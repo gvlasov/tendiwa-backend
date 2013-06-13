@@ -1,0 +1,37 @@
+package tendiwa.locationtypes;
+
+import tendiwa.buildings.House;
+import tendiwa.core.HorizontalPlane;
+import tendiwa.core.StaticData;
+import tendiwa.core.meta.Coordinate;
+import tendiwa.core.meta.Side;
+import tendiwa.core.terrain.settlements.BuildingPlace;
+import tendiwa.core.terrain.settlements.Settlement;
+
+public class BuildingTest extends Settlement {
+	public BuildingTest(HorizontalPlane plane, int x, int y, int width, int height) {
+		super(plane, x, y, width, height);
+		
+		int buildingSizeX = 18;
+		int buildingSizeY = 19;
+		
+		fillWithCells(StaticData.getFloorType("grass").getId(), StaticData.VOID);
+		// -2 and +5 are because of road.width
+		Coordinate nw = new Coordinate((width-buildingSizeX)/2-2,(height-buildingSizeY)/2-2);
+		Coordinate ne = new Coordinate(nw.x+buildingSizeX+5,nw.y);
+		Coordinate se = new Coordinate(nw.x+buildingSizeX+5,nw.y+buildingSizeY+5);
+		Coordinate sw = new Coordinate(nw.x,nw.y+buildingSizeY+5);
+		roadSystem.createRoad(nw.x,nw.y,ne.x,ne.y);
+		roadSystem.createRoad(ne.x,ne.y,se.x,se.y);
+		roadSystem.createRoad(se.x,se.y,sw.x,sw.y);
+		roadSystem.createRoad(sw.x,sw.y,nw.x,nw.y);
+		roadSystem.drawRoads();
+		quarterSystem.build(roadSystem.getReferencePoints());
+		for (BuildingPlace place : quarterSystem.buildingPlaces) {
+			if (place.contains(nw.x+buildingSizeX/2, nw.y+buildingSizeY/2)) {
+				placeBuilding(place, House.class, Side.getRandomCardinal());
+				break;
+			}
+		}
+	}
+}
