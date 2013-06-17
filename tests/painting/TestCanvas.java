@@ -141,7 +141,7 @@ public void paintComponent(Graphics g) {
 
 public void draw(int[] values) {
 	Color color1 = Color.blue;
-	Color color2 = Color.green;
+	Color color2 = Color.yellow;
 	Color currentColor = color1;
 	int paddingLeft = 10;
 	int paddingTop = 10;

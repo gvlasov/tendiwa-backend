@@ -202,23 +202,26 @@ public static int[] splitRandomLengthIntoRandomPieces(Range randomLength, Range 
 	for (int i=0; i<numberOfPieces; i++) {
 		piecesLengths[i] = randomPieceLength.min;
 	}
-	int singlePiecesLeft = randomLength.max % (numberOfPieces * randomPieceLength.min);
+	int singlePiecesLeft = randomLength.max - (numberOfPieces * randomPieceLength.min);
 	
 	Random random = new Random();
 	int probabilityFullLength = Chance.rand(randomLength) - randomLength.min;
 	for (int i=0; i<singlePiecesLeft; i++) {
-		// Probability of increasing a number at index i is an integer, the bigger the
-		// integer the more probability is.
 		double probabilityPiece = Math.abs(random.nextGaussian());
 		int increasingIndex = (int) Math.floor(probabilityPiece/2*numberOfPieces);
 		if (increasingIndex >= numberOfPieces) {
 			increasingIndex = numberOfPieces-1;
 		}
 		piecesLengths[increasingIndex] += 1;
-		if (i-dRandomLength == probabilityFullLength) {
+		if (singlePiecesLeft-i < probabilityFullLength) {
 			break;
 		}
 	}
+	int sum = 0;
+	for (int i=0; i<numberOfPieces; i++) {
+		sum += piecesLengths[i];
+	}
+	System.out.println(sum);
 	return piecesLengths;
 }
 }

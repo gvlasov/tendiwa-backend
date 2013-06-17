@@ -10,7 +10,7 @@ public void paint() {
 	setScale(2);
 	for (int i=0; i<20; i++) {
 		int[] values = TrailRectangleSystem.splitRandomLengthIntoRandomPieces(
-			new Range(400, 500), new Range(10, 40)
+			new Range(200, 250), new Range(10, 40)
 		);
 		draw(values);
 	}
