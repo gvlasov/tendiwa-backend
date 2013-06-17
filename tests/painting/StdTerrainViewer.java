@@ -4,11 +4,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import tendiwa.core.Cell;
-import tendiwa.core.Main;
 import tendiwa.core.StaticData;
 import tendiwa.core.TerrainBasics;
-import tendiwa.recsys.RectangleArea;
-import tendiwa.recsys.RectangleSystem;
+import tendiwa.geometry.RectangleArea;
+import tendiwa.geometry.RectangleSystem;
 
 public class StdTerrainViewer {
 Set<RectangleSystem> rectangleSystems = new HashSet<RectangleSystem>();

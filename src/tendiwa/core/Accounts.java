@@ -3,6 +3,7 @@ package tendiwa.core;
 import java.util.HashMap;
 
 
+
 public class Accounts {
 	public final static HashMap<String, Account> accounts = new HashMap<String, Account>();
 	public static void addAccount(Account account) {

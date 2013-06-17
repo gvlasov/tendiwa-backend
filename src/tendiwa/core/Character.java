@@ -3,13 +3,9 @@ package tendiwa.core;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import tendiwa.core.characters.CharacterEffect;
-import tendiwa.core.characters.CharacterState;
-import tendiwa.core.characters.DamageType;
 import tendiwa.core.meta.Coordinate;
 import tendiwa.core.meta.Side;
 import tendiwa.core.meta.Utils;
-import tendiwa.core.terrain.Container;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

@@ -6,7 +6,6 @@ import java.util.Set;
 
 import org.java_websocket.WebSocket;
 
-import tendiwa.core.net.Chat;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

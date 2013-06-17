@@ -4,6 +4,7 @@ import java.util.HashMap;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
+
 public class Body {
 	final SimpleGraph<BodyPart, DefaultEdge> graph;
 	final HashMap<BodyPart, UniqueItem> covered = new HashMap<BodyPart, UniqueItem>();

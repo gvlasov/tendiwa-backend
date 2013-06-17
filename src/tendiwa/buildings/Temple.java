@@ -3,14 +3,14 @@ package tendiwa.buildings;
 import java.awt.Rectangle;
 
 import tendiwa.core.Building;
-import tendiwa.core.EnhancedRectangle;
 import tendiwa.core.StaticData;
 import tendiwa.core.TerrainBasics;
 import tendiwa.core.meta.Coordinate;
 import tendiwa.core.meta.Side;
 import tendiwa.core.terrain.settlements.BuildingPlace;
-import tendiwa.recsys.RectangleArea;
-import tendiwa.recsys.RectangleSystem;
+import tendiwa.geometry.EnhancedRectangle;
+import tendiwa.geometry.RectangleArea;
+import tendiwa.geometry.RectangleSystem;
 
 
 public class Temple extends Building {

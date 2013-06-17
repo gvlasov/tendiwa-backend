@@ -5,8 +5,8 @@ import tendiwa.core.StaticData;
 import tendiwa.core.meta.Direction;
 import tendiwa.core.meta.Side;
 import tendiwa.core.terrain.settlements.BuildingPlace;
-import tendiwa.recsys.RectangleArea;
-import tendiwa.recsys.RectangleSystem;
+import tendiwa.geometry.RectangleArea;
+import tendiwa.geometry.RectangleSystem;
 
 public class Inn extends Building {
 	public static final long serialVersionUID = 11672547L;

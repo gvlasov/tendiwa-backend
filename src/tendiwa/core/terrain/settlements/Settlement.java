@@ -9,7 +9,6 @@ import java.util.HashSet;
 
 import tendiwa.core.Building;
 import tendiwa.core.Character;
-import tendiwa.core.EnhancedRectangle;
 import tendiwa.core.HorizontalPlane;
 import tendiwa.core.Location;
 import tendiwa.core.StaticData;
@@ -20,9 +19,10 @@ import tendiwa.core.meta.Direction;
 import tendiwa.core.meta.Side;
 import tendiwa.core.meta.Utils;
 import tendiwa.core.terrain.settlements.Settlement.RoadSystem.Road;
-import tendiwa.recsys.RandomRectangleSystem;
-import tendiwa.recsys.RectangleArea;
-import tendiwa.recsys.RectangleSystem;
+import tendiwa.geometry.EnhancedRectangle;
+import tendiwa.geometry.RandomRectangleSystem;
+import tendiwa.geometry.RectangleArea;
+import tendiwa.geometry.RectangleSystem;
 
 
 /**

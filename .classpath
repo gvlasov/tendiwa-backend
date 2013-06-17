@@ -10,6 +10,7 @@
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="lib/gson-2.2.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/java_websocket.jar"/>
+	<classpathentry kind="lib" path="/home/suseika/Projects/tendiwa/server/modules/MainModule.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

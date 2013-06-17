@@ -1,5 +1,6 @@
 package tendiwa.core;
 
+
 public class Cell {
 	protected int floor = StaticData.VOID;
 	protected int object = StaticData.VOID;

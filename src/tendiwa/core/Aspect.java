@@ -1,4 +1,6 @@
 package tendiwa.core;
+
+
 /**
  * Aspects determine how {@link ItemType}s may be used in game. For example, aspect {@link AspectApparel}
  * allows characters to wear an item, and {@link AspectContainer} allows storing other item

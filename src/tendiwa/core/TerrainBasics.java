@@ -7,7 +7,6 @@ import java.util.HashMap;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import tendiwa.core.meta.Coordinate;
-import tendiwa.core.terrain.Container;
 
 
 public abstract class TerrainBasics {

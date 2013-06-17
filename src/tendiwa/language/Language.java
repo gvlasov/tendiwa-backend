@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import tendiwa.core.Main;
-
 
 public abstract class Language {
 	public static Language instance = new English();

@@ -2,7 +2,6 @@ package tendiwa.core;
 
 import java.util.Arrays;
 
-import tendiwa.core.characters.CharacterState;
 import tendiwa.core.meta.Side;
 import tendiwa.core.net.clientmessages.ClientMessageAnswer;
 import tendiwa.core.net.clientmessages.ClientMessageAttack;
@@ -26,7 +25,6 @@ import tendiwa.core.net.clientmessages.ClientMessageStep;
 import tendiwa.core.net.clientmessages.ClientMessageTakeFromContainer;
 import tendiwa.core.net.clientmessages.ClientMessageTakeOff;
 import tendiwa.core.net.clientmessages.ClientMessageUseObject;
-import tendiwa.core.terrain.Container;
 
 import com.google.gson.Gson;
 

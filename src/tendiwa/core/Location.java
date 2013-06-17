@@ -1,8 +1,6 @@
 package tendiwa.core;
 
 import java.awt.Rectangle;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,10 +12,8 @@ import tendiwa.core.meta.Chance;
 import tendiwa.core.meta.Coordinate;
 import tendiwa.core.meta.Direction;
 import tendiwa.core.meta.Side;
-import tendiwa.core.net.Chat;
-import tendiwa.core.terrain.CellCollection;
 import tendiwa.core.terrain.settlements.BuildingPlace;
-import tendiwa.recsys.RectangleSystem;
+import tendiwa.geometry.RectangleSystem;
 
 
 public class Location extends TerrainBasics {
@@ -166,11 +162,11 @@ public class Location extends TerrainBasics {
 	 * @param name
 	 */
 	public void drawSegment(Segment segment, int width, int type, int name) {
-		if (segment.direction == Direction.H) {
-			square(segment.x, segment.y, segment.length, width, type, name, true);
+		if (segment.getDirection() == Direction.H) {
+			square(segment.getX(), segment.getY(), segment.getLength(), width, type, name, true);
 		} else {
 			// if segment.direction == Direction.V
-			square(segment.x, segment.y, width, segment.length, type, name, true);
+			square(segment.getX(), segment.getY(), width, segment.getLength(), type, name, true);
 		}
 	}
 	public void circle(int cX, int cY, int r, int type, int name) {

@@ -4,14 +4,14 @@ import java.awt.Rectangle;
 
 import tendiwa.core.Building;
 import tendiwa.core.Character;
+import tendiwa.core.CharacterCondition;
+import tendiwa.core.CustomCharacterAction;
+import tendiwa.core.Dialogue;
+import tendiwa.core.DialoguePoint;
 import tendiwa.core.ItemPile;
 import tendiwa.core.PlayerCharacter;
 import tendiwa.core.StaticData;
 import tendiwa.core.TerrainBasics;
-import tendiwa.core.characters.CharacterCondition;
-import tendiwa.core.characters.CustomCharacterAction;
-import tendiwa.core.characters.Dialogue;
-import tendiwa.core.characters.DialoguePoint;
 import tendiwa.core.meta.Chance;
 import tendiwa.core.meta.Side;
 import tendiwa.core.terrain.settlements.BuildingPlace;

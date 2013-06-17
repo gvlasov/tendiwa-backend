@@ -38,6 +38,9 @@ public class Chance {
 		}
 		return Math.min(a, b) + (int) Math.round(Math.random() * Math.abs(b - a));
 	}
+	public static int rand(Range range) {
+		return rand(range.min, range.max);
+	}
 	/**
 	 * Returns a random long from between two longs inclusive.
 	 * @param a

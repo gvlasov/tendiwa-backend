@@ -2,14 +2,10 @@ package tendiwa.core;
 
 import java.net.MalformedURLException;
 
-import javax.swing.SwingUtilities;
-
-import tendiwa.core.gui.Window;
 import tendiwa.locationtypes.Forest;
 //import tendiwa.modules.SuseikaBrowserClientResourceBuilder;
 
 public class Main {
-	public static Window window;
 	public static final int DEFAULT_PORT = 8787;
 	public static int[][] arr;
 	public final static boolean DEBUG = true;

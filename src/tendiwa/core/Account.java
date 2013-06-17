@@ -2,6 +2,7 @@ package tendiwa.core;
 
 import java.util.HashSet;
 import java.util.Iterator;
+
 public class Account {
 	final String login;
 	final String password;

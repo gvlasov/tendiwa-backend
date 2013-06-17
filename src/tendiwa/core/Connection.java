@@ -1,5 +1,6 @@
 package tendiwa.core;
 
+
 public abstract class Connection {
 	private PlayerHandler playerHandler;
 	public Connection(PlayerHandler playerHandler) {

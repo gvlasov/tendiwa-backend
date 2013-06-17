@@ -4,20 +4,18 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import tendiwa.core.meta.Coordinate;
 import tendiwa.core.meta.Direction;
 import tendiwa.core.meta.Side;
 import tendiwa.core.meta.Utils;
-import tendiwa.recsys.RandomRectangleSystem;
-import tendiwa.recsys.RectangleArea;
-import tendiwa.recsys.RectangleSystem;
+import tendiwa.geometry.RandomRectangleSystem;
+import tendiwa.geometry.RectangleArea;
+import tendiwa.geometry.RectangleSystem;
 
 
 /**
@@ -195,7 +193,7 @@ public void drawInnerBorders(int type, int name) {
 				 */
 				RectangleArea nextRectangle = rectanglesFromThatSide.get(i + 1);
 				if (rs.areRectanglesNear(rectanglesFromThatSide.get(i), nextRectangle)) {
-					segments.get(i).changeLength(segments.get(i + 1).length + rs.getBorderWidth());
+					segments.get(i).changeLength(segments.get(i + 1).getLength() + rs.getBorderWidth());
 					segments.remove(i + 1);
 					i--;// So the next time the segment after the deleted
 						// segment will be applied to the result segment.

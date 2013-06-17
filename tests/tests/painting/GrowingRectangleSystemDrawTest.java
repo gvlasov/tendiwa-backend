@@ -5,9 +5,9 @@ import javax.swing.SwingUtilities;
 import org.junit.Test;
 
 import painting.TestCanvas;
-import tendiwa.core.EnhancedRectangle;
 import tendiwa.core.meta.Side;
-import tendiwa.recsys.GrowingRectangleSystem;
+import tendiwa.geometry.EnhancedRectangle;
+import tendiwa.geometry.GrowingRectangleSystem;
 
 public class GrowingRectangleSystemDrawTest {
 

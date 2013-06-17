@@ -4,14 +4,14 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 
 import tendiwa.core.Building;
-import tendiwa.core.EnhancedRectangle;
+import tendiwa.core.CellCollection;
 import tendiwa.core.StaticData;
 import tendiwa.core.TerrainBasics;
 import tendiwa.core.meta.Chance;
 import tendiwa.core.meta.Coordinate;
 import tendiwa.core.meta.Side;
-import tendiwa.core.terrain.CellCollection;
 import tendiwa.core.terrain.settlements.BuildingPlace;
+import tendiwa.geometry.EnhancedRectangle;
 
 
 public class Crypt extends Building {

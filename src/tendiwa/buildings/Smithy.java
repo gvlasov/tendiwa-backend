@@ -4,8 +4,8 @@ import tendiwa.core.Building;
 import tendiwa.core.StaticData;
 import tendiwa.core.meta.Side;
 import tendiwa.core.terrain.settlements.BuildingPlace;
-import tendiwa.recsys.RectangleArea;
-import tendiwa.recsys.RectangleSystem;
+import tendiwa.geometry.RectangleArea;
+import tendiwa.geometry.RectangleSystem;
 
 public class Smithy extends Building {
 	protected Smithy(BuildingPlace bp, Side side) {

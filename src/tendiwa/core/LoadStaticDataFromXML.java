@@ -4,7 +4,9 @@ import static org.w3c.dom.Node.ELEMENT_NODE;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.HashSet;
 import java.util.Scanner;
 
@@ -27,6 +29,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import sun.misc.IOUtils;
+
+
 public class LoadStaticDataFromXML {
 	private static final EdgeFactory<BodyPartTypeInstance, DefaultEdge> defaultEdgeFactory = new EdgeFactory<BodyPartTypeInstance, DefaultEdge>() {
 		public DefaultEdge createEdge(BodyPartTypeInstance v1, BodyPartTypeInstance v2) {
@@ -42,14 +47,16 @@ public class LoadStaticDataFromXML {
 	 * @param filename
 	 *            Path to .xml data file.
 	 */
-	public static void loadGameDataFromXml(String filename) {
+	public static void loadGameDataFromXml(Class<? extends Module> subclass, String pathToResource) {
 		try {
-			File file = new File(filename);
+			InputStream xmlResource = subclass.getResourceAsStream(pathToResource);
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(file);
+			Document doc = dBuilder.parse(xmlResource);
 			Element eRoot = doc.getDocumentElement();
-			String textOfFile = new Scanner(file, "UTF-8").useDelimiter("\\A").next();
+
+			xmlResource = subclass.getResourceAsStream(pathToResource);
+			String textOfFile = new Scanner(xmlResource, "UTF-8").useDelimiter("\\A").next();
 			validate(textOfFile, "data/schema.xsd");
 			removeWhitespaceTextNodes(eRoot);
 

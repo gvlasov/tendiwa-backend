@@ -6,8 +6,8 @@ import java.awt.Rectangle;
 
 import org.junit.Test;
 
-import tendiwa.core.EnhancedRectangle;
 import tendiwa.core.meta.Side;
+import tendiwa.geometry.EnhancedRectangle;
 
 public class RectangleSystemTest {
 

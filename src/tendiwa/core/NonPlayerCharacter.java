@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import tendiwa.core.characters.CustomCharacterAction;
-import tendiwa.core.characters.Dialogue;
-import tendiwa.core.characters.DialoguePoint;
 import tendiwa.core.meta.Coordinate;
 import tendiwa.core.meta.Side;
 

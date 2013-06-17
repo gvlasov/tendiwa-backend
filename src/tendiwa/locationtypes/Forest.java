@@ -7,7 +7,7 @@ import tendiwa.core.StaticData;
 import tendiwa.core.TerrainModifier;
 import tendiwa.core.meta.Side;
 import tendiwa.core.terrain.settlements.BuildingPlace;
-import tendiwa.recsys.RectangleSystem;
+import tendiwa.geometry.RectangleSystem;
 
 public class Forest extends Location {
 	int wall = StaticData.getObjectType("wall_grey_stone").getId();
