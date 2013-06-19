@@ -103,8 +103,7 @@ public RectangleSystem buildToPoint(Point newPoint) {
 		// If there is some place between two rectangles on ends of the line,
 		// where at least one other rectangle can be placed, start preparing 
 		// those middle rectangles.
-		Range distanceRange = new Range(minDistanceLeft, minDistanceLeft);
-//		Range distanceRange = new Range(maxDistanceLeft, maxDistanceLeft);
+		Range distanceRange = new Range(minDistanceLeft, maxDistanceLeft);
 		Range sizeRangeWithBorder = new Range(sizeRange.min + borderWidth, sizeRange.max + borderWidth);
 		int[] lengths = splitRandomLengthIntoRandomPieces(
 			distanceRange,
@@ -124,8 +123,7 @@ public RectangleSystem buildToPoint(Point newPoint) {
 		// on the left point has min and max length).
 		int minLengthsStart = Math.max(1, lengthsStartVariants-sizeRange.max+1);
 		int maxLengthsStart = Math.min(sizeRange.max, lengthsStartVariants);
-//		int lengthsStart = Chance.rand(minLengthsStart, maxLengthsStart);
-		int lengthsStart = minLengthsStart;
+		int lengthsStart = Chance.rand(minLengthsStart, maxLengthsStart);
 		int leftRecLength = Chance.rand(
 			Math.min(sizeRange.max, Math.max(sizeRange.min, 1+borderWidth+lengthsStart)),
 			sizeRange.max
@@ -139,8 +137,6 @@ public RectangleSystem buildToPoint(Point newPoint) {
 			Math.min(sizeRange.max, Math.max(sizeRange.min, lengthsStartVariants - lengthsStart + 1)),
 			sizeRange.max
 		);
-		System.out.println(leftRecLength+" "+rightRecWidth);
-		System.out.println(lengthsStartVariants+" "+lengthsStart);
 		int rightRecCoord = (xIsGreater ? lastPoint.x : lastPoint.y) + sumOfLengths + borderWidth + lengthsStart;
 		listOfLengths.add(rightRecWidth);
 		// Then we get coordinates of rectangles on the main axis.
@@ -300,9 +296,6 @@ public static int[] splitRandomLengthIntoRandomPieces(Range randomLength, Range 
 		}
 	}
 	return piecesLengths;
-}
-public static void visualize() {
-
 }
 public Collection<Point> getPoints() {
 	return pointsToRectangles.keySet();

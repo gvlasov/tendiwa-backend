@@ -13,7 +13,7 @@ public static void main(String[] args) {
 @Override
 public void paint() {
 	setScale(2);
-	TrailRectangleSystem trs = new TrailRectangleSystem(1, new Range(5, 10), new Point(12, 18));
+	TrailRectangleSystem trs = new TrailRectangleSystem(0, new Range(1, 10), new Point(12, 18));
 	trs.buildToPoint(new Point(212, 18));
 	draw(trs);
 }
