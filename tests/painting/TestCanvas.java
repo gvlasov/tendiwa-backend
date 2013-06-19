@@ -1,3 +1,4 @@
+
 package painting;
 
 import java.awt.Color;
@@ -22,18 +23,18 @@ import tendiwa.core.HorizontalPlane;
 import tendiwa.core.TerrainBasics;
 import tendiwa.core.meta.Side;
 import tendiwa.geometry.EnhancedRectangle;
-import tendiwa.geometry.RandomRectangleSystem;
 import tendiwa.geometry.RectangleSystem;
-import tests.painting.RectangleSystemDrawTest;
+import tendiwa.geometry.TrailRectangleSystem;
 
 public abstract class TestCanvas {
 private final JFrame frame;
 private final DrawingPanel panel;
 private final Graphics2D graphics;
 private Color circularColor = new Color(0, 0, 0);
-private int CIRCULAR_COLOR_STEP = 1;
+private int CIRCULAR_COLOR_STEP = 50;
 private int numberOfLines;
 private int scale = 1;
+protected static Class<? extends TestCanvas> subclass;
 
 public TestCanvas() {
 	frame = new JFrame("tendiwa canvas");
@@ -45,25 +46,22 @@ public TestCanvas() {
 
 	frame.setVisible(true);
 }
-public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-	String mainClassName = args[0];
-	System.out.println(mainClassName);
-	Class<? extends TestCanvas> tcClass = (Class<? extends TestCanvas>) TestCanvas.class.getClassLoader().loadClass(mainClassName);
-	final TestCanvas self = tcClass.newInstance();
-	SwingUtilities.invokeLater(new Runnable() {
-		public void run() {
-			self.paint();
-		}
-	});
+public static void main(String[] args) {
+	throw new RuntimeException("You must override main method with a call to visualize()");
 }
 public abstract void paint();
 public void setScale(int scale) {
 	this.scale = scale;
 }
 public void draw(RectangleSystem rs) {
-	System.out.println(rs);
 	for (Rectangle r : rs) {
 		draw(r, getNextColor());
+	}
+}
+public void draw(TrailRectangleSystem trs) {
+	draw((RectangleSystem)trs);
+	for (Point p : trs.getPoints()) {
+		draw(p.x, p.y, Color.RED);
 	}
 }
 public void draw(HorizontalPlane plane) {
@@ -106,13 +104,17 @@ public void draw(int x, int y, Color color) {
 	if (scale == 1) {
 		panel.image.setRGB(x, y, color.getRGB());
 	} else {
-		draw(new Rectangle(x * scale, y * scale, scale, scale), color);
+		graphics.setColor(color);
+		graphics.fillRect(x * scale, y * scale, scale, scale);
 	}
 }
 
 public void draw(Rectangle r, Color color) {
 	graphics.setColor(color);
 	graphics.fillRect(r.x * scale, r.y * scale, r.width * scale, r.height * scale);
+}
+public void draw(Rectangle r) {
+	draw(r, getNextColor());
 }
 public Color getNextColor() {
 	if (circularColor.getRed() > 50) {
@@ -160,5 +162,40 @@ public void draw(int[] values) {
 	}
 	numberOfLines++;
 
+}
+/**
+ * This method provides an ability to launch painting of a subclass with just
+ * calling this method in Subclass.main()
+ *
+ */
+@SuppressWarnings("unchecked")
+protected static void visualize() {
+	StackTraceElement[] stack = Thread.currentThread ().getStackTrace ();
+    StackTraceElement main = stack[stack.length - 1];
+    String mainClass = main.getClassName ();
+    Class<? extends TestCanvas> tcClass = null;
+	try {
+		tcClass = (Class<? extends TestCanvas>) TestCanvas.class.getClassLoader().loadClass(mainClass);
+	} catch (ClassNotFoundException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	TestCanvas self1 = null;
+	try {
+		self1 = tcClass.newInstance();
+	} catch (InstantiationException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (IllegalAccessException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+    final TestCanvas self = self1;
+	
+	SwingUtilities.invokeLater(new Runnable() {
+		public void run() {
+			self.paint();
+		}
+	});
 }
 }
