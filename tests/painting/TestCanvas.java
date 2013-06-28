@@ -24,7 +24,7 @@ import tendiwa.core.TerrainBasics;
 import tendiwa.core.meta.Side;
 import tendiwa.geometry.EnhancedRectangle;
 import tendiwa.geometry.RectangleSystem;
-import tendiwa.geometry.TrailRectangleSystem;
+import tendiwa.geometry.FuckingTrailRectangleSystem;
 
 public abstract class TestCanvas {
 private final JFrame frame;
@@ -58,7 +58,7 @@ public void draw(RectangleSystem rs) {
 		draw(r, getNextColor());
 	}
 }
-public void draw(TrailRectangleSystem trs) {
+public void draw(FuckingTrailRectangleSystem trs) {
 	draw((RectangleSystem)trs);
 	for (Point p : trs.getPoints()) {
 		draw(p.x, p.y, Color.RED);

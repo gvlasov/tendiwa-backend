@@ -1,10 +1,10 @@
 package tendiwa.geometry;
 
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -18,24 +18,32 @@ import tendiwa.core.meta.Side;
  * 
  * Each RectangleArea has varying width and height.
  * 
- * {@link TrailRectangleSystem} guarantees that it will contain RectangleAreas
+ * {@link FuckingTrailRectangleSystem} guarantees that it will contain RectangleAreas
  * that contain given points inside them, for each defined point. RectangleAreas
  * between points are meant to be rather chaotic and unpredictable.
  * 
  * @author suseika
  * 
  */
-public class TrailRectangleSystem extends GrowingRectangleSystem {
+public class FuckingTrailRectangleSystem extends GrowingRectangleSystem {
+private static final int MIN_SECONDARY_AXIS_COVERING_SIZE = 4;
 protected Point lastPoint;
 protected Range sizeRange;
 final HashMap<Point, RectangleArea> pointsToRectangles = new HashMap<Point, RectangleArea>();
+public static boolean STOP = false;
 
-public TrailRectangleSystem(int borderWidth, Range sizeRange, Point start) {
+public FuckingTrailRectangleSystem(int borderWidth, Range sizeRange, Point start) {
 	super(borderWidth);
+	if (sizeRange.max < 2) {
+		throw new IllegalArgumentException("Maximum of sizeRange must be at least 2; your range is "+sizeRange);
+	}
+	if (sizeRange.min < 1) {
+		throw new IllegalArgumentException("Minumum of sizeRange must be at least 1; your range is "+sizeRange);
+	}
 	lastPoint = start;
 	this.sizeRange = sizeRange;
 }
-public RectangleSystem buildToPoint(Point newPoint) {
+public FuckingTrailRectangleSystem buildToPoint(Point newPoint) {
 	// You better not start trying to comprehend this code yourself. If you
 	// really need to know how it works, better contact me — I'll happily 
 	// explain its difficult moments (if I'll be able to remember how it works
@@ -46,17 +54,17 @@ public RectangleSystem buildToPoint(Point newPoint) {
 	int distanceBetweenPoints;
 	Side toSecondRectangle; // Direction of new rectangles appearing on the
 							// greatest axis
-	Side toSecondRectangleSecodary; // Direction of new rectangles shifting on
+	Side toSecondRectangleSecondary; // Direction of new rectangles shifting on
 									// the least axis
 	boolean xIsGreater = dx >= dy;
 	if (xIsGreater) {
 		distanceBetweenPoints = Math.abs(dx);
 		toSecondRectangle = Side.d2side(dx, 0);
-		toSecondRectangleSecodary = Side.d2side(0, dy);
+		toSecondRectangleSecondary = Side.d2side(0, dy);
 	} else {
 		distanceBetweenPoints = Math.abs(dy);
 		toSecondRectangle = Side.d2side(0, dy);
-		toSecondRectangleSecodary = Side.d2side(dx, 0);
+		toSecondRectangleSecondary = Side.d2side(dx, 0);
 	}
 	// First we assume that rectangles on the points are shifted away from each
 	// other in such a way that distance between them is the greatest possible,
@@ -107,7 +115,9 @@ public RectangleSystem buildToPoint(Point newPoint) {
 		Range sizeRangeWithBorder = new Range(sizeRange.min + borderWidth, sizeRange.max + borderWidth);
 		int[] lengths = splitRandomLengthIntoRandomPieces(
 			distanceRange,
-			sizeRangeWithBorder
+			sizeRangeWithBorder,
+			xIsGreater, 
+			newPoint
 		);
 		amountOfRectangles = lengths.length+2;
 		// First get length on the main axis (width or height) of all rectangles.
@@ -200,15 +210,14 @@ public RectangleSystem buildToPoint(Point newPoint) {
 	Point topPoint;
 	Point bottomPoint;
 	swapped = false;
-	if (toSecondRectangleSecodary == Side.W || toSecondRectangleSecodary == Side.N) {
+	if (toSecondRectangleSecondary == Side.W || toSecondRectangleSecondary == Side.N) {
 		topPoint = newPoint;
 		bottomPoint = lastPoint;
 	} else {
 		topPoint = lastPoint;
 		bottomPoint = newPoint;
 	}
-	int heightTop = Chance.rand(sizeRange);
-	int heightBottom = Chance.rand(sizeRange);
+	// Get coordinates of both points on secondary axis
 	int coordTopPoint;
 	int coordBottomPoint;
 	if (xIsGreater) {
@@ -218,34 +227,74 @@ public RectangleSystem buildToPoint(Point newPoint) {
 		coordTopPoint = topPoint.x;
 		coordBottomPoint = bottomPoint.x;
 	}
-	int topRecCoord1 = coordTopPoint - heightTop + 1;
-	int topRecCoord2 = coordBottomPoint - heightBottom + 1;
-	int dSecondaryAxis = (topRecCoord2 - topRecCoord1) / amountOfRectangles;
-	if (xIsGreater) {
-		heights.add(heightTop);
-		yCoordinates.add(topRecCoord1);
-	} else {
-		widths.add(heightTop);
-		xCoordinates.add(topRecCoord1);
+	int dSecondaryAxis = 1;
+	// Each of lengths by secondary axis is partially covered by next length
+	// (except for the last rectangle), and sum of uncovered areas equals 
+	// full length of system by secondary axis.
+	// For each rectangle except for last we store what part of it is not 
+	// covered by a next rectangle.
+	int secondaryAxisUncoveredAreas[] = new int[amountOfRectangles];
+	Collection<Integer> increaseableIndexes = new HashSet<Integer>();
+	int sumOfUncoveredAreasExceptForLastRec = 0;
+	for (int i=0; i<amountOfRectangles-1; i++) {
+		secondaryAxisUncoveredAreas[i] += dSecondaryAxis;
+		sumOfUncoveredAreasExceptForLastRec += dSecondaryAxis;
+		increaseableIndexes.add(i);
 	}
+	// The last rectangle doesn't have a next one, so its minimum uncovered area is
+	// set directly.
+	secondaryAxisUncoveredAreas[amountOfRectangles-1] = sizeRange.min;
+	int sumOfUncoveredAreas = sumOfUncoveredAreasExceptForLastRec + sizeRange.min;
+	increaseableIndexes.add(amountOfRectangles-1);
 
-	for (int i = 1; i < amountOfRectangles - 1; i++) {
-		// Setting coordinates and heights (widths if !xIsGreater) of all the
-		// rectangles except for the rectangles on Points
-		if (xIsGreater) {
-			yCoordinates.add(topRecCoord1 + dSecondaryAxis * i);
-			heights.add(Chance.rand(sizeRange));
-		} else {
-			xCoordinates.add(topRecCoord1 + dSecondaryAxis * i);
-			widths.add(Chance.rand(sizeRange));
+	int lengthOfTopRec = Chance.rand(Math.max(secondaryAxisUncoveredAreas[0]+1, sizeRange.min), sizeRange.max);
+	int lengthOfBottomRec = Chance.rand(sizeRange);
+	int minSumOfUncoveredAreas = coordBottomPoint-coordTopPoint+1;
+	int maxSumOfUncoveredAreas = minSumOfUncoveredAreas;
+	int sumLengthBySecondaryAxis = Chance.rand(minSumOfUncoveredAreas, maxSumOfUncoveredAreas);
+//	int sumLengthBySecondaryAxis = maxSumOfUncoveredAreas;
+	while (sumOfUncoveredAreas < sumLengthBySecondaryAxis) {
+		// Increase sizes of uncovered areas until their sum reaches 
+		Integer[] indexes = increaseableIndexes.toArray(new Integer[] {});
+		int index = indexes[Chance.rand(0, indexes.length-1)];
+		secondaryAxisUncoveredAreas[index]++;
+		if (secondaryAxisUncoveredAreas[index] >= sizeRange.max-MIN_SECONDARY_AXIS_COVERING_SIZE) {
+			increaseableIndexes.remove(new Integer(index));
 		}
+		sumOfUncoveredAreas++;
+		sumOfUncoveredAreasExceptForLastRec++;
 	}
-	if (xIsGreater) {
-		heights.add(heightBottom);
-		yCoordinates.add(topRecCoord2);
-	} else {
-		widths.add(heightBottom);
-		xCoordinates.add(topRecCoord2);
+	// Now we have all lengths of uncovered areas, so next we get lengths of our
+	// future rectangles. 
+	ArrayList<Integer> lengthsBySecondaryAxis = xIsGreater ? heights : widths;
+	lengthsBySecondaryAxis.add(lengthOfTopRec);
+	for (int i=1, l=secondaryAxisUncoveredAreas.length-1; i<l; i++) {
+		int uncoveredLength = secondaryAxisUncoveredAreas[i];
+		int fullLength = uncoveredLength + Chance.rand(
+			Math.max(sizeRange.min-uncoveredLength, MIN_SECONDARY_AXIS_COVERING_SIZE), 
+			sizeRange.max-uncoveredLength
+		);
+		lengthsBySecondaryAxis.add(fullLength);
+	}
+	lengthsBySecondaryAxis.add(lengthOfBottomRec);
+	// And finally set coordinates of rectangles by secondary axis.
+	Range rangeOfTopRec = new Range(0, lengthOfTopRec-1);
+	Range rangeOfBottomRec = new Range(
+		sumOfUncoveredAreasExceptForLastRec-(coordBottomPoint-coordTopPoint),
+		sumOfUncoveredAreasExceptForLastRec-(coordBottomPoint-coordTopPoint)+lengthOfBottomRec-1
+	);
+	Range rangesIntersection = rangeOfTopRec.intersection(rangeOfBottomRec);
+	int shift = rangeOfTopRec.max;
+	if (rangesIntersection == null) {
+		System.out.println(rangeOfTopRec+" "+rangeOfBottomRec+" "+rangesIntersection+" "+sumOfUncoveredAreasExceptForLastRec+" "+(coordBottomPoint-coordTopPoint));
+		STOP = true;
+	}
+	int topCoordOfCurrentRec = coordTopPoint - shift;
+	ArrayList<Integer> listOfSecondaryCoords = xIsGreater ? yCoordinates : xCoordinates;
+	listOfSecondaryCoords.add(topCoordOfCurrentRec);
+	for (int i=0; i<amountOfRectangles-1; i++) {
+		topCoordOfCurrentRec += secondaryAxisUncoveredAreas[i];
+		listOfSecondaryCoords.add(topCoordOfCurrentRec);
 	}
 
 	// Finally, place all rectangles.
@@ -271,11 +320,38 @@ public RectangleSystem buildToPoint(Point newPoint) {
 	}
 	return this;
 }
-public static int[] splitRandomLengthIntoRandomPieces(Range randomLength, Range randomPieceLength) {
+/**
+ * How many cells are there by secondary axis from lastPoint to newPoint
+ * inclusive.
+ */
+private int getAmountOfCellsOnSecondaryAxis(boolean xIsGreater, Point newPoint) {
+	return Math.abs(xIsGreater ? lastPoint.y-newPoint.y : lastPoint.x-newPoint.x)+1;
+}
+public int[] splitRandomLengthIntoRandomPieces(Range randomLength, Range randomPieceLength, boolean xIsGreater, Point newPoint) {
 	int maxNumberOfPieces = randomLength.max / randomPieceLength.min;
 	int minNumberOfPieces = randomLength.min / Math.min(randomPieceLength.max, randomLength.min);
-	int numberOfPieces = Chance.rand(minNumberOfPieces, maxNumberOfPieces);
-
+	/*
+	 * Finds out how many rectangles there should at least be between the points
+	 * (including those rectangles on the points) for the algorithm to be able to
+	 * completely fill the secondary axis with rectangles. Algorithm needs to know
+	 * this number before the main axis is split into rectangles, because if it
+	 * doesn't, then there is a chance that it will not be able to build a
+	 * RectnalgeSystem of connected rectangles because even maximum secondary size
+	 * of all rectangles will not be sufficient for all of them to touch sides.
+	 */
+	int amountOfCellsOnSecondaryAxis = getAmountOfCellsOnSecondaryAxis(xIsGreater, newPoint);
+	// -1 here is because last rectangle doesn't intersect with anything after it.
+	// Possible value of sizeRange.min == 1 is considered illegal in constructor,
+	// so there won't be any division by zero.
+	int minAmountOfRectangles = (amountOfCellsOnSecondaryAxis-1) / (sizeRange.max-1);
+	if ((amountOfCellsOnSecondaryAxis-1) % (sizeRange.max-1) != 0) {
+		minAmountOfRectangles += 1;
+	}
+	
+	int numberOfPieces = Chance.rand(
+		Math.max(minNumberOfPieces, minAmountOfRectangles), 
+		maxNumberOfPieces
+	);
 	int[] piecesLengths = new int[numberOfPieces];
 	for (int i = 0; i < numberOfPieces; i++) {
 		piecesLengths[i] = randomPieceLength.min;
@@ -297,6 +373,17 @@ public static int[] splitRandomLengthIntoRandomPieces(Range randomLength, Range 
 	}
 	return piecesLengths;
 }
+/**
+
+ * @param xIsGreater 
+ * 		If distance between points by x axis is greater than
+ * 		distance between points by y axis.
+ * @param newPoint
+ * 		Same as newPoint in 
+ * 		{@link FuckingTrailRectangleSystem#TrailRectangleSystem(int, Range, Point)}
+ * @return
+ */
+
 public Collection<Point> getPoints() {
 	return pointsToRectangles.keySet();
 
