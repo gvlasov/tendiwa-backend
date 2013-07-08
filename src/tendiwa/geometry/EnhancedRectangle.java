@@ -1,9 +1,11 @@
 package tendiwa.geometry;
 
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import tendiwa.core.meta.Chance;
 import tendiwa.core.meta.Coordinate;
 import tendiwa.core.meta.Direction;
 import tendiwa.core.meta.Side;
@@ -278,5 +280,49 @@ public class EnhancedRectangle extends Rectangle {
 	 */
 	public Coordinate getCenterPoint() {
 		return new Coordinate(x + width / 2, y + height / 2);
+	}
+	/**
+	 * Returns the minimum rectangle containing all the given points inside it.
+	 * @param points
+	 * @return
+	 */
+	public static EnhancedRectangle rectangleContainingAllPonts(Collection<Point> points) {
+		int maxX = Integer.MIN_VALUE, 
+			maxY = Integer.MIN_VALUE, 
+			minX = Integer.MAX_VALUE, 
+			minY = Integer.MAX_VALUE;
+		for (Point point : points) {
+			if (point.x < minX) {
+				minX = point.x;
+			}
+			if (point.x > maxX) {
+				maxX = point.x;
+			}
+			if (point.y < minY) {
+				minY = point.y;
+			}
+			if (point.y > maxY) {
+				maxY = point.y;
+			}
+		}
+		return new EnhancedRectangle(minX, minY, maxX-minX+1, maxY-minY+1);
+	}
+	/**
+	 * Creates a new rectangle whose center is the given point, with given width
+	 * and height. If the rectangle created has even width/height, the exact center
+	 * coordinate will be randomized between two possible coordinates.
+	 * 
+	 * @param point
+	 * @param width
+	 * @param height
+	 * @return
+	 */
+	public static EnhancedRectangle rectangleByCenterPoint(Point point, int width, int height) {
+		return new EnhancedRectangle(
+			point.x-width/2+(Chance.roll(50) ? -1 : 0), 
+			point.y-height/2+(Chance.roll(50) ? -1 : 0), 
+			width, 
+			height
+		);
 	}
 }

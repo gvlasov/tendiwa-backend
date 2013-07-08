@@ -12,7 +12,7 @@ public class Segment {
 int x;
 int y;
 int length;
-Direction direction;
+final Direction direction;
 
 public Segment(int x, int y, int length, Direction direction) {
 	if (length < 1) {
@@ -155,5 +155,19 @@ public Direction getDirection() {
 }
 public String toString() {
 	return "" + (direction == Direction.H ? x : y) + "," + length;
+}
+public int getStartCoord() {
+	if (direction == Direction.V) {
+		return y;
+	} else { 
+		return x;
+	}
+}
+public int getEndCoord() {
+	if (direction == Direction.V) {
+		return y+length-1;
+	} else {
+		return x+length-1;
+	}
 }
 }

@@ -1,4 +1,3 @@
-
 package painting;
 
 import java.awt.Color;
@@ -23,8 +22,10 @@ import tendiwa.core.HorizontalPlane;
 import tendiwa.core.TerrainBasics;
 import tendiwa.core.meta.Side;
 import tendiwa.geometry.EnhancedRectangle;
-import tendiwa.geometry.RectangleSystem;
 import tendiwa.geometry.FuckingTrailRectangleSystem;
+import tendiwa.geometry.InterrectangularPath;
+import tendiwa.geometry.RectangleSystem;
+import tendiwa.geometry.RectanglesJunction;
 
 public abstract class TestCanvas {
 private final JFrame frame;
@@ -58,8 +59,20 @@ public void draw(RectangleSystem rs) {
 		draw(r, getNextColor());
 	}
 }
+public void draw(InterrectangularPath path) {
+	for (Rectangle r : path) {
+		draw(r);
+	}
+	for (RectanglesJunction junction : path.getJunctions()) {
+		draw(junction);
+	}
+}
+private void draw(RectanglesJunction junction) {
+	// TODO Auto-generated method stub
+	
+}
 public void draw(FuckingTrailRectangleSystem trs) {
-	draw((RectangleSystem)trs);
+	draw((RectangleSystem) trs);
 	for (Point p : trs.getPoints()) {
 		draw(p.x, p.y, Color.RED);
 	}
@@ -166,14 +179,14 @@ public void draw(int[] values) {
 /**
  * This method provides an ability to launch painting of a subclass with just
  * calling this method in Subclass.main()
- *
+ * 
  */
 @SuppressWarnings("unchecked")
 protected static void visualize() {
-	StackTraceElement[] stack = Thread.currentThread ().getStackTrace ();
-    StackTraceElement main = stack[stack.length - 1];
-    String mainClass = main.getClassName ();
-    Class<? extends TestCanvas> tcClass = null;
+	StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+	StackTraceElement main = stack[stack.length - 1];
+	String mainClass = main.getClassName();
+	Class<? extends TestCanvas> tcClass = null;
 	try {
 		tcClass = (Class<? extends TestCanvas>) TestCanvas.class.getClassLoader().loadClass(mainClass);
 	} catch (ClassNotFoundException e) {
@@ -190,8 +203,8 @@ protected static void visualize() {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-    final TestCanvas self = self1;
-	
+	final TestCanvas self = self1;
+
 	SwingUtilities.invokeLater(new Runnable() {
 		public void run() {
 			self.paint();

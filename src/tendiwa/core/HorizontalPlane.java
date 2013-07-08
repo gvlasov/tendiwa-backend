@@ -1,9 +1,12 @@
 package tendiwa.core;
 
+import java.awt.Rectangle;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+
+import tendiwa.geometry.RectangleArea;
 
 
 
@@ -56,6 +59,13 @@ public class HorizontalPlane {
 			createChunk(x, y);
 		}
 	}
+	public void touchChunks(int x, int y, int width, int height) {
+		for (int j = getChunkRoundedCoord(y); j <= y + height; j += Chunk.WIDTH) {
+			for (int i = getChunkRoundedCoord(x); i <= x + width; i += Chunk.WIDTH) {
+				touchChunk(i, j);
+			}
+		}
+	}
 
 	public Chunk getChunkWithCell(int x, int y) {
 		int chX = (x < 0) ? x - ((x % Chunk.WIDTH == 0) ? 0 : Chunk.WIDTH) - x % Chunk.WIDTH
@@ -93,11 +103,7 @@ public class HorizontalPlane {
 
 	public Location generateLocation(int x, int y, int width, int height, Class<? extends Location> locationCls) {
 		// Create new chunks
-		for (int j = getChunkRoundedCoord(y); j <= y + height; j += Chunk.WIDTH) {
-			for (int i = getChunkRoundedCoord(x); i <= x + width; i += Chunk.WIDTH) {
-				touchChunk(i, j);
-			}
-		}
+		touchChunks(x, y, width, height);
 		Location location = null;
 		try {
 			Constructor<? extends Location> ctor = (Constructor<? extends Location>) locationCls.getDeclaredConstructors()[0];
@@ -107,6 +113,26 @@ public class HorizontalPlane {
 			e.printStackTrace();
 		}
 		return location;
+	}
+	public void placeTrail(Trail trail) {
+		final Rectangle pointsArea = RectangleArea.rectangleContainingAllPonts(trail.points);
+		pointsArea.x -= trail.width;
+		pointsArea.y -= trail.width;
+		pointsArea.width += trail.width*2;
+		pointsArea.height += trail.width*2;
+		touchChunks(pointsArea.x, pointsArea.y, pointsArea.width, pointsArea.height);
+		trail.draw(new TerrainBasics(pointsArea.x, pointsArea.y) {
+			
+			@Override
+			public int getWidth() {
+				return pointsArea.width;
+			}
+			
+			@Override
+			public int getHeight() {
+				return pointsArea.height;
+			}
+		});
 	}
 
 	public Cell[][] getCells(int x, int y, int width, int height) {

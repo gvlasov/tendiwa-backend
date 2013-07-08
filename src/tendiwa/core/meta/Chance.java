@@ -52,4 +52,13 @@ public class Chance {
 	public static long rand(long a, long b) {
 		return Math.min(a, b) + (long) Math.round(Math.random() * Math.abs(b - a));
 	}
+
+	/**
+	 * Returns an integer from 0 to max inclusive
+	 * @param max
+	 * @return
+	 */
+	public static int rand(int max) {
+		return 0;
+	}
 }

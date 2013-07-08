@@ -4,13 +4,21 @@ import java.awt.Rectangle;
 
 import tendiwa.core.meta.Side;
 
+/**
+ * A RectangleSystem that is constructed by setting an "initial" rectangle and 
+ * then adding new rectangles adjacent to first the existing one, and later to 
+ * the "grown" ones.
+ * 
+ * @author suseika
+ *
+ */
 public class GrowingRectangleSystem extends RectangleSystem {
 
 	public GrowingRectangleSystem(int borderWidth) {
 		super(borderWidth);
 	}
 
-	public GrowingRectangleSystem(int borderWidth, EnhancedRectangle r) {
+	public GrowingRectangleSystem(int borderWidth, Rectangle r) {
 		this(borderWidth);
 		addRectangleArea(new RectangleArea(r));
 	}
