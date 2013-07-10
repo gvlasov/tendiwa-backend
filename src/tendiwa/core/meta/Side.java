@@ -369,4 +369,16 @@ public enum Side {
 	public boolean isOrdinal() {
 		return this == NW || this == NE || this == SW || this == SE;
 	}
+	public Direction getDirection() {
+		switch (this) {
+			case N:
+			case S:
+				return Direction.V;
+			case E:
+			case W:
+				return Direction.H;
+			default:
+				throw new IllegalArgumentException("Method takes only cardinal directions");
+		}
+	}
 }

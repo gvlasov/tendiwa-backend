@@ -1,4 +1,4 @@
-package tendiwa.core;
+package tendiwa.geometry;
 
 import tendiwa.core.meta.Direction;
 

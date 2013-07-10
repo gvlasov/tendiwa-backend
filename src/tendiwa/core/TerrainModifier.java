@@ -16,6 +16,7 @@ import tendiwa.core.meta.Utils;
 import tendiwa.geometry.RandomRectangleSystem;
 import tendiwa.geometry.RectangleArea;
 import tendiwa.geometry.RectangleSystem;
+import tendiwa.geometry.Segment;
 
 
 /**

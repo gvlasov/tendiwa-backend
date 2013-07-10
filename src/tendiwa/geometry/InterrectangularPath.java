@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Set;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-import tendiwa.core.Segment;
 import tendiwa.core.meta.Chance;
 
 public class InterrectangularPath implements Iterable<RectangleArea> {

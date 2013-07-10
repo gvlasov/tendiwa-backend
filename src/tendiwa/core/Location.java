@@ -14,6 +14,7 @@ import tendiwa.core.meta.Direction;
 import tendiwa.core.meta.Side;
 import tendiwa.core.terrain.settlements.BuildingPlace;
 import tendiwa.geometry.RectangleSystem;
+import tendiwa.geometry.Segment;
 
 
 public class Location extends TerrainBasics {

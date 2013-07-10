@@ -11,9 +11,9 @@ import tendiwa.core.meta.Direction;
 import tendiwa.core.meta.Side;
 import tests.SideTest;
 
-
 /**
- * Adds more geometry methods to Rectangle. Unlike {@link Rectangle}, this class can't be of zero width or height.
+ * Adds more geometry methods to Rectangle. Unlike {@link Rectangle}, this class
+ * can't be of zero width or height.
  */
 public class EnhancedRectangle extends Rectangle {
 	private static final long serialVersionUID = -3818700857263511272L;
@@ -87,27 +87,33 @@ public class EnhancedRectangle extends Rectangle {
 	 * A more convenient method for creating rectangles. Takes a point, places
 	 * another point from ordinal direction from the initial point.
 	 * 
-	 * @param x Initial point
-	 * @param y Initial point
-	 * @param side Location of the second point relatively from the initial point.
-	 * @param width How far is the second point from the initial point on x-axis.
-	 * @param height How far is the second point from the initial point on y-axis.
+	 * @param x
+	 *            Initial point
+	 * @param y
+	 *            Initial point
+	 * @param side
+	 *            Location of the second point relatively from the initial
+	 *            point.
+	 * @param width
+	 *            How far is the second point from the initial point on x-axis.
+	 * @param height
+	 *            How far is the second point from the initial point on y-axis.
 	 * @return
 	 */
 	public static EnhancedRectangle growFromPoint(int x, int y, Side side, int width, int height) {
 		if (!side.isOrdinal()) {
-			throw new IllegalArgumentException("SideTest must be ordinal (SideTest = "+side);
+			throw new IllegalArgumentException("SideTest must be ordinal (SideTest = " + side);
 		}
 		if (side == Side.SE) {
 			return new EnhancedRectangle(x, y, width, height);
 		}
 		if (side == Side.NE) {
-			return new EnhancedRectangle(x, y-height, width, height);
+			return new EnhancedRectangle(x, y - height, width, height);
 		}
 		if (side == Side.NW) {
-			return new EnhancedRectangle(x-width, y-height, width, height);
+			return new EnhancedRectangle(x - width, y - height, width, height);
 		}
-		return new EnhancedRectangle(x-width, y, width, height);
+		return new EnhancedRectangle(x - width, y, width, height);
 	}
 	/**
 	 * Get cell on border.
@@ -217,8 +223,8 @@ public class EnhancedRectangle extends Rectangle {
 	 * Returns Coordinate of particular rectangle's corner.
 	 * 
 	 * @param side
-	 *            {@link SideTest#NW}, {@link SideTest#NE}, {@link SideTest#SW} or
-	 *            {@link SideTest#SE}.
+	 *            {@link SideTest#NW}, {@link SideTest#NE}, {@link SideTest#SW}
+	 *            or {@link SideTest#SE}.
 	 */
 	public Coordinate getCorner(Side side) {
 		switch (side) {
@@ -283,14 +289,12 @@ public class EnhancedRectangle extends Rectangle {
 	}
 	/**
 	 * Returns the minimum rectangle containing all the given points inside it.
+	 * 
 	 * @param points
 	 * @return
 	 */
 	public static EnhancedRectangle rectangleContainingAllPonts(Collection<Point> points) {
-		int maxX = Integer.MIN_VALUE, 
-			maxY = Integer.MIN_VALUE, 
-			minX = Integer.MAX_VALUE, 
-			minY = Integer.MAX_VALUE;
+		int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE, minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
 		for (Point point : points) {
 			if (point.x < minX) {
 				minX = point.x;
@@ -305,12 +309,12 @@ public class EnhancedRectangle extends Rectangle {
 				maxY = point.y;
 			}
 		}
-		return new EnhancedRectangle(minX, minY, maxX-minX+1, maxY-minY+1);
+		return new EnhancedRectangle(minX, minY, maxX - minX + 1, maxY - minY + 1);
 	}
 	/**
 	 * Creates a new rectangle whose center is the given point, with given width
-	 * and height. If the rectangle created has even width/height, the exact center
-	 * coordinate will be randomized between two possible coordinates.
+	 * and height. If the rectangle created has even width/height, the exact
+	 * center coordinate will be randomized between two possible coordinates.
 	 * 
 	 * @param point
 	 * @param width
@@ -318,11 +322,78 @@ public class EnhancedRectangle extends Rectangle {
 	 * @return
 	 */
 	public static EnhancedRectangle rectangleByCenterPoint(Point point, int width, int height) {
-		return new EnhancedRectangle(
-			point.x-width/2+(Chance.roll(50) ? -1 : 0), 
-			point.y-height/2+(Chance.roll(50) ? -1 : 0), 
-			width, 
-			height
-		);
+		return new EnhancedRectangle(point.x - width / 2 + (Chance.roll(50) ? -1 : 0), point.y - height / 2 + (Chance.roll(50) ? -1 : 0), width, height);
+	}
+	/**
+	 * Grows a new EnhancedRectangle from a point where two
+	 * {@link IntercellularLine}s intersect. An intersection of two such lines
+	 * divides the plane in 4 quadrants, and the quadrant where the rectangle
+	 * will be is defined by Side argument.
+	 * 
+	 * @param line1
+	 *            Must be perpendicular to line2.
+	 * @param line2
+	 *            Must be perpendicular to line1.
+	 * @param side
+	 *            Must be ordinal.
+	 * @param width
+	 *            Width of the resulting rectangle.
+	 * @param height
+	 *            Height of the resulting rectangle.
+	 * @return
+	 * @see {@link EnhancedRectangle#growFromPoint(int, int, Side, int, int)}
+	 */
+	public static EnhancedRectangle growFromIntersection(IntercellularLine line1, IntercellularLine line2, Side side, int width, int height) {
+		if (!side.isOrdinal()) {
+			throw new IllegalArgumentException("Only ordinal sides are allowed");
+		}
+		if (!line1.isPerpendicular(line2)) {
+			throw new IllegalArgumentException("Two lines must be perpendicular");
+		}
+		IntercellularLinesIntersection intersection = IntercellularLine.intersectionOf(line1, line2);
+		Point point = intersection.getPoint(side);
+		return growFromPoint(point.x, point.y, side, width, height);
+
+	}
+	/**
+	 * Checks if this rectangle touches an InterrectangularSegment with one of
+	 * its sides.
+	 * 
+	 * @param segment
+	 * @return
+	 */
+	public boolean touches(RectangleSidePiece piece) {
+		if (piece.isVertical()) {
+			if (getSegmentFromSide(Side.W).overlaps(piece) || getSideIntercellularSegment(Side.E).overlaps(piece)) {
+				return true;
+			}
+			return false;
+		} else {
+			if (getSideIntercellularSegment(Side.N).intersects(piece) || getSideIntercellularSegment(Side.S).intersects(piece)) {
+				return true;
+			}
+			return false;
+		}
+	}
+	/**
+	 * Returns an RectangleSidePiece representing one of 4 sides of this rectangle.
+	 * @param side
+	 * @return
+	 */
+	public RectangleSidePiece getSegmentFromSide(Side side) {
+		if (side == Side.N) {
+			return new RectangleSidePiece(this, Side.N, x, y, width);
+		}
+		if (side == Side.E) {
+			return new RectangleSidePiece(this, Side.E, x+width, y, height);
+		}
+		if (side == Side.S) {
+			return new RectangleSidePiece(this, Side.S, x, y+height, width);
+		}
+		if (side == Side.W) {
+			return new RectangleSidePiece(this, Side.W, x, y, height);
+		}
+		throw new IllegalArgumentException("Only a cardinal side may be rectangle's side");
+		
 	}
 }

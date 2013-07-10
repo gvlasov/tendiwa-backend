@@ -17,7 +17,6 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
 import tendiwa.core.Location;
-import tendiwa.core.Segment;
 import tendiwa.core.StaticData;
 import tendiwa.core.TerrainModifier;
 import tendiwa.core.meta.Chance;
@@ -337,7 +336,7 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 		} else if (side == Side.S) {
 			segments.add(new Segment(r.x, r.y + r.height - 1, r.width, Direction.H));
 		} else {
-			// if (side == SideTest.W)
+			// if (side == Side.W)
 			segments.add(new Segment(r.x, r.y, r.height, Direction.V));
 		}
 		int splitSegmentStartCoord, splitSegmentLength;
@@ -387,6 +386,9 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 		}
 		// segments.remove(null);
 		return new HashSet<Segment>(segments);
+	}
+	public Set<RectangleSidePiece> getSidePiecesFreeFromNeighbours(RectangleArea r, Side side) {
+		
 	}
 	/**
 	 * A method similar to
