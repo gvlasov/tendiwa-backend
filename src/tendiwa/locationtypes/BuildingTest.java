@@ -4,9 +4,9 @@ import tendiwa.buildings.House;
 import tendiwa.core.HorizontalPlane;
 import tendiwa.core.StaticData;
 import tendiwa.core.meta.Coordinate;
-import tendiwa.core.meta.Side;
 import tendiwa.core.terrain.settlements.BuildingPlace;
 import tendiwa.core.terrain.settlements.Settlement;
+import tendiwa.geometry.DirectionOldSide;
 
 public class BuildingTest extends Settlement {
 	public BuildingTest(HorizontalPlane plane, int x, int y, int width, int height) {
@@ -29,7 +29,7 @@ public class BuildingTest extends Settlement {
 		quarterSystem.build(roadSystem.getReferencePoints());
 		for (BuildingPlace place : quarterSystem.buildingPlaces) {
 			if (place.contains(nw.x+buildingSizeX/2, nw.y+buildingSizeY/2)) {
-				placeBuilding(place, House.class, Side.getRandomCardinal());
+				placeBuilding(place, House.class, DirectionOldSide.getRandomCardinal());
 				break;
 			}
 		}

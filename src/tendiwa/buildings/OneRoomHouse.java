@@ -2,12 +2,12 @@ package tendiwa.buildings;
 
 import tendiwa.core.Building;
 import tendiwa.core.StaticData;
-import tendiwa.core.meta.Side;
 import tendiwa.core.terrain.settlements.BuildingPlace;
+import tendiwa.geometry.CardinalDirection;
 
 public class OneRoomHouse extends Building {
 	public static final long serialVersionUID = 35681734L;
-	public OneRoomHouse(BuildingPlace bp, Side side) {
+	public OneRoomHouse(BuildingPlace bp, CardinalDirection side) {
 		super(bp, side);
 	}
 

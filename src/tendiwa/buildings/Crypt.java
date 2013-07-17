@@ -9,13 +9,12 @@ import tendiwa.core.StaticData;
 import tendiwa.core.TerrainBasics;
 import tendiwa.core.meta.Chance;
 import tendiwa.core.meta.Coordinate;
-import tendiwa.core.meta.Side;
 import tendiwa.core.terrain.settlements.BuildingPlace;
+import tendiwa.geometry.CardinalDirection;
 import tendiwa.geometry.EnhancedRectangle;
 
-
 public class Crypt extends Building {
-	public Crypt(BuildingPlace bp, Side side) {
+	public Crypt(BuildingPlace bp, CardinalDirection side) {
 		super(bp, side);
 		// TODO Auto-generated constructor stub
 	}

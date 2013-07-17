@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import tendiwa.core.meta.Coordinate;
-import tendiwa.core.meta.Side;
 import tendiwa.core.meta.Utils;
+import tendiwa.geometry.Direction;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -219,7 +219,7 @@ public abstract class Character extends UniqueObject implements GsonForStaticDat
 	 * @param character A Character being pushed.
 	 * @param side SideTest to push relative to the character being pushed.
 	 */
-	protected void push(Character character, Side side) {
+	protected void push(Character character, Direction side) {
 		int[] d = side.side2d();
 		int nx = character.x + d[0];
 		int ny = character.y + d[1];

@@ -10,12 +10,10 @@ import java.util.Iterator;
 
 import tendiwa.core.meta.Chance;
 import tendiwa.core.meta.Coordinate;
-import tendiwa.core.meta.Direction;
-import tendiwa.core.meta.Side;
 import tendiwa.core.terrain.settlements.BuildingPlace;
+import tendiwa.geometry.CardinalDirection;
 import tendiwa.geometry.RectangleSystem;
 import tendiwa.geometry.Segment;
-
 
 public class Location extends TerrainBasics {
 	public final String type;
@@ -156,17 +154,16 @@ public class Location extends TerrainBasics {
 	 * 
 	 * @param segment
 	 * @param width
-	 *            Defines width (if segment.getDirection() == Direction.V) of
-	 *            height (if segment.getDirection() == Direction.H) of the drawn
-	 *            rectangle.
+	 *            Defines width (if segment.getDirection() ==
+	 *            DirectionToBERemoved.V) of height (if segment.getDirection()
+	 *            == DirectionToBERemoved.H) of the drawn rectangle.
 	 * @param type
 	 * @param name
 	 */
 	public void drawSegment(Segment segment, int width, int type, int name) {
-		if (segment.getDirection() == Direction.H) {
+		if (segment.getOrientation().isHorizontal()) {
 			square(segment.getX(), segment.getY(), segment.getLength(), width, type, name, true);
 		} else {
-			// if segment.direction == Direction.V
 			square(segment.getX(), segment.getY(), width, segment.getLength(), type, name, true);
 		}
 	}
@@ -818,30 +815,36 @@ public class Location extends TerrainBasics {
 		return answer;
 	}
 
-	public void lineToRectangleBorder(int startX, int startY, Side side, Rectangle r, int type, int val) {
+	public void lineToRectangleBorder(int startX, int startY, CardinalDirection side, Rectangle r, int type, int val) {
 		if (!r.contains(startX, startY)) {
 			throw new Error("Rectangle " + r + " contains no point " + startX + ":" + startY);
 		}
+		if (side == null) {
+			throw new NullPointerException();
+		}
 		int endX, endY;
-		if (side == Side.N) {
-			endX = startX;
-			endY = r.y;
-		} else if (side == Side.E) {
+		switch (side) {
+			case N:
+				endX = startX;
+				endY = r.y;
+				break;
+			case E:
 			endX = r.x + r.width - 1;
 			endY = startY;
-		} else if (side == Side.S) {
+			break;
+			case S:
 			endX = startX;
 			endY = r.y + r.height - 1;
-		} else if (side == Side.W) {
+			break;
+			case W:
+			default:
 			endX = r.x;
 			endY = startY;
-		} else {
-			throw new Error("Unknown side " + side);
 		}
 		line(startX, startY, endX, endY, type, val);
 	}
 
-	public void fillSideOfRectangle(Rectangle r, Side side, int type, int val) {
+	public void fillSideOfRectangle(Rectangle r, CardinalDirection side, int type, int val) {
 		int startX, startY, endX, endY;
 		switch (side) {
 			case N:

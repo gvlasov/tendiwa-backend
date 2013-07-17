@@ -20,7 +20,7 @@ import javax.swing.SwingUtilities;
 import tendiwa.core.Chunk;
 import tendiwa.core.HorizontalPlane;
 import tendiwa.core.TerrainBasics;
-import tendiwa.core.meta.Side;
+import tendiwa.geometry.Directions;
 import tendiwa.geometry.EnhancedRectangle;
 import tendiwa.geometry.FuckingTrailRectangleSystem;
 import tendiwa.geometry.InterrectangularPath;
@@ -87,7 +87,7 @@ public Dimension getSize(RectangleSystem rs) {
 	Set<Integer> farthestPointsX = new HashSet<Integer>();
 	Set<Integer> farthestPointsY = new HashSet<Integer>();
 	for (EnhancedRectangle r : rs) {
-		Point p = r.getCorner(Side.SE);
+		Point p = r.getCorner(Directions.SE);
 		farthestPointsX.add(p.x);
 		farthestPointsY.add(p.y);
 	}

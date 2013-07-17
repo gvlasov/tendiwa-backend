@@ -15,11 +15,11 @@ import tendiwa.core.StaticData;
 import tendiwa.core.TerrainModifier;
 import tendiwa.core.meta.Chance;
 import tendiwa.core.meta.Coordinate;
-import tendiwa.core.meta.Direction;
-import tendiwa.core.meta.Side;
 import tendiwa.core.meta.Utils;
 import tendiwa.core.terrain.settlements.Settlement.RoadSystem.Road;
+import tendiwa.geometry.CardinalDirection;
 import tendiwa.geometry.EnhancedRectangle;
+import tendiwa.geometry.Orientation;
 import tendiwa.geometry.RandomRectangleSystem;
 import tendiwa.geometry.RectangleArea;
 import tendiwa.geometry.RectangleSystem;
@@ -42,9 +42,10 @@ public class Settlement extends Location {
 		super(plane, x, y, width, height, "Settlement");
 		quarterSystem = new QuarterSystem(this);
 	}
-	public void placeBuilding(BuildingPlace place, Class<? extends Building> cls, Side side) {
+	public void placeBuilding(BuildingPlace place, Class<? extends Building> cls, CardinalDirection side) {
 		Building building;
 		try {
+			@SuppressWarnings("unchecked")
 			Constructor<? extends Building> ctor = (Constructor<? extends Building>) cls.getDeclaredConstructors()[0];
 			building = ctor.newInstance(this, place, side);
 			if (building.fitsToPlace(place)) {
@@ -119,15 +120,15 @@ public class Settlement extends Location {
 
 			// If new road lies on the same cells as one of
 			// existing roads, then throw an error.
-			if (newRoad.direction == Direction.V) {
+			if (newRoad.orientation.isVertical()) {
 				for (Road road : roads) {
-					if (road.direction == Direction.V && road.start.x == newRoad.start.x && Utils.integersRangeIntersection(road.start.y, road.end.y, newRoad.start.y, newRoad.end.y) >= 1) {
+					if (road.orientation.isVertical() && road.start.x == newRoad.start.x && Utils.integersRangeIntersection(road.start.y, road.end.y, newRoad.start.y, newRoad.end.y) >= 1) {
 						throw new Error("Two roads on the same vertical line: " + newRoad + " and " + road);
 					}
 				}
 			} else {
 				for (Road road : roads) {
-					if (road.direction == Direction.H && road.start.y == newRoad.start.y && Utils.integersRangeIntersection(road.start.x, road.end.x, newRoad.start.x, newRoad.end.x) >= 1) {
+					if (road.orientation.isVertical() && road.start.y == newRoad.start.y && Utils.integersRangeIntersection(road.start.x, road.end.x, newRoad.start.x, newRoad.end.x) >= 1) {
 						throw new Error("Two roads on the same horizontal line: " + newRoad + " and " + road);
 					}
 				}
@@ -147,7 +148,7 @@ public class Settlement extends Location {
 			for (Road oldRoad : roads) {
 				if (!areParallel(newRoad, oldRoad)) {
 					// If roads are parallel, then go to next road
-					if (newRoad.direction == Direction.V) {
+					if (newRoad.orientation.isVertical()) {
 						// If new road is vertical
 						if ((newRoad.start.y == oldRoad.start.y || newRoad.end.y == oldRoad.start.y) && newRoad.start.x >= oldRoad.start.x && newRoad.start.x <= oldRoad.end.x) {
 							branches.get(oldRoad).add(new Intersection(newRoad, new Coordinate(newRoad.start.x, oldRoad.start.y)));
@@ -167,7 +168,7 @@ public class Settlement extends Location {
 		}
 
 		public boolean areParallel(Road road1, Road road2) {
-			return road1.direction == road2.direction;
+			return road1.orientation == road2.orientation;
 		}
 
 		public void drawRoads() {
@@ -216,7 +217,7 @@ public class Settlement extends Location {
 		public class Road {
 			public final Coordinate start;
 			protected final Coordinate end;
-			protected final Direction direction;
+			protected final Orientation orientation;
 			protected int width = 5;
 
 			public Road(int startX, int startY, int endX, int endY) {
@@ -225,28 +226,28 @@ public class Settlement extends Location {
 				}
 				start = new Coordinate(startX, startY);
 				end = new Coordinate(endX, endY);
-				direction = start.x == end.x ? Direction.V : Direction.H;
+				orientation = start.x == end.x ? Orientation.VERTICAL : Orientation.HORIZONTAL;
 			}
 
 			public String toString() {
 				return "Road [" + start.x + ", " + start.y + ", " + end.x + ", " + end.y + "];";
 			}
 
-			public Side getSideOfRectangle(Rectangle r) {
-				// Get side of rectangle from which this road is located
-				if (direction == Direction.V) {
+			public CardinalDirection getSideOfRectangle(Rectangle r) {
+				// Get direction of rectangle from which this road is located
+				if (orientation.isVertical()) {
 					if (this.start.x < r.x) {
-						return Side.W;
+						return CardinalDirection.W;
 					} else if (this.start.x >= r.x + r.width) {
-						return Side.E;
+						return CardinalDirection.E;
 					} else {
 						throw new Error("Vertical road " + this + " is inside rectangle " + r);
 					}
 				} else {
 					if (this.start.y < r.y) {
-						return Side.N;
+						return CardinalDirection.N;
 					} else if (this.start.y >= r.y + r.height) {
-						return Side.S;
+						return CardinalDirection.S;
 					} else {
 						throw new Error("Horizontal road " + this + " is inside rectangle " + r);
 					}
@@ -254,7 +255,7 @@ public class Settlement extends Location {
 			}
 
 			public boolean crossesRectangle(Rectangle r) {
-				if (direction == Direction.V) {
+				if (orientation.isVertical()) {
 					return start.x >= r.x && start.x < r.x + r.width;
 				} else {
 					return start.y >= r.y && start.y < r.y + r.height;
@@ -263,7 +264,7 @@ public class Settlement extends Location {
 
 			public boolean isRectangleOverlapsRoad(Rectangle rectangle) {
 				EnhancedRectangle ra = new EnhancedRectangle(rectangle);
-				if (direction == Direction.V) {
+				if (orientation.isVertical()) {
 					if (Utils.integersRangeIntersection(rectangle.y, rectangle.y + rectangle.height - 1, start.y, end.y) > 0 && ra.distanceToLine(start, end) < width / 2) {
 						// If road line and rectangle overlap in y-axis,
 						// and road is close enough to rectangle
@@ -284,7 +285,7 @@ public class Settlement extends Location {
 				 * rectangle
 				 */
 				EnhancedRectangle ra = new EnhancedRectangle(rectangle);
-				if (direction == Direction.V) {
+				if (orientation.isVertical()) {
 					if (Utils.integersRangeIntersection(rectangle.y, rectangle.y + rectangle.height - 1, start.y, end.y) > 0 && ra.distanceToLine(start, end) == width / 2 + 1) {
 						// If road line and rectangle overlap in y-axis,
 						// and road is close enough to rectangle
@@ -349,7 +350,7 @@ public class Settlement extends Location {
 				}
 			}
 			for (Road road : settlement.roadSystem.roads) {
-				if (road.direction == Direction.V) {
+				if (road.orientation.isVertical()) {
 					for (int y = road.start.y; y <= road.end.y; y++) {
 						grid[road.start.x][y] = ROAD;
 					}
@@ -488,23 +489,23 @@ public class Settlement extends Location {
 				 * Change rectangle start and dimensions as if road would
 				 * "bite off" a part of rectangle by road's width.
 				 */
-				Side side = road.getSideOfRectangle(rec);
-				if (side == Side.N) {
+				CardinalDirection side = road.getSideOfRectangle(rec);
+				if (side == CardinalDirection.N) {
 					int newY = Math.max(road.start.y + road.width / 2 + 1, rec.y);
 					if (newY != rec.y) {
 						rec.setBounds(rec.x, newY, rec.width, rec.height - (newY - road.start.y) + 1);
 					}
-				} else if (side == Side.E) {
+				} else if (side == CardinalDirection.E) {
 					int newEndX = Math.min(rec.x + rec.width - 1, road.start.x - road.width / 2 - 1);
 					if (newEndX != rec.x + rec.width - 1) {
 						rec.setSize(newEndX - rec.x + 1, rec.height);
 					}
-				} else if (side == Side.S) {
+				} else if (side == CardinalDirection.S) {
 					int newEndY = Math.min(rec.y + rec.height - 1, road.start.y - road.width / 2 - 1);
 					if (newEndY != rec.y + rec.height - 1) {
 						rec.setSize(rec.width, newEndY - rec.y + 1);
 					}
-				} else if (side == Side.W) {
+				} else if (side == CardinalDirection.W) {
 					int newX = Math.max(road.start.x + road.width / 2 + 1, rec.x);
 					if (newX != rec.x) {
 						rec.setBounds(newX, rec.y, rec.width - (newX - road.start.x) + 1, rec.height);

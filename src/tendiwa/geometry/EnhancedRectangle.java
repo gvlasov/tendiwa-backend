@@ -7,8 +7,6 @@ import java.util.Collection;
 
 import tendiwa.core.meta.Chance;
 import tendiwa.core.meta.Coordinate;
-import tendiwa.core.meta.Direction;
-import tendiwa.core.meta.Side;
 import tests.SideTest;
 
 /**
@@ -49,27 +47,27 @@ public class EnhancedRectangle extends Rectangle {
 	 * line
 	 */
 	public int distanceToLine(Coordinate start, Coordinate end) {
-		Direction dir;
+		Orientation dir;
 		if (start.x == end.x) {
-			dir = Direction.V;
+			dir = Orientation.VERTICAL;
 		} else if (start.y == end.y) {
-			dir = Direction.H;
+			dir = Orientation.HORIZONTAL;
 		} else {
 			throw new Error(start + " and " + end + " are not on the same line");
 		}
-		if (dir.isV() && start.x >= x && start.x <= x + width - 1) {
+		if (dir.isVertical() && start.x >= x && start.x <= x + width - 1) {
 			throw new Error("Vertical line inside rectangle");
-		} else if (dir.isH() && start.y >= y && start.y <= y + height - 1) {
+		} else if (dir.isHorizontal() && start.y >= y && start.y <= y + height - 1) {
 			throw new Error("Horizontal line inside rectangle");
 		}
-		if (dir.isV()) {
+		if (dir.isVertical()) {
 			return start.x > x ? start.x - x - width + 1 : x - start.x;
 		} else {
 			return start.y > y ? start.y - y - height + 1 : y - start.y;
 		}
 	}
 
-	public Coordinate getMiddleOfSide(Side side) {
+	public Coordinate getMiddleOfSide(CardinalDirection side) {
 		switch (side) {
 			case N:
 				return new Coordinate(x + width / 2, y);
@@ -80,7 +78,7 @@ public class EnhancedRectangle extends Rectangle {
 			case W:
 				return new Coordinate(x, y + height / 2);
 			default:
-				throw new Error("Incorrect side " + side.side2int());
+				throw new IllegalArgumentException();
 		}
 	}
 	/**
@@ -100,20 +98,23 @@ public class EnhancedRectangle extends Rectangle {
 	 *            How far is the second point from the initial point on y-axis.
 	 * @return
 	 */
-	public static EnhancedRectangle growFromPoint(int x, int y, Side side, int width, int height) {
-		if (!side.isOrdinal()) {
-			throw new IllegalArgumentException("SideTest must be ordinal (SideTest = " + side);
+	public static EnhancedRectangle growFromPoint(int x, int y, OrdinalDirection side, int width, int height) {
+		switch (side) {
+			case SE:
+				return new EnhancedRectangle(x, y, width, height);
+			case NE:
+				return new EnhancedRectangle(x, y - height, width, height);
+			case NW:
+				return new EnhancedRectangle(
+					x - width,
+					y - height,
+					width,
+					height);
+			case SW:
+				return new EnhancedRectangle(x - width, y, width, height);
+			default:
+				throw new IllegalArgumentException();
 		}
-		if (side == Side.SE) {
-			return new EnhancedRectangle(x, y, width, height);
-		}
-		if (side == Side.NE) {
-			return new EnhancedRectangle(x, y - height, width, height);
-		}
-		if (side == Side.NW) {
-			return new EnhancedRectangle(x - width, y - height, width, height);
-		}
-		return new EnhancedRectangle(x - width, y, width, height);
 	}
 	/**
 	 * Get cell on border.
@@ -121,7 +122,7 @@ public class EnhancedRectangle extends Rectangle {
 	 * @param side
 	 *            Which border;
 	 * 
-	 * @param sideOf
+	 * @param endOfSide
 	 *            SideTest Determines one of the ends of border;
 	 * 
 	 * @param depth
@@ -129,46 +130,54 @@ public class EnhancedRectangle extends Rectangle {
 	 *            cell near end of border. Depth may be even more than width or
 	 *            height, so the cell will be outside the rectangle.
 	 */
-	public Coordinate getCellFromSide(Side side, Side sideOfSide, int depth) {
+	public Coordinate getCellFromSide(CardinalDirection side, CardinalDirection endOfSide, int depth) {
 		switch (side) {
 			case N:
-				switch (sideOfSide) {
+				switch (endOfSide) {
 					case E:
 						return new Coordinate(x + width - 1 - depth, y);
 					case W:
 						return new Coordinate(x + depth, y);
 					default:
-						throw new Error("sideOfSide (" + sideOfSide + ") must be clockwise or counter-clockwise from side (" + side + ")");
+						throw new Error(
+							"sideOfSide (" + endOfSide + ") must be clockwise or counter-clockwise from side (" + side + ")");
 				}
 			case E:
-				switch (sideOfSide) {
+				switch (endOfSide) {
 					case N:
 						return new Coordinate(x + width - 1, y + depth);
 					case S:
-						return new Coordinate(x + width - 1, y + height - 1 - depth);
+						return new Coordinate(
+							x + width - 1,
+							y + height - 1 - depth);
 					default:
-						throw new Error("sideOfSide (" + sideOfSide + ") must be clockwise or counter-clockwise from side (" + side + ")");
+						throw new Error(
+							"sideOfSide (" + endOfSide + ") must be clockwise or counter-clockwise from side (" + side + ")");
 				}
 			case S:
-				switch (sideOfSide) {
+				switch (endOfSide) {
 					case E:
-						return new Coordinate(x + width - 1 - depth, y + height - 1);
+						return new Coordinate(
+							x + width - 1 - depth,
+							y + height - 1);
 					case W:
 						return new Coordinate(x + depth, y + height - 1);
 					default:
-						throw new Error("sideOfSide (" + sideOfSide + ") must be clockwise or counter-clockwise from side (" + side + ")");
+						throw new Error(
+							"sideOfSide (" + endOfSide + ") must be clockwise or counter-clockwise from side (" + side + ")");
 				}
 			case W:
-				switch (sideOfSide) {
+				switch (endOfSide) {
 					case N:
 						return new Coordinate(x, y + depth);
 					case S:
 						return new Coordinate(x, y + height - 1 - depth);
 					default:
-						throw new Error("sideOfSide (" + sideOfSide + ") must be clockwise or counter-clockwise from side (" + side + ")");
+						throw new Error(
+							"sideOfSide (" + endOfSide + ") must be clockwise or counter-clockwise from side (" + side + ")");
 				}
 			default:
-				throw new Error("Incorrect side " + side.side2int());
+				throw new Error("Incorrect side " + side.toInt());
 		}
 	}
 	/**
@@ -183,10 +192,14 @@ public class EnhancedRectangle extends Rectangle {
 	 *            SideTest == N or W, rectangle.x and rectangle.y will move. If
 	 *            depth == 0 then rectangle stays the same.
 	 */
-	public EnhancedRectangle stretch(Side side, int amount) {
+	public EnhancedRectangle stretch(CardinalDirection side, int amount) {
 		switch (side) {
 			case N:
-				this.setBounds(this.x, this.y - amount, this.width, this.height + amount);
+				this.setBounds(
+					this.x,
+					this.y - amount,
+					this.width,
+					this.height + amount);
 				break;
 			case E:
 				this.setSize(this.width + amount, this.height);
@@ -195,19 +208,23 @@ public class EnhancedRectangle extends Rectangle {
 				this.setSize(this.width, this.height + amount);
 				break;
 			case W:
-				this.setBounds(this.x - amount, this.y, this.width + amount, this.height);
+				this.setBounds(
+					this.x - amount,
+					this.y,
+					this.width + amount,
+					this.height);
 				break;
 			default:
-				throw new Error("Incorrect side " + side);
+				throw new IllegalArgumentException();
 		}
 		return this;
 	}
 
-	public int getDimensionBySide(Side side) {
-		/**
-		 * Returns this.height if side is N or S, returns this.width if side is
-		 * W or E
-		 */
+	/**
+	 * Returns this.height if side is N or S, returns this.width if side is W or
+	 * E
+	 */
+	public int getDimensionBySide(CardinalDirection side) {
 		switch (side) {
 			case N:
 			case S:
@@ -226,7 +243,7 @@ public class EnhancedRectangle extends Rectangle {
 	 *            {@link SideTest#NW}, {@link SideTest#NE}, {@link SideTest#SW}
 	 *            or {@link SideTest#SE}.
 	 */
-	public Coordinate getCorner(Side side) {
+	public Coordinate getCorner(OrdinalDirection side) {
 		switch (side) {
 			case NE:
 				return new Coordinate(x + width - 1, y);
@@ -237,7 +254,7 @@ public class EnhancedRectangle extends Rectangle {
 			case NW:
 				return new Coordinate(x, y);
 			default:
-				throw new IllegalArgumentException("Only cardinal sides are allowed");
+				throw new IllegalArgumentException();
 		}
 	}
 	/**
@@ -309,7 +326,11 @@ public class EnhancedRectangle extends Rectangle {
 				maxY = point.y;
 			}
 		}
-		return new EnhancedRectangle(minX, minY, maxX - minX + 1, maxY - minY + 1);
+		return new EnhancedRectangle(
+			minX,
+			minY,
+			maxX - minX + 1,
+			maxY - minY + 1);
 	}
 	/**
 	 * Creates a new rectangle whose center is the given point, with given width
@@ -322,13 +343,17 @@ public class EnhancedRectangle extends Rectangle {
 	 * @return
 	 */
 	public static EnhancedRectangle rectangleByCenterPoint(Point point, int width, int height) {
-		return new EnhancedRectangle(point.x - width / 2 + (Chance.roll(50) ? -1 : 0), point.y - height / 2 + (Chance.roll(50) ? -1 : 0), width, height);
+		return new EnhancedRectangle(
+			point.x - width / 2 + (Chance.roll(50) ? -1 : 0),
+			point.y - height / 2 + (Chance.roll(50) ? -1 : 0),
+			width,
+			height);
 	}
 	/**
 	 * Grows a new EnhancedRectangle from a point where two
 	 * {@link IntercellularLine}s intersect. An intersection of two such lines
 	 * divides the plane in 4 quadrants, and the quadrant where the rectangle
-	 * will be is defined by Side argument.
+	 * will be is defined by DirectionOldSide argument.
 	 * 
 	 * @param line1
 	 *            Must be perpendicular to line2.
@@ -341,17 +366,16 @@ public class EnhancedRectangle extends Rectangle {
 	 * @param height
 	 *            Height of the resulting rectangle.
 	 * @return
-	 * @see {@link EnhancedRectangle#growFromPoint(int, int, Side, int, int)}
+	 * @see {@link EnhancedRectangle#growFromPoint(int, int, DirectionOldSide, int, int)}
 	 */
-	public static EnhancedRectangle growFromIntersection(IntercellularLine line1, IntercellularLine line2, Side side, int width, int height) {
-		if (!side.isOrdinal()) {
-			throw new IllegalArgumentException("Only ordinal sides are allowed");
-		}
+	public static EnhancedRectangle growFromIntersection(IntercellularLine line1, IntercellularLine line2, OrdinalDirection side, int width, int height) {
 		if (!line1.isPerpendicular(line2)) {
-			throw new IllegalArgumentException("Two lines must be perpendicular");
+			throw new IllegalArgumentException(
+				"Two lines must be perpendicular");
 		}
-		IntercellularLinesIntersection intersection = IntercellularLine.intersectionOf(line1, line2);
-		Point point = intersection.getPoint(side);
+		IntercellularLinesIntersection intersection = IntercellularLine
+			.intersectionOf(line1, line2);
+		Point point = intersection.getCornerPointOfQuarter(side);
 		return growFromPoint(point.x, point.y, side, width, height);
 
 	}
@@ -364,36 +388,93 @@ public class EnhancedRectangle extends Rectangle {
 	 */
 	public boolean touches(RectangleSidePiece piece) {
 		if (piece.isVertical()) {
-			if (getSegmentFromSide(Side.W).overlaps(piece) || getSideIntercellularSegment(Side.E).overlaps(piece)) {
+			if (getSegmentFromSide(CardinalDirection.W).touches(piece) || getSegmentFromSide(
+				CardinalDirection.E).touches(piece)) {
 				return true;
 			}
 			return false;
 		} else {
-			if (getSideIntercellularSegment(Side.N).intersects(piece) || getSideIntercellularSegment(Side.S).intersects(piece)) {
+			if (getSegmentFromSide(CardinalDirection.N).touches(piece) || getSegmentFromSide(
+				CardinalDirection.S).touches(piece)) {
 				return true;
 			}
 			return false;
 		}
 	}
 	/**
-	 * Returns an RectangleSidePiece representing one of 4 sides of this rectangle.
+	 * Returns an RectangleSidePiece representing one of 4 sides of this
+	 * rectangle.
+	 * 
 	 * @param side
 	 * @return
 	 */
-	public RectangleSidePiece getSegmentFromSide(Side side) {
-		if (side == Side.N) {
-			return new RectangleSidePiece(this, Side.N, x, y, width);
+	public RectangleSidePiece getSegmentFromSide(CardinalDirection side) {
+		switch (side) {
+			case N:
+				return new RectangleSidePiece(
+					this,
+					CardinalDirection.N,
+					x,
+					y,
+					width);
+			case E:
+				return new RectangleSidePiece(
+					this,
+					CardinalDirection.E,
+					x + width,
+					y,
+					height);
+			case S:
+				return new RectangleSidePiece(
+					this,
+					CardinalDirection.S,
+					x,
+					y + height,
+					width);
+			case W:
+				return new RectangleSidePiece(
+					this,
+					CardinalDirection.W,
+					x,
+					y,
+					height);
+			default:
+				throw new IllegalArgumentException();
 		}
-		if (side == Side.E) {
-			return new RectangleSidePiece(this, Side.E, x+width, y, height);
+	}
+	/**
+	 * Returns a {@link RectangleSidePiece} representing the whole side of a
+	 * rectangle.
+	 * 
+	 * @param side
+	 * @return
+	 */
+	public RectangleSidePiece getSideAsSidePiece(CardinalDirection side) {
+		if (side == null) {
+			throw new NullPointerException();
 		}
-		if (side == Side.S) {
-			return new RectangleSidePiece(this, Side.S, x, y+height, width);
+		int x, y, length;
+		switch (side) {
+			case N:
+				x = this.x;
+				y = this.y;
+				length = this.width;
+				break;
+			case E:
+				x = this.x+this.width-1;
+				y = this.y;
+				length = this.height;
+				break;
+			case S:
+				x = this.x + this.width - 1;
+				y = this.y + this.height -1;
+				length = this.width;
+			case W:
+			default:
+				x = this.x;
+				y = this.y;
+				length = this.height;
 		}
-		if (side == Side.W) {
-			return new RectangleSidePiece(this, Side.W, x, y, height);
-		}
-		throw new IllegalArgumentException("Only a cardinal side may be rectangle's side");
-		
+		return new RectangleSidePiece(this, side, x, y, length);
 	}
 }

@@ -31,7 +31,7 @@ public class InterrectangularPath implements Iterable<RectangleArea> {
 	private void putJunctionRangomlyInSegment(RectangleArea r1, RectangleArea r2) {
 		Segment segment = rs.getAdjacencySegment(r1, r2);
 		RectanglesJunction junction = new RectanglesJunction(
-			segment.getDirection(), 
+			segment.getOrientation(), 
 			Chance.rand(segment.getStartCoord(), segment.getEndCoord()),
 			width,
 			r1,

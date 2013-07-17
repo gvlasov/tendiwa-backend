@@ -2,7 +2,6 @@ package tendiwa.core;
 
 import java.util.Arrays;
 
-import tendiwa.core.meta.Side;
 import tendiwa.core.net.clientmessages.ClientMessageAnswer;
 import tendiwa.core.net.clientmessages.ClientMessageAttack;
 import tendiwa.core.net.clientmessages.ClientMessageAuth;
@@ -25,6 +24,7 @@ import tendiwa.core.net.clientmessages.ClientMessageStep;
 import tendiwa.core.net.clientmessages.ClientMessageTakeFromContainer;
 import tendiwa.core.net.clientmessages.ClientMessageTakeOff;
 import tendiwa.core.net.clientmessages.ClientMessageUseObject;
+import tendiwa.geometry.Directions;
 
 import com.google.gson.Gson;
 
@@ -198,7 +198,7 @@ public class PlayerHandler extends PlayerCharacter {
 	}
 	public void aPush(String message) {
 		ClientMessagePush data = gson.fromJson(message, ClientMessagePush.class);
-		push(plane.getChunkWithCell(x, y).getCell(data.x, data.y).character(), Side.int2side(data.direction));
+		push(plane.getChunkWithCell(x, y).getCell(data.x, data.y).character(), Directions.intToDirection(data.direction));
 		timeStream.flushEvents();
 	}
 	public void aChangePlaces(String message) {

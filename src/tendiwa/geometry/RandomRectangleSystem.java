@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import tendiwa.core.meta.Chance;
-import tendiwa.core.meta.Direction;
 
 
 /**
@@ -30,14 +29,14 @@ public class RandomRectangleSystem extends RectangleSystem {
 			for (RectangleArea r : rectangles) {
 				if (r.width > splitableRecSizeLimit && r.height > splitableRecSizeLimit) {
 					noMoreRectangles = false;
-					randomlySplitRectangle(r, ch.roll() ? Direction.V
-						: Direction.H);
+					randomlySplitRectangle(r, ch.roll() ? Orientation.VERTICAL
+						: Orientation.HORIZONTAL);
 				} else if (r.width > splitableRecSizeLimit) {
 					noMoreRectangles = false;
-					randomlySplitRectangle(r, Direction.V);
+					randomlySplitRectangle(r, Orientation.VERTICAL);
 				} else if (r.height > splitableRecSizeLimit) {
 					noMoreRectangles = false;
-					randomlySplitRectangle(r, Direction.H);
+					randomlySplitRectangle(r, Orientation.HORIZONTAL);
 				}
 			}
 		}
@@ -49,16 +48,16 @@ public class RandomRectangleSystem extends RectangleSystem {
 	 * 
 	 * @param r
 	 *            A RectangleArea to split.
-	 * @param dir
-	 *            Direction of splitting.
+	 * @param orientation
+	 *            DirectionToBERemoved of splitting.
 	 */
-	private void randomlySplitRectangle(RectangleArea r, Direction dir) {
-		if (dir == Direction.H) {
+	private void randomlySplitRectangle(RectangleArea r, Orientation orientation) {
+		if (orientation.isHorizontal()) {
 			int y = Chance.rand(r.y + minRectangleWidth, r.y + r.height - minRectangleWidth - borderWidth);
-			splitRectangle(r, dir, y - r.y, false);
-		} else if (dir == Direction.V) {
+			splitRectangle(r, orientation, y - r.y, false);
+		} else if (orientation.isVertical()) {
 			int x = Chance.rand(r.x + minRectangleWidth, r.x + r.width - minRectangleWidth - borderWidth);
-			splitRectangle(r, dir, x - r.x, false);
+			splitRectangle(r, orientation, x - r.x, false);
 		} else {
 			throw new Error("Dafuq");
 		}

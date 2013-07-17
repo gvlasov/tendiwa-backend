@@ -10,9 +10,10 @@ import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 
 import tendiwa.core.meta.Coordinate;
-import tendiwa.core.meta.Direction;
-import tendiwa.core.meta.Side;
 import tendiwa.core.meta.Utils;
+import tendiwa.geometry.CardinalDirection;
+import tendiwa.geometry.Directions;
+import tendiwa.geometry.Orientation;
 import tendiwa.geometry.RandomRectangleSystem;
 import tendiwa.geometry.RectangleArea;
 import tendiwa.geometry.RectangleSystem;
@@ -20,7 +21,7 @@ import tendiwa.geometry.Segment;
 
 
 /**
- * Wrapper above a RectangleSystem that modifies terrain using RectangleSyetms's
+ * Wrapper above a RectangleSystem that places actual objects, floors etc on terrain using RectangleSyetms's
  * data.
  */
 public class TerrainModifier {
@@ -89,7 +90,7 @@ public void drawInnerBorders(int type, int name) {
 		 * Look at each side of each rectangle if there is an inner border to
 		 * draw.
 		 */
-		for (Side side : Side.EACH_CARDINAL_SIDE) {
+		for (CardinalDirection side : CardinalDirection.ALL) {
 			ArrayList<RectangleArea> rectanglesFromThatSide = new ArrayList<RectangleArea>(rs.getRectanglesCloseToSideOrBorder(r1, side));
 			if (rectanglesFromThatSide.size() == 0) {
 				continue;
@@ -97,10 +98,13 @@ public void drawInnerBorders(int type, int name) {
 			// Sort rectangles so they go from top/left to bottom/right in
 			// the ArrayList (it will be explained further why we need to
 			// sort this array).
-			if (side == Side.N || side == Side.S) {
-				Collections.sort(rectanglesFromThatSide, RectangleSystem.horizontalRectangleComparator);
-			} else {
-				Collections.sort(rectanglesFromThatSide, RectangleSystem.verticalRectangleComparator);
+			switch (side) {
+				case N:
+				case S:
+					Collections.sort(rectanglesFromThatSide, RectangleSystem.horizontalRectangleComparator);
+					break;
+				default:
+					Collections.sort(rectanglesFromThatSide, RectangleSystem.verticalRectangleComparator);
 			}
 			/*
 			 * Now we eliminate trailing rectangles — the rectangles which are
@@ -158,19 +162,23 @@ public void drawInnerBorders(int type, int name) {
 			// Knowing of close rectangles, create a list of segments. Each
 			// neighbor rectangle corresponds to a segment.
 			for (RectangleArea r2 : rectanglesFromThatSide) {
-				Side side2 = side.opposite();
+				CardinalDirection side2 = side.opposite();
 				// A segment on the border of close rectangle from side
 				// opposite to the original r1's side.
 				Segment segment;
-				if (side2 == Side.N) {
-					segment = new Segment(r2.x, r2.y, r2.width, Direction.H);
-				} else if (side2 == Side.E) {
-					segment = new Segment(r2.x + r2.width - 1, r2.y, r2.height, Direction.V);
-				} else if (side2 == Side.S) {
-					segment = new Segment(r2.x, r2.y + r2.height - 1, r2.width, Direction.H);
-				} else {
-					// if (side2 == SideTest.W)
-					segment = new Segment(r2.x, r2.y, r2.height, Direction.V);
+				switch (side2) {
+					case N:
+						segment = new Segment(r2.x, r2.y, r2.width, Orientation.HORIZONTAL);
+						break;
+					case E:
+						segment = new Segment(r2.x + r2.width - 1, r2.y, r2.height, Orientation.VERTICAL);
+						break;
+					case S:
+						segment = new Segment(r2.x, r2.y + r2.height - 1, r2.width, Orientation.HORIZONTAL);
+						break;
+					case W:
+					default:
+						segment = new Segment(r2.x, r2.y, r2.height, Orientation.VERTICAL);
 				}
 				segments.add(segment);
 			}
@@ -216,9 +224,9 @@ public void drawInnerBorders(int type, int name) {
 			boolean hasNextSameLineNeighbor = false; 	// Has this kind of
 														// neighbor from S/E
 														// side
-			if (side == Side.N) {
-				Set<RectangleArea> neighborsW = rs.getNeighborsFromSide(r1, Side.W);
-				Set<RectangleArea> neighborsE = rs.getNeighborsFromSide(r1, Side.E);
+			if (side == Directions.N) {
+				Set<RectangleArea> neighborsW = rs.getNeighborsFromSide(r1, Directions.W);
+				Set<RectangleArea> neighborsE = rs.getNeighborsFromSide(r1, Directions.E);
 				for (RectangleArea r : neighborsW) {
 					if (r.y == r1.y) {
 						hasPrevSameLineNeighbor = true;
@@ -231,9 +239,9 @@ public void drawInnerBorders(int type, int name) {
 						break;
 					}
 				}
-			} else if (side == Side.E) {
-				Set<RectangleArea> neighborsN = rs.getNeighborsFromSide(r1, Side.N);
-				Set<RectangleArea> neighborsS = rs.getNeighborsFromSide(r1, Side.S);
+			} else if (side == Directions.E) {
+				Set<RectangleArea> neighborsN = rs.getNeighborsFromSide(r1, Directions.N);
+				Set<RectangleArea> neighborsS = rs.getNeighborsFromSide(r1, Directions.S);
 				for (RectangleArea r : neighborsN) {
 					if (r.x + r.width == r1.x + r1.width) {
 						hasPrevSameLineNeighbor = true;
@@ -246,9 +254,9 @@ public void drawInnerBorders(int type, int name) {
 						break;
 					}
 				}
-			} else if (side == Side.S) {
-				Set<RectangleArea> neighborsW = rs.getNeighborsFromSide(r1, Side.W);
-				Set<RectangleArea> neighborsE = rs.getNeighborsFromSide(r1, Side.E);
+			} else if (side == Directions.S) {
+				Set<RectangleArea> neighborsW = rs.getNeighborsFromSide(r1, Directions.W);
+				Set<RectangleArea> neighborsE = rs.getNeighborsFromSide(r1, Directions.E);
 				for (RectangleArea r : neighborsW) {
 					if (r.y + r.height == r1.y + r1.height) {
 						hasPrevSameLineNeighbor = true;
@@ -261,9 +269,9 @@ public void drawInnerBorders(int type, int name) {
 						break;
 					}
 				}
-			} else if (side == Side.W) {
-				Set<RectangleArea> neighborsN = rs.getNeighborsFromSide(r1, Side.N);
-				Set<RectangleArea> neighborsS = rs.getNeighborsFromSide(r1, Side.S);
+			} else if (side == Directions.W) {
+				Set<RectangleArea> neighborsN = rs.getNeighborsFromSide(r1, Directions.N);
+				Set<RectangleArea> neighborsS = rs.getNeighborsFromSide(r1, Directions.S);
 				for (RectangleArea r : neighborsN) {
 					if (r.x == r1.x) {
 						hasPrevSameLineNeighbor = true;
@@ -283,17 +291,17 @@ public void drawInnerBorders(int type, int name) {
 			 * in front of r's side. If so, move start or end of such segment so
 			 * that it starts/ends at the start/end of r1's side.
 			 */
-			if (side == Side.N || side == Side.S) {
+			if (side == Directions.N || side == Directions.S) {
 				Segment segment = segments.get(0);
-				if (segment.x < r1.x) {
-					segment.length -= r1.x - (hasPrevSameLineNeighbor ? 1 : 0) - segment.x;
+				if (segment.getX() < r1.x) {
+					segment.changeLength( - (r1.x - (hasPrevSameLineNeighbor ? 1 : 0) - segment.x));
 					segment.x = r1.x - (hasPrevSameLineNeighbor ? 1 : 0);
 				}
 				segment = segments.get(segments.size() - 1);
 				if (segment.x + segment.length > r1.x + r1.width) {
 					segment.length = segment.length - (segment.x + segment.length - (r1.x + r1.width)) + (hasNextSameLineNeighbor ? 1 : 0);
 				}
-			} else if (side == Side.E || side == Side.W) {
+			} else if (side == Directions.E || side == Directions.W) {
 				Segment segment = segments.get(0);
 				if (segment.y < r1.y) {
 					segment.length -= r1.y - (hasPrevSameLineNeighbor ? 1 : 0) - segment.y;
@@ -309,17 +317,17 @@ public void drawInnerBorders(int type, int name) {
 			 * before drawing segments have to be moved so they are on inner
 			 * borders. The segments are also drawn here.
 			 */
-			if (side == Side.N) {
+			if (side == Directions.N) {
 				for (Segment s : segments) {
 					s.changeY(rs.getBorderWidth());
 					location.drawSegment(s, rs.getBorderWidth(), type, name);
 				}
-			} else if (side == Side.E) {
+			} else if (side == Directions.E) {
 				for (Segment s : segments) {
 					s.changeX(-rs.getBorderWidth());
 					location.drawSegment(s, rs.getBorderWidth(), type, name);
 				}
-			} else if (side == Side.S) {
+			} else if (side == Directions.S) {
 				for (Segment s : segments) {
 					s.changeY(-rs.getBorderWidth());
 					location.drawSegment(s, rs.getBorderWidth(), type, name);
@@ -351,21 +359,21 @@ public void drawOuterBorders(int type, int name) {
 		throw new RuntimeException("Can't draw borders of RectangleSystem with borderWidth="+rs.getBorderWidth());
 	}
 	for (RectangleArea r : rs.getOuterSides().keySet()) {
-		Set<Side> sides = rs.getOuterSides().get(r);
-		for (Side side : sides) {
+		Set<CardinalDirection> sides = rs.getOuterSides().get(r);
+		for (CardinalDirection side : sides) {
 			Set<Segment> segments = rs.getSegmentsFreeFromNeighbors(r, side);
 			for (Segment segment : segments) {
 				Segment borderSegment = segment.clone();
-				if (side == Side.N) {
+				if (side == Directions.N) {
 					borderSegment.changeY(-rs.getBorderWidth());
 					borderSegment.changeX(-rs.getBorderWidth());
-				} else if (side == Side.E) {
+				} else if (side == Directions.E) {
 					borderSegment.changeX(rs.getBorderWidth());
 					borderSegment.changeY(-rs.getBorderWidth());
-				} else if (side == Side.S) {
+				} else if (side == Directions.S) {
 					borderSegment.changeY(rs.getBorderWidth());
 					borderSegment.changeX(-rs.getBorderWidth());
-				} else if (side == Side.W) {
+				} else if (side == Directions.W) {
 					borderSegment.changeX(-rs.getBorderWidth());
 					borderSegment.changeY(-rs.getBorderWidth());
 				}
@@ -387,11 +395,11 @@ public void connectCornersWithLines(int type, int value, int padding, boolean co
 		}
 	};
 	for (RectangleArea r : rs.rectangleSet()) {
-		Set<Side> sides = rs.getOuterSides().get(r);
-		boolean n = sides.contains(Side.N);
-		boolean e = sides.contains(Side.E);
-		boolean s = sides.contains(Side.S);
-		boolean w = sides.contains(Side.W);
+		Set<CardinalDirection> sides = rs.getOuterSides().get(r);
+		boolean n = sides.contains(Directions.N);
+		boolean e = sides.contains(Directions.E);
+		boolean s = sides.contains(Directions.S);
+		boolean w = sides.contains(Directions.W);
 		if (n && e) {
 			corners.add(new Coordinate(r.x + r.width - 1 + (considerBorderWidth ? rs.getBorderWidth() : 0) + padding, r.y + (considerBorderWidth ? -rs.getBorderWidth() : 0) - padding));
 

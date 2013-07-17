@@ -3,9 +3,9 @@ import java.awt.Rectangle;
 import java.util.HashSet;
 import java.util.Set;
 
-import tendiwa.core.meta.Side;
 import tendiwa.core.terrain.settlements.Settlement.QuarterSystem.Quarter;
 import tendiwa.core.terrain.settlements.Settlement.RoadSystem.Road;
+import tendiwa.geometry.CardinalDirection;
 import tendiwa.geometry.EnhancedRectangle;
 
 /**
@@ -31,8 +31,8 @@ public class BuildingPlace extends EnhancedRectangle {
 	 * Returns what sides the close roads are from.
 	 * @return
 	 */
-	public Set<Side> getSidesOfCloseRoads() {
-		return new HashSet<Side>();
+	public Set<CardinalDirection> getSidesOfCloseRoads() {
+		return new HashSet<CardinalDirection>();
 	}
 	
 }

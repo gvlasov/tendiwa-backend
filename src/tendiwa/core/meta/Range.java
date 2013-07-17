@@ -1,62 +1,107 @@
 package tendiwa.core.meta;
 
 public class Range {
-public final int min;
-public final int max;
-public Range(int min, int max) {
-	this.min = min;
-	this.max = max;
-}
-public String toString() {
-	return "["+min+","+max+"]";
-}
-/**
- * Returns a new Range that is an intersection of this Range and another one.
- * @param b
- * 		Range to be intersected with.
- * @return
- */
-public Range intersection(Range b) {
-	if (b.max < min) {
-		return null;
+	public final int min;
+	public final int max;
+
+	public Range(int min, int max) {
+		this.min = min;
+		this.max = max;
 	}
-	if (b.min > max) {
-		return null;
+	public String toString() {
+		return "[" + min + "," + max + "]";
 	}
-	if (min >= b.min && max <= b.max) {
-		return new Range(min, max);
+	/**
+	 * Returns a new Range that is an intersection of this Range and another
+	 * one.
+	 * 
+	 * @param b
+	 *            Range to be intersected with.
+	 * @return null, if Ranges don't intersect.
+	 * @see Range#lengthOfIntersection(Range, Range)
+	 */
+	public Range intersection(Range b) {
+		if (b.max < min) {
+			return null;
+		}
+		if (b.min > max) {
+			return null;
+		}
+		if (min >= b.min && max <= b.max) {
+			return new Range(min, max);
+		}
+		if (b.min >= min && b.max <= max) {
+			return new Range(b.min, b.max);
+		}
+		if (min >= b.max) {
+			return new Range(min, b.max);
+		} else {
+			return new Range(b.min, max);
+		}
 	}
-	if (b.min >= min && b.max <= max) {
-		return new Range(b.min, b.max);
+	/**
+	 * Returns how much integers occur in both Ranges. Unlike
+	 * {@link Range#intersection(Range)} it returns an integer, so if ranges
+	 * don't intersect it will return 0 instead of null.
+	 * 
+	 * @param a
+	 * @param b
+	 * @return 0, if ranges don't intersect.
+	 */
+	public static int lengthOfIntersection(Range a, Range b) {
+		if (b.max < a.min) {
+			return 0;
+		}
+		if (b.min > a.max) {
+			return 0;
+		}
+		if (a.min >= b.min && a.max <= b.max) {
+			return a.max-a.min+1;
+		}
+		if (b.min >= a.min && b.max <= a.max) {
+			return b.max-b.min+1;
+		}
+		if (a.min >= b.max) {
+			return b.max-a.min+1;
+		} else {
+			return a.max-b.min+1;
+		}
 	}
-	if (min >= b.max) {
-		return new Range(min, b.max);
-	} else {
-		return new Range(b.min, max);
+	public boolean contains(int value) {
+		return value >= min && value <= max;
 	}
-}
-@Override
-public int hashCode() {
-	final int prime = 31;
-	int result = 1;
-	result = prime * result + max;
-	result = prime * result + min;
-	return result;
-}
-@Override
-public boolean equals(Object obj) {
-	if (this == obj)
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + max;
+		result = prime * result + min;
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Range other = (Range) obj;
+		if (max != other.max)
+			return false;
+		if (min != other.min)
+			return false;
 		return true;
-	if (obj == null)
-		return false;
-	if (getClass() != obj.getClass())
-		return false;
-	Range other = (Range) obj;
-	if (max != other.max)
-		return false;
-	if (min != other.min)
-		return false;
-	return true;
-}
+	}
+	/**
+	 * Returns the amount of numbers in this Range. For example, for Range(7,9)
+	 * it returns 3, since there are 3 numbers in it: 7, 8 and 9.
+	 * 
+	 * @return
+	 */
+	public int getLength() {
+		return max - min + 1;
+
+	}
 
 }

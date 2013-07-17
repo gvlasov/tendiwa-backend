@@ -12,6 +12,5 @@ public static void main(String[] args) {
 }
 public void paint() {
 	RectangleSystem rs = new GrowingRectangleSystem(0, new Rectangle(40, 50));
-	rs.
 }
 }

@@ -12,9 +12,9 @@ import org.jgrapht.graph.DefaultEdge;
 
 import tendiwa.core.meta.Chance;
 import tendiwa.core.meta.Coordinate;
-import tendiwa.core.meta.Side;
 import tendiwa.core.terrain.settlements.BuildingPlace;
 import tendiwa.core.terrain.settlements.Settlement.RoadSystem.Road;
+import tendiwa.geometry.CardinalDirection;
 import tendiwa.geometry.EnhancedRectangle;
 import tendiwa.geometry.RectangleArea;
 import tendiwa.geometry.RectangleSystem;
@@ -25,27 +25,27 @@ public abstract class Building {
 	protected Collection<RectangleArea> rooms;
 	protected TerrainModifier terrainModifier;
 	protected EnhancedRectangle lobby;
-	protected ArrayList<Side> doorSides = new ArrayList<Side>();
+	protected ArrayList<CardinalDirection> doorSides = new ArrayList<CardinalDirection>();
 	protected Coordinate frontDoor;
 
 	protected final int x;
 	protected final int y;
 	protected final int width;
 	protected final int height;
-	protected final Side frontSide;
-	protected final Side leftSide;
-	protected final Side rightSide;
-	protected final Side backSide;
+	protected final CardinalDirection frontSide;
+	protected final CardinalDirection leftSide;
+	protected final CardinalDirection rightSide;
+	protected final CardinalDirection backSide;
 	
-	protected Building(BuildingPlace bp, Side side) {
+	protected Building(BuildingPlace bp, CardinalDirection direction) {
 		x = bp.x;
 		y = bp.y;
 		width = bp.width;
 		height = bp.height;
-		frontSide = side;
-		leftSide = side.clockwise();
-		rightSide = side.counterClockwise();
-		backSide = side.opposite();
+		frontSide = direction;
+		leftSide = direction.clockwiseQuarter();
+		rightSide = direction.counterClockwiseQuarter();
+		backSide = direction.opposite();
 	}
 	private static HashMap<String, Class<? extends Building>> buildingClasses;
 	/**
@@ -65,29 +65,26 @@ public abstract class Building {
 	 * @param frontSide
 	 *            From which cardinal side is the front door.
 	 */
-	public Building(Location location, BuildingPlace place, Side frontSide) {
-		if (!Side.EACH_CARDINAL_SIDE.contains(frontSide)) {
-			throw new IllegalArgumentException("Only a cardinal side may be the front side of a building");
-		}
+	public Building(Location location, BuildingPlace place, CardinalDirection frontSide) {
 		this.x = place.x + 1;
 		this.y = place.y + 1;
 		this.width = place.width - 2;
 		this.height = place.height - 2;
 		this.settlement = location;
 		for (Road road : place.closeRoads) {
-			Side side = road.getSideOfRectangle(new Rectangle(x, y, width, height));
+			CardinalDirection side = road.getSideOfRectangle(new Rectangle(x, y, width, height));
 			if (!doorSides.contains(side)) {
 				doorSides.add(side);
 			}
 		}
 		// frontSide = doorSides.get(0);
 		this.frontSide = frontSide;
-		leftSide = frontSide.clockwise();
-		rightSide = frontSide.counterClockwise();
+		leftSide = frontSide.clockwiseQuarter();
+		rightSide = frontSide.counterClockwiseQuarter();
 		backSide = frontSide.opposite();
 	}
 
-	public Side getDoorSide() {
+	public CardinalDirection getDoorSide() {
 		/**
 		 * Returns first available door side
 		 */
@@ -98,7 +95,7 @@ public abstract class Building {
 		}
 	}
 
-	public Coordinate placeDoor(EnhancedRectangle r, Side side, int object) {
+	public Coordinate placeDoor(EnhancedRectangle r, CardinalDirection side, int object) {
 		/**
 		 * Places door in the middle of particular side of room.
 		 */
@@ -107,23 +104,23 @@ public abstract class Building {
 		return c;
 	}
 
-	public Coordinate placeDoor(RectangleArea r, Side side, Side sideOfSide, int depth, int object) {
+	public Coordinate placeDoor(RectangleArea r, CardinalDirection side, CardinalDirection endOfSide, int depth, int object) {
 		/**
 		 * Places door in the particular cell on particular side of room
 		 */
-		Coordinate c = r.getCellFromSide(side, sideOfSide, depth).moveToSide(side, 1);
+		Coordinate c = r.getCellFromSide(side, endOfSide, depth).moveToSide(side, 1);
 		settlement.setObject(c.x, c.y, object);
 		return c;
 	}
 
-	public Coordinate placeFrontDoor(Side side) {
+	public Coordinate placeFrontDoor(CardinalDirection side) {
 		int objDoorBlue = StaticData.getObjectType("door_blue").getId();
 		HashMap<Integer, Integer> cells = findDoorAppropriateCells(side);
 		if (cells.size() == 0) {
 			throw new Error("Nowhere to place the door from side " + side);
 		}
 		int dx, dy;
-		if (side == Side.N || side == Side.S) {
+		if (side == CardinalDirection.N || side == CardinalDirection.S) {
 			ArrayList<Integer> xes = new ArrayList<Integer>(cells.keySet());
 			dx = xes.get(Chance.rand(0, xes.size() - 1));
 			dy = cells.get(dx);
@@ -134,16 +131,22 @@ public abstract class Building {
 			dx = cells.get(dy);
 			settlement.setObject(dx, dy, objDoorBlue);
 		}
-		if (side == Side.N) {
-			lobby = terrainModifier.getRectangleSystem().findRectangleByCell(dx, dy + 1);
-		} else if (side == Side.E) {
-			lobby = terrainModifier.getRectangleSystem().findRectangleByCell(dx - 1, dy);
-		} else if (side == Side.S) {
-			lobby = terrainModifier.getRectangleSystem().findRectangleByCell(dx, dy - 1);
-		} else if (side == Side.W) {
-			lobby = terrainModifier.getRectangleSystem().findRectangleByCell(dx + 1, dy);
-		} else {
-			throw new Error("Unappropriate side");
+		switch (side) {
+			case N:
+				lobby = terrainModifier.getRectangleSystem().findRectangleByCell(dx, dy + 1);
+				break;
+			case E:
+				lobby = terrainModifier.getRectangleSystem().findRectangleByCell(dx - 1, dy);
+				break;
+			case S:
+				lobby = terrainModifier.getRectangleSystem().findRectangleByCell(dx, dy - 1);
+				break;
+			case W:
+				lobby = terrainModifier.getRectangleSystem().findRectangleByCell(dx + 1, dy);
+				break;
+			default:
+				throw new IllegalArgumentException();
+				
 		}
 		if (lobby == null) {
 			throw new Error("Can't determine the lobby room because desired cell is not in this rectangle system");
@@ -152,7 +155,7 @@ public abstract class Building {
 		return frontDoor;
 	}
 
-	public Coordinate placeFrontDoor(EnhancedRectangle r, Side side) {
+	public Coordinate placeFrontDoor(EnhancedRectangle r, CardinalDirection side) {
 		/**
 		 * Place front door in the middle of rectangle from particular side.
 		 */
@@ -164,10 +167,10 @@ public abstract class Building {
 		return frontDoor;
 	}
 
-	public HashMap<Integer, Integer> findDoorAppropriateCells(Side side) {
+	public HashMap<Integer, Integer> findDoorAppropriateCells(CardinalDirection side) {
 		HashMap<Integer, Integer> cells = new HashMap<Integer, Integer>();
 		Set<Integer> keys;
-		if (side == Side.N) {
+		if (side == CardinalDirection.N) {
 			for (Rectangle r : rooms) {
 				int y = r.y - 1;
 				for (int i = r.x; i < r.x + r.width; i++) {
@@ -183,7 +186,7 @@ public abstract class Building {
 					cells.remove(x);
 				}
 			}
-		} else if (side == Side.E) {
+		} else if (side == CardinalDirection.E) {
 			for (Rectangle r : rooms) {
 				int x = r.x + r.width;
 				for (int i = r.y; i < r.y + r.height; i++) {
@@ -199,7 +202,7 @@ public abstract class Building {
 					cells.remove(y);
 				}
 			}
-		} else if (side == Side.S) {
+		} else if (side == CardinalDirection.S) {
 			for (Rectangle r : rooms) {
 				int y = r.y + r.height;
 				for (int i = r.x; i < r.x + r.width; i++) {
@@ -215,7 +218,7 @@ public abstract class Building {
 					cells.remove(x);
 				}
 			}
-		} else if (side == Side.W) {
+		} else if (side == CardinalDirection.W) {
 			for (Rectangle r : rooms) {
 				int x = r.x - 1;
 				for (int i = r.y; i < r.y + r.height; i++) {
@@ -235,10 +238,10 @@ public abstract class Building {
 		return cells;
 	}
 
-	public HashMap<Integer, Integer> findDoorAppropriateCells(Rectangle r, Side side) {
+	public HashMap<Integer, Integer> findDoorAppropriateCells(Rectangle r, CardinalDirection side) {
 		HashMap<Integer, Integer> cells = new HashMap<Integer, Integer>();
 		Set<Integer> keys;
-		if (side == Side.N) {
+		if (side == CardinalDirection.N) {
 			int y = r.y - 1;
 			for (int i = r.x; i < r.x + r.width; i++) {
 				if (!cells.containsKey(i) || cells.get(i) > y) {
@@ -252,7 +255,7 @@ public abstract class Building {
 					cells.remove(x);
 				}
 			}
-		} else if (side == Side.E) {
+		} else if (side == CardinalDirection.E) {
 			int x = r.x + r.width;
 			for (int i = r.y; i < r.y + r.height; i++) {
 				if (!cells.containsKey(i) || cells.get(i) < x) {
@@ -266,7 +269,7 @@ public abstract class Building {
 					cells.remove(y);
 				}
 			}
-		} else if (side == Side.S) {
+		} else if (side == CardinalDirection.S) {
 			int y = r.y + r.height;
 			for (int i = r.x; i < r.x + r.width; i++) {
 				if (!cells.containsKey(i) || cells.get(i) < y) {
@@ -280,7 +283,7 @@ public abstract class Building {
 					cells.remove(x);
 				}
 			}
-		} else if (side == Side.W) {
+		} else if (side == CardinalDirection.W) {
 			int x = r.x - 1;
 			for (int i = r.y; i < r.y + r.height; i++) {
 				if (!cells.containsKey(i) || cells.get(i) > x) {
@@ -462,7 +465,7 @@ public abstract class Building {
 		lobby = r;
 	}
 
-	public void removeWall(Rectangle r, Side side) {
+	public void removeWall(Rectangle r, CardinalDirection side) {
 		/**
 		 * Removes objects on rectangle's border from side side. Removed objects
 		 * are not inside the rectangle, they are outside the rectangle. The

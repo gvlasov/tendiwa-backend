@@ -5,9 +5,9 @@ import tendiwa.core.HorizontalPlane;
 import tendiwa.core.Location;
 import tendiwa.core.StaticData;
 import tendiwa.core.TerrainModifier;
-import tendiwa.core.meta.Side;
 import tendiwa.core.terrain.settlements.BuildingPlace;
 import tendiwa.geometry.RectangleSystem;
+import tendiwa.geometry.DirectionOldSide;
 
 public class Forest extends Location {
 	int wall = StaticData.getObjectType("wall_grey_stone").getId();
@@ -16,7 +16,7 @@ public class Forest extends Location {
 
 	public Forest(HorizontalPlane plane, int x, int y, int width, int height) {
 		super(plane, x, y, width, height, "Forest");
-		House house = new House(this, new BuildingPlace(3, 3, 22, 22), Side.E);
+		House house = new House(this, new BuildingPlace(3, 3, 22, 22), DirectionOldSide.E);
 		placeBuilding(house);
 	}
 	private void recSysTest() {

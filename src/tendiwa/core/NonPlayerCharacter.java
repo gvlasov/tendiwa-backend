@@ -5,7 +5,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import tendiwa.core.meta.Coordinate;
-import tendiwa.core.meta.Side;
+import tendiwa.geometry.Direction;
+import tendiwa.geometry.Directions;
 
 
 public class NonPlayerCharacter extends Character {
@@ -195,28 +196,28 @@ public class NonPlayerCharacter extends Character {
 			int dx2 = (int) Math.round((double) dx / dMax);
 			int dy2 = (int) Math.round((double) dy / dMax);
 			// side is side from which current enemy is
-			Side side = Side.d2side(dx2, dy2);
-			Side sideR1 = side.ordinalClockwise();
-			Side sideR2 = sideR1.ordinalClockwise();
-			Side sideR3 = sideR2.ordinalClockwise();
-			Side sideL1 = side.ordinalCounterClockwise();
-			Side sideL2 = sideL1.ordinalCounterClockwise();
-			Side sideL3 = sideL2.ordinalCounterClockwise();
+			Direction side = Directions.shiftToDirection(dx2, dy2);
+			Direction sideR1 = side.clockwise();
+			Direction sideR2 = sideR1.clockwise();
+			Direction sideR3 = sideR2.clockwise();
+			Direction sideL1 = side.counterClockwise();
+			Direction sideL2 = sideL1.counterClockwise();
+			Direction sideL3 = sideL2.counterClockwise();
 			// Increase threat from all the sides except of opposite side
-			sides[side.side2int()] = 4;
-			sides[sideL1.side2int()] = 3;
-			sides[sideR1.side2int()] = 3;
-			sides[sideL2.side2int()] = 2;
-			sides[sideR2.side2int()] = 2;
-			sides[sideL3.side2int()] = 1;
-			sides[sideR3.side2int()] = 1;
+			sides[side.toInt()] = 4;
+			sides[sideL1.toInt()] = 3;
+			sides[sideR1.toInt()] = 3;
+			sides[sideL2.toInt()] = 2;
+			sides[sideR2.toInt()] = 2;
+			sides[sideL3.toInt()] = 1;
+			sides[sideR3.toInt()] = 1;
 		}
 		// Find index with minumum value and go to that side
 		int min = Integer.MAX_VALUE;
 		int indexMin = -1;
 		int[] d;
 		for (int i = 0; i < 8; i++) {
-			d = Side.int2side(i).side2d();
+			d = Directions.intToDirection(i).side2d();
 			if (plane.getCell(x + d[0], y + d[1]).getPassability() != TerrainBasics.PASSABILITY_FREE) {
 				continue;
 			}
@@ -228,7 +229,7 @@ public class NonPlayerCharacter extends Character {
 		if (indexMin == -1) {
 			throw new Error("Could not find least dangerous side to retreat");
 		}
-		d = Side.int2side(indexMin).side2d();
+		d = Directions.intToDirection(indexMin).side2d();
 		return new Coordinate(x + d[0], y + d[1]);
 	}
 

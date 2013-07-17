@@ -4,31 +4,31 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
-import tendiwa.core.meta.Side;
+import tendiwa.geometry.Directions;
 
 public class SideTest extends TestCase {
 
 	@Test
-	public void testD2Side() {
-		System.out.println(Side.d2side(1, 4));
-		assertEquals(Side.d2side(1, -4), Side.N);
-		assertEquals(Side.d2side(-1, -4), Side.N);
-		assertEquals(Side.d2side(-1, 4), Side.S);
-		assertEquals(Side.d2side(1, 4), Side.S);
-		assertEquals(Side.d2side(4, 1), Side.E);
-		assertEquals(Side.d2side(4, -1), Side.E);
-		assertEquals(Side.d2side(-4, 1), Side.W);
-		assertEquals(Side.d2side(-4, -1), Side.W);
+	public void testshiftToDirection() {
+		System.out.println(Directions.shiftToDirection(1, 4));
+		assertEquals(Directions.shiftToDirection(1, -4), Directions.N);
+		assertEquals(Directions.shiftToDirection(-1, -4), Directions.N);
+		assertEquals(Directions.shiftToDirection(-1, 4), Directions.S);
+		assertEquals(Directions.shiftToDirection(1, 4), Directions.S);
+		assertEquals(Directions.shiftToDirection(4, 1), Directions.E);
+		assertEquals(Directions.shiftToDirection(4, -1), Directions.E);
+		assertEquals(Directions.shiftToDirection(-4, 1), Directions.W);
+		assertEquals(Directions.shiftToDirection(-4, -1), Directions.W);
 
-		assertEquals(Side.d2side(-4, 0), Side.W);
-		assertEquals(Side.d2side(4, 0), Side.E);
-		assertEquals(Side.d2side(0, 4), Side.S);
-		assertEquals(Side.d2side(0, -4), Side.N);
+		assertEquals(Directions.shiftToDirection(-4, 0), Directions.W);
+		assertEquals(Directions.shiftToDirection(4, 0), Directions.E);
+		assertEquals(Directions.shiftToDirection(0, 4), Directions.S);
+		assertEquals(Directions.shiftToDirection(0, -4), Directions.N);
 
-		assertEquals(Side.d2side(-4, -4), Side.NW);
-		assertEquals(Side.d2side(4, -4), Side.NE);
-		assertEquals(Side.d2side(4, 4), Side.SE);
-		assertEquals(Side.d2side(-4, 4), Side.SW);
+		assertEquals(Directions.shiftToDirection(-4, -4), Directions.NW);
+		assertEquals(Directions.shiftToDirection(4, -4), Directions.NE);
+		assertEquals(Directions.shiftToDirection(4, 4), Directions.SE);
+		assertEquals(Directions.shiftToDirection(-4, 4), Directions.SW);
 
 	}
 

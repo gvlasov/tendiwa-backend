@@ -13,12 +13,13 @@ import tendiwa.core.PlayerCharacter;
 import tendiwa.core.StaticData;
 import tendiwa.core.TerrainBasics;
 import tendiwa.core.meta.Chance;
-import tendiwa.core.meta.Side;
 import tendiwa.core.terrain.settlements.BuildingPlace;
+import tendiwa.geometry.CardinalDirection;
+import tendiwa.geometry.Directions;
 
 
 public class Tavern extends Building {
-	protected Tavern(BuildingPlace bp, Side side) {
+	protected Tavern(BuildingPlace bp, CardinalDirection side) {
 		super(bp, side);
 	}
 	public static final long serialVersionUID = 2372987976L;
@@ -28,7 +29,7 @@ public class Tavern extends Building {
 		int wallGreyStone = StaticData.getObjectType("wall_gray_stone").getId();
 		
 		buildBasis(wallGreyStone);
-		placeFrontDoor(Side.ANY_SIDE);
+		placeFrontDoor(Directions.getRandomCardinal());
 		for (int sx=lobby.x; sx<lobby.x+lobby.width; sx++) {
 			if (!settlement.isDoor(sx, lobby.y-1)) {
 				settlement.setObject(sx, lobby.y, objVineshelf);

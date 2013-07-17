@@ -2,7 +2,6 @@ package tendiwa.geometry;
 
 import java.awt.Rectangle;
 
-import tendiwa.core.meta.Side;
 
 /**
  * A RectangleSystem that is constructed by setting an "initial" rectangle and 
@@ -40,10 +39,7 @@ public class GrowingRectangleSystem extends RectangleSystem {
 	 *            offset moves. the rectangle to the south, and negative — to
 	 *            the north.
 	 */
-	public void grow(EnhancedRectangle r, Side side, int width, int height, int offset) {
-		if (!side.isCardinal()) {
-			throw new IllegalArgumentException("Only cardinal sides are allowed");
-		}
+	public void grow(EnhancedRectangle r, CardinalDirection side, int width, int height, int offset) {
 		int startX = 0;
 		int startY = 0;
 		switch (side) {
@@ -66,10 +62,10 @@ public class GrowingRectangleSystem extends RectangleSystem {
 		default:
 			break;
 		}
-		if (side == Side.N) {
+		if (side == Directions.N) {
 			startX = r.x + offset;
 			startY = r.y - borderWidth - height;
-		} else if (side == Side.E) {
+		} else if (side == Directions.E) {
 			startX = r.x + r.width - 1 + borderWidth;
 			startY = r.y + offset;
 		}

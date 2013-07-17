@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import tendiwa.core.Building;
 import tendiwa.core.Location;
 import tendiwa.core.StaticData;
-import tendiwa.core.meta.Side;
 import tendiwa.core.terrain.settlements.BuildingPlace;
+import tendiwa.geometry.CardinalDirection;
 import tendiwa.geometry.RandomRectangleSystem;
 import tendiwa.geometry.RectangleArea;
 import tendiwa.geometry.RectangleSystem;
@@ -15,7 +15,7 @@ import tendiwa.geometry.RectangleSystem;
 public class House extends Building {
 	public static final long serialVersionUID = 23L;
 	private RectangleSystem rs;
-	public House(Location location, BuildingPlace place, Side frontSide) {
+	public House(Location location, BuildingPlace place, CardinalDirection frontSide) {
 		super(location, place, frontSide);
 	}
 	public void draw() {

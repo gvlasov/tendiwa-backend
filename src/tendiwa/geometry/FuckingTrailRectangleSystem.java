@@ -10,7 +10,6 @@ import java.util.Random;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import tendiwa.core.meta.Chance;
 import tendiwa.core.meta.Range;
-import tendiwa.core.meta.Side;
 
 /**
  * A RectangleSystem that is defined by a set of points and that consists of
@@ -52,19 +51,19 @@ public FuckingTrailRectangleSystem buildToPoint(Point newPoint) {
 	int dy = newPoint.y - lastPoint.y;
 	// First we work with distance on the greatest axis.
 	int distanceBetweenPoints;
-	Side toSecondRectangle; // Direction of new rectangles appearing on the
+	CardinalDirection toSecondRectangle; // Side of new rectangles appearing on the
 							// greatest axis
-	Side toSecondRectangleSecondary; // Direction of new rectangles shifting on
+	CardinalDirection toSecondRectangleSecondary; // DirectionToBERemoved of new rectangles shifting on
 									// the least axis
 	boolean xIsGreater = dx >= dy;
 	if (xIsGreater) {
 		distanceBetweenPoints = Math.abs(dx);
-		toSecondRectangle = Side.d2side(dx, 0);
-		toSecondRectangleSecondary = Side.d2side(0, dy);
+		toSecondRectangle = (CardinalDirection) Directions.shiftToDirection(dx, 0);
+		toSecondRectangleSecondary = (CardinalDirection) Directions.shiftToDirection(0, dy);
 	} else {
 		distanceBetweenPoints = Math.abs(dy);
-		toSecondRectangle = Side.d2side(0, dy);
-		toSecondRectangleSecondary = Side.d2side(dx, 0);
+		toSecondRectangle = (CardinalDirection) Directions.shiftToDirection(0, dy);
+		toSecondRectangleSecondary = (CardinalDirection) Directions.shiftToDirection(dx, 0);
 	}
 	// First we assume that rectangles on the points are shifted away from each
 	// other in such a way that distance between them is the greatest possible,
@@ -98,7 +97,7 @@ public FuckingTrailRectangleSystem buildToPoint(Point newPoint) {
 	Point leftPoint;
 	Point rightPoint;
 	boolean swapped = false;
-	if (toSecondRectangle == Side.W || toSecondRectangle == Side.N) {
+	if (toSecondRectangle == Directions.W || toSecondRectangle == Directions.N) {
 		leftPoint = newPoint;
 		rightPoint = lastPoint;
 		swapped = true;
@@ -210,7 +209,7 @@ public FuckingTrailRectangleSystem buildToPoint(Point newPoint) {
 	Point topPoint;
 	Point bottomPoint;
 	swapped = false;
-	if (toSecondRectangleSecondary == Side.W || toSecondRectangleSecondary == Side.N) {
+	if (toSecondRectangleSecondary == Directions.W || toSecondRectangleSecondary == Directions.N) {
 		topPoint = newPoint;
 		bottomPoint = lastPoint;
 	} else {

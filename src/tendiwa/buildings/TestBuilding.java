@@ -2,11 +2,11 @@ package tendiwa.buildings;
 
 import tendiwa.core.Building;
 import tendiwa.core.StaticData;
-import tendiwa.core.meta.Side;
 import tendiwa.core.terrain.settlements.BuildingPlace;
+import tendiwa.geometry.CardinalDirection;
 
 public class TestBuilding extends Building {
-	protected TestBuilding(BuildingPlace bp, Side side) {
+	protected TestBuilding(BuildingPlace bp, CardinalDirection side) {
 		super(bp, side);
 	}
 	public static final long serialVersionUID = 346347;
@@ -15,7 +15,7 @@ public class TestBuilding extends Building {
 		
 		getTerrainModifier(4);
 		buildBasis(wallGreyStone);
-		for (Side side : doorSides) {
+		for (CardinalDirection side : doorSides) {
 			placeFrontDoor(side);
 		}
 	}
