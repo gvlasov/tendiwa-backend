@@ -1,5 +1,7 @@
 package tendiwa.geometry;
 
+import java.awt.Point;
+
 /**
  * A Segment is a horizontal or vertical line starting at point {x;y} %length%
  * cells long. If direction of segment is {@link DirectionToBERemoved#V}, then
@@ -14,7 +16,8 @@ public class Segment {
 
 	public Segment(int x, int y, int length, Orientation orientation) {
 		if (length < 1) {
-			throw new IllegalArgumentException("Length must be >= 1 (it is now " + length + ")");
+			throw new IllegalArgumentException(
+				"Length must be >= 1 (it is now " + length + ")");
 		}
 		if (orientation == null) {
 			throw new NullPointerException();
@@ -58,8 +61,8 @@ public class Segment {
 	 * </pre>
 	 * <p>
 	 * Another example, the same designation. Here the splitter segment is not
-	 * full inside the initial segment, so it removes only a part of the initial
-	 * segment
+	 * fully inside the initial segment, so it removes only a part of the
+	 * initial segment
 	 * </p>
 	 * 
 	 * <pre>
@@ -71,14 +74,13 @@ public class Segment {
 	 * </pre>
 	 * 
 	 * 
-	 * @return Two Segments in an array.
+	 * @return Two Segments in an array, or one Segment and null, or two nulls.
 	 */
 	public Segment[] splitWithSegment(int splitterStartCoord, int splitterLength) {
 		Segment s1 = null, s2 = null;
 		if (orientation.isHorizontal()) {
 			// If splitting segment doesn't intersect with this segment, return
-			// this
-			// segment
+			// this segment
 			if (splitterStartCoord > x + length - 1 || splitterStartCoord + splitterLength < x) {
 				return new Segment[] { this, null };
 			}
@@ -88,7 +90,11 @@ public class Segment {
 			}
 			// A Segment after the splitting segment
 			if (x + length > splitterStartCoord + splitterLength && splitterStartCoord + splitterLength > x) {
-				s2 = new Segment(splitterStartCoord + splitterLength, y, length - splitterLength - splitterStartCoord + x, orientation);
+				s2 = new Segment(
+					splitterStartCoord + splitterLength,
+					y,
+					length - splitterLength - splitterStartCoord + x,
+					orientation);
 			}
 			// If none of ifs are true, s1 and s2 remain null
 		} else { // if (direction == DirectionToBERemoved.H)
@@ -104,7 +110,11 @@ public class Segment {
 			}
 			// A Segment after the splitting segment
 			if (y + length > splitterStartCoord + splitterLength && splitterStartCoord + splitterLength > y) {
-				s2 = new Segment(x, splitterStartCoord + splitterLength, length - splitterLength - splitterStartCoord + y, orientation);
+				s2 = new Segment(
+					x,
+					splitterStartCoord + splitterLength,
+					length - splitterLength - splitterStartCoord + y,
+					orientation);
 			}
 			// If none of ifs are true, s1 and s2 remain null
 		}
@@ -171,5 +181,22 @@ public class Segment {
 		} else {
 			return x + length - 1;
 		}
+	}
+	public Point getEndPoint(CardinalDirection direction) {
+		if (orientation == Orientation.VERTICAL) {
+			if (direction == Directions.N) {
+				return new Point(x, y);
+			} else if (direction == Directions.S) {
+				return new Point(x, y + length - 1);
+			}
+		} else {
+			if (direction == Directions.W) {
+				return new Point(x, y);
+			} else if (direction == Directions.E) {
+				return new Point(x + length - 1, y);
+			}
+		}
+		throw new IllegalArgumentException(
+			"Can't get " + direction + " end point of a " + orientation + " segment");
 	}
 }

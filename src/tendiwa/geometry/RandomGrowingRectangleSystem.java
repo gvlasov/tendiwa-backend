@@ -3,25 +3,24 @@ package tendiwa.geometry;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
-
-import org.apache.commons.lang3.tuple.Pair;
+import java.util.Set;
+import java.util.TreeSet;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import tendiwa.core.meta.Chance;
 import tendiwa.core.meta.Range;
-import tendiwa.core.meta.Utils;
 import tendiwa.geometry.RandomGrowingRectangleSystem.VirtualFront.RectangleablePiecesCollection.PiecesJunction;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.Sets;
 
 public class RandomGrowingRectangleSystem extends GrowingRectangleSystem {
-	private int amountOfRectangles;
-	private int rectangleWidth;
 	/**
 	 * A front #x is a set of rectangles that were created as neighbors of
 	 * rectangles of a previous front #x-1, with a front #1 being solely the
@@ -35,11 +34,11 @@ public class RandomGrowingRectangleSystem extends GrowingRectangleSystem {
 	private int lastFullyOccupiedFront = 0;
 	private final Range possibleRectangleWidth;
 	private final Range possibleRectangleWidthPlus2BorderWidth;
-	private Collection<RectangleArea> virtualCurrentFront;
+	private VirtualFront virtualCurrentFront;
 	private Collection<RectangleSidePiece> virtualCurrentFrontSidePieces;
 
 	public RandomGrowingRectangleSystem(int borderWidth, Range possibleRectangleWidth, int amountOfRectangles, Point startingPoint) {
-		super(0);
+		super(borderWidth);
 		this.possibleRectangleWidth = possibleRectangleWidth;
 		possibleRectangleWidthPlus2BorderWidth = new Range(
 			possibleRectangleWidth.min + borderWidth,
@@ -56,107 +55,48 @@ public class RandomGrowingRectangleSystem extends GrowingRectangleSystem {
 			addRectangleFromVirtualFront();
 		}
 	}
+	public RandomGrowingRectangleSystem(RectangleSystem rs, Range possibleRectangleWidth) {
+		super(rs.borderWidth);
+		this.possibleRectangleWidth = possibleRectangleWidth;
+		possibleRectangleWidthPlus2BorderWidth = new Range(
+			possibleRectangleWidth.min + borderWidth,
+			possibleRectangleWidth.max + borderWidth);
+		HashSet<RectangleArea> initialFront = new HashSet<RectangleArea>();
+		for (RectangleArea r : rs) {
+			addRectangleArea(r);
+			initialFront.add(r);
+		}
+	}
 	public void addRectangleFromVirtualFront() {
-		if (virtualCurrentFront.size() == 0) {
+		if (virtualCurrentFront == null || virtualCurrentFront.virtualRectangles
+			.size() == 0) {
 			buildVirtualCurrentFront();
 		}
-		for (RectangleArea r : virtualCurrentFront) {
+		Iterator<RectangleArea> iterator = virtualCurrentFront.virtualRectangles
+			.iterator();
+		System.out.println(virtualCurrentFront.virtualRectangles.size());
+		RectangleArea r = iterator.next();
+		addRectangleArea(r);
+		rectanglesFront.get(lastFullyOccupiedFront + 1).add(r);
+		iterator.remove();
+	}
+	public void buildFront() {
+		if (virtualCurrentFront.virtualRectangles.size() != 0) {
+			throw new IllegalStateException();
+		}
+		for (RectangleArea r : virtualCurrentFront.virtualRectangles) {
 			addRectangleArea(r);
-			virtualCurrentFront.remove(r);
 			rectanglesFront.get(lastFullyOccupiedFront + 1).add(r);
-			break;
-		}
-	}
-	public void buildVirtualCurrentFront() {
-		new VirtualFront(this);
-	}
-	/**
-	 * 
-	 * @param s
-	 *            Northern side piece that looks south
-	 * @param e
-	 *            Eastern side piece that looks west
-	 * @param s
-	 *            Southern side piece that looks north
-	 * @param w
-	 *            Western side piece that looks east
-	 * @return
-	 */
-	private RectangleArea getRectangleBetween4Sides(RectangleSidePiece a, RectangleSidePiece b, RectangleSidePiece c, RectangleSidePiece d) {
-		RectangleSidePiece n = null, e = null, s = null, w = null;
-		if (a.direction == Directions.N) {
-			n = a;
-		} else if (a.direction == Directions.E) {
-			e = a;
-		} else if (a.direction == Directions.S) {
-			s = a;
-		} else {
-			w = a;
-		}
-		if (b.direction == Directions.N) {
-			n = b;
-		} else if (b.direction == Directions.E) {
-			e = b;
-		} else if (b.direction == Directions.S) {
-			s = b;
-		} else {
-			w = b;
-		}
-		if (c.direction == Directions.N) {
-			n = c;
-		} else if (c.direction == Directions.E) {
-			e = c;
-		} else if (c.direction == Directions.S) {
-			s = c;
-		} else {
-			w = c;
-		}
-		if (d.direction == Directions.N) {
-			n = d;
-		} else if (d.direction == Directions.E) {
-			e = d;
-		} else if (d.direction == Directions.S) {
-			s = d;
-		} else {
-			w = d;
-		}
-		int x = w.getLine().getStaticCoordFromSide(Directions.E) + borderWidth;
-		int y = s.getLine().getStaticCoordFromSide(Directions.S) + borderWidth;
-		int width = w.getLine().distanceTo(e.getLine()) - borderWidth * 2;
-		if (width <= 0) {
-			throw new NotImplementedException();
-		}
-		int height = e.getLine().distanceTo(w.getLine()) - borderWidth * 2;
-		if (height <= 0) {
-			throw new NotImplementedException();
-		}
-		return new RectangleArea(x, y, width, height);
-	}
-	private RectangleArea getRectangleBetween3Sides(RectangleSidePiece a, RectangleSidePiece b, RectangleSidePiece c) {
-		RectangleSidePiece pieceA = a;
-		RectangleSidePiece pieceB;
-		if (a.line.orientation != b.line.orientation) {
-			pieceB = b;
-		} else {
-			pieceB = c;
-		}
-		RectangleSidePiece notParallelPiece = findNotParallelPiece(a, b, c);
-		for (RectangleSidePiece existingPiece : virtualCurrentFrontSidePieces) {
-			if (piecesAreParallelAndCloseEnough(notParallelPiece, existingPiece)) {
-				// If one of rectangles in this front previously placed between
-				// 4 sides makes the fourth side
-				return getRectangleBetween4Sides(a, b, c, existingPiece);
-			}
+			virtualCurrentFront.virtualRectangles.clear();
 		}
 
-		OrdinalDirection dirBetweenPieces = (OrdinalDirection) Directions
-			.getDirectionBetween(a.direction, b.direction);
-		return (RectangleArea) EnhancedRectangle.growFromIntersection(
-			pieceA.line,
-			pieceB.line,
-			dirBetweenPieces,
-			Chance.rand(possibleRectangleWidth),
-			Chance.rand(possibleRectangleWidth));
+	}
+	private void buildVirtualCurrentFront() {
+		findFreeSidePieces();
+		virtualCurrentFront = new VirtualFront();
+		if (virtualCurrentFront.virtualRectangles.size() == 0) {
+			throw new IllegalStateException();
+		}
 	}
 	private boolean piecesAreParallelAndCloseEnough(RectangleSidePiece a, RectangleSidePiece b) {
 		if (!a.direction.isOpposite(b.direction)) {
@@ -175,6 +115,13 @@ public class RandomGrowingRectangleSystem extends GrowingRectangleSystem {
 			return false;
 		}
 		return true;
+	}
+	private void findFreeSidePieces() {
+		for (RectangleArea r : rectanglesFront.get(rectanglesFront.size() - 1)) {
+			for (CardinalDirection side : CardinalDirection.values()) {
+				freeSidePiecesOnPreviousFront.add(r.getSideAsSidePiece(side));
+			}
+		}
 	}
 	/**
 	 * Finds a non-parallel piece out of 3 pieces.
@@ -196,27 +143,6 @@ public class RandomGrowingRectangleSystem extends GrowingRectangleSystem {
 		}
 		throw new IllegalArgumentException("All pieces are parallel");
 	}
-	/**
-	 * Finds all places in this RectangleSystem where a rectangle can be placed
-	 * neighboring two or more unoccupied RectnalgeSidePieces.
-	 * 
-	 * @return
-	 */
-	private VirtualFront getVirtualFront() {
-		return new VirtualFront(this);
-	}
-	private void addRandomRectangleBetween(RectangleSidePiece piece1, RectangleSidePiece piece2) {
-		RectangleSidePiece verticalPiece;
-		RectangleSidePiece horizontalPiece;
-		if (piece1.isVertical()) {
-			verticalPiece = piece1;
-			horizontalPiece = piece2;
-		} else {
-			horizontalPiece = piece1;
-			verticalPiece = piece2;
-		}
-
-	}
 	private boolean canRectangleBePlacedTouching(RectangleSidePiece piece1, RectangleSidePiece piece2) {
 		OrdinalDirection quadrantWhereRectnagleLies = (OrdinalDirection) Directions
 			.getDirectionBetween(piece1.direction, piece2.direction);
@@ -229,245 +155,606 @@ public class RandomGrowingRectangleSystem extends GrowingRectangleSystem {
 			squareSize);
 		return r.touches(piece1) && r.touches(piece2);
 	}
-	public void setRectangleWidth(int width) {
-		this.rectangleWidth = width;
-	}
-	public void build() {
-
-	}
 
 	class VirtualFront {
-		Collection<Pair<RectangleSidePiece, RectangleSidePiece>> parallelSides = new ArrayList<Pair<RectangleSidePiece, RectangleSidePiece>>();
-		private RectangleablePiecesCollection pieces = new RectangleablePiecesCollection();
-		private Collection<RectangleArea> fourSidedRectangles = new ArrayList<RectangleArea>();
-		private Multimap<RectangleArea, RectangleSidePiece> fourSideFormingPieces = HashMultimap.create();
-		private Collection<RectangleArea> threeSidedRectangles = new ArrayList<RectangleArea>();
-		private Collection<RectangleArea> twoSidedRectangles = new ArrayList<RectangleArea>();
-		private Collection<RectangleArea> parallelSidedRectangles = new ArrayList<RectangleArea>();
-		private Collection<RectangleArea> oneSidedRectangles = new ArrayList<RectangleArea>();
-		private boolean builtNew;
+		private final Collection<RectangleArea> virtualRectangles = new ArrayList<RectangleArea>();
+		private final RectangleablePiecesCollection pieces;
 
 		VirtualFront() {
-			pieces.addAndSplitPieces(freeSidePiecesOnPreviousFront);
-			while (true) {
-				Multimap<RectangleArea, RectangleSidePiece> newVirtualRectangles = build4SidedRectangles();
-				if (newVirtualRectangles.size() > 0) {
-					continue;
+			pieces = new RectangleablePiecesCollection(
+				freeSidePiecesOnPreviousFront);
+			pieces.buildJunctions();
+			for (int numberOfSides = 4; numberOfSides > 0; numberOfSides--) {
+				Collection<PiecesJunction> junctions = pieces
+					.getJunctionsWithOriginalPieces(numberOfSides);
+				System.out.println(junctions+" "+numberOfSides+" "+pieces.originalPieces.size());
+				if (junctions.size() > 0) {
+					// If at least one n-sided junction found, then start over
+					// from 4-sided junctions, because adding a rectangle will
+					// probably increase the number of occupied sides in
+					// existing junctions, making an x-junction to be
+					// (x+1)-junction.
+					for (PiecesJunction junction : junctions) {
+						occupyJunctionWithRectangle(junction);
+					}
+					pieces.buildJunctions();
+					numberOfSides = 4 + 1;
 				}
-				splitPiecesWithRectangles(newVirtualRectangles);
-
-				build3SidedRectangles();
-				splitPiecesWithRectangles(threeSidedRectangles);
-				if (builtNew) {
-					continue;
-				}
-				build2SidedRectangles(twoSidedRectangles);
-				buildParallelSidedRectangles(parallelSidedRectangles);
-				build1SidedRectangles(oneSidedRectangles);
-				break;
 			}
+		}
+
+		/**
+		 * 
+		 * @param s
+		 *            Northern side piece that looks south
+		 * @param e
+		 *            Eastern side piece that looks west
+		 * @param s
+		 *            Southern side piece that looks north
+		 * @param w
+		 *            Western side piece that looks east
+		 * @return
+		 */
+		private RectangleArea getRectangleBetween4Sides(RectangleSidePiece a, RectangleSidePiece b, RectangleSidePiece c, RectangleSidePiece d) {
+			RectangleSidePiece e = null, s = null, w = null;
+			if (a.direction == Directions.E) {
+				e = a;
+			} else if (a.direction == Directions.S) {
+				s = a;
+			} else {
+				w = a;
+			}
+			if (b.direction == Directions.E) {
+				e = b;
+			} else if (b.direction == Directions.S) {
+				s = b;
+			} else {
+				w = b;
+			}
+			if (c.direction == Directions.E) {
+				e = c;
+			} else if (c.direction == Directions.S) {
+				s = c;
+			} else {
+				w = c;
+			}
+			if (d.direction == Directions.E) {
+				e = d;
+			} else if (d.direction == Directions.S) {
+				s = d;
+			} else {
+				w = d;
+			}
+			int x = w.getLine().getStaticCoordFromSide(Directions.E) + borderWidth;
+			int y = s.getLine().getStaticCoordFromSide(Directions.S) + borderWidth;
+			int width = w.getLine().distanceTo(e.getLine()) - borderWidth * 2;
+			if (width <= 0) {
+				throw new NotImplementedException();
+			}
+			int height = e.getLine().distanceTo(w.getLine()) - borderWidth * 2;
+			if (height <= 0) {
+				throw new NotImplementedException();
+			}
+			pieces.removePiecesIfOriginal(a, b, c, d);
+			RectangleArea rectangle = new RectangleArea(x, y, width, height);
+			pieces.modifySidesByPlacingRectangle(rectangle, a, b, c, d);
+			return rectangle;
+		}
+		private RectangleArea getRectangleBetween3Sides(RectangleSidePiece a, RectangleSidePiece b, RectangleSidePiece c) {
+			RectangleSidePiece pieceA = a;
+			RectangleSidePiece pieceB;
+			if (a.line.orientation != b.line.orientation) {
+				pieceB = b;
+			} else {
+				pieceB = c;
+			}
+			RectangleSidePiece notParallelPiece = findNotParallelPiece(a, b, c);
+			for (RectangleSidePiece existingPiece : virtualCurrentFrontSidePieces) {
+				if (piecesAreParallelAndCloseEnough(
+					notParallelPiece,
+					existingPiece)) {
+					// If one of rectangles in this front previously placed
+					// between 4 sides makes the fourth side
+					return getRectangleBetween4Sides(a, b, c, existingPiece);
+				}
+			}
+
+			OrdinalDirection dirBetweenPieces = (OrdinalDirection) Directions
+				.getDirectionBetween(a.direction, b.direction);
+			pieces.removePiecesIfOriginal(new RectangleSidePiece[] { a, b, c });
+			RectangleArea rectangle = new RectangleArea(
+				EnhancedRectangle.growFromIntersection(
+					pieceA.line,
+					pieceB.line,
+					dirBetweenPieces,
+					Chance.rand(possibleRectangleWidth),
+					Chance.rand(possibleRectangleWidth)));
+			pieces.modifySidesByPlacingRectangle(rectangle, a, b, c);
+			return rectangle;
+		}
+		public RectangleArea getRectangleBetweenParallelSides(RectangleSidePiece d, RectangleSidePiece e) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		public RectangleArea getRectangeOn1Side(RectangleSidePiece piece) {
+			int dynamicCoord = Chance.rand(
+				piece.segment.getStartCoord(),
+				piece.segment.getEndCoord());
+			int staticCoord = piece.line
+				.getStaticCoordFromSide(piece.direction) + RandomGrowingRectangleSystem.this.borderWidth;
+			Point startPoint;
+			if (piece.isVertical()) {
+				startPoint = new Point(staticCoord, dynamicCoord);
+			} else {
+				startPoint = new Point(dynamicCoord, staticCoord);
+			}
+			CardinalDirection growSubdirection = Chance.roll(50) ? piece.direction
+				.clockwiseQuarter() : piece.direction.counterClockwiseQuarter();
+			RectangleArea rectangle = new RectangleArea(
+				RectangleArea.growFromPoint(
+					startPoint.x,
+					startPoint.y,
+					Directions.getDirectionBetween(
+						piece.direction,
+						growSubdirection),
+					Chance.rand(possibleRectangleWidth),
+					Chance.rand(possibleRectangleWidth)));
+			pieces.modifySidesByPlacingRectangle(rectangle, piece);
+			return rectangle;
+		}
+		public RectangleArea getRectangleBetween2Sides(RectangleSidePiece d, RectangleSidePiece e) {
+			// TODO Auto-generated method stub
+			return null;
 		}
 		/**
 		 * Places on this VirtualFront all the rectangles that can be built in
-		 * it touching 4 RectangleSidePieces on previous front.
+		 * it touching 4 RectangleSidePieces on previous front. Also if any
+		 * sides forming {@code junction} are original sides, remove them from
+		 * the collection of original sides, as they are now occupied.
 		 * 
 		 * @return A map where keys are RectangleAreas newly created during
 		 *         current call to this method, and values are collections of
 		 *         new free pieces these rectangles add to VirtualFront.
 		 */
-		private Multimap<RectangleArea, RectangleSidePiece> build4SidedRectangles() {
-			Multimap<RectangleArea, RectangleSidePiece> newRectangles = HashMultimap.create();
-			for (PiecesJunction junction : pieces.get4SidedJunctions()) {
-				RectangleSidePiece piece1 = pairPair.getLeft().getLeft();
-				RectangleSidePiece piece2 = pairPair.getRight().getLeft();
-				if (piece1.line.isParallel(piece2.line)) {
-					continue;
-				}
-				if (canRectangleBePlacedTouching(piece1, piece2)) {
-					RectangleSidePiece piece3 = pairPair.getLeft().getRight();
-					RectangleSidePiece piece4 = pairPair.getRight().getRight();
-					RectangleArea r = getRectangleBetween4Sides(
-						piece1,
-						piece2,
-						piece3,
-						piece4);
-					fourSidedRectangles.add(r);
-					ArrayList<RectangleSidePiece> pieces = new ArrayList<RectangleSidePiece>();
-					Collections.addAll(pieces, piece1, piece2, piece3, piece4);
-					fourSideFormingPieces.put(r, pieces);
-					newRectangles.put(r, piece1);
-				}
+		private void occupyJunctionWithRectangle(PiecesJunction junction) {
+			RectangleArea r;
+			switch (junction.amountOfSides()) {
+				case 4:
+					r = getRectangleBetween4Sides(
+						junction.pieces.get(Directions.N),
+						junction.pieces.get(Directions.E),
+						junction.pieces.get(Directions.S),
+						junction.pieces.get(Directions.W));
+					break;
+				case 3:
+					Collection<RectangleSidePiece> values = junction.pieces
+						.values();
+					RectangleSidePiece a = values.iterator().next();
+					RectangleSidePiece b = values.iterator().next();
+					RectangleSidePiece c = values.iterator().next();
+					r = getRectangleBetween3Sides(a, b, c);
+					break;
+				case 2:
+					Collection<RectangleSidePiece> values2 = junction.pieces
+						.values();
+					RectangleSidePiece d = values2.iterator().next();
+					RectangleSidePiece e = values2.iterator().next();
+					r = d.getLine().isParallel(e.getLine()) ? getRectangleBetweenParallelSides(
+						d,
+						e) : getRectangleBetween2Sides(d, e);
+					break;
+				case 1:
+				default:
+					r = getRectangeOn1Side(junction.pieces
+						.values()
+						.iterator()
+						.next());
 			}
-			return newRectangles;
-		}
-		private void splitPiecesWithRectangles(HashMap<RectangleArea, Collection<RectangleSidePiece>> rectanglesToPieces) {
-			Collection<RectangleSidePiece> splitPieces = new ArrayList<RectangleSidePiece>();
-			for (RectangleArea r : rectanglesToPieces.keySet()) {
-				Collection<RectangleSidePiece> fourPieces = rectanglesToPieces
-					.get(r);
-				for (RectangleSidePiece piece : rectanglesToPieces.get(r)) {
-					RectangleSidePiece rSidePiece = r
-						.getSideAsSidePiece(piece.direction.opposite());
-					splitPieces.addAll(cutPieceWithParallelPiece(
-						piece,
-						rSidePiece));
-					freeSidePiecesOnPreviousFront.remove(piece);
-				}
-			}
-			freeSidePiecesOnPreviousFront.addAll(splitPieces);
-		}
-		private void build3SidedRectangles() {
-
-		}
-		private void findParallelRectangleablePieces() {
-			HashMap<RectangleSidePiece, HashSet<Pair<RectangleSidePiece, RectangleSidePiece>>> candidatesForCandidates = new HashMap<RectangleSidePiece, HashSet<Pair<RectangleSidePiece, RectangleSidePiece>>>();
-			ArrayList<Pair<RectangleSidePiece, RectangleSidePiece>> answer = new ArrayList<Pair<RectangleSidePiece, RectangleSidePiece>>();
-			for (Pair<RectangleSidePiece, RectangleSidePiece> pieces : Utils
-				.combinationPairsIterable(RandomGrowingRectangleSystem.this.freeSidePiecesOnPreviousFront)) {
-				RectangleSidePiece piece1 = pieces.getLeft();
-				RectangleSidePiece piece2 = pieces.getRight();
-				if (!piecesAreParallelAndCloseEnough(piece1, piece2)) {
-					continue;
-				}
-				candidatesForCandidates.get(piece1).add(pieces);
-				candidatesForCandidates.get(piece2).add(pieces);
-			}
-			for (Map.Entry<RectangleSidePiece, HashSet<Pair<RectangleSidePiece, RectangleSidePiece>>> entry : candidatesForCandidates
-				.entrySet()) {
-				// Among all parallel side pieces that are facing entry.key,
-				// find the one that is closest to entry.key
-				Pair<RectangleSidePiece, RectangleSidePiece> minDistancePair = Utils
-					.getRandomElement(entry.getValue());
-				IntercellularLine line1 = minDistancePair.getLeft().getLine();
-				IntercellularLine line2 = minDistancePair.getRight().getLine();
-				int minDistance = line1.distanceTo(line2);
-				for (Pair<RectangleSidePiece, RectangleSidePiece> pair : entry
-					.getValue()) {
-					line1 = pair.getLeft().getLine();
-					line2 = pair.getRight().getLine();
-					int distance = line1.distanceTo(line2);
-					if (distance < minDistance) {
-						minDistancePair = pair;
-						minDistance = distance;
-					}
-				}
-				parallelPieces.add(minDistancePair);
-			}
-		}
-		/**
-		 * Returns one, two or three pieces that appear when this piece is cut
-		 * by end points of a piece parallel to this one.
-		 * 
-		 * @param rSidePiece
-		 */
-		private Collection<RectangleSidePiece> cutPieceWithParallelPiece(RectangleSidePiece cuttee, RectangleSidePiece cutter) {
-			Collection<RectangleSidePiece> answer = new ArrayList<RectangleSidePiece>();
-			Range cutterRange = new Range(
-				cutter.segment.getStartCoord(),
-				cutter.segment.getEndCoord());
-			int cutteeStart = cuttee.segment.getStartCoord();
-			int cutteeEnd = cuttee.segment.getEndCoord();
-			if (cutteeStart < cutterRange.min) {
-				answer
-					.add(new RectangleSidePiece(
-						cuttee.r,
-						cuttee.direction,
-						cuttee.line.orientation.isHorizontal() ? cutteeStart : cuttee.segment.x,
-						cuttee.line.orientation.isVertical() ? cutteeStart : cuttee.segment.y,
-						cutterRange.min - cutteeStart));
-			}
-			if (cutteeEnd > cutterRange.max) {
-				answer
-					.add(new RectangleSidePiece(
-						cuttee.r,
-						cuttee.direction,
-						cuttee.line.orientation.isHorizontal() ? cutterRange.max + 1 : cuttee.segment.x,
-						cuttee.line.orientation.isVertical() ? cutterRange.max + 1 : cuttee.segment.y,
-						cutteeEnd - cutterRange.max));
-			}
-			Range cutteeRange = new Range(cutteeStart, cutteeEnd);
-			answer.add(new RectangleSidePiece(
-				cuttee.r,
-				cuttee.direction,
-				cuttee.line.orientation.isHorizontal() ? cutteeRange
-					.intersection(cutterRange).min : cuttee.segment.x,
-				cuttee.line.orientation.isVertical() ? cutteeRange
-					.intersection(cutterRange).min : cuttee.segment.y,
-				Range.lengthOfIntersection(cutteeRange, cutterRange)));
-			return answer;
+			virtualRectangles.add(r);
 		}
 
 		class RectangleablePiecesCollection {
-			private Map<CardinalDirection, Collection<RectangleSidePiece>> pieces = new HashMap<CardinalDirection, Collection<RectangleSidePiece>>();
+			private Map<CardinalDirection, TreeSet<RectangleSidePiece>> pieces = new HashMap<CardinalDirection, TreeSet<RectangleSidePiece>>();
 			private Map<RectangleSidePiece, PiecesJunction> junctions = new HashMap<RectangleSidePiece, PiecesJunction>();
 			private Map<RectangleSidePiece, Integer> distanceToCurrentParallelSide = new HashMap<RectangleSidePiece, Integer>();
+			private final Collection<RectangleSidePiece> originalPieces;
+			/**
+			 * Pieces forming perimeter of previous front.
+			 */
+			private final Comparator<RectangleSidePiece> PIECES_COMPARATOR = new Comparator<RectangleSidePiece>() {
+				@Override
+				public int compare(RectangleSidePiece piece1, RectangleSidePiece piece2) {
+					switch (piece1.direction) {
+						case N:
+							return -(piece1.segment.y - piece2.segment.y);
+						case E:
+							return piece1.segment.x - piece2.segment.x;
+						case S:
+							return piece1.segment.y - piece2.segment.y;
+						case W:
+						default:
+							return -(piece1.segment.x - piece2.segment.x);
+					}
+				}
+			};
+			private final Collection<RectangleSidePiece> newPieces = new ArrayList<RectangleSidePiece>();
 
-			private RectangleablePiecesCollection() {
-
+			/**
+			 * 
+			 * @param freeSidePiecesOnPreviousFront
+			 * @param piecesOfPreviousFront
+			 *            RectangleSidePieces forming the outer perimeter of
+			 *            previous front.
+			 */
+			private RectangleablePiecesCollection(Collection<RectangleSidePiece> originalPieces) {
+				this.originalPieces = originalPieces;
+				newPieces.addAll(originalPieces);
+				for (CardinalDirection direction : CardinalDirection.values()) {
+					pieces.put(direction, new TreeSet<RectangleSidePiece>(
+						PIECES_COMPARATOR));
+				}
 			}
-			public Collection<PiecesJunction> get4SidedJunctions() {
+			/**
+			 * If some of {@code pieces} are in
+			 * {@link VirtualFront#originalPieces}, remove them from that
+			 * collection.
+			 * 
+			 * @param pieces
+			 */
+			private void removePiecesIfOriginal(RectangleSidePiece... pieces) {
+				for (RectangleSidePiece piece : pieces) {
+					if (originalPieces.contains(piece)) {
+						originalPieces.remove(piece);
+					}
+				}
+			}
+			/**
+			 * Returns {@link PiecesJunction}s that are:
+			 * <ol>
+			 * <li>Have exactly {@code numberOdSides} pieces in them</li>
+			 * <li>One of those pieces is an original piece (
+			 * {@link VirtualFront#originalPieces})
+			 * </ol>
+			 * 
+			 * @param numberOfSides
+			 * @return
+			 */
+			public Collection<PiecesJunction> getJunctionsWithOriginalPieces(int numberOfSides) {
 				Collection<PiecesJunction> answer = new ArrayList<PiecesJunction>();
-				for (PiecesJunction junction : junctions.values()) {
-					if (junction.amountOfSides() == 4) {
+				for (Map.Entry<RectangleSidePiece, PiecesJunction> entry : junctions
+					.entrySet()) {
+					if (!originalPieces.contains(entry.getKey())) {
+						continue;
+					}
+					PiecesJunction junction = entry.getValue();
+					if (junction.amountOfSides() == numberOfSides) {
 						answer.add(junction);
 					}
 				}
 				return answer;
 			}
-			public Pair<Pair<RectangleSidePiece, RectangleSidePiece>, Pair<RectangleSidePiece, RectangleSidePiece>> get4SidedPiecesPairs() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-			private void addAndSplitPieces(Collection<RectangleSidePiece> newPieces) {
-				Map<RectangleSidePiece, RectangleSidePiece> parallelsMarkedForRecalculation = new HashMap<RectangleSidePiece, RectangleSidePiece>();
+			private void buildJunctions() {
 				for (RectangleSidePiece newPiece : newPieces) {
-					for (RectangleSidePiece oldParallelPiece : pieces
-						.get(newPiece.direction)) {
-						if (pieceIsBetterThanCurrentParallel(
-							oldParallelPiece,
-							newPiece)) {
-							int distance = newPiece
-								.distanceTo(oldParallelPiece);
-							distanceToCurrentParallelSide.put(
-								oldParallelPiece,
-								distance);
-							distanceToCurrentParallelSide.put(
-								newPiece,
-								distance);
-							junctions.
-						}
-					}
 					pieces.get(newPiece.direction).add(newPiece);
 				}
+				// Set parallel pieces
+				for (RectangleSidePiece newPiece : newPieces) {
+					TreeSet<RectangleSidePiece> treeSet = pieces
+						.get(newPiece.direction.opposite());
+					RectangleSidePiece parallelPiece = getParallelRectangleablePiece(newPiece);
+					if (parallelPiece != null) {
+						addPieceToJunction(parallelPiece, newPiece);
+					} else {
+						newJunctionOf(newPiece);
+					}
+					treeSet.add(newPiece);
+				}
+				// Set perpendicular pieces
+				for (RectangleSidePiece newPiece : newPieces) {
+					TreeSet<RectangleSidePiece> treeSet = pieces
+						.get(newPiece.direction.clockwiseQuarter());
+					RectangleSidePiece[] perpendicularPieces = getPerpendicularRectangleablePieces(newPiece);
+					boolean nothingAdded = true;
+					for (RectangleSidePiece piece : perpendicularPieces) {
+						if (piece != null) {
+							addPieceToJunction(piece, newPiece);
+							nothingAdded = false;
+						}
+					}
+					if (nothingAdded && !junctions.containsKey(newPiece)) {
+						newJunctionOf(newPiece);
+					}
+					treeSet.add(newPiece);
+				}
+				for (RectangleSidePiece newPiece : newPieces) {
+					if (!junctions.containsKey(newPiece)) {
+						newJunctionOf(newPiece);
+					}
+				}
+				newPieces.clear();
+				// Cut and call the method again if there are any derivative
+				// pieces.
+				Collection<RectangleSidePiece> cutPieces = new ArrayList<RectangleSidePiece>();
+				for (PiecesJunction junction : junctions.values()) {
+					junction.cutParallel();
+				}
+				if (cutPieces.size() > 0) {
+					buildJunctions();
+				}
 			}
-			private boolean pieceIsBetterThanCurrentParallel(RectangleSidePiece oldParallelPiece, RectangleSidePiece newParallelPiece) {
-				boolean cond2 = piecesAreParallelAndCloseEnough(
-					newParallelPiece,
-					oldParallelPiece);
-				boolean cond3 = distanceToCurrentParallelSide
-					.get(oldParallelPiece) < newParallelPiece
-					.distanceTo(oldParallelPiece);
-				return cond2 && cond3;
+			/**
+			 * <ul>
+			 * <li>Splits each of {@code pieces} with a corresponding opposite
+			 * side of RectangleArea {@code r}</li>
+			 * <li>Removes the pieces which were split from this
+			 * {@link RectangleablePiecesCollection}</li>
+			 * <li>Adds newly created split pieces to this
+			 * {@link RectangleablePiecesCollection}</li>
+			 * <li>Disassociates the removed pieces with their junctions</li>
+			 * </ul>
+			 * 
+			 * @param r
+			 * @param pieces
+			 */
+			private void modifySidesByPlacingRectangle(RectangleArea r, RectangleSidePiece... pieces) {
+				Collection<CardinalDirection> directionsUnused = Sets
+					.newHashSet(CardinalDirection.values());
+				for (RectangleSidePiece piece : pieces) {
+					RectangleSidePiece rPiece = r
+						.getSideAsSidePiece(piece.direction.opposite());
+					TreeSet<RectangleSidePiece> treeSet = this.pieces
+						.get(piece.direction);
+					RectangleSidePiece[] splitPieces = piece
+						.splitWithPiece(rPiece);
+
+					if (splitPieces.length > 0 && splitPieces[0] == piece) {
+						// TODO: Added exception only for debugging, remove this
+						// part later.
+						throw new IllegalStateException(
+							"This shit should not happen");
+					}
+					if (originalPieces.contains(piece)) {
+						originalPieces.remove(piece);
+						for (RectangleSidePiece splitOriginalPiece : splitPieces) {
+							originalPieces.add(splitOriginalPiece);
+						}
+					}
+
+					for (RectangleSidePiece newPiece : splitPieces) {
+						treeSet.add(newPiece);
+					}
+					for (RectangleSidePiece rSplitPiece : rPiece
+						.splitWithPiece(piece)) {
+						newPieces.add(rSplitPiece);
+					}
+					directionsUnused.remove(rPiece.direction);
+					removePieceFromItsJunction(piece);
+				}
+				for (CardinalDirection dir : directionsUnused) {
+					newPieces.add(r.getSideAsSidePiece(dir));
+				}
+			}
+			/**
+			 * Disassociates a piece and with a junction containing it. Each
+			 * piece is a part of only one junction, so no need to provide a
+			 * junction as an argument here.
+			 * 
+			 * @param piece
+			 */
+			private void removePieceFromItsJunction(RectangleSidePiece piece) {
+				junctions.get(piece).pieces.remove(piece.direction);
+				junctions.remove(piece);
+			}
+			private RectangleSidePiece getParallelRectangleablePiece(RectangleSidePiece newPiece) {
+				TreeSet<RectangleSidePiece> treeSet = pieces
+					.get(newPiece.direction.opposite());
+				RectangleSidePiece opposite = inversePiece(newPiece);
+				do {
+					opposite = treeSet.higher(opposite);
+				} while (opposite != null && !piecesAreParallelAndCloseEnough(
+					opposite,
+					newPiece));
+				return opposite;
+			}
+			private RectangleSidePiece[] getPerpendicularRectangleablePieces(RectangleSidePiece newPiece) {
+				TreeSet<RectangleSidePiece> treeSet = pieces
+					.get(newPiece.direction.opposite());
+				RectangleSidePiece[] answer = new RectangleSidePiece[2];
+				// TODO: There's no need to hold RectangleArea in minPossible*
+				// to compute it; need a more limited class for this purpose.
+				RectangleSidePiece[] minPossibles = getMinPossiblePerpendicularPieces(newPiece);
+				System.out.println(minPossibles);
+				int index = 0;
+				for (RectangleSidePiece minPiece : minPossibles) {
+					RectangleSidePiece nextPiece;
+					do {
+						nextPiece = treeSet.lower(minPiece);
+					} while (nextPiece != null && !canRectangleBePlacedTouching(
+						nextPiece,
+						newPiece));
+					answer[index] = nextPiece;
+					index++;
+				}
+				return answer;
+			}
+			/**
+			 * Creates two virtual {@link RectangleSidePiece}s (not really
+			 * belonging to any RectangleArea) which will be used as starting
+			 * points to find perpendicular RectangleSidePieces in a junction
+			 * with {@code piece}.
+			 * 
+			 * @param piece
+			 * @return An array of 2 RectangleSidePieces.
+			 */
+			private RectangleSidePiece[] getMinPossiblePerpendicularPieces(RectangleSidePiece piece) {
+				RectangleSidePiece[] answer = new RectangleSidePiece[2];
+				if (piece.isVertical()) {
+					Point startingPointN = piece.segment
+						.getEndPoint(Directions.N);
+					Point startingPointS = piece.segment
+						.getEndPoint(Directions.S);
+					answer[0] = new RectangleSidePiece(
+						piece.r,
+						Directions.S,
+						piece.line.getStaticCoordFromSide(piece.direction),
+						startingPointN.y,
+						1);
+					answer[1] = new RectangleSidePiece(
+						piece.r,
+						Directions.N,
+						piece.line.getStaticCoordFromSide(piece.direction),
+						startingPointS.y,
+						1);
+				} else {
+					Point startingPointW = piece.segment
+						.getEndPoint(Directions.W);
+					Point startingPointE = piece.segment
+						.getEndPoint(Directions.E);
+					answer[0] = new RectangleSidePiece(
+						piece.r,
+						Directions.W,
+						startingPointE.x,
+						piece.line.getStaticCoordFromSide(piece.direction),
+						1);
+					answer[1] = new RectangleSidePiece(
+						piece.r,
+						Directions.E,
+						startingPointW.x,
+						piece.line.getStaticCoordFromSide(piece.direction),
+						1);
+				}
+				return answer;
+			}
+			private RectangleSidePiece inversePiece(RectangleSidePiece piece) {
+				return new RectangleSidePiece(
+					piece.r,
+					piece.direction.opposite(),
+					piece.segment.x,
+					piece.segment.y,
+					piece.segment.length);
+			}
+			private void newJunctionOf(RectangleSidePiece newPiece) {
+				junctions.put(newPiece, new PiecesJunction(newPiece));
+
+			}
+			private void addPieceToJunction(RectangleSidePiece key, RectangleSidePiece newPiece) {
+				if (key == null) {
+					throw new NullPointerException();
+				}
+				if (junctions.containsKey(key)) {
+					junctions.get(key).setPiece(newPiece);
+				} else {
+					junctions.put(key, new PiecesJunction(newPiece));
+				}
+
 			}
 
+			/**
+			 * Represents [1..4] pieces with different direction that together
+			 * form space where a {@link RectangleArea} with its
+			 * {@link RectangleSystem#borderWidth} can be put.
+			 * 
+			 * @author suseika
+			 * 
+			 */
 			class PiecesJunction {
 				private Map<CardinalDirection, RectangleSidePiece> pieces = new HashMap<CardinalDirection, RectangleSidePiece>();
 
-				public PiecesJunction() {
+				public PiecesJunction(RectangleSidePiece initialPiece) {
+					setPiece(initialPiece);
 				}
 				public int amountOfSides() {
 					return pieces.size();
 				}
+				@Override
+				public String toString() {
+					Collection<String> answer = new ArrayList<String>();
+					for (Map.Entry<CardinalDirection, RectangleSidePiece> e : pieces
+						.entrySet()) {
+						CardinalDirection dir = e.getKey();
+						RectangleSidePiece piece = e.getValue();
+						answer.add(dir + ":" + piece.segment.length);
+					}
+					return Joiner.on(", ").join(answer);
+				}
+				/**
+				 * Places a piece in this junction from a Direction
+				 * corresponding to newPiece's direction.
+				 * 
+				 * @param newPiece
+				 */
 				private void setPiece(RectangleSidePiece newPiece) {
 					RectangleSidePiece oppositePiece = pieces
 						.get(newPiece.direction.opposite());
-					junctions.remove(oppositePiece);
-					distanceToCurrentParallelSide.put(
-						newPiece,
-						newPiece.line.distanceTo(oppositePiece.line));
+					if (oppositePiece != null) {
+						junctions.remove(oppositePiece);
+						distanceToCurrentParallelSide.put(
+							newPiece,
+							newPiece.line.distanceTo(oppositePiece.line));
+					}
 					pieces.put(newPiece.direction, newPiece);
+				}
+
+				/**
+				 * Cuts pieces in this PiecesJuntion leaving only that part of a
+				 * piece that is inside a rectangle formed by pieces' junction.
+				 * This operation mutates the objects stored in
+				 * {@link RectangleablePiecesCollection#pieces}. If a
+				 * non-virtual piece of previous front was cut, the derivative
+				 * pieces are added to the collection of non-virtual pieces.
+				 * 
+				 * @return A set of pieces that were cut from original pieces
+				 *         (original pieces themselves not included).
+				 */
+				private void cutParallel() {
+					// TODO: This method could be written more clearly.
+					Set<CardinalDirection> directionsOccupied = pieces.keySet();
+					boolean hasVerticalParallel = directionsOccupied
+						.contains(Directions.N) && directionsOccupied
+						.contains(Directions.S);
+					boolean hasHorizontalParallel = directionsOccupied
+						.contains(Directions.W) && directionsOccupied
+						.contains(Directions.E);
+					if (!hasVerticalParallel || !hasHorizontalParallel) {
+						Map<Direction, Integer> coords = new HashMap<Direction, Integer>();
+						for (CardinalDirection dir : CardinalDirection.values()) {
+							if (directionsOccupied.contains(dir)) {
+								coords.put(dir, pieces
+									.get(dir)
+									.getLine()
+									.getStaticCoordFromSide(dir.opposite()));
+							}
+						}
+						Map<Orientation, Range> ranges = new HashMap<Orientation, Range>();
+						if (hasVerticalParallel) {
+							ranges.put(
+								Orientation.VERTICAL,
+								new Range(coords.get(Directions.W), coords
+									.get(Directions.E)));
+						}
+						if (hasHorizontalParallel) {
+							ranges.put(
+								Orientation.HORIZONTAL,
+								new Range(coords.get(Directions.N), coords
+									.get(Directions.S)));
+						}
+						for (CardinalDirection dir : directionsOccupied) {
+							// Cut each piece that has a parallel piece with
+							if (!directionsOccupied.contains(dir.opposite())) {
+								continue;
+							}
+							RectangleSidePiece piece = pieces.get(dir);
+							ImmutableCollection<RectangleSidePiece> cutWithRange = piece
+								.cutWithRange(ranges.get(dir.getOrientation()));
+							if (originalPieces.contains(piece)) {
+								originalPieces.addAll(cutWithRange);
+							}
+							newPieces.addAll(cutWithRange);
+						}
+					}
 				}
 			}
 		}
 	}
+
 }
