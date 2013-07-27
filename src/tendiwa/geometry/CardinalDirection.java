@@ -14,6 +14,7 @@ public enum CardinalDirection implements Direction {
 	N, E, S, W;
 
 	public static final List<CardinalDirection> ALL = Arrays.asList(N, E, S, W);
+
 	/**
 	 * <p>
 	 * Returns an int corresponding to CardinalDirection.
@@ -139,15 +140,15 @@ public enum CardinalDirection implements Direction {
 	}
 	public int[] side2d() {
 		switch (this) {
-		case N:
-			return new int[] {0,-1};
-		case E:
-			return new int[] {1,0};
-		case S:
-			return new int[] {0,1};
-		case W: 
-		default:
-			return new int[] {-1,0};
+			case N:
+				return new int[] { 0, -1 };
+			case E:
+				return new int[] { 1, 0 };
+			case S:
+				return new int[] { 0, 1 };
+			case W:
+			default:
+				return new int[] { -1, 0 };
 		}
 	}
 	public boolean isOpposite(Direction direction) {
@@ -164,6 +165,27 @@ public enum CardinalDirection implements Direction {
 			case W:
 			default:
 				return direction == E ? true : false;
+		}
+	}
+
+	public boolean isGrowing() {
+		switch (this) {
+			case E:
+			case S:
+				return true;
+			default:
+				return false;
+
+		}
+	}
+	public boolean isVertical() {
+		switch (this) {
+			case N:
+			case S:
+				return true;
+			default:
+				return false;
+
 		}
 	}
 }

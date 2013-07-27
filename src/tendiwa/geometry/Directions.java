@@ -11,6 +11,12 @@ public class Directions {
 	public static final OrdinalDirection SW = OrdinalDirection.SW;
 	public static final CardinalDirection W = CardinalDirection.W;
 	public static final OrdinalDirection NW = OrdinalDirection.NW;
+	public static final CardinalDirection[] CARDINAL_DIRECTIONS = {
+		CardinalDirection.N,
+		CardinalDirection.E,
+		CardinalDirection.S,
+		CardinalDirection.W
+	};
 	static double TAN1;
 	static double TAN2;
 
@@ -20,8 +26,9 @@ public class Directions {
 	}
 
 	/**
-	 * Returns Direction corresponding to number direction. Integer direction must be from
-	 * 1 to 8, 1 is for SideTest.N, each next is for the next direction clockwise.
+	 * Returns Direction corresponding to number direction. Integer direction
+	 * must be from 1 to 8, 1 is for SideTest.N, each next is for the next
+	 * direction clockwise.
 	 */
 	public static Direction intToDirection(int integer) {
 		switch (integer) {
@@ -71,11 +78,12 @@ public class Directions {
 				return SW;
 			}
 		}
-		throw new IllegalArgumentException("Sides " + dir1 + " and " + dir2 + " are not close as cardinal directions");
+		throw new IllegalArgumentException(
+			"Sides " + dir1 + " and " + dir2 + " are not close as cardinal directions");
 	}
 	/**
-	 * Converts shift in cells to a cardinal direction by finding out in what 1/8 of
-	 * full circle lies the shifted point.
+	 * Converts shift in cells to a cardinal direction by finding out in what
+	 * 1/8 of full circle lies the shifted point.
 	 * 
 	 * @param dx
 	 *            Shift in cells by x-axis, any integer.

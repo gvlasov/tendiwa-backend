@@ -2,6 +2,9 @@ package tendiwa.geometry;
 
 import java.awt.Rectangle;
 
+import tendiwa.core.meta.Chance;
+import tendiwa.core.meta.Range;
+
 
 /**
  * A RectangleSystem that is constructed by setting an "initial" rectangle and 
@@ -23,8 +26,8 @@ public class GrowingRectangleSystem extends RectangleSystem {
 	}
 
 	/**
-	 * From certain side of a RectangleArea existing in this system, creates
-	 * another rectangle of given size. Then shifts the created rectangle to a
+	 * From certain side of a RectangleArea existing in this system, create
+	 * another rectangle of given size. Then shift the created rectangle to a
 	 * certain amount of cells.
 	 * 
 	 * @param side
@@ -39,7 +42,10 @@ public class GrowingRectangleSystem extends RectangleSystem {
 	 *            offset moves. the rectangle to the south, and negative — to
 	 *            the north.
 	 */
-	public void grow(EnhancedRectangle r, CardinalDirection side, int width, int height, int offset) {
+	public void grow(Rectangle r, CardinalDirection side, int width, int height, int offset) {
+		addRectangleArea(create(r, side, width, height, offset));
+	}
+	protected RectangleArea create(Rectangle r, CardinalDirection side, int width, int height, int offset) {
 		int startX = 0;
 		int startY = 0;
 		switch (side) {
@@ -56,19 +62,11 @@ public class GrowingRectangleSystem extends RectangleSystem {
 			startY = r.y + r.height + borderWidth;
 			break;
 		case W:
+		default:
 			startX = r.x - borderWidth - width;
 			startY = r.y + offset;
 			break;
-		default:
-			break;
 		}
-		if (side == Directions.N) {
-			startX = r.x + offset;
-			startY = r.y - borderWidth - height;
-		} else if (side == Directions.E) {
-			startX = r.x + r.width - 1 + borderWidth;
-			startY = r.y + offset;
-		}
-		addRectangleArea(new Rectangle(startX, startY, width, height));
+		return new RectangleArea(startX, startY, width, height);
 	}
 }

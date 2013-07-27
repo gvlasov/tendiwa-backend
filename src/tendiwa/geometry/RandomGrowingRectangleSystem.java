@@ -1,5 +1,6 @@
 package tendiwa.geometry;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import painting.TestCanvas;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import tendiwa.core.meta.Chance;
 import tendiwa.core.meta.Range;
@@ -31,14 +33,16 @@ public class RandomGrowingRectangleSystem extends GrowingRectangleSystem {
 	 * 
 	 */
 	private HashSet<RectangleSidePiece> freeSidePiecesOnPreviousFront = new HashSet<RectangleSidePiece>();
-	private int lastFullyOccupiedFront = 0;
+	private int lastFullyOccupiedFront = -1;
 	private final Range possibleRectangleWidth;
 	private final Range possibleRectangleWidthPlus2BorderWidth;
 	private VirtualFront virtualCurrentFront;
 	private Collection<RectangleSidePiece> virtualCurrentFrontSidePieces;
+	private TestCanvas canvas;
 
-	public RandomGrowingRectangleSystem(int borderWidth, Range possibleRectangleWidth, int amountOfRectangles, Point startingPoint) {
+	public RandomGrowingRectangleSystem(int borderWidth, Range possibleRectangleWidth, int amountOfRectangles, Point startingPoint, TestCanvas canvas) {
 		super(borderWidth);
+		this.canvas = canvas;
 		this.possibleRectangleWidth = possibleRectangleWidth;
 		possibleRectangleWidthPlus2BorderWidth = new Range(
 			possibleRectangleWidth.min + borderWidth,
@@ -50,6 +54,7 @@ public class RandomGrowingRectangleSystem extends GrowingRectangleSystem {
 				Chance.rand(possibleRectangleWidth),
 				Chance.rand(possibleRectangleWidth)));
 		initialFront.add(initialRectangle);
+		canvas.draw(initialRectangle);
 		rectanglesFront.add(initialFront);
 		for (int i = 0; i < amountOfRectangles; i++) {
 			addRectangleFromVirtualFront();
@@ -71,10 +76,11 @@ public class RandomGrowingRectangleSystem extends GrowingRectangleSystem {
 		if (virtualCurrentFront == null || virtualCurrentFront.virtualRectangles
 			.size() == 0) {
 			buildVirtualCurrentFront();
+			lastFullyOccupiedFront++;
+			rectanglesFront.add(new HashSet<RectangleArea>());
 		}
 		Iterator<RectangleArea> iterator = virtualCurrentFront.virtualRectangles
 			.iterator();
-		System.out.println(virtualCurrentFront.virtualRectangles.size());
 		RectangleArea r = iterator.next();
 		addRectangleArea(r);
 		rectanglesFront.get(lastFullyOccupiedFront + 1).add(r);
@@ -149,7 +155,7 @@ public class RandomGrowingRectangleSystem extends GrowingRectangleSystem {
 		int squareSize = possibleRectangleWidth.max;
 		EnhancedRectangle r = EnhancedRectangle.growFromIntersection(
 			piece1.line,
-			piece1.line,
+			piece2.line,
 			quadrantWhereRectnagleLies,
 			squareSize,
 			squareSize);
@@ -165,18 +171,15 @@ public class RandomGrowingRectangleSystem extends GrowingRectangleSystem {
 				freeSidePiecesOnPreviousFront);
 			pieces.buildJunctions();
 			for (int numberOfSides = 4; numberOfSides > 0; numberOfSides--) {
-				Collection<PiecesJunction> junctions = pieces
-					.getJunctionsWithOriginalPieces(numberOfSides);
-				System.out.println(junctions+" "+numberOfSides+" "+pieces.originalPieces.size());
-				if (junctions.size() > 0) {
+				PiecesJunction junction = pieces
+					.getOneJunctionWithOriginalPieces(numberOfSides);
+				if (junction != null) {
 					// If at least one n-sided junction found, then start over
 					// from 4-sided junctions, because adding a rectangle will
 					// probably increase the number of occupied sides in
 					// existing junctions, making an x-junction to be
 					// (x+1)-junction.
-					for (PiecesJunction junction : junctions) {
-						occupyJunctionWithRectangle(junction);
-					}
+					occupyJunctionWithRectangle(junction);
 					pieces.buildJunctions();
 					numberOfSides = 4 + 1;
 				}
@@ -261,7 +264,9 @@ public class RandomGrowingRectangleSystem extends GrowingRectangleSystem {
 
 			OrdinalDirection dirBetweenPieces = (OrdinalDirection) Directions
 				.getDirectionBetween(a.direction, b.direction);
-			pieces.removePiecesIfOriginal(new RectangleSidePiece[] { a, b, c });
+			pieces.removePiecesIfOriginal(new RectangleSidePiece[] {
+				a, b, c
+			});
 			RectangleArea rectangle = new RectangleArea(
 				EnhancedRectangle.growFromIntersection(
 					pieceA.line,
@@ -276,31 +281,54 @@ public class RandomGrowingRectangleSystem extends GrowingRectangleSystem {
 			// TODO Auto-generated method stub
 			return null;
 		}
-		public RectangleArea getRectangeOn1Side(RectangleSidePiece piece) {
-			int dynamicCoord = Chance.rand(
-				piece.segment.getStartCoord(),
-				piece.segment.getEndCoord());
-			int staticCoord = piece.line
-				.getStaticCoordFromSide(piece.direction) + RandomGrowingRectangleSystem.this.borderWidth;
-			Point startPoint;
-			if (piece.isVertical()) {
-				startPoint = new Point(staticCoord, dynamicCoord);
-			} else {
-				startPoint = new Point(dynamicCoord, staticCoord);
-			}
-			CardinalDirection growSubdirection = Chance.roll(50) ? piece.direction
-				.clockwiseQuarter() : piece.direction.counterClockwiseQuarter();
-			RectangleArea rectangle = new RectangleArea(
-				RectangleArea.growFromPoint(
-					startPoint.x,
-					startPoint.y,
-					Directions.getDirectionBetween(
-						piece.direction,
-						growSubdirection),
-					Chance.rand(possibleRectangleWidth),
-					Chance.rand(possibleRectangleWidth)));
-			pieces.modifySidesByPlacingRectangle(rectangle, piece);
-			return rectangle;
+		public RectangleArea getRectangleOn1Side(RectangleSidePiece piece) {
+			int width = Chance.rand(possibleRectangleWidth);
+			int height = Chance.rand(possibleRectangleWidth);
+			int offset = Chance.rand(new Range(
+				-(piece.direction.isVertical() ? width : height) + 1,
+				piece.segment.length - 1));
+			RectangleArea r = create(
+				piece.r,
+				piece.direction,
+				width,
+				height,
+				offset);
+			pieces.modifySidesByPlacingRectangle(r, piece);
+			return r;
+			// // canvas.draw(piece);
+			// // int dynamicCoord = Chance.rand(
+			// // piece.segment.getStartCoord(),
+			// // piece.segment.getEndCoord());
+			// int dynamicCoord = piece.segment.getStartCoord();
+			// int staticCoord = piece.line
+			// .getStaticCoordFromSide(piece.direction) + (piece.direction
+			// .isGrowing() ? borderWidth : -borderWidth);
+			// Point startPoint;
+			// if (piece.isVertical()) {
+			// startPoint = new Point(staticCoord, dynamicCoord);
+			// } else {
+			// startPoint = new Point(dynamicCoord, staticCoord);
+			// }
+			// // CardinalDirection growSubdirection = Chance.roll(50) ?
+			// // piece.direction
+			// // .clockwiseQuarter() :
+			// piece.direction.counterClockwiseQuarter();
+			// CardinalDirection growSubdirection = piece.direction
+			// .clockwiseQuarter();
+			// int startX = startPoint.x;
+			// int startY = startPoint.y;
+			// OrdinalDirection direction = Directions.getDirectionBetween(
+			// piece.direction,
+			// growSubdirection);
+			// System.out.println(direction);
+			// RectangleArea rectangle = new RectangleArea(
+			// RectangleArea.growFromPoint(
+			// startX,
+			// startY,
+			// direction,
+			// Chance.rand(possibleRectangleWidth),
+			// Chance.rand(possibleRectangleWidth)));
+			// return rectangle;
 		}
 		public RectangleArea getRectangleBetween2Sides(RectangleSidePiece d, RectangleSidePiece e) {
 			// TODO Auto-generated method stub
@@ -344,13 +372,21 @@ public class RandomGrowingRectangleSystem extends GrowingRectangleSystem {
 						e) : getRectangleBetween2Sides(d, e);
 					break;
 				case 1:
-				default:
-					r = getRectangeOn1Side(junction.pieces
+					r = getRectangleOn1Side(junction.pieces
 						.values()
 						.iterator()
 						.next());
+					break;
+				default:
+					throw new IllegalStateException();
 			}
+			addVirtualRectangle(r);
+		}
+
+		private void addVirtualRectangle(RectangleArea r) {
 			virtualRectangles.add(r);
+			Color color = canvas.draw(r);
+			System.out.println(TestCanvas.colorName(color));
 		}
 
 		class RectangleablePiecesCollection {
@@ -364,6 +400,11 @@ public class RandomGrowingRectangleSystem extends GrowingRectangleSystem {
 			private final Comparator<RectangleSidePiece> PIECES_COMPARATOR = new Comparator<RectangleSidePiece>() {
 				@Override
 				public int compare(RectangleSidePiece piece1, RectangleSidePiece piece2) {
+					// TODO: Remove after debugging
+					if (piece1.direction != piece2.direction) {
+						throw new Error(
+							"Comparing pieces with different directions");
+					}
 					switch (piece1.direction) {
 						case N:
 							return -(piece1.segment.y - piece2.segment.y);
@@ -409,18 +450,17 @@ public class RandomGrowingRectangleSystem extends GrowingRectangleSystem {
 				}
 			}
 			/**
-			 * Returns {@link PiecesJunction}s that are:
+			 * Returns one of {@link PiecesJunction}s that:
 			 * <ol>
-			 * <li>Have exactly {@code numberOdSides} pieces in them</li>
+			 * <li>Has exactly {@code numberOdSides} pieces in it;</li>
 			 * <li>One of those pieces is an original piece (
-			 * {@link VirtualFront#originalPieces})
+			 * {@link VirtualFront#originalPieces}).
 			 * </ol>
 			 * 
 			 * @param numberOfSides
-			 * @return
+			 * @return That piece or null if it wasn't found.
 			 */
-			public Collection<PiecesJunction> getJunctionsWithOriginalPieces(int numberOfSides) {
-				Collection<PiecesJunction> answer = new ArrayList<PiecesJunction>();
+			public PiecesJunction getOneJunctionWithOriginalPieces(int numberOfSides) {
 				for (Map.Entry<RectangleSidePiece, PiecesJunction> entry : junctions
 					.entrySet()) {
 					if (!originalPieces.contains(entry.getKey())) {
@@ -428,10 +468,10 @@ public class RandomGrowingRectangleSystem extends GrowingRectangleSystem {
 					}
 					PiecesJunction junction = entry.getValue();
 					if (junction.amountOfSides() == numberOfSides) {
-						answer.add(junction);
+						return junction;
 					}
 				}
-				return answer;
+				return null;
 			}
 			private void buildJunctions() {
 				for (RectangleSidePiece newPiece : newPieces) {
@@ -439,20 +479,15 @@ public class RandomGrowingRectangleSystem extends GrowingRectangleSystem {
 				}
 				// Set parallel pieces
 				for (RectangleSidePiece newPiece : newPieces) {
-					TreeSet<RectangleSidePiece> treeSet = pieces
-						.get(newPiece.direction.opposite());
 					RectangleSidePiece parallelPiece = getParallelRectangleablePiece(newPiece);
 					if (parallelPiece != null) {
 						addPieceToJunction(parallelPiece, newPiece);
 					} else {
 						newJunctionOf(newPiece);
 					}
-					treeSet.add(newPiece);
 				}
 				// Set perpendicular pieces
 				for (RectangleSidePiece newPiece : newPieces) {
-					TreeSet<RectangleSidePiece> treeSet = pieces
-						.get(newPiece.direction.clockwiseQuarter());
 					RectangleSidePiece[] perpendicularPieces = getPerpendicularRectangleablePieces(newPiece);
 					boolean nothingAdded = true;
 					for (RectangleSidePiece piece : perpendicularPieces) {
@@ -464,7 +499,6 @@ public class RandomGrowingRectangleSystem extends GrowingRectangleSystem {
 					if (nothingAdded && !junctions.containsKey(newPiece)) {
 						newJunctionOf(newPiece);
 					}
-					treeSet.add(newPiece);
 				}
 				for (RectangleSidePiece newPiece : newPieces) {
 					if (!junctions.containsKey(newPiece)) {
@@ -474,11 +508,10 @@ public class RandomGrowingRectangleSystem extends GrowingRectangleSystem {
 				newPieces.clear();
 				// Cut and call the method again if there are any derivative
 				// pieces.
-				Collection<RectangleSidePiece> cutPieces = new ArrayList<RectangleSidePiece>();
 				for (PiecesJunction junction : junctions.values()) {
 					junction.cutParallel();
 				}
-				if (cutPieces.size() > 0) {
+				if (newPieces.size() > 0) {
 					buildJunctions();
 				}
 			}
@@ -556,24 +589,40 @@ public class RandomGrowingRectangleSystem extends GrowingRectangleSystem {
 					newPiece));
 				return opposite;
 			}
+
+			int ii = 0;
+
 			private RectangleSidePiece[] getPerpendicularRectangleablePieces(RectangleSidePiece newPiece) {
-				TreeSet<RectangleSidePiece> treeSet = pieces
-					.get(newPiece.direction.opposite());
 				RectangleSidePiece[] answer = new RectangleSidePiece[2];
 				// TODO: There's no need to hold RectangleArea in minPossible*
 				// to compute it; need a more limited class for this purpose.
 				RectangleSidePiece[] minPossibles = getMinPossiblePerpendicularPieces(newPiece);
-				System.out.println(minPossibles);
 				int index = 0;
 				for (RectangleSidePiece minPiece : minPossibles) {
-					RectangleSidePiece nextPiece;
+
+					TreeSet<RectangleSidePiece> treeSetOfMin = pieces
+						.get(minPiece.direction);
+					RectangleSidePiece nextPiece = minPiece;
 					do {
-						nextPiece = treeSet.lower(minPiece);
+						nextPiece = treeSetOfMin.lower(nextPiece);
 					} while (nextPiece != null && !canRectangleBePlacedTouching(
 						nextPiece,
 						newPiece));
 					answer[index] = nextPiece;
 					index++;
+				}
+				if (answer[0] != null || answer[1] != null) {
+					if (ii == 1) {
+						canvas.draw(newPiece);
+						if (answer[0] != null) {
+							canvas.draw(answer[0]);
+						}
+						if (answer[1] != null) {
+							canvas.draw(answer[1]);
+						}
+						// throw new Error();
+					}
+					ii++;
 				}
 				return answer;
 			}
@@ -625,6 +674,13 @@ public class RandomGrowingRectangleSystem extends GrowingRectangleSystem {
 				}
 				return answer;
 			}
+			/**
+			 * Returns a new RectangleSidePiece with the same segment and line,
+			 * but with opposite direction.
+			 * 
+			 * @param piece
+			 * @return
+			 */
 			private RectangleSidePiece inversePiece(RectangleSidePiece piece) {
 				return new RectangleSidePiece(
 					piece.r,
@@ -675,7 +731,7 @@ public class RandomGrowingRectangleSystem extends GrowingRectangleSystem {
 						RectangleSidePiece piece = e.getValue();
 						answer.add(dir + ":" + piece.segment.length);
 					}
-					return Joiner.on(", ").join(answer);
+					return Joiner.on("+").join(answer);
 				}
 				/**
 				 * Places a piece in this junction from a Direction
@@ -709,13 +765,13 @@ public class RandomGrowingRectangleSystem extends GrowingRectangleSystem {
 				private void cutParallel() {
 					// TODO: This method could be written more clearly.
 					Set<CardinalDirection> directionsOccupied = pieces.keySet();
-					boolean hasVerticalParallel = directionsOccupied
+					boolean hasHorizontalParallel = directionsOccupied
 						.contains(Directions.N) && directionsOccupied
 						.contains(Directions.S);
-					boolean hasHorizontalParallel = directionsOccupied
+					boolean hasVerticalParallel = directionsOccupied
 						.contains(Directions.W) && directionsOccupied
 						.contains(Directions.E);
-					if (!hasVerticalParallel || !hasHorizontalParallel) {
+					if (hasVerticalParallel || hasHorizontalParallel) {
 						Map<Direction, Integer> coords = new HashMap<Direction, Integer>();
 						for (CardinalDirection dir : CardinalDirection.values()) {
 							if (directionsOccupied.contains(dir)) {
@@ -739,7 +795,8 @@ public class RandomGrowingRectangleSystem extends GrowingRectangleSystem {
 									.get(Directions.S)));
 						}
 						for (CardinalDirection dir : directionsOccupied) {
-							// Cut each piece that has a parallel piece with
+							// Cut each piece that has a parallel piece with its
+							// parallel piece.
 							if (!directionsOccupied.contains(dir.opposite())) {
 								continue;
 							}

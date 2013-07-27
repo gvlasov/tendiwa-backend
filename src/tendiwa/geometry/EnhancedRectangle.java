@@ -103,15 +103,15 @@ public class EnhancedRectangle extends Rectangle {
 			case SE:
 				return new EnhancedRectangle(x, y, width, height);
 			case NE:
-				return new EnhancedRectangle(x, y - height, width, height);
+				return new EnhancedRectangle(x, y - height + 1, width, height);
 			case NW:
 				return new EnhancedRectangle(
-					x - width,
-					y - height,
+					x - width + 1,
+					y - height + 1,
 					width,
 					height);
 			case SW:
-				return new EnhancedRectangle(x - width, y, width, height);
+				return new EnhancedRectangle(x - width + 1, y, width, height);
 			default:
 				throw new IllegalArgumentException();
 		}
@@ -380,7 +380,7 @@ public class EnhancedRectangle extends Rectangle {
 
 	}
 	/**
-	 * Checks if this rectangle touches an InterrectangularSegment with one of
+	 * Checks if this rectangle touches an {@link RectangleSidePiece} with one of
 	 * its sides.
 	 * 
 	 * @param segment
@@ -388,13 +388,13 @@ public class EnhancedRectangle extends Rectangle {
 	 */
 	public boolean touches(RectangleSidePiece piece) {
 		if (piece.isVertical()) {
-			if (getSegmentFromSide(CardinalDirection.W).touches(piece) || getSegmentFromSide(
+			if (getSideAsSidePiece(CardinalDirection.W).touches(piece) || getSideAsSidePiece(
 				CardinalDirection.E).touches(piece)) {
 				return true;
 			}
 			return false;
 		} else {
-			if (getSegmentFromSide(CardinalDirection.N).touches(piece) || getSegmentFromSide(
+			if (getSideAsSidePiece(CardinalDirection.N).touches(piece) || getSideAsSidePiece(
 				CardinalDirection.S).touches(piece)) {
 				return true;
 			}
@@ -409,6 +409,7 @@ public class EnhancedRectangle extends Rectangle {
 	 * @return
 	 */
 	public RectangleSidePiece getSegmentFromSide(CardinalDirection side) {
+		// TODO: Duplicate?
 		switch (side) {
 			case N:
 				return new RectangleSidePiece(
@@ -461,14 +462,15 @@ public class EnhancedRectangle extends Rectangle {
 				length = this.width;
 				break;
 			case E:
-				x = this.x+this.width-1;
+				x = this.x + this.width - 1;
 				y = this.y;
 				length = this.height;
 				break;
 			case S:
-				x = this.x + this.width - 1;
-				y = this.y + this.height -1;
+				x = this.x;
+				y = this.y + this.height - 1;
 				length = this.width;
+				break;
 			case W:
 			default:
 				x = this.x;

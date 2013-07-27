@@ -1,6 +1,9 @@
 package tendiwa.geometry;
 
 import java.awt.Point;
+import java.util.Iterator;
+
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * A Segment is a horizontal or vertical line starting at point {x;y} %length%
@@ -8,7 +11,7 @@ import java.awt.Point;
  * {x;y} is its top cell. If direction is {@link DirectionToBERemoved#H}, then
  * {x;y} is its leftmost cell.
  */
-public class Segment {
+public class Segment implements Iterable<EnhancedPoint> {
 	public int x;
 	public int y;
 	public int length;
@@ -198,5 +201,28 @@ public class Segment {
 		}
 		throw new IllegalArgumentException(
 			"Can't get " + direction + " end point of a " + orientation + " segment");
+	}
+	@Override
+	public Iterator<EnhancedPoint> iterator() {
+		return new Iterator<EnhancedPoint>() {
+			final int staticCoord = orientation.isVertical() ? x : y;
+			int dynamicCoord = orientation.isVertical() ? y : x;
+			final int endDynamicCoord = dynamicCoord+length-1;
+			@Override
+			public boolean hasNext() {
+				return dynamicCoord <= endDynamicCoord;
+			}
+
+			@Override
+			public EnhancedPoint next() {
+				return EnhancedPoint.fromStaticAndDynamic(staticCoord, dynamicCoord++, orientation);
+			}
+
+			@Override
+			public void remove() {
+				throw new NotImplementedException();
+			}
+
+		};
 	}
 }

@@ -41,11 +41,29 @@ public class RectangleSidePiece {
 	public IntercellularLine getLine() {
 		return line;
 	}
-	boolean isVertical() {
+	public CardinalDirection getDirection() {
+		return direction;
+	}
+	public Segment getSegment() {
+		return segment;
+	}
+	public boolean isVertical() {
 		return line.orientation.isVertical();
 	}
+	/**
+	 * 
+	 * @param piece
+	 * @return
+	 */
 	public boolean touches(RectangleSidePiece piece) {
-		return piece.line.equals(line);
+		if (piece.direction != direction.opposite()) {
+			return false;
+		}
+		return piece.line.equals(line) && Range.overlap(
+			segment.getStartCoord(),
+			segment.getEndCoord(),
+			piece.segment.getStartCoord(),
+			piece.segment.getEndCoord());
 	}
 	public int intersectionByDynamicCoord(RectangleSidePiece piece2) {
 		return Range.lengthOfIntersection(
@@ -57,21 +75,22 @@ public class RectangleSidePiece {
 	}
 	/**
 	 * Creates [0..2] new ranges, changes coord and length of this one.
+	 * 
 	 * @param cutterRange
 	 * @return
 	 */
 	ImmutableCollection<RectangleSidePiece> cutWithRange(Range cutterRange) {
-		Builder<RectangleSidePiece> builder = ImmutableSet.<RectangleSidePiece>builder();
+		Builder<RectangleSidePiece> builder = ImmutableSet
+			.<RectangleSidePiece> builder();
 		int cutteeStart = segment.getStartCoord();
 		int cutteeEnd = segment.getEndCoord();
 		if (cutteeStart < cutterRange.min) {
-			builder
-				.add(new RectangleSidePiece(
-					r,
-					direction,
-					line.orientation.isHorizontal() ? cutteeStart : segment.x,
-					line.orientation.isVertical() ? cutteeStart : segment.y,
-					cutterRange.min - cutteeStart));
+			builder.add(new RectangleSidePiece(
+				r,
+				direction,
+				line.orientation.isHorizontal() ? cutteeStart : segment.x,
+				line.orientation.isVertical() ? cutteeStart : segment.y,
+				cutterRange.min - cutteeStart));
 		}
 		if (cutteeEnd > cutterRange.max) {
 			builder
@@ -85,18 +104,20 @@ public class RectangleSidePiece {
 		Range cutteeRange = new Range(cutteeStart, cutteeEnd);
 
 		segment.x = line.orientation.isHorizontal() ? cutteeRange
-				.intersection(cutterRange).min : segment.x;
+			.intersection(cutterRange).min : segment.x;
 		segment.y = line.orientation.isVertical() ? cutteeRange
-				.intersection(cutterRange).min : segment.y;
+			.intersection(cutterRange).min : segment.y;
 		segment.length = Range.lengthOfIntersection(cutteeRange, cutterRange);
 		return builder.build();
 	}
 	@Override
 	public String toString() {
-		return direction+"-"+segment.length;
+		return direction + "-" + segment.length;
 	}
 	RectangleSidePiece[] splitWithPiece(RectangleSidePiece splitter) {
-		Segment[] newSegments = segment.splitWithSegment(splitter.segment.getStartCoord(), splitter.segment.length);
+		Segment[] newSegments = segment.splitWithSegment(
+			splitter.segment.getStartCoord(),
+			splitter.segment.length);
 		int arraySize = 0;
 		for (Segment segment : newSegments) {
 			if (segment != null) {
@@ -110,9 +131,16 @@ public class RectangleSidePiece {
 				continue;
 			}
 			if (segment == this.segment) {
-				return new RectangleSidePiece[] {this};
+				return new RectangleSidePiece[] {
+					this
+				};
 			}
-			answer[index++] = new RectangleSidePiece(r, direction, segment.x, segment.y, segment.length);
+			answer[index++] = new RectangleSidePiece(
+				r,
+				direction,
+				segment.x,
+				segment.y,
+				segment.length);
 		}
 		return answer;
 	}

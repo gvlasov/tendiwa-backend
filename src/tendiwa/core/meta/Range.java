@@ -56,16 +56,35 @@ public class Range {
 			return 0;
 		}
 		if (a.min >= b.min && a.max <= b.max) {
-			return a.max-a.min+1;
+			return a.max - a.min + 1;
 		}
 		if (b.min >= a.min && b.max <= a.max) {
-			return b.max-b.min+1;
+			return b.max - b.min + 1;
 		}
 		if (a.min >= b.max) {
-			return b.max-a.min+1;
+			return b.max - a.min + 1;
 		} else {
-			return a.max-b.min+1;
+			return a.max - b.min + 1;
 		}
+	}
+	/**
+	 * Checks if two ranges overlap.
+	 * 
+	 * @param min1
+	 *            Start of first range.
+	 * @param max1
+	 *            End of first range.
+	 * @param min2
+	 *            Start of another range.
+	 * @param max2
+	 *            End of another range.
+	 * @return
+	 */
+	public static boolean overlap(int min1, int max1, int min2, int max2) {
+		if (max2 < min1 || min2 > max1) {
+			return false;
+		}
+		return true;
 	}
 	public boolean contains(int value) {
 		return value >= min && value <= max;
