@@ -375,13 +375,31 @@ public class EnhancedRectangle extends Rectangle {
 		}
 		IntercellularLinesIntersection intersection = IntercellularLine
 			.intersectionOf(line1, line2);
-		Point point = intersection.getCornerPointOfQuarter(side);
-		return growFromPoint(point.x, point.y, side, width, height);
+		return growFromIntersection(intersection, side, width, height);
 
 	}
 	/**
-	 * Checks if this rectangle touches an {@link RectangleSidePiece} with one of
-	 * its sides.
+	 * Grows a new EnhancedRectangle from a point where two
+	 * {@link IntercellularLine}s intersect. An intersection of two such lines
+	 * divides the plane in 4 quadrants, and the quadrant where the rectangle
+	 * will be is defined by DirectionOldSide argument.
+	 * 
+	 * @param intersection
+	 * @param side
+	 *            Must be ordinal.
+	 * @param width
+	 *            Width of the resulting rectangle.
+	 * @param height
+	 *            Height of the resulting rectangle.
+	 * @return
+	 */
+	public static EnhancedRectangle growFromIntersection(IntercellularLinesIntersection intersection, OrdinalDirection side, int width, int height) {
+		Point point = intersection.getCornerPointOfQuarter(side);
+		return growFromPoint(point.x, point.y, side, width, height);
+	}
+	/**
+	 * Checks if this rectangle touches an {@link RectangleSidePiece} with one
+	 * of its sides.
 	 * 
 	 * @param segment
 	 * @return
@@ -413,28 +431,24 @@ public class EnhancedRectangle extends Rectangle {
 		switch (side) {
 			case N:
 				return new RectangleSidePiece(
-					this,
 					CardinalDirection.N,
 					x,
 					y,
 					width);
 			case E:
 				return new RectangleSidePiece(
-					this,
 					CardinalDirection.E,
 					x + width,
 					y,
 					height);
 			case S:
 				return new RectangleSidePiece(
-					this,
 					CardinalDirection.S,
 					x,
 					y + height,
 					width);
 			case W:
 				return new RectangleSidePiece(
-					this,
 					CardinalDirection.W,
 					x,
 					y,
@@ -477,6 +491,6 @@ public class EnhancedRectangle extends Rectangle {
 				y = this.y;
 				length = this.height;
 		}
-		return new RectangleSidePiece(this, side, x, y, length);
+		return new RectangleSidePiece(side, x, y, length);
 	}
 }

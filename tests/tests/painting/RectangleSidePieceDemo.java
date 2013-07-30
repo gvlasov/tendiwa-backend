@@ -1,9 +1,9 @@
 package tests.painting;
 
-import static tendiwa.geometry.Directions.CARDINAL_DIRECTIONS;
+import java.awt.Color;
+
 import painting.TestCanvas;
-import tendiwa.geometry.CardinalDirection;
-import tendiwa.geometry.GrowingRectangleSystem;
+import tendiwa.geometry.Directions;
 import tendiwa.geometry.RectangleArea;
 
 public class RectangleSidePieceDemo extends TestCanvas {
@@ -13,14 +13,9 @@ public class RectangleSidePieceDemo extends TestCanvas {
 	@Override
 	public void paint() {
 		setScale(2);
-		RectangleArea rectangle = new RectangleArea(12, 17, 70, 67);
-		GrowingRectangleSystem rs = new GrowingRectangleSystem(1, rectangle);
-		for (CardinalDirection dir : CARDINAL_DIRECTIONS) {
-			rs.grow(rectangle, dir, 8, 7, 0);
-		}
-		for (CardinalDirection dir : CARDINAL_DIRECTIONS) {
-			draw(rectangle.getSideAsSidePiece(dir));
-		}
-		draw(rs);
+		RectangleArea rectangle = new RectangleArea(5,5,15,5);
+		draw(rectangle, Color.RED);
+		draw(rectangle.getSideAsSidePiece(Directions.S).createRectangle(4), Color.BLUE);
+
 	}
 }

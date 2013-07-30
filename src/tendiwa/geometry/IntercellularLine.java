@@ -82,10 +82,6 @@ public class IntercellularLine {
 			return false;
 		return true;
 	}
-	public LineIntersection intersectionWith(IntercellularLine line) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	public boolean isParallel(IntercellularLine line) {
 		return line.orientation == orientation;
 	}

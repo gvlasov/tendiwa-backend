@@ -35,6 +35,7 @@ import tendiwa.geometry.InterrectangularPath;
 import tendiwa.geometry.RectangleSidePiece;
 import tendiwa.geometry.RectangleSystem;
 import tendiwa.geometry.RectanglesJunction;
+import tendiwa.geometry.Segment;
 
 import com.google.common.collect.Iterables;
 
@@ -306,16 +307,24 @@ public abstract class TestCanvas {
 	 * @param piece
 	 */
 	public void draw(RectangleSidePiece piece) {
-		for (EnhancedPoint point : piece.getSegment()) {
 			setLayer(LAYER_SIDE_PIECES);
+		for (EnhancedPoint point : piece.getSegment()) {
+			point.moveToSide(piece.getDirection());
 			if ((point.x + point.y) % 2 == 0) {
 				draw(point, Color.RED);
 			} else {
-				draw(point, Color.WHITE);
+				draw(point, Color.BLUE);
 			}
 //			draw(point.moveToSide(piece.getDirection()), Color.DARK_GRAY);
 //			draw(point.moveToSide(piece.getDirection()), Color.LIGHT_GRAY);
-			setLayer(LAYER_DEFAULT);
 		}
+			setLayer(LAYER_DEFAULT);
+	}
+	public void draw(Segment segment) {
+		setLayer(LAYER_SIDE_PIECES);
+		for (EnhancedPoint point : segment) {
+			draw(point, Color.RED);
+		}
+		setLayer(LAYER_DEFAULT);
 	}
 }

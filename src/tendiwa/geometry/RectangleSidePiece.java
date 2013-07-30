@@ -1,36 +1,39 @@
 package tendiwa.geometry;
 
-import java.awt.Rectangle;
+import static tendiwa.geometry.Directions.N;
+import static tendiwa.geometry.Directions.NE;
+import static tendiwa.geometry.Directions.SE;
+import static tendiwa.geometry.Directions.SW;
+import static tendiwa.geometry.Directions.W;
+
+import java.awt.Point;
+
+import tendiwa.core.meta.Range;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
-
-import tendiwa.core.meta.Range;
 
 /**
  * Represents a line on rectangle's direction that divides cells inside the
  * rectangle from cells outside the rectangle. Unlike {@link Segment} it doesn't
  * describe specific cells, but rather defines a line between cells.
  * 
- * @param r
  * @param direction
  * @param startCoord
  * @param width
  */
 public class RectangleSidePiece {
-	final Rectangle r;
 	final CardinalDirection direction;
 	final Segment segment;
 	final IntercellularLine line;
 
-	public RectangleSidePiece(Rectangle r, CardinalDirection side, int x, int y, int length) {
+	public RectangleSidePiece(CardinalDirection side, int x, int y, int length) {
 		Orientation orientation = side.getOrientation().reverted();
 		line = new IntercellularLine(
 			orientation,
 			orientation.isVertical() ? x : y);
 		segment = new Segment(x, y, length, orientation);
-		this.r = r;
 		this.direction = side;
 	}
 	/**
@@ -86,7 +89,6 @@ public class RectangleSidePiece {
 		int cutteeEnd = segment.getEndCoord();
 		if (cutteeStart < cutterRange.min) {
 			builder.add(new RectangleSidePiece(
-				r,
 				direction,
 				line.orientation.isHorizontal() ? cutteeStart : segment.x,
 				line.orientation.isVertical() ? cutteeStart : segment.y,
@@ -95,7 +97,6 @@ public class RectangleSidePiece {
 		if (cutteeEnd > cutterRange.max) {
 			builder
 				.add(new RectangleSidePiece(
-					r,
 					direction,
 					line.orientation.isHorizontal() ? cutterRange.max + 1 : segment.x,
 					line.orientation.isVertical() ? cutterRange.max + 1 : segment.y,
@@ -112,7 +113,7 @@ public class RectangleSidePiece {
 	}
 	@Override
 	public String toString() {
-		return direction + "-" + segment.length;
+		return direction + "-" + segment.length + "@" + hashCode();
 	}
 	RectangleSidePiece[] splitWithPiece(RectangleSidePiece splitter) {
 		Segment[] newSegments = segment.splitWithSegment(
@@ -136,13 +137,49 @@ public class RectangleSidePiece {
 				};
 			}
 			answer[index++] = new RectangleSidePiece(
-				r,
 				direction,
 				segment.x,
 				segment.y,
 				segment.length);
 		}
 		return answer;
+	}
+	/**
+	 * Creates a rectangle out of this RectangleSidePiece such that this piece
+	 * forms one side of a Rectangle, and another dimension of the Rectangle is
+	 * defined by an argument.
+	 * 
+	 * @return
+	 */
+	public EnhancedRectangle createRectangle(int anotherDimensionLength) {
+		Point startPoint = segment.getEndPoint(isVertical() ? N : W);
+		OrdinalDirection growDirection;
+		switch (direction) {
+			case N:
+				growDirection = SE;
+			case E:
+				growDirection = SW;
+			case S:
+				growDirection = NE;
+			case W:
+			default:
+				growDirection = SE;
+		}
+		System.out.println("growing to "+growDirection);
+		int width, height;
+		if (isVertical()) {
+			width =anotherDimensionLength;
+			height = segment.length;
+		} else {
+			width = segment.length;
+			height = anotherDimensionLength;
+		}
+		return EnhancedRectangle.growFromPoint(
+			startPoint.x,
+			startPoint.y,
+			growDirection,
+			width,
+			height);
 	}
 
 }

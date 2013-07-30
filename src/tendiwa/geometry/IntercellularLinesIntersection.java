@@ -3,6 +3,7 @@ package tendiwa.geometry;
 import java.awt.Point;
 
 public class IntercellularLinesIntersection extends Intersection {
+
 	final int x;
 	final int y;
 	IntercellularLinesIntersection(IntercellularLine line1, IntercellularLine line2) {
@@ -32,5 +33,17 @@ public class IntercellularLinesIntersection extends Intersection {
 				throw new IllegalArgumentException("Only ordinal sides can be used here");
 					
 		}
+	}
+	public OrdinalDirection getQuadrantWherePointLies(Point point) {
+		if (point.x >= x) {
+			if (point.y <= y) {
+				return Directions.NE;
+			}
+			return Directions.SE;
+		}
+		if (point.y <= y) {
+			return Directions.NW;
+		}
+		return Directions.SW;
 	}
 }
