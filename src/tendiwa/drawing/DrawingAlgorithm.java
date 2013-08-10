@@ -37,4 +37,7 @@ public abstract class DrawingAlgorithm<T> {
 	protected void drawObject(Object shape) {
 		canvas.draw(shape, canvas.currentLayer);
 	}
+	protected <T> void drawObject(T shape, DrawingAlgorithm<T> algorithm) {
+		canvas.draw(shape, algorithm, canvas.currentLayer);
+	}
 }

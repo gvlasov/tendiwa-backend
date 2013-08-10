@@ -7,6 +7,7 @@ import static tendiwa.geometry.Directions.SW;
 import static tendiwa.geometry.Directions.W;
 
 import java.awt.Point;
+import java.util.Arrays;
 
 import tendiwa.core.meta.Range;
 
@@ -72,7 +73,7 @@ public class RectangleSidePiece {
 	}
 	public int intersectionByDynamicCoord(RectangleSidePiece piece2) {
 		return Range.lengthOfIntersection(
-			new Range(segment.getStartCoord(), segment.getEndCoord()),
+			new Range(piece2.segment.getStartCoord(), piece2.segment.getEndCoord()),
 			new Range(segment.getStartCoord(), segment.getEndCoord()));
 	}
 	int distanceTo(RectangleSidePiece piece) {
@@ -121,7 +122,7 @@ public class RectangleSidePiece {
 	/**
 	 * 
 	 * @param splitter
-	 * @return An array of 2 elements.
+	 * @return An array of 0-2 elements (no null values);
 	 */
 	RectangleSidePiece[] splitWithPiece(RectangleSidePiece splitter) {
 		assert splitter != null;

@@ -89,7 +89,7 @@ public class IntercellularLine {
 		if (!isParallel(line)) {
 			throw new IllegalArgumentException("Distance can be calculated only for parallel lines");
 		}
-		return constantCoord - line.constantCoord;
+		return Math.abs(constantCoord - line.constantCoord);
 	}
 	
 }
