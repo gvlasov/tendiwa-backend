@@ -16,6 +16,7 @@ public class InterrectangularPath implements Iterable<RectangleArea> {
 	final HashMap<RectangleArea, HashSet<RectanglesJunction>> junctions = new HashMap<RectangleArea, HashSet<RectanglesJunction>>();
 	protected final int width;
 	protected final RectangleSystem rs;
+
 	public InterrectangularPath(RectangleSystem rs, int width) {
 		this.rs = rs;
 		this.width = width;
@@ -24,20 +25,22 @@ public class InterrectangularPath implements Iterable<RectangleArea> {
 		locationPlaces.put(locationPlaces.size(), r);
 		junctions.put(r, new HashSet<RectanglesJunction>());
 		if (junctions.size() > 0) {
-			putJunctionRangomlyInSegment(r, getRectangleAt(locationPlaces.size()-1));
+			putJunctionRangomlyInSegment(
+				r,
+				getRectangleAt(locationPlaces.size() - 1));
 		}
 		return this;
 	}
 	private void putJunctionRangomlyInSegment(RectangleArea r1, RectangleArea r2) {
 		Segment segment = rs.getAdjacencySegment(r1, r2);
 		RectanglesJunction junction = new RectanglesJunction(
-			segment.getOrientation(), 
+			segment.getOrientation(),
 			Chance.rand(segment.getStartCoord(), segment.getEndCoord()),
 			width,
 			r1,
-			r2
-		);
-		// Associate the newly created junction with both rectangles it connects.
+			r2);
+		// Associate the newly created junction with both rectangles it
+		// connects.
 		junctions.get(r1).add(junction);
 		junctions.get(r2).add(junction);
 	}
@@ -49,8 +52,9 @@ public class InterrectangularPath implements Iterable<RectangleArea> {
 	}
 	/**
 	 * Returns a collection of RectnagleAreas that are joinable with the last
-	 * RectangleArea in this InterrectangularPath (i.e. last RectangleArea and its
-	 * neighbor have at least %width% connected cells.)
+	 * RectangleArea in this InterrectangularPath (i.e. last RectangleArea and
+	 * its neighbor have at least {@code width} connected cells.)
+	 * 
 	 * @return
 	 */
 	public Collection<RectangleArea> getRectanglesJoinableWithLast() {
@@ -71,9 +75,10 @@ public class InterrectangularPath implements Iterable<RectangleArea> {
 	public Iterator<RectangleArea> iterator() {
 		return new Iterator<RectangleArea>() {
 			int index = -1;
+
 			@Override
 			public boolean hasNext() {
-				return index == locationPlaces.size()-1;
+				return index == locationPlaces.size() - 1;
 			}
 
 			@Override
@@ -86,16 +91,19 @@ public class InterrectangularPath implements Iterable<RectangleArea> {
 			public void remove() {
 				throw new NotImplementedException();
 			}
-			
+
 		};
 	}
 	/**
-	 * Returns all junctions between rectangles present in this InterrectangularPath
+	 * Returns all junctions between rectangles present in this
+	 * InterrectangularPath
+	 * 
 	 * @return
 	 */
 	public List<RectanglesJunction> getJunctions() {
 		ArrayList<RectanglesJunction> list = new ArrayList<RectanglesJunction>();
-		for (HashSet<RectanglesJunction> junctionsOfRectangle : junctions.values()) {
+		for (HashSet<RectanglesJunction> junctionsOfRectangle : junctions
+			.values()) {
 			for (RectanglesJunction junction : junctionsOfRectangle) {
 				if (!list.contains(junction)) {
 					list.add(junction);
@@ -106,16 +114,29 @@ public class InterrectangularPath implements Iterable<RectangleArea> {
 	}
 	/**
 	 * Returns a junction between two particular rectangles.
+	 * 
 	 * @param r1
+	 *            a rectangle present in this {@link RectangleSystem}.
 	 * @param r2
-	 * @return
+	 *            a neighbor of that rectangle, also present in this
+	 *            {@link RectangleSystem}.
+	 * @return the junction between those rectangles, or {@code null} if two
+	 *         rectangles are not neighbors.
+	 * @throws IllegalArgumentException
+	 *             if r1 and r2 are not neighbors, or if {@code r1 == r2}
+	 * @see RectangleSystem#areRectanglesNear(java.awt.Rectangle,
+	 *      java.awt.Rectangle) for definition of what neighbor rectangles are.
 	 */
 	public RectanglesJunction getJunction(RectangleArea r1, RectangleArea r2) {
 		if (r1.equals(r2)) {
-			throw new Error("Trying to get a junction between two equal RectangleAreas");
+			throw new IllegalArgumentException(
+				"Trying to get a junction between two equal RectangleAreas");
+		}
+		if (!rs.areRectanglesNear(r1, r2)) {
+			throw new IllegalArgumentException("Rectangles are not neighbors");
 		}
 		for (RectanglesJunction rj : junctions.get(r1)) {
-			if(rj.r1 == r2 || rj.r2 == r2) {
+			if (rj.r1 == r2 || rj.r2 == r2) {
 				return rj;
 			}
 		}

@@ -16,6 +16,7 @@ import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import tendiwa.core.Location;
 import tendiwa.core.StaticData;
 import tendiwa.core.TerrainModifier;
@@ -26,7 +27,7 @@ import tests.SideTest;
 /**
  * <p>
  * RectangleSystem is one of the most basic yet powerful concepts of terrain
- * generation. Basically it is a graph, where vertices are rectangles. There is
+ * generation. Basically, it is a graph where vertices are rectangles. There is
  * an edge between two vertices if these rectangles touch each other's sides.
  * RectangleSystem provides methods
  * </p>
@@ -71,9 +72,9 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 	protected HashSet<RectangleArea> content;
 	/**
 	 * For some RectangleAreas in this RectangleSystem here is saved a list of
-	 * {@link SideTest}s of that RectangleArea that are exposed outside of
-	 * RectangleSystem (means they have no neighbors in the RectangleSystem from
-	 * that direction).
+	 * {@link CardinalDirection}s of that RectangleArea that are exposed outside
+	 * of RectangleSystem (means they have no neighbors in the RectangleSystem
+	 * from that direction).
 	 */
 	HashMap<RectangleArea, Set<CardinalDirection>> outerSides;
 
@@ -127,7 +128,8 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 		}
 		// Making a copy of collection to iterate and delete from the copied
 		// collection
-		Collection<RectangleArea> rectangles = new HashSet<RectangleArea>(content);
+		Collection<RectangleArea> rectangles = new HashSet<RectangleArea>(
+			content);
 		Iterator<RectangleArea> i = rectangles.iterator();
 
 		// The point of this loop is "check each RectangleArea in this
@@ -180,7 +182,11 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 				endY = r.y + r.height;
 			}
 		}
-		boundingRectangle = new Rectangle(startX, startY, endX - startX, endY - startY);
+		boundingRectangle = new Rectangle(
+			startX,
+			startY,
+			endX - startX,
+			endY - startY);
 		findOuterRectangles();
 	}
 	/* ========== GETTERS ========== */
@@ -203,7 +209,8 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 	 */
 	public Rectangle getBoundingRectangle() {
 		if (!isBuilt) {
-			throw new RuntimeException("Can't get bounding rectangle before edges are built");
+			throw new RuntimeException(
+				"Can't get bounding rectangle before edges are built");
 		}
 		return boundingRectangle;
 	}
@@ -230,7 +237,8 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 				return r;
 			}
 		}
-		throw new RuntimeException("There is no rectangle that contains point {" + x + ":" + y + "}");
+		throw new RuntimeException(
+			"There is no rectangle that contains point {" + x + ":" + y + "}");
 	}
 	/**
 	 * Returns a view to all RectangleArea existing in this RectangleSystem.
@@ -246,7 +254,8 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 	 * @return
 	 */
 	public Rectangle getRandomRectangle() {
-		ArrayList<RectangleArea> rectangles = new ArrayList<RectangleArea>(content);
+		ArrayList<RectangleArea> rectangles = new ArrayList<RectangleArea>(
+			content);
 		return rectangles.get(Chance.rand(0, rectangles.size() - 1));
 	}
 	/**
@@ -257,7 +266,8 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 	 * @see RectangleSystem#outerSides
 	 */
 	public Rectangle getRandomOuterRectangle() {
-		ArrayList<RectangleArea> a = new ArrayList<RectangleArea>(outerSides.keySet());
+		ArrayList<RectangleArea> a = new ArrayList<RectangleArea>(
+			outerSides.keySet());
 		return a.get(Chance.rand(0, a.size()));
 	}
 	/**
@@ -282,7 +292,8 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 		if (rectangle.x == neighbor.x + neighbor.width + borderWidth) {
 			return CardinalDirection.W;
 		}
-		throw new RuntimeException("Cannot find direction of neighbor rectangle " + neighbor + " for rectangle " + rectangle);
+		throw new RuntimeException(
+			"Cannot find direction of neighbor rectangle " + neighbor + " for rectangle " + rectangle);
 	}
 	/**
 	 * Returns length in cells of a zone of contact between two neighbor
@@ -299,16 +310,20 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 		switch (side) {
 			case N:
 			case S:
-				return Math.min(r1.x + r1.width, r2.x + r2.width) - Math.max(r1.x, r2.x);
+				return Math.min(r1.x + r1.width, r2.x + r2.width) - Math.max(
+					r1.x,
+					r2.x);
 			case E:
 			case W:
 			default:
-				return Math.min(r1.y + r1.height, r2.y + r2.height) - Math.max(r1.y, r2.y);
+				return Math.min(r1.y + r1.height, r2.y + r2.height) - Math.max(
+					r1.y,
+					r2.y);
 
 		}
 	}
 	/**
-	 * Returns segments on a RectangleArea's direction that don't touch any
+	 * Returns segments on a RectangleArea's side that don't touch any
 	 * neighbors.
 	 * 
 	 * @param r
@@ -317,32 +332,49 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 	 */
 	public Set<Segment> getSegmentsFreeFromNeighbors(RectangleArea r, CardinalDirection side) {
 		if (!isBuilt) {
-			throw new RuntimeException("RectangleSystem must be built before calling this method");
+			throw new RuntimeException(
+				"RectangleSystem must be built before calling this method");
 		}
-		ArrayList<RectangleArea> rectanglesFromThatSide = new ArrayList<RectangleArea>(getRectanglesCloseToSide(r, side));
+		ArrayList<RectangleArea> rectanglesFromThatSide = new ArrayList<RectangleArea>(
+			getRectanglesCloseToSide(r, side));
 		// Sort neighbors from that direction from top to bottom or from left to
 		// right
 		if (side == CardinalDirection.N || side == CardinalDirection.S) {
-			Collections.sort(rectanglesFromThatSide, horizontalRectangleComparator);
+			Collections.sort(
+				rectanglesFromThatSide,
+				horizontalRectangleComparator);
 		} else {
-			Collections.sort(rectanglesFromThatSide, verticalRectangleComparator);
+			Collections.sort(
+				rectanglesFromThatSide,
+				verticalRectangleComparator);
 		}
 		ArrayList<Segment> segments = new ArrayList<Segment>();
 		// We start from a single segment which fills the whole direction of
 		// rectangle r.
 		if (side == CardinalDirection.N) {
-			segments.add(new Segment(r.x, r.y, r.width, Orientation.HORIZONTAL));
+			segments
+				.add(new Segment(r.x, r.y, r.width, Orientation.HORIZONTAL));
 		} else if (side == CardinalDirection.E) {
-			segments.add(new Segment(r.x + r.width - 1, r.y, r.height, Orientation.VERTICAL));
+			segments.add(new Segment(
+				r.x + r.width - 1,
+				r.y,
+				r.height,
+				Orientation.VERTICAL));
 		} else if (side == Directions.S) {
-			segments.add(new Segment(r.x, r.y + r.height - 1, r.width, Orientation.HORIZONTAL));
+			segments.add(new Segment(
+				r.x,
+				r.y + r.height - 1,
+				r.width,
+				Orientation.HORIZONTAL));
 		} else {
 			// if (direction == DirectionOldSide.W)
 			segments.add(new Segment(r.x, r.y, r.height, Orientation.VERTICAL));
 		}
 		int splitSegmentStartCoord, splitSegmentLength;
-		// For each neighbor from that direction, we split our initial segment with
-		// another segment that is a direction of a neighbor rectangle that touches
+		// For each neighbor from that direction, we split our initial segment
+		// with
+		// another segment that is a direction of a neighbor rectangle that
+		// touches
 		// our initial segment.
 		for (int i = 0, l = rectanglesFromThatSide.size(); i < l; i++) {
 			Rectangle neighbor = rectanglesFromThatSide.get(i);
@@ -365,18 +397,20 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 					splitSegmentLength = neighbor.height + borderWidth * 2;
 			}
 			// Now, there may be a situation when the whole direction segment is
-			// eliminated, and there are still rectangles from that direction. If
-			// number of segments here reaches 0, it means that this direction of
-			// RectangleArea has no neighbor-free segments. Now we can safely
-			// break the loop and go straight to the "return" part.
+			// eliminated, and there are still rectangles from that direction.
+			// If number of segments here reaches 0, it means that this
+			// direction of RectangleArea has no neighbor-free segments. Now we
+			// can safely break the loop and go straight to the "return" part.
 			if (segments.size() == 0) {
 				break;
 			}
 			// Consecutively splitting the last segment with a neighbor
-			// rectangle direction segment, we get several segments. That is why we
-			// sorted all the neighbors — otherwise we would have to compare
+			// rectangle direction segment, we get several segments. That is why
+			// we sorted all the neighbors — otherwise we would have to compare
 			// each neighbor to each segment on each step.
-			Segment[] newSegments = segments.get(segments.size() - 1).splitWithSegment(splitSegmentStartCoord, splitSegmentLength);
+			Segment[] newSegments = segments
+				.get(segments.size() - 1)
+				.splitWithSegment(splitSegmentStartCoord, splitSegmentLength);
 			// If the segment was split (meaning there is at least one new
 			// segment), then the former segment is removed...
 			segments.remove(segments.size() - 1);
@@ -393,13 +427,13 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 		return new HashSet<Segment>(segments);
 	}
 	public Set<RectangleSidePiece> getSidePiecesFreeFromNeighbours(RectangleArea r, CardinalDirection side) {
-
+		throw new NotImplementedException();
 	}
 	/**
 	 * A method similar to
 	 * {@link RectangleSystem#getNeighborsFromSide(RectangleArea, SideTest)}
-	 * finds the neighbors from that direction and also RectangleAreas that touch
-	 * argument's direction only with their borders.
+	 * finds the neighbors from that direction and also RectangleAreas that
+	 * touch argument's direction only with their borders.
 	 * 
 	 * @return
 	 */
@@ -419,27 +453,47 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 				 * each case checks if a neighbor rectangle touches _side_ (not
 				 * border!) of the rectangle r with its direction _or_ border.
 				 */
-				if (neighbor.y + neighbor.height + borderWidth == r.y && Utils.integersRangeIntersection(neighbor.x - borderWidth, neighbor.x + neighbor.width - 1 + borderWidth, r.x, r.x + r.width - 1) > 0) {
+				if (neighbor.y + neighbor.height + borderWidth == r.y && Utils
+					.integersRangeIntersection(
+						neighbor.x - borderWidth,
+						neighbor.x + neighbor.width - 1 + borderWidth,
+						r.x,
+						r.x + r.width - 1) > 0) {
 					rectanglesFromThatSide.add(neighbor);
 				}
 			}
 
 		} else if (side == CardinalDirection.E) {
 			for (RectangleArea neighbor : content) {
-				if (neighbor.x == r.x + r.width + borderWidth && Utils.integersRangeIntersection(neighbor.y - borderWidth, neighbor.y + neighbor.height - 1 + borderWidth, r.y, r.y + r.height - 1) > 0) {
+				if (neighbor.x == r.x + r.width + borderWidth && Utils
+					.integersRangeIntersection(
+						neighbor.y - borderWidth,
+						neighbor.y + neighbor.height - 1 + borderWidth,
+						r.y,
+						r.y + r.height - 1) > 0) {
 					rectanglesFromThatSide.add(neighbor);
 				}
 			}
 		} else if (side == CardinalDirection.S) {
 			for (RectangleArea neighbor : content) {
-				if (neighbor.y == r.y + r.height + borderWidth && Utils.integersRangeIntersection(neighbor.x - borderWidth, neighbor.x + neighbor.width - 1 + borderWidth, r.x, r.x + r.width - 1) > 0) {
+				if (neighbor.y == r.y + r.height + borderWidth && Utils
+					.integersRangeIntersection(
+						neighbor.x - borderWidth,
+						neighbor.x + neighbor.width - 1 + borderWidth,
+						r.x,
+						r.x + r.width - 1) > 0) {
 					rectanglesFromThatSide.add(neighbor);
 				}
 			}
 		} else {
 			// if (direction == SideTest.W)
 			for (RectangleArea neighbor : content) {
-				if (neighbor.x + neighbor.width + borderWidth == r.x && Utils.integersRangeIntersection(neighbor.y - borderWidth, neighbor.y + neighbor.height - 1 + borderWidth, r.y, r.y + r.height - 1) > 0) {
+				if (neighbor.x + neighbor.width + borderWidth == r.x && Utils
+					.integersRangeIntersection(
+						neighbor.y - borderWidth,
+						neighbor.y + neighbor.height - 1 + borderWidth,
+						r.y,
+						r.y + r.height - 1) > 0) {
 					rectanglesFromThatSide.add(neighbor);
 				}
 			}
@@ -450,8 +504,8 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 	 * <p>
 	 * A method similar to
 	 * {@link RectangleSystem#getNeighborsFromSide(RectangleArea, SideTest)}
-	 * finds the neighbors from that direction and also RectangleAreas that touch
-	 * argument's direction _or border_ only with their borders.
+	 * finds the neighbors from that direction and also RectangleAreas that
+	 * touch argument's direction _or border_ only with their borders.
 	 * </p>
 	 * 
 	 * @return
@@ -472,27 +526,47 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 				 * each case checks if a neighbor rectangle touches _side_ (not
 				 * border!) of the rectangle r with its direction _or_ border.
 				 */
-				if (neighbor.y + neighbor.height + borderWidth == r.y && Utils.integersRangeIntersection(neighbor.x - borderWidth, neighbor.x + neighbor.width - 1 + borderWidth, r.x - borderWidth, r.x + r.width - 1 + borderWidth) > 0) {
+				if (neighbor.y + neighbor.height + borderWidth == r.y && Utils
+					.integersRangeIntersection(
+						neighbor.x - borderWidth,
+						neighbor.x + neighbor.width - 1 + borderWidth,
+						r.x - borderWidth,
+						r.x + r.width - 1 + borderWidth) > 0) {
 					rectanglesFromThatSide.add(neighbor);
 				}
 			}
 
 		} else if (side == CardinalDirection.E) {
 			for (RectangleArea neighbor : content) {
-				if (neighbor.x == r.x + r.width + borderWidth && Utils.integersRangeIntersection(neighbor.y - borderWidth, neighbor.y + neighbor.height - 1 + borderWidth, r.y - borderWidth, r.y + r.height - 1 + borderWidth) > 0) {
+				if (neighbor.x == r.x + r.width + borderWidth && Utils
+					.integersRangeIntersection(
+						neighbor.y - borderWidth,
+						neighbor.y + neighbor.height - 1 + borderWidth,
+						r.y - borderWidth,
+						r.y + r.height - 1 + borderWidth) > 0) {
 					rectanglesFromThatSide.add(neighbor);
 				}
 			}
 		} else if (side == CardinalDirection.S) {
 			for (RectangleArea neighbor : content) {
-				if (neighbor.y == r.y + r.height + borderWidth && Utils.integersRangeIntersection(neighbor.x - borderWidth, neighbor.x + neighbor.width - 1 + borderWidth, r.x - borderWidth, r.x + r.width - 1 + borderWidth) > 0) {
+				if (neighbor.y == r.y + r.height + borderWidth && Utils
+					.integersRangeIntersection(
+						neighbor.x - borderWidth,
+						neighbor.x + neighbor.width - 1 + borderWidth,
+						r.x - borderWidth,
+						r.x + r.width - 1 + borderWidth) > 0) {
 					rectanglesFromThatSide.add(neighbor);
 				}
 			}
 		} else {
 			// if (direction == SideTest.W)
 			for (RectangleArea neighbor : content) {
-				if (neighbor.x + neighbor.width + borderWidth == r.x && Utils.integersRangeIntersection(neighbor.y - borderWidth, neighbor.y + neighbor.height - 1 + borderWidth, r.y - borderWidth, r.y + r.height - 1 + borderWidth) > 0) {
+				if (neighbor.x + neighbor.width + borderWidth == r.x && Utils
+					.integersRangeIntersection(
+						neighbor.y - borderWidth,
+						neighbor.y + neighbor.height - 1 + borderWidth,
+						r.y - borderWidth,
+						r.y + r.height - 1 + borderWidth) > 0) {
 					rectanglesFromThatSide.add(neighbor);
 				}
 			}
@@ -508,10 +582,12 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 	 */
 	public Set<RectangleArea> outerRectanglesSet() {
 		if (!isBuilt) {
-			throw new RuntimeException("RectangleSystem must be built before calling this method");
+			throw new RuntimeException(
+				"RectangleSystem must be built before calling this method");
 		}
 		Set<RectangleArea> answer = new HashSet<RectangleArea>();
-		for (Map.Entry<RectangleArea, Set<CardinalDirection>> e : outerSides.entrySet()) {
+		for (Map.Entry<RectangleArea, Set<CardinalDirection>> e : outerSides
+			.entrySet()) {
 			if (e.getValue().size() > 0) {
 				answer.add(e.getKey());
 			}
@@ -531,9 +607,13 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 	public Set<RectangleArea> getNeighborsFromSide(RectangleArea r, CardinalDirection side) {
 		Set<RectangleArea> neighborsFromThatSide = new HashSet<RectangleArea>();
 		for (DefaultEdge e : graph.edgesOf(r)) {
-			if (graph.getEdgeSource(e) == r && getNeighborSide(r, graph.getEdgeTarget(e)) == side) {
+			if (graph.getEdgeSource(e) == r && getNeighborSide(
+				r,
+				graph.getEdgeTarget(e)) == side) {
 				neighborsFromThatSide.add(graph.getEdgeTarget(e));
-			} else if (graph.getEdgeTarget(e) == r && getNeighborSide(r, graph.getEdgeSource(e)) == side) {
+			} else if (graph.getEdgeTarget(e) == r && getNeighborSide(
+				r,
+				graph.getEdgeSource(e)) == side) {
 				neighborsFromThatSide.add(graph.getEdgeSource(e));
 			}
 		}
@@ -566,19 +646,32 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 	 */
 	public Segment getAdjacencySegment(RectangleArea r1, RectangleArea r2) {
 		if (!areRectanglesNear(r1, r2)) {
-			throw new IllegalArgumentException("Both rectangles must be near each other: " + r1 + " " + r2);
+			throw new IllegalArgumentException(
+				"Both rectangles must be near each other: " + r1 + " " + r2);
 		}
 		CardinalDirection side = getNeighborSide(r1, r2);
 		switch (side) {
 			case N:
-				return new Segment(Math.max(r1.x, r2.x), r1.y, Math.min(r1.x + r1.width - r2.x, r2.x + r2.width - r1.x), Orientation.HORIZONTAL);
+				return new Segment(Math.max(r1.x, r2.x), r1.y, Math.min(
+					r1.x + r1.width - r2.x,
+					r2.x + r2.width - r1.x), Orientation.HORIZONTAL);
 			case E:
-				return new Segment(r1.x + r1.width - 1, Math.max(r1.y, r2.y), Math.min(r1.y + r1.height - r2.y, r2.y + r2.height - r2.y), Orientation.VERTICAL);
+				return new Segment(
+					r1.x + r1.width - 1,
+					Math.max(r1.y, r2.y),
+					Math.min(r1.y + r1.height - r2.y, r2.y + r2.height - r2.y),
+					Orientation.VERTICAL);
 			case S:
-				return new Segment(Math.max(r1.x, r2.x), r1.y + r1.height - 1, Math.min(r1.x + r1.width - r2.x, r2.x + r2.width - r1.x), Orientation.HORIZONTAL);
+				return new Segment(
+					Math.max(r1.x, r2.x),
+					r1.y + r1.height - 1,
+					Math.min(r1.x + r1.width - r2.x, r2.x + r2.width - r1.x),
+					Orientation.HORIZONTAL);
 			case W:
 			default:
-				return new Segment(r1.x, Math.max(r1.y, r2.y), Math.min(r1.y + r1.height - r2.y, r2.y + r2.height - r1.y), Orientation.VERTICAL);
+				return new Segment(r1.x, Math.max(r1.y, r2.y), Math.min(
+					r1.y + r1.height - r2.y,
+					r2.y + r2.height - r1.y), Orientation.VERTICAL);
 		}
 	}
 	/**
@@ -609,7 +702,8 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 	 */
 	public RectangleArea addRectangleArea(int x, int y, int width, int height) {
 		if (isBuilt) {
-			throw new RuntimeException("Can't add any more rectangles when system is already built");
+			throw new RuntimeException(
+				"Can't add any more rectangles when system is already built");
 		}
 		RectangleArea r = new RectangleArea(x, y, width, height);
 		content.add(r);
@@ -642,7 +736,8 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 				CardinalDirection side = getNeighborSide(neighbor, r);
 				Set<CardinalDirection> neighborSides = outerSides.get(neighbor);
 				if (!neighborSides.contains(side)) {
-					// If neighbor rectangle doesn't have the outer direction from
+					// If neighbor rectangle doesn't have the outer direction
+					// from
 					// which the excluded rectangle was, make this his direction
 					// outer.
 					neighborSides.add(side);
@@ -663,7 +758,8 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 			excluded.add(r);
 			content.remove(r);
 		} else {
-			throw new RuntimeException("No rectangle " + r + "present in system");
+			throw new RuntimeException(
+				"No rectangle " + r + "present in system");
 		}
 	}
 	/* ========== CHECKS ========== */
@@ -678,8 +774,9 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 		return outerSides.get(r).size() > 0;
 	}
 	/**
-	 * Checks if two RectangleAreas existing in this RectangleSystem can be
-	 * neighbors.
+	 * Checks if two {@link RectangleArea}s existing in this RectangleSystem
+	 * have exactly {@code borderWidth} cells between their closest sides. Such
+	 * rectangles are considered "neighbors" in this individual RectangleSystem.
 	 * 
 	 * @param r1
 	 * @param r2
@@ -687,7 +784,7 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 	 */
 	public boolean areRectanglesNear(Rectangle r1, Rectangle r2) {
 		if (r1.x + r1.width + borderWidth == r2.x || r2.x + r2.width + borderWidth == r1.x) {
-			// Rectangles share vertical line
+			// Rectangles share a vertical line
 			int a1 = r1.y;
 			int a2 = r1.y + r1.height - 1;
 			int b1 = r2.y;
@@ -699,7 +796,7 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 				return false;
 			}
 		} else if (r1.y + r1.height + borderWidth == r2.y || r2.y + r2.height + borderWidth == r1.y) {
-			// Rectangles share horizontal line
+			// Rectangles share a horizontal line
 			int a1 = r1.x;
 			int a2 = r1.x + r1.width - 1;
 			int b1 = r2.x;
@@ -740,12 +837,14 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 		 * Another graph that will contain the same vertices that this.graph,
 		 * but with single tree-form edges.
 		 */
-		SimpleGraph<RectangleArea, DefaultEdge> graph2 = new SimpleGraph<RectangleArea, DefaultEdge>(edgeFactory);
+		SimpleGraph<RectangleArea, DefaultEdge> graph2 = new SimpleGraph<RectangleArea, DefaultEdge>(
+			edgeFactory);
 		graph2.addVertex(rootVertex);
 		// Vertex set of the new graph
 		Set<RectangleArea> newVertexSet = graph2.vertexSet();
 		for (int i = 0, l = graph.vertexSet().size(); i < l; i++) {
-			loop: for (RectangleArea r : newVertexSet) {// Select a random
+			loop:
+			for (RectangleArea r : newVertexSet) {// Select a random
 				for (DefaultEdge e : graph.edgesOf(r)) {
 					RectangleArea r2 = graph.getEdgeTarget(e);
 					if (r2 == r) {
@@ -780,10 +879,13 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 	 */
 	public void convertDoubleEdgesToSingle() {
 		if (!isBuilt) {
-			throw new RuntimeException("RectangeSystem must be built in order to find rectangles at bounds");
+			throw new RuntimeException(
+				"RectangeSystem must be built in order to find rectangles at bounds");
 		}
 		for (DefaultEdge edge : graph.edgeSet()) {
-			if (graph.containsEdge(graph.getEdgeTarget(edge), graph.getEdgeSource(edge))) {
+			if (graph.containsEdge(
+				graph.getEdgeTarget(edge),
+				graph.getEdgeSource(edge))) {
 				graph.removeEdge(edge);
 			}
 		}
@@ -797,7 +899,8 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 	 */
 	public void findRectanglesAtBounds() {
 		if (!isBuilt) {
-			throw new RuntimeException("RectangeSystem must be built in order to find rectangles at bounds");
+			throw new RuntimeException(
+				"RectangeSystem must be built in order to find rectangles at bounds");
 		}
 		outerSides = new HashMap<RectangleArea, Set<CardinalDirection>>();
 		for (RectangleArea r : content) {
@@ -829,7 +932,8 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 	 */
 	public void findOuterRectangles() {
 		if (!isBuilt) {
-			throw new RuntimeException("RectangleArea must be built before calling this method");
+			throw new RuntimeException(
+				"RectangleArea must be built before calling this method");
 		}
 		outerSides = new HashMap<RectangleArea, Set<CardinalDirection>>();
 		for (RectangleArea r : content) {
@@ -857,7 +961,8 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 	 */
 	public void findRectanglesWithNoNeighbors() {
 		if (!isBuilt) {
-			throw new RuntimeException("RectangleArea must be build before calling this method");
+			throw new RuntimeException(
+				"RectangleArea must be build before calling this method");
 		}
 		outerSides = new HashMap<RectangleArea, Set<CardinalDirection>>();
 		for (RectangleArea r : graph.vertexSet()) {
@@ -884,7 +989,8 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 			for (int i = 0; i < 8; i += 2) {
 				// Looking for a saved direction under indexes 0, 2, 4 and 6.
 				if (occupiedSides[i] == null) {
-					outerSidesOfRec.add((CardinalDirection) Directions.intToDirection(i));
+					outerSidesOfRec.add((CardinalDirection) Directions
+						.intToDirection(i));
 				}
 			}
 			if (outerSidesOfRec.size() > 0) {
@@ -911,22 +1017,46 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 			// (sides considered not outer are definitely not outer)
 			Set<CardinalDirection> sides = outerSides.get(r);
 			if (sides.contains(CardinalDirection.N)) {
-				if (hasDiagonallyAdjacentNeighbor(r, Directions.NW, Orientation.HORIZONTAL) && hasDiagonallyAdjacentNeighbor(r, Directions.NE, Orientation.HORIZONTAL)) {
+				if (hasDiagonallyAdjacentNeighbor(
+					r,
+					Directions.NW,
+					Orientation.HORIZONTAL) && hasDiagonallyAdjacentNeighbor(
+					r,
+					Directions.NE,
+					Orientation.HORIZONTAL)) {
 					sides.remove(Directions.N);
 				}
 			}
 			if (sides.contains(Directions.S)) {
-				if (hasDiagonallyAdjacentNeighbor(r, Directions.SW, Orientation.HORIZONTAL) && hasDiagonallyAdjacentNeighbor(r, OrdinalDirection.SE, Orientation.HORIZONTAL)) {
+				if (hasDiagonallyAdjacentNeighbor(
+					r,
+					Directions.SW,
+					Orientation.HORIZONTAL) && hasDiagonallyAdjacentNeighbor(
+					r,
+					OrdinalDirection.SE,
+					Orientation.HORIZONTAL)) {
 					sides.remove(CardinalDirection.S);
 				}
 			}
 			if (sides.contains(CardinalDirection.W)) {
-				if (hasDiagonallyAdjacentNeighbor(r, OrdinalDirection.SW, Orientation.VERTICAL) && hasDiagonallyAdjacentNeighbor(r, OrdinalDirection.NW, Orientation.VERTICAL)) {
+				if (hasDiagonallyAdjacentNeighbor(
+					r,
+					OrdinalDirection.SW,
+					Orientation.VERTICAL) && hasDiagonallyAdjacentNeighbor(
+					r,
+					OrdinalDirection.NW,
+					Orientation.VERTICAL)) {
 					sides.remove(Directions.W);
 				}
 			}
 			if (sides.contains(Directions.E)) {
-				if (hasDiagonallyAdjacentNeighbor(r, Directions.NE, Orientation.VERTICAL) && hasDiagonallyAdjacentNeighbor(r, Directions.SE, Directions.V)) {
+				if (hasDiagonallyAdjacentNeighbor(
+					r,
+					Directions.NE,
+					Orientation.VERTICAL) && hasDiagonallyAdjacentNeighbor(
+					r,
+					Directions.SE,
+					Orientation.VERTICAL)) {
 					sides.remove(Directions.E);
 				}
 			}
@@ -1111,14 +1241,13 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 	 */
 	public void nibbleSystem(int depth, int chance) {
 		if (!isBuilt) {
-			throw new RuntimeException("RectangleSystem must be built before calling this method");
+			throw new RuntimeException(
+				"RectangleSystem must be built before calling this method");
 		}
-		int u = 0;
 		for (int k = 0; k < depth; k++) {
 			Set<RectangleArea> removedRectangles = new HashSet<RectangleArea>();
 			for (RectangleArea r : outerRectanglesSet()) {
 				if (Chance.roll(chance)) {
-					u++;
 					removedRectangles.add(r);
 				}
 			}
@@ -1173,12 +1302,13 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 	 * @return A new rectangle that was created by splitting the old one.
 	 */
 	public RectangleArea splitRectangle(RectangleArea r, Orientation orientation, int width, boolean reverseAreas) {
-		/* */// Optimize size() calls
+		// TODO: Optimize size() calls
 		if (width == 0) {
 			throw new IllegalArgumentException("Argument width can't be 0");
 		}
 		if (!hasRectangle(r)) {
-			throw new IllegalArgumentException("RectangleArea " + r + " doesn't exist in this RectangleSystem");
+			throw new IllegalArgumentException(
+				"RectangleArea " + r + " doesn't exist in this RectangleSystem");
 		}
 		boolean negativeWidth = width < 0;
 		if (orientation.isVertical()) {
@@ -1187,20 +1317,30 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 				// This will be the width of the old RectangleArea
 				width = r.width + width - borderWidth;
 			}
-			if (width > r.width - 2) {
-				throw new IllegalArgumentException("Width " + width + " in vertical splitting is too big");
+			if (width > r.width) {
+				throw new IllegalArgumentException(
+					"Width " + width + " in vertical splitting is too big");
 			}
 			if (width < 1) {
 				width = width + borderWidth - r.width;
-				throw new IllegalArgumentException("Width " + width + " in vertical splitting is too big");
+				throw new IllegalArgumentException(
+					"Width " + width + " in vertical splitting is too big");
 			}
 			int newStartX = r.x + width + borderWidth;
 			RectangleArea newRec;
 			if (reverseAreas) {
 				newRec = new RectangleArea(r.x, r.y, width, r.height);
-				r.setBounds(newStartX, r.y, r.width - width - borderWidth, r.height);
+				r.setBounds(
+					newStartX,
+					r.y,
+					r.width - width - borderWidth,
+					r.height);
 			} else {
-				newRec = new RectangleArea(newStartX, r.y, r.width - width - borderWidth, r.height);
+				newRec = new RectangleArea(
+					newStartX,
+					r.y,
+					r.width - width - borderWidth,
+					r.height);
 				r.setSize(width, r.height);
 			}
 			return addRectangleArea(newRec);
@@ -1210,12 +1350,14 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 				// This will be the width of the old RectangleArea
 				width = r.height + width - borderWidth;
 			}
-			if (width > r.height - 2) {
-				throw new IllegalArgumentException("Width " + width + " in horizontal splitting is too big");
+			if (width > r.height) {
+				throw new IllegalArgumentException(
+					"Width " + width + " in horizontal splitting is too big");
 			}
 			if (width < 1) {
 				width = width + borderWidth - r.height;
-				throw new IllegalArgumentException("Width " + width + " in horizontal splitting is too big");
+				throw new IllegalArgumentException(
+					"Width " + width + " in horizontal splitting is too big");
 			}
 			int newStartY = r.y + width + borderWidth;
 			RectangleArea newRec;
@@ -1223,9 +1365,17 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 			// is split vertically
 			if (reverseAreas) {
 				newRec = new RectangleArea(r.x, r.y, r.width, width);
-				r.setBounds(r.x, newStartY, r.width, r.height - width - borderWidth);
+				r.setBounds(
+					r.x,
+					newStartY,
+					r.width,
+					r.height - width - borderWidth);
 			} else {
-				newRec = new RectangleArea(r.x, newStartY, r.width, r.height - width - borderWidth);
+				newRec = new RectangleArea(
+					r.x,
+					newStartY,
+					r.width,
+					r.height - width - borderWidth);
 				r.setSize(r.width, width);
 			}
 			return addRectangleArea(newRec);
@@ -1234,16 +1384,33 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 	}
 	public RectangleArea cutRectangleFromSide(RectangleArea rectangleToCut, CardinalDirection side, int depth) {
 		if (depth < 1) {
-			throw new IllegalArgumentException("Depth must be 1 or greater; it is now " + depth);
+			throw new IllegalArgumentException(
+				"Depth must be 1 or greater; it is now " + depth);
 		}
 		if (side == CardinalDirection.N) {
-			return splitRectangle(rectangleToCut, Orientation.HORIZONTAL, depth, true);
+			return splitRectangle(
+				rectangleToCut,
+				Orientation.HORIZONTAL,
+				depth,
+				true);
 		} else if (side == CardinalDirection.E) {
-			return splitRectangle(rectangleToCut, Orientation.VERTICAL, -depth, false);
+			return splitRectangle(
+				rectangleToCut,
+				Orientation.VERTICAL,
+				-depth,
+				false);
 		} else if (side == CardinalDirection.S) {
-			return splitRectangle(rectangleToCut, Orientation.HORIZONTAL, -depth, false);
+			return splitRectangle(
+				rectangleToCut,
+				Orientation.HORIZONTAL,
+				-depth,
+				false);
 		} else if (side == CardinalDirection.W) {
-			return splitRectangle(rectangleToCut, Orientation.VERTICAL, depth, true);
+			return splitRectangle(
+				rectangleToCut,
+				Orientation.VERTICAL,
+				depth,
+				true);
 		} else {
 			throw new Error("Unknown direction " + side);
 		}
@@ -1259,7 +1426,8 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 	 */
 	public void expandRectanglesToBorder(int depth) {
 		if (borderWidth < depth * 2) {
-			throw new Error("border width " + borderWidth + " is too thin for expanding each rectangle by " + depth);
+			throw new Error(
+				"border width " + borderWidth + " is too thin for expanding each rectangle by " + depth);
 		}
 		for (Rectangle r : content) {
 			r.x -= depth;
@@ -1317,7 +1485,8 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 		@Override
 		public Iterator<RectangleArea> iterator() {
 			if (orderSet == false) {
-				throw new Error("You must first set this Iterable's type of order with a set* method");
+				throw new Error(
+					"You must first set this Iterable's type of order with a set* method");
 			}
 			return orderedRectangles.iterator();
 		}
@@ -1350,7 +1519,8 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 		}
 		public NeighboursIterable setRandomOrder() {
 			orderedRectangles.addAll(rs.getNeighbors(centralRectangle));
-			orderedRectangles.remove(orderedRectangles.indexOf(startingNeighbour));
+			orderedRectangles.remove(orderedRectangles
+				.indexOf(startingNeighbour));
 			Collections.shuffle(orderedRectangles);
 			return this;
 		}
@@ -1371,7 +1541,9 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 				if (r == startingNeighbour) {
 					startingNeighbourIndex = rectangles.size();
 				}
-				rectangles.add(new AngleRectanglePair(Math.atan2(r.getCenterY() - centerY, r.getCenterX() - centerX), r));
+				rectangles.add(new AngleRectanglePair(Math.atan2(
+					r.getCenterY() - centerY,
+					r.getCenterX() - centerX), r));
 			}
 			Collections.sort(rectangles, new Comparator<AngleRectanglePair>() {
 				// Sort collection by angle value
@@ -1401,7 +1573,8 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 			return this;
 		}
 		public NeighboursIterable setRandomStartingNeighbour() {
-			startingNeighbour = Utils.getRandomElement(rs.getNeighbors(centralRectangle));
+			startingNeighbour = Utils.getRandomElement(rs
+				.getNeighbors(centralRectangle));
 			return this;
 		}
 

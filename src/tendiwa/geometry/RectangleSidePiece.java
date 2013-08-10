@@ -30,9 +30,11 @@ public class RectangleSidePiece {
 
 	public RectangleSidePiece(CardinalDirection side, int x, int y, int length) {
 		Orientation orientation = side.getOrientation().reverted();
-		line = new IntercellularLine(
-			orientation,
-			orientation.isVertical() ? x : y);
+		int constantCoord = orientation.isVertical() ? x : y;
+		if (side == Directions.S || side == Directions.E) {
+			constantCoord++;
+		}
+		line = new IntercellularLine(orientation, constantCoord);
 		segment = new Segment(x, y, length, orientation);
 		this.direction = side;
 	}
@@ -83,6 +85,7 @@ public class RectangleSidePiece {
 	 * @return
 	 */
 	ImmutableCollection<RectangleSidePiece> cutWithRange(Range cutterRange) {
+		assert cutterRange != null;
 		Builder<RectangleSidePiece> builder = ImmutableSet
 			.<RectangleSidePiece> builder();
 		int cutteeStart = segment.getStartCoord();
@@ -115,7 +118,13 @@ public class RectangleSidePiece {
 	public String toString() {
 		return direction + "-" + segment.length + "@" + hashCode();
 	}
+	/**
+	 * 
+	 * @param splitter
+	 * @return An array of 2 elements.
+	 */
 	RectangleSidePiece[] splitWithPiece(RectangleSidePiece splitter) {
+		assert splitter != null;
 		Segment[] newSegments = segment.splitWithSegment(
 			splitter.segment.getStartCoord(),
 			splitter.segment.length);
@@ -145,13 +154,20 @@ public class RectangleSidePiece {
 		return answer;
 	}
 	/**
-	 * Creates a rectangle out of this RectangleSidePiece such that this piece
+	 * Creates a rectangle out of this RectangleSidePiece, such that this piece
 	 * forms one side of a Rectangle, and another dimension of the Rectangle is
 	 * defined by an argument.
 	 * 
-	 * @return
+	 * @return a new rectangle.
+	 * @throws IllegalArgumentException
+	 *             if {@code anotherDimensionLength} is less than or equal to
+	 *             zero.
 	 */
 	public EnhancedRectangle createRectangle(int anotherDimensionLength) {
+		if (anotherDimensionLength <= 0) {
+			throw new IllegalArgumentException(
+				"anotherDimensionLength must be greater than 0, but it is " + anotherDimensionLength);
+		}
 		Point startPoint = segment.getEndPoint(isVertical() ? N : W);
 		OrdinalDirection growDirection;
 		switch (direction) {
@@ -165,10 +181,9 @@ public class RectangleSidePiece {
 			default:
 				growDirection = SE;
 		}
-		System.out.println("growing to "+growDirection);
 		int width, height;
 		if (isVertical()) {
-			width =anotherDimensionLength;
+			width = anotherDimensionLength;
 			height = segment.length;
 		} else {
 			width = segment.length;
@@ -180,6 +195,16 @@ public class RectangleSidePiece {
 			growDirection,
 			width,
 			height);
+	}
+	boolean contains(RectangleSidePiece piece) {
+		assert piece.line.equals(line);
+		assert piece.direction == direction;
+		int thisStartCoord = segment.getStartCoord();
+		int pieceStartCoord = piece.segment.getStartCoord();
+		return new Range(thisStartCoord, thisStartCoord + segment.length)
+			.contains(new Range(
+				pieceStartCoord,
+				pieceStartCoord + piece.segment.length));
 	}
 
 }

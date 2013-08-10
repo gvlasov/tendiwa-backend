@@ -7,7 +7,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 
-public class ItemType extends UniqueObject implements GsonForStaticDataSerializable {
+public class ItemType implements GsonForStaticDataSerializable {
+	private final UniqueObject uniqueness = new UniqueObject();
 	private final String name;
 	private final double weight;
 	private final double volume;
@@ -71,4 +72,7 @@ public class ItemType extends UniqueObject implements GsonForStaticDataSerializa
 		return jArray;
 	}
 	
+	public int getId() {
+		return uniqueness.id;
+	}
 }

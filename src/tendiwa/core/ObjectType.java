@@ -10,7 +10,8 @@ import com.google.gson.JsonSerializationContext;
  * Describes a certain type of inanimate objects that are large enough to be
  * treated as {@link Item}s: trees, furniture, wall segments
  */
-public class ObjectType extends UniqueObject implements GsonForStaticDataSerializable {
+public class ObjectType implements GsonForStaticDataSerializable {
+	private final UniqueObject uniqueness = new UniqueObject();
 	public static final int CLASS_DEFAULT = 0;
 	public static final int CLASS_WALL = 1;
 	public static final int CLASS_DOOR = 2;
@@ -43,6 +44,9 @@ public class ObjectType extends UniqueObject implements GsonForStaticDataSeriali
 	public String getName() {
 		return name;
 	}
+	public int getId() {
+		return uniqueness.id;
+	}
 
 	@Override
 	public JsonElement serialize(JsonSerializationContext context) {
@@ -51,5 +55,4 @@ public class ObjectType extends UniqueObject implements GsonForStaticDataSeriali
 		jArray.add(new JsonPrimitive(passability));
 		return jArray;
 	}
-
 }

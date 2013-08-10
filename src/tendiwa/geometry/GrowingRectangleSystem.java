@@ -2,17 +2,13 @@ package tendiwa.geometry;
 
 import java.awt.Rectangle;
 
-import tendiwa.core.meta.Chance;
-import tendiwa.core.meta.Range;
-
-
 /**
- * A RectangleSystem that is constructed by setting an "initial" rectangle and 
- * then adding new rectangles adjacent to first the existing one, and later to 
+ * A RectangleSystem that is constructed by setting an "initial" rectangle and
+ * then adding new rectangles adjacent to first the existing one, and later to
  * the "grown" ones.
  * 
  * @author suseika
- *
+ * 
  */
 public class GrowingRectangleSystem extends RectangleSystem {
 
@@ -49,23 +45,23 @@ public class GrowingRectangleSystem extends RectangleSystem {
 		int startX = 0;
 		int startY = 0;
 		switch (side) {
-		case N:
-			startX = r.x + offset;
-			startY = r.y - borderWidth - height;
-			break;
-		case E:
-			startX = r.x + r.width + borderWidth;
-			startY = r.y + offset;
-			break;
-		case S:
-			startX = r.x + offset;
-			startY = r.y + r.height + borderWidth;
-			break;
-		case W:
-		default:
-			startX = r.x - borderWidth - width;
-			startY = r.y + offset;
-			break;
+			case N:
+				startX = r.x + offset;
+				startY = r.y - borderWidth - height;
+				break;
+			case E:
+				startX = r.x + r.width + borderWidth;
+				startY = r.y + offset;
+				break;
+			case S:
+				startX = r.x + offset;
+				startY = r.y + r.height + borderWidth;
+				break;
+			case W:
+			default:
+				startX = r.x - borderWidth - width;
+				startY = r.y + offset;
+				break;
 		}
 		return new RectangleArea(startX, startY, width, height);
 	}

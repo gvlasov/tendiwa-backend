@@ -13,7 +13,8 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 
 
-public abstract class Character extends UniqueObject implements GsonForStaticDataSerializable {
+public abstract class Character implements GsonForStaticDataSerializable {
+	public final int id = new UniqueObject().id;
 	public static final long serialVersionUID = 1832389411;
 	public final static int FRACTION_NEUTRAL = -1, FRACTION_PLAYER = 1,
 			FRACTION_AGRESSIVE = 0;
@@ -104,7 +105,7 @@ public abstract class Character extends UniqueObject implements GsonForStaticDat
 		if (!omitEvent) {
 			// Sending for mobs. Sending for players is in
 			// PlayerCharacter.putOn()
-			timeStream.addEvent(ServerEvents.create("putOn", "["+id+","+item.getId()+"]"));
+			timeStream.addEvent(ServerEvents.create("putOn", "["+id+","+item.id+"]"));
 		}
 		moveTime(500);
 	}
@@ -112,7 +113,7 @@ public abstract class Character extends UniqueObject implements GsonForStaticDat
 	protected void takeOff(UniqueItem item) {
 		body.takeOff(item);
 		inventory.add(item);
-		getTimeStream().addEvent(ServerEvents.create("takeOff", "["+id+","+item.getId()+"]"));
+		getTimeStream().addEvent(ServerEvents.create("takeOff", "["+id+","+item.id+"]"));
 		moveTime(500);
 	}
 	/**
@@ -128,7 +129,7 @@ public abstract class Character extends UniqueObject implements GsonForStaticDat
 	 * Pick up an item lying on the same cell where the character stands.
 	 */
 	protected void pickUp(UniqueItem item) {
-		timeStream.addEvent(ServerEvents.create("pickUp", "["+id+","+item.getType().getId()+","+item.getId()+"]"));
+		timeStream.addEvent(ServerEvents.create("pickUp", "["+id+","+item.getType().getId()+","+item.id+"]"));
 		getItem(item);
 		Chunk chunk = plane.getChunkWithCell(x, y);
 		chunk.removeItem(item, x - chunk.getX(), y - chunk.getY());
@@ -139,7 +140,7 @@ public abstract class Character extends UniqueObject implements GsonForStaticDat
 		loseItem(item);
 		Chunk chunk = plane.getChunkWithCell(x, y);
 		chunk.addItem(item, x - chunk.getX(), y - chunk.getY());
-		timeStream.addEvent(ServerEvents.create("drop", "["+id+","+item.getType().getId()+","+item.getId()+"]"));
+		timeStream.addEvent(ServerEvents.create("drop", "["+id+","+item.getType().getId()+","+item.id+"]"));
 		moveTime(500);
 	}
 
@@ -161,7 +162,7 @@ public abstract class Character extends UniqueObject implements GsonForStaticDat
 	protected void takeFromContainer(UniqueItem item, Container container) {
 		getItem(item);
 		container.removeUnique(item);
-		timeStream.addEvent(ServerEvents.create("takeFromContainer", "["+id+","+item.getType().getId()+","+item.getId()+","+x+","+y+"]"));
+		timeStream.addEvent(ServerEvents.create("takeFromContainer", "["+id+","+item.getType().getId()+","+item.id+","+x+","+y+"]"));
 		moveTime(500);
 	}
 
@@ -175,7 +176,7 @@ public abstract class Character extends UniqueObject implements GsonForStaticDat
 	protected void putToContainer(UniqueItem item, Container container) {
 		loseItem(item);
 		container.add(item);
-		timeStream.addEvent(ServerEvents.create("putToContainer", "["+id+","+item.getType().getId()+","+item.getId()+","+x+","+y+"]"));
+		timeStream.addEvent(ServerEvents.create("putToContainer", "["+id+","+item.getType().getId()+","+item.id+","+x+","+y+"]"));
 		moveTime(500);
 	}
 
@@ -659,7 +660,7 @@ public abstract class Character extends UniqueObject implements GsonForStaticDat
 
 	public void getItem(UniqueItem item) {
 		inventory.add(item);
-		timeStream.addEvent(ServerEvents.create("getItem", "["+id+","+item.getType().getId()+","+item.getId()+"]"));
+		timeStream.addEvent(ServerEvents.create("getItem", "["+id+","+item.getType().getId()+","+item.id+"]"));
 	}
 
 	public void eventlessGetItem(UniqueItem item) {
@@ -676,12 +677,12 @@ public abstract class Character extends UniqueObject implements GsonForStaticDat
 	}
 
 	public void loseItem(UniqueItem item) {
-		if (inventory.hasUnique(item.getId())) {
+		if (inventory.hasUnique(item.id)) {
 			inventory.removeUnique(item);
-			timeStream.addEvent(ServerEvents.create("loseItem", "["+id+","+item.getType().getId()+","+item.getId()+"]"));
+			timeStream.addEvent(ServerEvents.create("loseItem", "["+id+","+item.getType().getId()+","+item.id+"]"));
 		} else {
 			throw new Error("An attempt to lose an item width id "
-					+ item.getId()
+					+ item.id
 					+ " that is neither in inventory nor in equipment");
 		}
 	}

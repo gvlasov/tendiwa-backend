@@ -2,11 +2,11 @@ package tests.examples;
 
 import org.junit.Test;
 
-import painting.StdTerrainViewer;
 import tendiwa.buildings.House;
 import tendiwa.core.HorizontalPlane;
 import tendiwa.core.Location;
 import tendiwa.core.terrain.settlements.BuildingPlace;
+import tendiwa.drawing.StdTerrainViewer;
 import tendiwa.geometry.Directions;
 import tendiwa.locationtypes.Forest;
 

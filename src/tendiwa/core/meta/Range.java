@@ -1,10 +1,28 @@
 package tendiwa.core.meta;
 
+/**
+ * Represents a set of all integers between some minimum and maximum values
+ * inclusive.
+ * 
+ * @author suseika
+ * 
+ */
 public class Range {
 	public final int min;
 	public final int max;
 
+	/**
+	 * Creates a new range defined by minimum and maximum value
+	 * 
+	 * @param min
+	 * @param max
+	 * @throws IllegalArgumentException
+	 *             if min > max
+	 */
 	public Range(int min, int max) {
+		if (min > max) {
+			throw new IllegalArgumentException("min must be <= max");
+		}
 		this.min = min;
 		this.max = max;
 	}
@@ -121,6 +139,15 @@ public class Range {
 	public int getLength() {
 		return max - min + 1;
 
+	}
+	/**
+	 * Checks if all values from {@code range} and inside this Range.
+	 * 
+	 * @param range
+	 * @return
+	 */
+	public boolean contains(Range range) {
+		return range.min >= min && range.max <= max;
 	}
 
 }

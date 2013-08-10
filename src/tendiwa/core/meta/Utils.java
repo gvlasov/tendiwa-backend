@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -95,11 +96,11 @@ public class Utils {
 		// numbers: [5,6,7,8,9,10,11]
 		return Math.max(a2, b2) - Math.min(a1, b1) - Math.abs(a1 - b1) - Math.abs(a2 - b2) + 1;
 	}
-	public static <T> T getRandomElement(ArrayList<T> list) {
-		return list.get(Chance.rand(list.size() - 1));
+	public static <T> T getRandomElement(List<T> list) {
+		return list.get(new Random().nextInt(list.size()));
 	}
 	public static <T> T getRandomElement(Set<T> set) {
-		ArrayList<T> list = new ArrayList<T>(set);
+		List<T> list = new ArrayList<T>(set);
 		return getRandomElement(list);
 	}
 	/**

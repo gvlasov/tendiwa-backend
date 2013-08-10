@@ -6,10 +6,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 
-public class FloorType extends UniqueObject implements GsonForStaticDataSerializable {
-	private String name;
+public final class FloorType implements GsonForStaticDataSerializable {
+	private final String name;
+	private final UniqueObject uniqueness;
 	FloorType(String name) {
-		super();
+		uniqueness = new UniqueObject();
 		this.name = name;
 	}
 	@Override
@@ -20,6 +21,9 @@ public class FloorType extends UniqueObject implements GsonForStaticDataSerializ
 	}
 	public String getName() {
 		return name;
+	}
+	public int getId() {
+		return uniqueness.id;
 	}
 	
 }

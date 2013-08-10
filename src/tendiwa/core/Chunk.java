@@ -147,7 +147,7 @@ public class Chunk extends TerrainBasics implements
 	 */
 	public void addItem(UniqueItem item, int x, int y) {
 		super.addItem(item, x, y);
-		timeStream.addEvent(ServerEvents.create("itemAppear", "[" + item.getType().getId() + "," + item.getId() + "," + (this.x + x) + "," + (this.y + y) + "]"));
+		timeStream.addEvent(ServerEvents.create("itemAppear", "[" + item.getType().getId() + "," + item.id + "," + (this.x + x) + "," + (this.y + y) + "]"));
 	}
 	/**
 	 * Places an ItemPile on a certain cell in this Chunk.
@@ -167,7 +167,7 @@ public class Chunk extends TerrainBasics implements
 	}
 	public void removeItem(UniqueItem item, int x, int y) {
 		super.removeItem(item, x, y);
-		timeStream.addEvent(ServerEvents.create("itemDisappear", "[" + item.getType().getId() + "," + item.getId() + "," + (this.x + x) + "," + (this.y + y) + "]"));
+		timeStream.addEvent(ServerEvents.create("itemDisappear", "[" + item.getType().getId() + "," + item.id + "," + (this.x + x) + "," + (this.y + y) + "]"));
 	}
 	void setCharacter(int x, int y, int characterTypeId, int fraction) {
 		createCharacter(x, y, characterTypeId, "", 0);

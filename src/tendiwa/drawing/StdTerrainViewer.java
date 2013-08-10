@@ -1,4 +1,4 @@
-package painting;
+package tendiwa.drawing;
 
 import java.util.HashSet;
 import java.util.Set;

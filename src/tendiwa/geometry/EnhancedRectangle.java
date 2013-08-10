@@ -430,11 +430,7 @@ public class EnhancedRectangle extends Rectangle {
 		// TODO: Duplicate?
 		switch (side) {
 			case N:
-				return new RectangleSidePiece(
-					CardinalDirection.N,
-					x,
-					y,
-					width);
+				return new RectangleSidePiece(CardinalDirection.N, x, y, width);
 			case E:
 				return new RectangleSidePiece(
 					CardinalDirection.E,
@@ -448,11 +444,7 @@ public class EnhancedRectangle extends Rectangle {
 					y + height,
 					width);
 			case W:
-				return new RectangleSidePiece(
-					CardinalDirection.W,
-					x,
-					y,
-					height);
+				return new RectangleSidePiece(CardinalDirection.W, x, y, height);
 			default:
 				throw new IllegalArgumentException();
 		}
@@ -492,5 +484,28 @@ public class EnhancedRectangle extends Rectangle {
 				length = this.height;
 		}
 		return new RectangleSidePiece(side, x, y, length);
+	}
+	/**
+	 * Creates a new {@link EnhancedRectangle} relative to an already existing
+	 * {@link Rectangle}.
+	 * 
+	 * @param r
+	 *            an already existing rectangle.
+	 * @param dx
+	 *            how far will the new rectangle be shifted by x-axis from the
+	 *            original one.
+	 * @param dy
+	 *            how far will the new rectangle be shifted by x-axis from the
+	 *            original one.
+	 * 
+	 * @return a new {@link EnhancedRectangle} with width and height equal to
+	 *         {@code r}'s.
+	 */
+	public static EnhancedRectangle rectangleMovedFromOriginal(Rectangle r, int dx, int dy) {
+		if (r == null) {
+			throw new NullPointerException();
+		}
+		return new EnhancedRectangle(r.x + dx, r.y + dy, r.width, r.height);
+
 	}
 }

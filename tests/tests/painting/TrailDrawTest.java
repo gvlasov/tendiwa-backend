@@ -2,15 +2,14 @@ package tests.painting;
 
 import java.awt.Rectangle;
 
-import painting.TestCanvas;
+import tendiwa.drawing.TestCanvas;
 import tendiwa.geometry.GrowingRectangleSystem;
 import tendiwa.geometry.RectangleSystem;
 
-public class TrailDrawTest extends TestCanvas {
+public class TrailDrawTest {
 public static void main(String[] args) {
-	visualize();
-}
-public void paint() {
+	TestCanvas canvas = new TestCanvas();
 	RectangleSystem rs = new GrowingRectangleSystem(0, new Rectangle(40, 50));
+	canvas.draw(rs);
 }
 }

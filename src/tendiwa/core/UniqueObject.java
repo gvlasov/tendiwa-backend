@@ -4,7 +4,7 @@ package tendiwa.core;
  * Manages ids of objects and makes sure that none of two objects inheriting
  * from UniqueObject have the same id.
  */
-public class UniqueObject {
+public final class UniqueObject {
 	private static int lastId = 0;
 	public final int id;
 
@@ -12,10 +12,10 @@ public class UniqueObject {
 		id = ++lastId;
 	}
 
-	public int getId() {
+	public final int getId() {
 		return id;
 	}
-	public int hashCode() {
+	public final int hashCode() {
 		return id;
 	}
 }

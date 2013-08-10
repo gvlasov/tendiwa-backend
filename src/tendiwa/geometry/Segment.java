@@ -1,6 +1,5 @@
 package tendiwa.geometry;
 
-import java.awt.Point;
 import java.util.Iterator;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -85,7 +84,9 @@ public class Segment implements Iterable<EnhancedPoint> {
 			// If splitting segment doesn't intersect with this segment, return
 			// this segment
 			if (splitterStartCoord > x + length - 1 || splitterStartCoord + splitterLength < x) {
-				return new Segment[] { this, null };
+				return new Segment[] {
+					this, null
+				};
 			}
 			// A Segment before the splitting segment
 			if (x < splitterStartCoord && splitterStartCoord < x + length) {
@@ -105,7 +106,9 @@ public class Segment implements Iterable<EnhancedPoint> {
 			// this
 			// segment
 			if (splitterStartCoord > y + length - 1 || splitterStartCoord + splitterLength < y) {
-				return new Segment[] { this, null };
+				return new Segment[] {
+					this, null
+				};
 			}
 			// A Segment before the splitting segment
 			if (y < splitterStartCoord && splitterStartCoord < y + length) {
@@ -121,7 +124,9 @@ public class Segment implements Iterable<EnhancedPoint> {
 			}
 			// If none of ifs are true, s1 and s2 remain null
 		}
-		return new Segment[] { s1, s2 };
+		return new Segment[] {
+			s1, s2
+		};
 	}
 	public Segment clone() {
 		return new Segment(x, y, length, orientation);
@@ -185,18 +190,18 @@ public class Segment implements Iterable<EnhancedPoint> {
 			return x + length - 1;
 		}
 	}
-	public Point getEndPoint(CardinalDirection direction) {
+	public EnhancedPoint getEndPoint(CardinalDirection direction) {
 		if (orientation == Orientation.VERTICAL) {
 			if (direction == Directions.N) {
-				return new Point(x, y);
+				return new EnhancedPoint(x, y);
 			} else if (direction == Directions.S) {
-				return new Point(x, y + length - 1);
+				return new EnhancedPoint(x, y + length - 1);
 			}
 		} else {
 			if (direction == Directions.W) {
-				return new Point(x, y);
+				return new EnhancedPoint(x, y);
 			} else if (direction == Directions.E) {
-				return new Point(x + length - 1, y);
+				return new EnhancedPoint(x + length - 1, y);
 			}
 		}
 		throw new IllegalArgumentException(
@@ -207,7 +212,8 @@ public class Segment implements Iterable<EnhancedPoint> {
 		return new Iterator<EnhancedPoint>() {
 			final int staticCoord = orientation.isVertical() ? x : y;
 			int dynamicCoord = orientation.isVertical() ? y : x;
-			final int endDynamicCoord = dynamicCoord+length-1;
+			final int endDynamicCoord = dynamicCoord + length - 1;
+
 			@Override
 			public boolean hasNext() {
 				return dynamicCoord <= endDynamicCoord;
@@ -215,7 +221,10 @@ public class Segment implements Iterable<EnhancedPoint> {
 
 			@Override
 			public EnhancedPoint next() {
-				return EnhancedPoint.fromStaticAndDynamic(staticCoord, dynamicCoord++, orientation);
+				return EnhancedPoint.fromStaticAndDynamic(
+					staticCoord,
+					dynamicCoord++,
+					orientation);
 			}
 
 			@Override

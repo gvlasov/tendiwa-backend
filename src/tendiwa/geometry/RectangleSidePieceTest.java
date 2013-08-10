@@ -2,6 +2,7 @@ package tendiwa.geometry;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static tendiwa.geometry.Directions.CARDINAL_DIRECTIONS;
 import static tendiwa.geometry.Directions.E;
 import static tendiwa.geometry.Directions.W;
@@ -14,27 +15,6 @@ import java.util.TreeSet;
 import org.junit.Test;
 
 public class RectangleSidePieceTest {
-	private final Comparator<RectangleSidePiece> PIECES_COMPARATOR = new Comparator<RectangleSidePiece>() {
-		@Override
-		public int compare(RectangleSidePiece piece1, RectangleSidePiece piece2) {
-			// TODO: Remove after debugging
-			if (piece1.direction != piece2.direction) {
-				throw new Error("Comparing pieces with different directions");
-			}
-			switch (piece1.direction) {
-				case N:
-					return -(piece1.segment.y - piece2.segment.y);
-				case E:
-					return piece1.segment.x - piece2.segment.x;
-				case S:
-					return piece1.segment.y - piece2.segment.y;
-				case W:
-				default:
-					return -(piece1.segment.x - piece2.segment.x);
-			}
-		}
-	};
-
 	@Test
 	public void testStaticCoordinateInsideAndOutside() {
 		RectangleArea r = new RectangleArea(5, 8, 5, 5);
@@ -50,24 +30,19 @@ public class RectangleSidePieceTest {
 	}
 
 	@Test
-	public void testCollections() {
-		TreeSet<RectangleSidePiece> set = new TreeSet<RectangleSidePiece>(
-			PIECES_COMPARATOR);
-		RectangleArea r1 = new RectangleArea(0, 0, 3, 4);
-		RectangleArea r2 = new RectangleArea(4, 0, 3, 4);
-		RectangleSidePiece piece = r1.getSideAsSidePiece(Directions.S);
-		RectangleSidePiece piece2 = r2.getSideAsSidePiece(Directions.S);
-		set.add(piece);
-		assertFalse(piece.equals(piece2));
-		assertFalse(set.contains(piece2));
+	public void touches() {
+		EnhancedRectangle r1 = new RectangleArea(4, 5, 5, 5);
+		EnhancedRectangle r2 = r1
+			.getSideAsSidePiece(Directions.E)
+			.createRectangle(5);
+		assertTrue(r1.touches(r2.getSideAsSidePiece(Directions.W)));
 	}
-	@Test
-	public void testCreateRectangle() {
-		RectangleArea r = new RectangleArea(5, 6, 7, 8);
-		for (CardinalDirection dir : CARDINAL_DIRECTIONS) {
-			System.out.println("Testing "+dir);
-			RectangleSidePiece piece = r.getSideAsSidePiece(dir);
-			assertEquals(new Rectangle(r), new Rectangle(piece.createRectangle(piece.isVertical() ? r.width : r.height)));
-		}
+	@Test public void contains() {
+		RectangleSidePiece bigPiece = new RectangleSidePiece(Directions.N, 5, 9, 17);
+		RectangleSidePiece smallerPiece = new RectangleSidePiece(Directions.N, 12, 9, 10);
+		RectangleSidePiece wrongPiece = new RectangleSidePiece(Directions.N, 4, 9, 3);
+		assertTrue(bigPiece.contains(smallerPiece));
+		assertFalse(bigPiece.contains(wrongPiece));
+		assertTrue(wrongPiece.contains(wrongPiece));
 	}
 }

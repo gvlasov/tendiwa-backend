@@ -6,7 +6,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 
-public class Material extends UniqueObject implements GsonForStaticDataSerializable {
+public class Material implements GsonForStaticDataSerializable {
+	private UniqueObject uniqueness = new UniqueObject();
 	private int durability;
 	private int density;
 	private String name;
@@ -27,6 +28,9 @@ public class Material extends UniqueObject implements GsonForStaticDataSerializa
 	}
 	public int getDensity() {
 		return density;
+	}
+	public int getId() {
+		return uniqueness.id;
 	}
 	@Override
 	public JsonElement serialize(JsonSerializationContext context) {

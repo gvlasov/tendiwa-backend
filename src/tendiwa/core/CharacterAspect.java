@@ -13,7 +13,8 @@ import com.google.gson.JsonSerializationContext;
  * string and a generated integer.
  *
  */
-public class CharacterAspect extends UniqueObject implements GsonForStaticDataSerializable {
+public class CharacterAspect implements GsonForStaticDataSerializable {
+	final int id = new UniqueObject().id;
 	private static final HashMap<String, CharacterAspect> aspects = new HashMap<String, CharacterAspect>();
 	private final String name;
 	static {

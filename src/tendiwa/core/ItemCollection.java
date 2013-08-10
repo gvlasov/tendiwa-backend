@@ -23,7 +23,7 @@ public class ItemCollection implements GsonForStaticDataSerializable {
 	}
 
 	public void add(UniqueItem item) {
-		uniqueItems.put(item.getId(), item);
+		uniqueItems.put(item.id, item);
 	}
 
 	public void add(int typeId, int amount) {
@@ -57,7 +57,7 @@ public class ItemCollection implements GsonForStaticDataSerializable {
 	}
 
 	public void removeUnique(UniqueItem item) {
-		uniqueItems.remove(item.getId());
+		uniqueItems.remove(item.id);
 	}
 
 	public boolean hasUnique(int itemId) {

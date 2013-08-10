@@ -4,9 +4,9 @@ import java.awt.Point;
 
 import org.junit.Test;
 
-import painting.TestCanvas;
 
 import tendiwa.core.meta.Range;
+import tendiwa.drawing.TestCanvas;
 import tendiwa.geometry.RectangleSystem;
 import tendiwa.geometry.FuckingTrailRectangleSystem;
 

@@ -10,8 +10,9 @@ import com.google.gson.JsonSerializationContext;
  * A single non-stackable item. Its main property is its id inherited from
  * {@link UniqueObject}. Unlike {@link ItemPile}s, UniqueObjects are unique -  
  */
-public class UniqueItem extends UniqueObject implements Item, GsonForStaticDataSerializable {
+public class UniqueItem implements Item, GsonForStaticDataSerializable {
 	private ItemType type;
+	final int id = new UniqueObject().id;
 
 	public UniqueItem(int typeId) {
 		super();

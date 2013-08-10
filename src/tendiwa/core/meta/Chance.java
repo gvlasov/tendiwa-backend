@@ -1,18 +1,28 @@
 package tendiwa.core.meta;
 
+/**
+ * An object used to return true with particular probability. For example,
+ * {@code new Chance(30).roll()} will return {@core true} with 30% chance.
+ */
 public class Chance {
-	/**
-	 * An object used to return true with particular probability. For example,
-	 * new Chance(30).roll() will return true with 30 percent probability.
-	 */
 	private final int value;
 
+	/**
+	 * 
+	 * @param val
+	 *            A chance to return true.
+	 * @throws IllegalArgumentException
+	 *             if {@literal value < 0}.
+	 */
 	public Chance(int val) {
+		if (val < 0) {
+			throw new IllegalArgumentException();
+		}
 		value = val;
 	}
 
 	/**
-	 * Get true of false.
+	 * Get true of false with a chance defined by constructor.
 	 * 
 	 * @return true with probability this.value%
 	 */
@@ -26,39 +36,42 @@ public class Chance {
 
 	/**
 	 * Returns a random int from between two ints inclusive.
-	 * @param a
-	 *            min value
-	 * @param b
+	 * 
+	 * @param min
+	 *            min value <= max
+	 * @param man
 	 *            max value
-	 * @return true with probability this.value%
+	 * @return true with probability {@code this.value}
+	 * @throws IllegalArgumentException
+	 *             if min is lesser or equal to max.
 	 */
-	public static int rand(int a, int b) {
-		if (a > b) {
-			throw new IllegalArgumentException();
+	public static int rand(int min, int max) {
+		if (min > max) {
+			throw new IllegalArgumentException(
+				"min ("+min+") must be lesser or equal to max ("+max+")");
 		}
-		return Math.min(a, b) + (int) Math.round(Math.random() * Math.abs(b - a));
+		return Math.min(min, max) + (int) Math.round(Math.random() * Math
+			.abs(max - min));
 	}
 	public static int rand(Range range) {
 		return rand(range.min, range.max);
 	}
 	/**
 	 * Returns a random long from between two longs inclusive.
-	 * @param a
+	 * 
+	 * @param min
 	 *            min value
-	 * @param b
+	 * @param max
 	 *            max value
 	 * @return true with probability this.value%
+	 * @throws IllegalArgumentException
+	 *             if min is lesser or equal to max.
 	 */
-	public static long rand(long a, long b) {
-		return Math.min(a, b) + (long) Math.round(Math.random() * Math.abs(b - a));
-	}
-
-	/**
-	 * Returns an integer from 0 to max inclusive
-	 * @param max
-	 * @return
-	 */
-	public static int rand(int max) {
-		return 0;
+	public static long rand(long min, long max) {
+		if (min > max) {
+			throw new IllegalArgumentException(
+				"min must be lesser or equal to max");
+		}
+		return min + (long) Math.round(Math.random() * Math.abs(max - min));
 	}
 }
