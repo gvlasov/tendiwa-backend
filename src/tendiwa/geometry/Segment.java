@@ -1,8 +1,10 @@
 package tendiwa.geometry;
 
+import java.awt.Rectangle;
 import java.util.Iterator;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import tendiwa.core.meta.Range;
 
 /**
  * A Segment is a horizontal or vertical line starting at point {x;y} %length%
@@ -233,5 +235,16 @@ public class Segment implements Iterable<EnhancedPoint> {
 			}
 
 		};
+	}
+	/**
+	 * Returns a new {@link Range} object from this segment's start dynamic
+	 * coord to its end dynamic coord.
+	 * 
+	 * @return
+	 * @see Segment#getStartCoord()
+	 * @see Segment#getEndCoord()
+	 */
+	public Range asRange() {
+		return new Range(getStartCoord(), getEndCoord());
 	}
 }

@@ -41,6 +41,22 @@ public class GrowingRectangleSystem extends RectangleSystem {
 	public void grow(Rectangle r, CardinalDirection side, int width, int height, int offset) {
 		addRectangleArea(create(r, side, width, height, offset));
 	}
+	/**
+	 * Creates, but doesn't place a new rectangle from a side of an existing
+	 * rectangle.
+	 * 
+	 * @param r
+	 *            Rectangle from whose side a new rectangle will be created.
+	 * @param side
+	 *            Side of rectangle {@code r} on which a new rectangle will be
+	 *            created.
+	 * @param width
+	 *            Width of a new rectangle.
+	 * @param height
+	 *            Height of a new rectangle.
+	 * @param offset
+	 * @return New rectangle.
+	 */
 	protected RectangleArea create(Rectangle r, CardinalDirection side, int width, int height, int offset) {
 		int startX = 0;
 		int startY = 0;

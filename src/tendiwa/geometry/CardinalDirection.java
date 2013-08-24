@@ -141,14 +141,22 @@ public enum CardinalDirection implements Direction {
 	public int[] side2d() {
 		switch (this) {
 			case N:
-				return new int[] { 0, -1 };
+				return new int[] {
+					0, -1
+				};
 			case E:
-				return new int[] { 1, 0 };
+				return new int[] {
+					1, 0
+				};
 			case S:
-				return new int[] { 0, 1 };
+				return new int[] {
+					0, 1
+				};
 			case W:
 			default:
-				return new int[] { -1, 0 };
+				return new int[] {
+					-1, 0
+				};
 		}
 	}
 	public boolean isOpposite(Direction direction) {
@@ -186,6 +194,45 @@ public enum CardinalDirection implements Direction {
 			default:
 				return false;
 
+		}
+	}
+
+	@Override
+	public boolean isPerpendicular(Direction direction) {
+		if (this == N || this == S) {
+			if (direction == E || direction == W) {
+				return true;
+			}
+			return false;
+		} else {
+			assert this == E || this == W;
+			if (direction == N || direction == S) {
+				return true;
+			}
+			return false;
+		}
+	}
+
+	/**
+	 * Returns 1 if going this direction increases coordinate, or -1 if going
+	 * this direction decreases coordinate.
+	 * 
+	 * @return
+	 * @see CardinalDirection#isGrowing()
+	 * @see Direction#side2d()
+	 */
+	public int getGrowing() {
+		switch (this) {
+			case N:
+				return -1;
+			case E:
+				return 1;
+			case S:
+				return 1;
+			case W:
+				return -1;
+			default:
+				throw new Error();
 		}
 	}
 }

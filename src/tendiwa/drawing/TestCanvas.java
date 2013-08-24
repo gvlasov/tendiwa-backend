@@ -8,6 +8,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,9 +59,10 @@ public final class TestCanvas {
 			TestCanvasBuilder.DEFAULT_SCALE,
 			TestCanvasBuilder.DEFAULT_WIDHT,
 			TestCanvasBuilder.DEFAULT_HEIGHT,
-			DefaultDrawingAlgorithms.algorithms);
+			DefaultDrawingAlgorithms.algorithms,
+			true);
 	}
-	TestCanvas(int scale, int width, int height, HashMap<Class<?>, DrawingAlgorithm<?>> defaultDrawingAlgorithms) {
+	TestCanvas(int scale, int width, int height, HashMap<Class<?>, DrawingAlgorithm<?>> defaultDrawingAlgorithms, boolean visibility) {
 		this.scale = scale;
 		this.defaultDrawingAlgorithms = defaultDrawingAlgorithms;
 		this.width = width;
@@ -80,7 +82,7 @@ public final class TestCanvas {
 		panel.add(TOP_LAYER.component);
 		setSize(width, height);
 		panel.setSize(width, height);
-		frame.setVisible(true);
+		frame.setVisible(visibility);
 	}
 	public void setSize(int width, int height) {
 		Collection<Component> components = new ArrayList<Component>();
@@ -275,5 +277,8 @@ public final class TestCanvas {
 					.getCanonicalName());
 		}
 		return (DrawingAlgorithm<T>) defaultDrawingAlgorithms.get(classOfWhat);
+	}
+	public RenderedImage getImage() {
+		return image;
 	}
 }

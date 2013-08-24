@@ -17,6 +17,16 @@ public class Directions {
 		CardinalDirection.S,
 		CardinalDirection.W
 	};
+	public static final Direction[] ALL_DIRECTIONS = {
+		CardinalDirection.N,
+		OrdinalDirection.NE,
+		CardinalDirection.E,
+		OrdinalDirection.SE,
+		CardinalDirection.S,
+		OrdinalDirection.SW,
+		CardinalDirection.W,
+		OrdinalDirection.NW
+	};
 	static double TAN1;
 	static double TAN2;
 

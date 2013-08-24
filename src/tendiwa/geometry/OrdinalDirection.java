@@ -5,7 +5,7 @@ public enum OrdinalDirection implements Direction {
 
 	/**
 	 * <p>
-	 * Returns an int corresponding to SideTest. 
+	 * Returns an int corresponding to SideTest.
 	 * </p>
 	 * <ul>
 	 * <li>1 is {@link OrdinalDirection.NE}</li>
@@ -13,6 +13,7 @@ public enum OrdinalDirection implements Direction {
 	 * <li>5 is {@link OrdinalDirection.SW}</li>
 	 * <li>7 is {@link OrdinalDirection.NW}</li>
 	 * </ul>
+	 * 
 	 * @see {@link CardinalDirection#toInt()}
 	 */
 	@Override
@@ -128,15 +129,23 @@ public enum OrdinalDirection implements Direction {
 	@Override
 	public int[] side2d() {
 		switch (this) {
-		case NE:
-			return new int[] {1,-1};
-		case SE: 
-			return new int[] {1,1};
-		case SW:
-			return new int[] {-1,1};
-		case NW:
-		default:
-			return new int[] {-1,-1};
+			case NE:
+				return new int[] {
+					1, -1
+				};
+			case SE:
+				return new int[] {
+					1, 1
+				};
+			case SW:
+				return new int[] {
+					-1, 1
+				};
+			case NW:
+			default:
+				return new int[] {
+					-1, -1
+				};
 		}
 	}
 	@Override
@@ -154,6 +163,21 @@ public enum OrdinalDirection implements Direction {
 			case NW:
 			default:
 				return direction == SE ? true : false;
+		}
+	}
+	@Override
+	public boolean isPerpendicular(Direction direction) {
+		if (this == NE || this == SW) {
+			if (direction == SE || direction == NW) {
+				return true;
+			}
+			return false;
+		} else {
+			assert this == NW || this == SE;
+			if (direction == NE || direction == SW) {
+				return true;
+			}
+			return false;
 		}
 	}
 }

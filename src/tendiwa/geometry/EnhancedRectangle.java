@@ -508,4 +508,8 @@ public class EnhancedRectangle extends Rectangle {
 		return new EnhancedRectangle(r.x + dx, r.y + dy, r.width, r.height);
 
 	}
+	@Override
+	public String toString() {
+		return "{"+x+","+y+","+width+","+height+"}";
+	}
 }

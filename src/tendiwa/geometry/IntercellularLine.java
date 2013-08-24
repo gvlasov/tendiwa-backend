@@ -1,5 +1,6 @@
 package tendiwa.geometry;
 
+import java.awt.Point;
 
 public class IntercellularLine {
 	final int constantCoord;
@@ -43,7 +44,8 @@ public class IntercellularLine {
 				case E:
 					return constantCoord;
 				default:
-					throw new IllegalArgumentException("This is a vertical line, so only sides N and S are allowed");
+					throw new IllegalArgumentException(
+						"This is a vertical line, so only sides N and S are allowed");
 			}
 		} else {
 			switch (side) {
@@ -52,7 +54,8 @@ public class IntercellularLine {
 				case S:
 					return constantCoord;
 				default:
-					throw new IllegalArgumentException("This is a vertical line, so only sides N and S are allowed");
+					throw new IllegalArgumentException(
+						"This is a vertical line, so only sides N and S are allowed");
 			}
 		}
 	}
@@ -64,7 +67,8 @@ public class IntercellularLine {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + constantCoord;
-		result = prime * result + ((orientation == null) ? 0 : orientation.hashCode());
+		result = prime * result + ((orientation == null) ? 0 : orientation
+			.hashCode());
 		return result;
 	}
 	@Override
@@ -87,10 +91,27 @@ public class IntercellularLine {
 	}
 	public int distanceTo(IntercellularLine line) {
 		if (!isParallel(line)) {
-			throw new IllegalArgumentException("Distance can be calculated only for parallel lines");
+			throw new IllegalArgumentException(
+				"Distance can be calculated only for parallel lines");
 		}
 		return Math.abs(constantCoord - line.constantCoord);
 	}
-	
-}
+	boolean hasPointFromSide(Point point, CardinalDirection direction) {
+		assert point != null;
+		assert direction != null;
+		assert direction.isVertical() != orientation.isVertical();
+		switch (direction) {
+			case N:
+				return point.y <= getStaticCoordFromSide(Directions.N);
+			case E:
+				return point.x >= getStaticCoordFromSide(Directions.E);
+			case S:
+				return point.y >= getStaticCoordFromSide(Directions.S);
+			case W:
+				return point.x <= getStaticCoordFromSide(Directions.W);
+			default:
+				return false;
+		}
+	}
 
+}

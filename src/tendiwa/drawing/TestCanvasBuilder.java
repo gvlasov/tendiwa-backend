@@ -10,6 +10,7 @@ public final class TestCanvasBuilder {
 	int scale = 1;
 	private int width = DEFAULT_WIDHT;
 	private int height = DEFAULT_HEIGHT;
+	private boolean visibility = true;
 
 	/**
 	 * Tells this builder what algorithm will be used in
@@ -48,6 +49,10 @@ public final class TestCanvasBuilder {
 		return this;
 	}
 	public TestCanvas build() {
-		return new TestCanvas(scale, width, height, defaultDrawingAlgorithms);
+		return new TestCanvas(scale, width, height, defaultDrawingAlgorithms, visibility);
+	}
+	public TestCanvasBuilder setVisiblilty(boolean visibility) {
+		this.visibility = visibility;
+		return this;
 	}
 }

@@ -104,6 +104,18 @@ public class Range {
 		}
 		return true;
 	}
+	/**
+	 * Checks if this range contains common numbers with anoter Range.
+	 * 
+	 * @param range another range.
+	 * @return true if it does, false otherwise.
+	 */
+	public boolean overlaps(Range range) {
+		if (range.max < min || range.min > max) {
+			return false;
+		}
+		return true;
+	}
 	public boolean contains(int value) {
 		return value >= min && value <= max;
 	}

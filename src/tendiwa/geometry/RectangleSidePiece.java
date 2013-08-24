@@ -73,7 +73,8 @@ public class RectangleSidePiece {
 	}
 	public int intersectionByDynamicCoord(RectangleSidePiece piece2) {
 		return Range.lengthOfIntersection(
-			new Range(piece2.segment.getStartCoord(), piece2.segment.getEndCoord()),
+			new Range(piece2.segment.getStartCoord(), piece2.segment
+				.getEndCoord()),
 			new Range(segment.getStartCoord(), segment.getEndCoord()));
 	}
 	int distanceTo(RectangleSidePiece piece) {
@@ -207,5 +208,22 @@ public class RectangleSidePiece {
 				pieceStartCoord,
 				pieceStartCoord + piece.segment.length));
 	}
-
+	int perpendicularDistanceTo(Point point) {
+		assert line.hasPointFromSide(point, direction);
+		if (isVertical()) {
+			return Math.abs(line.getStaticCoordFromSide(direction) - point.x);
+		} else {
+			return Math.abs(line.getStaticCoordFromSide(direction) - point.y);
+		}
+	}
+	public boolean overlaps(RectangleSidePiece piece) {
+		if (line.equals(piece.line) && Range.overlap(
+			segment.getStartCoord(),
+			segment.getEndCoord(),
+			piece.segment.getStartCoord(),
+			piece.segment.getEndCoord())) {
+			return true;
+		}
+		return false;
+	}
 }

@@ -36,4 +36,5 @@ public interface Direction {
 	 */
 	public int[] side2d();
 	public boolean isOpposite(Direction direction);
+	public boolean isPerpendicular(Direction direction);
 }
