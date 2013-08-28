@@ -11,7 +11,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/gson-2.2.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/java_websocket.jar"/>
 	<classpathentry kind="lib" path="/home/suseika/Projects/tendiwa/server/modules/MainModule.jar"/>
-	<classpathentry kind="lib" path="lib/guava-14.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/guava-14.0.1.jar" sourcepath="lib/guava-libraries/guava/src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="/home/suseika/Projects/tendiwa/server/lib/commons-lang3-3.1/commons-lang3-3.1.jar">
 		<attributes>

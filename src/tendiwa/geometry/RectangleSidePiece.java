@@ -16,7 +16,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 
 /**
- * Represents a line on rectangle's direction that divides cells inside the
+ * Represents a line on rectangle's side that divides cells inside the
  * rectangle from cells outside the rectangle. Unlike {@link Segment} it doesn't
  * describe specific cells, but rather defines a line between cells.
  * 

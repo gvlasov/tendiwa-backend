@@ -1,15 +1,10 @@
 package tests.painting;
 
-import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.imageio.IIOException;
-import javax.imageio.stream.FileImageOutputStream;
 
-import tendiwa.core.meta.GifSequenceWriter;
 import tendiwa.core.meta.Range;
 import tendiwa.geometry.RectangleSystem;
 import tendiwa.geometry.WaveRectangleSystem;
@@ -20,12 +15,17 @@ public class WaveRectangleSystemDemo {
 		RectangleSystem irs = new RectangleSystem(0);
 		irs.addRectangleArea(10, 20, 3, 8);
 		irs.addRectangleArea(16, 18, 5, 14);
-		irs.addRectangleArea(22, 18, 6, 14);
-		WaveRectangleSystem rs = new WaveRectangleSystem(
-			0,
-			new Range(1, 5),
-			1,
-			irs);
+//		irs.addRectangleArea(22, 18, 6, 14);
+//		irs.addRectangleArea(29, 18, 6, 9);
+//		for (int i=0; i<30; i++) {
+//			System.out.println(i);
+			WaveRectangleSystem rs = new WaveRectangleSystem(
+				0,
+				new Range(1, 5),
+				1,
+				irs);
+			rs.canvas.show();
+//		}
 		// RectangleArea rMostNighbours = rs.findRectangleWithMostNeigbors();
 		// NeighboursIterable neighbors =
 		// rs.getNeighboursIterable(rMostNighbours);

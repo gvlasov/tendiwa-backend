@@ -281,4 +281,7 @@ public final class TestCanvas {
 	public RenderedImage getImage() {
 		return image;
 	}
+	public void show() {
+		frame.setVisible(true);
+	}
 }
