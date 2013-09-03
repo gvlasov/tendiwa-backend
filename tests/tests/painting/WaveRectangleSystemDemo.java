@@ -13,19 +13,18 @@ public class WaveRectangleSystemDemo {
 
 	public static void main(String[] args) throws IIOException, FileNotFoundException, IOException {
 		RectangleSystem irs = new RectangleSystem(0);
-		irs.addRectangleArea(10, 20, 3, 8);
-		irs.addRectangleArea(16, 18, 5, 14);
-//		irs.addRectangleArea(22, 18, 6, 14);
-//		irs.addRectangleArea(29, 18, 6, 9);
-//		for (int i=0; i<30; i++) {
-//			System.out.println(i);
+		irs.addRectangleArea(10, 20, 4, 14);
+		irs.addRectangleArea(18, 16, 4, 14);
+		for (int i=0; i<1000; i++) {
+			System.out.println(i);
 			WaveRectangleSystem rs = new WaveRectangleSystem(
 				0,
 				new Range(1, 5),
 				1,
 				irs);
-			rs.canvas.show();
-//		}
+//			rs.canvas.show();
+		}
+		
 		// RectangleArea rMostNighbours = rs.findRectangleWithMostNeigbors();
 		// NeighboursIterable neighbors =
 		// rs.getNeighboursIterable(rMostNighbours);

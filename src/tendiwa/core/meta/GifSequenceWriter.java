@@ -42,6 +42,7 @@ public class GifSequenceWriter {
 	 */
 	public GifSequenceWriter(ImageOutputStream outputStream, int imageType, int timeBetweenFramesMS, boolean loopContinuously) throws IIOException, IOException {
 		// my method to create a writer
+		System.out.println(timeBetweenFramesMS);
 		gifWriter = getWriter();
 		imageWriteParam = gifWriter.getDefaultWriteParam();
 		ImageTypeSpecifier imageTypeSpecifier = ImageTypeSpecifier
@@ -69,7 +70,7 @@ public class GifSequenceWriter {
 			"FALSE");
 		graphicsControlExtensionNode.setAttribute(
 			"delayTime",
-			Integer.toString(timeBetweenFramesMS / 10));
+			Integer.toString(timeBetweenFramesMS/10));
 		graphicsControlExtensionNode.setAttribute("transparentColorIndex", "0");
 
 		IIOMetadataNode commentsNode = getNode(root, "CommentExtensions");

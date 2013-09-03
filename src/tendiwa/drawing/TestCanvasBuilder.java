@@ -1,16 +1,21 @@
 package tendiwa.drawing;
 
+import java.io.FileNotFoundException;
+import java.io.IOError;
+import java.io.IOException;
 import java.util.HashMap;
 
 public final class TestCanvasBuilder {
-	public static final int DEFAULT_SCALE = 1;
+	public static final int DEFAULT_SCALE = 3;
 	public static final int DEFAULT_WIDHT = 800;
 	public static final int DEFAULT_HEIGHT = 600;
+	public static final int DEFAULT_FPS = 1000;
 	final HashMap<Class<?>, DrawingAlgorithm<?>> defaultDrawingAlgorithms = new HashMap<Class<?>, DrawingAlgorithm<?>>(DefaultDrawingAlgorithms.algorithms);
 	int scale = 1;
 	private int width = DEFAULT_WIDHT;
 	private int height = DEFAULT_HEIGHT;
 	private boolean visibility = true;
+	private int fps = DEFAULT_FPS;
 
 	/**
 	 * Tells this builder what algorithm will be used in
@@ -49,10 +54,23 @@ public final class TestCanvasBuilder {
 		return this;
 	}
 	public TestCanvas build() {
-		return new TestCanvas(scale, width, height, defaultDrawingAlgorithms, visibility);
+		try {
+			return new TestCanvas(scale, width, height, defaultDrawingAlgorithms, visibility, fps);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		throw new RuntimeException("Could not create a gif file");
 	}
 	public TestCanvasBuilder setVisiblilty(boolean visibility) {
 		this.visibility = visibility;
+		return this;
+	}
+	public TestCanvasBuilder setFps(int fps) {
+		this.fps = fps;
 		return this;
 	}
 }

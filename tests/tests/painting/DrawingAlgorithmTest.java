@@ -16,7 +16,7 @@ import com.google.common.collect.Lists;
 
 public class DrawingAlgorithmTest {
 	public static void main(String[] args) {
-		TestCanvas canvas = new TestCanvas();
+		TestCanvas canvas = TestCanvas.builder().setScale(3).build();
 		
 		Rectangle r = new Rectangle(5, 7, 8, 7);
 		canvas.draw(r, DrawingRectangle.chequerwise(Color.ORANGE, Color.GREEN));

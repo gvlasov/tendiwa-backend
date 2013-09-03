@@ -1,24 +1,24 @@
 package tendiwa.geometry;
 
-import static tendiwa.geometry.Directions.N;
 import static tendiwa.geometry.Directions.NE;
 import static tendiwa.geometry.Directions.SE;
 import static tendiwa.geometry.Directions.SW;
-import static tendiwa.geometry.Directions.W;
 
 import java.awt.Point;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import tendiwa.core.meta.Range;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.google.common.collect.ImmutableSet.Builder;
 
 /**
- * Represents a line on rectangle's side that divides cells inside the
- * rectangle from cells outside the rectangle. Unlike {@link Segment} it doesn't
- * describe specific cells, but rather defines a line between cells.
+ * Represents a line on rectangle's side that divides cells inside the rectangle
+ * from cells outside the rectangle. Unlike {@link Segment} it doesn't describe
+ * specific cells, but rather defines a line between cells.
  * 
  * @param direction
  * @param startCoord
@@ -152,6 +152,7 @@ public class RectangleSidePiece {
 				segment.x,
 				segment.y,
 				segment.length);
+			assert contains(answer[index-1]);
 		}
 		return answer;
 	}
@@ -170,7 +171,10 @@ public class RectangleSidePiece {
 			throw new IllegalArgumentException(
 				"anotherDimensionLength must be greater than 0, but it is " + anotherDimensionLength);
 		}
-		Point startPoint = segment.getEndPoint(isVertical() ? N : W);
+		Point startPoint = EnhancedPoint.fromStaticAndDynamic(
+			line.getStaticCoordFromSide(direction.opposite()),
+			segment.getStartCoord(),
+			segment.orientation);
 		OrdinalDirection growDirection;
 		switch (direction) {
 			case N:
@@ -199,7 +203,9 @@ public class RectangleSidePiece {
 			height);
 	}
 	boolean contains(RectangleSidePiece piece) {
-		assert piece.line.equals(line);
+		if (!piece.line.equals(line)) {
+			return false;
+		}
 		assert piece.direction == direction;
 		int thisStartCoord = segment.getStartCoord();
 		int pieceStartCoord = piece.segment.getStartCoord();
@@ -208,6 +214,13 @@ public class RectangleSidePiece {
 				pieceStartCoord,
 				pieceStartCoord + piece.segment.length));
 	}
+	/**
+	 * Distance by static coordinate of this piece to same coordinate of a
+	 * point.
+	 * 
+	 * @param point
+	 * @return
+	 */
 	int perpendicularDistanceTo(Point point) {
 		assert line.hasPointFromSide(point, direction);
 		if (isVertical()) {
@@ -226,4 +239,64 @@ public class RectangleSidePiece {
 		}
 		return false;
 	}
+	public RectangleSidePiece[] splitWithPieces(Collection<RectangleSidePiece> touchingPieces) {
+		assert touchingPieces != null;
+		assert !touchingPieces.isEmpty();
+		Collection<Range> touchingRanges = new ArrayList<Range>(
+			touchingPieces.size());
+		for (RectangleSidePiece piece : touchingPieces) {
+			touchingRanges.add(piece.segment.asRange());
+		}
+		Range[] segmentsRanges = segment.asRange().splitWithRanges(
+			touchingRanges);
+		RectangleSidePiece[] answer = new RectangleSidePiece[segmentsRanges.length];
+		int i = 0;
+		for (Range range : segmentsRanges) {
+			Point point = EnhancedPoint.fromStaticAndDynamic(
+				segment.getStaticCoord(),
+				range.min,
+				segment.orientation);
+			answer[i++] = new RectangleSidePiece(
+				direction,
+				point.x,
+				point.y,
+				range.getLength());
+			assert contains(answer[i-1]);
+		}
+		return answer;
+	}
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((direction == null) ? 0 : direction
+			.hashCode());
+		result = prime * result + ((line == null) ? 0 : line.hashCode());
+		result = prime * result + ((segment == null) ? 0 : segment.hashCode());
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		RectangleSidePiece other = (RectangleSidePiece) obj;
+		if (direction != other.direction)
+			return false;
+		if (line == null) {
+			if (other.line != null)
+				return false;
+		} else if (!line.equals(other.line))
+			return false;
+		if (segment == null) {
+			if (other.segment != null)
+				return false;
+		} else if (!segment.equals(other.segment))
+			return false;
+		return true;
+	}
+
 }

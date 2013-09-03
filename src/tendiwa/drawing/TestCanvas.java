@@ -7,8 +7,12 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,12 +22,16 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.imageio.IIOException;
+import javax.imageio.stream.FileImageOutputStream;
+import javax.imageio.stream.ImageOutputStream;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 
 import tendiwa.core.Chunk;
 import tendiwa.core.HorizontalPlane;
+import tendiwa.core.meta.GifSequenceWriter;
 import tendiwa.geometry.Directions;
 import tendiwa.geometry.EnhancedRectangle;
 import tendiwa.geometry.InterrectangularPath;
@@ -31,6 +39,7 @@ import tendiwa.geometry.RectangleSystem;
 import tendiwa.geometry.RectanglesJunction;
 
 import com.google.common.collect.Iterables;
+import com.google.common.io.Files;
 
 public final class TestCanvas {
 	public final Layer DEFAULT_LAYER;
@@ -52,21 +61,27 @@ public final class TestCanvas {
 	BufferedImage image;
 	private final int height;
 	private final int width;
+	private final int fps;
 	Layer currentLayer;
+	private GifSequenceWriter gifSequenceWriter;
+	private File tempFile;
+	private ImageOutputStream imageOutput;
 
-	public TestCanvas() {
+	TestCanvas() throws FileNotFoundException, IOException {
 		this(
 			TestCanvasBuilder.DEFAULT_SCALE,
 			TestCanvasBuilder.DEFAULT_WIDHT,
 			TestCanvasBuilder.DEFAULT_HEIGHT,
 			DefaultDrawingAlgorithms.algorithms,
-			true);
+			true,
+			TestCanvasBuilder.DEFAULT_FPS);
 	}
-	TestCanvas(int scale, int width, int height, HashMap<Class<?>, DrawingAlgorithm<?>> defaultDrawingAlgorithms, boolean visibility) {
+	TestCanvas(int scale, int width, int height, HashMap<Class<?>, DrawingAlgorithm<?>> defaultDrawingAlgorithms, boolean visibility, int fps) throws FileNotFoundException, IOException {
 		this.scale = scale;
 		this.defaultDrawingAlgorithms = defaultDrawingAlgorithms;
 		this.width = width;
 		this.height = height;
+		this.fps = fps;
 		frame = new JFrame("tendiwa canvas");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		panel = new JLayeredPane();
@@ -83,6 +98,32 @@ public final class TestCanvas {
 		setSize(width, height);
 		panel.setSize(width, height);
 		frame.setVisible(visibility);
+		initGifWriter();
+	}
+	private void initGifWriter() {
+		imageOutput = null;
+
+		try {
+			tempFile = File
+				.createTempFile("tendiwa_animation", "" + hashCode());
+			imageOutput = new FileImageOutputStream(tempFile);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		int imageType = DEFAULT_LAYER.image.getType();
+		try {
+			this.gifSequenceWriter = new GifSequenceWriter(imageOutput, imageType, 1000 / fps, true);
+		} catch (IIOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	public void setSize(int width, int height) {
 		Collection<Component> components = new ArrayList<Component>();
@@ -146,6 +187,7 @@ public final class TestCanvas {
 				TestCanvas.this.height,
 				BufferedImage.TYPE_INT_ARGB);
 			graphics = image.createGraphics();
+			graphics.setBackground(Color.RED);
 			component = new JComponent() {
 				private static final long serialVersionUID = 1L;
 
@@ -283,5 +325,46 @@ public final class TestCanvas {
 	}
 	public void show() {
 		frame.setVisible(true);
+	}
+	public void saveFrame() {
+		try {
+			gifSequenceWriter.writeToSequence(image);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	/**
+	 * <p>
+	 * Saves animation of frames made with {@link TestCanvas#saveFrame()} to a
+	 * file with a specified destination.
+	 * </p>
+	 * <p>
+	 * This method does not create a file, but rather moves a previously formed
+	 * temporary file to the destination location.
+	 * 
+	 * @param filename
+	 */
+	public void saveAnimation(String filename) {
+		if (tempFile == null) {
+			throw new IllegalStateException("Before saving animation you need to create one");
+		}
+		try {
+			gifSequenceWriter.close();
+			imageOutput.close();
+			Files.move(tempFile, new File(filename));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		initGifWriter();
+		System.out.println("Animation saved to "+filename);
+	}
+	public static TestCanvasBuilder builder() {
+		return new TestCanvasBuilder();
+	}
+	public void clear() {
+		graphics.clearRect(0, 0, width, height);
+		
 	}
 }

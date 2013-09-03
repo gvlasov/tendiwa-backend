@@ -1,6 +1,5 @@
 package tendiwa.geometry;
 
-import java.awt.Rectangle;
 import java.util.Iterator;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -246,5 +245,42 @@ public class Segment implements Iterable<EnhancedPoint> {
 	 */
 	public Range asRange() {
 		return new Range(getStartCoord(), getEndCoord());
+	}
+	public int getStaticCoord() {
+		if (orientation.isVertical()) {
+			return x;
+		} else {
+			return y;
+		}
+	}
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + length;
+		result = prime * result + ((orientation == null) ? 0 : orientation
+			.hashCode());
+		result = prime * result + x;
+		result = prime * result + y;
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Segment other = (Segment) obj;
+		if (length != other.length)
+			return false;
+		if (orientation != other.orientation)
+			return false;
+		if (x != other.x)
+			return false;
+		if (y != other.y)
+			return false;
+		return true;
 	}
 }
