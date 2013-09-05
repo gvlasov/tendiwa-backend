@@ -235,4 +235,44 @@ public enum CardinalDirection implements Direction {
 				throw new Error();
 		}
 	}
+
+	/**
+	 * <p>
+	 * Returns the coordinate that lies closer in this direction.
+	 * </p>
+	 * 
+	 * @param a
+	 * @param b
+	 * @see CardinalDirection#isGrowing()
+	 * @see CardinalDirection#furthestCoordOf(int, int)
+	 * @return If this direction is a growing one, returns the least of two
+	 *         integers, otherwise returns the greatest.
+	 */
+	public int closestCoordOf(int a, int b) {
+		if (isGrowing()) {
+			return Math.min(a, b);
+		} else {
+			return Math.max(a, b);
+		}
+	}
+	/**
+	 * <p>
+	 * Returns the coordinate that lies further in this direction. That is,
+	 * </p>
+	 * 
+	 * @param a
+	 * @param b
+	 * @see CardinalDirection#isGrowing()
+	 * @see CardinalDirection#closestCoordOf(int, int)
+	 * @see 
+	 * @return If this direction is a growing one, returns the greatest of two
+	 *         integers, otherwise returns the least.
+	 */
+	public int furthestCoordOf(int a, int b) {
+		if (isGrowing()) {
+			return Math.max(a, b);
+		} else {
+			return Math.min(a, b);
+		}
+	}
 }

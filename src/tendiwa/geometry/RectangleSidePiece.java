@@ -152,7 +152,7 @@ public class RectangleSidePiece {
 				segment.x,
 				segment.y,
 				segment.length);
-			assert contains(answer[index-1]);
+			assert contains(answer[index - 1]);
 		}
 		return answer;
 	}
@@ -261,7 +261,7 @@ public class RectangleSidePiece {
 				point.x,
 				point.y,
 				range.getLength());
-			assert contains(answer[i-1]);
+			assert contains(answer[i - 1]);
 		}
 		return answer;
 	}
@@ -298,5 +298,13 @@ public class RectangleSidePiece {
 			return false;
 		return true;
 	}
-
+	/**
+	 * Returns static coordinate in front of piece.
+	 * 
+	 * @see Segment#getStaticCoord() for getting static coord behind piece.
+	 * @return
+	 */
+	int getStaticCoordInFront() {
+		return line.getStaticCoordFromSide(direction);
+	}
 }
