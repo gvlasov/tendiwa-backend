@@ -18,5 +18,6 @@
 			<attribute name="javadoc_location" value="jar:file:/home/suseika/Projects/tendiwa/server/lib/commons-lang3-3.1/commons-lang3-3.1-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/home/suseika/appframework-1.0.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

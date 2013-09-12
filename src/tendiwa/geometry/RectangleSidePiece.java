@@ -77,6 +77,13 @@ public class RectangleSidePiece {
 				.getEndCoord()),
 			new Range(segment.getStartCoord(), segment.getEndCoord()));
 	}
+	/**
+	 * Returns distance in cells between lines on which this and another piece
+	 * lie.
+	 * 
+	 * @param piece
+	 * @return
+	 */
 	int distanceTo(RectangleSidePiece piece) {
 		return piece.line.distanceTo(line);
 	}

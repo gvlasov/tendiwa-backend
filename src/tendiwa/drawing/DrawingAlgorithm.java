@@ -27,6 +27,12 @@ public abstract class DrawingAlgorithm<T> {
 			r.width * canvas.scale,
 			r.height * canvas.scale);
 	}
+	protected int getCanvasWidth() {
+		return canvas.width;
+	}
+	protected int getCanvasHeight() {
+		return canvas.height;
+	}
 	void setCanvas(TestCanvas canvas) {
 		this.canvas = canvas;
 	}

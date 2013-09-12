@@ -1,5 +1,6 @@
 package tests;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -40,6 +41,23 @@ public class RangeTest {
 		assertEquals(
 			new Range(-17, -17).intersection(new Range(-17, -17)),
 			new Range(-17, -17));
+		assertEquals(
+			new Range(10, 15).intersection(new Range(9, 13)),
+			new Range(10, 13));
+		assertEquals(
+			new Range(9, 13).intersection(new Range(10, 15)),
+			new Range(10, 13));
+	}
+	@Test
+	public void testIntersectionIntegers() {
+		assertEquals(Range.lengthOfIntersection(0, 10, 5, 190), 6);
+		assertEquals(Range.lengthOfIntersection(0, 10, 10, 190), 1);
+		assertEquals(Range.lengthOfIntersection(-3, -1, -17, -3), 1);
+		assertEquals(Range.lengthOfIntersection(-3, -1, -3, 200), 3);
+		assertEquals(Range.lengthOfIntersection(-300, 300, -600, 600), 600 + 1);
+		assertEquals(Range.lengthOfIntersection(-300, 300, -100, 100), 200 + 1);
+		assertEquals(Range.lengthOfIntersection(-17, 17, -17, 17), 17 * 2 + 1);
+		assertEquals(Range.lengthOfIntersection(-17, -17, -17, 17), 1);
 	}
 	@Test
 	public void splitWithRanges() {
@@ -59,12 +77,18 @@ public class RangeTest {
 		assertTrue(ranges.contains(new Range(2, 6)));
 		assertTrue(ranges.size() == 1);
 		ranges = Sets.newHashSet(new Range(-100, 100)
-			.splitWithRanges(ImmutableSet.of(
-				new Range(0, 0))));
+			.splitWithRanges(ImmutableSet.of(new Range(0, 0))));
 		assertTrue(ranges.contains(new Range(-100, -1)));
 		assertTrue(ranges.contains(new Range(1, 100)));
 		assertTrue(ranges.size() == 2);
-
+	}
+	@Test
+	public void staticContains() {
+		assertTrue(Range.contains(0, 5, 3));
+		assertTrue(Range.contains(-4, 1, -2));
+		assertTrue(Range.contains(3, 3, 3));
+		assertFalse(Range.contains(0, 4, 5));
+		assertFalse(Range.contains(-1, -1, 1));
 	}
 
 }

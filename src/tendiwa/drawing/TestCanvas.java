@@ -59,8 +59,8 @@ public final class TestCanvas {
 	private final JLayeredPane panel;
 	Graphics graphics;
 	BufferedImage image;
-	private final int height;
-	private final int width;
+	final int height;
+	final int width;
 	private final int fps;
 	Layer currentLayer;
 	private GifSequenceWriter gifSequenceWriter;

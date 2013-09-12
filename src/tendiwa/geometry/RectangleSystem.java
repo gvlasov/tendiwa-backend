@@ -16,13 +16,16 @@ import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import tendiwa.core.Location;
 import tendiwa.core.StaticData;
 import tendiwa.core.TerrainModifier;
 import tendiwa.core.meta.Chance;
 import tendiwa.core.meta.Utils;
+import tendiwa.geometry.RectangleSystemBuilding.RectangleSystemBuilder;
 import tests.SideTest;
+
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSet.Builder;
 
 /**
  * <p>
@@ -426,8 +429,22 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 		// segments.remove(null);
 		return new HashSet<Segment>(segments);
 	}
-	public Set<RectangleSidePiece> getSidePiecesFreeFromNeighbours(RectangleArea r, CardinalDirection side) {
-		throw new NotImplementedException();
+	public ImmutableSet<RectangleSidePiece> getSidePiecesFreeFromNeighbours(RectangleArea r, CardinalDirection side) {
+		Set<Segment> segmentsFreeFromNeighbors = getSegmentsFreeFromNeighbors(
+			r,
+			side);
+		Builder<RectangleSidePiece> answer = ImmutableSet
+			.<RectangleSidePiece> builder();
+		for (Segment segment : segmentsFreeFromNeighbors) {
+			// TODO: When Segment will be immutablized, create a constructor
+			// that uses an existing segment.
+			answer.add(new RectangleSidePiece(
+				side,
+				segment.x,
+				segment.y,
+				segment.length));
+		}
+		return answer.build();
 	}
 	/**
 	 * A method similar to
@@ -1587,5 +1604,8 @@ public class RectangleSystem implements Iterable<RectangleArea> {
 				this.rectangle = rectangle;
 			}
 		}
+	}
+	public static RectangleSystemBuilder builder() {
+		return new RectangleSystemBuilder();
 	}
 }

@@ -12,6 +12,7 @@ import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import tendiwa.geometry.RectangleSidePiece;
 
 public class Utils {
 	public Utils() {
@@ -97,10 +98,16 @@ public class Utils {
 		return Math.max(a2, b2) - Math.min(a1, b1) - Math.abs(a1 - b1) - Math.abs(a2 - b2) + 1;
 	}
 	public static <T> T getRandomElement(List<T> list) {
+		if (list.isEmpty()) {
+			throw new IllegalArgumentException("Can't get random element from an empty list");
+		}
 		return list.get(new Random().nextInt(list.size()));
 	}
-	public static <T> T getRandomElement(Set<T> set) {
-		List<T> list = new ArrayList<T>(set);
+	public static <T> T getRandomElement(Collection<T> collection) {
+		if (collection.isEmpty()) {
+			throw new IllegalArgumentException("Can't get random element from an empty collection");
+		}
+		List<T> list = new ArrayList<T>(collection);
 		return getRandomElement(list);
 	}
 	/**

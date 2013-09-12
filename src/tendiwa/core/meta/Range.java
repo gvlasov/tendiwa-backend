@@ -1,13 +1,8 @@
 package tendiwa.core.meta;
 
-import java.sql.PreparedStatement;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
-
-import tendiwa.geometry.RectangleSidePiece;
-
-import com.google.common.collect.Lists;
 
 /**
  * Represents a set of all integers between some minimum and maximum values
@@ -60,11 +55,9 @@ public class Range {
 		if (b.min >= min && b.max <= max) {
 			return new Range(b.min, b.max);
 		}
-		if (min >= b.max) {
-			return new Range(min, b.max);
-		} else {
-			return new Range(b.min, max);
-		}
+		int greaterMin = Math.max(min, b.min);
+		int lesserMax = Math.min(max, b.max);
+		return new Range(greaterMin, lesserMax);
 	}
 	/**
 	 * Returns how much integers occur in both Ranges. Unlike
@@ -95,6 +88,38 @@ public class Range {
 		}
 	}
 	/**
+	 * Returns how much integers occur in both Ranges. Unlike
+	 * {@link Range#intersection(Range)} it returns an integer, so if ranges
+	 * don't intersect it will return 0 instead of null.
+	 * 
+	 * @return 0, if ranges don't intersect.
+	 */
+	public static int lengthOfIntersection(int minA, int maxA, int minB, int maxB) {
+		if (minA > maxA) {
+			throw new IllegalArgumentException("minA must be less than maxA");
+		}
+		if (minB > maxB) {
+			throw new IllegalArgumentException("minB must be less than maxB");
+		}
+		if (maxB < minA) {
+			return 0;
+		}
+		if (minB > maxA) {
+			return 0;
+		}
+		if (minA >= minB && maxA <= maxB) {
+			return maxA - minA + 1;
+		}
+		if (minB >= minA && maxB <= maxA) {
+			return maxB - minB + 1;
+		}
+		if (minA >= maxB) {
+			return maxB - minA + 1;
+		} else {
+			return maxA - minB + 1;
+		}
+	}
+	/**
 	 * Checks if two ranges overlap.
 	 * 
 	 * @param min1
@@ -114,7 +139,7 @@ public class Range {
 		return true;
 	}
 	/**
-	 * Checks if this range contains common numbers with anoter Range.
+	 * Checks if this range contains common numbers with another Range.
 	 * 
 	 * @param range
 	 *            another range.
@@ -226,7 +251,7 @@ public class Range {
 			preRange = new Range(min - 2, min - 1);
 		}
 		// Same if max point is greater than this.max
-		if (rangesArray[rangesArray.length-1].max < max) {
+		if (rangesArray[rangesArray.length - 1].max < max) {
 			additionalSize++;
 			postRange = new Range(max + 1, max + 2);
 		}
@@ -256,8 +281,8 @@ public class Range {
 		int indexInAnswer = 0;
 		int itemsSkipped = 0;
 		for (int i = 0, l = finalRangesArray.length - 1; i < l; i++) {
-			int betweenMin = finalRangesArray[i].max+1;
-			int betweenMax = finalRangesArray[i + 1].min-1;
+			int betweenMin = finalRangesArray[i].max + 1;
+			int betweenMax = finalRangesArray[i + 1].min - 1;
 			if (betweenMin > betweenMax) {
 				continue;
 			}
@@ -266,8 +291,50 @@ public class Range {
 				answer[indexInAnswer++] = rangeBetween;
 			}
 		}
-		
+
 		return Arrays.copyOf(answer, indexInAnswer);
+	}
+	/**
+	 * Returns a new range that is an intersection of two ranges.
+	 * 
+	 * @param min1
+	 * @param max1
+	 * @param min2
+	 * @param max2
+	 * @return
+	 */
+	public static Range intersectionOf(int min1, int max1, int min2, int max2) {
+		if (max2 < min1) {
+			throw new IllegalArgumentException("Ranges don't intersect");
+		}
+		if (min2 > max1) {
+			throw new IllegalArgumentException("Ranges don't intersect");
+		}
+		if (min1 >= min2 && max1 <= max2) {
+			return new Range(min1, max1);
+		}
+		if (min2 >= min1 && max2 <= max1) {
+			return new Range(min2, max2);
+		}
+		if (min1 >= max2) {
+			return new Range(min1, max2);
+		} else {
+			return new Range(min2, max1);
+		}
+	}
+	/**
+	 * Checks if rangeMin <= value <= rangeMax.
+	 * @param rangeMin
+	 * @param rangeMax
+	 * @param value
+	 * @return
+	 * @throws IllegalArgumentException if rangeMin > rangeMax
+	 */
+	public static boolean contains(int rangeMin, int rangeMax, int value) {
+		if (rangeMin > rangeMax) {
+			throw new IllegalArgumentException("rangeMin ("+rangeMin+") can't be > rangeMax ("+rangeMax+")");
+		}
+		return value >= rangeMin && value <= rangeMax;
 	}
 
 }

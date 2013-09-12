@@ -267,6 +267,37 @@ public class EnhancedRectangle extends Rectangle {
 		int recHeight = Math.max(c1.y, c2.y) - startY + 1;
 		return new EnhancedRectangle(startX, startY, recWidth, recHeight);
 	}
+
+	/**
+	 * <p>
+	 * Creates a new EnhancedRectangle defined by its minimum and maximum
+	 * coordinates.
+	 * </p>
+	 * 
+	 * @param xMin
+	 *            Least coordinate by x-axis.
+	 * @param yMin
+	 *            Least coordinate by y-axis.
+	 * @param xMax
+	 *            Greatest coordinate by x-axis.
+	 * @param yMax
+	 *            Greatest coordinate by y-axis.
+	 * @return A new EnhancedRectangle bounded by these two points (containing
+	 *         both of them inside).
+	 */
+	public static EnhancedRectangle rectangleByMinAndMaxCoords(int xMin, int yMin, int xMax, int yMax) {
+		if (xMin > xMax) {
+			throw new IllegalArgumentException("xMin can't be > xMax");
+		}
+		if (yMin > yMax) {
+			throw new IllegalArgumentException("yMin can't be > yMax");
+		}
+		return new EnhancedRectangle(
+			xMin,
+			yMin,
+			xMax - xMin + 1,
+			yMax - yMin + 1);
+	}
 	/**
 	 * Checks if all cells of this rectangle are inside a particular circle.
 	 * 
@@ -426,6 +457,7 @@ public class EnhancedRectangle extends Rectangle {
 	 * @param side
 	 * @return
 	 */
+	@Deprecated
 	public RectangleSidePiece getSegmentFromSide(CardinalDirection side) {
 		// TODO: Duplicate?
 		switch (side) {
@@ -510,6 +542,6 @@ public class EnhancedRectangle extends Rectangle {
 	}
 	@Override
 	public String toString() {
-		return "{"+x+","+y+","+width+","+height+"}";
+		return "{" + x + "," + y + "," + width + "," + height + "}";
 	}
 }
