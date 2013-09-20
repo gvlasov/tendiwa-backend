@@ -1,15 +1,15 @@
 package tendiwa.buildings;
 
-import java.util.ArrayList;
-
 import tendiwa.core.Building;
 import tendiwa.core.Location;
 import tendiwa.core.StaticData;
 import tendiwa.core.terrain.settlements.BuildingPlace;
 import tendiwa.geometry.CardinalDirection;
+import tendiwa.geometry.EnhancedRectangle;
 import tendiwa.geometry.RandomRectangleSystem;
-import tendiwa.geometry.RectangleArea;
 import tendiwa.geometry.RectangleSystem;
+
+import java.util.ArrayList;
 
 
 public class House extends Building {
@@ -32,13 +32,13 @@ public class House extends Building {
 //		RectangleArea rightRoom = rs.cutRectangleFromSide(mainRoom, rightSide, 14);
 //		rs.excludeRectangle(exFront);
 //		terrainModifier = settlement.getTerrainModifier(rs);
-//		rs.build();
+//		rs.done();
 //		terrainModifier.fillContents(Location.ELEMENT_FLOOR, water);
 //		terrainModifier.drawInnerBorders(Location.ELEMENT_OBJECT, wallGreyStone);
 
 		rs = new RandomRectangleSystem(x, y, width, height, 1, 1);
 //		rs = new RectangleSystem(1);
-		ArrayList<RectangleArea> ras = new ArrayList<RectangleArea>();
+		ArrayList<EnhancedRectangle> ras = new ArrayList<>();
 		
 //		ras.add(rs.addRectangleArea(x, y, width, height));
 //		ras.add(rs.cutRectangleFromSide(ras.get(0), frontSide, 5));

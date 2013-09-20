@@ -84,7 +84,7 @@ public final class SuseikaBrowserClientResourceBuilder extends ResourceBuilder {
 
 	/**
 	 * Implementation of {@link ResourceBuilder#build()} for the Suseika's
-	 * browser client. Uses methods starting from "build..." in
+	 * browser client. Uses methods starting from "done..." in
 	 * {@link SuseikaBrowserClientResourceBuilder}.
 	 */
 	public void build(String clientPath) {
@@ -183,7 +183,7 @@ public final class SuseikaBrowserClientResourceBuilder extends ResourceBuilder {
 		/*
 		 * Build character doll parts graphics data. These include apparel,
 		 * wielded items, bodies and body parts. Building items graphics data
-		 * means moving images from build directory to game client directory
+		 * means moving images from done directory to game client directory
 		 * changing their names from %name_of_item%.png to %id_of_item%.png
 		 */
 		File[] files = new File(chardollPath + "apparel").listFiles();
@@ -221,7 +221,7 @@ public final class SuseikaBrowserClientResourceBuilder extends ResourceBuilder {
 	private void buildWalls() {
 		/*
 		 * Build walls graphical data. Building walls graphics data means moving
-		 * images from build directory to game client directory changing their
+		 * images from done directory to game client directory changing their
 		 * names from name_of_wall%.png to %id_of_wall%.png
 		 */
 		File[] files = new File(wallsPath).listFiles();
@@ -315,7 +315,7 @@ public final class SuseikaBrowserClientResourceBuilder extends ResourceBuilder {
 	private void buildItems() {
 		/*
 		 * Build items graphics data. Building items graphics data means moving
-		 * images from build directory to game client directory changing their
+		 * images from done directory to game client directory changing their
 		 * names from %name_of_item%.png to %id_of_item%.png
 		 */
 		File[] files = new File(itemsPath).listFiles();

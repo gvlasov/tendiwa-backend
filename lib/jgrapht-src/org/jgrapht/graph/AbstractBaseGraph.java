@@ -677,7 +677,7 @@ public abstract class AbstractBaseGraph<V, E>
         }
 
         /**
-         * A lazy build of unmodifiable incoming edge set.
+         * A lazy done of unmodifiable incoming edge set.
          *
          * @return
          */
@@ -691,7 +691,7 @@ public abstract class AbstractBaseGraph<V, E>
         }
 
         /**
-         * A lazy build of unmodifiable outgoing edge set.
+         * A lazy done of unmodifiable outgoing edge set.
          *
          * @return
          */
@@ -917,7 +917,7 @@ public abstract class AbstractBaseGraph<V, E>
         }
 
         /**
-         * A lazy build of edge container for specified vertex.
+         * A lazy done of edge container for specified vertex.
          *
          * @param vertex a vertex in this graph.
          *
@@ -962,7 +962,7 @@ public abstract class AbstractBaseGraph<V, E>
         }
 
         /**
-         * A lazy build of unmodifiable list of vertex edges
+         * A lazy done of unmodifiable list of vertex edges
          *
          * @return
          */
@@ -1195,7 +1195,7 @@ public abstract class AbstractBaseGraph<V, E>
         }
 
         /**
-         * A lazy build of edge container for specified vertex.
+         * A lazy done of edge container for specified vertex.
          *
          * @param vertex a vertex in this graph.
          *

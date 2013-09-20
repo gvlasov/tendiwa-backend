@@ -1,26 +1,18 @@
 package tendiwa.geometry;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static tendiwa.geometry.Directions.E;
-import static tendiwa.geometry.Directions.W;
-
-import java.awt.Color;
-import java.util.Set;
-
+import com.google.common.collect.Sets;
 import org.junit.Test;
 
-import tendiwa.drawing.DrawingRectangleSidePiece;
-import tendiwa.drawing.TestCanvas;
-import tendiwa.drawing.TestCanvasBuilder;
+import java.util.Set;
 
-import com.google.common.collect.Sets;
+import static org.junit.Assert.*;
+import static tendiwa.geometry.Directions.E;
+import static tendiwa.geometry.Directions.W;
 
 public class RectangleSidePieceTest {
 	@Test
 	public void testStaticCoordinateInsideAndOutside() {
-		RectangleArea r = new RectangleArea(5, 8, 5, 5);
+		EnhancedRectangle r = new EnhancedRectangle(5, 8, 5, 5);
 		int staticCoordinateInside = r
 			.getSideAsSidePiece(E)
 			.getLine()
@@ -35,7 +27,7 @@ public class RectangleSidePieceTest {
 	@Test
 	public void touches() {
 		// TODO: This is a test for another class.
-		EnhancedRectangle r1 = new RectangleArea(4, 5, 5, 5);
+		EnhancedRectangle r1 = new EnhancedRectangle(4, 5, 5, 5);
 		EnhancedRectangle r2 = r1
 			.getSideAsSidePiece(Directions.E)
 			.createRectangle(5);

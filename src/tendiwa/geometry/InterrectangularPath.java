@@ -1,19 +1,13 @@
 package tendiwa.geometry;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import tendiwa.core.meta.Chance;
 
-public class InterrectangularPath implements Iterable<RectangleArea> {
-	final HashMap<Integer, RectangleArea> locationPlaces = new HashMap<Integer, RectangleArea>();
-	final HashMap<RectangleArea, HashSet<RectanglesJunction>> junctions = new HashMap<RectangleArea, HashSet<RectanglesJunction>>();
+import java.util.*;
+
+public class InterrectangularPath implements Iterable<EnhancedRectangle> {
+	final HashMap<Integer, EnhancedRectangle> locationPlaces = new HashMap<Integer, EnhancedRectangle>();
+	final HashMap<EnhancedRectangle, HashSet<RectanglesJunction>> junctions = new HashMap<EnhancedRectangle, HashSet<RectanglesJunction>>();
 	protected final int width;
 	protected final RectangleSystem rs;
 
@@ -21,7 +15,7 @@ public class InterrectangularPath implements Iterable<RectangleArea> {
 		this.rs = rs;
 		this.width = width;
 	}
-	public InterrectangularPath addNextRectangle(RectangleArea r) {
+	public InterrectangularPath addNextRectangle(EnhancedRectangle r) {
 		locationPlaces.put(locationPlaces.size(), r);
 		junctions.put(r, new HashSet<RectanglesJunction>());
 		if (junctions.size() > 0) {
@@ -31,7 +25,7 @@ public class InterrectangularPath implements Iterable<RectangleArea> {
 		}
 		return this;
 	}
-	private void putJunctionRangomlyInSegment(RectangleArea r1, RectangleArea r2) {
+	private void putJunctionRangomlyInSegment(EnhancedRectangle r1, EnhancedRectangle r2) {
 		Segment segment = rs.getAdjacencySegment(r1, r2);
 		RectanglesJunction junction = new RectanglesJunction(
 			segment.getOrientation(),
@@ -44,36 +38,36 @@ public class InterrectangularPath implements Iterable<RectangleArea> {
 		junctions.get(r1).add(junction);
 		junctions.get(r2).add(junction);
 	}
-	public boolean junctionCanBePlacedBetween(RectangleArea r1, RectangleArea r2) {
+	public boolean junctionCanBePlacedBetween(EnhancedRectangle r1, EnhancedRectangle r2) {
 		return rs.getAdjacencySegment(r1, r2).getLength() >= width;
 	}
-	private RectangleArea getRectangleAt(int index) {
+	private EnhancedRectangle getRectangleAt(int index) {
 		return locationPlaces.get(index);
 	}
 	/**
 	 * Returns a collection of RectnagleAreas that are joinable with the last
-	 * RectangleArea in this InterrectangularPath (i.e. last RectangleArea and
+	 * EnhancedRectangle in this InterrectangularPath (i.e. last EnhancedRectangle and
 	 * its neighbor have at least {@code width} connected cells.)
 	 * 
 	 * @return
 	 */
-	public Collection<RectangleArea> getRectanglesJoinableWithLast() {
-		RectangleArea lastRectangle = getLastRectangle();
-		Set<RectangleArea> rectangles = rs.getNeighbors(lastRectangle);
-		Collection<RectangleArea> answer = new HashSet<RectangleArea>();
-		for (RectangleArea r : rectangles) {
+	public Collection<EnhancedRectangle> getRectanglesJoinableWithLast() {
+		EnhancedRectangle lastRectangle = getLastRectangle();
+		Set<EnhancedRectangle> rectangles = rs.getNeighbors(lastRectangle);
+		Collection<EnhancedRectangle> answer = new HashSet<EnhancedRectangle>();
+		for (EnhancedRectangle r : rectangles) {
 			if (junctionCanBePlacedBetween(r, lastRectangle)) {
 				answer.add(r);
 			}
 		}
 		return answer;
 	}
-	public RectangleArea getLastRectangle() {
+	public EnhancedRectangle getLastRectangle() {
 		return locationPlaces.get(locationPlaces.size());
 	}
 	@Override
-	public Iterator<RectangleArea> iterator() {
-		return new Iterator<RectangleArea>() {
+	public Iterator<EnhancedRectangle> iterator() {
+		return new Iterator<EnhancedRectangle>() {
 			int index = -1;
 
 			@Override
@@ -82,7 +76,7 @@ public class InterrectangularPath implements Iterable<RectangleArea> {
 			}
 
 			@Override
-			public RectangleArea next() {
+			public EnhancedRectangle next() {
 				index++;
 				return locationPlaces.get(index);
 			}
@@ -127,10 +121,10 @@ public class InterrectangularPath implements Iterable<RectangleArea> {
 	 * @see RectangleSystem#areRectanglesNear(java.awt.Rectangle,
 	 *      java.awt.Rectangle) for definition of what neighbor rectangles are.
 	 */
-	public RectanglesJunction getJunction(RectangleArea r1, RectangleArea r2) {
+	public RectanglesJunction getJunction(EnhancedRectangle r1, EnhancedRectangle r2) {
 		if (r1.equals(r2)) {
 			throw new IllegalArgumentException(
-				"Trying to get a junction between two equal RectangleAreas");
+				"Trying to get a junction between two equal EnhancedRectangles");
 		}
 		if (!rs.areRectanglesNear(r1, r2)) {
 			throw new IllegalArgumentException("Rectangles are not neighbors");

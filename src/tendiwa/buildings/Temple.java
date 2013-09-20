@@ -1,7 +1,5 @@
 package tendiwa.buildings;
 
-import java.awt.Rectangle;
-
 import tendiwa.core.Building;
 import tendiwa.core.StaticData;
 import tendiwa.core.TerrainBasics;
@@ -9,8 +7,9 @@ import tendiwa.core.meta.Coordinate;
 import tendiwa.core.terrain.settlements.BuildingPlace;
 import tendiwa.geometry.CardinalDirection;
 import tendiwa.geometry.EnhancedRectangle;
-import tendiwa.geometry.RectangleArea;
 import tendiwa.geometry.RectangleSystem;
+
+import java.awt.*;
 
 public class Temple extends Building {
 	protected Temple(BuildingPlace bp, CardinalDirection side) {
@@ -42,11 +41,11 @@ public class Temple extends Building {
 		// For two of four sides we should revert width of cut rectangle
 		RectangleSystem crs = new RectangleSystem(1);
 
-		RectangleArea initial = crs.addRectangleArea(x, y, width, height);
+		EnhancedRectangle initial = crs.addRectangle(new EnhancedRectangle(x, y, width, height));
 		crs.cutRectangleFromSide(initial, side.opposite(), 4);
 
 		// 0 - area behind altar, 1 - main area
-		RectangleArea trees = crs.cutRectangleFromSide(initial, side.counterClockwiseQuarter(), 4);
+		EnhancedRectangle trees = crs.cutRectangleFromSide(initial, side.counterClockwiseQuarter(), 4);
 		crs.excludeRectangle(trees);
 
 		terrainModifier = settlement.getTerrainModifier(crs);
@@ -117,7 +116,7 @@ public class Temple extends Building {
 		}
 
 		// Ceilings
-		for (EnhancedRectangle ceiling : terrainModifier.getRectangleSystem().rectangleSet()) {
+		for (EnhancedRectangle ceiling : terrainModifier.getRectangleSystem().rectangleList()) {
 			settlement.createCeiling(ceiling, 1);
 		}
 	}

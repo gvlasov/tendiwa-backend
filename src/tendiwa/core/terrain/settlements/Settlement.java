@@ -1,28 +1,19 @@
 package tendiwa.core.terrain.settlements;
 
-import java.awt.Rectangle;
+import tendiwa.core.*;
+import tendiwa.core.Character;
+import tendiwa.core.meta.Chance;
+import tendiwa.core.meta.Coordinate;
+import tendiwa.core.meta.Utils;
+import tendiwa.core.terrain.settlements.Settlement.RoadSystem.Road;
+import tendiwa.geometry.*;
+
+import java.awt.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-
-import tendiwa.core.Building;
-import tendiwa.core.Character;
-import tendiwa.core.HorizontalPlane;
-import tendiwa.core.Location;
-import tendiwa.core.StaticData;
-import tendiwa.core.TerrainModifier;
-import tendiwa.core.meta.Chance;
-import tendiwa.core.meta.Coordinate;
-import tendiwa.core.meta.Utils;
-import tendiwa.core.terrain.settlements.Settlement.RoadSystem.Road;
-import tendiwa.geometry.CardinalDirection;
-import tendiwa.geometry.EnhancedRectangle;
-import tendiwa.geometry.Orientation;
-import tendiwa.geometry.RandomRectangleSystem;
-import tendiwa.geometry.RectangleArea;
-import tendiwa.geometry.RectangleSystem;
 
 
 /**
@@ -31,13 +22,11 @@ import tendiwa.geometry.RectangleSystem;
  *
  */
 public class Settlement extends Location {
-	public RectangleSystem rectangleSystem;
 	protected RoadSystem roadSystem = new RoadSystem();
 	protected QuarterSystem quarterSystem;
-	public HashSet<RectangleSystem> quarters = new HashSet<RectangleSystem>();
-	public ArrayList<Building> buildings = new ArrayList<Building>();
-	public HashMap<Integer, Character> dwellers = new HashMap<Integer, Character>();
-	public ArrayList<Service> services = new ArrayList<Service>();
+	public HashSet<RectangleSystem> quarters = new HashSet<>();
+	public ArrayList<Building> buildings = new ArrayList<>();
+	public ArrayList<Service> services = new ArrayList<>();
 	public Settlement(HorizontalPlane plane, int x, int y, int width, int height) {
 		super(plane, x, y, width, height, "Settlement");
 		quarterSystem = new QuarterSystem(this);
@@ -52,17 +41,9 @@ public class Settlement extends Location {
 				building.draw();
 				buildings.add(building);
 			} else {
-				throw new RuntimeException("Coundn't place building " + cls.getSimpleName());
+				throw new RuntimeException("Couldn't place building " + cls.getSimpleName());
 			}
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			e.printStackTrace();
 		}
 
@@ -476,7 +457,7 @@ public class Settlement extends Location {
 				HashSet<BuildingPlace> answer = new HashSet<BuildingPlace>();
 				TerrainModifier modifier = settlement.getTerrainModifier(x, y, width, height, minWidth, 1);
 				RectangleSystem rs = modifier.getRectangleSystem(); 
-				for (RectangleArea r : rs.rectangleSet()) {
+				for (EnhancedRectangle r : rs.rectangleList()) {
 					if (rs.isRectangleOuter(r)) {
 						answer.add(new BuildingPlace(r, this));
 					}

@@ -9,7 +9,7 @@
 			debuglevel="lines,vars,source"
 			classpath="lib/gson-1.7.1.jar"
 		/>
-		<echo>Erpoge Server build is done</echo>
+		<echo>Erpoge Server done is done</echo>
 	</target>
 	<target name="buildStaticData">
 		<java 

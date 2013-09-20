@@ -1,6 +1,6 @@
 package tendiwa.geometry;
 
-import java.awt.Point;
+import java.awt.*;
 
 /**
  * Class represents an abstract intersection of two same type objects. One of

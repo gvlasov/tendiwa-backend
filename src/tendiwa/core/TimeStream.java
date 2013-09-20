@@ -268,11 +268,11 @@ public class TimeStream {
 		// A chunk where character came to
 		Chunk chunk = plane.getChunkWithCell(x, y);
 		// Bounds where we check for missing chunks
-		int endX = chunk.getX() + Chunk.WIDTH * TimeStream.LOADING_DEPTH;
-		int endY = chunk.getY() + Chunk.WIDTH * TimeStream.LOADING_DEPTH;
-		for (int currY = chunk.getY() - Chunk.WIDTH * TimeStream.LOADING_DEPTH; currY <= endY; currY += Chunk.WIDTH) {
+		int endX = chunk.getX() + Chunk.SIZE * TimeStream.LOADING_DEPTH;
+		int endY = chunk.getY() + Chunk.SIZE * TimeStream.LOADING_DEPTH;
+		for (int currY = chunk.getY() - Chunk.SIZE * TimeStream.LOADING_DEPTH; currY <= endY; currY += Chunk.SIZE) {
 			// Find missing chunks and query them
-			for (int currX = chunk.getX()-Chunk.WIDTH*TimeStream.LOADING_DEPTH; currX <= endX; currX += Chunk.WIDTH) {
+			for (int currX = chunk.getX()-Chunk.SIZE *TimeStream.LOADING_DEPTH; currX <= endX; currX += Chunk.SIZE) {
 				Chunk newChunk = plane.getChunkByCoord(currX, currY);
 				if (!newChunk.belongsToTimeStream(this)) {
 					addChunk(newChunk);
@@ -290,9 +290,9 @@ public class TimeStream {
 			for (PlayerCharacter player : players.keySet()) {
 				int playerChunkX = plane.getChunkRoundedCoord(player.x);
 				int playerChunkY = plane.getChunkRoundedCoord(player.y);
-				if (Math.abs(playerChunkX - chunk.getX()) > Chunk.WIDTH
+				if (Math.abs(playerChunkX - chunk.getX()) > Chunk.SIZE
 						* TimeStream.LOADING_DEPTH
-						|| Math.abs(playerChunkY - chunk.getY()) > Chunk.WIDTH
+						|| Math.abs(playerChunkY - chunk.getY()) > Chunk.SIZE
 								* TimeStream.LOADING_DEPTH) {
 					chunksToExclude.add(chunk);
 				}

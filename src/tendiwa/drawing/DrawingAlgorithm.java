@@ -1,7 +1,7 @@
 package tendiwa.drawing;
 
-import java.awt.Color;
-import java.awt.Rectangle;
+import java.awt.*;
+import java.awt.geom.AffineTransform;
 
 public abstract class DrawingAlgorithm<T> {
 	TestCanvas canvas;
@@ -21,11 +21,17 @@ public abstract class DrawingAlgorithm<T> {
 	}
 	protected void drawRectangle(Rectangle r, Color color) {
 		canvas.graphics.setColor(color);
-		canvas.graphics.fillRect(
-			r.x * canvas.scale,
-			r.y * canvas.scale,
-			r.width * canvas.scale,
-			r.height * canvas.scale);
+        Graphics2D g2d = (Graphics2D) canvas.graphics;
+        AffineTransform transform = new AffineTransform();
+        transform.setToScale(canvas.scale, canvas.scale);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setTransform(transform);
+        g2d.fill(r);
+//		canvas.graphics.fillRect(
+//			r.x * canvas.scale,
+//			r.y * canvas.scale,
+//			r.width * canvas.scale,
+//			r.height * canvas.scale);
 	}
 	protected int getCanvasWidth() {
 		return canvas.width;

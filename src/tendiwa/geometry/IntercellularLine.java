@@ -1,6 +1,6 @@
 package tendiwa.geometry;
 
-import java.awt.Point;
+import java.awt.*;
 
 public class IntercellularLine {
 	final int constantCoord;

@@ -16,7 +16,7 @@ import com.google.gson.JsonSerializationContext;
  * <ol>
  * <li>To send the serialized data to client as event that occurred on the
  * server-side;</li>
- * <li>To build a static data file</li>
+ * <li>To done a static data file</li>
  * </ol>
  * <p>
  * This interface is for the second purpose: implementing it makes sure that

@@ -98,16 +98,16 @@ public class PlayerCharacter extends Character implements GsonForStaticDataSeria
 		Set<Chunk> answer = new HashSet<Chunk>();
 		Chunk playerChunk = plane.getChunkWithCell(x, y);
 		answer.add(playerChunk);
-		answer.add(plane.getChunkByCoord(playerChunk.getX()-Chunk.WIDTH, playerChunk.getY()-Chunk.WIDTH));
-		answer.add(plane.getChunkByCoord(playerChunk.getX(), playerChunk.getY()-Chunk.WIDTH));
-		answer.add(plane.getChunkByCoord(playerChunk.getX()+Chunk.WIDTH, playerChunk.getY()-Chunk.WIDTH));
+		answer.add(plane.getChunkByCoord(playerChunk.getX()-Chunk.SIZE, playerChunk.getY()-Chunk.SIZE));
+		answer.add(plane.getChunkByCoord(playerChunk.getX(), playerChunk.getY()-Chunk.SIZE));
+		answer.add(plane.getChunkByCoord(playerChunk.getX()+Chunk.SIZE, playerChunk.getY()-Chunk.SIZE));
 		
-		answer.add(plane.getChunkByCoord(playerChunk.getX()-Chunk.WIDTH, playerChunk.getY()));
-		answer.add(plane.getChunkByCoord(playerChunk.getX()+Chunk.WIDTH, playerChunk.getY()));
+		answer.add(plane.getChunkByCoord(playerChunk.getX()-Chunk.SIZE, playerChunk.getY()));
+		answer.add(plane.getChunkByCoord(playerChunk.getX()+Chunk.SIZE, playerChunk.getY()));
 		
-		answer.add(plane.getChunkByCoord(playerChunk.getX()-Chunk.WIDTH, playerChunk.getY()+Chunk.WIDTH));
-		answer.add(plane.getChunkByCoord(playerChunk.getX(), playerChunk.getY()+Chunk.WIDTH));
-		answer.add(plane.getChunkByCoord(playerChunk.getX()+Chunk.WIDTH, playerChunk.getY()+Chunk.WIDTH));
+		answer.add(plane.getChunkByCoord(playerChunk.getX()-Chunk.SIZE, playerChunk.getY()+Chunk.SIZE));
+		answer.add(plane.getChunkByCoord(playerChunk.getX(), playerChunk.getY()+Chunk.SIZE));
+		answer.add(plane.getChunkByCoord(playerChunk.getX()+Chunk.SIZE, playerChunk.getY()+Chunk.SIZE));
 		return answer;
 	}
 

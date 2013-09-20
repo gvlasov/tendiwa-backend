@@ -63,7 +63,7 @@ public class AsyncEventProvider {
 	 * @throws InterruptedException
 	 */
 	static void aServerInfo(String message, Connection conn) throws InterruptedException {
-		conn.send("[{\"e\":\"serverInfo\",\"serverName\":\"Erpoge Server\",\"online\":31337,\"chunkWidth\":"+Chunk.WIDTH+"}]");
+		conn.send("[{\"e\":\"serverInfo\",\"serverName\":\"Erpoge Server\",\"online\":31337,\"chunkWidth\":"+Chunk.SIZE +"}]");
 	}
 	
 	static void aLogin(String message, Connection connection) throws InterruptedException {

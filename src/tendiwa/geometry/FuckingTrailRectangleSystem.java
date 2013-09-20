@@ -1,15 +1,11 @@
 package tendiwa.geometry;
 
-import java.awt.Point;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Random;
-
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import tendiwa.core.meta.Chance;
 import tendiwa.core.meta.Range;
+
+import java.awt.*;
+import java.util.*;
 
 /**
  * A RectangleSystem that is defined by a set of points and that consists of
@@ -28,7 +24,7 @@ public class FuckingTrailRectangleSystem extends GrowingRectangleSystem {
 private static final int MIN_SECONDARY_AXIS_COVERING_SIZE = 4;
 protected Point lastPoint;
 protected Range sizeRange;
-final HashMap<Point, RectangleArea> pointsToRectangles = new HashMap<Point, RectangleArea>();
+final HashMap<Point, EnhancedRectangle> pointsToRectangles = new HashMap<Point, EnhancedRectangle>();
 public static boolean STOP = false;
 
 public FuckingTrailRectangleSystem(int borderWidth, Range sizeRange, Point start) {
@@ -107,7 +103,7 @@ public FuckingTrailRectangleSystem buildToPoint(Point newPoint) {
 	}
 	int amountOfRectangles;
 	if (maxDistanceLeft > sizeRange.min) {
-		// If there is some place between two rectangles on ends of the line,
+		// If there is some placeIn between two rectangles on ends of the line,
 		// where at least one other rectangle can be placed, start preparing 
 		// those middle rectangles.
 		Range distanceRange = new Range(minDistanceLeft, maxDistanceLeft);
@@ -296,13 +292,13 @@ public FuckingTrailRectangleSystem buildToPoint(Point newPoint) {
 		listOfSecondaryCoords.add(topCoordOfCurrentRec);
 	}
 
-	// Finally, place all rectangles.
+	// Finally, placeIn all rectangles.
 	for (int i=0, l=widths.size(); i<l; i++) {
-		RectangleArea r = addRectangleArea(new RectangleArea(
-			xCoordinates.get(i),
-			yCoordinates.get(i),
-			widths.get(i),
-			heights.get(i)
+		EnhancedRectangle r = addRectangle(new EnhancedRectangle(
+				xCoordinates.get(i),
+				yCoordinates.get(i),
+				widths.get(i),
+				heights.get(i)
 		));
 		if (i == 0 && pointsToRectangles.size() == 0) {
 			pointsToRectangles.put(lastPoint, r);
@@ -334,7 +330,7 @@ public int[] splitRandomLengthIntoRandomPieces(Range randomLength, Range randomP
 	 * (including those rectangles on the points) for the algorithm to be able to
 	 * completely fill the secondary axis with rectangles. Algorithm needs to know
 	 * this number before the main axis is split into rectangles, because if it
-	 * doesn't, then there is a chance that it will not be able to build a
+	 * doesn't, then there is a chance that it will not be able to done a
 	 * RectnalgeSystem of connected rectangles because even maximum secondary size
 	 * of all rectangles will not be sufficient for all of them to touch sides.
 	 */
@@ -371,20 +367,5 @@ public int[] splitRandomLengthIntoRandomPieces(Range randomLength, Range randomP
 		}
 	}
 	return piecesLengths;
-}
-/**
-
- * @param xIsGreater 
- * 		If distance between points by x axis is greater than
- * 		distance between points by y axis.
- * @param newPoint
- * 		Same as newPoint in 
- * 		{@link FuckingTrailRectangleSystem#TrailRectangleSystem(int, Range, Point)}
- * @return
- */
-
-public Collection<Point> getPoints() {
-	return pointsToRectangles.keySet();
-
 }
 }

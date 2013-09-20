@@ -81,7 +81,7 @@ final class GsonArbitraryArrays {
 							break;
 						}
 					}
-					// After we found body part, recursively build the json
+					// After we found body part, recursively done the json
 					// structure of body.
 					if (root == null) {
 						throw new RuntimeException("Some character's body doesn't have a root vertex!");
@@ -114,7 +114,7 @@ final class GsonArbitraryArrays {
 					for (DefaultEdge edge : graph.edgesOf(root)) {
 						/*
 						 * Using all edges of root body part, seek for its
-						 * children body parts, and build their structure.
+						 * children body parts, and done their structure.
 						 */
 						if (graph.getEdgeSource(edge) == root) {
 							jObjNew.add(buildJson(graph.getEdgeTarget(edge)));

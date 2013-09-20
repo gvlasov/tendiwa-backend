@@ -199,7 +199,7 @@ public class StaticData implements GsonForStaticDataSerializable {
 		return instance.characterTypesByName.containsKey(name);
 	}
 	/**
-	 * Serializes all the known static data to build a client static data file.
+	 * Serializes all the known static data to done a client static data file.
 	 * @param typeOfSrc
 	 * @param context
 	 * @return

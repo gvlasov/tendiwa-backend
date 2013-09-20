@@ -1,6 +1,6 @@
 package tendiwa.geometry;
 
-import java.awt.Rectangle;
+import java.awt.*;
 
 /**
  * A RectangleSystem that is constructed by setting an "initial" rectangle and
@@ -18,7 +18,7 @@ public class GrowingRectangleSystem extends RectangleSystem {
 
 	public GrowingRectangleSystem(int borderWidth, Rectangle r) {
 		this(borderWidth);
-		addRectangleArea(new RectangleArea(r));
+		addRectangle(new EnhancedRectangle(r));
 	}
 
 	/**
@@ -39,10 +39,10 @@ public class GrowingRectangleSystem extends RectangleSystem {
 	 *            the north.
 	 */
 	public void grow(Rectangle r, CardinalDirection side, int width, int height, int offset) {
-		addRectangleArea(create(r, side, width, height, offset));
+		addRectangle(create(r, side, width, height, offset));
 	}
 	/**
-	 * Creates, but doesn't place a new rectangle from a side of an existing
+	 * Creates, but doesn't placeIn a new rectangle from a side of an existing
 	 * rectangle.
 	 * 
 	 * @param r
@@ -57,7 +57,7 @@ public class GrowingRectangleSystem extends RectangleSystem {
 	 * @param offset
 	 * @return New rectangle.
 	 */
-	protected RectangleArea create(Rectangle r, CardinalDirection side, int width, int height, int offset) {
+	protected EnhancedRectangle create(Rectangle r, CardinalDirection side, int width, int height, int offset) {
 		int startX = 0;
 		int startY = 0;
 		switch (side) {
@@ -79,6 +79,6 @@ public class GrowingRectangleSystem extends RectangleSystem {
 				startY = r.y + offset;
 				break;
 		}
-		return new RectangleArea(startX, startY, width, height);
+		return new EnhancedRectangle(startX, startY, width, height);
 	}
 }

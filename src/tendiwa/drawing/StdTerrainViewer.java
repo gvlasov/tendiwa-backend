@@ -1,16 +1,16 @@
 package tendiwa.drawing;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import tendiwa.core.Cell;
 import tendiwa.core.StaticData;
 import tendiwa.core.TerrainBasics;
-import tendiwa.geometry.RectangleArea;
+import tendiwa.geometry.EnhancedRectangle;
 import tendiwa.geometry.RectangleSystem;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class StdTerrainViewer {
-Set<RectangleSystem> rectangleSystems = new HashSet<RectangleSystem>();
+Set<RectangleSystem> rectangleSystems = new HashSet<>();
 /**
  * Width of the left ruler with numbers
  */
@@ -34,10 +34,12 @@ public StdTerrainViewer(TerrainBasics terrain) {
 		numbersHeight++;
 	}
 }
+
 public StdTerrainViewer printNumbers() {
 	printNumbersVertical();
 	return printNumbersHorizontal();
 }
+
 public StdTerrainViewer printNumbersHorizontal() {
 	// -1 here is because, for example, terrain with with 100 will need only
 	// 2 chars for digits, since it will need numbers from 0 to 99.
@@ -45,6 +47,7 @@ public StdTerrainViewer printNumbersHorizontal() {
 	printNumbersH = true;
 	return this;
 }
+
 public StdTerrainViewer printNumbersVertical() {
 	// -1 here is because, for example, terrain with with 100 will need only
 	// 2 chars for digits, since it will need numbers from 0 to 99.
@@ -52,10 +55,12 @@ public StdTerrainViewer printNumbersVertical() {
 	printNumbersV = true;
 	return this;
 }
+
 public StdTerrainViewer addRectangleSystem(RectangleSystem rs) {
 	rectangleSystems.add(rs);
 	return this;
 }
+
 public void print() {
 	// These builders contain chars that are
 	StringBuilder[] builders = new StringBuilder[terrain.getHeight()];
@@ -83,7 +88,7 @@ public void print() {
 	if (printNumbersV) {
 		// Create numbers of lines from the left side of the terrain
 		for (int i = 0; i < h; i++) {
-			String number = new String();
+			String number = "";
 			for (int j = 0, l = numbersWidth - String.valueOf(i).length(); j < l; j++) {
 				number += " ";
 			}
@@ -131,12 +136,12 @@ public void print() {
 	}
 	// Printing ids of rectangles
 	for (RectangleSystem rs : rectangleSystems) {
-		for (RectangleArea r : rs.rectangleSet()) {
-			int numOfDigits = String.valueOf(r.getId()).length();
+		for (EnhancedRectangle r : rs.rectangleList()) {
+			int numOfDigits = String.valueOf(r.hashCode()).length();
 			if (r.width < numOfDigits + 1 || r.height < 2) {
 				continue;
 			}
-			builders[r.y + 1].insert(numbersWidth + r.x + 1, r.getId());
+			builders[r.y + 1].insert(numbersWidth + r.x + 1, r.hashCode());
 
 			builders[r.y + 1].delete(numbersWidth + r.x + 1 + numOfDigits, numbersWidth + r.x + 1 + numOfDigits * 2);
 		}

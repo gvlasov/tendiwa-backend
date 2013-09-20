@@ -1,19 +1,15 @@
 package tendiwa.geometry;
 
-import static tendiwa.geometry.Directions.NE;
-import static tendiwa.geometry.Directions.SE;
-import static tendiwa.geometry.Directions.SW;
+import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSet.Builder;
+import tendiwa.core.meta.Range;
 
-import java.awt.Point;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import tendiwa.core.meta.Range;
-
-import com.google.common.collect.ImmutableCollection;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.ImmutableSet.Builder;
+import static tendiwa.geometry.Directions.*;
 
 /**
  * Represents a line on rectangle's side that divides cells inside the rectangle

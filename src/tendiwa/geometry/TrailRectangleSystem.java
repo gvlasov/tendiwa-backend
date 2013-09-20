@@ -1,9 +1,9 @@
 package tendiwa.geometry;
 
-import java.awt.Point;
-import java.util.ArrayList;
-
 import tendiwa.core.meta.Range;
+
+import java.awt.*;
+import java.util.ArrayList;
 
 public class TrailRectangleSystem extends RectangleSystem {
 

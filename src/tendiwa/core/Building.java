@@ -1,28 +1,22 @@
 package tendiwa.core;
 
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
-
 import tendiwa.core.meta.Chance;
 import tendiwa.core.meta.Coordinate;
 import tendiwa.core.terrain.settlements.BuildingPlace;
 import tendiwa.core.terrain.settlements.Settlement.RoadSystem.Road;
 import tendiwa.geometry.CardinalDirection;
 import tendiwa.geometry.EnhancedRectangle;
-import tendiwa.geometry.RectangleArea;
 import tendiwa.geometry.RectangleSystem;
+
+import java.awt.*;
+import java.util.*;
 
 
 public abstract class Building {
 	protected Location settlement;
-	protected Collection<RectangleArea> rooms;
+	protected Collection<EnhancedRectangle> rooms;
 	protected TerrainModifier terrainModifier;
 	protected EnhancedRectangle lobby;
 	protected ArrayList<CardinalDirection> doorSides = new ArrayList<CardinalDirection>();
@@ -51,7 +45,7 @@ public abstract class Building {
 	/**
 	 * ArrayList of rectangleIds
 	 */
-	private ArrayList<Integer> hallways = new ArrayList<Integer>();
+	private ArrayList<Integer> hallways = new ArrayList<>();
 
 	/**
 	 * Sets the main properties of Building. This method must have been the
@@ -104,7 +98,7 @@ public abstract class Building {
 		return c;
 	}
 
-	public Coordinate placeDoor(RectangleArea r, CardinalDirection side, CardinalDirection endOfSide, int depth, int object) {
+	public Coordinate placeDoor(EnhancedRectangle r, CardinalDirection side, CardinalDirection endOfSide, int depth, int object) {
 		/**
 		 * Places door in the particular cell on particular side of room
 		 */
@@ -121,12 +115,12 @@ public abstract class Building {
 		}
 		int dx, dy;
 		if (side == CardinalDirection.N || side == CardinalDirection.S) {
-			ArrayList<Integer> xes = new ArrayList<Integer>(cells.keySet());
+			ArrayList<Integer> xes = new ArrayList<>(cells.keySet());
 			dx = xes.get(Chance.rand(0, xes.size() - 1));
 			dy = cells.get(dx);
 			settlement.setObject(dx, dy, objDoorBlue);
 		} else {
-			ArrayList<Integer> yes = new ArrayList<Integer>(cells.keySet());
+			ArrayList<Integer> yes = new ArrayList<>(cells.keySet());
 			dy = yes.get(Chance.rand(0, yes.size() - 1));
 			dx = cells.get(dy);
 			settlement.setObject(dx, dy, objDoorBlue);
@@ -239,7 +233,7 @@ public abstract class Building {
 	}
 
 	public HashMap<Integer, Integer> findDoorAppropriateCells(Rectangle r, CardinalDirection side) {
-		HashMap<Integer, Integer> cells = new HashMap<Integer, Integer>();
+		HashMap<Integer, Integer> cells = new HashMap<>();
 		Set<Integer> keys;
 		if (side == CardinalDirection.N) {
 			int y = r.y - 1;
@@ -248,7 +242,7 @@ public abstract class Building {
 					cells.put(i, y);
 				}
 			}
-			keys = new HashSet<Integer>(cells.keySet());
+			keys = new HashSet<>(cells.keySet());
 			for (int x : keys) {
 				y = cells.get(x);
 				if (settlement.cells[x][y + 1].object() != 0) {
@@ -262,7 +256,7 @@ public abstract class Building {
 					cells.put(i, x);
 				}
 			}
-			keys = new HashSet<Integer>(cells.keySet());
+			keys = new HashSet<>(cells.keySet());
 			for (int y : keys) {
 				x = cells.get(y);
 				if (settlement.cells[x - 1][y].object() != 0) {
@@ -276,7 +270,7 @@ public abstract class Building {
 					cells.put(i, y);
 				}
 			}
-			keys = new HashSet<Integer>(cells.keySet());
+			keys = new HashSet<>(cells.keySet());
 			for (int x : keys) {
 				y = cells.get(x);
 				if (settlement.cells[x][y - 1].object() != 0) {
@@ -337,16 +331,16 @@ public abstract class Building {
 		modifier.drawInnerBorders(1, wallType);
 		int floorType = StaticData.getFloorType("stone").getId();
 		int objDoorBlue = StaticData.getObjectType("door_blue").getId();
-		for (Rectangle r : rs.rectangleSet()) {
+		for (Rectangle r : rs.rectangleList()) {
 			fillFloor(r, floorType);
 		}
-		Graph<RectangleArea, DefaultEdge> graph = rs.getGraph();
+		Graph<EnhancedRectangle, DefaultEdge> graph = rs.getGraph();
 		
 		for (DefaultEdge e : graph.edgeSet()) {
 			Coordinate c = connectRoomsWithDoor(graph.getEdgeSource(e), graph.getEdgeTarget(e), objDoorBlue);
 			settlement.setFloor(c.x, c.y, floorType);
 		}
-		rooms = rs.rectangleSet();
+		rooms = rs.rectangleList();
 		return modifier;
 	}
 
@@ -379,7 +373,7 @@ public abstract class Building {
 	}
 
 	protected ArrayList<Coordinate> getCellsNearWalls(Rectangle r) {
-		ArrayList<Coordinate> answer = new ArrayList<Coordinate>();
+		ArrayList<Coordinate> answer = new ArrayList<>();
 		for (int i = r.x + 1; i < r.x + r.width - 1; i++) {
 			if (!settlement.isDoor(i, r.y - 1)) {
 				answer.add(new Coordinate(i, r.y));
@@ -413,7 +407,7 @@ public abstract class Building {
 	}
 
 	public ArrayList<Coordinate> getCellsNearDoors(Rectangle r) {
-		ArrayList<Coordinate> answer = new ArrayList<Coordinate>();
+		ArrayList<Coordinate> answer = new ArrayList<>();
 		for (int i = r.x + 1; i < r.x + r.width - 1; i++) {
 			if (settlement.isDoor(i, r.y - 1)) {
 				answer.add(new Coordinate(i, r.y));
@@ -456,12 +450,12 @@ public abstract class Building {
 	 * Remove all the objects inside rooms.
 	 */
 	public void clearBasisInside() {
-		for (Rectangle r : terrainModifier.getRectangleSystem().rectangleSet()) {
+		for (Rectangle r : terrainModifier.getRectangleSystem().rectangleList()) {
 			settlement.square(r.x, r.y, r.width, r.height, TerrainBasics.ELEMENT_OBJECT, StaticData.VOID, true);
 		}
 	}
 
-	public void setLobby(RectangleArea r) {
+	public void setLobby(EnhancedRectangle r) {
 		lobby = r;
 	}
 
@@ -507,7 +501,7 @@ public abstract class Building {
 
 	public enum BasisBuildingSetup {
 		/**
-		 * Describes which methods should buildBasis use to build edges of graph
+		 * Describes which methods should buildBasis use to done edges of graph
 		 */
 		NOT_BUILD_EDGES, CONVERT_TO_DIRECTED_TREE, KEYPOINTS_BASED
 	}

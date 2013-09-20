@@ -1,9 +1,9 @@
 package tendiwa.geometry;
 
-import java.util.Iterator;
-
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import tendiwa.core.meta.Range;
+
+import java.util.Iterator;
 
 /**
  * A Segment is a horizontal or vertical line starting at point {x;y} %length%

@@ -1,6 +1,6 @@
 package tendiwa.geometry;
 
-import java.awt.Point;
+import java.awt.*;
 
 public class EnhancedPoint extends Point {
 	private static final long serialVersionUID = -437683005315402667L;

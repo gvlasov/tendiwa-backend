@@ -5,7 +5,7 @@ import tendiwa.core.StaticData;
 import tendiwa.core.meta.Coordinate;
 import tendiwa.core.terrain.settlements.BuildingPlace;
 import tendiwa.geometry.CardinalDirection;
-import tendiwa.geometry.RectangleArea;
+import tendiwa.geometry.EnhancedRectangle;
 import tendiwa.geometry.RectangleSystem;
 
 public class House2Rooms extends Building {
@@ -20,13 +20,13 @@ public class House2Rooms extends Building {
 
 		RectangleSystem crs = new RectangleSystem(1);
 		CardinalDirection side = CardinalDirection.S;
-		RectangleArea hallToKitchen = crs.addRectangleArea(x, y, width, height);
-		RectangleArea rightRoom = crs.cutRectangleFromSide(hallToKitchen, side.counterClockwiseQuarter(), 5);
-		RectangleArea hall = crs.cutRectangleFromSide(hallToKitchen, side, 2);
-		RectangleArea middleRoom = crs.cutRectangleFromSide(hallToKitchen, side.counterClockwiseQuarter(), 5);
-		RectangleArea exPartOfStoreroom = crs.cutRectangleFromSide(hall, side.clockwiseQuarter(), 2);
+		EnhancedRectangle hallToKitchen = crs.addRectangle(new EnhancedRectangle(x, y, width, height));
+		EnhancedRectangle rightRoom = crs.cutRectangleFromSide(hallToKitchen, side.counterClockwiseQuarter(), 5);
+		EnhancedRectangle hall = crs.cutRectangleFromSide(hallToKitchen, side, 2);
+		EnhancedRectangle middleRoom = crs.cutRectangleFromSide(hallToKitchen, side.counterClockwiseQuarter(), 5);
+		EnhancedRectangle exPartOfStoreroom = crs.cutRectangleFromSide(hall, side.clockwiseQuarter(), 2);
 		// int kitchen = crs.cutRectangleFromSide(0, side.opposite(), 5);
-		RectangleArea storeroom = crs.cutRectangleFromSide(hallToKitchen, side.clockwiseQuarter(), 2);
+		EnhancedRectangle storeroom = crs.cutRectangleFromSide(hallToKitchen, side.clockwiseQuarter(), 2);
 
 		// Stretch storeroom
 		storeroom.stretch(side, exPartOfStoreroom.getDimensionBySide(side) + 1);
