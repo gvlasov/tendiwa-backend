@@ -23,7 +23,6 @@ public class Forest extends Location {
 		RectangleSystem rs = new RectangleSystem(3);
 		// RectangleSystem rs = new RandomRectangleSystem(2, 2, 55, 22, 3, 2);
 		TerrainModifier tm = new TerrainModifier(this, rs);
-		rs.build();
 		tm.fillContents(ELEMENT_FLOOR, water);
 		tm.drawInnerBorders(ELEMENT_OBJECT, wall);
 		tm.drawOuterBorders(ELEMENT_OBJECT, wall);

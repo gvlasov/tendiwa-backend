@@ -4,6 +4,9 @@ import java.awt.Color;
 import java.awt.Rectangle;
 import java.util.Iterator;
 
+import org.jgrapht.Graph;
+import tendiwa.core.meta.Coordinate;
+import tendiwa.geometry.EnhancedRectangle;
 import tendiwa.geometry.RectangleSystem;
 
 import com.google.common.collect.Iterables;
@@ -35,4 +38,24 @@ public class DrawingRectangleSystem {
 			}
 		};
 	}
+
+
+
+public static DrawingAlgorithm<RectangleSystem> graphAndRectangles(final Color graphColor, Color... colors) {
+	return new DrawingAlgorithm<RectangleSystem>() {
+		final Iterator<Color> iter = Iterables.cycle(colors).iterator();
+		@Override
+		public void draw(RectangleSystem rs) {
+			for (Rectangle r : rs) {
+				drawRectangle(r, iter.next());
+			}
+			Graph<EnhancedRectangle,RectangleSystem.Neighborship> graph = rs.getGraph();
+			for (RectangleSystem.Neighborship edge : graph.edgeSet()) {
+				drawLine(graph.getEdgeSource(edge).getCenterPoint(), graph.getEdgeTarget(edge).getCenterPoint(), graphColor);
+			}
+		}
+
+	};
+}
+
 }

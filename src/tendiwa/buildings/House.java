@@ -51,7 +51,6 @@ public class House extends Building {
 //		rs.excludeRectangle(rs.getRectangleById(34));
 //		rs.excludeRectangle(rs.getRectangleById(38));
 //		rs.excludeRectangle(rs.getRectangleById(39));
-		rs.build();
 		rs.nibbleSystem(1, 100);
 		terrainModifier = settlement.getTerrainModifier(rs);
 		terrainModifier.drawInnerBorders(Location.ELEMENT_OBJECT, wall);

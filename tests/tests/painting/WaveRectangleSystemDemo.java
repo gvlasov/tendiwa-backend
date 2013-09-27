@@ -29,7 +29,6 @@ public static void main(String[] args) throws IOException {
 	irs.addRectangle(new EnhancedRectangle(10, 10, 1, 1));
 	irs.addRectangle(new EnhancedRectangle(13, 12, 1, 1));
 	irs.addRectangle(new EnhancedRectangle(13, 14, 70, 1));
-	irs.build();
 	int tries = 1;
 	for (int i = 0; i < (WaveRectangleSystem.DEBUG ? 1 : tries); i++) {
 		WaveRectangleSystem rs = new WaveRectangleSystem(

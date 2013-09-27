@@ -7,10 +7,7 @@ import tendiwa.core.meta.Utils;
 import tendiwa.geometry.*;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Wrapper above a RectangleSystem that places actual objects, floors etc on terrain using RectangleSystem's data.
@@ -38,9 +35,9 @@ public RectangleSystem getRectangleSystem() {
  * Excludes rectangles that contain a particular entity inside them.
  *
  * @param type
- * 		Type of entity
+ * 	Type of entity
  * @param val
- * 		Id of entity
+ * 	Id of entity
  */
 public void excludeRectanglesHaving(int type, int val) {
 	keyLoop:
@@ -61,9 +58,9 @@ public void excludeRectanglesHaving(int type, int val) {
  * intersect.
  *
  * @param type
- * 		Type of object to place on each resulting cell.
+ * 	Type of object to place on each resulting cell.
  * @param name
- * 		Id of object to place on each resulting cell.
+ * 	Id of object to place on each resulting cell.
  * @see TerrainModifier#drawOuterBorders(int, int)
  */
 public void drawInnerBorders(int type, int name) {
@@ -74,9 +71,6 @@ public void drawInnerBorders(int type, int name) {
 	 * particular details about this method, please feel free to contact me and
 	 * ask.
 	 */
-	if (!rs.isBuilt()) {
-		throw new RuntimeException("System must be built before calling this method");
-	}
 	if (rs.getBorderWidth() < 1) {
 		throw new RuntimeException("Can't draw borders of RectangleSystem with borderWidth=" + rs.getBorderWidth());
 	}
@@ -347,14 +341,11 @@ public void drawInnerBorders(int type, int name) {
  * @see TerrainModifier#drawInnerBorders(int, int)
  */
 public void drawOuterBorders(int type, int name) {
-	if (!rs.isBuilt()) {
-		throw new RuntimeException("System must be built before calling this method");
-	}
 	if (rs.getBorderWidth() < 1) {
 		throw new RuntimeException("Can't draw borders of RectangleSystem with borderWidth=" + rs.getBorderWidth());
 	}
 	for (EnhancedRectangle r : rs.getOuterSides().keySet()) {
-		Set<CardinalDirection> sides = rs.getOuterSides().get(r);
+		Collection<CardinalDirection> sides = rs.getOuterSides().get(r);
 		for (CardinalDirection side : sides) {
 			Set<Segment> segments = rs.getSegmentsFreeFromNeighbors(r, side);
 			for (Segment segment : segments) {
@@ -390,7 +381,7 @@ public void connectCornersWithLines(int type, int value, int padding, boolean co
 		}
 	};
 	for (EnhancedRectangle r : rs.rectangleList()) {
-		Set<CardinalDirection> sides = rs.getOuterSides().get(r);
+		Collection<CardinalDirection> sides = rs.getOuterSides().get(r);
 		boolean n = sides.contains(Directions.N);
 		boolean e = sides.contains(Directions.E);
 		boolean s = sides.contains(Directions.S);
@@ -430,10 +421,10 @@ public void fillContents(int type, int value) {
 }
 
 public void drawLines() {
-	Graph<EnhancedRectangle, DefaultEdge> graph = rs.getGraph();
-	for (DefaultEdge e : graph.edgeSet()) {
-		Coordinate c1 = graph.getEdgeSource(e).getCenterPoint();
-		Coordinate c2 = graph.getEdgeTarget(e).getCenterPoint();
+	Graph<EnhancedRectangle, RectangleSystem.Neighborship> graph = rs.getGraph();
+	for (RectangleSystem.Neighborship e : graph.edgeSet()) {
+		EnhancedPoint c1 = graph.getEdgeSource(e).getCenterPoint();
+		EnhancedPoint c2 = graph.getEdgeTarget(e).getCenterPoint();
 		location.line(c1.x, c1.y, c2.x, c2.y, Location.ELEMENT_OBJECT, wall);
 	}
 }

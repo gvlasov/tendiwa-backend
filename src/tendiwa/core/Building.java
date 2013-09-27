@@ -334,9 +334,9 @@ public abstract class Building {
 		for (Rectangle r : rs.rectangleList()) {
 			fillFloor(r, floorType);
 		}
-		Graph<EnhancedRectangle, DefaultEdge> graph = rs.getGraph();
-		
-		for (DefaultEdge e : graph.edgeSet()) {
+		Graph<EnhancedRectangle, RectangleSystem.Neighborship> graph = rs.getGraph();
+
+		for (RectangleSystem.Neighborship e : graph.edgeSet()) {
 			Coordinate c = connectRoomsWithDoor(graph.getEdgeSource(e), graph.getEdgeTarget(e), objDoorBlue);
 			settlement.setFloor(c.x, c.y, floorType);
 		}

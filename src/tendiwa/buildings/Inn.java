@@ -54,7 +54,6 @@ public void draw() {
 	// Link last room
 
 	terrainModifier = settlement.getTerrainModifier(crs);
-	terrainModifier.getRectangleSystem().findOuterRectangles();
 	lobby.stretch(side, -1);
 	buildBasis(wallGreyStone);
 
