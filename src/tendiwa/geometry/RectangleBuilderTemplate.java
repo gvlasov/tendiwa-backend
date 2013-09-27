@@ -27,7 +27,6 @@ public abstract class RectangleBuilderTemplate implements Placeable {
 
     @Override
     public void prebuild(RectangleSystemBuilder builder) {
-        return;
     }
 
     @Override

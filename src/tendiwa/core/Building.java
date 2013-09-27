@@ -19,7 +19,7 @@ public abstract class Building {
 	protected Collection<EnhancedRectangle> rooms;
 	protected TerrainModifier terrainModifier;
 	protected EnhancedRectangle lobby;
-	protected ArrayList<CardinalDirection> doorSides = new ArrayList<CardinalDirection>();
+	protected ArrayList<CardinalDirection> doorSides = new ArrayList<>();
 	protected Coordinate frontDoor;
 
 	protected final int x;

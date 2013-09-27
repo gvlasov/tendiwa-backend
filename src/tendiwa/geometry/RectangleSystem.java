@@ -15,7 +15,9 @@ import java.util.List;
 /**
  * <p> RectangleSystem is one of the most basic yet powerful concepts of terrain generation. Basically, it is a graph
  * where vertices are rectangles. There is an edge between two vertices if these rectangles touch each other's sides.
- * RectangleSystem provides methods </p>
+ * RectangleSystem provides methods </p> <p>RectangleSystem differs from RectangleSequence in that System always
+ * remembers what rectangles are neighbours and what rectangles are outer (don't have any neighbors from some
+ * side).</p>
  */
 public class RectangleSystem extends RectangleSequence {
 private static final Comparator<EnhancedRectangle> COMPARATOR_HORIZONTAL = new RectangleComparator(Orientation.HORIZONTAL);
@@ -522,7 +524,7 @@ private void buildEdgesWith(EnhancedRectangle r) {
 private String shortDef(EnhancedRectangle r) {
 	CardinalDirection dir1 = r.y == 0 ? CardinalDirection.N : CardinalDirection.S;
 	CardinalDirection dir2 = r.x == 0 ? CardinalDirection.W : CardinalDirection.E;
-	return "["+dir1+" "+dir2+" "+r.width+" "+ r.height+"]";
+	return "[" + dir1 + " " + dir2 + " " + r.width + " " + r.height + "]";
 }
 
 /**
@@ -579,7 +581,7 @@ private Map<EnhancedRectangle, CardinalDirection> findNeighborsInSortedSet(Enhan
 private boolean areProbableNeighborsByOrientation(EnhancedRectangle r1, EnhancedRectangle r2, Orientation orientation) {
 	if (!areRectanglesNear(r1, r2)) {
 		return false;
-	} else if  (r1.overlapsByDynamicRange(r2, orientation.reverted())) {
+	} else if (r1.overlapsByDynamicRange(r2, orientation.reverted())) {
 		return false;
 	}
 	return true;

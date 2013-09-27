@@ -20,11 +20,19 @@ public static TestCanvas canvas = new TestCanvasBuilder()
 	.build();
 public static void main(String[] args) {
 	long start = System.currentTimeMillis();
-//	RectangleSystem rs = new RandomRectangleSystem(0, 0, 1280, 1024, 3, 0);
-	RectangleSystem rs = builder(0)
-		.place(rectangle(10, 12), atPoint(5, 7))
-		.place(rectangle(14, 17), near(FIRST_RECTANGLE).fromSide(E).align(N))
-		.done();
+	RectangleSystem rs = new RandomRectangleSystem(0, 0, 1280, 1024, 20, 30);
+//	RectangleSystem rs = builder(0)
+//		.place(rectangle(10, 12), atPoint(5, 7))
+//		.place(rectangle(14, 17), near(FIRST_RECTANGLE).fromSide(E).align(N))
+//		.place(
+//			rectangle(10, 5).repeat(10).placingNextAt(near(LAST_RECTANGLE).fromSide(E).align(S).shift(3)),
+//			near(LAST_RECTANGLE).fromSide(E).align(N)
+//		)
+//		.place(
+//			rectangle(4,9).repeat(9).placingNextAt(near(LAST_RECTANGLE).fromSide(S).align(W).shift(2)),
+//			near(LAST_RECTANGLE).fromSide(S).align(E)
+//		)
+//		.done();
 	// RectangleSystem rs = new RectangleSystem(0);
 	// rs.addRectangleArea(10, 20, 30, 40);
 	// RectangleArea r = rs.rectangleList().iterator().next();

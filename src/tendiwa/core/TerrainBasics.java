@@ -27,11 +27,11 @@ public abstract class TerrainBasics {
 		PASSABILITY_NO = 1;
 	public final int x;
 	public final int y;
-	public HashMap<Integer, Character> characters = new HashMap<Integer, Character>();
-	public HashMap<Integer, Container> containers = new HashMap<Integer, Container>();
+	public HashMap<Integer, Character> characters = new HashMap<>();
+	public HashMap<Integer, Container> containers = new HashMap<>();
 	public ArrayList<Ceiling> ceilings;
 	Cell[][] cells;
-	protected HashMap<Integer, ItemCollection> items = new HashMap<Integer, ItemCollection>();
+	protected HashMap<Integer, ItemCollection> items = new HashMap<>();
 	public TerrainBasics(int x, int y) {
 		this.x = x;
 		this.y = y;

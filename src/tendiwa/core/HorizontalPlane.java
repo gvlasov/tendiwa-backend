@@ -59,9 +59,9 @@ public void touchChunks(int x, int y, int width, int height) {
 
 public Chunk getChunkWithCell(int x, int y) {
 	int chX = (x < 0) ? x - ((x % Chunk.SIZE == 0) ? 0 : Chunk.SIZE) - x % Chunk.SIZE
-			: x - x % Chunk.SIZE;
+		: x - x % Chunk.SIZE;
 	int chY = (y < 0) ? y - ((y % Chunk.SIZE == 0) ? 0 : Chunk.SIZE) - y % Chunk.SIZE
-			: y - y % Chunk.SIZE;
+		: y - y % Chunk.SIZE;
 	try {
 		return chunks.get(chX).get(chY);
 	} catch (NullPointerException e) {
@@ -160,12 +160,12 @@ public Cell[][] getCells(int x, int y, int width, int height) {
  * Round a coordinate (x or y, works equal) down to the nearest value in which may be a corner of a chunk.
  *
  * @param coord
- * 		x or y coordinate.
+ * 	x or y coordinate.
  * @return Rounded coordinate value.
  */
 public int getChunkRoundedCoord(int coord) {
 	return (coord < 0) ? coord - ((coord % Chunk.SIZE == 0) ? 0
-			: Chunk.SIZE) - coord % Chunk.SIZE : coord - coord % Chunk.SIZE;
+		: Chunk.SIZE) - coord % Chunk.SIZE : coord - coord % Chunk.SIZE;
 }
 
 public Cell getCell(int x, int y) {

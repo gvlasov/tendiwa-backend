@@ -7,6 +7,12 @@ import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+/**
+ * <p>Represents a most basic placeable collection of non-overlapping rectangles. Unlike {@link RectangleSystem},
+ * RectangleSequence doesn't maintain neighborship and outerness of rectangles.</p> <p/> <p>This is one of the most
+ * basic conceptions of terrain generation used in this framework, so you better consult tutorial to get started with
+ * it.</p>
+ */
 public class RectangleSequence implements Iterable<EnhancedRectangle>, Placeable {
 private static final AffineTransform TRANSFORM_CLOCKWISE = new AffineTransform(AffineTransform.getQuadrantRotateInstance(1, 0, 0));
 private static final AffineTransform TRANSFORM_COUNTER_CLOCKWISE = new AffineTransform(AffineTransform.getQuadrantRotateInstance(3, 0, 0));
@@ -16,6 +22,9 @@ private static final AffineTransform TRANSFORM_HALF_CIRCLE = new AffineTransform
  */
 protected ArrayList<EnhancedRectangle> content;
 
+/**
+ * Creates an empty RectangleSequence.
+ */
 public RectangleSequence() {
 	this.content = new ArrayList<>();
 }
@@ -62,11 +71,6 @@ public Placeable rotate(Rotation rotation) {
 	return newRs;
 }
 
-/**
- * Returns a minimum rectangle that contains all rectangles in this template.
- *
- * @return Minimum rectangle that contains all rectangles in this template.
- */
 @Override
 public final EnhancedRectangle getBounds() {
 	int minX = Integer.MAX_VALUE;
@@ -107,7 +111,14 @@ EnhancedRectangle getActualRectangle(EnhancedRectangle r, int x, int y) {
 	return new EnhancedRectangle(x + r.x - boundingRec.x, y + r.y - boundingRec.y, r.width, r.height);
 }
 
-public EnhancedRectangle addRectangle(EnhancedRectangle r) {
+/**
+ * Adds a new rectangle to this RectangleSequence. Doesn't check if the new rectangle overlaps any existing rectangles.
+ *
+ * @param r
+ * 	New rectangle
+ * @return Argument {@code r}
+ */
+EnhancedRectangle addRectangle(EnhancedRectangle r) {
 	content.add(r);
 	return r;
 }
@@ -119,7 +130,11 @@ public Iterator<EnhancedRectangle> iterator() {
 
 /**
  * Removes a rectangle.
+ *
  * @param r
+ * 	A rectangle to remove.
+ * @throws IllegalArgumentException
+ * 	If rectangle {@code r} is not present in this RectangleSequence.
  */
 public void excludeRectangle(EnhancedRectangle r) {
 	if (!content.contains(r)) {

@@ -21,18 +21,18 @@ public class StaticData implements GsonForStaticDataSerializable {
 	 * {@link TerrainBasics#setObject(int, int, int)}.
 	 */
 	public static final int VOID = -1;
-	final HashMap<Integer, Material> materials = new HashMap<Integer, Material>();
-	final HashMap<Integer, SoundType> soundTypes = new HashMap<Integer, SoundType>();
-	final HashMap<Integer, ItemType> itemTypes = new HashMap<Integer, ItemType>();
-	final HashMap<Integer, CharacterType> characterTypes = new HashMap<Integer, CharacterType>();
-	final HashMap<Integer, FloorType> floorTypes = new HashMap<Integer, FloorType>();
-	final HashMap<Integer, ObjectType> objectTypes = new HashMap<Integer, ObjectType>();
-	private final HashMap<String, Material> materialsByName = new HashMap<String, Material>();
-	final HashMap<String, FloorType> floorTypesByName = new HashMap<String, FloorType>();
-	final HashMap<String, CharacterType> characterTypesByName = new HashMap<String, CharacterType>();
-	final HashMap<String, ItemType> itemTypesByName = new HashMap<String, ItemType>();
-	final HashMap<String, ObjectType> objectTypesByName = new HashMap<String, ObjectType>();
-	final HashMap<Integer, SoundType> soundTypesByName = new HashMap<Integer, SoundType>();
+	final HashMap<Integer, Material> materials = new HashMap<>();
+	final HashMap<Integer, SoundType> soundTypes = new HashMap<>();
+	final HashMap<Integer, ItemType> itemTypes = new HashMap<>();
+	final HashMap<Integer, CharacterType> characterTypes = new HashMap<>();
+	final HashMap<Integer, FloorType> floorTypes = new HashMap<>();
+	final HashMap<Integer, ObjectType> objectTypes = new HashMap<>();
+	private final HashMap<String, Material> materialsByName = new HashMap<>();
+	final HashMap<String, FloorType> floorTypesByName = new HashMap<>();
+	final HashMap<String, CharacterType> characterTypesByName = new HashMap<>();
+	final HashMap<String, ItemType> itemTypesByName = new HashMap<>();
+	final HashMap<String, ObjectType> objectTypesByName = new HashMap<>();
+	final HashMap<Integer, SoundType> soundTypesByName = new HashMap<>();
 	public static final StaticData instance = new StaticData();
 	/*
 	 * Types of ObjectTypes passabilities. Complex types like "visual and 

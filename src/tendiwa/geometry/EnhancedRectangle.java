@@ -543,7 +543,6 @@ public EnhancedRectangle place(RectangleSystemBuilder builder, int x, int y) {
 
 @Override
 public void prebuild(RectangleSystemBuilder builder) {
-	return;
 }
 
 @Override

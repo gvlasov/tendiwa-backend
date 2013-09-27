@@ -16,8 +16,6 @@ public class RectangleSystemBuilder {
     }
 
     public RectangleSystemBuilder place(Placeable what, Placement where) {
-        // Prebuild is needed here because otherwise there wouldn't be any
-        // implicit way to inherit border width from an enclosing RectangleSystemBuilder
         what.prebuild(this);
         EnhancedRectangle r = where.placeIn(what, this);
         boundingRecs.add(r);
