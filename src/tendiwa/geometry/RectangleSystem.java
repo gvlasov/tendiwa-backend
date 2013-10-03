@@ -512,10 +512,14 @@ public EnhancedRectangle addRectangle(EnhancedRectangle r) {
 private void buildEdgesWith(EnhancedRectangle r) {
 	for (Orientation orientation : Orientation.values()) {
 		TreeSet<EnhancedRectangle> treeSet = sortedRectangles.get(orientation);
-		Map<EnhancedRectangle, CardinalDirection> neighbors = findNeighborsInSortedSet(r, orientation);
-		for (Map.Entry<EnhancedRectangle, CardinalDirection> e : neighbors.entrySet()) {
-			addEdgeBetween(r, e.getKey(), e.getValue());
+		ArrayList<Map<EnhancedRectangle, CardinalDirection>> neighbors = findNeighborsInSortedSet(r, orientation);
+		for (Map.Entry<EnhancedRectangle, CardinalDirection> e : neighbors.get(0).entrySet()) {
+			addEdgeBetween(r, e.getKey(), e.getValue(), Neighborship.NeighborshipType.NEIGHBORSHIP);
 		}
+		for (Map.Entry<EnhancedRectangle, CardinalDirection> e : neighbors.get(1).entrySet()) {
+			addEdgeBetween(r, e.getKey(), e.getValue(), Neighborship.NeighborshipType.UNION);
+		}
+		// Final value of type is 2
 //		System.out.println("Neighbours of "+shortDef(r)+" "+orientation+" are "+neighbors.keySet().stream().map(e -> shortDef(e)).collect(Collectors.toList()));
 		treeSet.add(r);
 	}
@@ -538,19 +542,28 @@ private String shortDef(EnhancedRectangle r) {
  * @param sourceRecOccupiedSide
  * 	Which side of source rectangle is occupied by destination rectangle.
  */
-private void addEdgeBetween(EnhancedRectangle r1, EnhancedRectangle r2, CardinalDirection sourceRecOccupiedSide) {
-	graph.addEdge(r1, r2, new Neighborship(sourceRecOccupiedSide));
+private void addEdgeBetween(EnhancedRectangle r1, EnhancedRectangle r2, CardinalDirection sourceRecOccupiedSide, Neighborship.NeighborshipType type) {
+	graph.addEdge(r1, r2, new Neighborship(sourceRecOccupiedSide, type));
 }
 
 /**
+ * Comuptes and returns both "near" and "united" neighbors of a newly added rectangle.
+ *
  * @param r
+ * 	The original rectangle — the one we search for neighbors of.
  * @param orientation
- * 	If rectangles are supposed to touch N and S sides, then orientation is VERTICAL, else it is HORIZONTAL.
- * @return
+ * 	Neighbors from which side of original rectangle are being found. If rectangles are supposed to touch N and S sides,
+ * 	then orientation is VERTICAL, else it is HORIZONTAL.
+ * @return List of two maps from a neighbor rectangle to a direction it is from original rectangle. First index of the
+ *         list contains neighbors of type Near, second index contains neighbors of type United.
  */
-private Map<EnhancedRectangle, CardinalDirection> findNeighborsInSortedSet(EnhancedRectangle r, Orientation orientation) {
+private ArrayList<Map<EnhancedRectangle, CardinalDirection>> findNeighborsInSortedSet(EnhancedRectangle r, Orientation orientation) {
 	TreeSet<EnhancedRectangle> treeSet = sortedRectangles.get(orientation);
-	Map<EnhancedRectangle, CardinalDirection> answer = new HashMap<>();
+	ArrayList<Map<EnhancedRectangle, CardinalDirection>> answer = new ArrayList<>();
+	Map<EnhancedRectangle, CardinalDirection> nears = new HashMap<>();
+	Map<EnhancedRectangle, CardinalDirection> uniteds = new HashMap<>();
+	answer.add(nears);
+	answer.add(uniteds);
 	int distance = 0;
 	CardinalDirection decreasingSide = orientation.isHorizontal() ? CardinalDirection.W : CardinalDirection.N;
 	CardinalDirection increasingSide = orientation.isHorizontal() ? CardinalDirection.E : CardinalDirection.S;
@@ -566,8 +579,14 @@ private Map<EnhancedRectangle, CardinalDirection> findNeighborsInSortedSet(Enhan
 				continue;
 			}
 			distance = bufferRectangle.amountOfCellsBetween(r, orientation);
-			if (distance == borderWidth && r.overlapsByDynamicRange(bufferRectangle, orientation)) {
-				answer.put(bufferRectangle, dir);
+			if (r.overlapsByDynamicRange(bufferRectangle, orientation)) {
+				if (distance == borderWidth) {
+					// Rectangles will have Neighborship of type Near
+					nears.put(bufferRectangle, dir);
+				} else if (distance == 0) {
+					// Rectangles will have Neighborship of type United
+					uniteds.put(bufferRectangle, dir);
+				}
 			} else {
 //				System.out.println(shortDef(bufferRectangle)+" is not neighbour 2");
 				assert !areRectanglesNear(r, bufferRectangle);
@@ -988,6 +1007,10 @@ public NeighboursIterable getNeighboursIterable(EnhancedRectangle r) {
 	return new NeighboursIterable(this, r);
 }
 
+public Collection<Segment> getOuterSegmentsOf(EnhancedRectangle r, CardinalDirection side) {
+	return outerSegments.getOuterSegmentsOf(r, side);
+}
+
 private static class RectangleComparator implements Comparator<EnhancedRectangle> {
 
 	private final Orientation orientation;
@@ -1013,9 +1036,23 @@ private static class RectangleComparator implements Comparator<EnhancedRectangle
 
 public static class Neighborship {
 	private final CardinalDirection occupiedSideOfSourceRectangle;
+	private final NeighborshipType type;
 
-	Neighborship(CardinalDirection occupiedSideOfSourceRectangle) {
+	Neighborship(CardinalDirection occupiedSideOfSourceRectangle, NeighborshipType type) {
 		this.occupiedSideOfSourceRectangle = occupiedSideOfSourceRectangle;
+		this.type = type;
+	}
+
+	public boolean isNeighborship() {
+		return type == NeighborshipType.NEIGHBORSHIP;
+	}
+
+	public boolean isUnion() {
+		return type == NeighborshipType.UNION;
+	}
+
+	private enum NeighborshipType {
+		NEIGHBORSHIP, UNION;
 	}
 }
 
@@ -1028,7 +1065,7 @@ class OuterSegments {
 			return computeOuterSegmentsOf(r, side);
 		}
 		Map<CardinalDirection, ImmutableSet<Segment>> segments = recsToSegments.get(r);
-		if (segments == null) {
+		if (segments == null || segments.get(side) == null) {
 			return computeOuterSegmentsOf(r, side);
 		} else {
 			// If a segment is already computed.

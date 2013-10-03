@@ -20,7 +20,7 @@ public static TestCanvas canvas = new TestCanvasBuilder()
 	.build();
 public static void main(String[] args) {
 	long start = System.currentTimeMillis();
-	RectangleSystem rs = new RandomRectangleSystem(0, 0, 1280, 1024, 20, 30);
+	RectangleSystem rs = new RandomRectangleSystem(5, 5, 1260, 800, 1, 30);
 //	RectangleSystem rs = builder(0)
 //		.place(rectangle(10, 12), atPoint(5, 7))
 //		.place(rectangle(14, 17), near(FIRST_RECTANGLE).fromSide(E).align(N))

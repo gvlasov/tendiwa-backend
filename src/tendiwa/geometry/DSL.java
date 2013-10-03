@@ -33,6 +33,9 @@ public class DSL {
     public static StepNear near(RectanglePointer pointer) {
         return new StepNear(pointer);
     }
+	public static StepUnitedWith unitedWith(RectanglePointer pointer) {
+		return new StepUnitedWith(pointer);
+	}
     public static Placement somewhere() {
         return new Placement() {
             @Override
