@@ -160,15 +160,6 @@ public final class TestCanvas {
         currentLayer = layer;
     }
 
-    public void draw(InterrectangularPath path) {
-        for (Rectangle r : path) {
-            draw(r);
-        }
-        for (RectanglesJunction junction : path.getJunctions()) {
-            draw(junction);
-        }
-    }
-
     public void draw(HorizontalPlane plane) {
         Collection<Chunk> chunks = plane.getChunks();
         for (Chunk chunk : chunks) {

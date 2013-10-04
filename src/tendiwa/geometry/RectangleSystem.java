@@ -598,7 +598,7 @@ private ArrayList<Map<EnhancedRectangle, CardinalDirection>> findNeighborsInSort
 }
 
 private boolean areProbableNeighborsByOrientation(EnhancedRectangle r1, EnhancedRectangle r2, Orientation orientation) {
-	if (!areRectanglesNear(r1, r2)) {
+	if (!areRectanglesNear(r1, r2) && !areRectanglesUnited(r1, r2)) {
 		return false;
 	} else if (r1.overlapsByDynamicRange(r2, orientation.reverted())) {
 		return false;
@@ -641,17 +641,53 @@ public boolean isRectangleOuter(EnhancedRectangle r) {
 }
 
 /**
- * Checks if two {@link EnhancedRectangle}s have exactly {@code borderWidth} cells between their closest sides. Such
- * rectangles are considered "neighbors" in this individual RectangleSystem. e
+ * Checks if two {@link EnhancedRectangle}s have exactly {@code borderWidth} cells between their closest sides, and
+ * these sides overlap by dynamic coordinate. Such rectangles are considered to be "near" in this individual
+ * RectangleSystem.
  *
  * @param r1
  * 	A rectangle from this rectangle system.
  * @param r2
  * 	Another rectangle from this rectangle system.
- * @return
+ * @return true if distance between rectangles is {@code cells}, false otherwise
+ * @see RectangleSystem#areRectanglesUnited(EnhancedRectangle, EnhancedRectangle)
  */
-public boolean areRectanglesNear(Rectangle r1, Rectangle r2) {
-	if (r1.x + r1.width + borderWidth == r2.x || r2.x + r2.width + borderWidth == r1.x) {
+public boolean areRectanglesNear(EnhancedRectangle r1, EnhancedRectangle r2) {
+	return areRectanglesInXCells(r1, r2, borderWidth);
+}
+
+/**
+ * Checks if two {@link EnhancedRectangle}s have exactly {@code borderWidth} cells between their closest sides, and
+ * these sides overlap by dynamic coordinate. Such rectangles are considered to be "near" in this individual
+ * RectangleSystem.
+ *
+ * @param r1
+ * 	A rectangle from this rectangle system.
+ * @param r2
+ * 	Another rectangle from this rectangle system.
+ * @return true if distance between rectangles is {@code cells}, false otherwise
+ * @see RectangleSystem#areRectanglesNear(EnhancedRectangle, EnhancedRectangle)
+ */
+private boolean areRectanglesUnited(EnhancedRectangle r1, EnhancedRectangle r2) {
+	return areRectanglesInXCells(r1, r2, 0);
+}
+
+/**
+ * Checks if two {@link EnhancedRectangle}s have exactly {@code amount} cells between their closest sides, and these
+ * sides overlap by dynamic coordinate. Such rectangles are considered to be "near" in this individual RectangleSystem.
+ *
+ * @param r1
+ * 	A rectangle from this rectangle system.
+ * @param r2
+ * 	Another rectangle from this rectangle system.
+ * @param amount
+ * 	Expected amount of cells
+ * @return true if distance between rectangles is {@code cells}, false otherwise
+ * @see RectangleSystem#areRectanglesNear(EnhancedRectangle, EnhancedRectangle)
+ * @see RectangleSystem#areRectanglesUnited(EnhancedRectangle, EnhancedRectangle)
+ */
+private boolean areRectanglesInXCells(EnhancedRectangle r1, EnhancedRectangle r2, int amount) {
+	if (r1.x + r1.width + amount == r2.x || r2.x + r2.width + amount == r1.x) {
 		// Rectangles share a vertical line
 		int a1 = r1.y;
 		int a2 = r1.y + r1.height - 1;
@@ -659,7 +695,7 @@ public boolean areRectanglesNear(Rectangle r1, Rectangle r2) {
 		int b2 = r2.y + r2.height - 1;
 		int intersection = Utils.integersRangeIntersection(a1, a2, b1, b2);
 		return intersection >= 1;
-	} else if (r1.y + r1.height + borderWidth == r2.y || r2.y + r2.height + borderWidth == r1.y) {
+	} else if (r1.y + r1.height + amount == r2.y || r2.y + r2.height + amount == r1.y) {
 		// Rectangles share a horizontal line
 		int a1 = r1.x;
 		int a2 = r1.x + r1.width - 1;

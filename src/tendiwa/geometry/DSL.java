@@ -50,4 +50,7 @@ public class DSL {
     public  static TestCanvas canvas() {
         return TestCanvas.builder().build();
     }
+	public static PathBuilder path(RectangleSystemBuilder builder) {
+		return new PathBuilder(builder);
+	}
 }

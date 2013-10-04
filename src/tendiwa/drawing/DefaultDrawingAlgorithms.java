@@ -1,13 +1,12 @@
 package tendiwa.drawing;
 
-import java.awt.Color;
-import java.awt.Rectangle;
-import java.util.HashMap;
-
 import tendiwa.core.TerrainBasics;
 import tendiwa.geometry.RectangleSidePiece;
 import tendiwa.geometry.RectangleSystem;
 import tendiwa.geometry.Segment;
+
+import java.awt.*;
+import java.util.HashMap;
 
 /**
  * This static field class contains {@link DrawingAlgorithm}s that each

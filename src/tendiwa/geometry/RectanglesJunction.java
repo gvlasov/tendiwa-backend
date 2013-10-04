@@ -1,7 +1,11 @@
 package tendiwa.geometry;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 /**
- * This class represents a junction between two rectangles that are neighbors within a {@link RectangleSystem}
+ * This class represents a junction between two rectangles. Is a rectangle that overlaps two rectangles with a single
+ * {@link Segment} each. Junction consists of those two segments and space between rectangles. You can think of junction
+ * as of a bridge with particular width between two rectangles.
  *
  * @author suseika
  */
@@ -18,5 +22,13 @@ public RectanglesJunction(Orientation orientation, int coordinate, int width, En
 	this.width = width;
 	this.r1 = r1;
 	this.r2 = r2;
+}
+
+Segment getSegmentOnRectangle(EnhancedRectangle r) {
+	throw new NotImplementedException();
+}
+
+EnhancedRectangle getRectangleBetweenRectangles() {
+	throw new NotImplementedException();
 }
 }

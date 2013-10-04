@@ -3,7 +3,6 @@ package tests.painting;
 import tendiwa.core.HorizontalPlane;
 import tendiwa.drawing.TestCanvas;
 import tendiwa.geometry.DSL;
-import tendiwa.geometry.InterrectangularPath;
 import tendiwa.locationtypes.BuildingTest;
 
 public class BuildingsDemo {

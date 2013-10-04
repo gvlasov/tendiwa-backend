@@ -605,12 +605,13 @@ int getMinStaticCoord(Orientation orientation) {
 		return y;
 	}
 }
+
 int getMaxStaticCoord(Orientation orientation) {
 	if (orientation == Orientation.HORIZONTAL) {
-		return x + width -1;
+		return x + width - 1;
 	} else {
 		assert orientation == Orientation.VERTICAL;
-		return y + height -1;
+		return y + height - 1;
 	}
 }
 
@@ -666,6 +667,7 @@ boolean overlapsByDynamicRange(EnhancedRectangle r, Orientation orientation) {
 		r.getMaxDynamicCoord(orientation)
 	);
 }
+
 boolean overlapsByStaticRange(EnhancedRectangle r, Orientation orientation) {
 	return Range.overlap(
 		this.getMinStaticCoord(orientation),
@@ -674,4 +676,34 @@ boolean overlapsByStaticRange(EnhancedRectangle r, Orientation orientation) {
 		r.getMaxStaticCoord(orientation)
 	);
 }
+
+public Segment getIntersectionSegment(EnhancedRectangle r) {
+	assert !this.intersects(r);
+	if (overlapsByDynamicRange(r, Orientation.HORIZONTAL)) {
+		int y = this.y < r.y ? this.y : this.y + this.height - 1;
+		Range range = Range.intersectionOf(
+			x, x + width - 1,
+			r.x, r.x + r.width - 1
+		);
+		return new Segment(range.min, y, range.getLength(), Orientation.HORIZONTAL);
+	}
+	if (overlapsByDynamicRange(r, Orientation.VERTICAL)) {
+		int x = this.x < r.x ? this.x : this.x + this.width - 1;
+		Range range = Range.intersectionOf(
+			y, y + height - 1,
+			r.y, r.y + r.height - 1
+		);
+		return new Segment(x, range.min, range.getLength(), Orientation.VERTICAL);
+	}
+	throw new IllegalArgumentException("Rectangles " + this + " and " + r + " don't have adjacency segment");
+}
+
+/**
+ * Finds out which side of this rectangle intersects by its dynamic coord an opposite side of another rectangle.
+ *
+ * @param r
+ * 	Another rectangle
+ * @return A side of this rectangle that intersects by dynamic coordinate with a side of another rectangle.
+ * @see EnhancedPoint#getDynamicCoord(Orientation) For what a dynamic coord is
+ */
 }
