@@ -27,7 +27,7 @@ public RectangleSystemBuilder place(String name, Placeable what, Placement where
 	EnhancedRectangle r = where.placeIn(what, this);
 	boundingRecs.add(r);
 	if (name != null) {
-		names.put(name, what);
+		names.put(name, r);
 	}
 	return this;
 }
@@ -88,8 +88,8 @@ public Placeable getByName(String name) {
  * @param index Index of Placeable
  * @return Placeable under the specified index.
  */
-public Placeable getByIndex(int index) {
-	return rectangles.get(index);
+public EnhancedRectangle getByIndex(int index) {
+	return boundingRecs.get(index);
 }
 }
 

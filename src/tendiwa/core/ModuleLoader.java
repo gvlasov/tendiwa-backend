@@ -5,8 +5,7 @@ import java.io.FilenameFilter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Manages loading of various game {@link Module}s
@@ -15,6 +14,8 @@ public class ModuleLoader {
 private static Map<Class<? extends Module>, Module> modules = new HashMap<Class<? extends Module>, Module>();
 private static File modulesDir;
 private static ClassLoader classLoader;
+private static List<Class<? extends Location>> drawers = new ArrayList<>();
+private static List<Class<? extends LocationFeature>> features = new ArrayList<>();
 
 public ModuleLoader() {}
 
@@ -79,4 +80,5 @@ public static boolean hasModuleLoaded(String dependency) {
 	}
 	return false;
 }
+
 }

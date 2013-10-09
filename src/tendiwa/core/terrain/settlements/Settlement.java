@@ -28,7 +28,7 @@ public class Settlement extends Location {
 	public ArrayList<Building> buildings = new ArrayList<>();
 	public ArrayList<Service> services = new ArrayList<>();
 	public Settlement(HorizontalPlane plane, int x, int y, int width, int height) {
-		super(plane, x, y, width, height, "Settlement");
+		super(plane, x, y, width, height);
 		quarterSystem = new QuarterSystem(this);
 	}
 	public void placeBuilding(BuildingPlace place, Class<? extends Building> cls, CardinalDirection side) {

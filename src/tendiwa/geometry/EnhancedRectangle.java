@@ -678,8 +678,11 @@ boolean overlapsByStaticRange(EnhancedRectangle r, Orientation orientation) {
 }
 
 public Segment getIntersectionSegment(EnhancedRectangle r) {
+	if (this == r) {
+		throw new IllegalArgumentException("You can't get intersection segment of a rectanlge with itself");
+	}
 	assert !this.intersects(r);
-	if (overlapsByDynamicRange(r, Orientation.HORIZONTAL)) {
+	if (overlapsByStaticRange(r, Orientation.HORIZONTAL)) {
 		int y = this.y < r.y ? this.y : this.y + this.height - 1;
 		Range range = Range.intersectionOf(
 			x, x + width - 1,
@@ -687,7 +690,7 @@ public Segment getIntersectionSegment(EnhancedRectangle r) {
 		);
 		return new Segment(range.min, y, range.getLength(), Orientation.HORIZONTAL);
 	}
-	if (overlapsByDynamicRange(r, Orientation.VERTICAL)) {
+	if (overlapsByStaticRange(r, Orientation.VERTICAL)) {
 		int x = this.x < r.x ? this.x : this.x + this.width - 1;
 		Range range = Range.intersectionOf(
 			y, y + height - 1,

@@ -1,7 +1,9 @@
 package tests.painting;
 
 import org.jgrapht.graph.SimpleGraph;
+import tendiwa.drawing.DrawingRectangle;
 import tendiwa.drawing.DrawingRectangleSystem;
+import tendiwa.drawing.TestCanvas;
 import tendiwa.geometry.EnhancedRectangle;
 import tendiwa.geometry.RectangleSystemBuilder;
 import tendiwa.geometry.RectanglesJunction;
@@ -17,14 +19,15 @@ public static void main(String[] args) {
 		.place(rectangle(29, 41), near(LAST_RECTANGLE).fromSide(E).align(S))
 		.place(rectangle(30, 20), unitedWith(FIRST_RECTANGLE).fromSide(S).inMiddle())
 		.place(rectangle(10, 15), near(LAST_RECTANGLE).fromSide(E).align(N));
+	TestCanvas canvas = canvas();
+	canvas.draw(builder.getByIndex(2), DrawingRectangle.withColor(Color.RED));
+	canvas.draw(builder.getByIndex(3), DrawingRectangle.withColor(Color.YELLOW));
 	SimpleGraph<EnhancedRectangle,RectanglesJunction> path = path(builder)
 		.link("start").with(1).width(3).shift(2)
 		.link(1).with(2).width(2).shift(0)
-		.link(2).with(2).width(3).shift(0)
-		.link(2).with(3).width(1).shift(0)
 		.link(3).with(LAST_RECTANGLE).width(3).shift(1)
 		.build();
-	canvas().draw(builder.done(), DrawingRectangleSystem.neighborsUnionsAndRectangles(
+	canvas.draw(builder.done(), DrawingRectangleSystem.neighborsUnionsAndRectangles(
 		Color.RED,
 		Color.BLUE,
 		Color.BLACK,
@@ -32,6 +35,6 @@ public static void main(String[] args) {
 		Color.GRAY,
 		Color.LIGHT_GRAY
 	));
-	canvas().draw(path);
+	canvas.draw(path);
 }
 }

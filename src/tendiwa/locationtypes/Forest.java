@@ -15,7 +15,7 @@ public class Forest extends Location {
 	int water = StaticData.getFloorType("water").getId();
 
 	public Forest(HorizontalPlane plane, int x, int y, int width, int height) {
-		super(plane, x, y, width, height, "Forest");
+		super(plane, x, y, width, height);
 		House house = new House(this, new BuildingPlace(3, 3, 22, 22), Directions.E);
 		placeBuilding(house);
 	}

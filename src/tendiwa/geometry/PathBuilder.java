@@ -73,6 +73,8 @@ public class WidthStep {
 public class ShiftStep {
 	public PathBuilder shift(int shift) {
 		Segment segment = rectangleToLinkSource.getIntersectionSegment(rectangleToLinkEnd);
+		path.addVertex(rectangleToLinkSource);
+		path.addVertex(rectangleToLinkEnd);
 		path.addEdge(
 			rectangleToLinkSource,
 			rectangleToLinkEnd,
