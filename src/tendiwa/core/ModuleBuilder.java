@@ -1,57 +1,59 @@
 package tendiwa.core;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
+import com.sun.codemodel.JCodeModel;
+
+import java.io.*;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
 public class ModuleBuilder {
-public static File buildModuleJar(File moduleDir, File outputDir) {
-	File tendiwaModulesPackage = new File(moduleDir.getAbsolutePath()+"/src/tendiwa/modules/");
+/**
+ * Defines the name of a directory with static data inside a module.
+ */
+static final String staticDataDirectory = "src";
 
-	File[] files = tendiwaModulesPackage.listFiles(new FilenameFilter() {
+static void buildResourcesJar(String moduleDir) {
+	File moduleDirFile = new File(moduleDir);
+	File[] xmls = new File(moduleDir+File.separator+"data").listFiles(new FilenameFilter() {
 		@Override
-		public boolean accept(File file, String name) {
-			// TODO Auto-generated method stub
-			if (name.endsWith("Module.java")) {
-				return true;
-			}
-			return false;
+		public boolean accept(File dir, String name) {
+			return name.endsWith("xml");
 		}
 	});
-	if (files.length > 1) {
-		throw new Error("There are more than 1 file in "+moduleDir+" that ends with *Module.jar");
+	for (File xml : xmls) {
+		LoadStaticDataFromXML.loadGameDataFromXml(xml.getAbsolutePath());
 	}
-	if (files.length == 0) {
-		throw new Error("No file *Module.java found in "+moduleDir);
+	// Create source files
+	File destDir = new File(moduleDir+File.separator+staticDataDirectory);
+	destDir.mkdirs();
+	for (JCodeModel model : LoadStaticDataFromXML.codeModels) {
+		try {
+			model.build(destDir);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
-	File moduleClassFile = files[0];
+	createJar(moduleDirFile);
 
-	String moduleName = moduleClassFile.getName().replace(".java", "");
+}
+
+private static void createJar(File moduleDirFile) {
 	Manifest manifest = new Manifest();
 	manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
-	JarOutputStream target = null;
-	String outputFileName = moduleName+".jar";
-	String outputFilePath = outputDir.getAbsolutePath()+"/"+outputFileName;
+	JarOutputStream target;
+	String outputFileName = new File(System.getProperty("user.dir")).getName()+"Resources.jar";
+	String outputFilePath = moduleDirFile.getAbsolutePath() + File.separator + outputFileName;
 	try {
 		target = new JarOutputStream(new FileOutputStream(outputFilePath), manifest);
-		add(moduleDir, target);
+		add(new File(moduleDirFile.getPath() + File.separator + staticDataDirectory), target);
 		target.close();
-	} catch (FileNotFoundException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
+		System.out.println("Created " + outputFileName);
 	} catch (IOException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-	return new File(outputFilePath);
 }
 
 private static void add(File source, JarOutputStream target) throws IOException {

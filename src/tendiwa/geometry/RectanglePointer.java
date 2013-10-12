@@ -3,7 +3,7 @@ package tendiwa.geometry;
 /**
  * Used as an argument to some DSL chaining methods to point to a certain rectangle that was already placed.
  */
-enum RectanglePointer {
+public enum RectanglePointer {
 	/**
 	 * The first rectangle placed.
 	 */

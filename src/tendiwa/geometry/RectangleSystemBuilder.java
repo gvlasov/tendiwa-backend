@@ -1,10 +1,13 @@
 package tendiwa.geometry;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 public class RectangleSystemBuilder {
 protected final LinkedList<EnhancedRectangle> rectangles = new LinkedList<>();
@@ -14,7 +17,7 @@ private LinkedList<EnhancedRectangle> boundingRecs = new LinkedList<>();
 private EnhancedRectangle rememberedBoundingRec;
 private Map<String, Placeable> names = new HashMap<>();
 
-RectangleSystemBuilder(int borderWidth) {
+protected RectangleSystemBuilder(int borderWidth) {
 	this.rs = new RectangleSystem(borderWidth);
 }
 
@@ -32,7 +35,7 @@ public RectangleSystemBuilder place(String name, Placeable what, Placement where
 	return this;
 }
 
-EnhancedRectangle getRectangleByPointer(RectanglePointer pointer) {
+public EnhancedRectangle getRectangleByPointer(RectanglePointer pointer) {
 	switch (pointer) {
 		case FIRST_RECTANGLE:
 			return rectangles.getFirst();
@@ -90,6 +93,13 @@ public Placeable getByName(String name) {
  */
 public EnhancedRectangle getByIndex(int index) {
 	return boundingRecs.get(index);
+}
+
+public ImmutableList<EnhancedRectangle> getRectangles() {
+	return ImmutableList.<EnhancedRectangle>builder().addAll(rectangles).build();
+}
+public EnhancedRectangle getLastBoundingRec() {
+	return boundingRecs.getLast();
 }
 }
 

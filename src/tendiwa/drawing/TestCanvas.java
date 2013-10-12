@@ -79,7 +79,6 @@ public final class TestCanvas {
         panel.setSize(width, height);
         panel.setPreferredSize(new Dimension(width, height));
         frame.pack();
-        System.out.println(panel.getSize());
         frame.setVisible(visibility);
         initGifWriter();
     }

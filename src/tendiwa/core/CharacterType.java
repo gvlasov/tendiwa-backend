@@ -33,7 +33,7 @@ public class CharacterType implements GsonForStaticDataSerializable {
 	 * @return the aspects
 	 */
 	public HashSet<CharacterAspect> getAspects() {
-		return new HashSet<CharacterAspect>(aspects);
+		return new HashSet<>(aspects);
 	}
 	/**
 	 * @return the name

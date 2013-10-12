@@ -1,6 +1,7 @@
 package tendiwa.drawing;
 
 import tendiwa.core.TerrainBasics;
+import tendiwa.core.World;
 import tendiwa.geometry.RectangleSidePiece;
 import tendiwa.geometry.RectangleSystem;
 import tendiwa.geometry.Segment;
@@ -31,5 +32,6 @@ final class DefaultDrawingAlgorithms {
 			DrawingRectangleSidePiece.withColor(Color.MAGENTA));
 		algorithms.put(Segment.class, DrawingSegment.withColor(Color.BLUE));
 		algorithms.put(TerrainBasics.class, DrawingTerrain.defaultAlgorithm());
+		algorithms.put(World.class, DrawingWorld.defaultAlgorithm());
 	}
 }

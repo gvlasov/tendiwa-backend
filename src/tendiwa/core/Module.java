@@ -1,23 +1,13 @@
 package tendiwa.core;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 
 public abstract class Module {
 private Collection<String> dependencies = new HashSet<>();
 private Collection<String> resourcePaths = new HashSet<>();
 
 protected Module() {
-}
-
-public void buildStaticData(Class<? extends Module> subclass) {
-
-	for (String pathToResource : resourcePaths) {
-		System.out.println(subclass.getResource(pathToResource));
-		LoadStaticDataFromXML.loadGameDataFromXml(subclass, pathToResource);
-	}
 }
 
 public Collection<String> getDependencies() {
@@ -33,22 +23,6 @@ public Collection<String> getDependencies() {
  */
 public void addDependency(String dependency) {
 	dependencies.add(dependency);
-}
-
-/**
- * Checks if all the modules that are required for this module to work are loaded by {@link
- * tendiwa.core.ModuleLoader}.
- */
-void checkForDependencies() throws DependencyNotSatisfiedException {
-	HashSet<String> unsatisfiedDependencies = new HashSet<String>();
-	for (String dependency : dependencies) {
-		if (!ModuleLoader.hasModuleLoaded(dependency)) {
-			unsatisfiedDependencies.add(dependency);
-		}
-	}
-	if (unsatisfiedDependencies.size() > 0) {
-		throw new DependencyNotSatisfiedException(unsatisfiedDependencies);
-	}
 }
 
 /**

@@ -2,6 +2,7 @@
   <dictionary name="suseika">
     <words>
       <w>coord</w>
+      <w>filepath</w>
       <w>hereinabove</w>
       <w>intercellular</w>
       <w>neighborship</w>
@@ -11,6 +12,7 @@
       <w>prebuild</w>
       <w>splitable</w>
       <w>suseika</w>
+      <w>tendiwa</w>
     </words>
   </dictionary>
 </component>

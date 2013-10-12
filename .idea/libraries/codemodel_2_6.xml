@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="codemodel-2.6">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/codemodel-2.6.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="file:///usr/share/doc/libcodemodel-java/api" />
+    </JAVADOC>
+    <SOURCES />
+  </library>
+</component>

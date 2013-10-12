@@ -1,8 +1,7 @@
 package tendiwa.core;
 
+import java.io.File;
 import java.net.MalformedURLException;
-
-import tendiwa.locationtypes.Forest;
 //import tendiwa.modules.SuseikaBrowserClientResourceBuilder;
 
 public class Main {
@@ -17,14 +16,18 @@ public class Main {
 			//new SuseikaBrowserClientResourceBuilder();
 		}
 
-		ModuleLoader.loadModules();
-		StaticData.showData();
+		if (args[0].equals("build")) {
+			String moduleDir = args[0] == null ? System.getProperty("user.dir") : args[1];
+			ModuleBuilder.buildResourcesJar(moduleDir);
+		}
+//		ModuleLoader.loadModules();
+//		StaticData.showData();
 
 		// World world = new World(20,20,"TestWorld", "Erpoge World");
 		// world.showWorld();
 
-		HorizontalPlane plane = new HorizontalPlane();
-		plane.generateLocation(-20, -20, 59, 26, Forest.class);
+//		HorizontalPlane plane = new HorizontalPlane();
+//		plane.generateLocation(-20, -20, 59, 26, Forest.class);
 
 		// PlayerHandler burok = CharacterManager.createPlayer(plane, 6, 9,
 		// "Alvoi", StaticData.getCharacterType("elf"), "Warrior");
@@ -46,7 +49,7 @@ public class Main {
 		// Accounts.addAccount(new Account("Billy","1"));
 		// Accounts.account("1").addCharacter(burok);
 
-		ConnectionServer.setDefaultPlane(plane);
+//		ConnectionServer.setDefaultPlane(plane);
 		// MainHandler.startServer();
 	}
 }
