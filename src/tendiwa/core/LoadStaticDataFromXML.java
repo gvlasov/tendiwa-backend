@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableSet;
 import com.sun.codemodel.*;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.EdgeFactory;
-import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.w3c.dom.Document;
@@ -47,7 +46,7 @@ private static final JDefinedClass objectsClass;
 private static final JDefinedClass floorsClass;
 private static final JDefinedClass itemsClass;
 private static final JDefinedClass materialsClass;
-private static final String staticDataPackageName = "tendiwa.resoureces.";
+private static final String staticDataPackageName = "tendiwa.resources.";
 private static final String schemaFileName = "schema.xsd";
 private static final JDefinedClass[] definedClasses;
 private static final String GENERATED_CLASS_COMMENT_TEXT = "Do not modify!\n\n" +
@@ -137,7 +136,7 @@ public static void loadGameDataFromXml(String pathToResource) {
 	xmlResource = getResourceFileInputStream(pathToResource);
 	String textOfFile = new Scanner(xmlResource, "UTF-8").useDelimiter("\\A").next();
 	try {
-		URL resource = LoadStaticDataFromXML.class.getResource(schemaFileName);
+		URL resource = LoadStaticDataFromXML.class.getResource("/" + schemaFileName);
 		validate(
 			textOfFile,
 			resource
@@ -205,6 +204,7 @@ public static boolean validate(String inputXml, URL schemaFile)
 
 private static void loadSounds(Element eRoot) {
 	Element eSounds = (Element) eRoot.getElementsByTagName("sounds").item(0);
+	JClass clsSoundType = soundsCodeModel.ref(SoundType.class);
 	for (Element eSound = (Element) eSounds.getFirstChild(); eSound != null; eSound = (Element) eSound.getNextSibling()) {
 		String name = eSound.getElementsByTagName("name").item(0).getFirstChild().getNodeValue();
 		int bass = Integer.parseInt(eSound.getElementsByTagName("bass").item(0).getFirstChild().getNodeValue());
@@ -213,12 +213,11 @@ private static void loadSounds(Element eRoot) {
 //		SoundType soundType = new SoundType(name, bass, mid, treble);
 //		StaticData.add(soundType);
 
-		JClass cls = soundsCodeModel.ref(SoundType.class);
 		soundsClass.field(
 			JMod.PUBLIC | JMod.STATIC | JMod.FINAL,
 			SoundType.class,
 			name,
-			JExpr._new(cls)
+			JExpr._new(clsSoundType)
 				.arg(JExpr.lit(name))
 				.arg(JExpr.lit(bass))
 				.arg(JExpr.lit(mid))
@@ -229,6 +228,7 @@ private static void loadSounds(Element eRoot) {
 
 private static void loadCharacters(Element eRoot) {
 	Element eCharacters = (Element) eRoot.getElementsByTagName("characters").item(0);
+	JClass clsCharacterType = charactersCodeModel.ref(CharacterType.class);
 	for (Element eCharacter = (Element) eCharacters.getFirstChild(); eCharacter != null; eCharacter = (Element) eCharacter.getNextSibling()) {
 		// Form a CharacterType object
 		String name = eCharacter.getElementsByTagName("name").item(0).getFirstChild().getNodeValue();
@@ -248,15 +248,14 @@ private static void loadCharacters(Element eRoot) {
 				.arg(clsCharacterAspect.staticInvoke("getByName").arg(JExpr.lit(tagName)));
 		}
 		invSet = invSet.invoke("build");
-		DirectedGraph<BodyPartTypeInstance, DefaultEdge> bodyGraph = xml2BodyGraph((Element) eCharacter.getElementsByTagName("body").item(0).getFirstChild());
+//		DirectedGraph<BodyPartTypeInstance, DefaultEdge> bodyGraph = xml2BodyGraph((Element) eCharacter.getElementsByTagName("body").item(0).getFirstChild());
 //		CharacterType characterType = new CharacterType(name, aspects, weight, height, bodyGraph);
 //		StaticData.add(characterType);
-		JClass cls = charactersCodeModel.ref(CharacterType.class);
 		charactersClass.field(
 			JMod.PUBLIC | JMod.STATIC | JMod.FINAL,
 			CharacterType.class,
 			name,
-			JExpr._new(cls)
+			JExpr._new(clsCharacterType)
 				.arg(JExpr.lit(name))
 				.arg(invSet)
 				.arg(JExpr.lit(weight))
@@ -268,18 +267,18 @@ private static void loadCharacters(Element eRoot) {
 
 private static void loadMaterials(Element eRoot) {
 	Element eMaterials = (Element) eRoot.getElementsByTagName("materials").item(0);
+	JClass clsMaterial = materialsCodeModel.ref(Material.class);
 	for (Element eMaterial = (Element) eMaterials.getFirstChild(); eMaterial != null; eMaterial = (Element) eMaterial.getNextSibling()) {
 		int durability = Integer.parseInt(eMaterial.getElementsByTagName("durability").item(0).getFirstChild().getNodeValue());
 		String name = eMaterial.getElementsByTagName("name").item(0).getFirstChild().getNodeValue();
 		int density = Integer.parseInt(eMaterial.getElementsByTagName("density").item(0).getFirstChild().getNodeValue());
 		Material material = new Material(name, durability, density);
 		StaticData.add(material);
-		JClass cls = materialsCodeModel.ref(Material.class);
 		materialsClass.field(
 			JMod.PUBLIC | JMod.STATIC | JMod.FINAL,
 			Material.class,
 			name,
-			JExpr._new(cls)
+			JExpr._new(clsMaterial)
 				.arg(JExpr.lit(name))
 				.arg(JExpr.lit(durability))
 				.arg(JExpr.lit(density))
@@ -289,6 +288,8 @@ private static void loadMaterials(Element eRoot) {
 
 private static void loadObjects(Element eRoot) {
 	Element eObjects = (Element) eRoot.getElementsByTagName("objects").item(0);
+
+	JClass clsObjectType = objectsCodeModel.ref(ObjectType.class);
 
 	for (Element eObject = (Element) eObjects.getFirstChild(); eObject != null; eObject = (Element) eObject.getNextSibling()) {
 		String name = eObject.getElementsByTagName("name").item(0).getFirstChild().getNodeValue();
@@ -343,15 +344,34 @@ private static void loadObjects(Element eRoot) {
 			 */
 			StaticData.add(new ObjectType(name + "_open", StaticData.PASSABILITY_PENETRABLE + StaticData.PASSABILITY_VISUAL + StaticData.PASSABILITY_WALKABLE, isUsable, objectClass));
 		}
+
+		objectsClass.field(
+			JMod.PUBLIC | JMod.STATIC | JMod.FINAL,
+			ObjectType.class,
+			name,
+			JExpr._new(clsObjectType)
+				.arg(JExpr.lit(name))
+				.arg(JExpr.lit(passability))
+				.arg(JExpr.lit(isUsable))
+				.arg(JExpr.lit(objectClass))
+		);
 	}
 }
 
 private static void loadFloors(Element eRoot) {
 	Element eFloors = (Element) eRoot.getElementsByTagName("floors").item(0);
+	JClass clsFloorType = floorsCodeModel.ref(FloorType.class);
 	for (Element eFloor = (Element) eFloors.getFirstChild(); eFloor != null; eFloor = (Element) eFloor.getNextSibling()) {
 		String name = eFloor.getElementsByTagName("name").item(0).getFirstChild().getNodeValue();
-		FloorType floorType = new FloorType(name);
-		StaticData.add(floorType);
+//		FloorType floorType = new FloorType(name);
+//		StaticData.add(floorType);
+		floorsClass.field(
+			JMod.PUBLIC | JMod.STATIC | JMod.FINAL,
+			FloorType.class,
+			name,
+			JExpr._new(clsFloorType)
+				.arg(JExpr.lit(name))
+		);
 	}
 }
 
@@ -365,15 +385,25 @@ private static Element getChild(Element parent, String name) {
 }
 
 private static void loadItems(Element eRoot) {
+	JClass clsHashSet = itemsCodeModel.ref(ImmutableSet.class);
+	JClass clsItemAspect = itemsCodeModel.ref(Aspect.class);
+	JClass clsItemType = itemsCodeModel.ref(ItemType.class);
+	JClass clsAspectRangedWeapon = itemsCodeModel.ref(AspectRangedWeapon.class);
+	JClass clsAspectApparel = itemsCodeModel.ref(AspectApparel.class);
+	JClass clsAspectContainer = itemsCodeModel.ref(AspectContainer.class);
+	// This class is referred through a string because it is created dynamically in modules, not in framework.
+	JClass clsMaterialTypes = itemsCodeModel.ref("tendiwa.resources.MaterialTypes");
+
+	// TODO: This is a hack. I couldn't find another way to import tendiwa.core.Aspect to the resulting class.
+	itemsClass.field(JMod.PRIVATE | JMod.STATIC | JMod.FINAL, clsItemAspect, "ASPECT", JExpr._null());
+
 	for (Element eItem = (Element) eRoot.getElementsByTagName("items").item(0).getFirstChild(); eItem != null; eItem = (Element) eItem.getNextSibling()) {
 		// Parsing item type's properties
 		String name = eItem.getElementsByTagName("name").item(0).getFirstChild().getNodeValue();
 		String materialName = getChild(eItem, "material").getFirstChild().getNodeValue();
-		Material material = StaticData.getMaterialByName(materialName);
-		JClass clsHashSet = itemsCodeModel.ref(ImmutableSet.class);
-		JClass clsItemAspect = itemsCodeModel.ref("tendiwa.core.Aspect");
-		assert clsItemAspect != null;
-		JInvocation invSet = clsHashSet.staticInvoke("<Aspect>builder");
+
+		JInvocation expAspects = clsHashSet.staticInvoke("<Aspect>builder");
+
 		double weight = Double.parseDouble(eItem.getElementsByTagName("weight").item(0).getFirstChild().getNodeValue());
 		double volume = Double.parseDouble(eItem.getElementsByTagName("volume").item(0).getFirstChild().getNodeValue());
 		boolean stackable;
@@ -398,19 +428,20 @@ private static void loadItems(Element eRoot) {
 					int iAimTime = Integer.parseInt(eAspect.getElementsByTagName("aimTime").item(0).getFirstChild().getNodeValue());
 					int iMagazine = Integer.parseInt(eAspect.getElementsByTagName("magazine").item(0).getFirstChild().getNodeValue());
 //					aspectBuilder.add(new AspectRangedWeapon(iReloadTime, iAimTime, iMagazine, sAmmoType));
+
 					JExpression expRangedWeaponAspect = JExpr
-						._new(itemsCodeModel.ref(AspectRangedWeapon.class))
+						._new(clsAspectRangedWeapon)
 						.arg(JExpr.lit(iReloadTime))
 						.arg(JExpr.lit(iAimTime))
 						.arg(JExpr.lit(iMagazine))
 						.arg(JExpr.lit(sAmmoType));
-					invSet = invSet.invoke("add").arg(expRangedWeaponAspect);
+					expAspects = expAspects.invoke("add").arg(expRangedWeaponAspect);
 				}
 				if (eAspect.getTagName().equals("craftable")) {
 
 				}
 				if (eAspect.getTagName().equals("apparel")) {
-					Graph<BodyPartTypeInstance, DefaultEdge> form = xml2BodyGraph((Element) eAspect.getElementsByTagName("form").item(0).getFirstChild());
+//					Graph<BodyPartTypeInstance, DefaultEdge> form = xml2BodyGraph((Element) eAspect.getElementsByTagName("form").item(0).getFirstChild());
 					HashSet<BodyPartType> covers = new HashSet<BodyPartType>();
 					HashSet<BodyPartType> blocks = new HashSet<BodyPartType>();
 					if (eAspect.getElementsByTagName("covers").getLength() > 0) {
@@ -423,7 +454,11 @@ private static void loadItems(Element eRoot) {
 							blocks.add(BodyPartType.string2BodyPart(eBlocks.getTagName()));
 						}
 					}
-					aspects.add(new AspectApparel(form, covers, blocks));
+//					aspects.add(new AspectApparel(form, covers, blocks));
+
+					JExpression expApparel = JExpr
+						._new(clsAspectApparel);
+					expAspects = expAspects.invoke("add").arg(expApparel);
 
 				}
 				if (eAspect.getTagName().equals("container")) {
@@ -434,25 +469,35 @@ private static void loadItems(Element eRoot) {
 					} else {
 						liquidAllowing = false;
 					}
-					aspects.add(new AspectContainer(containerVolume, liquidAllowing));
+//					aspects.add(new AspectContainer(containerVolume, liquidAllowing));
+
+					JExpression expAspectContainer = JExpr
+						._new(clsAspectContainer)
+						.arg(JExpr.lit(containerVolume))
+						.arg(JExpr.lit(liquidAllowing));
+					expAspects = expAspects.invoke("add").arg(expAspectContainer);
 				}
 			}
 		}
-		ItemType itemType = new ItemType(name, aspects, weight, volume, material, stackable);
-		StaticData.add(itemType);
-		JClass cls = itemsCodeModel.ref(ItemType.class);
-		materialsClass.field(
+//		ItemType itemType = new ItemType(name, aspects, weight, volume, material, stackable);
+//		StaticData.add(itemType);
+
+		JFieldRef expMaterial = clsMaterialTypes
+			.staticRef(materialName);
+		expAspects = expAspects.invoke("build");
+		itemsClass.field(
 			JMod.PUBLIC | JMod.STATIC | JMod.FINAL,
 			ItemType.class,
 			name,
-			JExpr._new(cls)
+			JExpr._new(clsItemType)
 				.arg(JExpr.lit(name))
-				.arg(exprAspects)
+				.arg(expAspects)
 				.arg(JExpr.lit(weight))
 				.arg(JExpr.lit(volume))
-				.arg(JExpr.lit(material))
+				.arg(expMaterial)
 				.arg(JExpr.lit(stackable))
 		);
+		System.out.println("Created item " + name);
 	}
 }
 

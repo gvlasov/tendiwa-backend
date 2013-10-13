@@ -9,7 +9,7 @@ import com.google.gson.JsonSerializationContext;
 public final class FloorType implements GsonForStaticDataSerializable {
 	private final String name;
 	private final UniqueObject uniqueness;
-	FloorType(String name) {
+	public FloorType(String name) {
 		uniqueness = new UniqueObject();
 		this.name = name;
 	}

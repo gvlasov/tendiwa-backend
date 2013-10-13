@@ -2,12 +2,14 @@
 <project name="tendiwa_framework">
     <dirname property="tendiwa_framework.basedir" file="${ant.file.tendiwa_framework}"/>
     <property environment="env"/>
+    <property name="tendiwa_framework.jar_path" value="${tendiwa_framework.basedir}/tendiwa.jar"/>
     <target name="frameworkBuildJar" depends="frameworkCompile">
-        <delete file="tendiwa.jar"/>
-        <jar destfile="tendiwa.jar">
+        <delete file="${tendiwa_framework.jar_path}"/>
+        <jar destfile="${tendiwa_framework.jar_path}">
             <fileset dir="${tendiwa_framework.basedir}/bin/">
                 <exclude name="${tendiwa_framework.basedir}/tests/**"/>
             </fileset>
+            <fileset file="${tendiwa_framework.basedir}/src/tendiwa/core/schema.xsd"/>
             <manifest>
                 <attribute name="Main-Class" value="tendiwa.core.Main"/>
             </manifest>
@@ -22,6 +24,7 @@
                 excludes="${tendiwa_framework.basedir}/tests"
                 debug="on"
                 debuglevel="lines,vars,source"
+                failonerror="yes"
                 >
             <classpath>
                 <fileset dir="${tendiwa_framework.basedir}/lib">
@@ -32,6 +35,7 @@
     </target>
     <target name="frameworkClean">
         <delete dir="${tendiwa_framework.basedir}/bin/"/>
+        <delete file="${tendiwa_framework.jar_path}"/>
     </target>
 </project>
 

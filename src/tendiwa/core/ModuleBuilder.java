@@ -19,7 +19,7 @@ static void generateResourcesCode(String moduleDir) {
 	File[] xmls = new File(moduleDir + File.separator + "data").listFiles(new FilenameFilter() {
 		@Override
 		public boolean accept(File dir, String name) {
-			return name.endsWith("xml");
+		return name.endsWith("xml");
 		}
 	});
 	for (File xml : xmls) {
