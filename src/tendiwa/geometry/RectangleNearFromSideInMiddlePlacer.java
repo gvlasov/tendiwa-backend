@@ -1,6 +1,5 @@
 package tendiwa.geometry;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.awt.*;
 
@@ -16,6 +15,6 @@ public class RectangleNearFromSideInMiddlePlacer implements Placement {
     @Override
     public EnhancedRectangle placeIn(Placeable placeable, RectangleSystemBuilder builder) {
         builder.getRectangleByPointer(pointer);
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 }

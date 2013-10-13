@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import tendiwa.core.meta.Chance;
 import tendiwa.core.meta.Range;
 import tendiwa.core.meta.Utils;
@@ -299,11 +298,11 @@ public class WaveRectangleSystem extends GrowingRectangleSystem {
 			int width = w.line.distanceTo(e.line) - borderWidth * 2;
 			// TODO: What is not implemented?
 			if (width <= 0) {
-				throw new NotImplementedException();
+				throw new UnsupportedOperationException();
 			}
 			int height = s.line.distanceTo(n.line) - borderWidth * 2;
 			if (height <= 0) {
-				throw new NotImplementedException();
+				throw new UnsupportedOperationException();
 			}
 			EnhancedRectangle rectangle = new EnhancedRectangle(x, y, width, height);
 			pieces.modifySidesByPlacingRectangle(rectangle, n, e, s, w);
@@ -1628,7 +1627,7 @@ public class WaveRectangleSystem extends GrowingRectangleSystem {
 						}
 						@Override
 						public void remove() {
-							throw new NotImplementedException();
+							throw new UnsupportedOperationException();
 						}
 					};
 				}

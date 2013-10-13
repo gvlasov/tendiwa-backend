@@ -1,6 +1,5 @@
 package tendiwa.core;
 
-import java.io.File;
 import java.net.MalformedURLException;
 //import tendiwa.modules.SuseikaBrowserClientResourceBuilder;
 
@@ -18,7 +17,7 @@ public class Main {
 
 		if (args[0].equals("build")) {
 			String moduleDir = args[0] == null ? System.getProperty("user.dir") : args[1];
-			ModuleBuilder.buildResourcesJar(moduleDir);
+			ModuleBuilder.generateResourcesCode(moduleDir);
 		}
 //		ModuleLoader.loadModules();
 //		StaticData.showData();

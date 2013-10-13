@@ -1,6 +1,7 @@
 package tendiwa.core;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
@@ -13,12 +14,12 @@ import com.google.gson.JsonSerializationContext;
 public class CharacterType implements GsonForStaticDataSerializable {
 	private static int lastId = 0;
 	private int id;
-	private HashSet<CharacterAspect> aspects;
+	private Set<CharacterAspect> aspects;
 	private String name;
 	private double weight;
 	private double height;
 	private DirectedGraph<BodyPartTypeInstance, DefaultEdge> bodyGraph;
-	public CharacterType(String name, HashSet<CharacterAspect> aspects, double weight, double height, DirectedGraph<BodyPartTypeInstance, DefaultEdge> bodyGraph) {
+	public CharacterType(String name, Set<CharacterAspect> aspects, double weight, double height) {
 		this.id = ++lastId;
 		this.name = name;
 		this.aspects = aspects;

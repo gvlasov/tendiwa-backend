@@ -1,6 +1,5 @@
 package tendiwa.geometry;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import tendiwa.core.meta.Chance;
 import tendiwa.core.meta.Range;
 
@@ -18,7 +17,6 @@ import java.util.*;
  * between points are meant to be rather chaotic and unpredictable.
  * 
  * @author suseika
- * 
  */
 public class FuckingTrailRectangleSystem extends GrowingRectangleSystem {
 private static final int MIN_SECONDARY_AXIS_COVERING_SIZE = 4;
@@ -199,7 +197,7 @@ public FuckingTrailRectangleSystem buildToPoint(Point newPoint) {
 				heights.add(widthOfRightRec);
 			}
 		}
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException();
 	}
 	// Now we get randomized positions of rectangles on the short axis.
 	Point topPoint;

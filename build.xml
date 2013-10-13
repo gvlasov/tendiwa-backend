@@ -1,26 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="Erpoge Server">
+<project name="tendiwa_framework">
+    <dirname property="tendiwa_framework.basedir" file="${ant.file.tendiwa_framework}"/>
     <property environment="env"/>
-    <target name="all">
-    </target>
-    <target name="jar" depends="compile">
+    <target name="frameworkBuildJar" depends="frameworkCompile">
         <delete file="tendiwa.jar"/>
         <jar destfile="tendiwa.jar">
-            <fileset dir="bin/">
-                <exclude name="tests/**"/>
+            <fileset dir="${tendiwa_framework.basedir}/bin/">
+                <exclude name="${tendiwa_framework.basedir}/tests/**"/>
             </fileset>
-            <fileset dir="resources/"/>
+            <manifest>
+                <attribute name="Main-Class" value="tendiwa.core.Main"/>
+            </manifest>
         </jar>
     </target>
-    <target name="compile">
+    <target name="frameworkCompile">
+        <mkdir dir="${tendiwa_framework.basedir}/bin/"/>
         <javac
-                destdir="bin"
-                srcdir="src"
+                destdir="${tendiwa_framework.basedir}/bin"
                 includeantruntime="false"
+                srcdir="${tendiwa_framework.basedir}/src"
+                excludes="${tendiwa_framework.basedir}/tests"
                 debug="on"
                 debuglevel="lines,vars,source"
-                classpath="lib/*.jar"
-                />
+                >
+            <classpath>
+                <fileset dir="${tendiwa_framework.basedir}/lib">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
+        </javac>
+    </target>
+    <target name="frameworkClean">
+        <delete dir="${tendiwa_framework.basedir}/bin/"/>
     </target>
 </project>
 

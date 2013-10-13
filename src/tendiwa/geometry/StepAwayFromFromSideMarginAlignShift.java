@@ -1,6 +1,5 @@
 package tendiwa.geometry;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class StepAwayFromFromSideMarginAlignShift implements Placement {
     private final RectanglePointer pointer;

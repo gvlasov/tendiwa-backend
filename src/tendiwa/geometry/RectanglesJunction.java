@@ -1,6 +1,5 @@
 package tendiwa.geometry;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * This class represents a junction between two rectangles. Is a rectangle that overlaps two rectangles with a single
@@ -25,10 +24,10 @@ public RectanglesJunction(Orientation orientation, int coordinate, int width, En
 }
 
 Segment getSegmentOnRectangle(EnhancedRectangle r) {
-	throw new NotImplementedException();
+	throw new UnsupportedOperationException();
 }
 
 EnhancedRectangle getRectangleBetweenRectangles() {
-	throw new NotImplementedException();
+	throw new UnsupportedOperationException();
 }
 }

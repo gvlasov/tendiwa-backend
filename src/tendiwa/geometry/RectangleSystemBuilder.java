@@ -2,7 +2,6 @@ package tendiwa.geometry;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -48,7 +47,7 @@ public EnhancedRectangle getRectangleByPointer(RectanglePointer pointer) {
 		case REMEMBERED_BOUNDING_REC:
 			return rememberedBoundingRec;
 		default:
-			throw new NotImplementedException();
+			throw new IllegalArgumentException();
 	}
 }
 

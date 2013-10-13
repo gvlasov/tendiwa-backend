@@ -9,10 +9,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import org.apache.commons.lang3.tuple.Pair;
-
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-import tendiwa.geometry.RectangleSidePiece;
 
 public class Utils {
 	public Utils() {
@@ -46,10 +42,10 @@ public class Utils {
 
 	public static <T> Set<T> intersectArrays(List<T> first, List<T> second) {
 		// initialize a return set for intersections
-		Set<T> instersection = new HashSet<T>();
+		Set<T> instersection = new HashSet<>();
 
 		// load first array to a hash
-		HashSet<T> array1ToHash = new HashSet<T>();
+		HashSet<T> array1ToHash = new HashSet<>();
 		for (T fElem : first) {
 			array1ToHash.add(fElem);
 		}
@@ -109,49 +105,5 @@ public class Utils {
 		}
 		List<T> list = new ArrayList<T>(collection);
 		return getRandomElement(list);
-	}
-	/**
-	 * Returns an Iterable object that allows iteration over all unique pairs of
-	 * elements in a Collection.
-	 * 
-	 * @param collection
-	 * @return
-	 */
-	public static <T> Iterable<Pair<T, T>> combinationPairsIterable(Collection<T> collection) {
-		final ArrayList<T> list = new ArrayList<T>();
-		list.addAll(collection);
-		return new Iterable<Pair<T, T>>() {
-
-			@Override
-			public Iterator<Pair<T, T>> iterator() {
-				return new Iterator<Pair<T, T>>() {
-					int i = 0;
-					int j = 1;
-					int l = list.size();
-
-					@Override
-					public boolean hasNext() {
-						if (i == l-2 && j == l-1) {
-							return false;
-						}
-						return true;
-					}
-
-					@Override
-					public Pair<T, T> next() {
-						if (j == l-1) {
-							i++;
-						}
-						return Pair.of(list.get(i), list.get(j));
-					}
-
-					@Override
-					public void remove() {
-						throw new NotImplementedException();
-					}
-				};
-			}
-
-		};
 	}
 }

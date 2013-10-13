@@ -5,7 +5,6 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import tendiwa.core.meta.Coordinate;
 
 
@@ -73,7 +72,7 @@ public abstract class TerrainBasics {
 		return false;
 	}
 	public boolean isContainer(int id) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not implemented yet");
 	}
 	public void createCeiling(Rectangle ceiling, int type) {
 		ceilings.add(new Ceiling(ceiling, type));

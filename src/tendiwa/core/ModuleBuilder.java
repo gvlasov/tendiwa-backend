@@ -14,9 +14,9 @@ public class ModuleBuilder {
  */
 static final String staticDataDirectory = "src";
 
-static void buildResourcesJar(String moduleDir) {
+static void generateResourcesCode(String moduleDir) {
 	File moduleDirFile = new File(moduleDir);
-	File[] xmls = new File(moduleDir+File.separator+"data").listFiles(new FilenameFilter() {
+	File[] xmls = new File(moduleDir + File.separator + "data").listFiles(new FilenameFilter() {
 		@Override
 		public boolean accept(File dir, String name) {
 			return name.endsWith("xml");
@@ -26,7 +26,7 @@ static void buildResourcesJar(String moduleDir) {
 		LoadStaticDataFromXML.loadGameDataFromXml(xml.getAbsolutePath());
 	}
 	// Create source files
-	File destDir = new File(moduleDir+File.separator+staticDataDirectory);
+	File destDir = new File(moduleDir + File.separator + staticDataDirectory);
 	destDir.mkdirs();
 	for (JCodeModel model : LoadStaticDataFromXML.codeModels) {
 		try {
@@ -35,15 +35,14 @@ static void buildResourcesJar(String moduleDir) {
 			e.printStackTrace();
 		}
 	}
-	createJar(moduleDirFile);
-
+//	createJar(moduleDirFile);
 }
 
 private static void createJar(File moduleDirFile) {
 	Manifest manifest = new Manifest();
 	manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
 	JarOutputStream target;
-	String outputFileName = new File(System.getProperty("user.dir")).getName()+"Resources.jar";
+	String outputFileName = new File(System.getProperty("user.dir")).getName() + "Resources.jar";
 	String outputFilePath = moduleDirFile.getAbsolutePath() + File.separator + outputFileName;
 	try {
 		target = new JarOutputStream(new FileOutputStream(outputFilePath), manifest);
@@ -70,7 +69,6 @@ private static void add(File source, JarOutputStream target) throws IOException 
 				target.closeEntry();
 			}
 			for (File nestedFile : source.listFiles()) {
-				System.out.println(nestedFile);
 				add(nestedFile, target);
 			}
 			return;

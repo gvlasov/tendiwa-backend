@@ -22,12 +22,14 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import java.io.*;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Scanner;
 
 import static org.w3c.dom.Node.ELEMENT_NODE;
 
 public class LoadStaticDataFromXML {
+static final JCodeModel[] codeModels;
 private static final EdgeFactory<BodyPartTypeInstance, DefaultEdge> defaultEdgeFactory = new EdgeFactory<BodyPartTypeInstance, DefaultEdge>() {
 	public DefaultEdge createEdge(BodyPartTypeInstance v1, BodyPartTypeInstance v2) {
 		return new DefaultEdge();
@@ -38,34 +40,43 @@ private static final JCodeModel charactersCodeModel = new JCodeModel();
 private static final JCodeModel objectsCodeModel = new JCodeModel();
 private static final JCodeModel floorsCodeModel = new JCodeModel();
 private static final JCodeModel itemsCodeModel = new JCodeModel();
-static final JCodeModel[] codeModels;
+private static final JCodeModel materialsCodeModel = new JCodeModel();
 private static final JDefinedClass soundsClass;
 private static final JDefinedClass charactersClass;
 private static final JDefinedClass objectsClass;
 private static final JDefinedClass floorsClass;
 private static final JDefinedClass itemsClass;
-
+private static final JDefinedClass materialsClass;
 private static final String staticDataPackageName = "tendiwa.resoureces.";
 private static final String schemaFileName = "schema.xsd";
+private static final JDefinedClass[] definedClasses;
+private static final String GENERATED_CLASS_COMMENT_TEXT = "Do not modify!\n\n" +
+	"This class was automatically generated.\n\n" +
+	"To define your own game resources, you need to describe them in data/*.xml files \n" +
+	"and then run build.";
 
 static {
+	// Define classes in code models
 	JDefinedClass itemsClass1;
 	JDefinedClass floorsClass1;
 	JDefinedClass objectsClass1;
 	JDefinedClass charactersClass1;
 	JDefinedClass soundsClass1;
+	JDefinedClass materialsClass1;
 	try {
-		soundsClass1 = soundsCodeModel._class(staticDataPackageName+"SoundTypes");
-		charactersClass1 = charactersCodeModel._class(staticDataPackageName+"CharacterTypes");
-		objectsClass1 = objectsCodeModel._class(staticDataPackageName+"ObjectTypes");
-		floorsClass1 = floorsCodeModel._class(staticDataPackageName+"FloorTypes");
-		itemsClass1 = itemsCodeModel._class(staticDataPackageName+"ItemTypes");
+		soundsClass1 = soundsCodeModel._class(staticDataPackageName + "SoundTypes");
+		charactersClass1 = charactersCodeModel._class(staticDataPackageName + "CharacterTypes");
+		objectsClass1 = objectsCodeModel._class(staticDataPackageName + "ObjectTypes");
+		floorsClass1 = floorsCodeModel._class(staticDataPackageName + "FloorTypes");
+		itemsClass1 = itemsCodeModel._class(staticDataPackageName + "ItemTypes");
+		materialsClass1 = materialsCodeModel._class(staticDataPackageName + "MaterialTypes");
 	} catch (JClassAlreadyExistsException e) {
 		soundsClass1 = null;
 		charactersClass1 = null;
 		objectsClass1 = null;
 		floorsClass1 = null;
 		itemsClass1 = null;
+		materialsClass1 = null;
 		e.printStackTrace();
 	}
 	itemsClass = itemsClass1;
@@ -73,13 +84,28 @@ static {
 	charactersClass = charactersClass1;
 	objectsClass = objectsClass1;
 	floorsClass = floorsClass1;
+	materialsClass = materialsClass1;
+	// Create an array to iterate over all code models
 	codeModels = new JCodeModel[]{
 		soundsCodeModel,
 		charactersCodeModel,
 		objectsCodeModel,
 		floorsCodeModel,
-		itemsCodeModel
+		itemsCodeModel,
+		materialsCodeModel
 	};
+	definedClasses = new JDefinedClass[]{
+		soundsClass,
+		charactersClass,
+		objectsClass,
+		floorsClass,
+		itemsClass,
+		materialsClass
+	};
+	// Add comments to each code model
+	for (JDefinedClass cls : definedClasses) {
+		cls.javadoc().append(GENERATED_CLASS_COMMENT_TEXT);
+	}
 }
 
 /**
@@ -96,27 +122,31 @@ public static void loadGameDataFromXml(String pathToResource) {
 	try {
 		dBuilder = dbFactory.newDocumentBuilder();
 	} catch (ParserConfigurationException e) {
-		e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+		e.printStackTrace();
 	}
 	Document doc = null;
 	try {
 		doc = dBuilder.parse(xmlResource);
 	} catch (SAXException e) {
-		e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+		e.printStackTrace();
 	} catch (IOException e) {
-		e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+		e.printStackTrace();
 	}
 	Element eRoot = doc.getDocumentElement();
 
 	xmlResource = getResourceFileInputStream(pathToResource);
 	String textOfFile = new Scanner(xmlResource, "UTF-8").useDelimiter("\\A").next();
 	try {
-		validate(textOfFile, new File(Main.class.getResource(File.separator+schemaFileName).getFile()));
+		URL resource = LoadStaticDataFromXML.class.getResource(schemaFileName);
+		validate(
+			textOfFile,
+			resource
+		);
 	} catch (SAXException e) {
-		e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+		e.printStackTrace();
 		System.exit(1);
 	} catch (IOException e) {
-		e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+		e.printStackTrace();
 		System.exit(1);
 	}
 	removeWhitespaceTextNodes(eRoot);
@@ -131,10 +161,10 @@ public static void loadGameDataFromXml(String pathToResource) {
 	loadObjects(eRoot);
 	loadFloors(eRoot);
 }
+
 private static InputStream getResourceFileInputStream(String pathToResource) {
-	InputStream xmlResource = null;
 	try {
-		return xmlResource = new FileInputStream(new File(pathToResource));
+		return new FileInputStream(new File(pathToResource));
 	} catch (FileNotFoundException e) {
 		e.printStackTrace();
 	}
@@ -154,7 +184,7 @@ private static void removeWhitespaceTextNodes(Node node) {
 	}
 }
 
-public static boolean validate(String inputXml, File schemaFile)
+public static boolean validate(String inputXml, URL schemaFile)
 	throws SAXException, IOException {
 	SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
 	Schema schema = factory.newSchema(schemaFile);
@@ -208,16 +238,16 @@ private static void loadCharacters(Element eRoot) {
 		JClass clsHashSet = charactersCodeModel.ref(ImmutableSet.class);
 		JClass clsCharacterAspect = charactersCodeModel.ref("tendiwa.core.CharacterAspect");
 		assert clsCharacterAspect != null;
-		JInvocation invSet = clsHashSet.staticInvoke("build");
+		JInvocation invSet = clsHashSet.staticInvoke("<CharacterAspect>builder");
 		for (Element eAspect = (Element) eCharacter.getElementsByTagName("aspects").item(0).getFirstChild(); eAspect != null; eAspect = (Element) eAspect.getNextSibling()) {
 			// For each aspect inside XML element <aspects/> add a
 			// CharacterAspect to CharacterType
 			String tagName = eAspect.getTagName();
-			invSet
-				.invoke("getByName")
+			invSet = invSet
+				.invoke("add")
 				.arg(clsCharacterAspect.staticInvoke("getByName").arg(JExpr.lit(tagName)));
 		}
-		invSet.invoke("build");
+		invSet = invSet.invoke("build");
 		DirectedGraph<BodyPartTypeInstance, DefaultEdge> bodyGraph = xml2BodyGraph((Element) eCharacter.getElementsByTagName("body").item(0).getFirstChild());
 //		CharacterType characterType = new CharacterType(name, aspects, weight, height, bodyGraph);
 //		StaticData.add(characterType);
@@ -232,7 +262,7 @@ private static void loadCharacters(Element eRoot) {
 				.arg(JExpr.lit(weight))
 				.arg(JExpr.lit(height))
 		);
-		System.out.println("Character " + name + " loaded");
+//		System.out.println("Character " + name + " loaded");
 	}
 }
 
@@ -244,6 +274,16 @@ private static void loadMaterials(Element eRoot) {
 		int density = Integer.parseInt(eMaterial.getElementsByTagName("density").item(0).getFirstChild().getNodeValue());
 		Material material = new Material(name, durability, density);
 		StaticData.add(material);
+		JClass cls = materialsCodeModel.ref(Material.class);
+		materialsClass.field(
+			JMod.PUBLIC | JMod.STATIC | JMod.FINAL,
+			Material.class,
+			name,
+			JExpr._new(cls)
+				.arg(JExpr.lit(name))
+				.arg(JExpr.lit(durability))
+				.arg(JExpr.lit(density))
+		);
 	}
 }
 
@@ -256,11 +296,11 @@ private static void loadObjects(Element eRoot) {
 		int passability = StaticData.PASSABILITY_NONE;
 		boolean isUsable;
 		for (Element ePassType = (Element) ePassability.getFirstChild(); ePassType != null; ePassType = (Element) ePassType.getNextSibling()) {
-				/*
-				 * <passability /> element can contain several flag elements,
-				 * that determine what types of passability this ObjectType has:
-				 * visual, walkable.
-				 */
+			/*
+			 * <passability /> element can contain several flag elements,
+			 * that determine what types of passability this ObjectType has:
+			 * visual, walkable.
+			 */
 			if (ePassType.getTagName().equals("none")) {
 				passability = StaticData.PASSABILITY_NONE;
 				break;
@@ -296,11 +336,11 @@ private static void loadObjects(Element eRoot) {
 		ObjectType objectType = new ObjectType(name, passability, isUsable, objectClass);
 		StaticData.add(objectType);
 		if (objectClass == ObjectType.CLASS_DOOR) {
-				/*
-				 * There are 2 ObjectTypes associated with each door: open and
-				 * closed. The default one is closed, then we should register
-				 * the open one.
-				 */
+			/*
+			 * There are 2 ObjectTypes associated with each door: open and
+			 * closed. The default one is closed, then we should register
+			 * the open one.
+			 */
 			StaticData.add(new ObjectType(name + "_open", StaticData.PASSABILITY_PENETRABLE + StaticData.PASSABILITY_VISUAL + StaticData.PASSABILITY_WALKABLE, isUsable, objectClass));
 		}
 	}
@@ -330,7 +370,10 @@ private static void loadItems(Element eRoot) {
 		String name = eItem.getElementsByTagName("name").item(0).getFirstChild().getNodeValue();
 		String materialName = getChild(eItem, "material").getFirstChild().getNodeValue();
 		Material material = StaticData.getMaterialByName(materialName);
-		HashSet<Aspect> aspects = new HashSet<Aspect>();
+		JClass clsHashSet = itemsCodeModel.ref(ImmutableSet.class);
+		JClass clsItemAspect = itemsCodeModel.ref("tendiwa.core.Aspect");
+		assert clsItemAspect != null;
+		JInvocation invSet = clsHashSet.staticInvoke("<Aspect>builder");
 		double weight = Double.parseDouble(eItem.getElementsByTagName("weight").item(0).getFirstChild().getNodeValue());
 		double volume = Double.parseDouble(eItem.getElementsByTagName("volume").item(0).getFirstChild().getNodeValue());
 		boolean stackable;
@@ -354,7 +397,14 @@ private static void loadItems(Element eRoot) {
 					int iReloadTime = Integer.parseInt(eAspect.getElementsByTagName("reloadTime").item(0).getFirstChild().getNodeValue());
 					int iAimTime = Integer.parseInt(eAspect.getElementsByTagName("aimTime").item(0).getFirstChild().getNodeValue());
 					int iMagazine = Integer.parseInt(eAspect.getElementsByTagName("magazine").item(0).getFirstChild().getNodeValue());
-					aspects.add(new AspectRangedWeapon(iReloadTime, iAimTime, iMagazine, sAmmoType));
+//					aspectBuilder.add(new AspectRangedWeapon(iReloadTime, iAimTime, iMagazine, sAmmoType));
+					JExpression expRangedWeaponAspect = JExpr
+						._new(itemsCodeModel.ref(AspectRangedWeapon.class))
+						.arg(JExpr.lit(iReloadTime))
+						.arg(JExpr.lit(iAimTime))
+						.arg(JExpr.lit(iMagazine))
+						.arg(JExpr.lit(sAmmoType));
+					invSet = invSet.invoke("add").arg(expRangedWeaponAspect);
 				}
 				if (eAspect.getTagName().equals("craftable")) {
 
@@ -374,6 +424,7 @@ private static void loadItems(Element eRoot) {
 						}
 					}
 					aspects.add(new AspectApparel(form, covers, blocks));
+
 				}
 				if (eAspect.getTagName().equals("container")) {
 					double containerVolume = Double.parseDouble(eAspect.getElementsByTagName("volume").item(0).getFirstChild().getNodeValue());
@@ -389,6 +440,19 @@ private static void loadItems(Element eRoot) {
 		}
 		ItemType itemType = new ItemType(name, aspects, weight, volume, material, stackable);
 		StaticData.add(itemType);
+		JClass cls = itemsCodeModel.ref(ItemType.class);
+		materialsClass.field(
+			JMod.PUBLIC | JMod.STATIC | JMod.FINAL,
+			ItemType.class,
+			name,
+			JExpr._new(cls)
+				.arg(JExpr.lit(name))
+				.arg(exprAspects)
+				.arg(JExpr.lit(weight))
+				.arg(JExpr.lit(volume))
+				.arg(JExpr.lit(material))
+				.arg(JExpr.lit(stackable))
+		);
 	}
 }
 

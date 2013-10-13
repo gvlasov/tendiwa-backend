@@ -1,6 +1,5 @@
 package tendiwa.geometry;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -62,7 +61,7 @@ public Placeable rotate(Rotation rotation) {
 			transform = TRANSFORM_HALF_CIRCLE;
 			break;
 		default:
-			throw new NotImplementedException();
+			throw new IllegalArgumentException();
 	}
 	RectangleSequence newRs = new RectangleSequence();
 	for (EnhancedRectangle r : content) {

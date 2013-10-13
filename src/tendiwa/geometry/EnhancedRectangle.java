@@ -1,6 +1,5 @@
 package tendiwa.geometry;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import tendiwa.core.meta.Chance;
 import tendiwa.core.meta.Coordinate;
 import tendiwa.core.meta.Range;
@@ -558,7 +557,7 @@ public Placeable rotate(Rotation rotation) {
 			newWidth = width;
 			newHeight = height;
 		default:
-			throw new NotImplementedException();
+			throw new UnsupportedOperationException("Operation for rotation "+rotation+" is not implemented yet");
 	}
 	return new EnhancedRectangle(x, y, newWidth, newHeight);
 }

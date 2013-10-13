@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="tendiwa">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/tendiwa.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

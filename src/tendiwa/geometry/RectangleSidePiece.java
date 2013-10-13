@@ -205,7 +205,7 @@ public class RectangleSidePiece {
 			width,
 			height);
 	}
-	boolean contains(RectangleSidePiece piece) {
+	public boolean contains(RectangleSidePiece piece) {
 		if (!piece.line.equals(line)) {
 			return false;
 		}
