@@ -1,7 +1,6 @@
 package tendiwa.core;
 
 import org.jgrapht.Graph;
-import org.jgrapht.graph.DefaultEdge;
 import tendiwa.core.meta.Coordinate;
 import tendiwa.core.meta.Utils;
 import tendiwa.geometry.*;
@@ -15,12 +14,6 @@ import java.util.*;
 public class TerrainModifier {
 private RectangleSystem rs;
 private Location location;
-private int wall = StaticData.getObjectType("wall_grey_stone").getId();
-
-public TerrainModifier(Location location, int startX, int startY, int width, int height, int minRectangleWidth, int borderWidth) {
-	rs = new RandomRectangleSystem(startX, startY, width, height, minRectangleWidth, borderWidth);
-	this.location = location;
-}
 
 public TerrainModifier(Location location, RectangleSystem crs) {
 	rs = crs;
@@ -39,12 +32,12 @@ public RectangleSystem getRectangleSystem() {
  * @param val
  * 	Id of entity
  */
-public void excludeRectanglesHaving(int type, int val) {
+public void excludeRectanglesHaving(PlaceableInCell placeable) {
 	keyLoop:
 	for (EnhancedRectangle r : rs.rectangleList()) {
 		for (int x = r.x; x < r.x + r.width; x++) {
 			for (int y = r.y; y < r.y + r.height; y++) {
-				if (location.cells[x][y].getElement(type) == val) {
+				if (location.cells[x][y].contains(placeable)) {
 					rs.excludeRectangle(r);
 					continue keyLoop;
 				}
@@ -57,13 +50,11 @@ public void excludeRectanglesHaving(int type, int val) {
  * Draws borders between neighbor rectangles. Note that sets of cells of which inner and outer borders consist never
  * intersect.
  *
- * @param type
- * 	Type of object to place on each resulting cell.
- * @param name
- * 	Id of object to place on each resulting cell.
- * @see TerrainModifier#drawOuterBorders(int, int)
+ * @param placeable
+ * 	Type of entities to place in cells.
+ * @see TerrainModifier#drawOuterBorders(PlaceableInCell)
  */
-public void drawInnerBorders(int type, int name) {
+public void drawInnerBorders(PlaceableInCell placeable) {
 	/*
 	 * For anyone who is going to read the code of this method: the code may be
 	 * really hard to understand, because it is hard to describe with words
@@ -309,23 +300,23 @@ public void drawInnerBorders(int type, int name) {
 			if (side == Directions.N) {
 				for (Segment s : segments) {
 					s.changeY(rs.getBorderWidth());
-					location.drawSegment(s, rs.getBorderWidth(), type, name);
+					location.drawSegment(s, rs.getBorderWidth(), placeable);
 				}
 			} else if (side == Directions.E) {
 				for (Segment s : segments) {
 					s.changeX(-rs.getBorderWidth());
-					location.drawSegment(s, rs.getBorderWidth(), type, name);
+					location.drawSegment(s, rs.getBorderWidth(), placeable);
 				}
 			} else if (side == Directions.S) {
 				for (Segment s : segments) {
 					s.changeY(-rs.getBorderWidth());
-					location.drawSegment(s, rs.getBorderWidth(), type, name);
+					location.drawSegment(s, rs.getBorderWidth(), placeable);
 				}
 			} else {
 				// if (side == SideTest.W)
 				for (Segment s : segments) {
 					s.changeX(rs.getBorderWidth());
-					location.drawSegment(s, rs.getBorderWidth(), type, name);
+					location.drawSegment(s, rs.getBorderWidth(), placeable);
 				}
 			}
 		}
@@ -336,11 +327,11 @@ public void drawInnerBorders(int type, int name) {
  * Draws borders around rectangles from those their segments that don't touch any neighbor rectangle. Note that sets of
  * cells of which inner and outer borders consist never intersect.
  *
- * @param type
- * @param name
- * @see TerrainModifier#drawInnerBorders(int, int)
+ * @param placeable
+ * 	Entity to place in each drawn cell.
+ * @see TerrainModifier#drawInnerBorders(PlaceableInCell)
  */
-public void drawOuterBorders(int type, int name) {
+public void drawOuterBorders(PlaceableInCell placeable) {
 	if (rs.getBorderWidth() < 1) {
 		throw new RuntimeException("Can't draw borders of RectangleSystem with borderWidth=" + rs.getBorderWidth());
 	}
@@ -364,13 +355,13 @@ public void drawOuterBorders(int type, int name) {
 					borderSegment.changeY(-rs.getBorderWidth());
 				}
 				borderSegment.changeLength(rs.getBorderWidth() * 2);
-				location.drawSegment(borderSegment, rs.getBorderWidth(), Location.ELEMENT_OBJECT, wall);
+				location.drawSegment(borderSegment, rs.getBorderWidth(), placeable);
 			}
 		}
 	}
 }
 
-public void connectCornersWithLines(int type, int value, int padding, boolean considerBorderWidth) {
+public void connectCornersWithLines(PlaceableInCell placeable, int padding, boolean considerBorderWidth) {
 	Rectangle boundingRec = rs.getBounds();
 	ccwlLastCellHolder.center = new Coordinate(Math.round(boundingRec.x + boundingRec.width / 2), Math.round(boundingRec.y + boundingRec.height / 2));
 	ArrayList<Coordinate> corners = new ArrayList<>();
@@ -405,27 +396,27 @@ public void connectCornersWithLines(int type, int value, int padding, boolean co
 	int size = corners.size();
 	for (int i = 1; i < size; i++) {
 		Coordinate c2 = corners.get(i);
-		location.line(c1.x, c1.y, c2.x, c2.y, type, value);
+		location.line(c1.x, c1.y, c2.x, c2.y, placeable);
 		c1 = c2;
 		if (i == size - 1) {
-			location.line(c2.x, c2.y, corners.get(0).x, corners.get(0).y, type, value);
+			location.line(c2.x, c2.y, corners.get(0).x, corners.get(0).y, placeable);
 		}
 
 	}
 }
 
-public void fillContents(int type, int value) {
+public void fillContents(PlaceableInCell placeable) {
 	for (Rectangle r : rs.rectangleList()) {
-		location.square(r, type, value, true);
+		location.square(r, placeable, true);
 	}
 }
 
-public void drawLines() {
+public void drawLines(PlaceableInCell placeable) {
 	Graph<EnhancedRectangle, RectangleSystem.Neighborship> graph = rs.getGraph();
 	for (RectangleSystem.Neighborship e : graph.edgeSet()) {
 		EnhancedPoint c1 = graph.getEdgeSource(e).getCenterPoint();
 		EnhancedPoint c2 = graph.getEdgeTarget(e).getCenterPoint();
-		location.line(c1.x, c1.y, c2.x, c2.y, Location.ELEMENT_OBJECT, wall);
+		location.line(c1.x, c1.y, c2.x, c2.y, placeable);
 	}
 }
 

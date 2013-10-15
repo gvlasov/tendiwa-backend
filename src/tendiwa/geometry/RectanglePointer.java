@@ -27,5 +27,10 @@ public enum RectanglePointer {
 	 * A bounding rectagle of the Placeable after placing which {@link tendiwa.geometry.RectangleSystemBuilder#rememberBoundingRec()}
 	 * was called in method chain.
 	 */
-	REMEMBERED_BOUNDING_REC;
+	REMEMBERED_BOUNDING_REC,
+
+	/**
+	 * All rectangles that matched a criteria in search methods, i.e. {@link WorldRectangleBuilder#findAllRectangles(FindCriteria)}
+	 */
+	FOUND_RECTANGLES;
 }

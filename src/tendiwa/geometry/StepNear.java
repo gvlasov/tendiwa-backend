@@ -16,7 +16,7 @@ public class StepNear {
             @Override
             public EnhancedRectangle placeIn(Placeable placeable, RectangleSystemBuilder builder) {
                 EnhancedRectangle placeableBounds = placeable.getBounds();
-                EnhancedRectangle existingRec = builder.getRectangleByPointer(pointer);
+                EnhancedRectangle existingRec = builder.getRectangleByPointer(pointer).getBounds();
                 int x, y;
                 switch (corner) {
                     case NE:

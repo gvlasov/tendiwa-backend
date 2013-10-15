@@ -21,7 +21,7 @@ public class StepNearFromSideAlign implements Placement {
             @Override
             public EnhancedRectangle placeIn(Placeable placeable, RectangleSystemBuilder builder) {
                 EnhancedRectangle placeableBounds = placeable.getBounds();
-                EnhancedRectangle existingRec = builder.getRectangleByPointer(pointer);
+                EnhancedRectangle existingRec = builder.getRectangleByPointer(pointer).getBounds();
                 int staticCoord = existingRec.getStaticCoordOfSide(fromSide) + (builder.rs.borderWidth + 1) * fromSide.getGrowing();
                 if (fromSide == Directions.N) {
                     staticCoord -= placeableBounds.height;

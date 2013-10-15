@@ -1,5 +1,6 @@
 package tendiwa.geometry;
 
+import com.google.common.collect.ImmutableList;
 import tendiwa.core.meta.Chance;
 import tendiwa.core.meta.Coordinate;
 import tendiwa.core.meta.Range;
@@ -214,6 +215,13 @@ public static EnhancedRectangle rectangleMovedFromOriginal(Rectangle r, int dx, 
 
 }
 
+public Segment getSideAsSegment(CardinalDirection side) {
+	if (side == CardinalDirection.N || side == CardinalDirection.S) {
+		return getSegmentInsideFromSide(side, 0, width);
+	}
+	return getSegmentInsideFromSide(side, 0, height);
+}
+
 public Collection<Coordinate> getCells() {
 	ArrayList<Coordinate> answer = new ArrayList<Coordinate>();
 	for (int i = x; i < x + width; i++) {
@@ -385,21 +393,19 @@ public int getDimensionBySide(CardinalDirection side) {
 /**
  * Returns Coordinate of particular rectangle's corner.
  *
- * @param side
+ * @param corner
  * 	Defines corner by ordinal side.
  */
-public Coordinate getCorner(OrdinalDirection side) {
-	switch (side) {
-		case NE:
-			return new Coordinate(x + width - 1, y);
-		case SE:
-			return new Coordinate(x + width - 1, y + height - 1);
-		case SW:
-			return new Coordinate(x, y + height - 1);
-		case NW:
-			return new Coordinate(x, y);
-		default:
-			throw new IllegalArgumentException();
+public EnhancedPoint getCorner(OrdinalDirection corner) {
+	if (corner == Directions.NW) {
+		return new EnhancedPoint(x, y);
+	} else if (corner == Directions.NE) {
+		return new EnhancedPoint(x + width - 1, y);
+	} else if (corner == Directions.SE) {
+		return new EnhancedPoint(x + width - 1, y + height - 1);
+	} else {
+		assert corner == Directions.SW;
+		return new EnhancedPoint(x, y + height - 1);
 	}
 }
 
@@ -557,9 +563,18 @@ public Placeable rotate(Rotation rotation) {
 			newWidth = width;
 			newHeight = height;
 		default:
-			throw new UnsupportedOperationException("Operation for rotation "+rotation+" is not implemented yet");
+			throw new UnsupportedOperationException("Operation for rotation " + rotation + " is not implemented yet");
 	}
 	return new EnhancedRectangle(x, y, newWidth, newHeight);
+}
+
+@Override
+public Iterable<EnhancedRectangle> getRectangles() {
+	return getArrayOfItself();
+}
+
+private Iterable<EnhancedRectangle> getArrayOfItself() {
+	return ImmutableList.of(this);
 }
 
 @Override
@@ -698,6 +713,66 @@ public Segment getIntersectionSegment(EnhancedRectangle r) {
 		return new Segment(x, range.min, range.getLength(), Orientation.VERTICAL);
 	}
 	throw new IllegalArgumentException("Rectangles " + this + " and " + r + " don't have adjacency segment");
+}
+
+/**
+ * Creates a new Segment that lies along a side inside this rectangle.
+ *
+ * @param side
+ * 	Side of rectangle.
+ * @param shift
+ * 	If side is N or S, it is shift by x-axis. If E or W, then by y-axis.
+ * @param length
+ * 	Length of the segment.
+ * @return A new Segment that lies along a side inside this rectangle.
+ */
+public Segment getSegmentInsideFromSide(CardinalDirection side, int shift, int length) {
+	int startX;
+	int startY;
+	if (side == Directions.N) {
+		startX = x + shift;
+		startY = y;
+	} else if (side == Directions.E) {
+		startX = x + width - 1;
+		startY = y + shift;
+	} else if (side == Directions.S) {
+		startX = x + shift;
+		startY = y + height - 1;
+	} else {
+		assert side == Directions.W;
+		startX = x;
+		startY = y + shift;
+	}
+	return new Segment(startX, startY, length, side.getOrientation().reverted());
+}
+
+/**
+ * <p>Returns true if this rectangle touches another rectangle's side from inside that rectangle, that is:</p><ol>
+ * <li>their sides lie on the same line and</li> <li>this rectangle is at least partially inside another rectangle</li>
+ * </ol>
+ *
+ * @param anotherRectangle
+ * 	True if this rectangle touches another rectangle from inside, false otherwise.
+ */
+public boolean touchesFromInside(EnhancedRectangle anotherRectangle) {
+	if (intersects(anotherRectangle)) {
+		if (anotherRectangle.x == x) {
+			return true;
+		}
+		if (anotherRectangle.y == y) {
+			return true;
+		}
+		if (anotherRectangle.x + anotherRectangle.width == x + width) {
+			// Unlike in similar methods, we don't need to subtract 1 here
+			// because it won't make any difference:
+			// 1 would be subtracted from both sides of == operator.
+			return true;
+		}
+		if (anotherRectangle.y + anotherRectangle.height == y + height) {
+			return true;
+		}
+	}
+	return false;
 }
 
 /**

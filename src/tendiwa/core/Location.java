@@ -6,6 +6,7 @@ import tendiwa.core.terrain.settlements.BuildingPlace;
 import tendiwa.geometry.CardinalDirection;
 import tendiwa.geometry.RectangleSystem;
 import tendiwa.geometry.Segment;
+import tendiwa.geometry.TerrainDiffusion;
 
 import java.awt.*;
 import java.util.*;
@@ -16,7 +17,7 @@ protected final int width;
 protected final int height;
 private HorizontalPlane plane;
 
-public Location(HorizontalPlane plane, int x, int y, int width, int height) {
+Location(HorizontalPlane plane, int x, int y, int width, int height) {
 	super(x, y);
 	this.cells = plane.getCells(x, y, width, height);
 	this.name = "Empty location name!";
@@ -26,86 +27,69 @@ public Location(HorizontalPlane plane, int x, int y, int width, int height) {
 	Chat.initLocationChat(this);
 }
 
-// Data
-// From TerrainBasics
-public void line(int startX, int startY, int endX, int endY, int type, int val, int chance) {
+public void line(int startX, int startY, int endX, int endY, PlaceableInCell placeable) {
 	if (startX == endX && startY == endY) {
-		int x = startX;
-		int y = startY;
-		setElement(x, y, type, val);
+		placeable.place(cells[startX][startY]);
 		return;
 	}
 	Coordinate[] cells = vector(startX, startY, endX, endY);
 	int size = cells.length;
-	Chance cellChance = new Chance(chance);
 	for (int i = 0; i < size - 1; i++) {
 		int x = cells[i].x;
 		int y = cells[i].y;
 		int x2 = cells[i + 1].x;
 		int y2 = cells[i + 1].y;
-		if (chance != 100 && !cellChance.roll()) {
-			continue;
-		}
 
-		setElement(x, y, type, val);
+		placeable.place(this.cells[x][y]);
 		if (i < cells.length - 1 && x != x2 && y != y2) {
-			// ������
-			setElement(x + ((x2 > x) ? 1 : -1), y, type, val);
+			int cx = x + ((x2 > x) ? 1 : -1);
+			placeable.place(this.cells[cx][y]);
 		}
 		if (i == size - 2) {
-			setElement(x2, y2, type, val);
+			placeable.place(this.cells[x2][y2]);
 		}
 	}
 }
 
-public void line(int startX, int startY, int endX, int endY, int type, int val) {
-	line(startX, startY, endX, endY, type, val, 100);
+public void square(int startX, int startY, int w, int h, PlaceableInCell placeable) {
+	square(startX, startY, w, h, placeable, false);
 }
 
-public void square(int startX, int startY, int w, int h, int type, int name) {
-	square(startX, startY, w, h, type, name, false);
+public void square(Rectangle r, PlaceableInCell placeable, boolean fill) {
+	square(r.x, r.y, r.width, r.height, placeable, fill);
 }
 
-public void square(Rectangle r, int type, int name, boolean fill) {
-	square(r.x, r.y, r.width, r.height, type, name, fill);
-}
-
-public void square(int startX, int startY, int w, int h, int type, int name, boolean fill) {
+public void square(int startX, int startY, int w, int h, PlaceableInCell placeable, boolean fill) {
 	if (startX + w > getWidth() || startY + h > getHeight()) {
 		throw new Error("Square " + startX + "," + startY + "," + w + "," + h + " goes out of location borders " + startX + " " + startY + " " + getHeight() + " " + getWidth());
 	}
-	// ��������� ����
 	if (w == 1) {
-		line(startX, startY, startX, startY + h - 1, type, name);
+		line(startX, startY, startX, startY + h - 1, placeable);
 	} else if (h == 1) {
-		line(startX, startY, startX + w - 1, startY, type, name);
+		line(startX, startY, startX + w - 1, startY, placeable);
 	} else {
-		line(startX, startY, startX + w - 2, startY, type, name);
-		line(startX, startY, startX, startY + h - 2, type, name);
-		line(startX + w - 1, startY, startX + w - 1, startY + h - 1, type, name);
-		line(startX, startY + h - 1, startX + w - 2, startY + h - 1, type, name);
+		line(startX, startY, startX + w - 2, startY, placeable);
+		line(startX, startY, startX, startY + h - 2, placeable);
+		line(startX + w - 1, startY, startX + w - 1, startY + h - 1, placeable);
+		line(startX, startY + h - 1, startX + w - 2, startY + h - 1, placeable);
 		if (fill) {
-			// ���� ���� - ��������� ���������� �������
 			for (int i = 1; i < h - 1; i++) {
-				line(startX + 1, startY + i, startX + w - 1, startY + i, type, name);
+				line(startX + 1, startY + i, startX + w - 1, startY + i, placeable);
 			}
 		}
 	}
 }
 
 public ArrayList<Coordinate> getCircle(int cx, int cy, int r) {
-	// ������ ���� � ������� � cX;cY ������� r �� �������� type / name
-	// ���� fill=true, ��������� ���������� �������
-	ArrayList<Coordinate> answer = new ArrayList<Coordinate>();
+	ArrayList<Coordinate> answer = new ArrayList<>();
 	int d = -r / 2;
 	int xCoord = 0;
 	int yCoord = r;
-	Hashtable<Integer, Integer> x = new Hashtable<Integer, Integer>();
-	Hashtable<Integer, Integer> y = new Hashtable<Integer, Integer>();
+	HashMap<Integer, Integer> x = new HashMap<>();
+	HashMap<Integer, Integer> y = new HashMap<>();
 	x.put(0, 0);
 	y.put(0, r);
 	do {
-		// �������� ���� (�������� ����������)
 		if (d < 0) {
 			xCoord += 1;
 			d += xCoord;
@@ -128,40 +112,38 @@ public ArrayList<Coordinate> getCircle(int cx, int cy, int r) {
 
 /**
  * Uses a {@link Segment} to draw a rectangle. This method is almost identical to {@link Location#square(int, int, int,
- * int, int, int)}, it is just more convenient to use when Segments are often used. The drawn rectangle's top-left cell
- * will be {segment.x;segment.y}.
+ * int, PlaceableInCell)}, it is just more convenient to use when Segments are often used. The drawn rectangle's
+ * top-left cell will be {segment.x;segment.y}.
  *
  * @param segment
+ * 	A segment of cells to draw.
  * @param width
  * 	Defines width (if segment.getDirection() == DirectionToBERemoved.V) of height (if segment.getDirection() ==
  * 	DirectionToBERemoved.H) of the drawn rectangle.
- * @param type
- * @param name
+ * @param placeable
+ * 	What to draw in each cell
  */
-public void drawSegment(Segment segment, int width, int type, int name) {
+public void drawSegment(Segment segment, int width, PlaceableInCell placeable) {
 	if (segment.getOrientation().isHorizontal()) {
-		square(segment.getX(), segment.getY(), segment.getLength(), width, type, name, true);
+		square(segment.getX(), segment.getY(), segment.getLength(), width, placeable, true);
 	} else {
-		square(segment.getX(), segment.getY(), width, segment.getLength(), type, name, true);
+		square(segment.getX(), segment.getY(), width, segment.getLength(), placeable, true);
 	}
 }
 
-public void circle(int cX, int cY, int r, int type, int name) {
-	circle(cX, cY, r, type, name, false);
+public void circle(int cX, int cY, int r, PlaceableInCell placeable) {
+	circle(cX, cY, r, placeable, false);
 }
 
-public void circle(int cX, int cY, int r, int type, int name, boolean fill) {
-	// ������ ���� � ������� � cX;cY ������� r �� �������� type / name
-	// ���� fill=true, ��������� ���������� �������
+public void circle(int cX, int cY, int r, PlaceableInCell placeable, boolean fill) {
 	int d = -r / 2;
 	int xCoord = 0;
 	int yCoord = r;
-	Hashtable<Integer, Integer> x = new Hashtable<Integer, Integer>();
-	Hashtable<Integer, Integer> y = new Hashtable<Integer, Integer>();
+	HashMap<Integer, Integer> x = new HashMap<>();
+	HashMap<Integer, Integer> y = new HashMap<>();
 	x.put(0, 0);
 	y.put(0, r);
 	do {
-		// �������� ���� (�������� ����������)
 		if (d < 0) {
 			xCoord += 1;
 			d += xCoord;
@@ -174,26 +156,11 @@ public void circle(int cX, int cY, int r, int type, int name, boolean fill) {
 	} while (yCoord > 0);
 	int size = x.size();
 	for (int i = 0; i < size; i++) {
-		setElement(cX + x.get(i), cY + y.get(i), type, name);
-		setElement(cX - x.get(i), cY + y.get(i), type, name);
-		setElement(cX + x.get(i), cY - y.get(i), type, name);
-		setElement(cX - x.get(i), cY - y.get(i), type, name);
+		placeable.place(cells[cX + x.get(i)][cY + y.get(i)]);
+		placeable.place(cells[cX - x.get(i)][cY + y.get(i)]);
+		placeable.place(cells[cX + x.get(i)][cY - y.get(i)]);
+		placeable.place(cells[cX - x.get(i)][cY - y.get(i)]);
 	}
-}
-
-/**
- * Returns a wrapper above RectangleSystem that allows modifying cells' contents using a RectangeSystem.
- *
- * @param startX
- * @param startY
- * @param width
- * @param height
- * @param minRectangleWidth
- * @param borderWidth
- * @return
- */
-public TerrainModifier getTerrainModifier(int startX, int startY, int width, int height, int minRectangleWidth, int borderWidth) {
-	return new TerrainModifier(this, startX, startY, width, height, minRectangleWidth, borderWidth);
 }
 
 public TerrainModifier getTerrainModifier(RectangleSystem rs) {
@@ -233,7 +200,7 @@ public ArrayList<Coordinate> polygon(ArrayList<Coordinate> coords) {
 }
 
 public ArrayList<Coordinate> polygon(ArrayList<Coordinate> coords, boolean mode) {
-	ArrayList<Coordinate> answer = new ArrayList<Coordinate>();
+	ArrayList<Coordinate> answer = new ArrayList<>();
 
 	int size = coords.size();
 	Coordinate[] v;
@@ -249,9 +216,9 @@ public ArrayList<Coordinate> polygon(ArrayList<Coordinate> coords, boolean mode)
 	}
 	int startX = (int) Math.floor((coords.get(0).x + coords.get(1).x + coords.get(2).x) / 3);
 	int startY = (int) Math.floor((coords.get(0).y + coords.get(1).y + coords.get(2).y) / 3);
-	if (mode == false) {
-		HashSet<Coordinate> oldFront = new HashSet<Coordinate>();
-		HashSet<Coordinate> newFront = new HashSet<Coordinate>();
+	if (!mode) {
+		HashSet<Coordinate> oldFront = new HashSet<>();
+		HashSet<Coordinate> newFront = new HashSet<>();
 		newFront.add(new Coordinate(startX, startY));
 		int[][] pathTable = new int[getWidth()][getHeight()];
 		for (int i = 0; i < getWidth(); i++) {
@@ -262,10 +229,10 @@ public ArrayList<Coordinate> polygon(ArrayList<Coordinate> coords, boolean mode)
 			Coordinate cell = it.next();
 			pathTable[cell.x][cell.y] = 2;
 		}
-		answer = new ArrayList<Coordinate>();
+		answer = new ArrayList<>();
 		do {
 			oldFront = newFront;
-			newFront = new HashSet<Coordinate>();
+			newFront = new HashSet<>();
 			size = oldFront.size();
 			it = oldFront.iterator();
 			while (it.hasNext()) {
@@ -373,15 +340,15 @@ public ArrayList<Coordinate> closeCells(int startX, int startY, int length, int 
 	return answer;
 }
 
-public ArrayList<Coordinate> getElementsAreaBorder(int startX, int startY, int type, int val, int depth, boolean noDiagonal) {
+public ArrayList<Coordinate> getElementsAreaBorder(int startX, int startY, PlaceableInCell placeable, int depth, boolean noDiagonal) {
 	// �������� ������� ������� � ���������� ���� %type% ���� %val%, �������
 	// �� ����� ��� � %depth% ������� �� ��������� ������
 	// noDiagonal - �������� ������� ���������� ������ �� ������ �������,
 	// ��� �� ��� ������ ������.
 	int[][] pathTable = new int[getWidth()][getHeight()];
-	ArrayList<Coordinate> cells = new ArrayList<Coordinate>();
-	ArrayList<Coordinate> oldFront = new ArrayList<Coordinate>();
-	ArrayList<Coordinate> newFront = new ArrayList<Coordinate>();
+	ArrayList<Coordinate> cells = new ArrayList<>();
+	ArrayList<Coordinate> oldFront = new ArrayList<>();
+	ArrayList<Coordinate> newFront = new ArrayList<>();
 	// �� ����� ������ �������� ������
 	newFront.add(new Coordinate(startX, startY));
 	for (int i = 0; i < getWidth(); i++) {
@@ -403,7 +370,7 @@ public ArrayList<Coordinate> getElementsAreaBorder(int startX, int startY, int t
 	}
 	do {
 		oldFront = newFront;
-		newFront = new ArrayList<Coordinate>();
+		newFront = new ArrayList<>();
 		for (int i = 0; i < oldFront.size(); i++) {
 			// ������� ����� �� ������ ��������� ������ �� ������ ������
 			int x = oldFront.get(i).x;
@@ -414,11 +381,11 @@ public ArrayList<Coordinate> getElementsAreaBorder(int startX, int startY, int t
 				if (thisNumX < 0 || thisNumX >= getWidth() || thisNumY < 0 || thisNumY >= getHeight() || pathTable[thisNumX][thisNumY] != 0 || distance(startX, startY, thisNumX, thisNumY) > depth) {
 					continue;
 				}
-				int currElemVal = getElement(thisNumX, thisNumY, type);
-				if (currElemVal == val && !(thisNumX == startX && thisNumY == startY)) {
+				int currElemVal = getElement(thisNumX, thisNumY, placeable.getClass());
+				if (placeable.containedIn(this.cells[thisNumX][thisNumY]) && !(thisNumX == startX && thisNumY == startY)) {
 					pathTable[thisNumX][thisNumY] = t + 1;
 					newFront.add(new Coordinate(thisNumX, thisNumY));
-				} else if (currElemVal != val) {
+				} else if (!placeable.containedIn(this.cells[thisNumX][thisNumY])) {
 					cells.add(new Coordinate(x, y));
 				}
 			}
@@ -428,15 +395,8 @@ public ArrayList<Coordinate> getElementsAreaBorder(int startX, int startY, int t
 	return cells;
 }
 
-public void waveStructure(int startX, int startY, int type, int value, int maxSize) {
-	// ������ �������� ��������� �� ��������� ����� �� �������� ����������
-	// ����� ���� type �������� value
-		/*
-		 * type:[ 0:���| 1:�����| 2:������| 3:���������������| 4:ground|
-		 * 5:forest| 6:road| 7:river| 8:race ]
-		 */
-	// maxSize - ������������ ���������� ����
-	Hashtable<Integer, Coordinate> newFront = new Hashtable<Integer, Coordinate>();
+public void waveStructure(int startX, int startY, PlaceableInCell placeable, int maxSize) {
+	Hashtable<Integer, Coordinate> newFront = new Hashtable<>();
 	newFront.put(0, new Coordinate(startX, startY));
 	int[][] canceled = new int[getWidth()][getHeight()];
 	int[][] pathTable = new int[getWidth()][getHeight()];
@@ -444,14 +404,11 @@ public void waveStructure(int startX, int startY, int type, int value, int maxSi
 		Arrays.fill(pathTable[i], 0);
 		Arrays.fill(canceled[i], 0);
 	}
-	setElement(startX, startY, type, value);
+	setElement(startX, startY, placeable);
 	int t = 0;
 	do {
-		int size = newFront.size(); // ������ ����� ������� � ����������,
-		// ������ ��� �� ���������� �� ����
-		// ���������� �����
+		int size = newFront.size();
 		for (int i = 0; i < size; i++) {
-			// ������� ����� �� ������ ��������� ������ �� ������ ������
 			Coordinate c = newFront.get(i);
 			int x = c.x;
 			int y = c.y;
@@ -460,33 +417,22 @@ public void waveStructure(int startX, int startY, int type, int value, int maxSi
 			for (int j = 0; j < 4; j++) {
 				int thisNumX = adjactentX[j];
 				int thisNumY = adjactentY[j];
-				if (thisNumX < 0 || thisNumX >= getWidth() || thisNumY < 0 || thisNumY >= getHeight() || getElement(thisNumX, thisNumY, type) != 0 || canceled[thisNumX][thisNumY] != 0) {
-					// �� ������� ������ �� �������, ������� ������� ��
-					// ������� ���� ��� �������� ��� ���������
+				if (thisNumX < 0 || thisNumX >= getWidth() || thisNumY < 0 || thisNumY >= getHeight() || canceled[thisNumX][thisNumY] != 0) {
 					continue;
 				}
 				if (thisNumX <= 0 || thisNumX >= getWidth() - 1 || thisNumY <= 0 || thisNumY >= getHeight() - 1) {
-					// ��������, ����� ��� ��������� �������� ������ ��
-					// �������� �� �������
-					// ��� �������� �������� � ����, ��� �� ������� ��
-					// �������
 					continue;
 				}
-				if (getElement(thisNumX + 1, thisNumY, type) + getElement(thisNumX - 1, thisNumY, type) + getElement(thisNumX, thisNumY + 1, type) + getElement(thisNumX, thisNumY - 1, type) + getElement(thisNumX + 1, thisNumY + 1, type) + getElement(thisNumX - 1, thisNumY + 1, type) + getElement(thisNumX + 1, thisNumY - 1, type) + getElement(thisNumX - 1, thisNumY - 1, type) > 3 && t > 4) {
-					// �� ������� ������ �� ��� �������, ����� � �������� (�
-					// 8 ������) ��� ��� ������� 3 ������������ � ���� ��
-					// ������� ��������
-					continue;
-				}
+				// TODO: This has been making compile time errors so I commented it out : (
+//				if (getElement(thisNumX + 1, thisNumY, type) + getElement(thisNumX - 1, thisNumY, type) + getElement(thisNumX, thisNumY + 1, type) + getElement(thisNumX, thisNumY - 1, type) + getElement(thisNumX + 1, thisNumY + 1, type) + getElement(thisNumX - 1, thisNumY + 1, type) + getElement(thisNumX + 1, thisNumY - 1, type) + getElement(thisNumX - 1, thisNumY - 1, type) > 3 && t > 4) {
+//					continue;
+//				}
 				Chance chance = new Chance(15);
 				if (chance.roll()) {
-					// ������ ������ (������ ��������� ������; ������ �����
-					// ������ � ������� ������������ ��������� �����������
-					// ���)
 					canceled[thisNumX][thisNumY] = 1;
 					continue;
 				}
-				setElement(thisNumX, thisNumY, type, value);
+				setElement(thisNumX, thisNumY, placeable);
 				newFront.put(newFront.size(), new Coordinate(thisNumX, thisNumY));
 			}
 		}
@@ -501,8 +447,8 @@ public CellCollection newCellCollection(Collection<Coordinate> cls) {
 public int[][] getPathTable(int startX, int startY, int endX, int endY, boolean noDiagonal) {
 	int[][] pathTable = new int[getWidth()][getHeight()];
 	boolean isPathFound = false;
-	ArrayList<Coordinate> oldFront = new ArrayList<Coordinate>();
-	ArrayList<Coordinate> newFront = new ArrayList<Coordinate>();
+	ArrayList<Coordinate> oldFront = new ArrayList<>();
+	ArrayList<Coordinate> newFront = new ArrayList<>();
 	newFront.add(new Coordinate(startX, startY));
 	for (int i = 0; i < getWidth(); i++) {
 		for (int j = 0; j < getHeight(); j++) {
@@ -603,7 +549,7 @@ public ArrayList<Coordinate> getPath(int startX, int startY, int destinationX, i
 	return path;
 }
 
-protected void cellularAutomataSmooth(int level, int type, int val, int changeVal) {
+protected void cellularAutomataSmooth(int level, int type, PlaceableInCell formerContent, PlaceableInCell newContent) {
 	// Smooth the borders of terrain's areas consisting of
 	// elements with %type% and %val%
 	for (int l = 0; l < level; l++) {
@@ -620,63 +566,62 @@ protected void cellularAutomataSmooth(int level, int type, int val, int changeVa
 				boolean iLTw = i < getWidth() - 1;
 				boolean jGT0 = j > 0;
 				boolean jLTh = j < getHeight() - 1;
-				if (jGT0 && bufCells[i][j - 1].getElement(type) == val) {
+				if (jGT0 && bufCells[i][j - 1].contains(formerContent)) {
 					count++;
 				}
-				if (iLTw && jGT0 && bufCells[i + 1][j - 1].getElement(type) == val) {
+				if (iLTw && jGT0 && bufCells[i + 1][j - 1].contains(formerContent)) {
 					count++;
 				}
-				if (iLTw && bufCells[i + 1][j].getElement(type) == val) {
+				if (iLTw && bufCells[i + 1][j].contains(formerContent)) {
 					count++;
 				}
-				if (iLTw && jLTh && bufCells[i + 1][j + 1].getElement(type) == val) {
+				if (iLTw && jLTh && bufCells[i + 1][j + 1].contains(formerContent)) {
 					count++;
 				}
-				if (jLTh && bufCells[i][j + 1].getElement(type) == val) {
+				if (jLTh && bufCells[i][j + 1].contains(formerContent)) {
 					count++;
 				}
-				if (iGT0 && jLTh && bufCells[i - 1][j + 1].getElement(type) == val) {
+				if (iGT0 && jLTh && bufCells[i - 1][j + 1].contains(formerContent)) {
 					count++;
 				}
-				if (iGT0 && bufCells[i - 1][j].getElement(type) == val) {
+				if (iGT0 && bufCells[i - 1][j].contains(formerContent)) {
 					count++;
 				}
-				if (iGT0 && jGT0 && bufCells[i - 1][j - 1].getElement(type) == val) {
+				if (iGT0 && jGT0 && bufCells[i - 1][j - 1].contains(formerContent)) {
 					count++;
 				}
 
-				if (bufCells[i][j].getElement(type) != val && count > 4) {
-					setElement(i, j, type, val);
-				} else if (bufCells[i][j].getElement(type) == val && count < 4) {
-					setElement(i, j, type, changeVal);
+				if (bufCells[i][j].contains(formerContent) && count > 4) {
+					setElement(i, j, formerContent);
+				} else if (bufCells[i][j].contains(formerContent) && count < 4) {
+					setElement(i, j, newContent);
 				}
 			}
 		}
 	}
 }
 
-public void boldLine(int startX, int startY, int endX, int endY, int type, int name) {
-	boldLine(startX, startY, endX, endY, type, name, 3, 100);
+/**
+ * Default bold line with width of 3 cells
+ *
+ * @param startX
+ * @param startY
+ * @param endX
+ * @param endY
+ * @param placeable
+ * @see Location#boldLine(int, int, int, int, PlaceableInCell, int)
+ */
+public void boldLine(int startX, int startY, int endX, int endY, PlaceableInCell placeable) {
+	boldLine(startX, startY, endX, endY, placeable, 3);
 }
 
-public void boldLine(int startX, int startY, int endX, int endY, int type, int name, int w) {
-	boldLine(startX, startY, endX, endY, type, name, w, 100);
-}
-
-public void boldLine(int startX, int startY, int endX, int endY, int type, int name, int w, int chance) {
-	// ����� �������� � ��������� ������
-		/*
-		 * . . . . . . . . . - ��� ����� ������������� ������� ������ � �����
-		 * ����� ����� ���� . . .
-		 */
+public void boldLine(int startX, int startY, int endX, int endY, PlaceableInCell placeable, int w) {
 	int dx;
 	int dy;
 	if (endX - startX == 0) {
-		// ������ ������������ ����� (tg = �������������)
 		dx = 1;
 		dy = 0;
 	} else {
-		// ������� ���� ����� ���� � � ������ ����������
 		int tg = (endY - startY) / (endX - startX);
 		if (tg > -0.5 && tg < 0.5) {
 			dx = 0;
@@ -712,7 +657,7 @@ public void boldLine(int startX, int startY, int endX, int endY, int type, int n
 		endY = getHeight() - 1;
 	}
 	for (int i = 0; i < w; i++) {
-		line(startX, startY, endX, endY, type, name, chance);
+//		line(startX, startY, endX, endY, placeable);
 		startX += dx;
 		startY += dy;
 		endX += dx;
@@ -731,11 +676,11 @@ public void placeSeveralObjects(ArrayList<Integer> objects, int num, Rectangle r
 	}
 }
 
-public void drawPath(int startX, int startY, int endX, int endY, int type, int val) {
+public void drawPath(int startX, int startY, int endX, int endY, PlaceableInCell placeable) {
 	ArrayList<Coordinate> path = getPath(startX, startY, endX, endY, true);
 	int size = path.size();
 	for (int i = 0; i < size; i++) {
-		setElement(path.get(i).x, path.get(i).y, type, val);
+		setElement(path.get(i).x, path.get(i).y, placeable);
 	}
 }
 
@@ -793,7 +738,7 @@ public ArrayList<Coordinate> getCellsAroundCell(int x, int y) {
 	return answer;
 }
 
-public void lineToRectangleBorder(int startX, int startY, CardinalDirection side, Rectangle r, int type, int val) {
+public void lineToRectangleBorder(int startX, int startY, CardinalDirection side, Rectangle r, PlaceableInCell placeable) {
 	if (!r.contains(startX, startY)) {
 		throw new Error("Rectangle " + r + " contains no point " + startX + ":" + startY);
 	}
@@ -819,10 +764,10 @@ public void lineToRectangleBorder(int startX, int startY, CardinalDirection side
 			endX = r.x;
 			endY = startY;
 	}
-	line(startX, startY, endX, endY, type, val);
+	line(startX, startY, endX, endY, placeable);
 }
 
-public void fillSideOfRectangle(Rectangle r, CardinalDirection side, int type, int val) {
+public void fillSideOfRectangle(Rectangle r, CardinalDirection side, PlaceableInCell placeable) {
 	int startX, startY, endX, endY;
 	switch (side) {
 		case N:
@@ -852,19 +797,17 @@ public void fillSideOfRectangle(Rectangle r, CardinalDirection side, int type, i
 		default:
 			throw new Error("Incorrect side " + side);
 	}
-	line(startX, startY, endX, endY, type, val);
+	line(startX, startY, endX, endY, placeable);
 }
 
-public void fillRectangle(Rectangle r, int type, int val, int chance) {
+public void fillRectangle(Rectangle r, PlaceableInCell placeable) {
 	/**
 	 * Fill rectngle with objects randomly. chance% of cells will be filled
 	 * with these objects.
 	 */
 	for (int x = r.x; x < r.x + r.width; x++) {
 		for (int y = r.y; y < r.y + r.height; y++) {
-			if (Chance.roll(chance)) {
-				setElement(x, y, type, val);
-			}
+			placeable.place(cells[x][y]);
 		}
 	}
 }
@@ -877,4 +820,7 @@ public int getHeight() {
 	return height;
 }
 
+public TerrainDiffusion.TerrainDiffusionBuilder diffusionBuilder() {
+	return new TerrainDiffusion.TerrainDiffusionBuilder().setLocation(this);
+}
 }

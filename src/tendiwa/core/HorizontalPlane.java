@@ -93,20 +93,6 @@ public boolean hasChunk(int x, int y) {
 	return chunks.containsKey(x - x % Chunk.SIZE) && chunks.get(x - x % Chunk.SIZE).containsKey(y - y % Chunk.SIZE);
 }
 
-public Location generateLocation(int x, int y, int width, int height, Class<? extends Location> locationCls) {
-	// Create new chunks
-	touchChunks(x, y, width, height);
-	Location location = null;
-	try {
-		Constructor<? extends Location> ctor = (Constructor<? extends Location>) locationCls.getDeclaredConstructors()[0];
-		location = ctor.newInstance(this, x, y, width, height);
-	} catch (Exception e) {
-		// TODO
-		e.printStackTrace();
-	}
-	return location;
-}
-
 public void placeTrail(Trail trail) {
 	final Rectangle pointsArea = EnhancedRectangle.rectangleContainingAllPonts(trail.points);
 	pointsArea.x -= trail.width;

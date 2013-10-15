@@ -18,7 +18,7 @@ public class StepNearFromSide {
         return new Placement() {
             @Override
             public EnhancedRectangle placeIn(Placeable placeable, RectangleSystemBuilder builder) {
-                EnhancedRectangle existingRec = builder.getRectangleByPointer(pointer);
+                EnhancedRectangle existingRec = builder.getRectangleByPointer(pointer).getBounds();
                 EnhancedRectangle placeableBounds = placeable.getBounds();
                 int staticCoord = existingRec.getStaticCoordOfSide(fromSide) + (builder.rs.borderWidth + 1) * fromSide.getGrowing();
                 int dynamicCoord = (fromSide.isVertical() ? existingRec.x : existingRec.y) + (existingRec.getDimensionBySide(fromSide) - placeableBounds.getDimensionBySide(fromSide)) / 2;

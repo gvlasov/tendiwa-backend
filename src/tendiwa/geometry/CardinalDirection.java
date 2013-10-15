@@ -20,10 +20,10 @@ public enum CardinalDirection implements Direction {
 	 * Returns an int corresponding to CardinalDirection.
 	 * </p>
 	 * <ul>
-	 * <li>0 is {@link CardinalDirection.N}</li>
-	 * <li>2 is {@link CardinalDirection.E}</li>
-	 * <li>4 is {@link CardinalDirection.S}</li>
-	 * <li>6 is {@link CardinalDirection.W}</li>
+	 * <li>0 is {@link CardinalDirection#N}</li>
+	 * <li>2 is {@link CardinalDirection#E}</li>
+	 * <li>4 is {@link CardinalDirection#S}</li>
+	 * <li>6 is {@link CardinalDirection#W}</li>
 	 * </ul>
 	 * 
 	 * @see {@link OrdinalDirection#toInt()}
@@ -213,7 +213,12 @@ public enum CardinalDirection implements Direction {
 		}
 	}
 
-	/**
+@Override
+public boolean isCardinal() {
+	return true;
+}
+
+/**
 	 * Returns 1 if going this direction increases coordinate, or -1 if going
 	 * this direction decreases coordinate.
 	 * 

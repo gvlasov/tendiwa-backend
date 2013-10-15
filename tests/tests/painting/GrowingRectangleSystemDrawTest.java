@@ -1,11 +1,7 @@
 package tests.painting;
 
 import tendiwa.drawing.TestCanvas;
-import tendiwa.geometry.Directions;
-import tendiwa.geometry.EnhancedRectangle;
-import tendiwa.geometry.GrowingRectangleSystem;
-import tendiwa.geometry.RandomRectangleSystem;
-import tendiwa.geometry.RectangleSystem;
+import tendiwa.geometry.*;
 
 public class GrowingRectangleSystemDrawTest {
 	public static void main(String[] args) {
@@ -17,7 +13,7 @@ public class GrowingRectangleSystemDrawTest {
 		grs.grow(er, Directions.S, 12, 16, 0);
 		grs.grow(er, Directions.W, 12, 16, 0);
 		canvas.draw(grs);
-		RectangleSystem rs = new RandomRectangleSystem(0, 0, 100, 200, 3, 0);
+		RectangleSystem rs = RecursivelySplitRectangleSystemFactory.create(0, 0, 100, 200, 3, 0);
 		canvas.draw(rs);
 	}
 }

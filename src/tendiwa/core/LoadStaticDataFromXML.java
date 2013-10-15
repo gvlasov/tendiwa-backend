@@ -291,6 +291,16 @@ private static void loadObjects(Element eRoot) {
 
 	JClass clsObjectType = objectsCodeModel.ref(ObjectType.class);
 
+	JFieldRef expVoidObject = objectsCodeModel.ref(ObjectType.class).staticRef("VOID");
+	// Void object type
+	objectsClass.field(
+		JMod.PUBLIC | JMod.STATIC | JMod.FINAL,
+		ObjectType.class,
+		"VOID",
+		expVoidObject
+	);
+
+
 	for (Element eObject = (Element) eObjects.getFirstChild(); eObject != null; eObject = (Element) eObject.getNextSibling()) {
 		String name = eObject.getElementsByTagName("name").item(0).getFirstChild().getNodeValue();
 		Element ePassability = (Element) eObject.getElementsByTagName("passability").item(0);
@@ -302,17 +312,18 @@ private static void loadObjects(Element eRoot) {
 			 * that determine what types of passability this ObjectType has:
 			 * visual, walkable.
 			 */
-			if (ePassType.getTagName().equals("none")) {
+			String ePassTypeTagName = ePassType.getTagName();
+			if (ePassTypeTagName.equals("none")) {
 				passability = StaticData.PASSABILITY_NONE;
 				break;
 			}
-			if (ePassType.getTagName().equals("all")) {
+			if (ePassTypeTagName.equals("all")) {
 				passability = StaticData.PASSABILITY_VISUAL + StaticData.PASSABILITY_WALKABLE;
 				break;
 			}
-			if (ePassType.getTagName().equals("visual")) {
+			if (ePassTypeTagName.equals("visual")) {
 				passability += StaticData.PASSABILITY_VISUAL;
-			} else if (ePassType.getTagName().equals("walkable")) {
+			} else if (ePassTypeTagName.equals("walkable")) {
 				passability += StaticData.PASSABILITY_WALKABLE;
 			}
 		}

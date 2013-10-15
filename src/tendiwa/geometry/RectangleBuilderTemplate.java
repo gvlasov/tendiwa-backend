@@ -33,4 +33,9 @@ public abstract class RectangleBuilderTemplate implements Placeable {
     public Placeable rotate(Rotation rotation) {
         return getRectangleSystem().rotate(rotation);
     }
+
+@Override
+public Iterable<EnhancedRectangle> getRectangles() {
+	return getRectangleSystem().getRectangles();
+}
 }

@@ -27,9 +27,9 @@ public class WaveRectangleSystem extends GrowingRectangleSystem {
 	private final Range possibleRectangleWidthPlus2BorderWidth;
 	private VirtualWave virtualCurrentWave;
 	public TestCanvas canvas;
-	private DrawingAlgorithm<Rectangle> RED = DrawingRectangle
+	private DrawingAlgorithm<Placeable> RED = DrawingRectangle
 		.withColor(Color.RED);
-	private DrawingAlgorithm<Rectangle> GREEN = DrawingRectangle
+	private DrawingAlgorithm<Placeable> GREEN = DrawingRectangle
 		.withColor(Color.GREEN);
 	private final StringBuilder log = new StringBuilder();
 	public final static boolean DEBUG = false;
@@ -90,7 +90,7 @@ public class WaveRectangleSystem extends GrowingRectangleSystem {
 			.setSize(200, 200)
 			.setVisiblilty(DEBUG ? true : false)
 			.setDefaultDrawingAlgorithmForClass(
-				Rectangle.class,
+				Placeable.class,
 				DrawingRectangle.withColorLoop(
 					Color.BLACK,
 					Color.DARK_GRAY,
@@ -451,12 +451,6 @@ public class WaveRectangleSystem extends GrowingRectangleSystem {
 			pieces.modifySidesByPlacingRectangle(rectangle, piece1, piece2);
 			return rectangle;
 		}
-		/**
-		 *
-		 * @param piece
-		 *            Actual piece
-		 * @return
-		 */
 		public EnhancedRectangle getRectangleOn1Side(RectangleSidePiece originalPiece) {
 			assert originalPiece != null;
 			int width = Chance.rand(possibleRectangleWidth);

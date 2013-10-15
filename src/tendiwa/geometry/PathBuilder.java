@@ -32,7 +32,7 @@ public WithStep link(int index) {
 }
 
 public WithStep link(RectanglePointer pointer) {
-	rectangleToLinkSource = builder.getRectangleByPointer(pointer);
+	rectangleToLinkSource = builder.getRectangleByPointer(pointer).getBounds();
 	return withStep;
 }
 
@@ -52,7 +52,7 @@ public class WithStep {
 	}
 
 	public WidthStep with(RectanglePointer pointer) {
-		rectangleToLinkEnd = builder.getRectangleByPointer(pointer);
+		rectangleToLinkEnd = builder.getRectangleByPointer(pointer).getBounds();
 		return widthStep;
 	}
 }

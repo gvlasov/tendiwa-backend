@@ -4,6 +4,7 @@ package tendiwa.geometry;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 
 /**
@@ -68,6 +69,11 @@ public Placeable rotate(Rotation rotation) {
 		newRs.addRectangle(new EnhancedRectangle(transform.createTransformedShape(r).getBounds()));
 	}
 	return newRs;
+}
+
+@Override
+public Iterable<EnhancedRectangle> getRectangles() {
+	return Collections.unmodifiableCollection(content);
 }
 
 @Override

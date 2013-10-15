@@ -13,7 +13,7 @@ public class StepPlaceNextAt {
 
     public Placeable placingNextAt(Placement where) {
         return new Placeable() {
-            private RectangleSystem rs;
+            private RectangleSequence rs;
             public RectangleSystemBuilder prebuiltBuilder;
 
             @Override
@@ -50,6 +50,11 @@ public class StepPlaceNextAt {
             public Placeable rotate(Rotation rotation) {
                 return rs.rotate(rotation);
             }
+
+	        @Override
+	        public Iterable<EnhancedRectangle> getRectangles() {
+		        return rs.getRectangles();
+	        }
         };
     }
 }

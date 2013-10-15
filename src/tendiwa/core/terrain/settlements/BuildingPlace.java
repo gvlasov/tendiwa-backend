@@ -3,8 +3,8 @@ import java.awt.Rectangle;
 import java.util.HashSet;
 import java.util.Set;
 
-import tendiwa.core.terrain.settlements.Settlement.QuarterSystem.Quarter;
-import tendiwa.core.terrain.settlements.Settlement.RoadSystem.Road;
+import tendiwa.core.Settlement.QuarterSystem.Quarter;
+import tendiwa.core.Settlement.RoadSystem.Road;
 import tendiwa.geometry.CardinalDirection;
 import tendiwa.geometry.EnhancedRectangle;
 

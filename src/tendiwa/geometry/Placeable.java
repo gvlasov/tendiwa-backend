@@ -51,4 +51,10 @@ void prebuild(RectangleSystemBuilder builder);
  * @return A new Placeable.
  */
 Placeable rotate(Rotation rotation);
+
+/**
+ * Returns all rectangles this Placeable consists of.
+ * @return
+ */
+Iterable<EnhancedRectangle> getRectangles();
 }

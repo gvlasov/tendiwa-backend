@@ -33,8 +33,8 @@ public final class TestCanvas {
             Color.ORANGE,
             Color.PINK).iterator();
     final int scale;
-    final int height;
-    final int width;
+    public final int height;
+    public final int width;
     private final JFrame frame;
     private final HashMap<Class<?>, DrawingAlgorithm<?>> defaultDrawingAlgorithms;
     private final JLayeredPane panel;
@@ -78,6 +78,7 @@ public final class TestCanvas {
         setSize(width, height);
         panel.setSize(width, height);
         panel.setPreferredSize(new Dimension(width, height));
+	    frame.setResizable(false);
         frame.pack();
         frame.setVisible(visibility);
         initGifWriter();
@@ -189,7 +190,7 @@ public final class TestCanvas {
      * @param where
      *         a layer on which the object will be drawn.
      */
-    public <T> void draw(T what, DrawingAlgorithm<T> how, Layer where) {
+    public <T> void draw(T what, DrawingAlgorithm<? super T> how, Layer where) {
         how.canvas = this;
         setLayer(where);
         how.draw(what);
@@ -205,7 +206,7 @@ public final class TestCanvas {
      * @param how
      *         an algorithm to draw the object.
      */
-    public <T> void draw(T what, DrawingAlgorithm<T> how) {
+    public <T> void draw(T what, DrawingAlgorithm<? super T> how) {
         how.canvas = this;
         setLayer(DEFAULT_LAYER);
         how.draw(what);
@@ -255,7 +256,7 @@ public final class TestCanvas {
     @SuppressWarnings("unchecked")
     private <T> DrawingAlgorithm<T> getDefaultDrawingAlgorithmOfClass(T what) {
         assert what != null;
-        Class<? extends Object> classOfWhat = null;
+        Class<?> classOfWhat = null;
         for (Class<?> cls : defaultDrawingAlgorithms.keySet()) {
             if (cls.isInstance(what)) {
                 classOfWhat = cls;

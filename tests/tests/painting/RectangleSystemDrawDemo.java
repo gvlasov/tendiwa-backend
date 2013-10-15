@@ -3,12 +3,10 @@ package tests.painting;
 import tendiwa.drawing.DrawingRectangleSystem;
 import tendiwa.drawing.TestCanvas;
 import tendiwa.drawing.TestCanvasBuilder;
-import tendiwa.geometry.RandomRectangleSystem;
 import tendiwa.geometry.RectangleSystem;
+import tendiwa.geometry.RecursivelySplitRectangleSystemFactory;
 
 import java.awt.*;
-
-import static tendiwa.geometry.DSL.*;
 
 public class RectangleSystemDrawDemo {
 public static TestCanvas canvas = new TestCanvasBuilder()
@@ -20,7 +18,7 @@ public static TestCanvas canvas = new TestCanvasBuilder()
 	.build();
 public static void main(String[] args) {
 	long start = System.currentTimeMillis();
-	RectangleSystem rs = new RandomRectangleSystem(5, 5, 1260, 800, 1, 30);
+	RectangleSystem rs = RecursivelySplitRectangleSystemFactory.create(5, 5, 1260, 800, 1, 30);
 //	RectangleSystem rs = builder(0)
 //		.place(rectangle(10, 12), atPoint(5, 7))
 //		.place(rectangle(14, 17), near(FIRST_RECTANGLE).fromSide(E).align(N))

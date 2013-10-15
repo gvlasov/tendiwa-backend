@@ -8,7 +8,7 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 
 public abstract class DrawingAlgorithm<T> {
-	TestCanvas canvas;
+	protected TestCanvas canvas;
 
 	public abstract void draw(T shape);
 	protected void drawPoint(int x, int y, Color color) {

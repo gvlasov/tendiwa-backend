@@ -18,7 +18,7 @@ public class CellCollection {
 		if (cls.isEmpty()) {
 			throw new Error("Can't create an empty cell collection: argument is an empty collection");
 		}
-		cells = new ArrayList<Coordinate>(cls);
+		cells = new ArrayList<>(cls);
 		location = loc;
 	}
 	public int size() {
@@ -82,25 +82,23 @@ public class CellCollection {
 		}
 	}
 	/**
-	 * Randomly puts some elements 
-	 * @param type Type of an element
-	 * @param val
-	 * @param amount
+	 * Randomly puts some elements
+	 * @param placeable What type of entity to put.
+	 * @param amount Total amount of elements to put.
 	 */
-	public void setElements(int type, int val, int amount) {
+	public void setElements(PlaceableInCell placeable, int amount) {
 		for (int i = 0; i < amount; i++) {
 			if (!hasCells) {
 				throw new RuntimeException("CellCollection has no cells left");
 			}
 			int cellIndex = Chance.rand(0, cells.size()-1);
 			Coordinate cell = cells.get(cellIndex);
-			location.setElement(cell.x, cell.y, type, val);
+			location.setElement(cell.x, cell.y, placeable);
 			unsetCell(cell);
 		}
 	}
 	/**
 	 * 
-	 * @param val
 	 * @param amount
 	 */
 	public void setObjects(ObjectType type, int amount) {
@@ -119,27 +117,27 @@ public class CellCollection {
 		return cells.get(Chance.rand(0,cells.size()-1));
 	}
 	
-	public void fillWithElements(int type, int val) {
+	public void fillWithElements(PlaceableInCell placeable) {
 		// TODO Auto-generated method stub
 		for (Coordinate c : cells) {
-			location.setElement(c.x, c.y, type, val);
+			location.setElement(c.x, c.y, placeable);
 		}
 	}
-	public ArrayList<Coordinate> setElementsAndReport(int type, int val, int amount) {
-		ArrayList<Coordinate> coords = new ArrayList<Coordinate>();
+	public ArrayList<Coordinate> setElementsAndReport(PlaceableInCell placeable, int amount) {
+		ArrayList<Coordinate> coords = new ArrayList<>();
 		for (int i = 0; i < amount; i++) {
 			if (!hasCells) {
 				throw new RuntimeException("CellCollection has no cells left");
 			}
 			int cellIndex = Chance.rand(0, cells.size()-1);
 			Coordinate cell = cells.get(cellIndex);
-			location.setElement(cell.x, cell.y, type, val);
+			location.setElement(cell.x, cell.y, placeable);
 			unsetCell(cell);
 			coords.add(cell);
 		}
 		return coords;
 	}
-	public Coordinate setElementAndReport(int type, int val) {
+	public Coordinate setElementAndReport(PlaceableInCell placeable) {
 		if (!hasCells) {
 			// ���� � ������� ������ �� �������� ������ �� ����� ���������
 			// ������, ����� �� ���������� �������
@@ -149,7 +147,7 @@ public class CellCollection {
 		}
 		int cellIndex = Chance.rand(0, cells.size()-1);
 		Coordinate cell = cells.get(cellIndex);
-		location.setElement(cell.x, cell.y, type, val);
+		location.setElement(cell.x, cell.y, placeable);
 		unsetCell(cell);
 		return cell;
 	}
@@ -173,7 +171,7 @@ public class CellCollection {
 //		return location.createCharacter(type, name, cell.x, cell.y);
 //	}
 	public static ArrayList<Coordinate> rectangleToCellsList(Rectangle r) {
-		ArrayList<Coordinate> answer = new ArrayList<Coordinate>();
+		ArrayList<Coordinate> answer = new ArrayList<>();
 		for (int i=r.x;i<r.x+r.width;i++) {
 			for (int j=r.y;j<r.y+r.height;j++) {
 				answer.add(new Coordinate(i,j));

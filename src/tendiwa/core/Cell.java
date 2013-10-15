@@ -5,7 +5,7 @@ public class Cell {
 	protected int floor = StaticData.VOID;
 	protected int object = StaticData.VOID;
 	private int passability = TerrainBasics.PASSABILITY_FREE;
-	private Character character = null;
+	Character character = null;
 
 	public Cell() {
 		
@@ -72,5 +72,8 @@ public class Cell {
 	public int getPassability() {
 		return passability;
 	}
-	
+
+public boolean contains(PlaceableInCell placeable) {
+	return placeable.containedIn(this);
+}
 }

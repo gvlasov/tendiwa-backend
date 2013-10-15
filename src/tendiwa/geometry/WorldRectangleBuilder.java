@@ -3,10 +3,7 @@ package tendiwa.geometry;
 import com.google.common.collect.ImmutableList;
 import tendiwa.core.LocationFeature;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class WorldRectangleBuilder extends RectangleSystemBuilder {
 
@@ -28,18 +25,32 @@ public WorldRectangleBuilder setLocationFeatures(int index, LocationFeature feat
 	return setLocationFeatures(getByIndex(index), feature);
 }
 
-private WorldRectangleBuilder setLocationFeatures(EnhancedRectangle rectangle, LocationFeature feature) {
-	if (!rectangles.contains(rectangle)) {
-		throw new IllegalArgumentException("Rectangle " + rectangle + " is not present in this WorldRectangleBuilder");
+/**
+ * <p>Sets a particular LocationFeature to all EnhancedRectangles a {@code placeable} consists of.</p> <p>If {@code
+ * placeable} is an EnhancedRectangle, for example, it will affect a single rectangle — itself. If {@code placeable} is
+ * a {@link RectangleSequence}, then LocationFeature will be added to each EnhancedRectangle that RectangleSequence
+ * consists of.</p>
+ *
+ * @param placeable
+ * 	A placeable object.
+ * @param feature
+ * 	A property of Location to set.
+ * @return This WorldRectangleBuilder for method chaining.
+ */
+private WorldRectangleBuilder setLocationFeatures(Placeable placeable, LocationFeature feature) {
+	for (EnhancedRectangle rectangle : placeable.getRectangles()) {
+		if (!rs.content.contains(rectangle)) {
+			throw new IllegalArgumentException("Rectangle " + rectangle + " from argument "+placeable+" is not present in this WorldRectangleBuilder");
+		}
+		List<LocationFeature> values;
+		if (!locationFeatures.containsKey(rectangle)) {
+			values = new ArrayList<>();
+			locationFeatures.put(rectangle, values);
+		} else {
+			values = locationFeatures.get(rectangle);
+		}
+		values.add(feature);
 	}
-	List<LocationFeature> values;
-	if (!locationFeatures.containsKey(rectangle)) {
-		values = new ArrayList<>();
-		locationFeatures.put(rectangle, values);
-	} else {
-		values = locationFeatures.get(rectangle);
-	}
-	values.add(feature);
 	return this;
 }
 
@@ -64,5 +75,16 @@ public ImmutableList<LocationPlace> getLocationPlaces() {
 		builder.add(locationPlace);
 	}
 	return builder.build();
+}
+public WorldRectangleBuilder findAllRectangles(FindCriteria criteria) {
+	foundRectangles = new RectangleSequence();
+	for (Placeable placeable : placeables) {
+		for (EnhancedRectangle rectangle : placeable.getRectangles()) {
+			if (criteria.check(rectangle, rs, this)) {
+				foundRectangles.addRectangle(rectangle);
+			}
+		}
+	}
+	return this;
 }
 }

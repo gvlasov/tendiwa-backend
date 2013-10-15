@@ -8,6 +8,7 @@ public static final RectanglePointer FIRST_RECTANGLE = RectanglePointer.FIRST_RE
 public static final RectanglePointer REMEMBERED_RECTANGLE = RectanglePointer.REMEMBERED_RECTANGLE;
 public static final RectanglePointer LAST_BOUNDING_REC = RectanglePointer.LAST_BOUNDING_REC;
 public static final RectanglePointer REMEMBERED_BOUNDING_REC = RectanglePointer.REMEMBERED_BOUNDING_REC;
+public static final RectanglePointer FOUND_RECTANGLES = RectanglePointer.FOUND_RECTANGLES;
 public static final Rotation CLOCKWISE = Rotation.CLOCKWISE;
 public static final Rotation COUNTER_CLOCKWISE = Rotation.COUNTER_CLOCKWISE;
 public static final Rotation HALF_CIRCLE = Rotation.HALF_CIRCLE;
@@ -66,5 +67,9 @@ public static PathBuilder path(RectangleSystemBuilder builder) {
 
 public static WorldRectangleBuilder worldBuilder() {
 	return new WorldRectangleBuilder();
+}
+
+public static StepRectangle recursivelySplitRec(int width, int height) {
+	return new StepRectangle(width, height);
 }
 }

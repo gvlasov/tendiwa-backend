@@ -13,7 +13,7 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 
 
-public abstract class Character implements GsonForStaticDataSerializable {
+public abstract class Character implements PlaceableInCell, GsonForStaticDataSerializable {
 	public final int id = new UniqueObject().id;
 	public static final long serialVersionUID = 1832389411;
 	public final static int FRACTION_NEUTRAL = -1, FRACTION_PLAYER = 1,
@@ -769,7 +769,17 @@ public abstract class Character implements GsonForStaticDataSerializable {
 		return jArray;
 	}
 
-	/* Nested classes */
+@Override
+public void place(Cell cell) {
+	cell.character = this;
+}
+
+@Override
+public boolean containedIn(Cell cell) {
+	return cell.character == this;
+}
+
+/* Nested classes */
 	public class Effect {
 		// Class that holds description of one current character's effect
 		public int duration, modifier, effectId;

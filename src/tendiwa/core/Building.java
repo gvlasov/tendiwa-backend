@@ -1,14 +1,14 @@
 package tendiwa.core;
 
 import org.jgrapht.Graph;
-import org.jgrapht.graph.DefaultEdge;
 import tendiwa.core.meta.Chance;
 import tendiwa.core.meta.Coordinate;
 import tendiwa.core.terrain.settlements.BuildingPlace;
-import tendiwa.core.terrain.settlements.Settlement.RoadSystem.Road;
+import tendiwa.core.Settlement.RoadSystem.Road;
 import tendiwa.geometry.CardinalDirection;
 import tendiwa.geometry.EnhancedRectangle;
 import tendiwa.geometry.RectangleSystem;
+import tendiwa.geometry.RecursivelySplitRectangleSystemFactory;
 
 import java.awt.*;
 import java.util.*;
@@ -295,7 +295,7 @@ public abstract class Building {
 		return cells;
 	}
 
-	public TerrainModifier buildBasis(int wallType) {
+	public TerrainModifier buildBasis(FloorType floor, ObjectType walls) {
 		TerrainModifier modifier = terrainModifier;
 		RectangleSystem rs = modifier.getRectangleSystem();
 		// if (notSimpleForm) {
@@ -328,11 +328,11 @@ public abstract class Building {
 		//
 		// }
 
-		modifier.drawInnerBorders(1, wallType);
+		modifier.drawInnerBorders(walls);
 		int floorType = StaticData.getFloorType("stone").getId();
 		int objDoorBlue = StaticData.getObjectType("door_blue").getId();
 		for (Rectangle r : rs.rectangleList()) {
-			fillFloor(r, floorType);
+			fillFloor(r, floor);
 		}
 		Graph<EnhancedRectangle, RectangleSystem.Neighborship> graph = rs.getGraph();
 
@@ -345,7 +345,7 @@ public abstract class Building {
 	}
 
 	public TerrainModifier getTerrainModifier(int minRoomSize) {
-		return settlement.getTerrainModifier(x, y, width, height, minRoomSize, 1);
+		return settlement.getTerrainModifier(RecursivelySplitRectangleSystemFactory.create(x, y, width, height, minRoomSize, 1));
 	}
 
 	public TerrainModifier setTerrainModifier(RectangleSystem crs) {
@@ -368,8 +368,8 @@ public abstract class Building {
 		return new Coordinate(x, y);
 	}
 
-	protected void fillFloor(Rectangle r, int floorId) {
-		settlement.square(r.x, r.y, r.width, r.height, 0, floorId, true);
+	protected void fillFloor(Rectangle r, FloorType floor) {
+		settlement.square(r.x, r.y, r.width, r.height, floor, true);
 	}
 
 	protected ArrayList<Coordinate> getCellsNearWalls(Rectangle r) {
@@ -451,7 +451,7 @@ public abstract class Building {
 	 */
 	public void clearBasisInside() {
 		for (Rectangle r : terrainModifier.getRectangleSystem().rectangleList()) {
-			settlement.square(r.x, r.y, r.width, r.height, TerrainBasics.ELEMENT_OBJECT, StaticData.VOID, true);
+			settlement.square(r.x, r.y, r.width, r.height, ObjectType.VOID, true);
 		}
 	}
 
@@ -496,7 +496,7 @@ public abstract class Building {
 			default:
 				throw new Error("Incorrect side " + side);
 		}
-		settlement.line(startX, startY, endX, endY, TerrainBasics.ELEMENT_OBJECT, StaticData.VOID);
+		settlement.line(startX, startY, endX, endY, ObjectType.VOID);
 	}
 
 	public enum BasisBuildingSetup {
