@@ -1,10 +1,6 @@
 package tendiwa.core;
 
-import tendiwa.geometry.EnhancedRectangle;
-import tendiwa.geometry.LocationPlace;
-import tendiwa.geometry.WorldRectangleBuilder;
-
-import static tendiwa.geometry.DSL.*;
+import static tendiwa.core.DSL.*;
 
 public class World {
 
@@ -22,11 +18,11 @@ public static World create(WorldDrawer worldDrawer, int width, int height) {
 	WorldRectangleBuilder builder = worldBuilder();
 	worldDrawer.draw(builder, width, height);
 	World world = new World(width, height);
-	for (LocationPlace place : builder.getLocationPlaces()) {
+	builder.done();
+	for (LocationPlace place : builder.rectanglesToPlaces.values()) {
 		LocationDrawer locationDrawer = ResourcesRegistry.getLocationDrawerFor(place);
-		EnhancedRectangle rectangle = place.getRectangle();
 		locationDrawer.draw(
-			new Location(world.defaultPlane, rectangle.x, rectangle.y, rectangle.width, rectangle.height),
+			new Location(world.defaultPlane, place.x, place.y, place.width, place.height),
 			place
 		);
 	}
@@ -36,10 +32,9 @@ public static World create(WorldDrawer worldDrawer, int width, int height) {
 
 private void checkIfLocationPlacesFillAllWorld(WorldRectangleBuilder builder) {
 	boolean filled[][] = new boolean[width][height];
-	for (LocationPlace location : builder.getLocationPlaces()) {
-		EnhancedRectangle r = location.getRectangle();
-		for (int x = r.x; x < r.width; x++) {
-			for (int y = r.y; y < r.height; y++) {
+	for (LocationPlace place : builder.rectanglesToPlaces.values()) {
+		for (int x = place.x; x < place.width; x++) {
+			for (int y = place.y; y < place.height; y++) {
 				filled[x][y] = true;
 			}
 		}

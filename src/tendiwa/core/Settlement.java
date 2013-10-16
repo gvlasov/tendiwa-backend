@@ -6,7 +6,6 @@ import tendiwa.core.meta.Utils;
 import tendiwa.core.terrain.settlements.BuildingPlace;
 import tendiwa.core.terrain.settlements.Service;
 import tendiwa.core.Settlement.RoadSystem.Road;
-import tendiwa.geometry.*;
 
 import java.awt.*;
 import java.lang.reflect.Constructor;
@@ -456,7 +455,7 @@ public class Settlement extends Location {
 				HashSet<BuildingPlace> answer = new HashSet<BuildingPlace>();
 				TerrainModifier modifier = settlement.getTerrainModifier(RecursivelySplitRectangleSystemFactory.create(x, y, width, height, minWidth, 1));
 				RectangleSystem rs = modifier.getRectangleSystem(); 
-				for (EnhancedRectangle r : rs.rectangleList()) {
+				for (EnhancedRectangle r : rs.getRectangles()) {
 					if (rs.isRectangleOuter(r)) {
 						answer.add(new BuildingPlace(r, this));
 					}

@@ -3,7 +3,7 @@ package tendiwa.drawing;
 import java.awt.Color;
 import java.awt.Rectangle;
 
-import tendiwa.geometry.Orientation;
+import tendiwa.core.Orientation;
 
 public class DrawingInteger {
 	/**

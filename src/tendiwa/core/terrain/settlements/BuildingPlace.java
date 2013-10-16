@@ -5,8 +5,8 @@ import java.util.Set;
 
 import tendiwa.core.Settlement.QuarterSystem.Quarter;
 import tendiwa.core.Settlement.RoadSystem.Road;
-import tendiwa.geometry.CardinalDirection;
-import tendiwa.geometry.EnhancedRectangle;
+import tendiwa.core.CardinalDirection;
+import tendiwa.core.EnhancedRectangle;
 
 /**
  * Space for placing a building. Each quarter will be divided into 

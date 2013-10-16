@@ -7,9 +7,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import tendiwa.geometry.EnhancedPoint;
-import tendiwa.geometry.Orientation;
-import tendiwa.geometry.Segment;
+import tendiwa.core.EnhancedPoint;
+import tendiwa.core.Orientation;
+import tendiwa.core.Segment;
 
 import com.google.common.collect.Lists;
 

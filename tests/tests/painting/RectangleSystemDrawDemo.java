@@ -3,8 +3,8 @@ package tests.painting;
 import tendiwa.drawing.DrawingRectangleSystem;
 import tendiwa.drawing.TestCanvas;
 import tendiwa.drawing.TestCanvasBuilder;
-import tendiwa.geometry.RectangleSystem;
-import tendiwa.geometry.RecursivelySplitRectangleSystemFactory;
+import tendiwa.core.RectangleSystem;
+import tendiwa.core.RecursivelySplitRectangleSystemFactory;
 
 import java.awt.*;
 

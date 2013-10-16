@@ -5,7 +5,6 @@ import java.util.HashMap;
 
 import tendiwa.core.meta.Coordinate;
 import tendiwa.core.meta.Utils;
-import tendiwa.geometry.Direction;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

@@ -5,7 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import tendiwa.core.meta.Coordinate;
-import tendiwa.geometry.CardinalDirection;
 
 import java.util.ArrayList;
 import java.util.HashSet;

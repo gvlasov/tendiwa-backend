@@ -6,8 +6,8 @@ import java.awt.Rectangle;
 
 import org.junit.Test;
 
-import tendiwa.geometry.Directions;
-import tendiwa.geometry.EnhancedRectangle;
+import tendiwa.core.Directions;
+import tendiwa.core.EnhancedRectangle;
 
 public class RectangleSystemTest {
 

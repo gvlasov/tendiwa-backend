@@ -3,8 +3,8 @@ package tests.painting;
 import java.awt.Rectangle;
 
 import tendiwa.drawing.TestCanvas;
-import tendiwa.geometry.GrowingRectangleSystem;
-import tendiwa.geometry.RectangleSystem;
+import tendiwa.core.GrowingRectangleSystem;
+import tendiwa.core.RectangleSystem;
 
 public class TrailDrawTest {
 public static void main(String[] args) {

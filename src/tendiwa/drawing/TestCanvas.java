@@ -2,10 +2,8 @@ package tendiwa.drawing;
 
 import com.google.common.collect.Iterables;
 import com.google.common.io.Files;
-import tendiwa.core.Chunk;
-import tendiwa.core.HorizontalPlane;
+import tendiwa.core.*;
 import tendiwa.core.meta.GifSequenceWriter;
-import tendiwa.geometry.*;
 
 import javax.imageio.IIOException;
 import javax.imageio.stream.FileImageOutputStream;

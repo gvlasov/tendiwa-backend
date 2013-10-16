@@ -1,8 +1,5 @@
 package tendiwa.core;
 
-import tendiwa.geometry.LocationPlace;
-import tendiwa.geometry.PathSegment;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;

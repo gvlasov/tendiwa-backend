@@ -5,9 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import tendiwa.core.meta.Coordinate;
-import tendiwa.geometry.Direction;
-import tendiwa.geometry.Directions;
-
 
 public class NonPlayerCharacter extends Character {
 	public static final long serialVersionUID = 34638L;

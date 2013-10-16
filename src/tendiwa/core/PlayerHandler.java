@@ -24,7 +24,6 @@ import tendiwa.core.net.clientmessages.ClientMessageStep;
 import tendiwa.core.net.clientmessages.ClientMessageTakeFromContainer;
 import tendiwa.core.net.clientmessages.ClientMessageTakeOff;
 import tendiwa.core.net.clientmessages.ClientMessageUseObject;
-import tendiwa.geometry.Directions;
 
 import com.google.gson.Gson;
 

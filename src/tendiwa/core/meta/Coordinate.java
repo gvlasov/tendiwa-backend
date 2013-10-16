@@ -2,9 +2,9 @@ package tendiwa.core.meta;
 
 import java.awt.Point;
 
-import tendiwa.geometry.CardinalDirection;
-import tendiwa.geometry.Direction;
-import tendiwa.geometry.OrdinalDirection;
+import tendiwa.core.CardinalDirection;
+import tendiwa.core.Direction;
+import tendiwa.core.OrdinalDirection;
 
 public class Coordinate extends Point {
 	public static final long serialVersionUID = 1452389451;

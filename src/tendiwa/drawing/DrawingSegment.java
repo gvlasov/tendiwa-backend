@@ -3,7 +3,7 @@ package tendiwa.drawing;
 import java.awt.Color;
 import java.awt.Point;
 
-import tendiwa.geometry.Segment;
+import tendiwa.core.Segment;
 
 public class DrawingSegment {
 	private DrawingSegment() {

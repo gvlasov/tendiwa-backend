@@ -1,7 +1,7 @@
 package tendiwa.drawing;
 
 import com.google.common.collect.Iterables;
-import tendiwa.geometry.Placeable;
+import tendiwa.core.Placeable;
 
 import java.awt.*;
 import java.util.Iterator;

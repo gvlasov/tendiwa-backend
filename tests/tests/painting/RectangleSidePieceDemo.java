@@ -3,8 +3,8 @@ package tests.painting;
 import tendiwa.drawing.DrawingRectangle;
 import tendiwa.drawing.TestCanvas;
 import tendiwa.drawing.TestCanvasBuilder;
-import tendiwa.geometry.Directions;
-import tendiwa.geometry.EnhancedRectangle;
+import tendiwa.core.Directions;
+import tendiwa.core.EnhancedRectangle;
 
 import java.awt.*;
 

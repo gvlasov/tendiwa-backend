@@ -3,10 +3,6 @@ package tendiwa.core;
 import tendiwa.core.meta.Chance;
 import tendiwa.core.meta.Coordinate;
 import tendiwa.core.terrain.settlements.BuildingPlace;
-import tendiwa.geometry.CardinalDirection;
-import tendiwa.geometry.RectangleSystem;
-import tendiwa.geometry.Segment;
-import tendiwa.geometry.TerrainDiffusion;
 
 import java.awt.*;
 import java.util.*;
@@ -805,10 +801,16 @@ public void fillRectangle(Rectangle r, PlaceableInCell placeable) {
 	 * Fill rectngle with objects randomly. chance% of cells will be filled
 	 * with these objects.
 	 */
-	for (int x = r.x; x < r.x + r.width; x++) {
-		for (int y = r.y; y < r.y + r.height; y++) {
-			placeable.place(cells[x][y]);
+	int x = 0 ;
+	int y = 0;
+	try {
+		for (x = r.x; x < r.x + r.width; x++) {
+			for (y = r.y; y < r.y + r.height; y++) {
+				placeable.place(cells[x][y]);
+			}
 		}
+	} catch (IndexOutOfBoundsException e) {
+		throw new LocationException("Trying to place entity " + placeable + " outside of location at cell " + x + ":" + y);
 	}
 }
 

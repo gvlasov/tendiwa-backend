@@ -5,10 +5,10 @@ import tendiwa.drawing.DrawingAlgorithm;
 import tendiwa.drawing.DrawingRectangle;
 import tendiwa.drawing.DrawingRectangleSystem;
 import tendiwa.drawing.TestCanvas;
-import tendiwa.geometry.EnhancedRectangle;
-import tendiwa.geometry.Placeable;
-import tendiwa.geometry.RectangleSystem;
-import tendiwa.geometry.RecursivelySplitRectangleSystemFactory;
+import tendiwa.core.EnhancedRectangle;
+import tendiwa.core.Placeable;
+import tendiwa.core.RectangleSystem;
+import tendiwa.core.RecursivelySplitRectangleSystemFactory;
 
 import java.awt.*;
 import java.util.Collection;

@@ -2,19 +2,19 @@ package tests;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static tendiwa.geometry.Directions.ALL_DIRECTIONS;
-import static tendiwa.geometry.Directions.E;
-import static tendiwa.geometry.Directions.N;
-import static tendiwa.geometry.Directions.NE;
-import static tendiwa.geometry.Directions.NW;
-import static tendiwa.geometry.Directions.S;
-import static tendiwa.geometry.Directions.SE;
-import static tendiwa.geometry.Directions.SW;
-import static tendiwa.geometry.Directions.W;
+import static tendiwa.core.Directions.ALL_DIRECTIONS;
+import static tendiwa.core.Directions.E;
+import static tendiwa.core.Directions.N;
+import static tendiwa.core.Directions.NE;
+import static tendiwa.core.Directions.NW;
+import static tendiwa.core.Directions.S;
+import static tendiwa.core.Directions.SE;
+import static tendiwa.core.Directions.SW;
+import static tendiwa.core.Directions.W;
 
 import org.junit.Test;
 
-import tendiwa.geometry.Direction;
+import tendiwa.core.Direction;
 
 public class DirectionTest {
 

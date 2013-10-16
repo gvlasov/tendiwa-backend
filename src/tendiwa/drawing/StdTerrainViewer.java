@@ -3,8 +3,8 @@ package tendiwa.drawing;
 import tendiwa.core.Cell;
 import tendiwa.core.StaticData;
 import tendiwa.core.TerrainBasics;
-import tendiwa.geometry.EnhancedRectangle;
-import tendiwa.geometry.RectangleSystem;
+import tendiwa.core.EnhancedRectangle;
+import tendiwa.core.RectangleSystem;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -136,7 +136,7 @@ public void print() {
 	}
 	// Printing ids of rectangles
 	for (RectangleSystem rs : rectangleSystems) {
-		for (EnhancedRectangle r : rs.rectangleList()) {
+		for (EnhancedRectangle r : rs.getRectangles()) {
 			int numOfDigits = String.valueOf(r.hashCode()).length();
 			if (r.width < numOfDigits + 1 || r.height < 2) {
 				continue;

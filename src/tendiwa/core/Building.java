@@ -5,10 +5,6 @@ import tendiwa.core.meta.Chance;
 import tendiwa.core.meta.Coordinate;
 import tendiwa.core.terrain.settlements.BuildingPlace;
 import tendiwa.core.Settlement.RoadSystem.Road;
-import tendiwa.geometry.CardinalDirection;
-import tendiwa.geometry.EnhancedRectangle;
-import tendiwa.geometry.RectangleSystem;
-import tendiwa.geometry.RecursivelySplitRectangleSystemFactory;
 
 import java.awt.*;
 import java.util.*;
@@ -331,7 +327,7 @@ public abstract class Building {
 		modifier.drawInnerBorders(walls);
 		int floorType = StaticData.getFloorType("stone").getId();
 		int objDoorBlue = StaticData.getObjectType("door_blue").getId();
-		for (Rectangle r : rs.rectangleList()) {
+		for (Rectangle r : rs.getRectangles()) {
 			fillFloor(r, floor);
 		}
 		Graph<EnhancedRectangle, RectangleSystem.Neighborship> graph = rs.getGraph();
@@ -340,7 +336,7 @@ public abstract class Building {
 			Coordinate c = connectRoomsWithDoor(graph.getEdgeSource(e), graph.getEdgeTarget(e), objDoorBlue);
 			settlement.setFloor(c.x, c.y, floorType);
 		}
-		rooms = rs.rectangleList();
+		rooms = rs.getRectangles();
 		return modifier;
 	}
 
@@ -450,7 +446,7 @@ public abstract class Building {
 	 * Remove all the objects inside rooms.
 	 */
 	public void clearBasisInside() {
-		for (Rectangle r : terrainModifier.getRectangleSystem().rectangleList()) {
+		for (Rectangle r : terrainModifier.getRectangleSystem().getRectangles()) {
 			settlement.square(r.x, r.y, r.width, r.height, ObjectType.VOID, true);
 		}
 	}

@@ -6,9 +6,7 @@ import org.junit.Test;
 
 
 import tendiwa.core.meta.Range;
-import tendiwa.drawing.TestCanvas;
-import tendiwa.geometry.RectangleSystem;
-import tendiwa.geometry.FuckingTrailRectangleSystem;
+import tendiwa.core.FuckingTrailRectangleSystem;
 
 public class TrailRectnagleSystemTest {
 

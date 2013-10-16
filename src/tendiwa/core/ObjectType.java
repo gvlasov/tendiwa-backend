@@ -66,4 +66,8 @@ public void place(Cell cell) {
 public boolean containedIn(Cell cell) {
 	return cell.object == uniqueness.id;
 }
+@Override
+public String toString() {
+	return name;
+}
 }

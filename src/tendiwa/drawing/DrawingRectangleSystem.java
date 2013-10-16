@@ -2,10 +2,10 @@ package tendiwa.drawing;
 
 import com.google.common.collect.Iterables;
 import org.jgrapht.Graph;
-import tendiwa.geometry.CardinalDirection;
-import tendiwa.geometry.EnhancedRectangle;
-import tendiwa.geometry.RectangleSystem;
-import tendiwa.geometry.Segment;
+import tendiwa.core.CardinalDirection;
+import tendiwa.core.EnhancedRectangle;
+import tendiwa.core.RectangleSystem;
+import tendiwa.core.Segment;
 
 import java.awt.*;
 import java.util.Iterator;

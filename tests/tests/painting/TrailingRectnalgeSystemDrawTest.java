@@ -5,7 +5,7 @@ import java.awt.Point;
 import tendiwa.core.meta.Range;
 import tendiwa.drawing.TestCanvas;
 import tendiwa.drawing.TestCanvasBuilder;
-import tendiwa.geometry.FuckingTrailRectangleSystem;
+import tendiwa.core.FuckingTrailRectangleSystem;
 
 public class TrailingRectnalgeSystemDrawTest {
 	public static void main(String[] args) {

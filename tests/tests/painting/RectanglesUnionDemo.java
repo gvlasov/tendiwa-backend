@@ -4,13 +4,13 @@ import org.jgrapht.graph.SimpleGraph;
 import tendiwa.drawing.DrawingRectangle;
 import tendiwa.drawing.DrawingRectangleSystem;
 import tendiwa.drawing.TestCanvas;
-import tendiwa.geometry.EnhancedRectangle;
-import tendiwa.geometry.RectangleSystemBuilder;
-import tendiwa.geometry.RectanglesJunction;
+import tendiwa.core.EnhancedRectangle;
+import tendiwa.core.RectangleSystemBuilder;
+import tendiwa.core.RectanglesJunction;
 
 import java.awt.*;
 
-import static tendiwa.geometry.DSL.*;
+import static tendiwa.core.DSL.*;
 public class RectanglesUnionDemo {
 public static void main(String[] args) {
 	RectangleSystemBuilder builder = builder(10)

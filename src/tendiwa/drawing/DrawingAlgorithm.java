@@ -2,7 +2,7 @@ package tendiwa.drawing;
 
 import tendiwa.core.Location;
 import tendiwa.core.meta.Coordinate;
-import tendiwa.geometry.EnhancedPoint;
+import tendiwa.core.EnhancedPoint;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;

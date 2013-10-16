@@ -3,8 +3,8 @@ package tendiwa.drawing;
 import java.awt.Color;
 import java.util.Iterator;
 
-import tendiwa.geometry.EnhancedPoint;
-import tendiwa.geometry.RectangleSidePiece;
+import tendiwa.core.EnhancedPoint;
+import tendiwa.core.RectangleSidePiece;
 
 import com.google.common.collect.Iterables;
 

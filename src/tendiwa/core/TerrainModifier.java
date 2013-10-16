@@ -3,7 +3,6 @@ package tendiwa.core;
 import org.jgrapht.Graph;
 import tendiwa.core.meta.Coordinate;
 import tendiwa.core.meta.Utils;
-import tendiwa.geometry.*;
 
 import java.awt.*;
 import java.util.*;
@@ -34,7 +33,7 @@ public RectangleSystem getRectangleSystem() {
  */
 public void excludeRectanglesHaving(PlaceableInCell placeable) {
 	keyLoop:
-	for (EnhancedRectangle r : rs.rectangleList()) {
+	for (EnhancedRectangle r : rs.getRectangles()) {
 		for (int x = r.x; x < r.x + r.width; x++) {
 			for (int y = r.y; y < r.y + r.height; y++) {
 				if (location.cells[x][y].contains(placeable)) {
@@ -65,7 +64,7 @@ public void drawInnerBorders(PlaceableInCell placeable) {
 	if (rs.getBorderWidth() < 1) {
 		throw new RuntimeException("Can't draw borders of RectangleSystem with borderWidth=" + rs.getBorderWidth());
 	}
-	for (EnhancedRectangle r1 : rs.rectangleList()) {
+	for (EnhancedRectangle r1 : rs.getRectangles()) {
 		/*
 		 * Look at each side of each rectangle if there is an inner border to
 		 * draw.
@@ -371,7 +370,7 @@ public void connectCornersWithLines(PlaceableInCell placeable, int padding, bool
 			return new Double(Utils.getLineAngle(ccwlLastCellHolder.center, c1)).compareTo(Utils.getLineAngle(ccwlLastCellHolder.center, c2));
 		}
 	};
-	for (EnhancedRectangle r : rs.rectangleList()) {
+	for (EnhancedRectangle r : rs.getRectangles()) {
 		Collection<CardinalDirection> sides = rs.getOuterSides().get(r);
 		boolean n = sides.contains(Directions.N);
 		boolean e = sides.contains(Directions.E);
@@ -406,7 +405,7 @@ public void connectCornersWithLines(PlaceableInCell placeable, int padding, bool
 }
 
 public void fillContents(PlaceableInCell placeable) {
-	for (Rectangle r : rs.rectangleList()) {
+	for (Rectangle r : rs.getRectangles()) {
 		location.square(r, placeable, true);
 	}
 }

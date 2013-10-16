@@ -1,9 +1,6 @@
 package tendiwa.core;
 
-import tendiwa.geometry.EnhancedRectangle;
-
 import java.awt.*;
-import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
