@@ -36,7 +36,7 @@ public static DrawingAlgorithm<RectangleSystem> withColors(final Color... colors
 	};
 }
 
-public static DrawingAlgorithm<RectangleSystem> graphAndRectangles(final Color graphColor, Color... colors) {
+public static DrawingAlgorithm<RectangleSystem> graphAndRectangles(final Color graphColor, final Color... colors) {
 	return new DrawingAlgorithm<RectangleSystem>() {
 		final Iterator<Color> iter = Iterables.cycle(colors).iterator();
 
@@ -61,7 +61,7 @@ public static DrawingAlgorithm<RectangleSystem> graphAndRectangles(final Color g
 	};
 }
 
-public static DrawingAlgorithm<RectangleSystem> neighborsUnionsAndRectangles(final Color neighborshipColor, final Color unionColor, Color... colors) {
+public static DrawingAlgorithm<RectangleSystem> neighborsUnionsAndRectangles(final Color neighborshipColor, final Color unionColor, final Color... colors) {
 	return new DrawingAlgorithm<RectangleSystem>() {
 		final Iterator<Color> iter = Iterables.cycle(colors).iterator();
 

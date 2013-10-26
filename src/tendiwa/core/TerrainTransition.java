@@ -10,12 +10,12 @@ import java.util.HashSet;
  * those edges of the rectangle will gradually be placed tiles that contain certain placeable entities. They will head
  * to the middle of the rectangle and after several cells will be replaced by {@code to} entities.</p>
  */
-public class TerrainDiffusion {
+public class TerrainTransition {
 private static final TerrainDiffusionStopCondition DEFAULT_STOP_CONDITION = new TerrainDiffusionStopCondition() {
 
 	@Override
 	public boolean check(int depth, int iterationNumber) {
-		int diffusionStartDepth = 2;
+		int diffusionStartDepth = 8;
 		if (depth - iterationNumber < diffusionStartDepth) {
 			return Chance.roll(30);
 		}
@@ -26,11 +26,8 @@ private static final TerrainDiffusionStopCondition DEFAULT_STOP_CONDITION = new 
 /**
  * @param from
  * 	Entities to come from border.
- * @param to
- * 	The rest of entities.
  */
-public TerrainDiffusion(Location location, EnhancedRectangle rectangle, PlaceableInCell from, PlaceableInCell to, int depth, HashSet<Direction> fromDirections, TerrainDiffusionStopCondition stopCondition) {
-	location.square(rectangle, to, true);
+public TerrainTransition(Location location, EnhancedRectangle rectangle, PlaceableInCell from, int depth, HashSet<Direction> fromDirections, TerrainDiffusionStopCondition stopCondition) {
 	for (Direction dir : fromDirections) {
 		if (!dir.isCardinal()) {
 			continue;
@@ -39,8 +36,8 @@ public TerrainDiffusion(Location location, EnhancedRectangle rectangle, Placeabl
 		int dimensionBySide = rectangle.getDimensionBySide(cardinalDirection);
 		Segment segmentWithoutCorners = rectangle.getSegmentInsideFromSide(
 			cardinalDirection,
-			depth,
-			dimensionBySide - depth * 2
+			0,
+			dimensionBySide
 		);
 
 		// Place cells
@@ -173,40 +170,34 @@ private interface TerrainDiffusionStopCondition {
 	boolean check(int depth, int iterationNumber);
 }
 
-public static class TerrainDiffusionBuilder {
+public static class TerrainTransitionBuilder {
 	private PlaceableInCell from;
-	private PlaceableInCell to;
 	private HashSet<Direction> directions = new HashSet<>();
 	private int depth = -1;
 	private EnhancedRectangle rectangle;
 	private TerrainDiffusionStopCondition condition = DEFAULT_STOP_CONDITION;
 	private Location location;
 
-	public TerrainDiffusionBuilder() {
+	public TerrainTransitionBuilder() {
 
 	}
 
-	public TerrainDiffusionBuilder setLocation(Location location) {
+	public TerrainTransitionBuilder setLocation(Location location) {
 		this.location = location;
 		return this;
 	}
 
-	public TerrainDiffusionBuilder setRectangle(EnhancedRectangle rectangle) {
+	public TerrainTransitionBuilder setRectangle(EnhancedRectangle rectangle) {
 		this.rectangle = rectangle;
 		return this;
 	}
 
-	public TerrainDiffusionBuilder setFrom(PlaceableInCell from) {
+	public TerrainTransitionBuilder setFrom(PlaceableInCell from) {
 		this.from = from;
 		return this;
 	}
 
-	public TerrainDiffusionBuilder setTo(PlaceableInCell to) {
-		this.to = to;
-		return this;
-	}
-
-	public TerrainDiffusionBuilder setDepth(int depth) {
+	public TerrainTransitionBuilder setDepth(int depth) {
 		if (depth < 0) {
 			throw new IllegalArgumentException("depth can't be < 0");
 		}
@@ -214,7 +205,7 @@ public static class TerrainDiffusionBuilder {
 		return this;
 	}
 
-	public TerrainDiffusionBuilder addFromDirection(Direction direction) {
+	public TerrainTransitionBuilder addFromDirection(Direction direction) {
 		if (directions.contains(direction)) {
 			throw new IllegalArgumentException("Direction " + direction + " is already present in builder");
 		}
@@ -228,21 +219,15 @@ public static class TerrainDiffusionBuilder {
 	 *
 	 * @param condition
 	 * 	A functor with condition.
-	 * @return The same TerrainDiffusion to call next methods in a chain.
-	 * @see TerrainDiffusion#DEFAULT_STOP_CONDITION
+	 * @return The same TerrainTransition to call next methods in a chain.
+	 * @see TerrainTransition#DEFAULT_STOP_CONDITION
 	 */
-	public TerrainDiffusionBuilder setStopCondition(TerrainDiffusionStopCondition condition) {
+	public TerrainTransitionBuilder setStopCondition(TerrainDiffusionStopCondition condition) {
 		this.condition = condition;
 		return this;
 	}
 
-	public TerrainDiffusion build() {
-		if (from == null) {
-			throw new IllegalStateException("Parameter `from` is not set");
-		}
-		if (to == null) {
-			throw new IllegalStateException("Parameter `to` is not set");
-		}
+	public TerrainTransition build() {
 		if (location == null) {
 			throw new IllegalStateException("Parameter `location` is not set");
 		}
@@ -255,7 +240,7 @@ public static class TerrainDiffusionBuilder {
 		if (directions.isEmpty()) {
 			throw new IllegalStateException("No directions specified");
 		}
-		return new TerrainDiffusion(location, rectangle, from, to, depth, directions, condition);
+		return new TerrainTransition(location, rectangle, from, depth, directions, condition);
 	}
 }
 }

@@ -39,12 +39,29 @@ public String toString() {
  * Mutates this object changing its {@link Point#x} and {@link Point#y}.
  *
  * @param direction
- * @return
+ * 	Direction to move.
+ * @return The same mutated point.
  */
 public EnhancedPoint moveToSide(Direction direction) {
 	int[] d = direction.side2d();
 	x += d[0];
 	y += d[1];
+	return this;
+}
+
+/**
+ * Mutates this object changing its {@link Point#x} and {@link Point#y}.
+ *
+ * @param direction
+ * 	Direction to move
+ * @param cells
+ * 	How far to move in cells
+ * @return The same mutated point.
+ */
+public EnhancedPoint moveToSide(Direction direction, int cells) {
+	int[] d = direction.side2d();
+	x += d[0] * cells;
+	y += d[1] * cells;
 	return this;
 }
 
@@ -91,6 +108,7 @@ public int getDynamicCoord(Orientation orientation) {
 public EnhancedPoint newRelativePoint(int dx, int dy) {
 	return new EnhancedPoint(x + dx, y + dy);
 }
+
 public EnhancedPoint newRelativePoint(Direction dir) {
 	int[] coords = dir.side2d();
 	return new EnhancedPoint(x + coords[0], y + coords[1]);

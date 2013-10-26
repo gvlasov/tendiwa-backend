@@ -57,7 +57,7 @@ public void square(Rectangle r, PlaceableInCell placeable, boolean fill) {
 
 public void square(int startX, int startY, int w, int h, PlaceableInCell placeable, boolean fill) {
 	if (startX + w > getWidth() || startY + h > getHeight()) {
-		throw new Error("Square " + startX + "," + startY + "," + w + "," + h + " goes out of location borders " + startX + " " + startY + " " + getHeight() + " " + getWidth());
+		throw new LocationException("Square " + startX + "," + startY + "," + w + "," + h + " goes out of borders of a "+getWidth()+"*"+getHeight()+" location");
 	}
 	if (w == 1) {
 		line(startX, startY, startX, startY + h - 1, placeable);
@@ -822,7 +822,7 @@ public int getHeight() {
 	return height;
 }
 
-public TerrainDiffusion.TerrainDiffusionBuilder diffusionBuilder() {
-	return new TerrainDiffusion.TerrainDiffusionBuilder().setLocation(this);
+public TerrainTransition.TerrainTransitionBuilder transitionBuilder() {
+	return new TerrainTransition.TerrainTransitionBuilder().setLocation(this);
 }
 }

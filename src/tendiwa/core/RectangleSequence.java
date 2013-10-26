@@ -149,7 +149,6 @@ public Iterator<EnhancedRectangle> iterator() {
  * 	If rectangle {@code r} is not present in this RectangleSequence.
  */
 public void excludeRectangle(EnhancedRectangle r) {
-	System.out.println("Exclude "+r);
 	if (!content.contains(r)) {
 		throw new IllegalArgumentException("No rectangle " + r + " present in system");
 	}

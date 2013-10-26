@@ -11,7 +11,7 @@ public class StepNear {
         return new StepNearFromSide(pointer, side);
     }
 
-    public Placement fromCorner(OrdinalDirection corner) {
+    public Placement fromCorner(final OrdinalDirection corner) {
         return new Placement() {
             @Override
             public EnhancedRectangle placeIn(Placeable placeable, RectangleSystemBuilder builder) {

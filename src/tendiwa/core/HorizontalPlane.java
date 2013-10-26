@@ -31,7 +31,7 @@ public Chunk createChunk(int x, int y) {
 		throw new Error("Wrong y " + y);
 	}
 	if (!chunks.containsKey(x)) {
-		chunks.put(x, new HashMap<>());
+		chunks.put(x, new HashMap<Integer, Chunk>());
 	}
 	if (chunks.get(x).containsKey(y)) {
 		throw new Error("Chunk at " + x + ":" + y + " already exists");

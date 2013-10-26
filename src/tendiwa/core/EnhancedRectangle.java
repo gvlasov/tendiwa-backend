@@ -778,7 +778,8 @@ public boolean touchesFromInside(EnhancedRectangle anotherRectangle) {
 /**
  * Returns a {@link RectangleSidePiece} of this rectangle that touches {@code rectangle} (with 0 cells between them).
  *
- * @param neighbor Neighbor rectangle.
+ * @param neighbor
+ * 	Neighbor rectangle.
  */
 public RectangleSidePiece getCommonSidePiece(EnhancedRectangle neighbor) {
 	if (!RectangleSystem.areRectanglesInXCells(this, neighbor, 0)) {
@@ -789,12 +790,11 @@ public RectangleSidePiece getCommonSidePiece(EnhancedRectangle neighbor) {
 	boolean found = false;
 	for (CardinalDirection thisSide : CardinalDirection.values()) {
 		commonSidePiece = getSideAsSidePiece(thisSide);
-		for (CardinalDirection neighborSide : CardinalDirection.values()) {
-			neighborPiece = neighbor.getSideAsSidePiece(neighborSide);
-			if (commonSidePiece.distanceTo(neighborPiece) == 0) {
-				found = true;
-				break;
-			}
+		CardinalDirection neighborSide = thisSide.opposite();
+		neighborPiece = neighbor.getSideAsSidePiece(neighborSide);
+		if (commonSidePiece.distanceTo(neighborPiece) == 0) {
+			found = true;
+			break;
 		}
 	}
 	if (!found) {

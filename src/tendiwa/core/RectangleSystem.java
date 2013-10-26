@@ -457,11 +457,11 @@ public Set<EnhancedRectangle> getNeighborsFromSide(EnhancedRectangle r, Cardinal
 	Builder<EnhancedRectangle> builder = ImmutableSet.builder();
 	assert graph.containsVertex(r);
 	for (Neighborship e : graph.edgesOf(r)) {
-		if (graph.getEdgeSource(e) == r && getNeighborSide(
+		if (graph.getEdgeSource(e).equals(r) && getNeighborSide(
 			r,
 			graph.getEdgeTarget(e)) == side) {
 			builder.add(graph.getEdgeTarget(e));
-		} else if (graph.getEdgeTarget(e) == r && getNeighborSide(
+		} else if (graph.getEdgeTarget(e).equals(r) && getNeighborSide(
 			r,
 			graph.getEdgeSource(e)) == side) {
 			builder.add(graph.getEdgeSource(e));

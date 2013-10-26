@@ -16,7 +16,7 @@ public EnhancedRectangle placeIn(Placeable placeable, RectangleSystemBuilder bui
 	return shift(0).placeIn(placeable, builder);
 }
 
-public Placement shift(int shift) {
+public Placement shift(final int shift) {
 	return new Placement() {
 		@Override
 		public EnhancedRectangle placeIn(Placeable placeable, RectangleSystemBuilder builder) {

@@ -8,10 +8,12 @@ package tendiwa.core;
 public class LocationNeighborship {
 private final LocationPlace place;
 private final CardinalDirection direction;
+private final RectangleSidePiece commonSidePiece;
 
-LocationNeighborship(LocationPlace place, CardinalDirection direction) {
+LocationNeighborship(LocationPlace place, CardinalDirection direction, RectangleSidePiece commonSidePiece) {
 	this.place = place;
 	this.direction = direction;
+	this.commonSidePiece = commonSidePiece;
 }
 
 /**
@@ -21,6 +23,9 @@ LocationNeighborship(LocationPlace place, CardinalDirection direction) {
  */
 public LocationPlace getPlace() {
 	return place;
+}
+public int getLength() {
+	return commonSidePiece.segment.length;
 }
 
 /**

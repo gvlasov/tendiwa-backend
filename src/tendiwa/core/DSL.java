@@ -53,8 +53,13 @@ public static Placement somewhere() {
 	};
 }
 
-public static Placement atPoint(int x, int y) {
-	return (placeable, builder) -> placeable.place(builder, x, y);
+public static Placement atPoint(final int x, final int y) {
+	return new Placement() {
+		@Override
+		public EnhancedRectangle placeIn(Placeable placeable, RectangleSystemBuilder builder) {
+			return placeable.place(builder, x, y);
+		}
+	};
 }
 
 public static TestCanvas canvas() {

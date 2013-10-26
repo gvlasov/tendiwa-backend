@@ -11,7 +11,7 @@ public class StepPlaceNextAt {
         this.placeable = placeable;
     }
 
-    public Placeable placingNextAt(Placement where) {
+    public Placeable placingNextAt(final Placement where) {
         return new Placeable() {
             private RectangleSequence rs;
             public RectangleSystemBuilder prebuiltBuilder;
