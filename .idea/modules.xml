@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../MainModule/MainModule.iml" filepath="$PROJECT_DIR$/../MainModule/MainModule.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../client/Tendiwa Client.iml" filepath="$PROJECT_DIR$/../client/Tendiwa Client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tendiwa.iml" filepath="$PROJECT_DIR$/tendiwa.iml" />
+    </modules>
+  </component>
+</project>
+

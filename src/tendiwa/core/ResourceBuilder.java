@@ -36,4 +36,6 @@ public abstract class ResourceBuilder {
 	public abstract void build(String clientPath);
 	public abstract String buildResourcesStaticData();
 	protected abstract void cleanClientResourcesDirectory(String path);
+
+
 }

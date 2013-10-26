@@ -3,7 +3,7 @@
     <dirname property="tendiwa_framework.basedir" file="${ant.file.tendiwa_framework}"/>
     <property environment="env"/>
     <property name="tendiwa_framework.jar_path" value="${tendiwa_framework.basedir}/tendiwa.jar"/>
-    <target name="frameworkBuildJar" depends="frameworkCompile">
+    <target name="jar" depends="compile">
         <delete file="${tendiwa_framework.jar_path}"/>
         <jar destfile="${tendiwa_framework.jar_path}">
             <fileset dir="${tendiwa_framework.basedir}/bin/">
@@ -15,7 +15,7 @@
             </manifest>
         </jar>
     </target>
-    <target name="frameworkCompile">
+    <target name="compile">
         <mkdir dir="${tendiwa_framework.basedir}/bin/"/>
         <javac
                 destdir="${tendiwa_framework.basedir}/bin"
@@ -33,7 +33,7 @@
             </classpath>
         </javac>
     </target>
-    <target name="frameworkClean">
+    <target name="clean">
         <delete dir="${tendiwa_framework.basedir}/bin/"/>
         <delete file="${tendiwa_framework.jar_path}"/>
     </target>
