@@ -22,60 +22,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library" exported="">
-      <library name="jgrapht-jdk1.6.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/jgrapht-jdk1.6.jar!/" />
-        </CLASSES>
-        <JAVADOC>
-          <root url="http://jgrapht.org/javadoc/" />
-        </JAVADOC>
-        <SOURCES>
-          <root url="file://$USER_HOME$/workspace/Erpoge Server/lib/jgrapht-src" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library name="gson-2.2.2.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/gson-2.2.2.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library name="java_websocket.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/java_websocket.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library name="MainModule.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/modules/MainModule.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="file://$MODULE_DIR$/../MainModule/src" />
-          <root url="file://$MODULE_DIR$/../MainModule/tests" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library name="guava-14.0.1.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/guava-14.0.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="file://$MODULE_DIR$/lib/guava-libraries/guava/src" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
       <library name="junit4">
         <CLASSES>
           <root url="jar://$APPLICATION_HOME_DIR$/lib/junit-4.10.jar!/" />
@@ -84,20 +30,11 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
-      <library name="commons-lang3-3.1.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/commons-lang3-3.1/commons-lang3-3.1.jar!/" />
-        </CLASSES>
-        <JAVADOC>
-          <root url="jar://$MODULE_DIR$/lib/commons-lang3-3.1/commons-lang3-3.1-javadoc.jar!/" />
-        </JAVADOC>
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="library" name="jgrapht-jdk1.6" level="project" />
-    <orderEntry type="library" name="guava" level="project" />
-    <orderEntry type="library" name="codemodel-2.6" level="project" />
+    <orderEntry type="library" exported="" name="google-gson-2.2" level="project" />
+    <orderEntry type="library" exported="" name="jgrapht-0.8" level="project" />
+    <orderEntry type="library" exported="" name="codemodel-2.6" level="project" />
+    <orderEntry type="library" exported="" name="guava-15.0" level="project" />
+    <orderEntry type="library" exported="" name="java-websocket" level="project" />
   </component>
 </module>
 

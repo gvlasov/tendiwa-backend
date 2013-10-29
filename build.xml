@@ -2,40 +2,40 @@
 <project name="tendiwa_framework">
     <dirname property="tendiwa_framework.basedir" file="${ant.file.tendiwa_framework}"/>
     <property environment="env"/>
-    <property name="tendiwa_framework.jar_path" value="${tendiwa_framework.basedir}/tendiwa.jar"/>
+    <property name="jar_file" value="tendiwa.jar"/>
     <target name="jar" depends="compile">
-        <delete file="${tendiwa_framework.jar_path}"/>
-        <jar destfile="${tendiwa_framework.jar_path}">
-            <fileset dir="${tendiwa_framework.basedir}/bin/">
-                <exclude name="${tendiwa_framework.basedir}/tests/**"/>
+        <jar destfile="${jar_file}">
+            <fileset dir="bin/">
+                <exclude name="tests/**"/>
             </fileset>
-            <fileset file="${tendiwa_framework.basedir}/src/tendiwa/core/schema.xsd"/>
+            <fileset file="src/tendiwa/core/schema.xsd"/>
             <manifest>
                 <attribute name="Main-Class" value="tendiwa.core.Main"/>
             </manifest>
         </jar>
     </target>
     <target name="compile">
-        <mkdir dir="${tendiwa_framework.basedir}/bin/"/>
+        <echo message="${user.dir}"/>
+        <mkdir dir="bin/"/>
         <javac
-                destdir="${tendiwa_framework.basedir}/bin"
+                destdir="bin"
                 includeantruntime="false"
-                srcdir="${tendiwa_framework.basedir}/src"
-                excludes="${tendiwa_framework.basedir}/tests"
+                srcdir="src"
+                excludes="tests"
                 debug="on"
                 debuglevel="lines,vars,source"
                 failonerror="yes"
                 >
             <classpath>
-                <fileset dir="${tendiwa_framework.basedir}/lib">
-                    <include name="*.jar"/>
+                <fileset dir="../libs">
+                    <include name="**/*.jar"/>
                 </fileset>
             </classpath>
         </javac>
     </target>
     <target name="clean">
-        <delete dir="${tendiwa_framework.basedir}/bin/"/>
-        <delete file="${tendiwa_framework.jar_path}"/>
+        <delete dir="bin/"/>
+        <delete file="${jar_file}"/>
     </target>
 </project>
 

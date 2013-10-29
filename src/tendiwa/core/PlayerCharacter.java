@@ -22,7 +22,7 @@ public class PlayerCharacter extends Character implements GsonForStaticDataSeria
 	protected int itl;
 	
 	
-	protected HashMap<String, Integer> skills = new HashMap<String, Integer>();
+	protected HashMap<String, Integer> skills = new HashMap<>();
 	protected int party = 0;
 	protected PlayerCharacter inviter;
 	protected NonPlayerCharacter dialoguePartner;
