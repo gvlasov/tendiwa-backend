@@ -3,7 +3,7 @@ package tendiwa.core;
 
 public class Cell {
 	protected int floor = StaticData.VOID;
-	protected int object = StaticData.VOID;
+	protected int object = ObjectType.VOID.getId();
 	private int passability = TerrainBasics.PASSABILITY_FREE;
 	Character character = null;
 

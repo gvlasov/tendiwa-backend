@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+You should not change this file.
+
+This build file is supposed to be used in all tendiwa modules.
+When you need to customize build process for a module, edit build.properties file.
+-->
+<project name="tendiwa_game">
+    <property environment="env"/>
+
+    <description>
+        Ant script for generating a game from backend, frontend and modules.
+    </description>
+
+    <target name="game" depends="ontology,_build_core,_build_client">
+        <jar destfile="game.jar">
+            <zipgroupfileset dir="." includes="*.jar"/>
+            <manifest>
+                <attribute name="Main-Class" value="org.tendiwa.client.DesktopStarter"/>
+            </manifest>
+        </jar>
+    </target>
+    <target name="_core_src_available">
+        <available file="core/build.xml" property="core.available"/>
+    </target>
+    <target name="_build_core" depends="_core_src_available" if="core.available">
+        <ant dir="core" target="jar"/>
+    </target>
+    <target name="_client_src_available">
+        <available file="client/build.xml" property="client.available"/>
+    </target>
+    <target name="_build_client" depends="_client_src_available" if="client.available">
+        <ant dir="client" target="jar"/>
+    </target>
+    <target name="clean">
+        <delete>
+            <fileset dir="." includes="*.jar"/>
+        </delete>
+    </target>
+    <target name="ontology" depends="_core_src_available">
+        <antcall target="_build_core"/>
+        <description>
+            Transforms xml descriptions of game objects to source code and places them in module's src/
+            directory.
+        </description>
+        <tempfile destdir="${java.io.tmpdir}" prefix="tendiwa" property="tmpdir"/>
+        <mkdir dir="${tmpdir}"/>
+        <!--Extract ontologies from jars-->
+        <unjar dest="${tmpdir}" failonemptyarchive="true">
+            <fileset dir=".">
+                <include name="*.jar"/>
+            </fileset>
+            <patternset>
+                <include name="**/ontology/*.xml"/>
+            </patternset>
+        </unjar>
+        <!--Extract ontologies from source code-->
+        <copy todir="${tmpdir}">
+            <fileset dir="." includes="**/data/ontology/*.xml"/>
+            <flattenmapper/>
+        </copy>
+        <!--Generate sources-->
+        <java classname="tendiwa.core.Main" failonerror="true">
+            <arg value="--ontology"/>
+            <arg value="${tmpdir}"/>
+            <classpath>
+                <pathelement path="tendiwa-backend.jar"/>
+                <fileset dir="libs" includes="**/*.jar"/>
+            </classpath>
+        </java>
+        <mkdir dir="${tmpdir}/ontology"/>
+        <mkdir dir="${tmpdir}/ontology/src"/>
+        <mkdir dir="${tmpdir}/ontology/bin"/>
+        <!--Compile generated sources -->
+        <javac
+                srcdir="${tmpdir}/ontology/src"
+                destdir="${tmpdir}/ontology/bin"
+                >
+            <classpath>
+                <pathelement path="tendiwa-backend.jar"/>
+                <fileset dir="libs" includes="**/*.jar"/>
+            </classpath>
+        </javac>
+        <!--Create jar with ontology consisting of compiled generated sources -->
+        <jar basedir="${tmpdir}/ontology/bin" destfile="tendiwa-ontology.jar">
+            <fileset dir="${tmpdir}/ontology/bin" includes="*.class"/>
+        </jar>
+        <!--<delete dir="${unjar.tmpdir}"/>-->
+
+        <echo>Resources source code generated</echo>
+    </target>
+</project>

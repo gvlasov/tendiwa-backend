@@ -40,14 +40,10 @@ public class PlayerHandler extends PlayerCharacter {
 	public boolean checkedOut = false;
 	protected boolean isAuthorized = false;
 	private static final Gson gson = new Gson();
-	public Connection connection;
 	public PlayerHandler(HorizontalPlane plane, int x, int y, String name, CharacterType race, String cls) {
 		super(plane, x, y, name, race, cls);
 	}
 	/* Net setters */
-	public void setConnection(Connection connection) {
-		this.connection = connection;
-	}
 	public void deauthorize() {
 		// Inform all characters who are on global map right now that
 		// this character has left
@@ -177,9 +173,6 @@ public class PlayerHandler extends PlayerCharacter {
 		useObject(data.x, data.y);
 		timeStream.flushEvents();
 	}
-	public void aCheckOut(String message) throws InterruptedException {
-		timeStream.checkOut(this);
-	}
 	public void aAnswer(String message) throws InterruptedException {
 		ClientMessageAnswer messageAnswer = gson.fromJson(message, ClientMessageAnswer.class);
 		dialogueAnswer(messageAnswer.answerId);
@@ -233,67 +226,5 @@ public class PlayerHandler extends PlayerCharacter {
 		ClientMessageEnterState data = gson.fromJson(message, ClientMessageEnterState.class);
 		enterState(CharacterState.int2state(data.stateId));
 		timeStream.flushEvents();
-	}
-	/**
-	 * Sends data about PlayerHandler's parameters and surroundings to a client when 
-	 * that client connects to the server with that player.
-	 * @param message 
-	 * @param ws
-	 * @throws InterruptedException
-	 */
-	void aLoadContents(String message, Connection connection) throws InterruptedException {
-		// Almost the same as LOAD_LOCATON_CONTENTS
-		ClientMessageAuth clientData = gson.fromJson(message, ClientMessageAuth.class);
-		if (clientData.login.equals("")) {
-		// Login is empty
-			connection.send("[{\"e\":\"loadContents\",\"error\":0}]");
-		} else if (clientData.password.equals("")) {
-		// Password is empty
-			connection.send("[{\"e\":\"loadContents\",\"error\":1}]");
-		}
-		Account account = Accounts.account(clientData.login);
-		if (account == null) {
-		// No such account
-			connection.send("[{\"e\":\"loadContents\",\"error\":2}]");
-		} else if (!account.password.equals(clientData.password)) {
-		// Client password doesn't match account password
-			connection.send("[{\"e\":\"loadContents\",\"error\":3}]");
-		} else if (!account.hasCharacterWithId(clientData.characterId)) {
-			connection.send("[{\"e\":\"loadContents\",\"error\":4}]");
-		} else {
-		// Player login data is correct
-			PlayerHandler player = connection.getPlayerHandler();
-			if (player.isAuthorized()) {
-				if (player.connection.isClosed()) {
-				/* 
-				 * If a PlayerHandler is authorized and associated with a 
-				 * Connection that is already closed 
-				 */
-					connection.setPlayerHandler(player);
-				} else {
-				// Error: player is already in game
-					connection.send("[{\"e\":\"loadContents\",\"error\":5}]");
-					return;
-				}
-			} else {
-			// If that player is not authorized
-				connection.setPlayerHandler(player);
-			}
-			player.authorize();
-			player.setConnection(connection);
-			/*{ 	p : [(1)x, (2)y, (0)characterId, (4)name, (5)race, (6)class, 
-			 *  		(7)maxHp, (8)maxMp, (9)maxEp, (10)hp, (11)mp, (12)ep, 
-			 *  		(13)str, (14)dex, (15)wis, (16)itl, (17)items[], (18)equipment[], (19)spells[], (20)skills[],
-			 *  		(21)ac, (22)ev, (23)resistances[]],
-			 * 		online : [[characterId,x,y,name,maxHp,hp,effects,equipment(,cls,race)|(,type)]xM], 
-			 * } 
-			 */
-			Chunk[] chunks = (Chunk[]) Arrays.asList(timeStream.chunks).toArray();
-			EventQueue queue = new EventQueue()
-				.add(ServerEvents.create("authenticationSuccessful", "1"))
-				.add(ServerEvents.create("chunks", chunks))
-				.add(ServerEvents.create("player", this));
-			connection.send(queue.serialize());
-		}
 	}
 }

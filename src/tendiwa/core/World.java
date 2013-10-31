@@ -7,6 +7,7 @@ public class World {
 protected final int width;
 protected final int height;
 final HorizontalPlane defaultPlane = new HorizontalPlane();
+private PlayerCharacter playerCharacter;
 
 public World(int width, int height) {
 	this.width = width;
@@ -29,6 +30,9 @@ public static World create(WorldDrawer worldDrawer, int width, int height) {
 //	world.checkIfLocationPlacesFillAllWorld(builder);
 	return world;
 }
+public HorizontalPlane getDefaultPlane() {
+	return defaultPlane;
+}
 
 private void checkIfLocationPlacesFillAllWorld(WorldRectangleBuilder builder) {
 	boolean filled[][] = new boolean[width][height];
@@ -50,5 +54,13 @@ private void checkIfLocationPlacesFillAllWorld(WorldRectangleBuilder builder) {
 
 public Cell[][] getCellContents() {
 	return defaultPlane.getCells(0, 0, width, height);
+}
+
+public void setPlayerCharacter(PlayerCharacter playerCharacter) {
+	this.playerCharacter = playerCharacter;
+}
+
+public PlayerCharacter getPlayerCharacter() {
+	return playerCharacter;
 }
 }

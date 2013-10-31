@@ -14,19 +14,20 @@ public class ModuleBuilder {
  */
 static final String staticDataDirectory = "src";
 
-static void generateResourcesCode(String moduleDir) {
-	File moduleDirFile = new File(moduleDir);
-	File[] xmls = new File(moduleDir + File.separator + "data").listFiles(new FilenameFilter() {
+static void generateResourcesCode(String tempDirWithModules) {
+	File moduleDirFile = new File(tempDirWithModules);
+	File[] xmls = new File(tempDirWithModules).listFiles(new FilenameFilter() {
 		@Override
 		public boolean accept(File dir, String name) {
-		return name.endsWith("xml");
+			return name.endsWith("xml");
 		}
 	});
 	for (File xml : xmls) {
 		LoadStaticDataFromXML.loadGameDataFromXml(xml.getAbsolutePath());
 	}
 	// Create source files
-	File destDir = new File(moduleDir + File.separator + staticDataDirectory);
+	File destDir = new File(moduleDirFile + File.separator + "ontology" + File.separator + "src");
+	System.out.println("Saving sources to "+destDir);
 	destDir.mkdirs();
 	for (JCodeModel model : LoadStaticDataFromXML.codeModels) {
 		try {

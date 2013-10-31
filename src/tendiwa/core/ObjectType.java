@@ -5,11 +5,15 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Describes a certain type of inanimate objects that are large enough to be treated as {@link Item}s: trees, furniture,
  * wall segments
  */
 public class ObjectType implements PlaceableInCell, GsonForStaticDataSerializable {
+private static Map<Integer, ObjectType> byId = new HashMap<>();
 public static final ObjectType VOID = new ObjectType("void", 0, false, 0);
 public static final int CLASS_DEFAULT = 0;
 public static final int CLASS_WALL = 1;
@@ -21,12 +25,17 @@ private final int passability;
 private final boolean isUsable;
 private final int cls;
 
-public ObjectType(String name, int passability, boolean isUsable, int cls) {
+public ObjectType(String name, int passability, boolean isUsable, int cls ) {
 	super();
 	this.name = name;
 	this.passability = passability;
 	this.isUsable = isUsable;
 	this.cls = cls;
+	ObjectType.byId.put(uniqueness.id, this);
+}
+
+public static ObjectType getById(int id) {
+	return byId.get(id);
 }
 
 public int getObjectClass() {
@@ -66,8 +75,13 @@ public void place(Cell cell) {
 public boolean containedIn(Cell cell) {
 	return cell.object == uniqueness.id;
 }
+
 @Override
 public String toString() {
 	return name;
+}
+
+public boolean isWall() {
+	return cls == CLASS_WALL;
 }
 }

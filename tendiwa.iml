@@ -1,18 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
-  <component name="EclipseModuleManager">
-    <libelement value="jar://$MODULE_DIR$/lib/jgrapht-jdk1.6.jar!/" />
-    <libelement value="jar://$MODULE_DIR$/lib/gson-2.2.2.jar!/" />
-    <libelement value="jar://$MODULE_DIR$/lib/java_websocket.jar!/" />
-    <libelement value="jar://$MODULE_DIR$/modules/MainModule.jar!/" />
-    <libelement value="jar://$MODULE_DIR$/lib/guava-14.0.1.jar!/" />
-    <libelement value="jar://$MODULE_DIR$/lib/commons-lang3-3.1/commons-lang3-3.1.jar!/" />
-    <libelement value="jar://$USER_HOME$/appframework-1.0.3.jar!/" />
-    <src_description expected_position="1">
-      <src_folder value="file://$MODULE_DIR$/src" expected_position="1" />
-      <src_folder value="file://$MODULE_DIR$/tests" expected_position="2" />
-    </src_description>
-  </component>
   <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/bin" />
     <content url="file://$MODULE_DIR$">
@@ -21,7 +8,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library" exported="">
+    <orderEntry type="module-library">
       <library name="junit4">
         <CLASSES>
           <root url="jar://$APPLICATION_HOME_DIR$/lib/junit-4.10.jar!/" />
@@ -30,11 +17,11 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" exported="" name="google-gson-2.2" level="project" />
-    <orderEntry type="library" exported="" name="jgrapht-0.8" level="project" />
-    <orderEntry type="library" exported="" name="codemodel-2.6" level="project" />
-    <orderEntry type="library" exported="" name="guava-15.0" level="project" />
-    <orderEntry type="library" exported="" name="java-websocket" level="project" />
+    <orderEntry type="library" name="google-gson-2.2" level="project" />
+    <orderEntry type="library" name="jgrapht-0.8" level="project" />
+    <orderEntry type="library" name="codemodel-2.6" level="project" />
+    <orderEntry type="library" name="guava-15.0" level="project" />
+    <orderEntry type="library" name="java-websocket" level="project" />
   </component>
 </module>
 

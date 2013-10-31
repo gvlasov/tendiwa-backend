@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="tendiwa_framework">
-    <dirname property="tendiwa_framework.basedir" file="${ant.file.tendiwa_framework}"/>
+<project name="tendiwa_backend">
+    <property file="build.properties"/>
     <property environment="env"/>
-    <property name="jar_file" value="tendiwa.jar"/>
+    <!--<property name="jar_file" value="tendiwa.jar"/>-->
     <target name="jar" depends="compile">
         <jar destfile="${jar_file}">
             <fileset dir="bin/">

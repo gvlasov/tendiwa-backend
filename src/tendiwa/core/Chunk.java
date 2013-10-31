@@ -18,8 +18,8 @@ public Chunk neighborS;
 public Chunk neighborW;
 private HashSet<Character> characters = new HashSet<>();
 private HashSet<NonPlayerCharacter> nonPlayerCharacters = new HashSet<>();
-private TimeStream timeStream;
 private ArrayList<SoundSource> soundSources = new ArrayList<>();
+private TimeStream timeStream;
 
 public Chunk(HorizontalPlane plane, int x, int y) {
 	super(x, y);
@@ -63,8 +63,6 @@ public int getY() {
 
 protected NonPlayerCharacter createCharacter(int relX, int relY, int characterTypeId, String name, int fraction) {
 	NonPlayerCharacter character = new NonPlayerCharacter(plane, StaticData.getCharacterType(characterTypeId), x + relX, y + relY, name);
-	character.setTimeStream(timeStream);
-	timeStream.addNonPlayerCharacter(character);
 	character.setFraction(fraction);
 	characters.add(character);
 	nonPlayerCharacters.add(character);

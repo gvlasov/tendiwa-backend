@@ -15,8 +15,11 @@ public class Main {
 			//new SuseikaBrowserClientResourceBuilder();
 		}
 
-		if (args[0].equals("build")) {
-			String moduleDir = args[0] == null ? System.getProperty("user.dir") : args[1];
+		if (args[0].equals("--ontology")) {
+			String moduleDir = args[1];
+			if (moduleDir == null) {
+				throw new RuntimeException("Modules directory not provided");
+			}
 			ModuleBuilder.generateResourcesCode(moduleDir);
 		}
 //		ModuleLoader.loadModules();

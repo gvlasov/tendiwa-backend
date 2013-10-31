@@ -261,7 +261,6 @@ private static void loadCharacters(Element eRoot) {
 				.arg(JExpr.lit(weight))
 				.arg(JExpr.lit(height))
 		);
-//		System.out.println("Character " + name + " loaded");
 	}
 }
 
@@ -300,7 +299,6 @@ private static void loadObjects(Element eRoot) {
 		expVoidObject
 	);
 
-
 	for (Element eObject = (Element) eObjects.getFirstChild(); eObject != null; eObject = (Element) eObject.getNextSibling()) {
 		String name = eObject.getElementsByTagName("name").item(0).getFirstChild().getNodeValue();
 		Element ePassability = (Element) eObject.getElementsByTagName("passability").item(0);
@@ -333,14 +331,16 @@ private static void loadObjects(Element eRoot) {
 			isUsable = false;
 		}
 		int objectClass = ObjectType.CLASS_DEFAULT;
-		if (eObject.getElementsByTagName("type").getLength() == 1) {
-			String objectClassAsString = eObject.getElementsByTagName("type").item(0).getFirstChild().getNodeValue();
+		if (eObject.getElementsByTagName("class").getLength() == 1) {
+			String objectClassAsString = eObject.getElementsByTagName("class").item(0).getFirstChild().getNodeValue();
 			if (objectClassAsString.equals("wall")) {
 				objectClass = ObjectType.CLASS_WALL;
 			} else if (objectClassAsString.equals("door")) {
 				objectClass = ObjectType.CLASS_DOOR;
 			} else if (objectClassAsString.equals("interlevel")) {
 				objectClass = ObjectType.CLASS_INTERLEVEL;
+			} else if (objectClassAsString.equals("default")) {
+
 			} else {
 				throw new RuntimeException("Unknown object class " + objectClassAsString);
 			}
