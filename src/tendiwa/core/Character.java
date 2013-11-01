@@ -4,6 +4,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
+import org.tendiwa.events.EventAttack;
+import org.tendiwa.events.EventMove;
 import tendiwa.core.meta.Coordinate;
 import tendiwa.core.meta.Utils;
 
@@ -48,7 +50,7 @@ public Character(HorizontalPlane plane, CharacterType characterType, int x, int 
 
 /* Actions */
 protected void attack(Character aim) {
-	timeStream.addEvent(ServerEvents.create("meleeAttack", "[" + id + "," + aim.id + "]"));
+	timeStream.fireEvent(new EventAttack(aim));
 	aim.getDamage(7, DamageType.PLAIN);
 	moveTime(500);
 }
@@ -56,7 +58,7 @@ protected void attack(Character aim) {
 protected void shootMissile(int toX, int toY, ItemPile missile) {
 	loseItem(missile);
 	Coordinate end = getRayEnd(toX, toY);
-	timeStream.addEvent(ServerEvents.create("missileFlight", "[" + x + "," + y + "," + end.x + "," + end.y + "," + 1 + "]"));
+	timeStream.fireEvent(ServerEvents.create("missileFlight", "[" + x + "," + y + "," + end.x + "," + end.y + "," + 1 + "]"));
 	plane.addItem(missile, end.x, end.y);
 	Cell aimCell = plane.getCell(toX, toY);
 	if (aimCell.character() != null) {
@@ -67,7 +69,7 @@ protected void shootMissile(int toX, int toY, ItemPile missile) {
 protected void shootMissile(int toX, int toY, UniqueItem item) {
 	loseItem(item);
 	Coordinate end = getRayEnd(toX, toY);
-	timeStream.addEvent(ServerEvents.create("missileFlight", "[" + x + "," + y + "," + end.x + "," + end.y + "," + item.getType().getId() + "]"));
+	timeStream.fireEvent(ServerEvents.create("missileFlight", "[" + x + "," + y + "," + end.x + "," + end.y + "," + item.getType().getId() + "]"));
 	plane.addItem(item, end.x, end.y);
 	Cell aimCell = plane.getCell(toX, toY);
 	if (aimCell.character() != null) {
@@ -76,7 +78,7 @@ protected void shootMissile(int toX, int toY, UniqueItem item) {
 }
 
 protected void castSpell(int spellId, int x, int y) {
-	timeStream.addEvent(ServerEvents.create("spellCast", "[" + id + "," + spellId + "," + x + "," + y + "]"));
+	timeStream.fireEvent(ServerEvents.create("spellCast", "[" + id + "," + spellId + "," + x + "," + y + "]"));
 	moveTime(500);
 	// TODO Implement spellcasting
 	throw new Error("Not implemented!");
@@ -90,7 +92,7 @@ protected void die() {
 	isAlive = false;
 	timeStream.claimCharacterDisappearance(this);
 	plane.getChunkWithCell(x, y).removeCharacter(this);
-	timeStream.addEvent(ServerEvents.create("death", "[" + id + "]"));
+	timeStream.fireEvent(ServerEvents.create("death", "[" + id + "]"));
 }
 
 protected void putOn(UniqueItem item, boolean omitEvent) {
@@ -100,7 +102,7 @@ protected void putOn(UniqueItem item, boolean omitEvent) {
 	if (!omitEvent) {
 		// Sending for mobs. Sending for players is in
 		// PlayerCharacter.putOn()
-		timeStream.addEvent(ServerEvents.create("putOn", "[" + id + "," + item.id + "]"));
+		timeStream.fireEvent(ServerEvents.create("putOn", "[" + id + "," + item.id + "]"));
 	}
 	moveTime(500);
 }
@@ -108,7 +110,7 @@ protected void putOn(UniqueItem item, boolean omitEvent) {
 protected void takeOff(UniqueItem item) {
 	body.takeOff(item);
 	inventory.add(item);
-	getTimeStream().addEvent(ServerEvents.create("takeOff", "[" + id + "," + item.id + "]"));
+	getTimeStream().fireEvent(ServerEvents.create("takeOff", "[" + id + "," + item.id + "]"));
 	moveTime(500);
 }
 
@@ -116,7 +118,7 @@ protected void takeOff(UniqueItem item) {
  * Pick up an item lying on the same cell where the character stands.
  */
 protected void pickUp(ItemPile pile) {
-	timeStream.addEvent(ServerEvents.create("pickUp", "[" + id + "," + pile.getType().getId() + "," + pile.getAmount() + "]"));
+	timeStream.fireEvent(ServerEvents.create("pickUp", "[" + id + "," + pile.getType().getId() + "," + pile.getAmount() + "]"));
 	getItem(pile);
 	plane.removeItem(pile, x, y);
 	moveTime(500);
@@ -126,7 +128,7 @@ protected void pickUp(ItemPile pile) {
  * Pick up an item lying on the same cell where the character stands.
  */
 protected void pickUp(UniqueItem item) {
-	timeStream.addEvent(ServerEvents.create("pickUp", "[" + id + "," + item.getType().getId() + "," + item.id + "]"));
+	timeStream.fireEvent(ServerEvents.create("pickUp", "[" + id + "," + item.getType().getId() + "," + item.id + "]"));
 	getItem(item);
 	Chunk chunk = plane.getChunkWithCell(x, y);
 	chunk.removeItem(item, x - chunk.getX(), y - chunk.getY());
@@ -137,7 +139,7 @@ protected void drop(UniqueItem item) {
 	loseItem(item);
 	Chunk chunk = plane.getChunkWithCell(x, y);
 	chunk.addItem(item, x - chunk.getX(), y - chunk.getY());
-	timeStream.addEvent(ServerEvents.create("drop", "[" + id + "," + item.getType().getId() + "," + item.id + "]"));
+	timeStream.fireEvent(ServerEvents.create("drop", "[" + id + "," + item.getType().getId() + "," + item.id + "]"));
 	moveTime(500);
 }
 
@@ -145,35 +147,35 @@ protected void drop(ItemPile pile) {
 	loseItem(pile);
 	Chunk chunk = plane.getChunkWithCell(x, y);
 	chunk.addItem(pile, x - chunk.getX(), y - chunk.getY());
-	timeStream.addEvent(ServerEvents.create("pickUp", "[" + id + "," + pile.getType().getId() + "," + pile.getAmount() + "]"));
+	timeStream.fireEvent(ServerEvents.create("pickUp", "[" + id + "," + pile.getType().getId() + "," + pile.getAmount() + "]"));
 	moveTime(500);
 }
 
 protected void takeFromContainer(ItemPile pile, Container container) {
 	getItem(pile);
 	container.removePile(pile);
-	timeStream.addEvent(ServerEvents.create("takeFromContainer", "[" + id + "," + pile.getType().getId() + "," + pile.getAmount() + "," + x + "," + y + "]"));
+	timeStream.fireEvent(ServerEvents.create("takeFromContainer", "[" + id + "," + pile.getType().getId() + "," + pile.getAmount() + "," + x + "," + y + "]"));
 	moveTime(500);
 }
 
 protected void takeFromContainer(UniqueItem item, Container container) {
 	getItem(item);
 	container.removeUnique(item);
-	timeStream.addEvent(ServerEvents.create("takeFromContainer", "[" + id + "," + item.getType().getId() + "," + item.id + "," + x + "," + y + "]"));
+	timeStream.fireEvent(ServerEvents.create("takeFromContainer", "[" + id + "," + item.getType().getId() + "," + item.id + "," + x + "," + y + "]"));
 	moveTime(500);
 }
 
 protected void putToContainer(ItemPile pile, Container container) {
 	loseItem(pile);
 	container.add(pile);
-	timeStream.addEvent(ServerEvents.create("putToContainer", "[" + id + "," + pile.getType().getId() + "," + pile.getAmount() + "," + x + "," + y + "]"));
+	timeStream.fireEvent(ServerEvents.create("putToContainer", "[" + id + "," + pile.getType().getId() + "," + pile.getAmount() + "," + x + "," + y + "]"));
 	moveTime(500);
 }
 
 protected void putToContainer(UniqueItem item, Container container) {
 	loseItem(item);
 	container.add(item);
-	timeStream.addEvent(ServerEvents.create("putToContainer", "[" + id + "," + item.getType().getId() + "," + item.id + "," + x + "," + y + "]"));
+	timeStream.fireEvent(ServerEvents.create("putToContainer", "[" + id + "," + item.getType().getId() + "," + item.id + "," + x + "," + y + "]"));
 	moveTime(500);
 }
 
@@ -183,7 +185,7 @@ protected void useObject(int x, int y) {
 	} else {
 		throw new Error("Trying to use an object that is not a door");
 	}
-	timeStream.addEvent(ServerEvents.create("useObject", "[" + id + "," + x + "," + y + "]"));
+	timeStream.fireEvent(ServerEvents.create("useObject", "[" + id + "," + x + "," + y + "]"));
 	moveTime(500);
 }
 
@@ -208,7 +210,7 @@ protected void makeSound(SoundType type) {
 
 protected void enterState(CharacterState state) {
 	this.state = state;
-	timeStream.addEvent(ServerEvents.create("enterState", "[" + id + "," + state.state2int() + "]"));
+	timeStream.fireEvent(ServerEvents.create("enterState", "[" + id + "," + state.state2int() + "]"));
 }
 
 	/* Special actions */
@@ -244,7 +246,7 @@ protected void changePlaces(Character character) {
 	changeEnergy(-30);
 	// This event is needed for client to correctly
 	// handle characters' new positions in Terrain.cells
-	timeStream.addEvent(ServerEvents.create("changePlaces", "[" + id + "," + character.id + "]"));
+	timeStream.fireEvent(ServerEvents.create("changePlaces", "[" + id + "," + character.id + "]"));
 	moveTime(500);
 }
 
@@ -254,7 +256,7 @@ protected void scream() {
 
 protected void jump(int x, int y) {
 	move(x, y);
-	timeStream.addEvent(ServerEvents.create("jump", "[" + id + "]"));
+	timeStream.fireEvent(ServerEvents.create("jump", "[" + id + "]"));
 	changeEnergy(-40);
 	moveTime(500);
 }
@@ -640,19 +642,19 @@ public void move(int x, int y) {
 	this.y = y;
 	plane.getCell(x, y).character(this);
 	plane.getCell(x, y).setPassability(TerrainBasics.PASSABILITY_SEE);
-	timeStream.addEvent(ServerEvents.create("move", "[" + id + "," + x + "," + y + "]"));
+	timeStream.fireEvent(new EventMove(x, y, this));
 	timeStream.notifyNeighborsVisiblilty(this);
 }
 
 public void getDamage(int amount, DamageType type) {
-	timeStream.addEvent(ServerEvents.create("damage", "[" + id + "," + amount + "," + type.type2int() + "]"));
+	timeStream.fireEvent(ServerEvents.create("damage", "[" + id + "," + amount + "," + type.type2int() + "]"));
 }
 
 protected void changeEnergy(int amount) {
 	amount = Math.min(amount, maxEp - ep);
 	if (amount != 0) {
 		ep += amount;
-		timeStream.addEvent(ServerEvents.create("changeEnergy", "[" + id + "," + ep + "]"));
+		timeStream.fireEvent(ServerEvents.create("changeEnergy", "[" + id + "," + ep + "]"));
 	} else {
 		if (state == CharacterState.RUNNING) {
 			enterState(CharacterState.DEFAULT);
@@ -666,7 +668,7 @@ protected void removeEffect(CharacterEffect effect) {
 
 public void getItem(UniqueItem item) {
 	inventory.add(item);
-	timeStream.addEvent(ServerEvents.create("getItem", "[" + id + "," + item.getType().getId() + "," + item.id + "]"));
+	timeStream.fireEvent(ServerEvents.create("getItem", "[" + id + "," + item.getType().getId() + "," + item.id + "]"));
 }
 
 public void eventlessGetItem(UniqueItem item) {
@@ -679,13 +681,13 @@ public void eventlessGetItem(ItemPile pile) {
 
 public void getItem(ItemPile pile) {
 	inventory.add(pile);
-	timeStream.addEvent(ServerEvents.create("getItem", "[" + id + "," + pile.getType().getId() + "," + pile.getAmount() + "]"));
+	timeStream.fireEvent(ServerEvents.create("getItem", "[" + id + "," + pile.getType().getId() + "," + pile.getAmount() + "]"));
 }
 
 public void loseItem(UniqueItem item) {
 	if (inventory.hasUnique(item.id)) {
 		inventory.removeUnique(item);
-		timeStream.addEvent(ServerEvents.create("loseItem", "[" + id + "," + item.getType().getId() + "," + item.id + "]"));
+		timeStream.fireEvent(ServerEvents.create("loseItem", "[" + id + "," + item.getType().getId() + "," + item.id + "]"));
 	} else {
 		throw new Error("An attempt to lose an item width id "
 			+ item.id
@@ -695,7 +697,7 @@ public void loseItem(UniqueItem item) {
 
 public void loseItem(ItemPile pile) {
 	inventory.removePile(pile);
-	timeStream.addEvent(ServerEvents.create("loseItem", "[" + id + "," + pile.getType().getId() + "," + pile.getAmount() + "]"));
+	timeStream.fireEvent(ServerEvents.create("loseItem", "[" + id + "," + pile.getType().getId() + "," + pile.getAmount() + "]"));
 }
 
 public void addEffect(int effectId, int duration, int modifier) {
@@ -703,12 +705,12 @@ public void addEffect(int effectId, int duration, int modifier) {
 		removeEffect(effectId);
 	}
 	effects.put(effectId, new Character.Effect(effectId, duration, modifier));
-	timeStream.addEvent(ServerEvents.create("effectStart", "[" + id + "," + effectId + "]"));
+	timeStream.fireEvent(ServerEvents.create("effectStart", "[" + id + "," + effectId + "]"));
 }
 
 public void removeEffect(int effectId) {
 	effects.remove(effectId);
-	timeStream.addEvent(ServerEvents.create("effectEnd", "[" + id + "," + effectId + "]"));
+	timeStream.fireEvent(ServerEvents.create("effectEnd", "[" + id + "," + effectId + "]"));
 }
 
 protected void moveTime(int amount) {

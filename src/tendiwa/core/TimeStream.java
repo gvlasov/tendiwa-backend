@@ -1,5 +1,7 @@
 package tendiwa.core;
 
+import org.tendiwa.events.Event;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -64,8 +66,7 @@ public HashSet<Character> getCharacters() {
 	return characters;
 }
 
-public void addEvent(ServerEvent event) {
-	// Main.console("add event "+event);
+public void fireEvent(Event event) {
 	events.add(event);
 }
 
@@ -114,7 +115,7 @@ public void removeCharacter(NonPlayerCharacter character) {
 }
 
 public void makeSound(int x, int y, SoundType type) {
-	addEvent(ServerEvents.create("sound", new Sound(x, y, type)));
+	fireEvent(ServerEvents.create("sound", new Sound(x, y, type)));
 }
 
 public Character getCharacterById(int characterId) {
@@ -160,7 +161,7 @@ public Character next() {
 void addChunk(Chunk chunk) {
 	chunk.setTimeStream(this);
 	chunks.add(chunk);
-	addEvent(ServerEvents.create("chunkContents", chunk));
+	fireEvent(ServerEvents.create("chunkContents", chunk));
 }
 
 public void excludeChunk(Chunk chunk) {
@@ -169,7 +170,7 @@ public void excludeChunk(Chunk chunk) {
 	}
 	chunks.remove(chunk);
 	chunk.setTimeStream(null);
-	addEvent(ServerEvents.create("excludeChunk", "[" + chunk.x + "," + chunk.y + "]"));
+	fireEvent(ServerEvents.create("excludeChunk", "[" + chunk.x + "," + chunk.y + "]"));
 }
 
 /**

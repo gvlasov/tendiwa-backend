@@ -48,7 +48,7 @@ public class PlayerHandler extends PlayerCharacter {
 		// Inform all characters who are on global map right now that
 		// this character has left
 		isAuthorized = false;
-//		timeStream.addEvent(new EventDeauthorization(characterId));
+//		timeStream.fireEvent(new EventDeauthorization(characterId));
 //		timeStream.flushEvents();
 	}
 	public void authorize() {

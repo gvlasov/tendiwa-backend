@@ -1,12 +1,12 @@
 package org.tendiwa.events;
 import tendiwa.core.Character;
 
-public class EventMove {
+public class EventMove implements Event {
 final Character character;
 final int x;
 final int y;
 
-EventMove(int x, int y, Character character) {
+public EventMove(int x, int y, Character character) {
 	this.x = x;
 	this.y = y;
 	this.character = character;

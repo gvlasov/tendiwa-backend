@@ -68,7 +68,7 @@ protected NonPlayerCharacter createCharacter(int relX, int relY, int characterTy
 	nonPlayerCharacters.add(character);
 	cells[relX][relY].character(character);
 		/*
-		 * timeStream.addEvent(new EventCharacterAppear( character.getId(),
+		 * timeStream.fireEvent(new EventCharacterAppear( character.getId(),
 		 * character.x, character.y, character.getType().getId(),
 		 * character.name, character.getEffects(), character.getEquipment(),
 		 * character.getFraction()));
@@ -115,12 +115,12 @@ void removeCharacter(Character character) {
 
 public void setFloor(int x, int y, int type) {
 	super.setFloor(x, y, type);
-	timeStream.addEvent(ServerEvents.create("floorChange", "[" + type + "," + (this.x + x) + "," + (this.y + y) + "]"));
+	timeStream.fireEvent(ServerEvents.create("floorChange", "[" + type + "," + (this.x + x) + "," + (this.y + y) + "]"));
 }
 
 public void setObject(int x, int y, int type) {
 	super.setObject(x, y, type);
-	timeStream.addEvent(ServerEvents.create("objectAppear", "[" + type + "," + (this.x + x) + "," + (this.y + y) + "]"));
+	timeStream.fireEvent(ServerEvents.create("objectAppear", "[" + type + "," + (this.x + x) + "," + (this.y + y) + "]"));
 	for (NonPlayerCharacter ch : nonPlayerCharacters) {
 		if (ch.initialCanSee(x, y)) {
 			ch.getVisibleEntities();
@@ -134,7 +134,7 @@ public void setObject(Coordinate c, int type) {
 
 public void removeObject(int x, int y) {
 	super.removeObject(x, y);
-	timeStream.addEvent(ServerEvents.create("objectDisappear", "[" + (this.x + x) + "," + (this.y + y) + "]"));
+	timeStream.fireEvent(ServerEvents.create("objectDisappear", "[" + (this.x + x) + "," + (this.y + y) + "]"));
 	for (NonPlayerCharacter ch : nonPlayerCharacters) {
 		if (ch.initialCanSee(x, y)) {
 			ch.getVisibleEntities();
@@ -152,7 +152,7 @@ public void removeObject(int x, int y) {
  */
 public void addItem(UniqueItem item, int x, int y) {
 	super.addItem(item, x, y);
-	timeStream.addEvent(ServerEvents.create("itemAppear", "[" + item.getType().getId() + "," + item.id + "," + (this.x + x) + "," + (this.y + y) + "]"));
+	timeStream.fireEvent(ServerEvents.create("itemAppear", "[" + item.getType().getId() + "," + item.id + "," + (this.x + x) + "," + (this.y + y) + "]"));
 }
 
 /**
@@ -165,17 +165,17 @@ public void addItem(UniqueItem item, int x, int y) {
  */
 public void addItem(ItemPile pile, int x, int y) {
 	super.addItem(pile, x, y);
-	timeStream.addEvent(ServerEvents.create("itemDisappear", "[" + pile.getType().getId() + "," + pile.getAmount() + "," + (this.x + x) + "," + (this.y + y) + "]"));
+	timeStream.fireEvent(ServerEvents.create("itemDisappear", "[" + pile.getType().getId() + "," + pile.getAmount() + "," + (this.x + x) + "," + (this.y + y) + "]"));
 }
 
 public void removeItem(ItemPile pile, int x, int y) {
 	super.removeItem(pile, x, y);
-	timeStream.addEvent(ServerEvents.create("itemDisappear", "[" + pile.getType().getId() + "," + pile.getAmount() + "," + (this.x + x) + "," + (this.y + y) + "]"));
+	timeStream.fireEvent(ServerEvents.create("itemDisappear", "[" + pile.getType().getId() + "," + pile.getAmount() + "," + (this.x + x) + "," + (this.y + y) + "]"));
 }
 
 public void removeItem(UniqueItem item, int x, int y) {
 	super.removeItem(item, x, y);
-	timeStream.addEvent(ServerEvents.create("itemDisappear", "[" + item.getType().getId() + "," + item.id + "," + (this.x + x) + "," + (this.y + y) + "]"));
+	timeStream.fireEvent(ServerEvents.create("itemDisappear", "[" + item.getType().getId() + "," + item.id + "," + (this.x + x) + "," + (this.y + y) + "]"));
 }
 
 void setCharacter(int x, int y, int characterTypeId, int fraction) {
@@ -184,7 +184,7 @@ void setCharacter(int x, int y, int characterTypeId, int fraction) {
 
 public void createSoundSource(int x, int y, SoundType type) {
 	soundSources.add(new SoundSource(x, y, type, 1000));
-	timeStream.addEvent(ServerEvents.create("soundSourceAppear", "[" + type.getId() + "," + (this.x + x) + "," + (this.y + y) + "]"));
+	timeStream.fireEvent(ServerEvents.create("soundSourceAppear", "[" + type.getId() + "," + (this.x + x) + "," + (this.y + y) + "]"));
 }
 
 public void removeSoundSource(int x, int y) {
@@ -193,7 +193,7 @@ public void removeSoundSource(int x, int y) {
 		Sound s = soundSources.get(i);
 		if (s.x == x && s.y == y) {
 			soundSources.remove(i);
-			timeStream.addEvent(ServerEvents.create("soundSourceDisppear", "[" + 1 + "," + (this.x + x) + "," + (this.y + y) + "]"));
+			timeStream.fireEvent(ServerEvents.create("soundSourceDisppear", "[" + 1 + "," + (this.x + x) + "," + (this.y + y) + "]"));
 			return;
 		}
 	}

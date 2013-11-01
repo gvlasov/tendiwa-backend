@@ -74,7 +74,7 @@ public void move(int x, int y) {
 public void say(String message) {
 	// location message
 	Chat.locationMessage(this, message);
-	timeStream.addEvent(ServerEvents.create("chatMessage", "[" + id + "," + message + "]"));
+	timeStream.fireEvent(ServerEvents.create("chatMessage", "[" + id + "," + message + "]"));
 	timeStream.flushEvents();
 }
 

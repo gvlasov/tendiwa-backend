@@ -785,10 +785,10 @@ public class NonPlayerCharacter extends Character {
 		}
 		if (prevDP.isAnswerEnding(answerIndex)) {
 			// End dialogue
-			timeStream.addEvent(ServerEvents.create("dialogueEnd", ""+player.getId()));
+			timeStream.fireEvent(ServerEvents.create("dialogueEnd", "" + player.getId()));
 		} else {
 			// Continue dialogue
-			timeStream.addEvent(ServerEvents.create("dialoguePoint", "["+id+","+player.getId()+","+curDP.message+","+curDP.getAnswers().toArray(new String[0])+"]"));
+			timeStream.fireEvent(ServerEvents.create("dialoguePoint", "[" + id + "," + player.getId() + "," + curDP.message + "," + curDP.getAnswers().toArray(new String[0]) + "]"));
 		}
 	}
 
@@ -801,6 +801,6 @@ public class NonPlayerCharacter extends Character {
 		}
 
 		dialogues.put(player, startDP);
-		timeStream.addEvent(ServerEvents.create("dialoguePoint", "["+id+","+player.getId()+","+startDP.message+","+startDP.getAnswers().toArray(new String[0])+"]"));
+		timeStream.fireEvent(ServerEvents.create("dialoguePoint", "[" + id + "," + player.getId() + "," + startDP.message + "," + startDP.getAnswers().toArray(new String[0]) + "]"));
 	}
 }

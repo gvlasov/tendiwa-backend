@@ -36,7 +36,7 @@ final class ServerEvents {
 	 * @example 
 	 * ServerEvents.registerServerEventType("fart", "loudness", "flavor", "tone"); 
 	 * ServerEvent e = ServerEvents.createEvent("fart", new Loudness(100), new Flavor("mint"), new Tone("D#"));
-	 * timeStream.addEvent(e);
+	 * timeStream.fireEvent(e);
 	 * timeStream.flushEvents(); // Sends [{e:"fart", "loudness":100, "flavor": "mint", "tone":"D#"}] to clients
 	 */
 	public ServerEvents() {
