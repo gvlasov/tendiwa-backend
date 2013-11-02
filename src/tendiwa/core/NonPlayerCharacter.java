@@ -13,15 +13,15 @@ public class NonPlayerCharacter extends Character {
 	private int destY;
 	private Character activeEnemy; // Enemy in plain sight
 	private Character enemyToChase;
-	private HashSet<Character> unseenEnemies = new HashSet<Character>();
+	private HashSet<Character> unseenEnemies = new HashSet<>();
 	// private ArrayList<Item> seenItems = new ArrayList<Item>();
-	protected HashSet<Character> seenCharacters = new HashSet<Character>();
-	private final HashMap<Character, Coordinate> lastSeenEnemyCoord = new HashMap<Character, Coordinate>();
+	protected HashSet<Character> seenCharacters = new HashSet<>();
+	private final HashMap<Character, Coordinate> lastSeenEnemyCoord = new HashMap<>();
 
 	private int[][] pathTable;
 	
-	public ArrayList<CustomCharacterAction> customActions = new ArrayList<CustomCharacterAction>();
-	public HashMap<Character, DialoguePoint> dialogues = new HashMap<Character, DialoguePoint>();
+	public ArrayList<CustomCharacterAction> customActions = new ArrayList<>();
+	public HashMap<Character, DialoguePoint> dialogues = new HashMap<>();
 	private Dialogue dialogue;
 
 	public NonPlayerCharacter(HorizontalPlane plane, CharacterType characterType, int x, int y, String name) {
@@ -785,10 +785,10 @@ public class NonPlayerCharacter extends Character {
 		}
 		if (prevDP.isAnswerEnding(answerIndex)) {
 			// End dialogue
-			timeStream.fireEvent(ServerEvents.create("dialogueEnd", "" + player.getId()));
+			throw new UnsupportedOperationException();
 		} else {
 			// Continue dialogue
-			timeStream.fireEvent(ServerEvents.create("dialoguePoint", "[" + id + "," + player.getId() + "," + curDP.message + "," + curDP.getAnswers().toArray(new String[0]) + "]"));
+			throw new UnsupportedOperationException();
 		}
 	}
 
@@ -801,6 +801,6 @@ public class NonPlayerCharacter extends Character {
 		}
 
 		dialogues.put(player, startDP);
-		timeStream.fireEvent(ServerEvents.create("dialoguePoint", "[" + id + "," + player.getId() + "," + startDP.message + "," + startDP.getAnswers().toArray(new String[0]) + "]"));
+		throw new UnsupportedOperationException();
 	}
 }

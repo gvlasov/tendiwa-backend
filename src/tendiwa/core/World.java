@@ -17,7 +17,7 @@ public World(int width, int height) {
 
 public static World create(WorldDrawer worldDrawer, int width, int height) {
 	WorldRectangleBuilder builder = worldBuilder();
-	worldDrawer.draw(builder, width, height);
+	worldDrawer.drawWorld(builder, width, height);
 	World world = new World(width, height);
 	builder.done();
 	for (LocationPlace place : builder.rectanglesToPlaces.values()) {
@@ -61,6 +61,10 @@ public void setPlayerCharacter(PlayerCharacter playerCharacter) {
 }
 
 public PlayerCharacter getPlayerCharacter() {
+	assert playerCharacter != null;
 	return playerCharacter;
+}
+public void placePlayerCharacter(PlayerCharacter player, int x, int y) {
+	defaultPlane.placeCharacter(player, x, y);
 }
 }

@@ -196,4 +196,9 @@ public ItemCollection getItems(int x, int y) {
 	Chunk chunk = getChunkWithCell(x, y);
 	return chunk.getItems(x - chunk.x, y - chunk.y);
 }
+
+public void placeCharacter(Character character, int x, int y) {
+	Chunk chunk = getChunkWithCell(x, y);
+	chunk.addCharacter(character);
+}
 }

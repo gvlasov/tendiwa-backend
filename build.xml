@@ -10,7 +10,7 @@
             </fileset>
             <fileset file="src/tendiwa/core/schema.xsd"/>
             <manifest>
-                <attribute name="Main-Class" value="tendiwa.core.Main"/>
+                <attribute name="Main-Class" value="tendiwa.core.Tendiwa"/>
             </manifest>
         </jar>
     </target>

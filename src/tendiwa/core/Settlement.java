@@ -339,12 +339,6 @@ public class Settlement extends Location {
 					}
 				}
 			}
-			// for (int i=0;i<settlement.height; i++) {
-			// for (int j=0;j<settlement.width; j++) {
-			// Main.out(grid[j][i]);
-			// }
-			// Main.outln();
-			// }
 			for (Coordinate point : points) {
 				findQuarter(point, 1, 1);
 				findQuarter(point, 1, -1);

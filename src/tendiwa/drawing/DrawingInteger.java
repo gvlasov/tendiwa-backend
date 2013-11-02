@@ -15,7 +15,7 @@ public class DrawingInteger {
 	 * @param color
 	 *            Color of line
 	 * @return DrawingAlgorithm that draws that line when given an Integer to
-	 *         draw.
+	 *         drawWorld.
 	 */
 	public static DrawingAlgorithm<Integer> byOrientation(final Orientation orientation, final Color color) {
 		return new DrawingAlgorithm<Integer>() {

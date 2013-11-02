@@ -1,7 +1,5 @@
 package tendiwa.core;
 
-import org.tendiwa.events.Event;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -50,7 +48,6 @@ private HashSet<NonPlayerCharacter> nonPlayerCharacters = new HashSet<NonPlayerC
 /**
  * Events, accumulated here in this ArrayList each turn, ready to send out to clients.
  */
-private EventQueue events = new EventQueue();
 
 /**
  * Initiate a TimeStream around one PlayerCharacter.
@@ -59,20 +56,10 @@ private EventQueue events = new EventQueue();
  */
 public TimeStream(PlayerCharacter character) {
 	addCharacter(character);
-	events.clear();
 }
 
 public HashSet<Character> getCharacters() {
 	return characters;
-}
-
-public void fireEvent(Event event) {
-	events.add(event);
-}
-
-public void flushEvents() {
-	String data = events.serialize();
-	events.clear();
 }
 
 /**
@@ -115,7 +102,7 @@ public void removeCharacter(NonPlayerCharacter character) {
 }
 
 public void makeSound(int x, int y, SoundType type) {
-	fireEvent(ServerEvents.create("sound", new Sound(x, y, type)));
+	throw new UnsupportedOperationException();
 }
 
 public Character getCharacterById(int characterId) {
@@ -161,7 +148,7 @@ public Character next() {
 void addChunk(Chunk chunk) {
 	chunk.setTimeStream(this);
 	chunks.add(chunk);
-	fireEvent(ServerEvents.create("chunkContents", chunk));
+//	throw new UnsupportedOperationException();
 }
 
 public void excludeChunk(Chunk chunk) {
@@ -170,7 +157,7 @@ public void excludeChunk(Chunk chunk) {
 	}
 	chunks.remove(chunk);
 	chunk.setTimeStream(null);
-	fireEvent(ServerEvents.create("excludeChunk", "[" + chunk.x + "," + chunk.y + "]"));
+	throw new UnsupportedOperationException();
 }
 
 /**
@@ -179,7 +166,7 @@ public void excludeChunk(Chunk chunk) {
  * @return A set of characters that are close enough to this character.
  */
 public HashSet<NonPlayerCharacter> getNearbyNonPlayerCharacters(Character character) {
-	HashSet<NonPlayerCharacter> answer = new HashSet<NonPlayerCharacter>();
+	HashSet<NonPlayerCharacter> answer = new HashSet<>();
 	for (NonPlayerCharacter neighbor : nonPlayerCharacters) {
 		// Quickly select characters that could be seen (including this Seer
 		// itself)

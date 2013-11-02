@@ -19,12 +19,12 @@ public final class TestCanvasBuilder {
 
 	/**
 	 * Tells this builder what algorithm will be used in
-	 * {@link TestCanvas#draw(Object)} to draw a particular class of objects.
+	 * {@link TestCanvas#draw(Object)} to drawWorld a particular class of objects.
 	 * 
 	 * @param type
 	 *            Class of objects that may be drawn.
 	 * @param algorithm
-	 *            Algorithm that will be used by default to draw those objects.
+	 *            Algorithm that will be used by default to drawWorld those objects.
 	 */
 	public <T> TestCanvasBuilder setDefaultDrawingAlgorithmForClass(Class<T> type, DrawingAlgorithm<T> algorithm) {
 		defaultDrawingAlgorithms.put(type, algorithm);

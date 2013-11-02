@@ -3,7 +3,7 @@ package tendiwa.drawing;
 import java.util.HashMap;
 
 /**
- * This static field class contains {@link DrawingAlgorithm}s that each {@link TestCanvas} uses to draw objects if no
+ * This static field class contains {@link DrawingAlgorithm}s that each {@link TestCanvas} uses to raw objects if no
  * other algorithm was specified by API user for those object classes.
  *
  * @author suseika

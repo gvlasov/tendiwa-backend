@@ -78,32 +78,8 @@ protected NonPlayerCharacter createCharacter(int relX, int relY, int characterTy
 	return character;
 }
 
-void addCharacter(PlayerCharacter ch, Portal portal) {
-	/**
-	 * Adds character near portal. Portal is portal object not in this
-	 * location, but in location character came from.
-	 */
-	Coordinate spawn = portal.getAnotherEnd();
-	boolean freeSpaceFound = false;
-	both:
-	for (int dx = -1; dx < 2; dx++) {
-		/**
-		 * Search for free space near portal
-		 */
-		for (int dy = -1; dy < 2; dy++) {
-			if (cells[spawn.x + dx][spawn.y + dy].getPassability() == PASSABILITY_FREE) {
-				spawn.move(spawn.x + dx, spawn.y + dy);
-				freeSpaceFound = true;
-				break both;
-			}
-		}
-	}
-	if (!freeSpaceFound) {
-		throw new Error("Free space not found");
-	}
-	cells[spawn.x][spawn.y].character(ch);
-	ch.x = spawn.x;
-	ch.y = spawn.y;
+void addCharacter(Character ch) {
+	cells[ch.x - x][ch.y - y].character(ch);
 	characters.add(ch);
 }
 
@@ -115,17 +91,17 @@ void removeCharacter(Character character) {
 
 public void setFloor(int x, int y, int type) {
 	super.setFloor(x, y, type);
-	timeStream.fireEvent(ServerEvents.create("floorChange", "[" + type + "," + (this.x + x) + "," + (this.y + y) + "]"));
+	throw new UnsupportedOperationException();
 }
 
 public void setObject(int x, int y, int type) {
 	super.setObject(x, y, type);
-	timeStream.fireEvent(ServerEvents.create("objectAppear", "[" + type + "," + (this.x + x) + "," + (this.y + y) + "]"));
 	for (NonPlayerCharacter ch : nonPlayerCharacters) {
 		if (ch.initialCanSee(x, y)) {
 			ch.getVisibleEntities();
 		}
 	}
+	throw new UnsupportedOperationException();
 }
 
 public void setObject(Coordinate c, int type) {
@@ -134,12 +110,12 @@ public void setObject(Coordinate c, int type) {
 
 public void removeObject(int x, int y) {
 	super.removeObject(x, y);
-	timeStream.fireEvent(ServerEvents.create("objectDisappear", "[" + (this.x + x) + "," + (this.y + y) + "]"));
 	for (NonPlayerCharacter ch : nonPlayerCharacters) {
 		if (ch.initialCanSee(x, y)) {
 			ch.getVisibleEntities();
 		}
 	}
+	throw new UnsupportedOperationException();
 }
 
 /**
@@ -152,7 +128,7 @@ public void removeObject(int x, int y) {
  */
 public void addItem(UniqueItem item, int x, int y) {
 	super.addItem(item, x, y);
-	timeStream.fireEvent(ServerEvents.create("itemAppear", "[" + item.getType().getId() + "," + item.id + "," + (this.x + x) + "," + (this.y + y) + "]"));
+	throw new UnsupportedOperationException();
 }
 
 /**
@@ -165,17 +141,17 @@ public void addItem(UniqueItem item, int x, int y) {
  */
 public void addItem(ItemPile pile, int x, int y) {
 	super.addItem(pile, x, y);
-	timeStream.fireEvent(ServerEvents.create("itemDisappear", "[" + pile.getType().getId() + "," + pile.getAmount() + "," + (this.x + x) + "," + (this.y + y) + "]"));
+	throw new UnsupportedOperationException();
 }
 
 public void removeItem(ItemPile pile, int x, int y) {
 	super.removeItem(pile, x, y);
-	timeStream.fireEvent(ServerEvents.create("itemDisappear", "[" + pile.getType().getId() + "," + pile.getAmount() + "," + (this.x + x) + "," + (this.y + y) + "]"));
+	throw new UnsupportedOperationException();
 }
 
 public void removeItem(UniqueItem item, int x, int y) {
 	super.removeItem(item, x, y);
-	timeStream.fireEvent(ServerEvents.create("itemDisappear", "[" + item.getType().getId() + "," + item.id + "," + (this.x + x) + "," + (this.y + y) + "]"));
+	throw new UnsupportedOperationException();
 }
 
 void setCharacter(int x, int y, int characterTypeId, int fraction) {
@@ -184,7 +160,7 @@ void setCharacter(int x, int y, int characterTypeId, int fraction) {
 
 public void createSoundSource(int x, int y, SoundType type) {
 	soundSources.add(new SoundSource(x, y, type, 1000));
-	timeStream.fireEvent(ServerEvents.create("soundSourceAppear", "[" + type.getId() + "," + (this.x + x) + "," + (this.y + y) + "]"));
+	throw new UnsupportedOperationException();
 }
 
 public void removeSoundSource(int x, int y) {
@@ -193,8 +169,8 @@ public void removeSoundSource(int x, int y) {
 		Sound s = soundSources.get(i);
 		if (s.x == x && s.y == y) {
 			soundSources.remove(i);
-			timeStream.fireEvent(ServerEvents.create("soundSourceDisppear", "[" + 1 + "," + (this.x + x) + "," + (this.y + y) + "]"));
-			return;
+			throw new UnsupportedOperationException();
+//			return;
 		}
 	}
 	throw new Error("Sound source at " + x + ":" + y + " not found");

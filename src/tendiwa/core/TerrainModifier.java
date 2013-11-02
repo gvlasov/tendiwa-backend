@@ -67,7 +67,7 @@ public void drawInnerBorders(PlaceableInCell placeable) {
 	for (EnhancedRectangle r1 : rs.getRectangles()) {
 		/*
 		 * Look at each side of each rectangle if there is an inner border to
-		 * draw.
+		 * drawWorld.
 		 */
 		for (CardinalDirection side : CardinalDirection.ALL) {
 			ArrayList<EnhancedRectangle> rectanglesFromThatSide = new ArrayList<>(rs.getRectanglesCloseToSideOrBorder(r1, side));

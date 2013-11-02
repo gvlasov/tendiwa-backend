@@ -49,7 +49,7 @@ public static void main(String[] args) throws IOException {
 	// for (RectangleArea r : neighbors) {
 	// trail.addNextRectangle(r);
 	// }
-	// draw(trail);
+	// drawWorld(trail);
 }
 
 }

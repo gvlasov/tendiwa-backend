@@ -149,7 +149,7 @@ public final class TestCanvas {
      * beginning of some drawing method, and with the default layer in the end of that method.
      *
      * @param layer
-     *         The layer to draw on.
+     *         The layer to drawWorld on.
      */
 
     private void setLayer(Layer layer) {
@@ -182,9 +182,9 @@ public final class TestCanvas {
      * Draws an object on this test canvas using a particular algorithm, on a particular {@link Layer}.
      *
      * @param what
-     *         an object to draw.
+     *         an object to drawWorld.
      * @param how
-     *         an algorithm to draw the object.
+     *         an algorithm to drawWorld the object.
      * @param where
      *         a layer on which the object will be drawn.
      */
@@ -200,9 +200,9 @@ public final class TestCanvas {
      * TestCanvas#DEFAULT_LAYER}.
      *
      * @param what
-     *         an object to draw.
+     *         an object to drawWorld.
      * @param how
-     *         an algorithm to draw the object.
+     *         an algorithm to drawWorld the object.
      */
     public <T> void draw(T what, DrawingAlgorithm<? super T> how) {
         how.canvas = this;
@@ -223,15 +223,15 @@ public final class TestCanvas {
 
     /**
      * <p> Draws an object on this TestCanvas on its default layer using a predefined default algorithm. </p> <p> This
-     * overloading of {@code draw} method is intended to be the most convenient to API users for drawing objects on a
+     * overloading of {@code drawWorld} method is intended to be the most convenient to API users for drawing objects on a
      * canvas. However, if you need runtime safety, you'd probably better use {@link TestCanvas#draw(Object,
      * DrawingAlgorithm, Layer)}, because it specifies the exact drawing algorithm, and thus won't throw any exceptions.
      * </p>
      *
      * @param what
-     *         an object to draw.
+     *         an object to drawWorld.
      * @throws IllegalArgumentException
-     *         if {@code what} can't be drawn because TestCanvas doesn't know of any default algorithm to draw objects
+     *         if {@code what} can't be drawn because TestCanvas doesn't know of any default algorithm to drawWorld objects
      *         of {@code what} 's class.
      * @see TestCanvasBuilder#setDefaultDrawingAlgorithmForClass(Class, DrawingAlgorithm)
      */
@@ -263,7 +263,7 @@ public final class TestCanvas {
         }
         if (classOfWhat == null) {
             throw new IllegalArgumentException(
-                    "This TestCanvas doesn't know of any default DrawingAlgorithm to draw a " + what
+                    "This TestCanvas doesn't know of any default DrawingAlgorithm to drawWorld a " + what
                             .getClass()
                             .getCanonicalName());
         }

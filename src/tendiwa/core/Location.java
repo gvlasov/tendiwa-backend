@@ -107,17 +107,17 @@ public ArrayList<Coordinate> getCircle(int cx, int cy, int r) {
 }
 
 /**
- * Uses a {@link Segment} to draw a rectangle. This method is almost identical to {@link Location#square(int, int, int,
+ * Uses a {@link Segment} to drawWorld a rectangle. This method is almost identical to {@link Location#square(int, int, int,
  * int, PlaceableInCell)}, it is just more convenient to use when Segments are often used. The drawn rectangle's
  * top-left cell will be {segment.x;segment.y}.
  *
  * @param segment
- * 	A segment of cells to draw.
+ * 	A segment of cells to drawWorld.
  * @param width
  * 	Defines width (if segment.getDirection() == DirectionToBERemoved.V) of height (if segment.getDirection() ==
  * 	DirectionToBERemoved.H) of the drawn rectangle.
  * @param placeable
- * 	What to draw in each cell
+ * 	What to drawWorld in each cell
  */
 public void drawSegment(Segment segment, int width, PlaceableInCell placeable) {
 	if (segment.getOrientation().isHorizontal()) {

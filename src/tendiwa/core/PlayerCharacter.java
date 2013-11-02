@@ -34,18 +34,6 @@ public PlayerCharacter(HorizontalPlane plane, int x, int y, String name, Charact
 	timeStream = new TimeStream(this);
 }
 
-/**
- * Creates a new PlayerCharacter to live in a particular World. This method is called from client only.
- *
- * @param world
- * @return
- */
-public static PlayerCharacter resideToWorld(World world, int x, int y, String name, CharacterType characterType) {
-	PlayerCharacter playerCharacter = new PlayerCharacter(world.defaultPlane, x, y, name, characterType, "warrior");
-	world.setPlayerCharacter(playerCharacter);
-	return playerCharacter;
-}
-
 /* Getters */
 public String toString() {
 	return name + " the " + cls;
@@ -74,8 +62,7 @@ public void move(int x, int y) {
 public void say(String message) {
 	// location message
 	Chat.locationMessage(this, message);
-	timeStream.fireEvent(ServerEvents.create("chatMessage", "[" + id + "," + message + "]"));
-	timeStream.flushEvents();
+	Tendiwa.getClient().event(new EventSay(message));
 }
 
 public void die() {
@@ -87,7 +74,6 @@ public void startConversation(int characterId) {
 	dialoguePartner = (NonPlayerCharacter) timeStream.getCharacterById(characterId);
 	if (dialoguePartner.hasDialogue()) {
 		dialoguePartner.applyConversationStarting(this);
-		timeStream.flushEvents();
 	}
 }
 
@@ -105,12 +91,11 @@ public void dialogueAnswer(int answerIndex) {
 	say(dialoguePartner.dialogues.get(this).getAnswerText(answerIndex));
 	dialoguePartner.proceedToNextDialoguePoint(this, answerIndex);
 	moveTime(500);
-	getTimeStream().flushEvents();
 }
 
 /* Data */
 public Set<Chunk> getClosestChunks() {
-	Set<Chunk> answer = new HashSet<Chunk>();
+	Set<Chunk> answer = new HashSet<>();
 	Chunk playerChunk = plane.getChunkWithCell(x, y);
 	answer.add(playerChunk);
 	answer.add(plane.getChunkByCoord(playerChunk.getX() - Chunk.SIZE, playerChunk.getY() - Chunk.SIZE));

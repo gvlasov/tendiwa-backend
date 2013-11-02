@@ -81,7 +81,7 @@ public static DrawingAlgorithm<RectangleSystem> neighborsUnionsAndRectangles(fin
 //			for (EnhancedRectangle r : rs) {
 //				for (CardinalDirection dir : CardinalDirection.values()) {
 //					for (Segment segment : rs.getOuterSegmentsOf(r, dir)) {
-//						canvas.draw(segment);
+//						canvas.drawWorld(segment);
 //					}
 //				}
 //			}

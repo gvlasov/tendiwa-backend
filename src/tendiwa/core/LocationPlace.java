@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Represents a place where user will draw a location. This class is supposed to hold properties assigned to it at the
+ * Represents a place where user will drawWorld a location. This class is supposed to hold properties assigned to it at the
  * world generation stage: {@link LocationFeature}, {@link PathSegment}s.
  */
 public class LocationPlace extends EnhancedRectangle {

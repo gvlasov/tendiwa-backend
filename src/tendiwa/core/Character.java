@@ -46,42 +46,43 @@ public Character(HorizontalPlane plane, CharacterType characterType, int x, int 
 	fraction = 0;
 	isAlive = true;
 	this.characterType = characterType;
+	this.x = x;
+	this.y = y;
 }
 
 /* Actions */
 protected void attack(Character aim) {
-	timeStream.fireEvent(new EventAttack(aim));
 	aim.getDamage(7, DamageType.PLAIN);
 	moveTime(500);
+	throw new UnsupportedOperationException();
 }
 
 protected void shootMissile(int toX, int toY, ItemPile missile) {
 	loseItem(missile);
 	Coordinate end = getRayEnd(toX, toY);
-	timeStream.fireEvent(ServerEvents.create("missileFlight", "[" + x + "," + y + "," + end.x + "," + end.y + "," + 1 + "]"));
 	plane.addItem(missile, end.x, end.y);
 	Cell aimCell = plane.getCell(toX, toY);
 	if (aimCell.character() != null) {
 		aimCell.character().getDamage(10, DamageType.PLAIN);
 	}
+	throw new UnsupportedOperationException();
 }
 
 protected void shootMissile(int toX, int toY, UniqueItem item) {
 	loseItem(item);
 	Coordinate end = getRayEnd(toX, toY);
-	timeStream.fireEvent(ServerEvents.create("missileFlight", "[" + x + "," + y + "," + end.x + "," + end.y + "," + item.getType().getId() + "]"));
 	plane.addItem(item, end.x, end.y);
 	Cell aimCell = plane.getCell(toX, toY);
 	if (aimCell.character() != null) {
 		aimCell.character().getDamage(10, DamageType.PLAIN);
 	}
+	throw new UnsupportedOperationException();
 }
 
 protected void castSpell(int spellId, int x, int y) {
-	timeStream.fireEvent(ServerEvents.create("spellCast", "[" + id + "," + spellId + "," + x + "," + y + "]"));
 	moveTime(500);
 	// TODO Implement spellcasting
-	throw new Error("Not implemented!");
+	throw new UnsupportedOperationException();
 }
 
 public void learnSpell(int spellId) {
@@ -92,17 +93,17 @@ protected void die() {
 	isAlive = false;
 	timeStream.claimCharacterDisappearance(this);
 	plane.getChunkWithCell(x, y).removeCharacter(this);
-	timeStream.fireEvent(ServerEvents.create("death", "[" + id + "]"));
+	throw new UnsupportedOperationException();
 }
 
 protected void putOn(UniqueItem item, boolean omitEvent) {
-	// Main put on function
+	// Tendiwa put on function
 	body.putOn(item);
 	inventory.removeUnique(item);
 	if (!omitEvent) {
 		// Sending for mobs. Sending for players is in
 		// PlayerCharacter.putOn()
-		timeStream.fireEvent(ServerEvents.create("putOn", "[" + id + "," + item.id + "]"));
+		throw new UnsupportedOperationException();
 	}
 	moveTime(500);
 }
@@ -110,73 +111,73 @@ protected void putOn(UniqueItem item, boolean omitEvent) {
 protected void takeOff(UniqueItem item) {
 	body.takeOff(item);
 	inventory.add(item);
-	getTimeStream().fireEvent(ServerEvents.create("takeOff", "[" + id + "," + item.id + "]"));
 	moveTime(500);
+	throw new UnsupportedOperationException();
 }
 
 /**
  * Pick up an item lying on the same cell where the character stands.
  */
 protected void pickUp(ItemPile pile) {
-	timeStream.fireEvent(ServerEvents.create("pickUp", "[" + id + "," + pile.getType().getId() + "," + pile.getAmount() + "]"));
 	getItem(pile);
 	plane.removeItem(pile, x, y);
 	moveTime(500);
+	throw new UnsupportedOperationException();
 }
 
 /**
  * Pick up an item lying on the same cell where the character stands.
  */
 protected void pickUp(UniqueItem item) {
-	timeStream.fireEvent(ServerEvents.create("pickUp", "[" + id + "," + item.getType().getId() + "," + item.id + "]"));
 	getItem(item);
 	Chunk chunk = plane.getChunkWithCell(x, y);
 	chunk.removeItem(item, x - chunk.getX(), y - chunk.getY());
 	moveTime(500);
+	throw new UnsupportedOperationException();
 }
 
 protected void drop(UniqueItem item) {
 	loseItem(item);
 	Chunk chunk = plane.getChunkWithCell(x, y);
 	chunk.addItem(item, x - chunk.getX(), y - chunk.getY());
-	timeStream.fireEvent(ServerEvents.create("drop", "[" + id + "," + item.getType().getId() + "," + item.id + "]"));
 	moveTime(500);
+	throw new UnsupportedOperationException();
 }
 
 protected void drop(ItemPile pile) {
 	loseItem(pile);
 	Chunk chunk = plane.getChunkWithCell(x, y);
 	chunk.addItem(pile, x - chunk.getX(), y - chunk.getY());
-	timeStream.fireEvent(ServerEvents.create("pickUp", "[" + id + "," + pile.getType().getId() + "," + pile.getAmount() + "]"));
 	moveTime(500);
+	throw new UnsupportedOperationException();
 }
 
 protected void takeFromContainer(ItemPile pile, Container container) {
 	getItem(pile);
 	container.removePile(pile);
-	timeStream.fireEvent(ServerEvents.create("takeFromContainer", "[" + id + "," + pile.getType().getId() + "," + pile.getAmount() + "," + x + "," + y + "]"));
 	moveTime(500);
+	throw new UnsupportedOperationException();
 }
 
 protected void takeFromContainer(UniqueItem item, Container container) {
 	getItem(item);
 	container.removeUnique(item);
-	timeStream.fireEvent(ServerEvents.create("takeFromContainer", "[" + id + "," + item.getType().getId() + "," + item.id + "," + x + "," + y + "]"));
 	moveTime(500);
+	throw new UnsupportedOperationException();
 }
 
 protected void putToContainer(ItemPile pile, Container container) {
 	loseItem(pile);
 	container.add(pile);
-	timeStream.fireEvent(ServerEvents.create("putToContainer", "[" + id + "," + pile.getType().getId() + "," + pile.getAmount() + "," + x + "," + y + "]"));
 	moveTime(500);
+	throw new UnsupportedOperationException();
 }
 
 protected void putToContainer(UniqueItem item, Container container) {
 	loseItem(item);
 	container.add(item);
-	timeStream.fireEvent(ServerEvents.create("putToContainer", "[" + id + "," + item.getType().getId() + "," + item.id + "," + x + "," + y + "]"));
 	moveTime(500);
+	throw new UnsupportedOperationException();
 }
 
 protected void useObject(int x, int y) {
@@ -185,8 +186,8 @@ protected void useObject(int x, int y) {
 	} else {
 		throw new Error("Trying to use an object that is not a door");
 	}
-	timeStream.fireEvent(ServerEvents.create("useObject", "[" + id + "," + x + "," + y + "]"));
 	moveTime(500);
+	throw new UnsupportedOperationException();
 }
 
 protected void idle() {
@@ -210,7 +211,7 @@ protected void makeSound(SoundType type) {
 
 protected void enterState(CharacterState state) {
 	this.state = state;
-	timeStream.fireEvent(ServerEvents.create("enterState", "[" + id + "," + state.state2int() + "]"));
+	throw new UnsupportedOperationException();
 }
 
 	/* Special actions */
@@ -246,8 +247,8 @@ protected void changePlaces(Character character) {
 	changeEnergy(-30);
 	// This event is needed for client to correctly
 	// handle characters' new positions in Terrain.cells
-	timeStream.fireEvent(ServerEvents.create("changePlaces", "[" + id + "," + character.id + "]"));
 	moveTime(500);
+	throw new UnsupportedOperationException();
 }
 
 protected void scream() {
@@ -256,9 +257,9 @@ protected void scream() {
 
 protected void jump(int x, int y) {
 	move(x, y);
-	timeStream.fireEvent(ServerEvents.create("jump", "[" + id + "]"));
 	changeEnergy(-40);
 	moveTime(500);
+	throw new UnsupportedOperationException();
 }
 
 protected void shieldBash(Character character) {
@@ -642,19 +643,19 @@ public void move(int x, int y) {
 	this.y = y;
 	plane.getCell(x, y).character(this);
 	plane.getCell(x, y).setPassability(TerrainBasics.PASSABILITY_SEE);
-	timeStream.fireEvent(new EventMove(x, y, this));
 	timeStream.notifyNeighborsVisiblilty(this);
+	Tendiwa.getClientEventManager().event(new EventMove(x, y, this));
 }
 
 public void getDamage(int amount, DamageType type) {
-	timeStream.fireEvent(ServerEvents.create("damage", "[" + id + "," + amount + "," + type.type2int() + "]"));
+	throw new UnsupportedOperationException();
 }
 
 protected void changeEnergy(int amount) {
 	amount = Math.min(amount, maxEp - ep);
 	if (amount != 0) {
 		ep += amount;
-		timeStream.fireEvent(ServerEvents.create("changeEnergy", "[" + id + "," + ep + "]"));
+		throw new UnsupportedOperationException();
 	} else {
 		if (state == CharacterState.RUNNING) {
 			enterState(CharacterState.DEFAULT);
@@ -668,7 +669,7 @@ protected void removeEffect(CharacterEffect effect) {
 
 public void getItem(UniqueItem item) {
 	inventory.add(item);
-	timeStream.fireEvent(ServerEvents.create("getItem", "[" + id + "," + item.getType().getId() + "," + item.id + "]"));
+	throw new UnsupportedOperationException();
 }
 
 public void eventlessGetItem(UniqueItem item) {
@@ -681,13 +682,13 @@ public void eventlessGetItem(ItemPile pile) {
 
 public void getItem(ItemPile pile) {
 	inventory.add(pile);
-	timeStream.fireEvent(ServerEvents.create("getItem", "[" + id + "," + pile.getType().getId() + "," + pile.getAmount() + "]"));
+	throw new UnsupportedOperationException();
 }
 
 public void loseItem(UniqueItem item) {
 	if (inventory.hasUnique(item.id)) {
 		inventory.removeUnique(item);
-		timeStream.fireEvent(ServerEvents.create("loseItem", "[" + id + "," + item.getType().getId() + "," + item.id + "]"));
+		throw new UnsupportedOperationException();
 	} else {
 		throw new Error("An attempt to lose an item width id "
 			+ item.id
@@ -697,7 +698,7 @@ public void loseItem(UniqueItem item) {
 
 public void loseItem(ItemPile pile) {
 	inventory.removePile(pile);
-	timeStream.fireEvent(ServerEvents.create("loseItem", "[" + id + "," + pile.getType().getId() + "," + pile.getAmount() + "]"));
+	throw new UnsupportedOperationException();
 }
 
 public void addEffect(int effectId, int duration, int modifier) {
@@ -705,12 +706,12 @@ public void addEffect(int effectId, int duration, int modifier) {
 		removeEffect(effectId);
 	}
 	effects.put(effectId, new Character.Effect(effectId, duration, modifier));
-	timeStream.fireEvent(ServerEvents.create("effectStart", "[" + id + "," + effectId + "]"));
+	throw new UnsupportedOperationException();
 }
 
 public void removeEffect(int effectId) {
 	effects.remove(effectId);
-	timeStream.fireEvent(ServerEvents.create("effectEnd", "[" + id + "," + effectId + "]"));
+	throw new UnsupportedOperationException();
 }
 
 protected void moveTime(int amount) {
