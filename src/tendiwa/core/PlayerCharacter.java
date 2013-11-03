@@ -60,9 +60,7 @@ public void move(int x, int y) {
 
 /* Actions */
 public void say(String message) {
-	// location message
-	Chat.locationMessage(this, message);
-	Tendiwa.getClient().event(new EventSay(message));
+	Tendiwa.getClient().getEventManager().event(new EventSay(message, this));
 }
 
 public void die() {

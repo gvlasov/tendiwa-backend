@@ -1,7 +1,7 @@
 package tendiwa.core;
 
 public class RequestWalk implements Request {
-private final CardinalDirection dir;
+private final Direction dir;
 
 @Override
 public void process() {
@@ -10,7 +10,7 @@ public void process() {
 	player.move(player.x+coords[0], player.y+coords[1]);
 }
 
-public RequestWalk(CardinalDirection dir) {
+public RequestWalk(Direction dir) {
 	this.dir = dir;
 }
 }
