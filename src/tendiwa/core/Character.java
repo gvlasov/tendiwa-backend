@@ -15,7 +15,7 @@ public abstract class Character implements PlaceableInCell, PathWalker, GsonForS
 public static final long serialVersionUID = 1832389411;
 public final static int FRACTION_NEUTRAL = -1, FRACTION_PLAYER = 1,
 	FRACTION_AGRESSIVE = 0;
-protected static final double VISION_RANGE = 8;
+protected static final double VISION_RANGE = 13;
 public final int id = new UniqueObject().id;
 public final ItemCollection inventory = new ItemCollection();
 protected final CharacterType characterType;
@@ -768,6 +768,11 @@ public boolean canStepOn(int x, int y) {
 		&& x < Tendiwa.getWorld().width
 		&& y < Tendiwa.getWorld().height
 		&& plane.getCell(x, y).getPassability() == TerrainBasics.Passability.FREE;
+}
+
+public boolean canSee(int x, int y) {
+//	return  EnhancedPoint.distance(x, y, this.x, this.y) < 7;
+	return initialCanSee(x, y);
 }
 
 /* Nested classes */

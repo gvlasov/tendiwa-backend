@@ -12,6 +12,7 @@ import java.util.Properties;
 
 public class Tendiwa {
 private static Tendiwa INSTANCE;
+private static AssociationChangeNotification clientEventManager;
 public final org.apache.log4j.Logger logger = Logger.getLogger("tendiwa");
 public final Server SERVER = Server.SERVER;
 public final TendiwaClient CLIENT;
@@ -20,7 +21,6 @@ private final String MODULES_CONF_FILE;
 private final String CLIENT_CONF_FILE;
 private final World WORLD;
 private final PlayerCharacter PLAYER;
-private static AssociationChangeNotification clientEventManager;
 
 Tendiwa(String args[]) throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException {
 	// Run game server and client.
@@ -111,4 +111,9 @@ public static Server getServer() {
 public static TendiwaClientEventManager getClientEventManager() {
 	return INSTANCE.CLIENT.getEventManager();
 }
+
+public static Logger getLogger() {
+	return INSTANCE.logger;
+}
+
 }

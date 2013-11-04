@@ -1,6 +1,6 @@
 package tendiwa.core;
 
-import static tendiwa.core.DSL.*;
+import static tendiwa.core.DSL.worldBuilder;
 
 public class World {
 
@@ -30,6 +30,7 @@ public static World create(WorldDrawer worldDrawer, int width, int height) {
 //	world.checkIfLocationPlacesFillAllWorld(builder);
 	return world;
 }
+
 public HorizontalPlane getDefaultPlane() {
 	return defaultPlane;
 }
@@ -56,15 +57,22 @@ public Cell[][] getCellContents() {
 	return defaultPlane.getCells(0, 0, width, height);
 }
 
-public void setPlayerCharacter(PlayerCharacter playerCharacter) {
-	this.playerCharacter = playerCharacter;
-}
-
 public PlayerCharacter getPlayerCharacter() {
 	assert playerCharacter != null;
 	return playerCharacter;
 }
+
+public void setPlayerCharacter(PlayerCharacter playerCharacter) {
+	this.playerCharacter = playerCharacter;
+}
+
 public void placePlayerCharacter(PlayerCharacter player, int x, int y) {
 	defaultPlane.placeCharacter(player, x, y);
+}
+public int getWidth() {
+	return width;
+}
+public int getHeight() {
+	return height;
 }
 }

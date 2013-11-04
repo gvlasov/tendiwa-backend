@@ -1,5 +1,6 @@
 package tendiwa.core;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
@@ -13,7 +14,7 @@ import java.util.Map;
  * wall segments
  */
 public class ObjectType implements PlaceableInCell, GsonForStaticDataSerializable {
-private static Map<Integer, ObjectType> byId = new HashMap<>();
+private final static Map<Integer, ObjectType> byId = new HashMap<>();
 public static final ObjectType VOID = new ObjectType();
 public static final int CLASS_DEFAULT = 0;
 public static final int CLASS_WALL = 1;
@@ -113,5 +114,13 @@ public enum ObjectClass {
 				throw new IllegalArgumentException();
 		}
 	}
+}
+
+/**
+ * Returns a map of object type ids to object types.
+ * @return Immutable map of ids to ObjectTypes.
+ */
+public static Map<Integer, ObjectType> getAll() {
+	return ImmutableMap.copyOf(byId);
 }
 }

@@ -138,4 +138,7 @@ public static boolean isNear(int startX, int startY, int endX, int endY) {
 	int ableY = Math.abs(startY - endY);
 	return (ableX == 1 && ableY == 0) || (ableY == 1 && ableX == 0) || (ableY == 1 && ableX == 1);
 }
+public static int distance(int startX, int startY, int endX, int endY) {
+	return (int) Math.sqrt(Math.pow(startX - endX, 2) + Math.pow(startY - endY, 2));
+}
 }
