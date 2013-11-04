@@ -7,8 +7,12 @@ import tendiwa.core.terrain.settlements.BuildingPlace;
 import java.awt.*;
 import java.util.*;
 
+/**
+ * Location is a rectangle of cells. API users write cell contents to Location calling its methods, and that fills up
+ * the {@link HorizontalPlane} this Location is on.
+ *
+ */
 public class Location extends TerrainBasics {
-public final String name;
 protected final int width;
 protected final int height;
 private HorizontalPlane plane;
@@ -16,7 +20,6 @@ private HorizontalPlane plane;
 Location(HorizontalPlane plane, int x, int y, int width, int height) {
 	super(x, y);
 	this.cells = plane.getCells(x, y, width, height);
-	this.name = "Empty location name!";
 	this.plane = plane;
 	this.width = width;
 	this.height = height;
@@ -57,7 +60,7 @@ public void square(Rectangle r, PlaceableInCell placeable, boolean fill) {
 
 public void square(int startX, int startY, int w, int h, PlaceableInCell placeable, boolean fill) {
 	if (startX + w > getWidth() || startY + h > getHeight()) {
-		throw new LocationException("Square " + startX + "," + startY + "," + w + "," + h + " goes out of borders of a "+getWidth()+"*"+getHeight()+" location");
+		throw new LocationException("Square " + startX + "," + startY + "," + w + "," + h + " goes out of borders of a " + getWidth() + "*" + getHeight() + " location");
 	}
 	if (w == 1) {
 		line(startX, startY, startX, startY + h - 1, placeable);
@@ -107,8 +110,8 @@ public ArrayList<Coordinate> getCircle(int cx, int cy, int r) {
 }
 
 /**
- * Uses a {@link Segment} to drawWorld a rectangle. This method is almost identical to {@link Location#square(int, int, int,
- * int, PlaceableInCell)}, it is just more convenient to use when Segments are often used. The drawn rectangle's
+ * Uses a {@link Segment} to drawWorld a rectangle. This method is almost identical to {@link Location#square(int, int,
+ * int, int, PlaceableInCell)}, it is just more convenient to use when Segments are often used. The drawn rectangle's
  * top-left cell will be {segment.x;segment.y}.
  *
  * @param segment
@@ -168,7 +171,7 @@ public CellCollection getCellCollection(ArrayList<Coordinate> cls) {
 }
 
 // From LocationGenerator
-public NonPlayerCharacter createCharacter(String type, int characterTypeId, int x, int y) {
+public NonPlayerCharacter createCharacter(String type, int characterTypeId, int x, int y, String name) {
 	NonPlayerCharacter ch = new NonPlayerCharacter(plane, StaticData.getCharacterType(characterTypeId), x, y, name);
 	characters.put(ch.getId(), ch);
 	cells[x][y].character(ch);
@@ -264,16 +267,16 @@ public ArrayList<Coordinate> polygon(ArrayList<Coordinate> coords, boolean mode)
 	return answer;
 }
 
-public void fillWithCells(int floorId, int objectId) {
+public void fillWithCells(FloorType floor, ObjectType object) {
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
-			setFloor(i, j, floorId);
-			setObject(i, j, objectId);
+			floor.place(cells[i][j]);
+			object.place(cells[i][j]);
 		}
 	}
 }
 
-public ArrayList<Coordinate> closeCells(int startX, int startY, int length, int pass, boolean noDiagonal) {
+public ArrayList<Coordinate> closeCells(int startX, int startY, int length, byte pass, boolean noDiagonal) {
 	ArrayList<Coordinate> oldFront = new ArrayList<Coordinate>();
 	ArrayList<Coordinate> newFront = new ArrayList<Coordinate>();
 	ArrayList<Coordinate> answer = new ArrayList<Coordinate>();
@@ -321,7 +324,7 @@ public ArrayList<Coordinate> closeCells(int startX, int startY, int length, int 
 					continue;
 				}
 
-				if (cells[thisNumX][thisNumY].getPassability() != pass) {
+				if (cells[thisNumX][thisNumY].getPassabilityByte() != pass) {
 					continue;
 				}
 				if (Math.floor(distance(startX, startY, thisNumX, thisNumY)) >= length) {
@@ -368,7 +371,6 @@ public ArrayList<Coordinate> getElementsAreaBorder(int startX, int startY, Place
 		oldFront = newFront;
 		newFront = new ArrayList<>();
 		for (int i = 0; i < oldFront.size(); i++) {
-			// ������� ����� �� ������ ��������� ������ �� ������ ������
 			int x = oldFront.get(i).x;
 			int y = oldFront.get(i).y;
 			for (int j = 0; j < numOfSides; j++) {
@@ -377,7 +379,6 @@ public ArrayList<Coordinate> getElementsAreaBorder(int startX, int startY, Place
 				if (thisNumX < 0 || thisNumX >= getWidth() || thisNumY < 0 || thisNumY >= getHeight() || pathTable[thisNumX][thisNumY] != 0 || distance(startX, startY, thisNumX, thisNumY) > depth) {
 					continue;
 				}
-				int currElemVal = getElement(thisNumX, thisNumY, placeable.getClass());
 				if (placeable.containedIn(this.cells[thisNumX][thisNumY]) && !(thisNumX == startX && thisNumY == startY)) {
 					pathTable[thisNumX][thisNumY] = t + 1;
 					newFront.add(new Coordinate(thisNumX, thisNumY));
@@ -478,7 +479,7 @@ public int[][] getPathTable(int startX, int startY, int endX, int endY, boolean 
 				if (thisNumX == endX && thisNumY == endY) {
 					isPathFound = true;
 				}
-				if (cells[thisNumX][thisNumY].getPassability() == TerrainBasics.PASSABILITY_FREE && !(thisNumX == startX && thisNumY == startY)) {
+				if (cells[thisNumX][thisNumY].getPassability() == Passability.FREE && !(thisNumX == startX && thisNumY == startY)) {
 					pathTable[thisNumX][thisNumY] = t + 1;
 					newFront.add(new Coordinate(thisNumX, thisNumY));
 				}
@@ -661,17 +662,6 @@ public void boldLine(int startX, int startY, int endX, int endY, PlaceableInCell
 	}
 }
 
-public void placeSeveralObjects(ArrayList<Integer> objects, int num, Rectangle r) {
-	// ���������� ��������� ��������
-	// in: objects - ������ � id ������ ��������
-	// num - ���������� ��������.
-	// r - �������������, � ������� ����������� �������
-	int size = objects.size();
-	for (int i = 0; i < num; i++) {
-		this.setObject(r.x + Chance.rand(0, r.width - 1), r.y + Chance.rand(0, r.height - 1), objects.get(Chance.rand(0, size - 1)));
-	}
-}
-
 public void drawPath(int startX, int startY, int endX, int endY, PlaceableInCell placeable) {
 	ArrayList<Coordinate> path = getPath(startX, startY, endX, endY, true);
 	int size = path.size();
@@ -684,8 +674,7 @@ protected CellCollection getCoast(int startX, int startY) {
 	int[][] pathTable = new int[getWidth()][getHeight()];
 	ArrayList<Coordinate> cells = new ArrayList<Coordinate>();
 	ArrayList<Coordinate> oldFront = new ArrayList<Coordinate>();
-	ArrayList<Coordinate> newFront = new ArrayList<Coordinate>();
-	// �� ����� ������ �������� ������
+	ArrayList<Coordinate> newFront = new ArrayList<>();
 	newFront.add(new Coordinate(startX, startY));
 	for (int i = 0; i < getWidth(); i++) {
 		for (int j = 0; j < getHeight(); j++) {
@@ -696,9 +685,8 @@ protected CellCollection getCoast(int startX, int startY) {
 	int t = 0;
 	do {
 		oldFront = newFront;
-		newFront = new ArrayList<Coordinate>();
+		newFront = new ArrayList<>();
 		for (int i = 0; i < oldFront.size(); i++) {
-			// ������� ����� �� ������ ��������� ������ �� ������ ������
 			int x = oldFront.get(i).x;
 			int y = oldFront.get(i).y;
 			int[] adjactentX = new int[]{x + 1, x, x, x - 1,};
@@ -709,10 +697,10 @@ protected CellCollection getCoast(int startX, int startY) {
 				if (thisNumX < 0 || thisNumX >= getWidth() || thisNumY < 0 || thisNumY >= getHeight() || pathTable[thisNumX][thisNumY] != 0) {
 					continue;
 				}
-				if (this.cells[thisNumX][thisNumY].getPassability() == 0 && !(thisNumX == startX && thisNumY == startY)) {
+				if (this.cells[thisNumX][thisNumY].getPassability() == Passability.NO && !(thisNumX == startX && thisNumY == startY)) {
 					pathTable[thisNumX][thisNumY] = t + 1;
 					newFront.add(new Coordinate(thisNumX, thisNumY));
-				} else if (this.cells[thisNumX][thisNumY].getPassability() != 0) {
+				} else if (this.cells[thisNumX][thisNumY].getPassability() != Passability.NO) {
 					cells.add(new Coordinate(x, y));
 				}
 			}
@@ -727,7 +715,7 @@ public ArrayList<Coordinate> getCellsAroundCell(int x, int y) {
 	int x1[] = {x, x + 1, x + 1, x + 1, x, x - 1, x - 1, x - 1};
 	int y1[] = {y - 1, y - 1, y, y + 1, y + 1, y + 1, y, y - 1};
 	for (int i = 0; i < 8; i++) {
-		if (cells[x1[i]][y1[i]].getPassability() == PASSABILITY_FREE) {
+		if (cells[x1[i]][y1[i]].getPassability() == Passability.FREE) {
 			answer.add(new Coordinate(x1[i], y1[i]));
 		}
 	}
@@ -801,7 +789,7 @@ public void fillRectangle(Rectangle r, PlaceableInCell placeable) {
 	 * Fill rectngle with objects randomly. chance% of cells will be filled
 	 * with these objects.
 	 */
-	int x = 0 ;
+	int x = 0;
 	int y = 0;
 	try {
 		for (x = r.x; x < r.x + r.width; x++) {

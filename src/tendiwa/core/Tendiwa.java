@@ -49,7 +49,7 @@ Tendiwa(String args[]) throws ClassNotFoundException, IllegalAccessException, In
 	WorldProvider worldProvider = (WorldProvider) modulesCreatingWorlds.get(0).newInstance();
 	Server.SERVER.setWorld(worldProvider);
 	if (SERVER.getWorld().getPlayerCharacter() == null) {
-		throw new RuntimeException("WorldProvider module did not specify the initial of PlayerCharacter");
+		throw new RuntimeException("WorldProvider module did not specify the initial position of PlayerCharacter");
 	}
 
 	// Initializing client

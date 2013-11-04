@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
-import org.tendiwa.events.EventAttack;
 import org.tendiwa.events.EventMove;
 import tendiwa.core.meta.Coordinate;
 import tendiwa.core.meta.Utils;
@@ -12,7 +11,7 @@ import tendiwa.core.meta.Utils;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public abstract class Character implements PlaceableInCell, GsonForStaticDataSerializable {
+public abstract class Character implements PlaceableInCell, PathWalker, GsonForStaticDataSerializable {
 public static final long serialVersionUID = 1832389411;
 public final static int FRACTION_NEUTRAL = -1, FRACTION_PLAYER = 1,
 	FRACTION_AGRESSIVE = 0;
@@ -21,7 +20,7 @@ public final int id = new UniqueObject().id;
 public final ItemCollection inventory = new ItemCollection();
 protected final CharacterType characterType;
 protected final String name;
-protected final HashMap<Integer, Character.Effect> effects = new HashMap<Integer, Character.Effect>();
+protected final HashMap<Integer, Character.Effect> effects = new HashMap<>();
 protected Body body;
 protected int actionPoints;
 protected int ep;
@@ -180,16 +179,6 @@ protected void putToContainer(UniqueItem item, Container container) {
 	throw new UnsupportedOperationException();
 }
 
-protected void useObject(int x, int y) {
-	if (plane.getCell(x, y).isDoor()) {
-		plane.openDoor(x, y);
-	} else {
-		throw new Error("Trying to use an object that is not a door");
-	}
-	moveTime(500);
-	throw new UnsupportedOperationException();
-}
-
 protected void idle() {
 	moveTime(500);
 }
@@ -228,7 +217,7 @@ protected void push(Character character, Direction side) {
 	int[] d = side.side2d();
 	int nx = character.x + d[0];
 	int ny = character.y + d[1];
-	if (plane.getCell(nx, ny).getPassability() == TerrainBasics.PASSABILITY_FREE) {
+	if (plane.getCell(nx, ny).getPassability() == TerrainBasics.Passability.FREE) {
 		int bufX = character.x;
 		int bufY = character.y;
 		character.move(nx, ny);
@@ -288,14 +277,14 @@ public boolean initialCanSee(int x, int y) {
 		if (x == this.x) {
 			int dy = Math.abs(y - this.y) / (y - this.y);
 			for (int i = this.y + dy; i != y; i += dy) {
-				if (plane.getCell(x, i).getPassability() == 1) {
+				if (plane.getCell(x, i).getPassability() == TerrainBasics.Passability.NO) {
 					return false;
 				}
 			}
 		} else {
 			int dx = Math.abs(x - this.x) / (x - this.x);
 			for (int i = this.x + dx; i != x; i += dx) {
-				if (plane.getCell(i, y).getPassability() == 1) {
+				if (plane.getCell(i, y).getPassability() == TerrainBasics.Passability.NO) {
 					return false;
 				}
 			}
@@ -305,7 +294,7 @@ public boolean initialCanSee(int x, int y) {
 		int yMin = Math.min(y, this.y);
 		int yMax = Math.max(y, this.y);
 		for (int i = yMin + 1; i < yMax; i++) {
-			if (plane.getCell(x, i).getPassability() == 1) {
+			if (plane.getCell(x, i).getPassability() == TerrainBasics.Passability.NO) {
 				break;
 			}
 			if (i == yMax - 1) {
@@ -313,7 +302,7 @@ public boolean initialCanSee(int x, int y) {
 			}
 		}
 		for (int i = yMin + 1; i < yMax; i++) {
-			if (plane.getCell(this.x, i).getPassability() == 1) {
+			if (plane.getCell(this.x, i).getPassability() == TerrainBasics.Passability.NO) {
 				break;
 			}
 			if (i == yMax - 1) {
@@ -325,7 +314,7 @@ public boolean initialCanSee(int x, int y) {
 		int xMin = Math.min(x, this.x);
 		int xMax = Math.max(x, this.x);
 		for (int i = xMin + 1; i < xMax; i++) {
-			if (plane.getCell(i, y).getPassability() == 1) {
+			if (plane.getCell(i, y).getPassability() == TerrainBasics.Passability.NO) {
 				break;
 			}
 			if (i == xMax - 1) {
@@ -333,7 +322,7 @@ public boolean initialCanSee(int x, int y) {
 			}
 		}
 		for (int i = xMin + 1; i < xMax; i++) {
-			if (plane.getCell(i, this.y).getPassability() == 1) {
+			if (plane.getCell(i, this.y).getPassability() == TerrainBasics.Passability.NO) {
 				break;
 			}
 			if (i == xMax - 1) {
@@ -350,7 +339,7 @@ public boolean initialCanSee(int x, int y) {
 		for (int i = 1; i < dMax; i++) {
 			cx += dx;
 			cy += dy;
-			if (plane.getCell(cx, cy).getPassability() == 1) {
+			if (plane.getCell(cx, cy).getPassability() == TerrainBasics.Passability.NO) {
 				return false;
 			}
 
@@ -382,7 +371,7 @@ public boolean initialCanSee(int x, int y) {
 				double yStart = start[j][1];
 				for (Coordinate c : rays) {
 					try {
-						if (plane.getCell(c.x, c.y).getPassability() == 1) {
+						if (plane.getCell(c.x, c.y).getPassability() == TerrainBasics.Passability.NO) {
 							if (c.x == x && c.y == y || c.x == x
 								&& c.y == y) {
 								continue;
@@ -417,14 +406,14 @@ public Coordinate getRayEnd(int endX, int endY) {
 		if (endX == this.x) {
 			int dy = Math.abs(endY - this.y) / (endY - this.y);
 			for (int i = this.y + dy; i != endY + dy; i += dy) {
-				if (plane.getCell(endX, i).getPassability() != TerrainBasics.PASSABILITY_FREE) {
+				if (plane.getCell(endX, i).getPassability() != TerrainBasics.Passability.FREE) {
 					return new Coordinate(endX, i - dy);
 				}
 			}
 		} else {
 			int dx = Math.abs(endX - this.x) / (endX - this.x);
 			for (int i = this.x + dx; i != endX + dx; i += dx) {
-				if (plane.getCell(i, endY).getPassability() != TerrainBasics.PASSABILITY_FREE) {
+				if (plane.getCell(i, endY).getPassability() != TerrainBasics.Passability.FREE) {
 					return new Coordinate(i - dx, endY);
 				}
 			}
@@ -434,7 +423,7 @@ public Coordinate getRayEnd(int endX, int endY) {
 		int dy = Math.abs(endY - this.y) / (endY - this.y);
 		int y1 = endY, y2 = endY;
 		for (int i = this.y + dy; i != endY + dy; i += dy) {
-			if (plane.getCell(endX, i).getPassability() != TerrainBasics.PASSABILITY_FREE) {
+			if (plane.getCell(endX, i).getPassability() != TerrainBasics.Passability.FREE) {
 				y1 = i - dy;
 				break;
 			}
@@ -443,7 +432,7 @@ public Coordinate getRayEnd(int endX, int endY) {
 			}
 		}
 		for (int i = this.y + dy; i != endY + dy; i += dy) {
-			if (plane.getCell(this.x, i).getPassability() != TerrainBasics.PASSABILITY_FREE) {
+			if (plane.getCell(this.x, i).getPassability() != TerrainBasics.Passability.FREE) {
 				y2 = i - dy;
 				break;
 			}
@@ -456,14 +445,14 @@ public Coordinate getRayEnd(int endX, int endY) {
 		}
 		if (answer.x == this.x
 			&& answer.y == y2
-			&& plane.getCell(endX, endY).getPassability() == TerrainBasics.PASSABILITY_FREE) {
+			&& plane.getCell(endX, endY).getPassability() == TerrainBasics.Passability.FREE) {
 			// If answer is the furthest cell on the same line, but
 			// {endX:endY} is free
 			answer.x = endX;
 			answer.y = endY;
 		} else if (answer.x == this.x
 			&& answer.y == y2
-			&& plane.getCell(endX, endY).getPassability() == TerrainBasics.PASSABILITY_NO) {
+			&& plane.getCell(endX, endY).getPassability() == TerrainBasics.Passability.NO) {
 			// If answer is the furthest cell on the same line, and
 			// {endX:endY} has no passage
 			answer.y = endY - dy;
@@ -473,7 +462,7 @@ public Coordinate getRayEnd(int endX, int endY) {
 		int dx = Math.abs(endX - this.x) / (endX - this.x);
 		int x1 = endX, x2 = endX;
 		for (int i = this.x + dx; i != endX + dx; i += dx) {
-			if (plane.getCell(i, endY).getPassability() != TerrainBasics.PASSABILITY_FREE) {
+			if (plane.getCell(i, endY).getPassability() != TerrainBasics.Passability.FREE) {
 				x1 = i - dx;
 				break;
 			}
@@ -482,7 +471,7 @@ public Coordinate getRayEnd(int endX, int endY) {
 			}
 		}
 		for (int i = this.x + dx; i != endX + dx; i += dx) {
-			if (plane.getCell(i, this.y).getPassability() != TerrainBasics.PASSABILITY_FREE) {
+			if (plane.getCell(i, this.y).getPassability() != TerrainBasics.Passability.FREE) {
 				x2 = i - dx;
 				break;
 			}
@@ -495,14 +484,14 @@ public Coordinate getRayEnd(int endX, int endY) {
 		}
 		if (answer.x == x2
 			&& answer.y == this.y
-			&& plane.getCell(endX, endY).getPassability() == TerrainBasics.PASSABILITY_FREE) {
+			&& plane.getCell(endX, endY).getPassability() == TerrainBasics.Passability.FREE) {
 			// If answer is the furthest cell on the same line, but
 			// {endX:endY} is free
 			answer.x = endX;
 			answer.y = endY;
 		} else if (answer.x == x2
 			&& answer.y == this.y
-			&& plane.getCell(endX, endY).getPassability() == TerrainBasics.PASSABILITY_NO) {
+			&& plane.getCell(endX, endY).getPassability() == TerrainBasics.Passability.NO) {
 			// If answer is the furthest cell on the same line, and
 			// {endX:endY} has no passage
 			answer.x = endX - dx;
@@ -518,7 +507,7 @@ public Coordinate getRayEnd(int endX, int endY) {
 		for (int i = 1; i <= dMax; i++) {
 			cx += dx;
 			cy += dy;
-			if (plane.getCell(cx, cy).getPassability() == 1) {
+			if (plane.getCell(cx, cy).getPassability() == TerrainBasics.Passability.NO) {
 				return new Coordinate(cx - dx, cy - dy);
 			}
 
@@ -553,7 +542,7 @@ public Coordinate getRayEnd(int endX, int endY) {
 				double yStart = start[j][1];
 				for (Coordinate c : rays) {
 					try {
-						if (plane.getCell(c.x, c.y).getPassability() == 1) {
+						if (plane.getCell(c.x, c.y).getPassability() == TerrainBasics.Passability.NO) {
 							if (Math.abs(((yStart - yEnd) * c.x
 								+ (xEnd - xStart) * c.y + (xStart
 								* yEnd - yStart * xEnd))
@@ -581,14 +570,14 @@ public Coordinate getRayEnd(int endX, int endY) {
 
 public Coordinate[] rays(int startX, int startY, int endX, int endY) {
 	return Utils.concatAll(
-		TerrainBasics.vector(startX, startY, endX, endY), TerrainBasics
-		.vector(startX, startY + (endY > startY ? 1 : -1), endX
-			+ (endX > startX ? -1 : 1), endY),
-		TerrainBasics.vector(startX + (endX > startX ? 1 : -1), startY,
-			endX, endY + (endY > startY ? -1 : 1)));
+		TerrainBasics.vector(startX, startY, endX, endY),
+		TerrainBasics.vector(startX, startY + (endY > startY ? 1 : -1), endX + (endX > startX ? -1 : 1), endY),
+		TerrainBasics.vector(startX + (endX > startX ? 1 : -1), startY, endX, endY + (endY > startY ? -1 : 1))
+	);
 }
 
 /* Getters */
+
 public int hashCode() {
 	return id;
 }
@@ -637,12 +626,12 @@ public String getName() {
  */
 public void move(int x, int y) {
 	plane.getCell(this.x, this.y).setPassability(
-		TerrainBasics.PASSABILITY_FREE);
+		TerrainBasics.Passability.FREE);
 	plane.getCell(this.x, this.y).character(false);
 	this.x = x;
 	this.y = y;
 	plane.getCell(x, y).character(this);
-	plane.getCell(x, y).setPassability(TerrainBasics.PASSABILITY_SEE);
+	plane.getCell(x, y).setPassability(TerrainBasics.Passability.SEE);
 	timeStream.notifyNeighborsVisiblilty(this);
 	Tendiwa.getClientEventManager().event(new EventMove(x, y, this));
 }
@@ -740,29 +729,8 @@ public boolean isEnemy(Character ch) {
 	return ch.fraction != fraction;
 }
 
-/* Data */
-public String jsonGetEffects() {
-	return "[]";
-}
-
-public String jsonGetEquipment() {
-	return body.toJson();
-}
-
-public int[] getEffects() {
-	return new int[0];
-}
-
-public int[][] getEquipment() {
-	return new int[0][2];
-}
-
 public TimeStream getTimeStream() {
 	return timeStream;
-}
-
-public void setTimeStream(TimeStream timeStream) {
-	this.timeStream = timeStream;
 }
 
 public int getX() {
@@ -791,6 +759,15 @@ public void place(Cell cell) {
 @Override
 public boolean containedIn(Cell cell) {
 	return cell.character == this;
+}
+
+@Override
+public boolean canStepOn(int x, int y) {
+	return x >= 0
+		&& y >= 0
+		&& x < Tendiwa.getWorld().width
+		&& y < Tendiwa.getWorld().height
+		&& plane.getCell(x, y).getPassability() == TerrainBasics.Passability.FREE;
 }
 
 /* Nested classes */

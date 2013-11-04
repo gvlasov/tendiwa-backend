@@ -12,22 +12,22 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 
 public class CharacterType implements GsonForStaticDataSerializable {
-	private static int lastId = 0;
-	private int id;
+	private static short nextId = 0;
+	private short id;
 	private Set<CharacterAspect> aspects;
 	private String name;
 	private double weight;
 	private double height;
 	private DirectedGraph<BodyPartTypeInstance, DefaultEdge> bodyGraph;
 	public CharacterType(String name, Set<CharacterAspect> aspects, double weight, double height) {
-		this.id = ++lastId;
+		this.id = nextId++;
 		this.name = name;
 		this.aspects = aspects;
 		this.weight = weight;
 		this.height = height;
 		this.bodyGraph = bodyGraph;
 	}
-	public int getId() {
+	public short getId() {
 		return id;
 	}
 	/**

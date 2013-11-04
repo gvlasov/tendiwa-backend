@@ -67,18 +67,14 @@ public class CellCollection {
 			hasCells = false;
 		}
 	}
-	public void setFloor(int val) {
-		for (Coordinate coo : cells) {
-			location.setFloor(coo.x, coo.y, val);
-		}
-	}
 	public void clear() {
 		Chance ch10 = new Chance(10);
 		for (Coordinate coo : cells) {
 			if (ch10.roll()) {
 				continue;
 			}
-			location.setObject(coo.x, coo.y, StaticData.VOID);
+			location.removeObject(coo.x, coo.y);
+
 		}
 	}
 	/**
@@ -108,7 +104,7 @@ public class CellCollection {
 			}
 			int cellIndex = Chance.rand(0, cells.size()-1);
 			Coordinate cell = cells.get(cellIndex);
-			location.setObject(cell.x, cell.y, type.getId());
+			type.place(location.cells[cell.x][cell.y]);
 			unsetCell(cell);
 		}
 	}
@@ -151,13 +147,13 @@ public class CellCollection {
 		unsetCell(cell);
 		return cell;
 	}
-	public Coordinate setObjectAndReport(int val) {
+	public Coordinate setObjectAndReport(ObjectType objectType) {
 		if (!hasCells) {
 			throw new Error("No more cells");
 		}
 		int cellIndex = Chance.rand(0, cells.size()-1);
 		Coordinate cell = cells.get(cellIndex);
-		location.setObject(cell.x, cell.y, val);
+		objectType.place(location.cells[cell.x][cell.y]);
 		unsetCell(cell);
 		return cell;
 	}

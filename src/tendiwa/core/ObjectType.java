@@ -14,35 +14,44 @@ import java.util.Map;
  */
 public class ObjectType implements PlaceableInCell, GsonForStaticDataSerializable {
 private static Map<Integer, ObjectType> byId = new HashMap<>();
-public static final ObjectType VOID = new ObjectType("void", 0, false, 0);
+public static final ObjectType VOID = new ObjectType();
 public static final int CLASS_DEFAULT = 0;
 public static final int CLASS_WALL = 1;
 public static final int CLASS_DOOR = 2;
 public static final int CLASS_INTERLEVEL = 3;
-private final UniqueObject uniqueness = new UniqueObject();
+private static short nextIdToAssign = 0;
 private final String name;
-private final int passability;
+private final byte passability;
 private final boolean isUsable;
-private final int cls;
+private final ObjectClass cls;
+private final short id;
 
-public ObjectType(String name, int passability, boolean isUsable, int cls ) {
-	super();
+public ObjectType(String name, int passability, boolean isUsable, int cls) {
 	this.name = name;
-	this.passability = passability;
+	this.passability = (byte) passability;
 	this.isUsable = isUsable;
-	this.cls = cls;
-	ObjectType.byId.put(uniqueness.id, this);
+	this.cls = ObjectClass.getById(cls);
+	this.id = nextIdToAssign++;
+	ObjectType.byId.put((int) id, this);
+}
+
+/**
+ * Constructor for void object type.
+ */
+private ObjectType() {
+	this("void", TerrainBasics.Passability.FREE.value(), false, 0);
+	assert nextIdToAssign == 1;
 }
 
 public static ObjectType getById(int id) {
 	return byId.get(id);
 }
 
-public int getObjectClass() {
+public ObjectClass getObjectClass() {
 	return cls;
 }
 
-public int getPassability() {
+public byte getPassability() {
 	return passability;
 }
 
@@ -54,8 +63,8 @@ public String getName() {
 	return name;
 }
 
-public int getId() {
-	return uniqueness.id;
+public short getId() {
+	return id;
 }
 
 @Override
@@ -68,12 +77,13 @@ public JsonElement serialize(JsonSerializationContext context) {
 
 @Override
 public void place(Cell cell) {
-	cell.object = uniqueness.id;
+	cell.object = id;
+	cell.setPassability(passability);
 }
 
 @Override
 public boolean containedIn(Cell cell) {
-	return cell.object == uniqueness.id;
+	return cell.object == id;
 }
 
 @Override
@@ -81,7 +91,27 @@ public String toString() {
 	return name;
 }
 
-public boolean isWall() {
-	return cls == CLASS_WALL;
+public enum ObjectClass {
+	DEFAULT(0), WALL(1), DOOR(2), INTERLEVEL(3);
+	private final short value;
+
+	private ObjectClass(int value) {
+		this.value = (short) value;
+	}
+
+	public static ObjectClass getById(int cls) {
+		switch (cls) {
+			case 0:
+				return DEFAULT;
+			case 1:
+				return WALL;
+			case 2:
+				return DOOR;
+			case 3:
+				return INTERLEVEL;
+			default:
+				throw new IllegalArgumentException();
+		}
+	}
 }
 }

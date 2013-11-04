@@ -7,14 +7,14 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 
 public class SoundType implements GsonForStaticDataSerializable {
-	private int lastSoundId = 0;
+	private short nextSoundId = 0;
 	private String name;
 	private int bass;
 	private int mid;
 	private int treble;
-	private int id;
+	private short id;
 	public SoundType(String name, int bass, int mid, int treble) {
-		this.id = ++lastSoundId;
+		this.id = nextSoundId++;
 		this.name = name;
 		this.bass = bass;
 		this.mid = mid;
@@ -44,7 +44,7 @@ public class SoundType implements GsonForStaticDataSerializable {
 	public int getTreble() {
 		return treble;
 	}
-	public int getId() {
+	public short getId() {
 		return id;
 	}
 	@Override

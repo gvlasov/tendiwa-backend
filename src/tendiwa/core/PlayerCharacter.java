@@ -27,7 +27,7 @@ public PlayerCharacter(HorizontalPlane plane, int x, int y, String name, Charact
 	super(plane, race, x, y, name);
 	this.cls = cls;
 	this.plane = plane;
-	this.plane.getCell(x, y).setPassability(TerrainBasics.PASSABILITY_SEE);
+	this.plane.getCell(x, y).setPassability(TerrainBasics.Passability.SEE);
 	maxEp = 100;
 	ep = 100;
 	fraction = 1;
@@ -115,4 +115,5 @@ public JsonElement serialize(JsonSerializationContext context) {
 	jArray.add(new JsonPrimitive(cls));
 	return jArray;
 }
+
 }

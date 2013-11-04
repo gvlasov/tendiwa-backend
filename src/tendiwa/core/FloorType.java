@@ -9,14 +9,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class FloorType implements PlaceableInCell, GsonForStaticDataSerializable {
-private static Map<Integer, FloorType> byId = new HashMap<>();
+private static Map<Short, FloorType> byId = new HashMap<>();
 private final String name;
-private final UniqueObject uniqueness;
+private final short id;
+private static short lastId = 0;
 
 public FloorType(String name) {
-	uniqueness = new UniqueObject();
-	byId.put(uniqueness.id, this);
 	this.name = name;
+	this.id = lastId++;
+	byId.put(id, this);
 }
 
 @Override
@@ -30,21 +31,21 @@ public String getName() {
 	return name;
 }
 
-public int getId() {
-	return uniqueness.id;
+public short getId() {
+	return id;
 }
 
 @Override
 public void place(Cell cell) {
-	cell.floor(uniqueness.id);
+	cell.floor(id);
 }
 
 @Override
 public boolean containedIn(Cell cell) {
-	return cell.floor == uniqueness.id;
+	return cell.floor == id;
 }
 
 public static FloorType getById(int floorId) {
-	return byId.get(floorId);
+	return byId.get((short)floorId);
 }
 }

@@ -21,18 +21,18 @@ public class StaticData implements GsonForStaticDataSerializable {
 	 * {@link TerrainBasics#setObject(int, int, int)}.
 	 */
 	public static final int VOID = -1;
-	final HashMap<Integer, Material> materials = new HashMap<>();
-	final HashMap<Integer, SoundType> soundTypes = new HashMap<>();
-	final HashMap<Integer, ItemType> itemTypes = new HashMap<>();
-	final HashMap<Integer, CharacterType> characterTypes = new HashMap<>();
-	final HashMap<Integer, FloorType> floorTypes = new HashMap<>();
-	final HashMap<Integer, ObjectType> objectTypes = new HashMap<>();
+	final HashMap<Short, Material> materials = new HashMap<>();
+	final HashMap<Short, SoundType> soundTypes = new HashMap<>();
+	final HashMap<Short, ItemType> itemTypes = new HashMap<>();
+	final HashMap<Short, CharacterType> characterTypes = new HashMap<>();
+	final HashMap<Short, FloorType> floorTypes = new HashMap<>();
+	final HashMap<Short, ObjectType> objectTypes = new HashMap<>();
 	private final HashMap<String, Material> materialsByName = new HashMap<>();
-	final HashMap<String, FloorType> floorTypesByName = new HashMap<>();
-	final HashMap<String, CharacterType> characterTypesByName = new HashMap<>();
-	final HashMap<String, ItemType> itemTypesByName = new HashMap<>();
-	final HashMap<String, ObjectType> objectTypesByName = new HashMap<>();
-	final HashMap<Integer, SoundType> soundTypesByName = new HashMap<>();
+	private final HashMap<String, FloorType> floorTypesByName = new HashMap<>();
+	private final HashMap<String, CharacterType> characterTypesByName = new HashMap<>();
+	private final HashMap<String, ItemType> itemTypesByName = new HashMap<>();
+	private final HashMap<String, ObjectType> objectTypesByName = new HashMap<>();
+	private final HashMap<Integer, SoundType> soundTypesByName = new HashMap<>();
 	public static final StaticData instance = new StaticData();
 	/*
 	 * Types of ObjectTypes passabilities. Complex types like "visual and 

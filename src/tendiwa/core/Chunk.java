@@ -84,28 +84,14 @@ void addCharacter(Character ch) {
 }
 
 void removeCharacter(Character character) {
-	cells[character.x - x][character.y - y].setPassability(PASSABILITY_FREE);
+	cells[character.x - x][character.y - y].setPassability(Passability.FREE);
 	cells[character.x - x][character.y - y].character(false);
 	characters.remove(character);
 }
 
-public void setFloor(int x, int y, int type) {
-	super.setFloor(x, y, type);
+public void place(int x, int y, PlaceableInCell type) {
+	type.place(cells[x][y]);
 	throw new UnsupportedOperationException();
-}
-
-public void setObject(int x, int y, int type) {
-	super.setObject(x, y, type);
-	for (NonPlayerCharacter ch : nonPlayerCharacters) {
-		if (ch.initialCanSee(x, y)) {
-			ch.getVisibleEntities();
-		}
-	}
-	throw new UnsupportedOperationException();
-}
-
-public void setObject(Coordinate c, int type) {
-	setObject(c.x, c.y, type);
 }
 
 public void removeObject(int x, int y) {
@@ -152,10 +138,6 @@ public void removeItem(ItemPile pile, int x, int y) {
 public void removeItem(UniqueItem item, int x, int y) {
 	super.removeItem(item, x, y);
 	throw new UnsupportedOperationException();
-}
-
-void setCharacter(int x, int y, int characterTypeId, int fraction) {
-	createCharacter(x, y, characterTypeId, "", 0);
 }
 
 public void createSoundSource(int x, int y, SoundType type) {

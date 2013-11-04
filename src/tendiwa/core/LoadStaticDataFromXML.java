@@ -302,7 +302,7 @@ private static void loadObjects(Element eRoot) {
 	for (Element eObject = (Element) eObjects.getFirstChild(); eObject != null; eObject = (Element) eObject.getNextSibling()) {
 		String name = eObject.getElementsByTagName("name").item(0).getFirstChild().getNodeValue();
 		Element ePassability = (Element) eObject.getElementsByTagName("passability").item(0);
-		int passability = StaticData.PASSABILITY_NONE;
+		TerrainBasics.Passability passability = TerrainBasics.Passability.NO;
 		boolean isUsable;
 		for (Element ePassType = (Element) ePassability.getFirstChild(); ePassType != null; ePassType = (Element) ePassType.getNextSibling()) {
 			/*
@@ -312,17 +312,17 @@ private static void loadObjects(Element eRoot) {
 			 */
 			String ePassTypeTagName = ePassType.getTagName();
 			if (ePassTypeTagName.equals("none")) {
-				passability = StaticData.PASSABILITY_NONE;
+				passability = TerrainBasics.Passability.NO;
 				break;
 			}
 			if (ePassTypeTagName.equals("all")) {
-				passability = StaticData.PASSABILITY_VISUAL + StaticData.PASSABILITY_WALKABLE;
+				passability = TerrainBasics.Passability.FREE;
 				break;
 			}
 			if (ePassTypeTagName.equals("visual")) {
-				passability += StaticData.PASSABILITY_VISUAL;
+				passability = TerrainBasics.Passability.SEE;
 			} else if (ePassTypeTagName.equals("walkable")) {
-				passability += StaticData.PASSABILITY_WALKABLE;
+				passability = TerrainBasics.Passability.FREE;
 			}
 		}
 		if (eObject.getElementsByTagName("usable").getLength() == 1) {
@@ -345,15 +345,13 @@ private static void loadObjects(Element eRoot) {
 				throw new RuntimeException("Unknown object class " + objectClassAsString);
 			}
 		}
-		ObjectType objectType = new ObjectType(name, passability, isUsable, objectClass);
-		StaticData.add(objectType);
 		if (objectClass == ObjectType.CLASS_DOOR) {
 			/*
 			 * There are 2 ObjectTypes associated with each door: open and
 			 * closed. The default one is closed, then we should register
 			 * the open one.
 			 */
-			StaticData.add(new ObjectType(name + "_open", StaticData.PASSABILITY_PENETRABLE + StaticData.PASSABILITY_VISUAL + StaticData.PASSABILITY_WALKABLE, isUsable, objectClass));
+//			StaticData.add(new ObjectType(name + "_open", StaticData.PASSABILITY_PENETRABLE + StaticData.PASSABILITY_VISUAL + StaticData.PASSABILITY_WALKABLE, isUsable, objectClass));
 		}
 
 		objectsClass.field(
@@ -362,7 +360,7 @@ private static void loadObjects(Element eRoot) {
 			name,
 			JExpr._new(clsObjectType)
 				.arg(JExpr.lit(name))
-				.arg(JExpr.lit(passability))
+				.arg(JExpr.lit(passability.value()))
 				.arg(JExpr.lit(isUsable))
 				.arg(JExpr.lit(objectClass))
 		);

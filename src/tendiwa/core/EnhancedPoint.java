@@ -132,4 +132,10 @@ public EnhancedPoint newRelativePointByOrientaton(int dStatic, int dDynamic, Ori
 	}
 	return new EnhancedPoint(x + dStatic, y + dDynamic);
 }
+
+public static boolean isNear(int startX, int startY, int endX, int endY) {
+	int ableX = Math.abs(startX - endX);
+	int ableY = Math.abs(startY - endY);
+	return (ableX == 1 && ableY == 0) || (ableY == 1 && ableX == 0) || (ableY == 1 && ableX == 1);
+}
 }

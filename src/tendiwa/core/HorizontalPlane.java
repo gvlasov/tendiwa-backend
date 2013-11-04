@@ -62,8 +62,7 @@ public Chunk getChunkWithCell(int x, int y) {
 	try {
 		return chunks.get(chX).get(chY);
 	} catch (NullPointerException e) {
-		System.out.println("No chunk " + chX + ":" + chY + " with cell " + x + ":" + y);
-		return null;
+		throw new NullPointerException("No chunk " + chX + ":" + chY + " with cell " + x + ":" + y);
 	}
 }
 
@@ -153,18 +152,6 @@ public int getChunkRoundedCoord(int coord) {
 
 public Cell getCell(int x, int y) {
 	return getChunkWithCell(x, y).getCell(x, y);
-}
-
-public void openDoor(int x, int y) {
-	Chunk chunk = getChunkWithCell(x, y);
-	int doorId = chunk.getCell(x, y).object();
-	chunk.removeObject(x - chunk.x, y - chunk.y);
-	if (doorId % 2 == 0) {
-		// The door is closed, open the door
-		chunk.setObject(x - chunk.x, y - chunk.y, doorId - 1);
-	} else {
-		chunk.setObject(x - chunk.x, y - chunk.y, doorId + 1);
-	}
 }
 
 public NonPlayerCharacter createCharacter(int absX, int absY, int characterTypeId, String name, int fraction) {

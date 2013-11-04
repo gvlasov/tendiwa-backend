@@ -85,25 +85,25 @@ public abstract class Building {
 		}
 	}
 
-	public Coordinate placeDoor(EnhancedRectangle r, CardinalDirection side, int object) {
+	public Coordinate placeDoor(EnhancedRectangle r, CardinalDirection side, ObjectType object) {
 		/**
 		 * Places door in the middle of particular side of room.
 		 */
 		Coordinate c = r.getMiddleOfSide(side).moveToSide(side, 1);
-		settlement.setObject(c.x, c.y, object);
+		object.place(settlement.cells[c.x][c.y]);
 		return c;
 	}
 
-	public Coordinate placeDoor(EnhancedRectangle r, CardinalDirection side, CardinalDirection endOfSide, int depth, int object) {
+	public Coordinate placeDoor(EnhancedRectangle r, CardinalDirection side, CardinalDirection endOfSide, int depth, ObjectType door) {
 		/**
 		 * Places door in the particular cell on particular side of room
 		 */
 		Coordinate c = r.getCellFromSide(side, endOfSide, depth).moveToSide(side, 1);
-		settlement.setObject(c.x, c.y, object);
+		door.place(settlement.cells[c.x][c.y]);
 		return c;
 	}
 
-	public Coordinate placeFrontDoor(CardinalDirection side) {
+	public Coordinate placeFrontDoor(CardinalDirection side, ObjectType door) {
 		int objDoorBlue = StaticData.getObjectType("door_blue").getId();
 		HashMap<Integer, Integer> cells = findDoorAppropriateCells(side);
 		if (cells.size() == 0) {
@@ -114,12 +114,12 @@ public abstract class Building {
 			ArrayList<Integer> xes = new ArrayList<>(cells.keySet());
 			dx = xes.get(Chance.rand(0, xes.size() - 1));
 			dy = cells.get(dx);
-			settlement.setObject(dx, dy, objDoorBlue);
+			door.place(settlement.cells[dx][dy]);
 		} else {
 			ArrayList<Integer> yes = new ArrayList<>(cells.keySet());
 			dy = yes.get(Chance.rand(0, yes.size() - 1));
 			dx = cells.get(dy);
-			settlement.setObject(dx, dy, objDoorBlue);
+			door.place(settlement.cells[dx][dy]);
 		}
 		switch (side) {
 			case N:
@@ -145,13 +145,14 @@ public abstract class Building {
 		return frontDoor;
 	}
 
-	public Coordinate placeFrontDoor(EnhancedRectangle r, CardinalDirection side) {
+	public Coordinate placeFrontDoor(EnhancedRectangle r, CardinalDirection side, ObjectType door) {
 		/**
 		 * Place front door in the middle of rectangle from particular side.
 		 */
 		int objDoorBlue = StaticData.getObjectType("door_blue").getId();
 		Coordinate doorCoord = r.getMiddleOfSide(side).moveToSide(side, 1);
-		settlement.setObject(doorCoord.x, doorCoord.y, objDoorBlue);
+
+		door.place(settlement.cells[doorCoord.x][doorCoord.y]);
 		lobby = r;
 		frontDoor = doorCoord;
 		return frontDoor;
@@ -291,7 +292,7 @@ public abstract class Building {
 		return cells;
 	}
 
-	public TerrainModifier buildBasis(FloorType floor, ObjectType walls) {
+	public TerrainModifier buildBasis(FloorType floor, ObjectType walls, ObjectType door) {
 		TerrainModifier modifier = terrainModifier;
 		RectangleSystem rs = modifier.getRectangleSystem();
 		// if (notSimpleForm) {
@@ -325,16 +326,14 @@ public abstract class Building {
 		// }
 
 		modifier.drawInnerBorders(walls);
-		int floorType = StaticData.getFloorType("stone").getId();
-		int objDoorBlue = StaticData.getObjectType("door_blue").getId();
 		for (Rectangle r : rs.getRectangles()) {
 			fillFloor(r, floor);
 		}
 		Graph<EnhancedRectangle, RectangleSystem.Neighborship> graph = rs.getGraph();
 
 		for (RectangleSystem.Neighborship e : graph.edgeSet()) {
-			Coordinate c = connectRoomsWithDoor(graph.getEdgeSource(e), graph.getEdgeTarget(e), objDoorBlue);
-			settlement.setFloor(c.x, c.y, floorType);
+			Coordinate c = connectRoomsWithDoor(graph.getEdgeSource(e), graph.getEdgeTarget(e), door);
+			floor.place(settlement.cells[c.x][c.y]);
 		}
 		rooms = rs.getRectangles();
 		return modifier;
@@ -348,7 +347,7 @@ public abstract class Building {
 		return settlement.getTerrainModifier(crs);
 	}
 
-	protected Coordinate connectRoomsWithDoor(Rectangle r1, Rectangle r2, int doorObjectId) {
+	protected Coordinate connectRoomsWithDoor(Rectangle r1, Rectangle r2, ObjectType door) {
 		int x, y;
 		if (r1.x + r1.width + 1 == r2.x || r2.x + r2.width + 1 == r1.x) {
 			// Vertical
@@ -360,7 +359,7 @@ public abstract class Building {
 												// y - min.
 			x = Chance.rand(Math.max(r1.x, r2.x), Math.min(r1.x + r1.width - 1, r2.x + r2.width - 1));
 		}
-		settlement.setObject(x, y, doorObjectId);
+		door.place(settlement.cells[x][y]);
 		return new Coordinate(x, y);
 	}
 
