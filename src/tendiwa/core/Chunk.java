@@ -101,6 +101,9 @@ public void removeObject(int x, int y) {
 			ch.getVisibleEntities();
 		}
 	}
+	if (Tendiwa.getPlayer().canSee(x,y) && Tendiwa.getPlayer().isVisionCacheEmpty()) {
+		Tendiwa.getPlayer().invalidateVisionCache();
+	}
 	throw new UnsupportedOperationException();
 }
 

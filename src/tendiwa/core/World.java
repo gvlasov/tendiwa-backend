@@ -63,6 +63,9 @@ public PlayerCharacter getPlayerCharacter() {
 }
 
 public void setPlayerCharacter(PlayerCharacter playerCharacter) {
+	while (defaultPlane.getCell(playerCharacter.x, playerCharacter.y).getPassability() == TerrainBasics.Passability.NO) {
+		playerCharacter.x++;
+	}
 	this.playerCharacter = playerCharacter;
 }
 

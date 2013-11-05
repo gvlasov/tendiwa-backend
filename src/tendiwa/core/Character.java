@@ -16,11 +16,25 @@ public static final long serialVersionUID = 1832389411;
 public final static int FRACTION_NEUTRAL = -1, FRACTION_PLAYER = 1,
 	FRACTION_AGRESSIVE = 0;
 protected static final double VISION_RANGE = 13;
+/**
+ * Value for {@link Character#visionCache} meaning that vision of particular cell is not computed for current
+ * character's position yet.
+ */
+private static final byte VISION_NOT_COMPUTED = 0;
+/**
+ * Value for {@link Character#visionCache} meaning that a particular cell is visible from this Character's current
+ */
+private static final byte VISION_VISIBLE = 1;
+/**
+ * Value for {@link Character#visionCache} meaning that a particular cell is invisible from this Character's current
+ */
+private static final byte VISION_INVISIBLE = 2;
 public final int id = new UniqueObject().id;
 public final ItemCollection inventory = new ItemCollection();
 protected final CharacterType characterType;
 protected final String name;
 protected final HashMap<Integer, Character.Effect> effects = new HashMap<>();
+private final byte VISION_CACHE_WIDTH = (byte) (VISION_RANGE * 2 + 1);
 protected Body body;
 protected int actionPoints;
 protected int ep;
@@ -35,6 +49,12 @@ protected ArrayList<Integer> spells = new ArrayList<>();
 protected boolean isAlive;
 protected CharacterState state = CharacterState.DEFAULT;
 protected TimeStream timeStream;
+/**
+ * <p>Here is cached whether this Character sees a cell relative to his current position or not.</p> <p>{@code
+ * visionCache[VISION_CACHE_WIDTH][VISION_CACHE_WIDTH]} is Character's current cell.</p>
+ */
+private byte[][] visionCache = new byte[VISION_CACHE_WIDTH][VISION_CACHE_WIDTH];
+private boolean isVisionCacheEmpty = true;
 
 public Character(HorizontalPlane plane, CharacterType characterType, int x, int y, String name) {
 	// Common character creation: with all attributes, in location.
@@ -264,13 +284,33 @@ protected void shieldBash(int x, int y) {
 	moveTime(500);
 }
 
+private void cacheVision(int x, int y, byte visible) {
+	visionCache[(byte) (x - this.x + VISION_RANGE)][(byte) (y - this.y + VISION_RANGE)] = visible;
+	isVisionCacheEmpty = false;
+}
+
+private byte getVisionFromCache(int x, int y) {
+	return visionCache[(byte) (x - this.x + VISION_RANGE)][(byte) (y - this.y + VISION_RANGE)];
+}
+
+void invalidateVisionCache() {
+	for (byte i = 0; i < VISION_CACHE_WIDTH; i++) {
+		for (byte j = 0; j < VISION_CACHE_WIDTH; j++) {
+			visionCache[i][j] = VISION_NOT_COMPUTED;
+		}
+	}
+	isVisionCacheEmpty = true;
+}
+
 /* Vision */
-public boolean initialCanSee(int x, int y) {
+boolean initialCanSee(int x, int y) {
 	Coordinate characterCoord = new Coordinate(this.x, this.y);
 	if (characterCoord.isNear(x, y) || this.x == x && this.y == y) {
+		cacheVision(x, y, VISION_VISIBLE);
 		return true;
 	}
 	if (Math.floor(characterCoord.distance(x, y)) > Character.VISION_RANGE) {
+		cacheVision(x, y, VISION_INVISIBLE);
 		return false;
 	}
 	if (x == this.x || y == this.y) {
@@ -278,6 +318,7 @@ public boolean initialCanSee(int x, int y) {
 			int dy = Math.abs(y - this.y) / (y - this.y);
 			for (int i = this.y + dy; i != y; i += dy) {
 				if (plane.getCell(x, i).getPassability() == TerrainBasics.Passability.NO) {
+					cacheVision(x, y, VISION_INVISIBLE);
 					return false;
 				}
 			}
@@ -285,10 +326,12 @@ public boolean initialCanSee(int x, int y) {
 			int dx = Math.abs(x - this.x) / (x - this.x);
 			for (int i = this.x + dx; i != x; i += dx) {
 				if (plane.getCell(i, y).getPassability() == TerrainBasics.Passability.NO) {
+					cacheVision(x, y, VISION_INVISIBLE);
 					return false;
 				}
 			}
 		}
+		cacheVision(x, y, VISION_VISIBLE);
 		return true;
 	} else if (Math.abs(x - this.x) == 1) {
 		int yMin = Math.min(y, this.y);
@@ -298,6 +341,7 @@ public boolean initialCanSee(int x, int y) {
 				break;
 			}
 			if (i == yMax - 1) {
+				cacheVision(x, y, VISION_VISIBLE);
 				return true;
 			}
 		}
@@ -306,9 +350,11 @@ public boolean initialCanSee(int x, int y) {
 				break;
 			}
 			if (i == yMax - 1) {
+				cacheVision(x, y, VISION_VISIBLE);
 				return true;
 			}
 		}
+		cacheVision(x, y, VISION_INVISIBLE);
 		return false;
 	} else if (Math.abs(y - this.y) == 1) {
 		int xMin = Math.min(x, this.x);
@@ -318,6 +364,7 @@ public boolean initialCanSee(int x, int y) {
 				break;
 			}
 			if (i == xMax - 1) {
+				cacheVision(x, y, VISION_VISIBLE);
 				return true;
 			}
 		}
@@ -326,9 +373,11 @@ public boolean initialCanSee(int x, int y) {
 				break;
 			}
 			if (i == xMax - 1) {
+				cacheVision(x, y, VISION_VISIBLE);
 				return true;
 			}
 		}
+		cacheVision(x, y, VISION_INVISIBLE);
 		return false;
 	} else if (Math.abs(x - this.x) == Math.abs(y - this.y)) {
 		int dMax = Math.abs(x - this.x);
@@ -340,10 +389,11 @@ public boolean initialCanSee(int x, int y) {
 			cx += dx;
 			cy += dy;
 			if (plane.getCell(cx, cy).getPassability() == TerrainBasics.Passability.NO) {
+				cacheVision(x, y, VISION_INVISIBLE);
 				return false;
 			}
-
 		}
+		cacheVision(x, y, VISION_VISIBLE);
 		return true;
 	} else {
 		double[][] start = new double[2][2];
@@ -390,9 +440,11 @@ public boolean initialCanSee(int x, int y) {
 						throw new Error();
 					}
 				}
+				cacheVision(x, y, VISION_VISIBLE);
 				return true;
 			}
 		}
+		cacheVision(x, y, VISION_INVISIBLE);
 		return false;
 	}
 }
@@ -633,6 +685,7 @@ public void move(int x, int y) {
 	plane.getCell(x, y).character(this);
 	plane.getCell(x, y).setPassability(TerrainBasics.Passability.SEE);
 	timeStream.notifyNeighborsVisiblilty(this);
+	invalidateVisionCache();
 	Tendiwa.getClientEventManager().event(new EventMove(x, y, this));
 }
 
@@ -772,7 +825,22 @@ public boolean canStepOn(int x, int y) {
 
 public boolean canSee(int x, int y) {
 //	return  EnhancedPoint.distance(x, y, this.x, this.y) < 7;
-	return initialCanSee(x, y);
+	if (Math.abs(x-this.x) > VISION_RANGE) {
+		return false;
+	}
+	if (Math.abs(y-this.y) > VISION_RANGE) {
+		return false;
+	}
+	byte visionFromCache = getVisionFromCache(x, y);
+	if (visionFromCache == VISION_NOT_COMPUTED) {
+		return initialCanSee(x, y);
+	} else {
+		return visionFromCache == VISION_VISIBLE;
+	}
+}
+
+public boolean isVisionCacheEmpty() {
+	return isVisionCacheEmpty;
 }
 
 /* Nested classes */
