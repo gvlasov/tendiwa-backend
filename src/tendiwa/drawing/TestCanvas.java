@@ -158,13 +158,6 @@ public final class TestCanvas {
         currentLayer = layer;
     }
 
-    public void draw(HorizontalPlane plane) {
-        Collection<Chunk> chunks = plane.getChunks();
-        for (Chunk chunk : chunks) {
-            draw(chunk);
-        }
-    }
-
     public Dimension getSize(RectangleSystem rs) {
         Set<Integer> farthestPointsX = new HashSet<Integer>();
         Set<Integer> farthestPointsY = new HashSet<Integer>();

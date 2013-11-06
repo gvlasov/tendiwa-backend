@@ -240,6 +240,33 @@
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
+                <xs:element name="walls">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="wall" minOccurs="1" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="name" type="nameType"/>
+                                        <xs:element name="passability">
+                                            <xs:complexType>
+                                                <xs:choice>
+                                                    <xs:element name="all" />
+                                                    <xs:element name="none" />
+                                                    <xs:sequence>
+                                                        <xs:element name="visual" minOccurs="0" maxOccurs="1" />
+                                                        <xs:element name="walkable" minOccurs="0" maxOccurs="1" />
+                                                        <xs:element name="penetrable" minOccurs="0" maxOccurs="1" />
+                                                    </xs:sequence>
+                                                </xs:choice>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="material" type="nameType" minOccurs="0"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
 				<xs:element name="materials">
 					<xs:complexType>
 						<xs:sequence>

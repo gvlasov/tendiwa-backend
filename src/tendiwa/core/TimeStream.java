@@ -23,7 +23,6 @@ public class TimeStream {
 /**
  * How far from character should terrain be loaded (in chunks)
  */
-private static final byte LOADING_DEPTH = 1;
 public static int BASE_ENERGY = 500;
 /**
  * All the Characters that take their turns in this TimeStream, both PlayerCharacters and NonPlayerCharacters.
@@ -50,28 +49,18 @@ private HashSet<NonPlayerCharacter> nonPlayerCharacters = new HashSet<NonPlayerC
  */
 
 /**
- * Initiate a TimeStream around one PlayerCharacter.
+ * Initiate a TimeStream around one PlayerCharacter. Places a PlayerCharacter in this TimeStream, which makes
+ * PlayerCharacter's client receive events from this TimeStream and determines PlayerCharacter's turn queue.
  *
  * @param character
  */
 public TimeStream(PlayerCharacter character) {
-	addCharacter(character);
+	characters.add(character);
+	observers.put(character, new HashSet<NonPlayerCharacter>());
 }
 
 public HashSet<Character> getCharacters() {
 	return characters;
-}
-
-/**
- * Places a PlayerCharacter in this TimeStream, which makes PlayerCharacter's client receive events from this TimeStream
- * and determines PlayerCharacter's turn queue.
- *
- * @param character
- */
-public void addCharacter(PlayerCharacter character) {
-	characters.add(character);
-	observers.put(character, new HashSet<NonPlayerCharacter>());
-	loadApproachedChunks(character.plane, character.x, character.y);
 }
 
 public void addNonPlayerCharacter(NonPlayerCharacter character) {
@@ -178,35 +167,8 @@ public HashSet<NonPlayerCharacter> getNearbyNonPlayerCharacters(Character charac
 	return answer;
 }
 
-/**
- * Add chunks near certain point to this time stream and send their contents to characters.
- *
- * @param x
- * @param y
- */
-public void loadApproachedChunks(HorizontalPlane plane, int x, int y) {
-	// A chunk where character came to
-	Chunk chunk = plane.getChunkWithCell(x, y);
-	// Bounds where we check for missing chunks
-	int endX = chunk.getX() + Chunk.SIZE * TimeStream.LOADING_DEPTH;
-	int endY = chunk.getY() + Chunk.SIZE * TimeStream.LOADING_DEPTH;
-	for (int currY = chunk.getY() - Chunk.SIZE * TimeStream.LOADING_DEPTH; currY <= endY; currY += Chunk.SIZE) {
-		// Find missing chunks and query them
-		for (int currX = chunk.getX() - Chunk.SIZE * TimeStream.LOADING_DEPTH; currX <= endX; currX += Chunk.SIZE) {
-			if (plane.hasChunk(currX, currY)) {
-				Chunk newChunk = plane.getChunkByCoord(currX, currY);
-				if (!newChunk.belongsToTimeStream(this)) {
-					addChunk(newChunk);
-				}
-			}
-		}
-	}
-}
-
-;
-
 public void unloadUnusedChunks(HorizontalPlane plane) {
-	Set<Chunk> chunksToExclude = new HashSet<Chunk>();
+	Set<Chunk> chunksToExclude = new HashSet<>();
 	for (Chunk chunk : chunks) {
 		if (chunk.plane != plane) {
 			continue;
@@ -223,10 +185,10 @@ public void unloadUnusedChunks(HorizontalPlane plane) {
 	 * characters know about who can they personally see even without a
 	 * TimeStream. TimeStream observation methods are used when it is needed to
 	 * track not who sees who, but _who is seen by who_. NonPlayerCharacters
-	 * themselves tell TimeStream about who it should add as observer to who.
+	 * themselves tell TimeStream about who it should add as observer to whom.
 	 * Only NonPlayerCharacters can be observers - it makes no sense tracking
 	 * PlayerCharacters as observers since their general thought process is made
-	 * by player himself, and their visibility is computed on the cliend-side.
+	 * by player himself, and their visibility is computed on the client-side.
 	 */
 
 /**

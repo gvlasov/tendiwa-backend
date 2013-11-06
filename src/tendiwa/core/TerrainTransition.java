@@ -66,7 +66,7 @@ public TerrainTransition(Location location, EnhancedRectangle rectangle, Placeab
 					x = columnDynamicCoord;
 					y = segmentDynamicCoord;
 				}
-				location.setElement(x, y, from);
+				from.place(location.getPlane(), location.x+x, location.y+y);
 				i++;
 			}
 		}
@@ -123,7 +123,7 @@ private void drawNoSideCorner(Location location, PlaceableInCell from, EnhancedR
 			if (i == depth-1 && Chance.roll(20)) {
 				continue;
 			}
-			location.setElement(diagonalLineNextPoint.x, diagonalLineNextPoint.y, from);
+			from.place(location.getPlane(), diagonalLineNextPoint.x, diagonalLineNextPoint.y);
 
 		}
 		diagonalLineStartPoint = diagonalLineStartPoint.newRelativePoint(components[0]);
@@ -159,7 +159,7 @@ private void drawSingleSideCorner(Location location, PlaceableInCell from, Enhan
 				cornerPoint.getDynamicCoord(rectangleSideOrientation) + i * segmentGrowing,
 				rectangleSideOrientation
 			);
-			location.setElement(cornerFormingCell.x, cornerFormingCell.y, from);
+			from.place(location.getPlane(), cornerFormingCell.x, cornerFormingCell.y);
 		}
 	}
 	EnhancedRectangle cornerRectangle = EnhancedRectangle.growFromPoint(cornerPoint.x, cornerPoint.y, corner.opposite(), depth, depth);

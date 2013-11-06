@@ -1,10 +1,6 @@
 package tendiwa.core;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +9,7 @@ import java.util.Map;
  * Describes a certain type of inanimate objects that are large enough to be treated as {@link Item}s: trees, furniture,
  * wall segments
  */
-public class ObjectType implements PlaceableInCell, GsonForStaticDataSerializable {
+public class ObjectType implements PlaceableInCell {
 private final static Map<Integer, ObjectType> byId = new HashMap<>();
 public static final ObjectType VOID = new ObjectType();
 public static final int CLASS_DEFAULT = 0;
@@ -22,14 +18,14 @@ public static final int CLASS_DOOR = 2;
 public static final int CLASS_INTERLEVEL = 3;
 private static short nextIdToAssign = 0;
 private final String name;
-private final byte passability;
+private final Chunk.Passability passability;
 private final boolean isUsable;
 private final ObjectClass cls;
 private final short id;
 
-public ObjectType(String name, int passability, boolean isUsable, int cls) {
+public ObjectType(String name, Chunk.Passability passability, boolean isUsable, int cls) {
 	this.name = name;
-	this.passability = (byte) passability;
+	this.passability = passability;
 	this.isUsable = isUsable;
 	this.cls = ObjectClass.getById(cls);
 	this.id = nextIdToAssign++;
@@ -40,7 +36,7 @@ public ObjectType(String name, int passability, boolean isUsable, int cls) {
  * Constructor for void object type.
  */
 private ObjectType() {
-	this("void", TerrainBasics.Passability.FREE.value(), false, 0);
+	this("void", Chunk.Passability.FREE, false, 0);
 	assert nextIdToAssign == 1;
 }
 
@@ -52,7 +48,7 @@ public ObjectClass getObjectClass() {
 	return cls;
 }
 
-public byte getPassability() {
+public Chunk.Passability getPassability() {
 	return passability;
 }
 
@@ -68,23 +64,15 @@ public short getId() {
 	return id;
 }
 
+
 @Override
-public JsonElement serialize(JsonSerializationContext context) {
-	JsonArray jArray = new JsonArray();
-	jArray.add(new JsonPrimitive(name));
-	jArray.add(new JsonPrimitive(passability));
-	return jArray;
+public void place(HorizontalPlane plane, int x, int y) {
+	plane.setTerrainElement(this.id, x, y);
 }
 
 @Override
-public void place(Cell cell) {
-	cell.object = id;
-	cell.setPassability(passability);
-}
-
-@Override
-public boolean containedIn(Cell cell) {
-	return cell.object == id;
+public boolean containedIn(HorizontalPlane plane, int x, int y) {
+	return plane.getTerrainElement(x, y) == this.id;
 }
 
 @Override

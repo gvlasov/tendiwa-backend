@@ -26,7 +26,6 @@ private Dialogue dialogue;
 public NonPlayerCharacter(HorizontalPlane plane, CharacterType characterType, int x, int y, String name) {
 	super(plane, characterType, x, y, name);
 	Chunk chunk = plane.getChunkWithCell(x, y);
-	chunk.getCell(x, y).setPassability(TerrainBasics.Passability.SEE);
 	this.chunk = chunk;
 	ep = 100;
 	maxEp = 100;
@@ -74,7 +73,7 @@ private void setDestNearEntity(int eX, int eY) {
 	int dist = Integer.MAX_VALUE;
 	int curDestX = -1, curDestY = -1;
 	for (int i = 0; i < 8; i++) {
-		if (plane.getCell(dists[i * 2], dists[i * 2 + 1]).getPassability() == TerrainBasics.Passability.FREE
+		if (plane.getPassability(dists[i * 2], dists[i * 2 + 1]) == Chunk.Passability.FREE
 			&& pathTable[dists[i * 2] - dX][dists[i * 2 + 1] - dY] <= dist
 			&& (curDestX == -1 || characterCoord.distance(dists[i * 2],
 			dists[i * 2 + 1]) < characterCoord.distance(curDestX, curDestY))
@@ -210,7 +209,7 @@ private Coordinate getRetreatCoord() {
 	int[] d;
 	for (int i = 0; i < 8; i++) {
 		d = Directions.intToDirection(i).side2d();
-		if (plane.getCell(x + d[0], y + d[1]).getPassability() != TerrainBasics.Passability.FREE) {
+		if (plane.getPassability(x + d[0], y + d[1]) != Chunk.Passability.FREE) {
 			continue;
 		}
 		if (sides[i] < min) {
@@ -294,7 +293,7 @@ public void action() {
 				imaginaryPathTable = Paths.getPathTable(x, y, pathWalkerOverCharacters, MAX_PATH_TABLE_DEPTH);
 				LinkedList<EnhancedPoint> imaginaryPath = imaginaryPathTable.getPath(activeEnemy.x, activeEnemy.y);
 				EnhancedPoint firstStep = imaginaryPath.get(0);
-				if (!plane.getCell(firstStep.x, firstStep.y).hasCharacter()) {
+				if (plane.getCharacter(firstStep.x, firstStep.y) == null) {
 					// If there is no character on first cell of imaginary
 					// path, then step there
 					step(firstStep.x, firstStep.y);
@@ -310,12 +309,11 @@ public void action() {
 		PathTable pathTable = Paths.getPathTable(x, y, this, MAX_PATH_TABLE_DEPTH);
 		pathTable.getPath(lastSeenCoord.x, lastSeenCoord.y);
 
-
 		if (!pathTable.cellComputed(lastSeenCoord.x, lastSeenCoord.y)) {
 			// If path is blocked by characters
 			LinkedList<EnhancedPoint> path = Paths.getPath(x, y, lastSeenCoord.x, lastSeenCoord.y, pathWalkerOverCharacters, MAX_PATH_TABLE_DEPTH);
 			EnhancedPoint firstStep = path.getFirst();
-			if (!plane.getCell(firstStep.x, firstStep.y).hasCharacter()) {
+			if (plane.getCharacter(firstStep.x, firstStep.y) == null) {
 				// If there is no character on first cell of imaginary path,
 				// then step there
 				step(firstStep.x, firstStep.y);
@@ -434,10 +432,10 @@ public boolean getPathTableToAllSeenCharacters() {
 					|| (thisNumX + dX == this.x && thisNumY + dY == this.y)) {
 					continue;
 				}
-				Cell cell = plane.getCell(thisNumX + dX, thisNumY + dY);
-				if ((cell.getPassability() == TerrainBasics.Passability.FREE || !initialCanSee(
+				Chunk.Passability passability = plane.getPassability(thisNumX + dX, thisNumY + dY);
+				if ((passability == Chunk.Passability.FREE || !initialCanSee(
 					thisNumX + dX, thisNumY + dY)
-					&& cell.getPassability() != TerrainBasics.Passability.NO)) {
+					&& passability != Chunk.Passability.NO)) {
 					// Step to cell if character can see it and it is free
 					// or character cannot see it and it is not
 					// PASSABILITY_NO
@@ -445,7 +443,7 @@ public boolean getPathTableToAllSeenCharacters() {
 					newFront.add(new Coordinate(adjactentX[j],
 						adjactentY[j]));
 				} else {
-					Character characterInCell = cell.character();
+					Character characterInCell = plane.getCharacter(thisNumX + dX, thisNumY + dY);
 					if (seenCharacters.contains(characterInCell)
 						&& !foundCharacters.contains(characterInCell)) {
 						foundCharacters.add(characterInCell);
@@ -568,17 +566,17 @@ public void applyConversationStarting(PlayerCharacter player) {
 	dialogues.put(player, startDP);
 	throw new UnsupportedOperationException();
 }
+
 class PathWalkerOverCharacters implements PathWalker {
 
 	@Override
 	public boolean canStepOn(int x, int y) {
-		Cell cell = plane.getCell(x, y);
 		return x >= 0
 			&& y >= 0
 			&& x < Tendiwa.getWorld().width
 			&& y < Tendiwa.getWorld().height
-			&& (cell.getPassability() == TerrainBasics.Passability.FREE
-			|| cell.hasCharacter());
+			&& (plane.getPassability(x, y) == Chunk.Passability.FREE
+			|| plane.getCharacter(x, y) != null);
 
 	}
 }

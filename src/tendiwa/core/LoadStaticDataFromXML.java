@@ -37,13 +37,13 @@ private static final EdgeFactory<BodyPartTypeInstance, DefaultEdge> defaultEdgeF
 private static final JCodeModel soundsCodeModel = new JCodeModel();
 private static final JCodeModel charactersCodeModel = new JCodeModel();
 private static final JCodeModel objectsCodeModel = new JCodeModel();
-private static final JCodeModel floorsCodeModel = new JCodeModel();
+private static final JCodeModel terrainCodeModel = new JCodeModel();
 private static final JCodeModel itemsCodeModel = new JCodeModel();
 private static final JCodeModel materialsCodeModel = new JCodeModel();
 private static final JDefinedClass soundsClass;
 private static final JDefinedClass charactersClass;
 private static final JDefinedClass objectsClass;
-private static final JDefinedClass floorsClass;
+private static final JDefinedClass terrainClass;
 private static final JDefinedClass itemsClass;
 private static final JDefinedClass materialsClass;
 private static final String staticDataPackageName = "tendiwa.resources.";
@@ -57,7 +57,7 @@ private static final String GENERATED_CLASS_COMMENT_TEXT = "Do not modify!\n\n" 
 static {
 	// Define classes in code models
 	JDefinedClass itemsClass1;
-	JDefinedClass floorsClass1;
+	JDefinedClass terrainClass1;
 	JDefinedClass objectsClass1;
 	JDefinedClass charactersClass1;
 	JDefinedClass soundsClass1;
@@ -66,14 +66,14 @@ static {
 		soundsClass1 = soundsCodeModel._class(staticDataPackageName + "SoundTypes");
 		charactersClass1 = charactersCodeModel._class(staticDataPackageName + "CharacterTypes");
 		objectsClass1 = objectsCodeModel._class(staticDataPackageName + "ObjectTypes");
-		floorsClass1 = floorsCodeModel._class(staticDataPackageName + "FloorTypes");
+		terrainClass1 = terrainCodeModel._class(staticDataPackageName + "TerrainTypes");
 		itemsClass1 = itemsCodeModel._class(staticDataPackageName + "ItemTypes");
 		materialsClass1 = materialsCodeModel._class(staticDataPackageName + "MaterialTypes");
 	} catch (JClassAlreadyExistsException e) {
 		soundsClass1 = null;
 		charactersClass1 = null;
 		objectsClass1 = null;
-		floorsClass1 = null;
+		terrainClass1 = null;
 		itemsClass1 = null;
 		materialsClass1 = null;
 		e.printStackTrace();
@@ -82,14 +82,14 @@ static {
 	soundsClass = soundsClass1;
 	charactersClass = charactersClass1;
 	objectsClass = objectsClass1;
-	floorsClass = floorsClass1;
+	terrainClass = terrainClass1;
 	materialsClass = materialsClass1;
 	// Create an array to iterate over all code models
 	codeModels = new JCodeModel[]{
 		soundsCodeModel,
 		charactersCodeModel,
 		objectsCodeModel,
-		floorsCodeModel,
+		terrainCodeModel,
 		itemsCodeModel,
 		materialsCodeModel
 	};
@@ -97,7 +97,7 @@ static {
 		soundsClass,
 		charactersClass,
 		objectsClass,
-		floorsClass,
+		terrainClass,
 		itemsClass,
 		materialsClass
 	};
@@ -159,6 +159,7 @@ public static void loadGameDataFromXml(String pathToResource) {
 	loadItems(eRoot);
 	loadObjects(eRoot);
 	loadFloors(eRoot);
+	loadWalls(eRoot);
 }
 
 private static InputStream getResourceFileInputStream(String pathToResource) {
@@ -271,8 +272,6 @@ private static void loadMaterials(Element eRoot) {
 		int durability = Integer.parseInt(eMaterial.getElementsByTagName("durability").item(0).getFirstChild().getNodeValue());
 		String name = eMaterial.getElementsByTagName("name").item(0).getFirstChild().getNodeValue();
 		int density = Integer.parseInt(eMaterial.getElementsByTagName("density").item(0).getFirstChild().getNodeValue());
-		Material material = new Material(name, durability, density);
-		StaticData.add(material);
 		materialsClass.field(
 			JMod.PUBLIC | JMod.STATIC | JMod.FINAL,
 			Material.class,
@@ -290,19 +289,10 @@ private static void loadObjects(Element eRoot) {
 
 	JClass clsObjectType = objectsCodeModel.ref(ObjectType.class);
 
-	JFieldRef expVoidObject = objectsCodeModel.ref(ObjectType.class).staticRef("VOID");
-	// Void object type
-	objectsClass.field(
-		JMod.PUBLIC | JMod.STATIC | JMod.FINAL,
-		ObjectType.class,
-		"VOID",
-		expVoidObject
-	);
-
 	for (Element eObject = (Element) eObjects.getFirstChild(); eObject != null; eObject = (Element) eObject.getNextSibling()) {
 		String name = eObject.getElementsByTagName("name").item(0).getFirstChild().getNodeValue();
 		Element ePassability = (Element) eObject.getElementsByTagName("passability").item(0);
-		TerrainBasics.Passability passability = TerrainBasics.Passability.NO;
+		Chunk.Passability passability = Chunk.Passability.NO;
 		boolean isUsable;
 		for (Element ePassType = (Element) ePassability.getFirstChild(); ePassType != null; ePassType = (Element) ePassType.getNextSibling()) {
 			/*
@@ -312,17 +302,17 @@ private static void loadObjects(Element eRoot) {
 			 */
 			String ePassTypeTagName = ePassType.getTagName();
 			if (ePassTypeTagName.equals("none")) {
-				passability = TerrainBasics.Passability.NO;
+				passability = Chunk.Passability.NO;
 				break;
 			}
 			if (ePassTypeTagName.equals("all")) {
-				passability = TerrainBasics.Passability.FREE;
+				passability = Chunk.Passability.FREE;
 				break;
 			}
 			if (ePassTypeTagName.equals("visual")) {
-				passability = TerrainBasics.Passability.SEE;
+				passability = Chunk.Passability.SEE;
 			} else if (ePassTypeTagName.equals("walkable")) {
-				passability = TerrainBasics.Passability.FREE;
+				passability = Chunk.Passability.FREE;
 			}
 		}
 		if (eObject.getElementsByTagName("usable").getLength() == 1) {
@@ -354,13 +344,14 @@ private static void loadObjects(Element eRoot) {
 //			StaticData.add(new ObjectType(name + "_open", StaticData.PASSABILITY_PENETRABLE + StaticData.PASSABILITY_VISUAL + StaticData.PASSABILITY_WALKABLE, isUsable, objectClass));
 		}
 
+		JFieldRef passabilityRef = objectsCodeModel.ref(Chunk.Passability.class).staticRef(passability.toString());
 		objectsClass.field(
 			JMod.PUBLIC | JMod.STATIC | JMod.FINAL,
 			ObjectType.class,
 			name,
 			JExpr._new(clsObjectType)
 				.arg(JExpr.lit(name))
-				.arg(JExpr.lit(passability.value()))
+				.arg(passabilityRef)
 				.arg(JExpr.lit(isUsable))
 				.arg(JExpr.lit(objectClass))
 		);
@@ -369,17 +360,34 @@ private static void loadObjects(Element eRoot) {
 
 private static void loadFloors(Element eRoot) {
 	Element eFloors = (Element) eRoot.getElementsByTagName("floors").item(0);
-	JClass clsFloorType = floorsCodeModel.ref(FloorType.class);
+	JClass clsFloorType = terrainCodeModel.ref(TerrainType.class);
+	JFieldRef terrainTypeRef = objectsCodeModel.ref(TerrainType.TerrainClass.class).staticRef("FLOOR");
 	for (Element eFloor = (Element) eFloors.getFirstChild(); eFloor != null; eFloor = (Element) eFloor.getNextSibling()) {
 		String name = eFloor.getElementsByTagName("name").item(0).getFirstChild().getNodeValue();
-//		FloorType floorType = new FloorType(name);
-//		StaticData.add(floorType);
-		floorsClass.field(
+		terrainClass.field(
 			JMod.PUBLIC | JMod.STATIC | JMod.FINAL,
-			FloorType.class,
+			TerrainType.class,
 			name,
 			JExpr._new(clsFloorType)
 				.arg(JExpr.lit(name))
+				.arg(terrainTypeRef)
+		);
+	}
+}
+
+private static void loadWalls(Element eRoot) {
+	Element eFloors = (Element) eRoot.getElementsByTagName("walls").item(0);
+	JClass clsFloorType = terrainCodeModel.ref(TerrainType.class);
+	JFieldRef terrainTypeRef = objectsCodeModel.ref(TerrainType.TerrainClass.class).staticRef("WALL");
+	for (Element eFloor = (Element) eFloors.getFirstChild(); eFloor != null; eFloor = (Element) eFloor.getNextSibling()) {
+		String name = eFloor.getElementsByTagName("name").item(0).getFirstChild().getNodeValue();
+		terrainClass.field(
+			JMod.PUBLIC | JMod.STATIC | JMod.FINAL,
+			TerrainType.class,
+			name,
+			JExpr._new(clsFloorType)
+				.arg(JExpr.lit(name))
+				.arg(terrainTypeRef)
 		);
 	}
 }

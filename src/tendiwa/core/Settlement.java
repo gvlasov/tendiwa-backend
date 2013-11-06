@@ -151,7 +151,7 @@ public class Settlement extends Location {
 			return road1.orientation == road2.orientation;
 		}
 
-		public void drawRoads(FloorType floor) {
+		public void drawRoads(TerrainType floor) {
 			for (Road road : roads) {
 				boldLine(road.start.x, road.start.y, road.end.x, road.end.y, floor, 5);
 			}

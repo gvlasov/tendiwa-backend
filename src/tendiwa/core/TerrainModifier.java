@@ -26,17 +26,15 @@ public RectangleSystem getRectangleSystem() {
 /**
  * Excludes rectangles that contain a particular entity inside them.
  *
- * @param type
- * 	Type of entity
- * @param val
- * 	Id of entity
+ * @param placeable
+ * 	Type of entity.
  */
 public void excludeRectanglesHaving(PlaceableInCell placeable) {
 	keyLoop:
 	for (EnhancedRectangle r : rs.getRectangles()) {
 		for (int x = r.x; x < r.x + r.width; x++) {
 			for (int y = r.y; y < r.y + r.height; y++) {
-				if (location.cells[x][y].contains(placeable)) {
+				if (placeable.containedIn(location.getPlane(), location.x + x, location.y + y)) {
 					rs.excludeRectangle(r);
 					continue keyLoop;
 				}

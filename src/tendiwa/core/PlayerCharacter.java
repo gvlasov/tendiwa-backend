@@ -27,7 +27,6 @@ public PlayerCharacter(HorizontalPlane plane, int x, int y, String name, Charact
 	super(plane, race, x, y, name);
 	this.cls = cls;
 	this.plane = plane;
-	this.plane.getCell(x, y).setPassability(TerrainBasics.Passability.SEE);
 	maxEp = 100;
 	ep = 100;
 	fraction = 1;
@@ -53,7 +52,6 @@ public void move(int x, int y) {
 			|| plane.getChunkRoundedCoord(prevY) != plane.getChunkRoundedCoord(y)
 		) {
 		// If player moves to another chunk, load chunks
-		timeStream.loadApproachedChunks(plane, x, y);
 		timeStream.unloadUnusedChunks(plane);
 	}
 }
@@ -89,24 +87,6 @@ public void dialogueAnswer(int answerIndex) {
 	say(dialoguePartner.dialogues.get(this).getAnswerText(answerIndex));
 	dialoguePartner.proceedToNextDialoguePoint(this, answerIndex);
 	moveTime(500);
-}
-
-/* Data */
-public Set<Chunk> getClosestChunks() {
-	Set<Chunk> answer = new HashSet<>();
-	Chunk playerChunk = plane.getChunkWithCell(x, y);
-	answer.add(playerChunk);
-	answer.add(plane.getChunkByCoord(playerChunk.getX() - Chunk.SIZE, playerChunk.getY() - Chunk.SIZE));
-	answer.add(plane.getChunkByCoord(playerChunk.getX(), playerChunk.getY() - Chunk.SIZE));
-	answer.add(plane.getChunkByCoord(playerChunk.getX() + Chunk.SIZE, playerChunk.getY() - Chunk.SIZE));
-
-	answer.add(plane.getChunkByCoord(playerChunk.getX() - Chunk.SIZE, playerChunk.getY()));
-	answer.add(plane.getChunkByCoord(playerChunk.getX() + Chunk.SIZE, playerChunk.getY()));
-
-	answer.add(plane.getChunkByCoord(playerChunk.getX() - Chunk.SIZE, playerChunk.getY() + Chunk.SIZE));
-	answer.add(plane.getChunkByCoord(playerChunk.getX(), playerChunk.getY() + Chunk.SIZE));
-	answer.add(plane.getChunkByCoord(playerChunk.getX() + Chunk.SIZE, playerChunk.getY() + Chunk.SIZE));
-	return answer;
 }
 
 @Override

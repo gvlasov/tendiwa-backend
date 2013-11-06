@@ -1,16 +1,17 @@
 package tendiwa.drawing;
 
+import tendiwa.core.Chunk;
+
 import java.awt.Color;
 
-import tendiwa.core.TerrainBasics;
 
 public class DrawingTerrain {
 
-	public static DrawingAlgorithm<TerrainBasics> defaultAlgorithm() {
-		return new DrawingAlgorithm<TerrainBasics>() {
-			public void draw(TerrainBasics tb) {
-				for (int x = 0, maxX = tb.getWidth(); x < maxX; x++) {
-					for (int y = 0, maxY = tb.getHeight(); y < maxY; y++) {
+	public static DrawingAlgorithm<Chunk> defaultAlgorithm() {
+		return new DrawingAlgorithm<Chunk>() {
+			public void draw(Chunk tb) {
+				for (int x = 0, maxX = Chunk.SIZE; x < maxX; x++) {
+					for (int y = 0, maxY = Chunk.SIZE; y < maxY; y++) {
 						int rasterX = tb.x + x;
 						int rasterY = tb.y + y;
 						if (tb.hasCharacter(x, y)) {

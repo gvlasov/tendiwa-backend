@@ -12,9 +12,9 @@ public class CellCollection {
 	private ArrayList<Coordinate> cells;
 	ArrayList<Coordinate> unoccupied;
 	boolean hasCells = true;
-	public TerrainBasics location;
+	public Location location;
 
-	public CellCollection(Collection<Coordinate> cls, TerrainBasics loc) {
+	public CellCollection(Collection<Coordinate> cls, Location loc) {
 		if (cls.isEmpty()) {
 			throw new Error("Can't create an empty cell collection: argument is an empty collection");
 		}
@@ -73,7 +73,7 @@ public class CellCollection {
 			if (ch10.roll()) {
 				continue;
 			}
-			location.removeObject(coo.x, coo.y);
+			location.getPlane().removeObject(coo.x, coo.y);
 
 		}
 	}
@@ -89,7 +89,7 @@ public class CellCollection {
 			}
 			int cellIndex = Chance.rand(0, cells.size()-1);
 			Coordinate cell = cells.get(cellIndex);
-			location.setElement(cell.x, cell.y, placeable);
+			placeable.place(location.getPlane(), cell.x, cell.y);
 			unsetCell(cell);
 		}
 	}
@@ -104,7 +104,7 @@ public class CellCollection {
 			}
 			int cellIndex = Chance.rand(0, cells.size()-1);
 			Coordinate cell = cells.get(cellIndex);
-			type.place(location.cells[cell.x][cell.y]);
+			type.place(location.getPlane(), cell.x, cell.y);
 			unsetCell(cell);
 		}
 	}
@@ -116,7 +116,7 @@ public class CellCollection {
 	public void fillWithElements(PlaceableInCell placeable) {
 		// TODO Auto-generated method stub
 		for (Coordinate c : cells) {
-			location.setElement(c.x, c.y, placeable);
+			placeable.place(location.getPlane(), c.x, c.y);
 		}
 	}
 	public ArrayList<Coordinate> setElementsAndReport(PlaceableInCell placeable, int amount) {
@@ -127,7 +127,7 @@ public class CellCollection {
 			}
 			int cellIndex = Chance.rand(0, cells.size()-1);
 			Coordinate cell = cells.get(cellIndex);
-			location.setElement(cell.x, cell.y, placeable);
+			placeable.place(location.getPlane(), cell.x, cell.y);
 			unsetCell(cell);
 			coords.add(cell);
 		}
@@ -143,7 +143,7 @@ public class CellCollection {
 		}
 		int cellIndex = Chance.rand(0, cells.size()-1);
 		Coordinate cell = cells.get(cellIndex);
-		location.setElement(cell.x, cell.y, placeable);
+		placeable.place(location.getPlane(), cell.x, cell.y);
 		unsetCell(cell);
 		return cell;
 	}
@@ -153,7 +153,8 @@ public class CellCollection {
 		}
 		int cellIndex = Chance.rand(0, cells.size()-1);
 		Coordinate cell = cells.get(cellIndex);
-		objectType.place(location.cells[cell.x][cell.y]);
+		objectType.place(location.getPlane(), cell.x, cell.y);
+
 		unsetCell(cell);
 		return cell;
 	}

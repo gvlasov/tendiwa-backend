@@ -1,17 +1,21 @@
 package tendiwa.core;
 
+import org.tendiwa.events.EventFovChange;
+import org.tendiwa.events.EventInitialTerrain;
+
 import static tendiwa.core.DSL.worldBuilder;
 
 public class World {
 
 protected final int width;
 protected final int height;
-final HorizontalPlane defaultPlane = new HorizontalPlane();
+final HorizontalPlane defaultPlane;
 private PlayerCharacter playerCharacter;
 
 public World(int width, int height) {
 	this.width = width;
 	this.height = height;
+	defaultPlane = new HorizontalPlane(width, height);
 	defaultPlane.touchChunks(0, 0, width, height);
 }
 
@@ -53,17 +57,13 @@ private void checkIfLocationPlacesFillAllWorld(WorldRectangleBuilder builder) {
 	}
 }
 
-public Cell[][] getCellContents() {
-	return defaultPlane.getCells(0, 0, width, height);
-}
-
 public PlayerCharacter getPlayerCharacter() {
 	assert playerCharacter != null;
 	return playerCharacter;
 }
 
 public void setPlayerCharacter(PlayerCharacter playerCharacter) {
-	while (defaultPlane.getCell(playerCharacter.x, playerCharacter.y).getPassability() == TerrainBasics.Passability.NO) {
+	while (defaultPlane.getPassability(playerCharacter.x, playerCharacter.y) == Chunk.Passability.NO) {
 		playerCharacter.x++;
 	}
 	this.playerCharacter = playerCharacter;
@@ -72,10 +72,13 @@ public void setPlayerCharacter(PlayerCharacter playerCharacter) {
 public void placePlayerCharacter(PlayerCharacter player, int x, int y) {
 	defaultPlane.placeCharacter(player, x, y);
 }
+
 public int getWidth() {
 	return width;
 }
+
 public int getHeight() {
 	return height;
 }
+
 }

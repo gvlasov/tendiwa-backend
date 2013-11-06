@@ -7,13 +7,13 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 
 public class ItemType implements GsonForStaticDataSerializable {
-private static short lastId = 0;
+private static int lastId = 0;
 private final String name;
 private final double weight;
 private final double volume;
 private final Material material;
 private final boolean stackable;
-private final short id;
+private final int id;
 private ImmutableSet<Aspect> aspects;
 
 public ItemType(String name, ImmutableSet<Aspect> aspects, double weight, double volume, Material material, boolean stackable) {
@@ -83,7 +83,7 @@ public JsonElement serialize(JsonSerializationContext context) {
 	return jArray;
 }
 
-public short getId() {
+public int getId() {
 	return id;
 }
 }

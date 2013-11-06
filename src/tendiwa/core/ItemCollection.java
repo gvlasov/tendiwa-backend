@@ -14,9 +14,9 @@ import com.google.gson.JsonSerializationContext;
  */
 public class ItemCollection implements GsonForStaticDataSerializable {
 	// itemId => UniqueItem
-	protected final HashMap<Integer, UniqueItem> uniqueItems = new HashMap<Integer, UniqueItem>();
+	protected final HashMap<Integer, UniqueItem> uniqueItems = new HashMap<>();
 	// typeId => ItemPile
-	private final HashMap<Integer, ItemPile> itemPiles = new HashMap<Integer, ItemPile>();
+	private final HashMap<Integer, ItemPile> itemPiles = new HashMap<>();
 
 	public ItemCollection() {
 
@@ -26,11 +26,12 @@ public class ItemCollection implements GsonForStaticDataSerializable {
 		uniqueItems.put(item.id, item);
 	}
 
-	public void add(int typeId, int amount) {
-		if (itemPiles.containsKey(typeId)) {
-			itemPiles.get(typeId).changeAmount(amount);
+	public void add(ItemType type, int amount) {
+		int id = type.getId();
+		if (itemPiles.containsKey(id)) {
+			itemPiles.get(id).changeAmount(amount);
 		} else {
-			itemPiles.put(typeId, new ItemPile(typeId, amount));
+			itemPiles.put(id, new ItemPile(type, amount));
 		}
 	}
 

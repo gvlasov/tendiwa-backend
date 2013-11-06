@@ -1,56 +1,59 @@
 package tendiwa.core;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
 import tendiwa.core.meta.Coordinate;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 
-public class Chunk extends TerrainBasics implements GsonForStaticDataSerializable {
-public static final byte SIZE = 30;
+public class Chunk implements Serializable {
+public static final byte SIZE = 32;
+public final int x;
+public final int y;
 public HorizontalPlane plane;
-public Chunk neighborN;
-public Chunk neighborE;
-public Chunk neighborS;
-public Chunk neighborW;
-private HashSet<Character> characters = new HashSet<>();
-private HashSet<NonPlayerCharacter> nonPlayerCharacters = new HashSet<>();
+protected HashMap<Integer, ItemCollection> items = new HashMap<>();
+Map<Integer, Character> characters = new HashMap<>();
+short[][] terrain;
+Map<Integer, GameObject> objects = new HashMap<>();
 private ArrayList<SoundSource> soundSources = new ArrayList<>();
-private TimeStream timeStream;
+transient private TimeStream timeStream;
 
 public Chunk(HorizontalPlane plane, int x, int y) {
-	super(x, y);
+	this.x = x;
+	this.y = y;
+	this.terrain = new short[SIZE][SIZE];
 	this.plane = plane;
-	this.cells = new Cell[Chunk.SIZE][Chunk.SIZE];
-	for (byte i = 0; i < SIZE; i++) {
-		for (byte j = 0; j < SIZE; j++) {
-			cells[i][j] = new Cell();
-		}
-	}
 }
 
-public Cell getCell(int x, int y) {
-	return cells[x - this.x][y - this.y];
-}
+public static Coordinate[] vector(int startX, int startY, int endX, int endY) {
+	int l = Math.round(Math.max(Math.abs(endX - startX),
+		Math.abs(endY - startY)));
+	float x[] = new float[l + 2];
+	float y[] = new float[l + 2];
+	Coordinate result[] = new Coordinate[l + 1];
 
-public Chunk getNeighbor(CardinalDirection side) {
-	if (side == null) {
-		throw new NullPointerException();
+	x[0] = startX;
+	y[0] = startY;
+
+	if (startX == endX && startY == endY) {
+		result = new Coordinate[1];
+		result[0] = new Coordinate(startX, startY);
+		return result;
 	}
-	switch (side) {
-		case N:
-			return neighborN;
-		case E:
-			return neighborE;
-		case S:
-			return neighborE;
-		case W:
-		default:
-			return neighborE;
+	float dx = (endX - startX) / (float) l;
+	float dy = (endY - startY) / (float) l;
+	for (int i = 1; i <= l; i++) {
+		x[i] = x[i - 1] + dx;
+		y[i] = y[i - 1] + dy;
 	}
+	x[l + 1] = endX;
+	y[l + 1] = endY;
+
+	for (int i = 0; i <= l; i++) {
+		result[i] = new Coordinate(Math.round(x[i]), Math.round(y[i]));
+	}
+	return result;
 }
 
 public int getX() {
@@ -61,12 +64,10 @@ public int getY() {
 	return y;
 }
 
-protected NonPlayerCharacter createCharacter(int relX, int relY, int characterTypeId, String name, int fraction) {
-	NonPlayerCharacter character = new NonPlayerCharacter(plane, StaticData.getCharacterType(characterTypeId), x + relX, y + relY, name);
+protected NonPlayerCharacter createCharacter(int relX, int relY, CharacterType characterType, String name, int fraction) {
+	NonPlayerCharacter character = new NonPlayerCharacter(plane, characterType, x + relX, y + relY, name);
 	character.setFraction(fraction);
-	characters.add(character);
-	nonPlayerCharacters.add(character);
-	cells[relX][relY].character(character);
+	addCharacter(character);
 		/*
 		 * timeStream.fireEvent(new EventCharacterAppear( character.getId(),
 		 * character.x, character.y, character.getType().getId(),
@@ -78,68 +79,19 @@ protected NonPlayerCharacter createCharacter(int relX, int relY, int characterTy
 	return character;
 }
 
-void addCharacter(Character ch) {
-	cells[ch.x - x][ch.y - y].character(ch);
-	characters.add(ch);
+void addCharacter(Character character) {
+	characters.put(character.x * Chunk.SIZE + character.y, character);
 }
 
 void removeCharacter(Character character) {
-	cells[character.x - x][character.y - y].setPassability(Passability.FREE);
-	cells[character.x - x][character.y - y].character(false);
-	characters.remove(character);
-}
-
-public void place(int x, int y, PlaceableInCell type) {
-	type.place(cells[x][y]);
-	throw new UnsupportedOperationException();
+	characters.remove(character.x * Chunk.SIZE + character.y);
 }
 
 public void removeObject(int x, int y) {
-	super.removeObject(x, y);
-	for (NonPlayerCharacter ch : nonPlayerCharacters) {
-		if (ch.initialCanSee(x, y)) {
-			ch.getVisibleEntities();
-		}
-	}
-	if (Tendiwa.getPlayer().canSee(x,y) && Tendiwa.getPlayer().isVisionCacheEmpty()) {
+	objects.remove(x * Chunk.SIZE + y);
+	if (Tendiwa.getPlayer().canSee(x, y) && Tendiwa.getPlayer().isVisionCacheEmpty()) {
 		Tendiwa.getPlayer().invalidateVisionCache();
 	}
-	throw new UnsupportedOperationException();
-}
-
-/**
- * Places a UniqueItem on a certain cell in this Chunk.
- *
- * @param x
- * 		Relative coordinates of cell
- * @param y
- * 		Relative coordinates of cell
- */
-public void addItem(UniqueItem item, int x, int y) {
-	super.addItem(item, x, y);
-	throw new UnsupportedOperationException();
-}
-
-/**
- * Places an ItemPile on a certain cell in this Chunk.
- *
- * @param x
- * 		Relative coordinates of cell
- * @param y
- * 		Relative coordinates of cell
- */
-public void addItem(ItemPile pile, int x, int y) {
-	super.addItem(pile, x, y);
-	throw new UnsupportedOperationException();
-}
-
-public void removeItem(ItemPile pile, int x, int y) {
-	super.removeItem(pile, x, y);
-	throw new UnsupportedOperationException();
-}
-
-public void removeItem(UniqueItem item, int x, int y) {
-	super.removeItem(item, x, y);
 	throw new UnsupportedOperationException();
 }
 
@@ -165,7 +117,7 @@ public void removeSoundSource(int x, int y) {
  * Sets or unsets a TimeStream this Chunk belongs to.
  *
  * @param timeStream
- * 		A TimeStream, or null to let this Chunk belong to no TimeStream.
+ * 	A TimeStream, or null to let this Chunk belong to no TimeStream.
  */
 public void setTimeStream(TimeStream timeStream) {
 	if (timeStream != null && this.timeStream != null) {
@@ -174,47 +126,8 @@ public void setTimeStream(TimeStream timeStream) {
 	this.timeStream = timeStream;
 }
 
-public int getWidth() {
-	return Chunk.SIZE;
-}
-
-public int getHeight() {
-	return Chunk.SIZE;
-}
-
 public String toString() {
 	return "Chunk " + x + " " + y;
-}
-
-public int[] getContentsAsIntegerArray() {
-	int[] contents = new int[Chunk.SIZE * Chunk.SIZE * 2];
-	int u = 0;
-	for (int y = 0; y < Chunk.SIZE; y++) {
-		for (int x = 0; x < Chunk.SIZE; x++) {
-			contents[u++] = cells[x][y].floor;
-			contents[u++] = cells[x][y].object;
-		}
-	}
-	return contents;
-}
-
-@Override
-public JsonElement serialize(JsonSerializationContext context) {
-	JsonArray jArray = new JsonArray();
-	for (int j = 0; j < SIZE; j++) {
-		for (int i = 0; i < SIZE; i++) {
-			Cell c = cells[i][j];
-			JsonArray jArrayCell = new JsonArray();
-			jArrayCell.add(new JsonPrimitive(c.floor()));
-			jArrayCell.add(new JsonPrimitive(c.object()));
-			ItemCollection cellItems = items.get(i * 100000 + j);
-			if (cellItems != null) {
-				jArrayCell.add(cellItems.serialize(context));
-			}
-			jArray.add(jArrayCell);
-		}
-	}
-	return jArray;
 }
 
 /**
@@ -225,5 +138,94 @@ public JsonElement serialize(JsonSerializationContext context) {
  */
 public boolean belongsToTimeStream(TimeStream timeStream) {
 	return this.timeStream == timeStream;
+}
+
+public void setTerrainElement(short id, int x, int y) {
+	terrain[x - this.x][y - this.y] = id;
+}
+
+public Character getCharacter(int x, int y) {
+	return characters.get(x * SIZE + y);
+}
+
+public GameObject getGameObject(int x, int y) {
+	return objects.get(x * SIZE + y);
+}
+
+/**
+ * Places a UniqueItem on a certain cell in this Chunk.
+ *
+ * @param x
+ * 	Relative coordinates of cell
+ * @param y
+ * 	Relative coordinates of cell
+ */
+public void addItem(UniqueItem item, int x, int y) {
+	items.get(x * Chunk.SIZE + y).add(item);
+}
+
+/**
+ * Places a ItemPile on a certain cell in this Chunk.
+ *
+ * @param x
+ * 	Relative coordinates of cell
+ * @param y
+ * 	Relative coordinates of cell
+ */
+public void addItem(ItemPile item, int x, int y) {
+	items.get(x * SIZE + y).add(item);
+}
+
+public boolean hasObject(int x, int y) {
+	return objects.containsKey(x * SIZE + y);
+}
+
+public boolean hasCharacter(int x, int y) {
+	for (Character character : characters.values()) {
+		if (character.x == x && character.y == y) {
+			return true;
+		}
+	}
+	return false;
+}
+
+public ItemCollection getItems(int x, int y) {
+	return items.get(x * SIZE + y);
+}
+
+public float distance(int startX, int startY, int endX, int endY) {
+	return (float) Math.sqrt(Math.pow(startX - endX, 2)
+		+ Math.pow(startY - endY, 2));
+}
+
+public void removeItem(UniqueItem item, int x, int y) {
+	items.get(x * SIZE + y).removeUnique(item);
+}
+
+public void removeItem(ItemPile item, int x, int y) {
+	items.get(x * SIZE + y).removePile(item);
+}
+
+public boolean isDoor(int x, int y) {
+	return getObject(x, y).getType().getObjectClass() == ObjectType.ObjectClass.DOOR;
+}
+
+private GameObject getObject(int x, int y) {
+	return objects.get(x * SIZE + y);
+}
+
+/**
+ * @param x
+ * 	Absolute x coordinate.
+ * @param y
+ * 	Absolute y coordinate.
+ * @return Id of {@link TerrainType} in that cell.
+ */
+public short getTerrainElement(int x, int y) {
+	return terrain[x-this.x][y-this.y];
+}
+
+public enum Passability {
+	FREE, SEE, NO;
 }
 }

@@ -1,10 +1,5 @@
 package tendiwa.core;
 
-import java.awt.*;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-
 /**
  * <p> A HorizontalPlane is a single storey of the world, much like a single level of a dungeon in traditional
  * rogue-likes. It is a potentially infinite Cartesian plane with integral coordinates divided by square {@link Chunk}s.
@@ -14,35 +9,41 @@ import java.util.HashSet;
  * absolute height in the world. </p>
  */
 public class HorizontalPlane {
-protected final HashMap<Integer, HashMap<Integer, Chunk>> chunks = new HashMap<>();
+protected final Chunk[][] chunks;
+private final int width;
+private final int height;
 public HorizontalPlane upperPlane;
 public HorizontalPlane lowerPlane;
 private int numberOfChunks = 0;
 
-public HorizontalPlane() {
-
+/**
+ * @param width
+ * 	Width of plane in cells.
+ * @param height
+ * 	Height of plane in cells.
+ */
+public HorizontalPlane(int width, int height) {
+	chunks = new Chunk[width / Chunk.SIZE + 1][height / Chunk.SIZE + 1];
+	this.width = width;
+	this.height = height;
 }
 
-public Chunk createChunk(int x, int y) {
-	if (x % Chunk.SIZE != 0) {
-		throw new Error("Wrong x " + x);
+public Chunk loadChunk(int x, int y) {
+	int chunkX = (x - x % Chunk.SIZE) / Chunk.SIZE;
+	int chunkY = (y - y % Chunk.SIZE) / Chunk.SIZE;
+	if (chunks[chunkX][chunkY] != null) {
+		throw new RuntimeException("Trying to load a chunk that is already loaded.");
 	}
-	if (y % Chunk.SIZE != 0) {
-		throw new Error("Wrong y " + y);
-	}
-	if (!chunks.containsKey(x)) {
-		chunks.put(x, new HashMap<Integer, Chunk>());
-	}
-	if (chunks.get(x).containsKey(y)) {
-		throw new Error("Chunk at " + x + ":" + y + " already exists");
-	}
-	numberOfChunks++;
-	return chunks.get(x).put(y, new Chunk(this, x, y));
+	return chunks[chunkX][chunkY] = loadChunkFromFilesystem(chunkX, chunkY);
+}
+
+private Chunk loadChunkFromFilesystem(int chunkX, int chunkY) {
+	return null;
 }
 
 public void touchChunk(int x, int y) {
 	if (!hasChunk(x, y)) {
-		createChunk(x, y);
+		chunks[x / Chunk.SIZE][y / Chunk.SIZE] = new Chunk(this, x, y);
 	}
 }
 
@@ -54,88 +55,27 @@ public void touchChunks(int x, int y, int width, int height) {
 	}
 }
 
-public Chunk getChunkWithCell(int x, int y) {
-	int chX = (x < 0) ? x - ((x % Chunk.SIZE == 0) ? 0 : Chunk.SIZE) - x % Chunk.SIZE
-		: x - x % Chunk.SIZE;
-	int chY = (y < 0) ? y - ((y % Chunk.SIZE == 0) ? 0 : Chunk.SIZE) - y % Chunk.SIZE
-		: y - y % Chunk.SIZE;
-	try {
-		return chunks.get(chX).get(chY);
-	} catch (NullPointerException e) {
-		throw new NullPointerException("No chunk " + chX + ":" + chY + " with cell " + x + ":" + y);
-	}
-}
-
 /**
- * Returns all chunks present in this HorizontalPlane.
+ * Returns the chunk that contains cell with absolute coordinates x:y. Loads it if it was not loaded.
  *
- * @return All chunks.
+ * @param x
+ * 	Absolute x coordinate of a cell.
+ * @param y
+ * 	Absolute y coordinate of a cell.
+ * @return Chunk that contains a cell with given absolute coordinates.
  */
-public Collection<Chunk> getChunks() {
-	Collection<Chunk> chs = new HashSet<>();
-	for (HashMap<Integer, Chunk> column : chunks.values()) {
-		for (Chunk chunk : column.values()) {
-			chs.add(chunk);
-		}
+public Chunk getChunkWithCell(int x, int y) {
+	if (x < 0 || y < 0 || x >= width || y >= height) {
+		throw new ArrayIndexOutOfBoundsException("Point " + x + ":" + y + " is not inside plane of " + width + "x" + height + " cells large.");
 	}
-	return chs;
-}
-
-public Chunk getChunkByCoord(int x, int y) {
-	return chunks.get(x).get(y);
+	int chunkX = (x - x % Chunk.SIZE) / Chunk.SIZE;
+	int chunkY = (y - y % Chunk.SIZE) / Chunk.SIZE;
+	Chunk chunk = chunks[chunkX][chunkY];
+	return chunk == null ? loadChunk(x, y) : chunk;
 }
 
 public boolean hasChunk(int x, int y) {
-	return chunks.containsKey(x - x % Chunk.SIZE) && chunks.get(x - x % Chunk.SIZE).containsKey(y - y % Chunk.SIZE);
-}
-
-public void placeTrail(Trail trail) {
-	final Rectangle pointsArea = EnhancedRectangle.rectangleContainingAllPonts(trail.points);
-	pointsArea.x -= trail.width;
-	pointsArea.y -= trail.width;
-	pointsArea.width += trail.width * 2;
-	pointsArea.height += trail.width * 2;
-	touchChunks(pointsArea.x, pointsArea.y, pointsArea.width, pointsArea.height);
-	trail.draw(new TerrainBasics(pointsArea.x, pointsArea.y) {
-
-		@Override
-		public int getWidth() {
-			return pointsArea.width;
-		}
-
-		@Override
-		public int getHeight() {
-			return pointsArea.height;
-		}
-	});
-}
-
-public Cell[][] getCells(int x, int y, int width, int height) {
-	Cell[][] answer = new Cell[width][height];
-	int chunkX = getChunkRoundedCoord(x);
-	int chunkY = getChunkRoundedCoord(y);
-	// Difference between the start cell and the coordinate of a chunk it is
-	// in.
-	int endX = x + width;
-	int endY = y + height;
-	for (int currX = x; currX < endX; chunkX += Chunk.SIZE, currX = chunkX) {
-		for (int currY = y; currY < endY; chunkY += Chunk.SIZE, currY = chunkY) {
-			// For each chunk in the selected zone
-			Chunk chunk = getChunkByCoord(chunkX, chunkY);
-			int dxInResult = 0;
-			for (int k = currX - chunkX; k < Chunk.SIZE && chunkX + k != endX; k++) {
-				// Fill answer array with cells from chunk
-				int dyInResult = 0;
-				for (int l = currY - chunkY; l < Chunk.SIZE && chunkY + l != endY; l++) {
-					answer[currX - x + dxInResult][currY - y + dyInResult++] = chunk.cells[k][l];
-				}
-				dxInResult++;
-			}
-		}
-		// It IS neccessary!
-		chunkY = getChunkRoundedCoord(y);
-	}
-	return answer;
+	return chunks[(x - x % Chunk.SIZE) / Chunk.SIZE][(y - y % Chunk.SIZE) / Chunk.SIZE] != null;
 }
 
 /**
@@ -150,13 +90,17 @@ public int getChunkRoundedCoord(int coord) {
 		: Chunk.SIZE) - coord % Chunk.SIZE : coord - coord % Chunk.SIZE;
 }
 
-public Cell getCell(int x, int y) {
-	return getChunkWithCell(x, y).getCell(x, y);
+public short getTerrainElement(int x, int y) {
+	return getChunkWithCell(x, y).getTerrainElement(x, y);
 }
 
-public NonPlayerCharacter createCharacter(int absX, int absY, int characterTypeId, String name, int fraction) {
+public Chunk.Passability getPassability(int x, int y) {
+	return TerrainType.getById(getChunkWithCell(x, y).getTerrainElement(x, y)).getPassability();
+}
+
+public NonPlayerCharacter createCharacter(int absX, int absY, CharacterType characterType, String name, int fraction) {
 	Chunk chunk = getChunkWithCell(absX, absY);
-	return chunk.createCharacter(absX - chunk.x, absY - chunk.y, characterTypeId, name, fraction);
+	return chunk.createCharacter(absX - chunk.x, absY - chunk.y, characterType, name, fraction);
 }
 
 public void addItem(ItemPile pile, int x, int y) {
@@ -187,5 +131,35 @@ public ItemCollection getItems(int x, int y) {
 public void placeCharacter(Character character, int x, int y) {
 	Chunk chunk = getChunkWithCell(x, y);
 	chunk.addCharacter(character);
+}
+
+public void removeObject(int x, int y) {
+	Chunk chunkWithCell = getChunkWithCell(x, y);
+	chunkWithCell.removeObject(x - chunkWithCell.x, y - chunkWithCell.y);
+}
+
+public void placeTerrainElement(short id, int x, int y) {
+	getChunkWithCell(x, y).setTerrainElement(id, x, y);
+}
+
+public Character getCharacter(int x, int y) {
+
+	return getChunkWithCell(x, y).getCharacter(x, y);
+}
+
+public void removeCharacter(Character character) {
+	getChunkWithCell(character.x, character.y).removeCharacter(character);
+}
+
+public void addCharacter(Character character) {
+	getChunkWithCell(character.x, character.y).addCharacter(character);
+}
+
+public void setTerrainElement(short id, int x, int y) {
+	getChunkWithCell(x, y).setTerrainElement(id, x, y);
+}
+
+public GameObject getGameObject(int x, int y) {
+	return getChunkWithCell(x, y).getGameObject(x, y);
 }
 }

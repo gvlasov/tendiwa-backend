@@ -7,28 +7,35 @@ import tendiwa.core.terrain.settlements.BuildingPlace;
 import java.awt.*;
 import java.util.*;
 
+import static tendiwa.core.Chunk.vector;
+
 /**
- * Location is a rectangle of cells. API users write cell contents to Location calling its methods, and that fills up
- * the {@link HorizontalPlane} this Location is on.
- *
+ * Location is a rectangle of cells lying over several {@link Chunk}s. API users write cell contents to Location calling
+ * its methods, and that fills up the {@link HorizontalPlane} (by filling up Chunks) this Location is on.
  */
-public class Location extends TerrainBasics {
+public class Location {
 protected final int width;
 protected final int height;
+final int y;
+final int x;
 private HorizontalPlane plane;
 
 Location(HorizontalPlane plane, int x, int y, int width, int height) {
-	super(x, y);
-	this.cells = plane.getCells(x, y, width, height);
+	this.x = x;
+	this.y = y;
 	this.plane = plane;
 	this.width = width;
 	this.height = height;
 	Chat.initLocationChat(this);
 }
 
+public HorizontalPlane getPlane() {
+	return plane;
+}
+
 public void line(int startX, int startY, int endX, int endY, PlaceableInCell placeable) {
 	if (startX == endX && startY == endY) {
-		placeable.place(cells[startX][startY]);
+		placeable.place(plane, x + startX, y + startY);
 		return;
 	}
 	Coordinate[] cells = vector(startX, startY, endX, endY);
@@ -39,13 +46,13 @@ public void line(int startX, int startY, int endX, int endY, PlaceableInCell pla
 		int x2 = cells[i + 1].x;
 		int y2 = cells[i + 1].y;
 
-		placeable.place(this.cells[x][y]);
+		placeable.place(plane, x, y);
 		if (i < cells.length - 1 && x != x2 && y != y2) {
 			int cx = x + ((x2 > x) ? 1 : -1);
-			placeable.place(this.cells[cx][y]);
+			placeable.place(plane, this.x + cx, this.y + y);
 		}
 		if (i == size - 2) {
-			placeable.place(this.cells[x2][y2]);
+			placeable.place(plane, this.x + x2, this.y + y2);
 		}
 	}
 }
@@ -155,10 +162,10 @@ public void circle(int cX, int cY, int r, PlaceableInCell placeable, boolean fil
 	} while (yCoord > 0);
 	int size = x.size();
 	for (int i = 0; i < size; i++) {
-		placeable.place(cells[cX + x.get(i)][cY + y.get(i)]);
-		placeable.place(cells[cX - x.get(i)][cY + y.get(i)]);
-		placeable.place(cells[cX + x.get(i)][cY - y.get(i)]);
-		placeable.place(cells[cX - x.get(i)][cY - y.get(i)]);
+		placeable.place(plane, this.x + cX + x.get(i), this.y + cY + y.get(i));
+		placeable.place(plane, this.x + cX - x.get(i), this.y + cY + y.get(i));
+		placeable.place(plane, this.x + cX + x.get(i), this.y + cY - y.get(i));
+		placeable.place(plane, this.x + cX - x.get(i), this.y + cY - y.get(i));
 	}
 }
 
@@ -168,18 +175,6 @@ public TerrainModifier getTerrainModifier(RectangleSystem rs) {
 
 public CellCollection getCellCollection(ArrayList<Coordinate> cls) {
 	return new CellCollection(cls, this);
-}
-
-// From LocationGenerator
-public NonPlayerCharacter createCharacter(String type, int characterTypeId, int x, int y, String name) {
-	NonPlayerCharacter ch = new NonPlayerCharacter(plane, StaticData.getCharacterType(characterTypeId), x, y, name);
-	characters.put(ch.getId(), ch);
-	cells[x][y].character(ch);
-	return ch;
-}
-
-public void selectPlane(HorizontalPlane plane) {
-	this.plane = plane;
 }
 
 public <T extends Building> void placeBuilding(T building) {
@@ -267,19 +262,18 @@ public ArrayList<Coordinate> polygon(ArrayList<Coordinate> coords, boolean mode)
 	return answer;
 }
 
-public void fillWithCells(FloorType floor, ObjectType object) {
+public void fillWithCells(TerrainType floor) {
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
-			floor.place(cells[i][j]);
-			object.place(cells[i][j]);
+			plane.setTerrainElement(floor.getId(), x + i, y + j);
 		}
 	}
 }
 
-public ArrayList<Coordinate> closeCells(int startX, int startY, int length, byte pass, boolean noDiagonal) {
-	ArrayList<Coordinate> oldFront = new ArrayList<Coordinate>();
-	ArrayList<Coordinate> newFront = new ArrayList<Coordinate>();
-	ArrayList<Coordinate> answer = new ArrayList<Coordinate>();
+public ArrayList<Coordinate> closeCells(int startX, int startY, int length, Chunk.Passability pass, boolean noDiagonal) {
+	ArrayList<Coordinate> oldFront = new ArrayList<>();
+	ArrayList<Coordinate> newFront = new ArrayList<>();
+	ArrayList<Coordinate> answer = new ArrayList<>();
 	answer.add(new Coordinate(startX, startY));
 	newFront.add(new Coordinate(startX, startY));
 	int[][] pathTable = new int[width][height];
@@ -324,10 +318,10 @@ public ArrayList<Coordinate> closeCells(int startX, int startY, int length, byte
 					continue;
 				}
 
-				if (cells[thisNumX][thisNumY].getPassabilityByte() != pass) {
+				if (plane.getPassability(thisNumX, thisNumY) != pass) {
 					continue;
 				}
-				if (Math.floor(distance(startX, startY, thisNumX, thisNumY)) >= length) {
+				if (Math.floor(EnhancedPoint.distance(startX, startY, thisNumX, thisNumY)) >= length) {
 					continue;
 				}
 				newFront.add(new Coordinate(thisNumX, thisNumY));
@@ -376,13 +370,13 @@ public ArrayList<Coordinate> getElementsAreaBorder(int startX, int startY, Place
 			for (int j = 0; j < numOfSides; j++) {
 				int thisNumX = x + adjactentX[j];
 				int thisNumY = y + adjactentY[j];
-				if (thisNumX < 0 || thisNumX >= getWidth() || thisNumY < 0 || thisNumY >= getHeight() || pathTable[thisNumX][thisNumY] != 0 || distance(startX, startY, thisNumX, thisNumY) > depth) {
+				if (thisNumX < 0 || thisNumX >= getWidth() || thisNumY < 0 || thisNumY >= getHeight() || pathTable[thisNumX][thisNumY] != 0 || EnhancedPoint.distance(startX, startY, thisNumX, thisNumY) > depth) {
 					continue;
 				}
-				if (placeable.containedIn(this.cells[thisNumX][thisNumY]) && !(thisNumX == startX && thisNumY == startY)) {
+				if (placeable.containedIn(plane, thisNumX, thisNumY) && !(thisNumX == startX && thisNumY == startY)) {
 					pathTable[thisNumX][thisNumY] = t + 1;
 					newFront.add(new Coordinate(thisNumX, thisNumY));
-				} else if (!placeable.containedIn(this.cells[thisNumX][thisNumY])) {
+				} else if (!placeable.containedIn(plane, thisNumX, thisNumY)) {
 					cells.add(new Coordinate(x, y));
 				}
 			}
@@ -401,7 +395,7 @@ public void waveStructure(int startX, int startY, PlaceableInCell placeable, int
 		Arrays.fill(pathTable[i], 0);
 		Arrays.fill(canceled[i], 0);
 	}
-	setElement(startX, startY, placeable);
+	placeable.place(plane, startX, startY);
 	int t = 0;
 	do {
 		int size = newFront.size();
@@ -429,7 +423,7 @@ public void waveStructure(int startX, int startY, PlaceableInCell placeable, int
 					canceled[thisNumX][thisNumY] = 1;
 					continue;
 				}
-				setElement(thisNumX, thisNumY, placeable);
+				placeable.place(plane, thisNumX, thisNumY);
 				newFront.put(newFront.size(), new Coordinate(thisNumX, thisNumY));
 			}
 		}
@@ -479,7 +473,7 @@ public int[][] getPathTable(int startX, int startY, int endX, int endY, boolean 
 				if (thisNumX == endX && thisNumY == endY) {
 					isPathFound = true;
 				}
-				if (cells[thisNumX][thisNumY].getPassability() == Passability.FREE && !(thisNumX == startX && thisNumY == startY)) {
+				if (plane.getPassability(thisNumX, thisNumY) == Chunk.Passability.FREE && !(thisNumX == startX && thisNumY == startY)) {
 					pathTable[thisNumX][thisNumY] = t + 1;
 					newFront.add(new Coordinate(thisNumX, thisNumY));
 				}
@@ -533,7 +527,7 @@ public ArrayList<Coordinate> getPath(int startX, int startY, int destinationX, i
 			if (thisNumY < 0 || thisNumY >= getHeight()) {
 				continue;
 			}
-			if (pathTable[thisNumX][thisNumY] == j - 1 && (currentNumX == -1 || distance(thisNumX, thisNumY, destinationX, destinationY) < distance(currentNumX, currentNumY, destinationX, destinationY))) {
+			if (pathTable[thisNumX][thisNumY] == j - 1 && (currentNumX == -1 || EnhancedPoint.distance(thisNumX, thisNumY, destinationX, destinationY) < EnhancedPoint.distance(currentNumX, currentNumY, destinationX, destinationY))) {
 				// ���� ������ � ���� ������� �������� ���������� �����,
 				// ������� �� ��
 				currentNumX = thisNumX;
@@ -546,57 +540,57 @@ public ArrayList<Coordinate> getPath(int startX, int startY, int destinationX, i
 	return path;
 }
 
-protected void cellularAutomataSmooth(int level, int type, PlaceableInCell formerContent, PlaceableInCell newContent) {
-	// Smooth the borders of terrain's areas consisting of
-	// elements with %type% and %val%
-	for (int l = 0; l < level; l++) {
-		Cell[][] bufCells = new Cell[getWidth()][getHeight()];
-		for (int i = 0; i < getHeight(); i++) {
-			for (int j = 0; j < getWidth(); j++) {
-				bufCells[j][i] = new Cell(cells[j][i]);
-			}
-		}
-		for (int i = 0; i < getWidth(); i++) {
-			for (int j = 0; j < getHeight(); j++) {
-				int count = 0;
-				boolean iGT0 = i > 0;
-				boolean iLTw = i < getWidth() - 1;
-				boolean jGT0 = j > 0;
-				boolean jLTh = j < getHeight() - 1;
-				if (jGT0 && bufCells[i][j - 1].contains(formerContent)) {
-					count++;
-				}
-				if (iLTw && jGT0 && bufCells[i + 1][j - 1].contains(formerContent)) {
-					count++;
-				}
-				if (iLTw && bufCells[i + 1][j].contains(formerContent)) {
-					count++;
-				}
-				if (iLTw && jLTh && bufCells[i + 1][j + 1].contains(formerContent)) {
-					count++;
-				}
-				if (jLTh && bufCells[i][j + 1].contains(formerContent)) {
-					count++;
-				}
-				if (iGT0 && jLTh && bufCells[i - 1][j + 1].contains(formerContent)) {
-					count++;
-				}
-				if (iGT0 && bufCells[i - 1][j].contains(formerContent)) {
-					count++;
-				}
-				if (iGT0 && jGT0 && bufCells[i - 1][j - 1].contains(formerContent)) {
-					count++;
-				}
-
-				if (bufCells[i][j].contains(formerContent) && count > 4) {
-					setElement(i, j, formerContent);
-				} else if (bufCells[i][j].contains(formerContent) && count < 4) {
-					setElement(i, j, newContent);
-				}
-			}
-		}
-	}
-}
+//protected void cellularAutomataSmooth(int level, int type, PlaceableInCell formerContent, PlaceableInCell newContent) {
+//	// Smooth the borders of terrain's areas consisting of
+//	// elements with %type% and %val%
+//	for (int l = 0; l < level; l++) {
+//		Cell[][] bufCells = new Cell[getWidth()][getHeight()];
+//		for (int i = 0; i < getHeight(); i++) {
+//			for (int j = 0; j < getWidth(); j++) {
+//				bufCells[j][i] = new Cell(cells[j][i]);
+//			}
+//		}
+//		for (int i = 0; i < getWidth(); i++) {
+//			for (int j = 0; j < getHeight(); j++) {
+//				int count = 0;
+//				boolean iGT0 = i > 0;
+//				boolean iLTw = i < getWidth() - 1;
+//				boolean jGT0 = j > 0;
+//				boolean jLTh = j < getHeight() - 1;
+//				if (jGT0 && bufCells[i][j - 1].contains(formerContent)) {
+//					count++;
+//				}
+//				if (iLTw && jGT0 && bufCells[i + 1][j - 1].contains(formerContent)) {
+//					count++;
+//				}
+//				if (iLTw && bufCells[i + 1][j].contains(formerContent)) {
+//					count++;
+//				}
+//				if (iLTw && jLTh && bufCells[i + 1][j + 1].contains(formerContent)) {
+//					count++;
+//				}
+//				if (jLTh && bufCells[i][j + 1].contains(formerContent)) {
+//					count++;
+//				}
+//				if (iGT0 && jLTh && bufCells[i - 1][j + 1].contains(formerContent)) {
+//					count++;
+//				}
+//				if (iGT0 && bufCells[i - 1][j].contains(formerContent)) {
+//					count++;
+//				}
+//				if (iGT0 && jGT0 && bufCells[i - 1][j - 1].contains(formerContent)) {
+//					count++;
+//				}
+//
+//				if (bufCells[i][j].contains(formerContent) && count > 4) {
+//					setElement(i, j, formerContent);
+//				} else if (bufCells[i][j].contains(formerContent) && count < 4) {
+//					setElement(i, j, newContent);
+//				}
+//			}
+//		}
+//	}
+//}
 
 /**
  * Default bold line with width of 3 cells
@@ -666,7 +660,8 @@ public void drawPath(int startX, int startY, int endX, int endY, PlaceableInCell
 	ArrayList<Coordinate> path = getPath(startX, startY, endX, endY, true);
 	int size = path.size();
 	for (int i = 0; i < size; i++) {
-		setElement(path.get(i).x, path.get(i).y, placeable);
+		Coordinate coordinate = path.get(i);
+		placeable.place(plane, coordinate.x, coordinate.y);
 	}
 }
 
@@ -697,10 +692,10 @@ protected CellCollection getCoast(int startX, int startY) {
 				if (thisNumX < 0 || thisNumX >= getWidth() || thisNumY < 0 || thisNumY >= getHeight() || pathTable[thisNumX][thisNumY] != 0) {
 					continue;
 				}
-				if (this.cells[thisNumX][thisNumY].getPassability() == Passability.NO && !(thisNumX == startX && thisNumY == startY)) {
+				if (plane.getPassability(thisNumX, thisNumY) == Chunk.Passability.NO && !(thisNumX == startX && thisNumY == startY)) {
 					pathTable[thisNumX][thisNumY] = t + 1;
 					newFront.add(new Coordinate(thisNumX, thisNumY));
-				} else if (this.cells[thisNumX][thisNumY].getPassability() != Passability.NO) {
+				} else if (plane.getPassability(thisNumX, thisNumY) != Chunk.Passability.NO) {
 					cells.add(new Coordinate(x, y));
 				}
 			}
@@ -715,7 +710,7 @@ public ArrayList<Coordinate> getCellsAroundCell(int x, int y) {
 	int x1[] = {x, x + 1, x + 1, x + 1, x, x - 1, x - 1, x - 1};
 	int y1[] = {y - 1, y - 1, y, y + 1, y + 1, y + 1, y, y - 1};
 	for (int i = 0; i < 8; i++) {
-		if (cells[x1[i]][y1[i]].getPassability() == Passability.FREE) {
+		if (plane.getPassability(x1[i], y1[i]) == Chunk.Passability.FREE) {
 			answer.add(new Coordinate(x1[i], y1[i]));
 		}
 	}
@@ -794,7 +789,7 @@ public void fillRectangle(Rectangle r, PlaceableInCell placeable) {
 	try {
 		for (x = r.x; x < r.x + r.width; x++) {
 			for (y = r.y; y < r.y + r.height; y++) {
-				placeable.place(cells[x][y]);
+				placeable.place(plane, x, y);
 			}
 		}
 	} catch (IndexOutOfBoundsException e) {

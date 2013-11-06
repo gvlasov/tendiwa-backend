@@ -6,30 +6,288 @@
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8b4d96ac-5daf-4774-9e72-1ceab60ca879" name="Default" comment="Added field of view caching.">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../MainModule/data/images/floors/old/grass_2.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../MainModule/data/images/floors/old/grass_3.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../MainModule/data/images/floors/old/stone_0.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../MainModule/data/images/floors/old/stone_1.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../MainModule/data/images/floors/old/stone_3.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_gray_stone_0001.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_gray_stone_0010.png" afterPath="" />
+    <list default="true" id="8b4d96ac-5daf-4774-9e72-1ceab60ca879" name="Default" comment="Field of view caching">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/org/tendiwa/events/EventFovChange.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/org/tendiwa/events/EventInitialTerrain.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/tendiwa/core/GameObject.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/tendiwa/core/RenderCell.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/tendiwa/core/RequestInitialTerrain.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/tendiwa/core/TerrainType.java" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../MainModule/data/images/floors/old/grass_1.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../MainModule/data/images/floors/old/stone_2.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/tendiwa/core/Cell.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/tendiwa/core/CharacterManager.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/tendiwa/core/FloorType.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/tendiwa/core/StaticData.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/tendiwa/core/Terrain.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/tendiwa/core/TerrainBasics.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/tendiwa/drawing/StdTerrainViewer.java" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/lattice_0000.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/lattice_0000.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/lattice_0001.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/lattice_0001.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/lattice_0010.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/lattice_0010.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/lattice_0011.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/lattice_0011.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/lattice_0100.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/lattice_0100.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/lattice_0101.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/lattice_0101.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/lattice_0110.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/lattice_0110.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/lattice_0111.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/lattice_0111.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/lattice_1000.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/lattice_1000.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/lattice_1001.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/lattice_1001.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/lattice_1010.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/lattice_1010.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/lattice_10101.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/lattice_10101.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/lattice_1011.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/lattice_1011.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/lattice_1100.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/lattice_1100.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/lattice_1101.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/lattice_1101.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/lattice_1110.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/lattice_1110.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/lattice_1111.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/lattice_1111.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/lattice_d0.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/lattice_d0.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/lattice_d1.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/lattice_d1.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/lattice_d2.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/lattice_d2.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/lattice_d3.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/lattice_d3.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_cave_0000.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_cave_0000.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_cave_0001.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_cave_0001.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_cave_0010.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_cave_0010.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_cave_0011.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_cave_0011.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_cave_0100.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_cave_0100.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_cave_0101.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_cave_0101.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_cave_0110.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_cave_0110.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_cave_0111.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_cave_0111.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_cave_1000.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_cave_1000.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_cave_1001.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_cave_1001.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_cave_1010.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_cave_1010.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_cave_1011.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_cave_1011.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_cave_1100.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_cave_1100.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_cave_1101.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_cave_1101.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_cave_1110.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_cave_1110.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_cave_1111.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_cave_1111.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_cave_d0.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_cave_d0.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_cave_d1.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_cave_d1.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_cave_d2.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_cave_d2.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_cave_d3.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_cave_d3.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_red_stone_0000.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_red_stone_0000.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_red_stone_0001.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_red_stone_0001.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_red_stone_0010.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_red_stone_0010.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_red_stone_0011.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_red_stone_0011.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_red_stone_0100.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_red_stone_0100.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_red_stone_0101.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_red_stone_0101.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_red_stone_0110.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_red_stone_0110.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_red_stone_0111.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_red_stone_0111.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_red_stone_1000.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_red_stone_1000.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_red_stone_1001.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_red_stone_1001.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_red_stone_1010.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_red_stone_1010.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_red_stone_1011.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_red_stone_1011.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_red_stone_1100.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_red_stone_1100.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_red_stone_1101 .png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_red_stone_1101 .png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_red_stone_1101.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_red_stone_1101.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_red_stone_1110.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_red_stone_1110.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_red_stone_1111.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_red_stone_1111.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_red_stone_d0.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_red_stone_d0.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_red_stone_d1.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_red_stone_d1.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_red_stone_d2.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_red_stone_d2.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_red_stone_d3.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_red_stone_d3.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_wooden_0000.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_wooden_0000.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_wooden_0001.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_wooden_0001.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_wooden_0010.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_wooden_0010.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_wooden_0011.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_wooden_0011.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_wooden_0100.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_wooden_0100.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_wooden_0101.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_wooden_0101.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_wooden_0110.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_wooden_0110.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_wooden_0111.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_wooden_0111.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_wooden_1000.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_wooden_1000.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_wooden_1001.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_wooden_1001.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_wooden_1010.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_wooden_1010.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_wooden_1011.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_wooden_1011.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_wooden_1100.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_wooden_1100.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_wooden_1101.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_wooden_1101.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_wooden_1110.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_wooden_1110.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_wooden_1111.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_wooden_1111.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_wooden_d0.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_wooden_d0.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_wooden_d1.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_wooden_d1.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_wooden_d2.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_wooden_d2.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/wall_wooden_d3.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/walls/wall_wooden_d3.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/2red_stone_wall_0000.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/2red_stone_wall_0000.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/2red_stone_wall_0001.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/2red_stone_wall_0001.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/2red_stone_wall_0010.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/2red_stone_wall_0010.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/2red_stone_wall_0011.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/2red_stone_wall_0011.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/2red_stone_wall_0100.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/2red_stone_wall_0100.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/2red_stone_wall_0101.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/2red_stone_wall_0101.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/2red_stone_wall_0110.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/2red_stone_wall_0110.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/2red_stone_wall_0111.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/2red_stone_wall_0111.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/2red_stone_wall_1000.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/2red_stone_wall_1000.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/2red_stone_wall_1001.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/2red_stone_wall_1001.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/2red_stone_wall_1010.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/2red_stone_wall_1010.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/2red_stone_wall_1011.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/2red_stone_wall_1011.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/2red_stone_wall_1100.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/2red_stone_wall_1100.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/2red_stone_wall_1101.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/2red_stone_wall_1101.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/2red_stone_wall_1110.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/2red_stone_wall_1110.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/2red_stone_wall_1111.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/2red_stone_wall_1111.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/3red_stone_wall_0000.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/3red_stone_wall_0000.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/3red_stone_wall_0001.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/3red_stone_wall_0001.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/3red_stone_wall_0010.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/3red_stone_wall_0010.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/3red_stone_wall_0011.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/3red_stone_wall_0011.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/3red_stone_wall_0100.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/3red_stone_wall_0100.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/3red_stone_wall_0101.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/3red_stone_wall_0101.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/3red_stone_wall_0110.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/3red_stone_wall_0110.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/3red_stone_wall_0111.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/3red_stone_wall_0111.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/3red_stone_wall_1000.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/3red_stone_wall_1000.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/3red_stone_wall_1001.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/3red_stone_wall_1001.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/3red_stone_wall_1010.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/3red_stone_wall_1010.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/3red_stone_wall_1011.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/3red_stone_wall_1011.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/3red_stone_wall_1100.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/3red_stone_wall_1100.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/3red_stone_wall_1101.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/3red_stone_wall_1101.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/3red_stone_wall_1110.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/3red_stone_wall_1110.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/3red_stone_wall_1111.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/3red_stone_wall_1111.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/900_0000.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/900_0000.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/900_0001.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/900_0001.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/900_0010.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/900_0010.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/900_0011.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/900_0011.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/900_0100.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/900_0100.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/900_0101.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/900_0101.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/900_0110.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/900_0110.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/900_0111.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/900_0111.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/900_1000.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/900_1000.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/900_1001.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/900_1001.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/900_1010.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/900_1010.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/900_1011.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/900_1011.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/900_1100.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/900_1100.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/900_1101.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/900_1101.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/900_1110.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/900_1110.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/900_1111.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/900_1111.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/90bush_wall_0000.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/90bush_wall_0000.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/90bush_wall_0001.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/90bush_wall_0001.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/90bush_wall_0010.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/90bush_wall_0010.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/90bush_wall_0011.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/90bush_wall_0011.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/90bush_wall_0100.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/90bush_wall_0100.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/90bush_wall_0101.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/90bush_wall_0101.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/90bush_wall_0110.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/90bush_wall_0110.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/90bush_wall_0111.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/90bush_wall_0111.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/90bush_wall_1000.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/90bush_wall_1000.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/90bush_wall_1001.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/90bush_wall_1001.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/90bush_wall_1010 - копия.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/90bush_wall_1010 - копия.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/90bush_wall_1011.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/90bush_wall_1011.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/90bush_wall_1100.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/90bush_wall_1100.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/90bush_wall_1101.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/90bush_wall_1101.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/90bush_wall_1110.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/90bush_wall_1110.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/90bush_wall_1111.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/90bush_wall_1111.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/bush_wall_0001.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/bush_wall_0001.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/bush_wall_0010.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/bush_wall_0010.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/bush_wall_0011.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/bush_wall_0011.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/bush_wall_0100.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/bush_wall_0100.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/bush_wall_0101.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/bush_wall_0101.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/bush_wall_0110.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/bush_wall_0110.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/bush_wall_0111.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/bush_wall_0111.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/bush_wall_1000.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/bush_wall_1000.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/bush_wall_1001.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/bush_wall_1001.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/bush_wall_1010.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/bush_wall_1010.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/bush_wall_1011.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/bush_wall_1011.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/bush_wall_1100.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/bush_wall_1100.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/bush_wall_1101.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/bush_wall_1101.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/bush_wall_1110.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/bush_wall_1110.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/bush_wall_1111.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/bush_wall_1111.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/forest_0011.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/forest_0011.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/forest_0110.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/forest_0110.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/forest_1001.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/forest_1001.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/forest_1100.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/forest_1100.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/greyStoneWallDark/greyStoneWall_0000.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/greyStoneWallDark/greyStoneWall_0000.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/greyStoneWallDark/greyStoneWall_0001.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/greyStoneWallDark/greyStoneWall_0001.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/greyStoneWallDark/greyStoneWall_0010.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/greyStoneWallDark/greyStoneWall_0010.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/greyStoneWallDark/greyStoneWall_0011.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/greyStoneWallDark/greyStoneWall_0011.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/greyStoneWallDark/greyStoneWall_0100.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/greyStoneWallDark/greyStoneWall_0100.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/greyStoneWallDark/greyStoneWall_0101.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/greyStoneWallDark/greyStoneWall_0101.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/greyStoneWallDark/greyStoneWall_0110.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/greyStoneWallDark/greyStoneWall_0110.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/greyStoneWallDark/greyStoneWall_0111.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/greyStoneWallDark/greyStoneWall_0111.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/greyStoneWallDark/greyStoneWall_1000.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/greyStoneWallDark/greyStoneWall_1000.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/greyStoneWallDark/greyStoneWall_1001.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/greyStoneWallDark/greyStoneWall_1001.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/greyStoneWallDark/greyStoneWall_1010.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/greyStoneWallDark/greyStoneWall_1010.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/greyStoneWallDark/greyStoneWall_1011.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/greyStoneWallDark/greyStoneWall_1011.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/greyStoneWallDark/greyStoneWall_1100.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/greyStoneWallDark/greyStoneWall_1100.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/greyStoneWallDark/greyStoneWall_1101.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/greyStoneWallDark/greyStoneWall_1101.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/greyStoneWallDark/greyStoneWall_1110.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/greyStoneWallDark/greyStoneWall_1110.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/greyStoneWallDark/greyStoneWall_1111.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/greyStoneWallDark/greyStoneWall_1111.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/redStoneWall/redStoneWall_0000.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/redStoneWall/redStoneWall_0000.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/redStoneWall/redStoneWall_0001.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/redStoneWall/redStoneWall_0001.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/redStoneWall/redStoneWall_0010.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/redStoneWall/redStoneWall_0010.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/redStoneWall/redStoneWall_0011.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/redStoneWall/redStoneWall_0011.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/redStoneWall/redStoneWall_0100.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/redStoneWall/redStoneWall_0100.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/redStoneWall/redStoneWall_0101.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/redStoneWall/redStoneWall_0101.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/redStoneWall/redStoneWall_0110.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/redStoneWall/redStoneWall_0110.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/redStoneWall/redStoneWall_0111.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/redStoneWall/redStoneWall_0111.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/redStoneWall/redStoneWall_1000.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/redStoneWall/redStoneWall_1000.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/redStoneWall/redStoneWall_1001.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/redStoneWall/redStoneWall_1001.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/redStoneWall/redStoneWall_1010.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/redStoneWall/redStoneWall_1010.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/redStoneWall/redStoneWall_1011.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/redStoneWall/redStoneWall_1011.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/redStoneWall/redStoneWall_1100.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/redStoneWall/redStoneWall_1100.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/redStoneWall/redStoneWall_1101.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/redStoneWall/redStoneWall_1101.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/redStoneWall/redStoneWall_1110.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/redStoneWall/redStoneWall_1110.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/redStoneWall/redStoneWall_1111.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/redStoneWall/redStoneWall_1111.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/redStoneWall/redStoneWall_5.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/redStoneWall/redStoneWall_5.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/road_0011.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/road_0011.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/road_0110.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/road_0110.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/road_1001.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/road_1001.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/road_1100.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/road_1100.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/water_wall_0001.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/water_wall_0001.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/water_wall_0010.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/water_wall_0010.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/water_wall_0011.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/water_wall_0011.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/water_wall_0100.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/water_wall_0100.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/water_wall_0101.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/water_wall_0101.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/water_wall_0110.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/water_wall_0110.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/water_wall_0111.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/water_wall_0111.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/water_wall_1000.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/water_wall_1000.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/water_wall_1001.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/water_wall_1001.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/water_wall_1010.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/water_wall_1010.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/water_wall_1011.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/water_wall_1011.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/water_wall_1100.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/water_wall_1100.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/water_wall_1101.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/water_wall_1101.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/water_wall_1110.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/water_wall_1110.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/old/water_wall_1111.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/old/water_wall_1111.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/walls/psd/lattice.psd" afterPath="$PROJECT_DIR$/../MainModule/data/images/old/psd/lattice.psd" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/Building.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/Building.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../MainModule/src/org/tendiwa/suseika/locationDrawers/BuildingTest.java" afterPath="$PROJECT_DIR$/../MainModule/src/org/tendiwa/suseika/locationDrawers/BuildingTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/CellCollection.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/CellCollection.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/Character.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/Character.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/Chunk.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/Chunk.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../client/Desktop/src/org/tendiwa/client/DesktopStarter.java" afterPath="$PROJECT_DIR$/../client/Desktop/src/org/tendiwa/client/DesktopStarter.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/drawing/DrawingAlgorithm.java" afterPath="$PROJECT_DIR$/src/tendiwa/drawing/DrawingAlgorithm.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/drawing/DrawingTerrain.java" afterPath="$PROJECT_DIR$/src/tendiwa/drawing/DrawingTerrain.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../MainModule/src/tendiwa/modules/DrawingWorld.java" afterPath="$PROJECT_DIR$/../MainModule/src/tendiwa/modules/DrawingWorld.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../MainModule/src/tendiwa/modules/Forest.java" afterPath="$PROJECT_DIR$/../MainModule/src/tendiwa/modules/Forest.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreen.java" afterPath="$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreen.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreenInputProcessor.java" afterPath="$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreenInputProcessor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../MainModule/src/tendiwa/modules/HelperCoastline.java" afterPath="$PROJECT_DIR$/../MainModule/src/tendiwa/modules/HelperCoastline.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/HorizontalPlane.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/HorizontalPlane.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/ItemCollection.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/ItemCollection.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/ItemPile.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/ItemPile.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/ItemType.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/ItemType.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/LoadStaticDataFromXML.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/LoadStaticDataFromXML.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/Location.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/Location.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../MainModule/src/tendiwa/modules/MainModule.java" afterPath="$PROJECT_DIR$/../MainModule/src/tendiwa/modules/MainModule.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/NonPlayerCharacter.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/NonPlayerCharacter.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/ObjectType.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/ObjectType.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../MainModule/src/tendiwa/modules/Ocean.java" afterPath="$PROJECT_DIR$/../MainModule/src/tendiwa/modules/Ocean.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../client/src/org/tendiwa/client/PixmapTextureAtlas.java" afterPath="$PROJECT_DIR$/../client/src/org/tendiwa/client/PixmapTextureAtlas.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/PlaceableInCell.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/PlaceableInCell.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/PlayerCharacter.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/PlayerCharacter.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/Settlement.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/Settlement.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/TendiwaClientEventManager.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/TendiwaClientEventManager.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../client/src/org/tendiwa/client/TendiwaClientLibgdxEventManager.java" afterPath="$PROJECT_DIR$/../client/src/org/tendiwa/client/TendiwaClientLibgdxEventManager.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../client/src/org/tendiwa/client/TendiwaGame.java" afterPath="$PROJECT_DIR$/../client/src/org/tendiwa/client/TendiwaGame.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/TerrainModifier.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/TerrainModifier.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/TerrainTransition.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/TerrainTransition.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/drawing/TestCanvas.java" afterPath="$PROJECT_DIR$/src/tendiwa/drawing/TestCanvas.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../MainModule/src/tendiwa/modules/TestLocationDrawer.java" afterPath="$PROJECT_DIR$/../MainModule/src/tendiwa/modules/TestLocationDrawer.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/TimeStream.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/TimeStream.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/Trail.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/Trail.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/UniqueItem.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/UniqueItem.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../MainModule/src/org/tendiwa/suseika/locationDrawers/Village.java" afterPath="$PROJECT_DIR$/../MainModule/src/org/tendiwa/suseika/locationDrawers/Village.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/World.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/World.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../client/src/org/tendiwa/client/WorldMapScreen.java" afterPath="$PROJECT_DIR$/../client/src/org/tendiwa/client/WorldMapScreen.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../MainModule/data/ontology/mainmodule.xml" afterPath="$PROJECT_DIR$/../MainModule/data/ontology/mainmodule.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/schema.xsd" afterPath="$PROJECT_DIR$/src/tendiwa/core/schema.xsd" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="server.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383619122238" ignored="false" />
-    <file path="/fragment.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383516577973" ignored="false" />
+    <file path="/Dummy.txt" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383709129772" ignored="false" />
+    <file path="/fragment.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383699541069" ignored="false" />
     <file path="/WaveRectangleSystem.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381954580765" ignored="false" />
     <file path="/LocationNearRectangle1.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1378959919082" ignored="false" />
     <file path="/LocationNearRectangleFromSide.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1378960147820" ignored="false" />
@@ -333,14 +591,14 @@
     <file path="/StepPlaceable.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1379327390343" ignored="false" />
     <file path="/KeyboardDemo.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1379600754152" ignored="false" />
     <file path="/StepPlaceNextAt.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381765461756" ignored="false" />
-    <file path="/TerrainModifier.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381948514357" ignored="false" />
+    <file path="/TerrainModifier.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383653165037" ignored="false" />
     <file path="/RectangleNearFromSideInMiddlePlacer.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1379417510131" ignored="false" />
     <file path="/StepNearFromSideAlign.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381866232614" ignored="false" />
     <file path="/TestCanvas.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381836945239" ignored="false" />
     <file path="/RectangleSidePieceDemo.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1379694338082" ignored="false" />
     <file path="/RandomRectangleSystem.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381757567774" ignored="false" />
-    <file path="/HorizontalPlane.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383525807785" ignored="false" />
-    <file path="/DrawingAlgorithm.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381799100652" ignored="false" />
+    <file path="/HorizontalPlane.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383701150948" ignored="false" />
+    <file path="/DrawingAlgorithm.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383698234666" ignored="false" />
     <file path="/Rotation.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1379589768681" ignored="false" />
     <file path="/StepNearFromSide.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381866213668" ignored="false" />
     <file path="/RectangleSequence.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381948465500" ignored="false" />
@@ -356,8 +614,8 @@
     <file path="/Park.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381948535648" ignored="false" />
     <file path="/Smithy.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383490614525" ignored="false" />
     <file path="/Temple.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381948542423" ignored="false" />
-    <file path="/Building.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383490383673" ignored="false" />
-    <file path="/Chunk.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383613707661" ignored="false" />
+    <file path="/Building.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383673630136" ignored="false" />
+    <file path="/Chunk.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383701120068" ignored="false" />
     <file path="/DrawingRectangleSystem.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1380749663314" ignored="false" />
     <file path="/RectangleSystemDrawDemo.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381758630725" ignored="false" />
     <file path="/BuildingsDemo.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1380314638662" ignored="false" />
@@ -371,15 +629,15 @@
     <file path="/EhancedRectangleTest.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1380812912620" ignored="false" />
     <file path="/RectanglesJunction.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381667283103" ignored="false" />
     <file path="/SuseikaWorld.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383314713139" ignored="false" />
-    <file path="/World.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383618767158" ignored="false" />
+    <file path="/World.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383700516630" ignored="false" />
     <file path="/WorldException.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1380920420064" ignored="false" />
-    <file path="/Forest.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381870004659" ignored="false" />
+    <file path="/Forest.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383696265474" ignored="false" />
     <file path="/WorldRectangleBuilder.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381948418708" ignored="false" />
     <file path="/WorldDrawer.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383314840639" ignored="false" />
     <file path="/LocationFeature.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1380996159106" ignored="false" />
     <file path="/River.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381179635199" ignored="false" />
     <file path="/Road.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1380996281594" ignored="false" />
-    <file path="/MainModule.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383338208593" ignored="false" />
+    <file path="/MainModule.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383698353683" ignored="false" />
     <file path="/Module.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383335855250" ignored="false" />
     <file path="/ModuleLoader.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381105322332" ignored="false" />
     <file path="/LocationDrawer.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381354350227" ignored="false" />
@@ -388,13 +646,13 @@
     <file path="/LocationPlace.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381962685959" ignored="false" />
     <file path="/ResourcesRegistry.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381354940871" ignored="false" />
     <file path="/LocationException.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381354268975" ignored="false" />
-    <file path="/Location.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383525258904" ignored="false" />
-    <file path="/DrawingWorld.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1382460948482" ignored="false" />
-    <file path="/TestLocationDrawer.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383593310433" ignored="false" />
+    <file path="/Location.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383698149234" ignored="false" />
+    <file path="/DrawingWorld.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383696187353" ignored="false" />
+    <file path="/TestLocationDrawer.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383696231307" ignored="false" />
     <file path="/StaticData.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383489479398" ignored="false" />
-    <file path="/Ocean.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1382788208830" ignored="false" />
+    <file path="/Ocean.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383696176169" ignored="false" />
     <file path="/FeatureOcean.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381433210824" ignored="false" />
-    <file path="/LoadStaticDataFromXML.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383526309673" ignored="false" />
+    <file path="/LoadStaticDataFromXML.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383696131618" ignored="false" />
     <file path="/CharacterAspect.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381507728564" ignored="false" />
     <file path="/ModuleBuilder.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383058212611" ignored="false" />
     <file path="/build.xml" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383089080791" ignored="false" />
@@ -403,22 +661,22 @@
     <file path="/.gitignore" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381610751272" ignored="false" />
     <file path="/CharacterType.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383489622722" ignored="false" />
     <file path="/CharacterTypes.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381616711370" ignored="false" />
-    <file path="/TerrainBasics.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383489979614" ignored="false" />
+    <file path="/TerrainBasics.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383649831012" ignored="false" />
     <file path="/Segment.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381667143083" ignored="false" />
     <file path="/a.dummy" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383100831357" ignored="false" />
     <file path="/RectangleSidePiece.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381955257165" ignored="false" />
-    <file path="/ItemType.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383489744229" ignored="false" />
+    <file path="/ItemType.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383672805545" ignored="false" />
     <file path="/AspectApparel.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381681913620" ignored="false" />
-    <file path="/FloorType.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383581241694" ignored="false" />
-    <file path="/PlaceableInCell.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381701128322" ignored="false" />
+    <file path="/FloorType.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383695436957" ignored="false" />
+    <file path="/PlaceableInCell.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383648693093" ignored="false" />
     <file path="/Crypt.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381796833625" ignored="false" />
     <file path="/Cell.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383490925923" ignored="false" />
-    <file path="/ObjectType.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383579537479" ignored="false" />
+    <file path="/ObjectType.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383698162794" ignored="false" />
     <file path="/Settlement.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381948481590" ignored="false" />
-    <file path="/BuildingTest.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383490789117" ignored="false" />
-    <file path="/mainmodule.xml" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383592856124" ignored="false" />
+    <file path="/BuildingTest.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383696201226" ignored="false" />
+    <file path="/mainmodule.xml" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383694088450" ignored="false" />
     <file path="/ObjectTypes.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381705102364" ignored="false" />
-    <file path="/Village.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383490815799" ignored="false" />
+    <file path="/Village.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383696283377" ignored="false" />
     <file path="/OneRoomHouse.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381705350216" ignored="false" />
     <file path="/Tavern.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381796710821" ignored="false" />
     <file path="/TestBuilding.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383490581382" ignored="false" />
@@ -431,12 +689,12 @@
     <file path="/TerrainDiffusion.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381863497389" ignored="false" />
     <file path="/CardinalDirection.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381794940247" ignored="false" />
     <file path="/OrdinalDirection.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381858954148" ignored="false" />
-    <file path="/Character.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383618811156" ignored="false" />
-    <file path="/CellCollection.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383490136483" ignored="false" />
+    <file path="/Character.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383700704562" ignored="false" />
+    <file path="/CellCollection.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383649252152" ignored="false" />
     <file path="/FindCriteria.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381864078209" ignored="false" />
     <file path="/Neighborship.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1382012653450" ignored="false" />
     <file path="/LocationNeighborship.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381962729845" ignored="false" />
-    <file path="/HelperCoastline.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1382788423028" ignored="false" />
+    <file path="/HelperCoastline.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383696154759" ignored="false" />
     <file path="/LocationHelper.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1382387943270" ignored="false" />
     <file path="/Game.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1382475823780" ignored="false" />
     <file path="/HelloWorld.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1382482682350" ignored="false" />
@@ -444,11 +702,11 @@
     <file path="$PROJECT_DIR$/../client/Android/src/ru/yarger/Android/AndroidStarter.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1382482238622" ignored="false" />
     <file path="/SuseikaGame.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1382482463616" ignored="false" />
     <file path="/DesktopStarter.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383618267608" ignored="false" />
-    <file path="/TendiwaGame.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383618457013" ignored="false" />
-    <file path="/WorldMapScreen.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383618366607" ignored="false" />
+    <file path="/TendiwaGame.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383701722959" ignored="false" />
+    <file path="/WorldMapScreen.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383696250746" ignored="false" />
     <file path="/ShaderTest.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1382554793578" ignored="false" />
     <file path="/invaders.g3dj" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1382553736612" ignored="false" />
-    <file path="/GameScreen.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383618518383" ignored="false" />
+    <file path="/GameScreen.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383708666833" ignored="false" />
     <file path="/BookFun.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1382735735441" ignored="false" />
     <file path="/ResourcesBuilder.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383100357452" ignored="false" />
     <file path="/ResourceBuilder.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1382801003865" ignored="false" />
@@ -459,14 +717,14 @@
     <file path="$USER_HOME$/asdf/src/dependencyfinder/ClassPathReader.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383072363295" ignored="false" />
     <file path="$USER_HOME$/asdf/src/dependencyfinder/DependencyFinder.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383072363295" ignored="false" />
     <file path="$USER_HOME$/asdf/src/dependencyfinder/Package.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383072363295" ignored="false" />
-    <file path="/PixmapTextureAtlas.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383097543124" ignored="false" />
+    <file path="/PixmapTextureAtlas.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383707664403" ignored="false" />
     <file path="$PROJECT_DIR$/../libs/libgdx/gdx.jar!/com/badlogic/gdx/graphics/Camera.class" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383090950866" ignored="false" />
     <file path="$PROJECT_DIR$/../libs/libgdx/sources/gdx-sources.jar!/com/badlogic/gdx/graphics/Pixmap.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383090950868" ignored="false" />
     <file path="/PlayerCharacter.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383487032106" ignored="false" />
     <file path="/TendiwaClient.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383618060573" ignored="false" />
     <file path="/EventMove.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383211456584" ignored="false" />
     <file path="/CharacterActor.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383437121450" ignored="false" />
-    <file path="/TimeStream.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383333157608" ignored="false" />
+    <file path="/TimeStream.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383646061804" ignored="false" />
     <file path="/EventAttack.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383241033087" ignored="false" />
     <file path="/EventQueue.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383241282832" ignored="false" />
     <file path="/Server.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383524571050" ignored="false" />
@@ -476,12 +734,12 @@
     <file path="/WorldProvider.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383316862788" ignored="false" />
     <file path="/RequestWalk.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383426859917" ignored="false" />
     <file path="/EventSay.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383420318860" ignored="false" />
-    <file path="/NonPlayerCharacter.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383520960341" ignored="false" />
+    <file path="/NonPlayerCharacter.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383650858555" ignored="false" />
     <file path="/CharacterManager.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383333588370" ignored="false" />
     <file path="/module.conf" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383336017974" ignored="false" />
     <file path="/GameScreenInputProcessor.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383611600202" ignored="false" />
-    <file path="/TendiwaClientEventManager.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383418953826" ignored="false" />
-    <file path="/TendiwaClientLibgdxEventManager.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383600820949" ignored="false" />
+    <file path="/TendiwaClientEventManager.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383700520701" ignored="false" />
+    <file path="/TendiwaClientLibgdxEventManager.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383705002534" ignored="false" />
     <file path="/EventResult.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383419925024" ignored="false" />
     <file path="/RequestSay.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383430027410" ignored="false" />
     <file path="/SoundType.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383489528094" ignored="false" />
@@ -491,6 +749,19 @@
     <file path="/PathWalker.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383515808651" ignored="false" />
     <file path="/PathTable.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383523096644" ignored="false" />
     <file path="/Terrain.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383516601240" ignored="false" />
+    <file path="/GameObject.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383640144194" ignored="false" />
+    <file path="/TerrainTransition.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383671032848" ignored="false" />
+    <file path="/ItemPile.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383672364407" ignored="false" />
+    <file path="/UniqueItem.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383672414055" ignored="false" />
+    <file path="/ItemCollection.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383672824665" ignored="false" />
+    <file path="/EventFovChange.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383709076854" ignored="false" />
+    <file path="/RenderCell.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383693879776" ignored="false" />
+    <file path="/schema.xsd" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383694166312" ignored="false" />
+    <file path="/TerrainType.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383708248570" ignored="false" />
+    <file path="/DrawingTerrain.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383698211784" ignored="false" />
+    <file path="/Trail.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383698239244" ignored="false" />
+    <file path="/RequestInitialTerrain.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383701443353" ignored="false" />
+    <file path="/EventInitialTerrain.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383704808250" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -513,23 +784,7 @@
     <disable_hints />
   </component>
   <component name="DebuggerManager">
-    <line_breakpoints default_suspend_policy="SuspendThread" default_condition_enabled="true">
-      <breakpoint url="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreenInputProcessor.java" line="117" class="org.tendiwa.client.GameScreenInputProcessor$1" package="org.tendiwa.client">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="REMOVE_AFTER_HIT" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendThread" />
-        <option name="SUSPEND" value="true" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="true" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="&#13;&#13;JAVA" />
-        <option name="LOG_MESSAGE" value="&#13;&#13;JAVA" />
-      </breakpoint>
-    </line_breakpoints>
+    <line_breakpoints default_suspend_policy="SuspendThread" default_condition_enabled="true" />
     <exception_breakpoints default_suspend_policy="SuspendThread" default_condition_enabled="true" />
     <breakpoint_any default_suspend_policy="SuspendAll" default_condition_enabled="true">
       <breakpoint>
@@ -588,7 +843,7 @@
       <file leaf-file-name="GameScreen.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreen.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="255" column="121" selection-start="9054" selection-end="9054" vertical-scroll-proportion="0.0">
+            <state line="313" column="0" selection-start="11224" selection-end="11224" vertical-scroll-proportion="0.0">
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -596,38 +851,61 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="DesktopStarter.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../client/Desktop/src/org/tendiwa/client/DesktopStarter.java">
+      <file leaf-file-name="TerrainType.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/tendiwa/core/TerrainType.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="15" column="24" selection-start="382" selection-end="382" vertical-scroll-proportion="0.0">
+            <state line="77" column="1" selection-start="1894" selection-end="1894" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Cell.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/tendiwa/core/Cell.java">
+      <file leaf-file-name="DrawingWorld.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../MainModule/src/tendiwa/modules/DrawingWorld.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="2" column="13" selection-start="36" selection-end="36" vertical-scroll-proportion="0.0">
+            <state line="18" column="42" selection-start="523" selection-end="523" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TendiwaGame.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/TendiwaGame.java">
+      <file leaf-file-name="EventInitialTerrain.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/org/tendiwa/events/EventInitialTerrain.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="16" column="5" selection-start="508" selection-end="508" vertical-scroll-proportion="0.0">
+            <state line="4" column="27" selection-start="119" selection-end="119" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="WorldMapScreen.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/WorldMapScreen.java">
+      <file leaf-file-name="EventFovChange.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/org/tendiwa/events/EventFovChange.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="19" column="89" selection-start="632" selection-end="632" vertical-scroll-proportion="0.0">
+            <state line="46" column="12" selection-start="1898" selection-end="1898" vertical-scroll-proportion="0.8062016">
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PixmapTextureAtlas.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/PixmapTextureAtlas.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="20" column="36" selection-start="720" selection-end="720" vertical-scroll-proportion="0.0">
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TendiwaClientLibgdxEventManager.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/TendiwaClientLibgdxEventManager.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="82" column="0" selection-start="2403" selection-end="2403" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="e#2504#2779#0" expanded="true" />
+                <element signature="e#2775#2776#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -635,25 +913,7 @@
       <file leaf-file-name="Tendiwa.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/tendiwa/core/Tendiwa.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="70" column="99" selection-start="2515" selection-end="2515" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TendiwaClient.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/tendiwa/core/TendiwaClient.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="18" column="0" selection-start="421" selection-end="421" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MainModule.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../MainModule/src/tendiwa/modules/MainModule.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="36" column="18" selection-start="1299" selection-end="1299" vertical-scroll-proportion="0.0">
+            <state line="21" column="16" selection-start="717" selection-end="717" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -662,16 +922,7 @@
       <file leaf-file-name="World.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/tendiwa/core/World.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="68" column="4" selection-start="1970" selection-end="1970" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Character.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/tendiwa/core/Character.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="687" column="27" selection-start="19628" selection-end="19628" vertical-scroll-proportion="0.5957031">
+            <state line="75" column="11" selection-start="2153" selection-end="2153" vertical-scroll-proportion="0.0">
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -709,22 +960,22 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/src/tendiwa/core/FloorType.java" />
-        <option value="$PROJECT_DIR$/../MainModule/data/ontology/mainmodule.xml" />
-        <option value="$PROJECT_DIR$/../MainModule/src/tendiwa/modules/TestLocationDrawer.java" />
-        <option value="$PROJECT_DIR$/src/tendiwa/core/EnhancedPoint.java" />
-        <option value="$PROJECT_DIR$/../client/src/org/tendiwa/client/TendiwaClientLibgdxEventManager.java" />
-        <option value="$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreenInputProcessor.java" />
-        <option value="$PROJECT_DIR$/src/tendiwa/core/Chunk.java" />
-        <option value="$PROJECT_DIR$/src/tendiwa/core/TendiwaClient.java" />
         <option value="$PROJECT_DIR$/../client/Desktop/src/org/tendiwa/client/DesktopStarter.java" />
-        <option value="$PROJECT_DIR$/../client/src/org/tendiwa/client/WorldMapScreen.java" />
-        <option value="$PROJECT_DIR$/src/tendiwa/core/Tendiwa.java" />
-        <option value="$PROJECT_DIR$/../client/src/org/tendiwa/client/TendiwaGame.java" />
-        <option value="$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreen.java" />
-        <option value="$PROJECT_DIR$/../MainModule/src/tendiwa/modules/MainModule.java" />
+        <option value="$PROJECT_DIR$/src/tendiwa/core/PlayerCharacter.java" />
+        <option value="$PROJECT_DIR$/src/tendiwa/core/TendiwaClientEventManager.java" />
+        <option value="$PROJECT_DIR$/src/tendiwa/core/Chunk.java" />
+        <option value="$PROJECT_DIR$/src/tendiwa/core/HorizontalPlane.java" />
         <option value="$PROJECT_DIR$/src/tendiwa/core/World.java" />
+        <option value="$PROJECT_DIR$/src/tendiwa/core/RequestInitialTerrain.java" />
         <option value="$PROJECT_DIR$/src/tendiwa/core/Character.java" />
+        <option value="$PROJECT_DIR$/src/org/tendiwa/events/EventInitialTerrain.java" />
+        <option value="$PROJECT_DIR$/src/tendiwa/core/RenderCell.java" />
+        <option value="$PROJECT_DIR$/../client/src/org/tendiwa/client/TendiwaGame.java" />
+        <option value="$PROJECT_DIR$/../client/src/org/tendiwa/client/TendiwaClientLibgdxEventManager.java" />
+        <option value="$PROJECT_DIR$/../client/src/org/tendiwa/client/PixmapTextureAtlas.java" />
+        <option value="$PROJECT_DIR$/src/tendiwa/core/TerrainType.java" />
+        <option value="$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreen.java" />
+        <option value="$PROJECT_DIR$/src/org/tendiwa/events/EventFovChange.java" />
       </list>
     </option>
   </component>
@@ -893,6 +1144,165 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="MainModule" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="MainModule" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="data" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="MainModule" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="data" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="images" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="MainModule" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="data" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="images" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="walls" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="core" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="core" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="core" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="core" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="core" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="events" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="client" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="client" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pack" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
       <pane id="PackagesPane">
         <subPane>
           <PATH>
@@ -945,109 +1355,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
-      <pane id="ProjectPane">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MainModule" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MainModule" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="data" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ontology" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MainModule" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="data" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="images" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MainModule" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="data" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="images" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="floors" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="client" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="client" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="client" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -1058,7 +1365,7 @@
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="GenerateAntBuildDialog.enableUiFormCompile" value="false" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth1" value="117" />
-    <property name="options.lastSelected" value="preferences.keymap" />
+    <property name="options.lastSelected" value="project.propCompiler" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth0" value="93" />
     <property name="GoToFile.includeJavaFiles" value="false" />
     <property name="recentsLimit" value="5" />
@@ -1115,11 +1422,11 @@
       <recent name="" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/../MainModule/data/images/old" />
+      <recent name="$PROJECT_DIR$/../MainModule/data/images/walls" />
       <recent name="$PROJECT_DIR$/../MainModule/data/images/floors" />
       <recent name="$PROJECT_DIR$/src" />
       <recent name="$PROJECT_DIR$/../MainModule/data/images/objects" />
-      <recent name="$PROJECT_DIR$/../MainModule/data/ontology" />
-      <recent name="$PROJECT_DIR$/../client/" />
     </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="org.tendiwa.client" />
@@ -1437,7 +1744,11 @@
       <created>1383607618644</created>
       <updated>1383607618644</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="Field of view caching">
+      <created>1383619157703</created>
+      <updated>1383619157703</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TodoView" selected-index="1">
@@ -1471,13 +1782,13 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.41710114" sideWeight="0.5" order="14" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.41710114" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.54744524" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3290461" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22257054" sideWeight="0.58289886" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22178683" sideWeight="0.45255473" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4911366" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.18652038" sideWeight="0.6688103" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.11598746" sideWeight="0.58289886" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.11598746" sideWeight="0.5088634" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.37747654" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.16144201" sideWeight="0.39624608" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -1541,7 +1852,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Displaying of terrain based on field of view in client; regrouped images in main module; made ids of FloorType and ObjectType be short rather than int;  pseudo-randomization of floor image's index." />
+    <option name="LAST_COMMIT_MESSAGE" value="Field of view caching" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -1577,6 +1888,7 @@
     <MESSAGE value="Implemented the queue of event results' processing in client; implemented movement and camera animations." />
     <MESSAGE value="Movement with mouse; improved PathTable code; miltiturn tasks on client." />
     <MESSAGE value="Displaying of terrain based on field of view in client; regrouped images in main module; made ids of FloorType and ObjectType be short rather than int;  pseudo-randomization of floor image's index." />
+    <MESSAGE value="Field of view caching" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1625,114 +1937,125 @@
     </buildFile>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreenInputProcessor.java">
+    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/RenderCell.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="148" column="8" selection-start="4405" selection-end="4405" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/Server.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="26" column="18" selection-start="695" selection-end="695" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/NonPlayerCharacter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="499" column="26" selection-start="15997" selection-end="15997" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/Chunk.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="103" column="66" selection-start="2840" selection-end="2840" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/Cell.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="13" selection-start="36" selection-end="36" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../client/Desktop/src/org/tendiwa/client/DesktopStarter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="24" selection-start="382" selection-end="382" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/Tendiwa.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="70" column="99" selection-start="2515" selection-end="2515" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/TendiwaClient.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="0" selection-start="421" selection-end="421" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///usr/lib/jvm/java-7-oracle/jre/lib/rt.jar!/sun/reflect/Reflection.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="54" column="0" selection-start="2821" selection-end="2821" vertical-scroll-proportion="0.81963927">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/WorldMapScreen.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="19" column="89" selection-start="632" selection-end="632" vertical-scroll-proportion="0.0">
+        <state line="10" column="14" selection-start="169" selection-end="169" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/TendiwaGame.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="5" selection-start="508" selection-end="508" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../MainModule/data/images/floors/dry_grass_1.png">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreen.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="255" column="121" selection-start="9054" selection-end="9054" vertical-scroll-proportion="0.0">
+        <state line="22" column="40" selection-start="642" selection-end="642" vertical-scroll-proportion="0.0">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../MainModule/src/tendiwa/modules/MainModule.java">
+    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/RequestInitialTerrain.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="36" column="18" selection-start="1299" selection-end="1299" vertical-scroll-proportion="0.0">
+        <state line="7" column="54" selection-start="212" selection-end="212" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreenInputProcessor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="106" column="4" selection-start="3527" selection-end="3527" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/Tendiwa.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="21" column="16" selection-start="717" selection-end="717" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/tendiwa/core/World.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="68" column="4" selection-start="1970" selection-end="1970" vertical-scroll-proportion="0.0">
+        <state line="75" column="11" selection-start="2153" selection-end="2153" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/WorldMapScreen.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="36" column="22" selection-start="1100" selection-end="1100" vertical-scroll-proportion="0.33333334">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/../libs/libgdx/sources/gdx-backend-lwjgl-sources.jar!/com/badlogic/gdx/backends/lwjgl/LwjglApplication.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="135" column="25" selection-start="4614" selection-end="4614" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/Character.java">
+    <entry file="jar://$PROJECT_DIR$/../tendiwa-ontology.jar!/tendiwa/resources/TerrainTypes.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="687" column="27" selection-start="19628" selection-end="19628" vertical-scroll-proportion="0.5957031">
+        <state line="6" column="13" selection-start="160" selection-end="160" vertical-scroll-proportion="-3.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../MainModule/src/tendiwa/modules/DrawingWorld.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="18" column="42" selection-start="523" selection-end="523" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreen.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="313" column="0" selection-start="11224" selection-end="11224" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/PixmapTextureAtlas.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="20" column="36" selection-start="720" selection-end="720" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/TendiwaClientLibgdxEventManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="82" column="0" selection-start="2403" selection-end="2403" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="e#2504#2779#0" expanded="true" />
+            <element signature="e#2775#2776#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/TerrainType.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="77" column="1" selection-start="1894" selection-end="1894" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/tendiwa/events/EventInitialTerrain.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="4" column="27" selection-start="119" selection-end="119" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/tendiwa/events/EventFovChange.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="46" column="12" selection-start="1898" selection-end="1898" vertical-scroll-proportion="0.8062016">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
