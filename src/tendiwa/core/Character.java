@@ -16,7 +16,7 @@ public abstract class Character implements PlaceableInCell, PathWalker, GsonForS
 public static final long serialVersionUID = 1832389411;
 public final static int FRACTION_NEUTRAL = -1, FRACTION_PLAYER = 1,
 	FRACTION_AGRESSIVE = 0;
-public static final int VISION_RANGE = 13;
+public static final int VISION_RANGE = 11;
 /**
  * Value for {@link Character#visionCache} meaning that vision of particular cell is not computed for current
  * character's position yet.
@@ -54,13 +54,13 @@ protected TimeStream timeStream;
  * <p>Here is cached whether this Character sees a cell relative to his current position or not.</p> <p>{@code
  * visionCache[VISION_CACHE_WIDTH][VISION_CACHE_WIDTH]} is Character's current cell.</p>
  */
-private byte[][] visionCache = new byte[VISION_CACHE_WIDTH][VISION_CACHE_WIDTH];
+public byte[][] visionCache = new byte[VISION_CACHE_WIDTH][VISION_CACHE_WIDTH];
 private boolean isVisionCacheEmpty = true;
 /**
  * Saves field of view on previous turn when it is needed to calculate diffirences between FOV on previous turn and
  * current turn.
  */
-private byte[][] visionPrevious;
+private byte[][] visionPrevious = new byte[VISION_CACHE_WIDTH][VISION_CACHE_WIDTH];
 
 public Character(HorizontalPlane plane, CharacterType characterType, int x, int y, String name) {
 	// Common character creation: with all attributes, in location.
@@ -292,7 +292,10 @@ void invalidateVisionCache() {
 }
 
 /* Vision */
-boolean initialCanSee(int x, int y) {
+public boolean initialCanSee(int x, int y) {
+	if (x == 227 && y == 198) {
+		System.out.println(11111);
+	}
 	Coordinate characterCoord = new Coordinate(this.x, this.y);
 	if (characterCoord.isNear(x, y) || this.x == x && this.y == y) {
 		cacheVision(x, y, VISION_VISIBLE);
@@ -409,24 +412,20 @@ boolean initialCanSee(int x, int y) {
 				double xStart = start[j][0];
 				double yStart = start[j][1];
 				for (Coordinate c : rays) {
-					try {
-						if (plane.getPassability(c.x, c.y) == Chunk.Passability.NO) {
-							if (c.x == x && c.y == y || c.x == x
-								&& c.y == y) {
-								continue;
-							}
-							if (Math.abs(((yStart - yEnd) * c.x
-								+ (xEnd - xStart) * c.y + (xStart
-								* yEnd - yStart * xEnd))
-								/ Math.sqrt(Math.abs((xEnd - xStart)
-								* (xEnd - xStart)
-								+ (yEnd - yStart)
-								* (yEnd - yStart)))) <= 0.5) {
-								continue jump;
-							}
+					if (plane.getPassability(c.x, c.y) == Chunk.Passability.NO) {
+						if (c.x == x && c.y == y || c.x == x
+							&& c.y == y) {
+							continue;
 						}
-					} catch (Exception e) {
-						throw new Error();
+						if (Math.abs(((yStart - yEnd) * c.x
+							+ (xEnd - xStart) * c.y + (xStart
+							* yEnd - yStart * xEnd))
+							/ Math.sqrt(Math.abs((xEnd - xStart)
+							* (xEnd - xStart)
+							+ (yEnd - yStart)
+							* (yEnd - yStart)))) <= 0.5) {
+							continue jump;
+						}
 					}
 				}
 				cacheVision(x, y, VISION_VISIBLE);
@@ -436,6 +435,9 @@ boolean initialCanSee(int x, int y) {
 		cacheVision(x, y, VISION_INVISIBLE);
 		return false;
 	}
+}
+public byte getFromCache(int x, int y) {
+	return visionCache[x-this.x+VISION_RANGE][y-this.y+VISION_RANGE];
 }
 
 public Coordinate getRayEnd(int endX, int endY) {
@@ -666,6 +668,11 @@ public String getName() {
  * For action method, use Character.step.
  */
 public void move(int x, int y) {
+	for (int i=0; i<VISION_CACHE_WIDTH; i++) {
+		for (int j=0; j<VISION_CACHE_WIDTH; j++) {
+			visionPrevious[i][j] = visionCache[i][j];
+		}
+	}
 	plane.removeCharacter(this);
 	int xPrev = this.x;
 	int yPrev = this.y;
@@ -674,10 +681,8 @@ public void move(int x, int y) {
 	plane.addCharacter(this);
 	timeStream.notifyNeighborsVisiblilty(this);
 	Tendiwa.getClientEventManager().event(new EventMove(x, y, this));
-	visionPrevious = visionCache.clone();
 	Tendiwa.getPlayer().computeFullVisionCache();
 	Tendiwa.getClientEventManager().event(new EventFovChange(xPrev, yPrev, visionPrevious, visionCache));
-	invalidateVisionCache();
 }
 
 public void getDamage(int amount, DamageType type) {
@@ -838,9 +843,9 @@ public boolean isVisionCacheEmpty() {
 }
 
 public void computeFullVisionCache() {
-	for (int i=0; i<VISION_CACHE_WIDTH; i++) {
-		for (int j=0; j<VISION_CACHE_WIDTH; j++) {
-			 initialCanSee(x-VISION_RANGE+i, y-VISION_RANGE+j);
+	for (int i = 0; i < VISION_CACHE_WIDTH; i++) {
+		for (int j = 0; j < VISION_CACHE_WIDTH; j++) {
+			initialCanSee(x - VISION_RANGE + i, y - VISION_RANGE + j);
 		}
 	}
 }

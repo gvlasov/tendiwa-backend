@@ -5,7 +5,7 @@ import java.util.LinkedList;
 
 public class PathTable {
 
-private static final int NOT_COMPUTED_CELL = 0;
+private static final int NOT_COMPUTED_CELL = -1;
 private final int startX;
 private final int startY;
 private final PathWalker walker;
@@ -28,11 +28,14 @@ public PathTable(int startX, int startY, PathWalker walker, int maxDepth) {
 
 	newFront = new ArrayList<>();
 	newFront.add(new EnhancedPoint(startX, startY));
+
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < width; j++) {
 			pathTable[i][j] = NOT_COMPUTED_CELL;
 		}
 	}
+	// Zero-wave consists of a single cell, which is path table's start
+	pathTable[maxDepth][maxDepth] = 0;
 }
 
 private boolean nextWave() {
