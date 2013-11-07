@@ -8,16 +8,14 @@
   <component name="ChangeListManager">
     <list default="true" id="8b4d96ac-5daf-4774-9e72-1ceab60ca879" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/Character.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/Character.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/tendiwa/events/EventFovChange.java" afterPath="$PROJECT_DIR$/src/org/tendiwa/events/EventFovChange.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreen.java" afterPath="$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreen.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/PathTable.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/PathTable.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../MainModule/src/tendiwa/modules/MainModule.java" afterPath="$PROJECT_DIR$/../MainModule/src/tendiwa/modules/MainModule.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../client/src/org/tendiwa/client/TendiwaClientLibgdxEventManager.java" afterPath="$PROJECT_DIR$/../client/src/org/tendiwa/client/TendiwaClientLibgdxEventManager.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../client/src/org/tendiwa/client/TendiwaGame.java" afterPath="$PROJECT_DIR$/../client/src/org/tendiwa/client/TendiwaGame.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="server.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383772112017" ignored="false" />
+    <file path="/Dummy.txt" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383851741465" ignored="false" />
     <file path="/fragment.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383796801913" ignored="false" />
     <file path="/WaveRectangleSystem.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381954580765" ignored="false" />
     <file path="/LocationNearRectangle1.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1378959919082" ignored="false" />
@@ -437,7 +435,7 @@
     <file path="/WorldMapScreen.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383696250746" ignored="false" />
     <file path="/ShaderTest.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1382554793578" ignored="false" />
     <file path="/invaders.g3dj" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1382553736612" ignored="false" />
-    <file path="/GameScreen.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383792326820" ignored="false" />
+    <file path="/GameScreen.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383855321738" ignored="false" />
     <file path="/BookFun.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1382735735441" ignored="false" />
     <file path="/ResourcesBuilder.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383100357452" ignored="false" />
     <file path="/ResourceBuilder.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1382801003865" ignored="false" />
@@ -516,7 +514,7 @@
   </component>
   <component name="DebuggerManager">
     <line_breakpoints default_suspend_policy="SuspendThread" default_condition_enabled="true">
-      <breakpoint url="file://$PROJECT_DIR$/src/tendiwa/core/Character.java" line="296" class="tendiwa.core.Character" package="tendiwa.core">
+      <breakpoint url="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreen.java" line="324" class="org.tendiwa.client.GameScreen" package="org.tendiwa.client">
         <option name="ENABLED" value="true" />
         <option name="LOG_ENABLED" value="false" />
         <option name="LOG_EXPRESSION_ENABLED" value="false" />
@@ -590,55 +588,29 @@
       <file leaf-file-name="GameScreen.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreen.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="252" column="4" selection-start="8905" selection-end="8905" vertical-scroll-proportion="0.0">
+            <state line="390" column="18" selection-start="13638" selection-end="13638" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="EventFovChange.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/org/tendiwa/events/EventFovChange.java">
+      <file leaf-file-name="Server.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/tendiwa/core/Server.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="80" column="0" selection-start="3569" selection-end="3569" vertical-scroll-proportion="0.8135593">
+            <state line="10" column="12" selection-start="346" selection-end="346" vertical-scroll-proportion="0.07364976">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TendiwaClientLibgdxEventManager.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/TendiwaClientLibgdxEventManager.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="36" column="64" selection-start="1321" selection-end="1321" vertical-scroll-proportion="0.0">
               <folding>
-                <element signature="imports" expanded="true" />
+                <element signature="e#1817#2169#0" expanded="true" />
+                <element signature="e#2165#2166#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="HorizontalPlane.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/tendiwa/core/HorizontalPlane.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="80" column="2" selection-start="2782" selection-end="2782" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Character.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/tendiwa/core/Character.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="62" column="82" selection-start="2505" selection-end="2505" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="RequestWalk.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/tendiwa/core/RequestWalk.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="5" column="8" selection-start="107" selection-end="107" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="PlayerCharacter.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/tendiwa/core/PlayerCharacter.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="48" column="12" selection-start="1209" selection-end="1209" vertical-scroll-proportion="0.0">
-              <folding />
             </state>
           </provider>
         </entry>
@@ -682,7 +654,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/src/tendiwa/core/Chunk.java" />
         <option value="$PROJECT_DIR$/src/tendiwa/core/HorizontalPlane.java" />
         <option value="$PROJECT_DIR$/src/tendiwa/core/World.java" />
         <option value="$PROJECT_DIR$/src/tendiwa/core/RenderCell.java" />
@@ -694,10 +665,11 @@
         <option value="$PROJECT_DIR$/src/tendiwa/core/RequestInitialTerrain.java" />
         <option value="$PROJECT_DIR$/src/org/tendiwa/events/EventInitialTerrain.java" />
         <option value="$PROJECT_DIR$/src/tendiwa/core/PathTable.java" />
+        <option value="$PROJECT_DIR$/src/org/tendiwa/events/EventFovChange.java" />
+        <option value="$PROJECT_DIR$/../MainModule/src/tendiwa/modules/MainModule.java" />
+        <option value="$PROJECT_DIR$/src/tendiwa/core/Character.java" />
         <option value="$PROJECT_DIR$/../client/src/org/tendiwa/client/TendiwaClientLibgdxEventManager.java" />
         <option value="$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreen.java" />
-        <option value="$PROJECT_DIR$/src/tendiwa/core/Character.java" />
-        <option value="$PROJECT_DIR$/src/org/tendiwa/events/EventFovChange.java" />
       </list>
     </option>
   </component>
@@ -1474,7 +1446,11 @@
       <created>1383709211314</created>
       <updated>1383709211314</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="Fixed bug with unseeing of not yet seen cells">
+      <created>1383798565719</created>
+      <updated>1383798565719</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="TodoView" selected-index="1">
@@ -1511,10 +1487,10 @@
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.31798714" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3290461" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2300813" sideWeight="0.68201286" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.1097561" sideWeight="0.68201286" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.49036402" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.18652038" sideWeight="0.6688103" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.11598746" sideWeight="0.5088634" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.115447156" sideWeight="0.68201286" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.38650963" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.16144201" sideWeight="0.39624608" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -1578,7 +1554,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Massive refactoring" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed bug with unseeing of not yet seen cells" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -1616,6 +1592,7 @@
     <MESSAGE value="Displaying of terrain based on field of view in client; regrouped images in main module; made ids of FloorType and ObjectType be short rather than int;  pseudo-randomization of floor image's index." />
     <MESSAGE value="Field of view caching" />
     <MESSAGE value="Massive refactoring" />
+    <MESSAGE value="Fixed bug with unseeing of not yet seen cells" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1664,41 +1641,6 @@
     </buildFile>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/org/tendiwa/events/EventInitialTerrain.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="27" selection-start="149" selection-end="149" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreenInputProcessor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="107" column="0" selection-start="3529" selection-end="3529" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/Chunk.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="85" column="5" selection-start="2345" selection-end="2345" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/Paths.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="0" selection-start="428" selection-end="428" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/TendiwaClientLibgdxEventManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="73" column="65" selection-start="2269" selection-end="2269" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/org/tendiwa/events/EventMove.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="8" column="7" selection-start="163" selection-end="163" vertical-scroll-proportion="0.22181146">
@@ -1727,34 +1669,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/Tendiwa.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="95" column="0" selection-start="3159" selection-end="3159" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/PlayerCharacter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="48" column="12" selection-start="1209" selection-end="1209" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/Character.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="62" column="82" selection-start="2505" selection-end="2505" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/HorizontalPlane.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="80" column="2" selection-start="2782" selection-end="2782" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/tendiwa/core/RequestWalk.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="5" column="8" selection-start="107" selection-end="107" vertical-scroll-proportion="0.0">
@@ -1762,19 +1676,83 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreen.java">
+    <entry file="file://$PROJECT_DIR$/src/org/tendiwa/events/EventFovChange.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="252" column="4" selection-start="8905" selection-end="8905" vertical-scroll-proportion="0.0">
+        <state line="80" column="0" selection-start="3569" selection-end="3569" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/tendiwa/events/EventFovChange.java">
+    <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreenInputProcessor.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="80" column="0" selection-start="3569" selection-end="3569" vertical-scroll-proportion="0.8135593">
+        <state line="114" column="30" selection-start="3719" selection-end="3719" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../MainModule/src/tendiwa/modules/MainModule.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="36" column="81" selection-start="1354" selection-end="1354" vertical-scroll-proportion="0.7372881">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/Character.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="295" column="0" selection-start="8294" selection-end="8294" vertical-scroll-proportion="0.5084746">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/PlayerCharacter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="48" column="12" selection-start="1209" selection-end="1209" vertical-scroll-proportion="0.024549918">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/HorizontalPlane.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="80" column="2" selection-start="2782" selection-end="2782" vertical-scroll-proportion="0.024549918">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/TerrainType.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="36" column="46" selection-start="975" selection-end="975" vertical-scroll-proportion="0.41734862">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/Tendiwa.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="95" column="0" selection-start="3159" selection-end="3159" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/TendiwaClientLibgdxEventManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="36" column="64" selection-start="1321" selection-end="1321" vertical-scroll-proportion="0.0">
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="e#1817#2169#0" expanded="true" />
+            <element signature="e#2165#2166#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreen.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="390" column="18" selection-start="13638" selection-end="13638" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/Server.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="10" column="12" selection-start="346" selection-end="346" vertical-scroll-proportion="0.07364976">
+          <folding />
         </state>
       </provider>
     </entry>

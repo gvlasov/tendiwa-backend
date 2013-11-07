@@ -293,9 +293,6 @@ void invalidateVisionCache() {
 
 /* Vision */
 public boolean initialCanSee(int x, int y) {
-	if (x == 227 && y == 198) {
-		System.out.println(11111);
-	}
 	Coordinate characterCoord = new Coordinate(this.x, this.y);
 	if (characterCoord.isNear(x, y) || this.x == x && this.y == y) {
 		cacheVision(x, y, VISION_VISIBLE);
