@@ -14,6 +14,7 @@ private static final Queue<Request> queue = new LinkedList<>();
 private World WORLD;
 private boolean stopped;
 private int sleepTime = 100;
+private boolean turnComputing = false;
 
 public static void receive(Request request) {
 	request.process();
@@ -30,9 +31,14 @@ public void run() {
 			try {
 				Thread.sleep(sleepTime);
 			} catch (InterruptedException e) {
-				while (!queue.isEmpty()) {
-					queue.remove().process();
+				turnComputing = true;
+				synchronized (queue) {
+					while (!queue.isEmpty()) {
+						queue.remove().process();
+					}
+					queue.notify();
 				}
+				turnComputing = false;
 				continue;
 			}
 		}
@@ -40,7 +46,6 @@ public void run() {
 }
 
 public void pushRequest(Request request) {
-	int size = queue.size();
 	queue.offer(request);
 	if (queue.size() == 1) {
 		Tendiwa.getServerThread().interrupt();
@@ -57,5 +62,8 @@ public World getWorld() {
 
 void stop() {
 	stopped = true;
+}
+public static boolean isTurnComputing() {
+	return SERVER.turnComputing;
 }
 }

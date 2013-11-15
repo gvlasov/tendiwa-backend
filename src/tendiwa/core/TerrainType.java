@@ -24,7 +24,11 @@ public TerrainType(String name, TerrainClass terrainClass) {
 }
 
 public static TerrainType getById(int floorId) {
-	return byId.get((short) floorId);
+	TerrainType terrainType = byId.get((short) floorId);
+	if (terrainType == null) {
+		throw new NullPointerException("No terrain with id "+floorId);
+	}
+	return terrainType;
 }
 
 public static TerrainType getById(short floorId) {
@@ -78,6 +82,9 @@ public TerrainClass getTerrainClass() {
 }
 
 public enum TerrainClass {
-	FLOOR, WALL;
+	FLOOR, WALL
+}
+public static int hashXYtoFloorId(int x, int y) {
+	return (x+100*y)%3+1;
 }
 }
