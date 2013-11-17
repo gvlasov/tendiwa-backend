@@ -10,16 +10,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TerrainType implements PlaceableInCell, GsonForStaticDataSerializable {
-protected static short lastId = 0;
+protected static short lastFloorId = 0;
+protected static short lastWallId = -1;
 private static Map<Short, TerrainType> byId = new HashMap<>();
 private final String name;
 private short id;
 private TerrainClass terrainClass;
 
 public TerrainType(String name, TerrainClass terrainClass) {
-	this.id = lastId++;
 	this.name = name;
 	this.terrainClass = terrainClass;
+	if (terrainClass == TerrainClass.WALL) {
+		this.id = lastWallId--;
+	} else {
+		assert terrainClass == TerrainClass.FLOOR;
+		this.id = lastFloorId++;
+	}
 	byId.put(id, this);
 }
 
@@ -46,6 +52,10 @@ public static Map<Short, TerrainType> getAll() {
 
 public static boolean isFloor(int north) {
 	return byId.get((short) north).getTerrainClass() == TerrainClass.FLOOR;
+}
+
+public static int getNumberOfWallTypes() {
+	return -lastWallId-1;
 }
 
 @Override
