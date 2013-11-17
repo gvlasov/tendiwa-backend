@@ -13,6 +13,8 @@ import java.util.Properties;
 public class Tendiwa {
 private static Tendiwa INSTANCE;
 private static AssociationChangeNotification clientEventManager;
+private static int worldWidth;
+private static int worldHeight;
 public final org.apache.log4j.Logger logger = Logger.getLogger("tendiwa");
 public final Server SERVER = Server.SERVER;
 public final TendiwaClient CLIENT;
@@ -72,6 +74,8 @@ Tendiwa(String args[]) throws ClassNotFoundException, IllegalAccessException, In
 	CLIENT.startup();
 
 	WORLD = Server.SERVER.getWorld();
+	worldWidth = WORLD.getWidth();
+	worldHeight = WORLD.getHeight();
 	PLAYER = WORLD.getPlayerCharacter();
 }
 
@@ -116,4 +120,27 @@ public static Logger getLogger() {
 	return INSTANCE.logger;
 }
 
+/**
+ * <p>Returns width of world in cells. It is equivalent to {@code Tendiwa.getWorld().getWidth()}, just more convenient
+ * and fast, as world width and height are often needed by different parts of game.</p> <p>Use this method strictly
+ * after the world has been initialized.</p>
+ *
+ * @return Width of world in cells.
+ * @see tendiwa.core.Tendiwa#getWorldHeight()
+ */
+public static int getWorldWidth() {
+	return worldWidth;
+}
+
+/**
+ * <p>Returns height of world in cells. It is equivalent to {@code Tendiwa.getWorld().getHeight()}, just more convenient
+ * and fast, as world width and height are often needed by different parts of game.</p> <p>Use this method strictly
+ * after the world has been initialized.</p>
+ *
+ * @return Height of world in cells.
+ * @see Tendiwa#getWorldWidth() ()
+ */
+public static int getWorldHeight() {
+	return worldHeight;
+}
 }

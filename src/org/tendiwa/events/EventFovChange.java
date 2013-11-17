@@ -1,6 +1,7 @@
 package org.tendiwa.events;
 
 import tendiwa.core.Character;
+import tendiwa.core.PlayerCharacter;
 import tendiwa.core.RenderCell;
 import tendiwa.core.Tendiwa;
 
@@ -24,11 +25,16 @@ public final LinkedList<Integer> unseen = new LinkedList<>();
  */
 public EventFovChange(int xPrev, int yPrev, byte[][] visionPrevious, byte[][] visionCurrent) {
 	int worldHeight = Tendiwa.getWorld().getHeight();
-	int dx = Tendiwa.getPlayer().getX() - xPrev;
-	int dy = Tendiwa.getPlayer().getY() - yPrev;
+	PlayerCharacter player = Tendiwa.getPlayer();
+	int dx = player.getX() - xPrev;
+	int dy = player.getY() - yPrev;
 	// Loop over points in previous cache
-	for (int i = 0; i < Character.VISION_CACHE_WIDTH; i++) {
-		for (int j = 0; j < Character.VISION_CACHE_WIDTH; j++) {
+	int startIndexX = Character.getStartIndexOfRelativeTable(xPrev, Character.VISION_RANGE);
+	int startIndexY = Character.getStartIndexOfRelativeTable(yPrev, Character.VISION_RANGE);
+	int endPrevX = Character.getEndIndexOfRelativeTableX(xPrev, Character.VISION_RANGE);
+	int endPrevY = Character.getEndIndexOfRelativeTableY(yPrev, Character.VISION_RANGE);
+	for (int i = startIndexX; i < endPrevX; i++) {
+		for (int j = startIndexY; j < endPrevY; j++) {
 			boolean pointIsInBothCaches = i - dx >= 0
 				&& j - dy >= 0
 				&& i - dx < Character.VISION_CACHE_WIDTH
@@ -62,8 +68,12 @@ public EventFovChange(int xPrev, int yPrev, byte[][] visionPrevious, byte[][] vi
 		}
 	}
 	// Loop over points in the new cache that are _not_ in the previous cache
-	for (int i = 0; i < Character.VISION_CACHE_WIDTH; i++) {
-		for (int j = 0; j < Character.VISION_CACHE_WIDTH; j++) {
+	int startPlayerX = Character.getStartIndexOfRelativeTable(player.getX(), Character.VISION_RANGE);
+	int startPlayerY = Character.getStartIndexOfRelativeTable(player.getY(), Character.VISION_RANGE);
+	int endPlayerX = Character.getEndIndexOfRelativeTableX(player.getX(), Character.VISION_RANGE);
+	int endPlayerY = Character.getEndIndexOfRelativeTableY(player.getY(), Character.VISION_RANGE);
+	for (int i = startPlayerX; i < endPlayerX; i++) {
+		for (int j = startPlayerY; j < endPlayerY; j++) {
 			// Condition from previous loop with reversed dx
 			boolean pointIsInBothCaches = i + dx >= 0
 				&& j + dy >= 0

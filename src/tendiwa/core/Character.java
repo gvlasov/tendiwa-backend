@@ -36,6 +36,11 @@ public final ItemCollection inventory = new ItemCollection();
 protected final CharacterType characterType;
 protected final String name;
 protected final HashMap<Integer, Character.Effect> effects = new HashMap<>();
+/**
+ * <p>Here is cached whether this Character sees a cell relative to his current position or not.</p> <p>{@code
+ * visionCache[VISION_CACHE_WIDTH][VISION_CACHE_WIDTH]} is Character's current cell.</p>
+ */
+public byte[][] visionCache = new byte[VISION_CACHE_WIDTH][VISION_CACHE_WIDTH];
 protected Body body;
 protected int actionPoints;
 protected int ep;
@@ -50,11 +55,6 @@ protected ArrayList<Integer> spells = new ArrayList<>();
 protected boolean isAlive;
 protected CharacterState state = CharacterState.DEFAULT;
 protected TimeStream timeStream;
-/**
- * <p>Here is cached whether this Character sees a cell relative to his current position or not.</p> <p>{@code
- * visionCache[VISION_CACHE_WIDTH][VISION_CACHE_WIDTH]} is Character's current cell.</p>
- */
-public byte[][] visionCache = new byte[VISION_CACHE_WIDTH][VISION_CACHE_WIDTH];
 private boolean isVisionCacheEmpty = true;
 /**
  * Saves field of view on previous turn when it is needed to calculate diffirences between FOV on previous turn and
@@ -73,6 +73,56 @@ public Character(HorizontalPlane plane, CharacterType characterType, int x, int 
 	this.characterType = characterType;
 	this.x = x;
 	this.y = y;
+}
+
+/**
+ * <p>Returns the first index (either x or y) of a relative table (a FOV table, for example) which resides inside world
+ * rectangle {0, 0, world.width, world.height}.</p> <p>There is only one method for the first index, but two methods for
+ * the last indices, because the least world coordinate is 0 on both x and y axes, but the greatest is different
+ * (world.width or world.height) for x and y axes.</p>
+ *
+ * @param centerCoordinate
+ * 	Absolute coordinate (in world coordinates) of table's center by one of axes.
+ * @param tableRadius
+ * 	{@code (table_width-1)/2}
+ * @return First index in relative table's coordinates that resides inside world rectangle.
+ * @see PathTable For more information on relative tables.
+ * @see tendiwa.core.Character#computeFullVisionCache()  For more information on relative tables.
+ */
+public static int getStartIndexOfRelativeTable(int centerCoordinate, int tableRadius) {
+	return Math.max(0, -(centerCoordinate - tableRadius));
+}
+
+/**
+ * <p>Returns the last index on x axis of a relative table (a FOV table, for example) which resides inside world
+ * recangle.</p> <p/> <p>There is only one method for the first index, but two methods for the last indices, because the
+ * least world coordinate is 0 on both x and y axes, but the greatest is different (world.width or world.height) for x
+ * and y axes.</p>
+ *
+ * @param centerCoordinate
+ * 	Absolute x coordinate of table's center in world coordinates.
+ * @param tableRadius
+ * 	{@code (table_width-1)/2}
+ * @return Last index in relative table's coordinates on x axis that resides inside world rectangle.
+ */
+public static int getEndIndexOfRelativeTableX(int centerCoordinate, int tableRadius) {
+	return Math.min(tableRadius * 2 + 1, Tendiwa.getWorldWidth() - centerCoordinate + tableRadius);
+}
+
+/**
+ * <p>Returns the last index on y axis of a relative table (a FOV table, for example) which resides inside world
+ * recangle.</p> <p/> <p>There is only one method for the first index, but two methods for the last indices, because the
+ * least world coordinate is 0 on both x and y axes, but the greatest is different (world.width or world.height) for x
+ * and y axes.</p>
+ *
+ * @param centerCoordinate
+ * 	Absolute y coordinate of table's center in world coordinates.
+ * @param tableRadius
+ * 	{@code (table_width-1)/2}
+ * @return Last index in relative table's coordinates on x axis that resides inside world rectangle.
+ */
+public static int getEndIndexOfRelativeTableY(int centerCoordinate, int tableRadius) {
+	return Math.min(tableRadius * 2 + 1, Tendiwa.getWorldHeight() - centerCoordinate + tableRadius);
 }
 
 /* Actions */
@@ -224,12 +274,12 @@ protected void makeSound(SoundType type) {
 	timeStream.makeSound(x, y, type);
 }
 
+	/* Special actions */
+
 protected void enterState(CharacterState state) {
 	this.state = state;
 	throw new UnsupportedOperationException();
 }
-
-	/* Special actions */
 
 /**
  * Pushes another character so he moves to another cell
@@ -433,8 +483,9 @@ public boolean initialCanSee(int x, int y) {
 		return false;
 	}
 }
+
 public byte getFromCache(int x, int y) {
-	return visionCache[x-this.x+VISION_RANGE][y-this.y+VISION_RANGE];
+	return visionCache[x - this.x + VISION_RANGE][y - this.y + VISION_RANGE];
 }
 
 public Coordinate getRayEnd(int endX, int endY) {
@@ -608,6 +659,8 @@ public Coordinate getRayEnd(int endX, int endY) {
 	}
 }
 
+/* Getters */
+
 public Coordinate[] rays(int startX, int startY, int endX, int endY) {
 	return Utils.concatAll(
 		Chunk.vector(startX, startY, endX, endY),
@@ -615,8 +668,6 @@ public Coordinate[] rays(int startX, int startY, int endX, int endY) {
 		Chunk.vector(startX + (endX > startX ? 1 : -1), startY, endX, endY + (endY > startY ? -1 : 1))
 	);
 }
-
-/* Getters */
 
 public int hashCode() {
 	return id;
@@ -648,11 +699,11 @@ public int getFraction() {
 public void setFraction(int fraction) {
 	this.fraction = fraction;
 }
+	/* Setters */
 
 public int getId() {
 	return id;
 }
-	/* Setters */
 
 public String getName() {
 	return name;
@@ -665,8 +716,8 @@ public String getName() {
  * For action method, use Character.step.
  */
 public void move(int x, int y) {
-	for (int i=0; i<VISION_CACHE_WIDTH; i++) {
-		for (int j=0; j<VISION_CACHE_WIDTH; j++) {
+	for (int i = 0; i < VISION_CACHE_WIDTH; i++) {
+		for (int j = 0; j < VISION_CACHE_WIDTH; j++) {
 			visionPrevious[i][j] = visionCache[i][j];
 		}
 	}
@@ -840,8 +891,12 @@ public boolean isVisionCacheEmpty() {
 }
 
 public void computeFullVisionCache() {
-	for (int i = 0; i < VISION_CACHE_WIDTH; i++) {
-		for (int j = 0; j < VISION_CACHE_WIDTH; j++) {
+	int startX = getStartIndexOfRelativeTable(x, VISION_RANGE);
+	int startY = getStartIndexOfRelativeTable(y, VISION_RANGE);
+	int endX = getEndIndexOfRelativeTableX(x, VISION_RANGE);
+	int endY = getEndIndexOfRelativeTableY(y, VISION_RANGE);
+	for (int i = startX; i < endX; i++) {
+		for (int j = startY; j < endY; j++) {
 			initialCanSee(x - VISION_RANGE + i, y - VISION_RANGE + j);
 		}
 	}

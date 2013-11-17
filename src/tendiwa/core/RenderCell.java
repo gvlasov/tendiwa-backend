@@ -32,4 +32,12 @@ public int getY() {
 public short getTerrain() {
 	return terrain;
 }
+
+public static int getY(int coord) {
+	return coord % Tendiwa.getWorld().getHeight();
+}
+
+public static int getX(Integer coord) {
+	return coord / Tendiwa.getWorld().getHeight();
+}
 }
