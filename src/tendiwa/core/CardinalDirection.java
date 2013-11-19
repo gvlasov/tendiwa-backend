@@ -13,7 +13,6 @@ public enum CardinalDirection implements Direction {
 	N, E, S, W;
 public static final int[] dx = new int[]{0, 1, 0, -1};
 public static final int[] dy = new int[]{-1, 0, 1, 0};
-
 public static final List<CardinalDirection> ALL = Arrays.asList(N, E, S, W);
 
 public static CardinalDirection indexToDirection(int i) {
@@ -305,5 +304,14 @@ public int getCardinalIndex() {
 	}
 	assert this == W;
 	return 3;
+}
+
+/**
+ * Checks whether this direction is a horizontal one.
+ *
+ * @return Returns true if this is {@link CardinalDirection#E} or {@link CardinalDirection#W}, otherwise returns false.
+ */
+public boolean isHorizontal() {
+	return this == E || this == W;
 }
 }
