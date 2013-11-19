@@ -11,6 +11,9 @@ import java.util.List;
  */
 public enum CardinalDirection implements Direction {
 	N, E, S, W;
+public static final int[] dx = new int[]{0, 1, 0, -1};
+public static final int[] dy = new int[]{-1, 0, 1, 0};
+
 public static final List<CardinalDirection> ALL = Arrays.asList(N, E, S, W);
 
 public static CardinalDirection indexToDirection(int i) {

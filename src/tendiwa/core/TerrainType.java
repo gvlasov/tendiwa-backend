@@ -14,6 +14,7 @@ protected static short lastFloorId = 0;
 protected static short lastWallId = -1;
 private static Map<Short, TerrainType> byId = new HashMap<>();
 private final String name;
+private static short emptinessId;
 private short id;
 private TerrainClass terrainClass;
 
@@ -27,6 +28,9 @@ public TerrainType(String name, TerrainClass terrainClass) {
 		this.id = lastFloorId++;
 	}
 	byId.put(id, this);
+	if (name.equals("emptiness")) {
+		emptinessId = this.id;
+	}
 }
 
 public static TerrainType getById(int floorId) {
@@ -89,6 +93,10 @@ public Chunk.Passability getPassability() {
 
 public TerrainClass getTerrainClass() {
 	return terrainClass;
+}
+
+public static short getEmptiness() {
+	return emptinessId;
 }
 
 public enum TerrainClass {
