@@ -37,13 +37,15 @@ private static final EdgeFactory<BodyPartTypeInstance, DefaultEdge> defaultEdgeF
 private static final JCodeModel soundsCodeModel = new JCodeModel();
 private static final JCodeModel charactersCodeModel = new JCodeModel();
 private static final JCodeModel objectsCodeModel = new JCodeModel();
-private static final JCodeModel terrainCodeModel = new JCodeModel();
+private static final JCodeModel floorsCodeModel = new JCodeModel();
+private static final JCodeModel wallsCodeModel = new JCodeModel();
 private static final JCodeModel itemsCodeModel = new JCodeModel();
 private static final JCodeModel materialsCodeModel = new JCodeModel();
 private static final JDefinedClass soundsClass;
 private static final JDefinedClass charactersClass;
 private static final JDefinedClass objectsClass;
-private static final JDefinedClass terrainClass;
+private static final JDefinedClass floorsClass;
+private static final JDefinedClass wallsClass;
 private static final JDefinedClass itemsClass;
 private static final JDefinedClass materialsClass;
 private static final String staticDataPackageName = "tendiwa.resources.";
@@ -54,10 +56,12 @@ private static final String GENERATED_CLASS_COMMENT_TEXT = "Do not modify!\n\n" 
 	"To define your own game resources, you need to describe them in data/*.xml files \n" +
 	"and then run build.";
 
+
 static {
 	// Define classes in code models
 	JDefinedClass itemsClass1;
-	JDefinedClass terrainClass1;
+	JDefinedClass floorsClass1;
+	JDefinedClass wallsClass1;
 	JDefinedClass objectsClass1;
 	JDefinedClass charactersClass1;
 	JDefinedClass soundsClass1;
@@ -66,14 +70,16 @@ static {
 		soundsClass1 = soundsCodeModel._class(staticDataPackageName + "SoundTypes");
 		charactersClass1 = charactersCodeModel._class(staticDataPackageName + "CharacterTypes");
 		objectsClass1 = objectsCodeModel._class(staticDataPackageName + "ObjectTypes");
-		terrainClass1 = terrainCodeModel._class(staticDataPackageName + "TerrainTypes");
+		floorsClass1 = floorsCodeModel._class(staticDataPackageName + "FloorTypes");
+		wallsClass1 = floorsCodeModel._class(staticDataPackageName + "WallTypes");
 		itemsClass1 = itemsCodeModel._class(staticDataPackageName + "ItemTypes");
 		materialsClass1 = materialsCodeModel._class(staticDataPackageName + "MaterialTypes");
 	} catch (JClassAlreadyExistsException e) {
 		soundsClass1 = null;
 		charactersClass1 = null;
 		objectsClass1 = null;
-		terrainClass1 = null;
+		floorsClass1 = null;
+		wallsClass1 = null;
 		itemsClass1 = null;
 		materialsClass1 = null;
 		e.printStackTrace();
@@ -82,14 +88,16 @@ static {
 	soundsClass = soundsClass1;
 	charactersClass = charactersClass1;
 	objectsClass = objectsClass1;
-	terrainClass = terrainClass1;
+	floorsClass = floorsClass1;
+	wallsClass = wallsClass1;
 	materialsClass = materialsClass1;
 	// Create an array to iterate over all code models
 	codeModels = new JCodeModel[]{
 		soundsCodeModel,
 		charactersCodeModel,
 		objectsCodeModel,
-		terrainCodeModel,
+		floorsCodeModel,
+		wallsCodeModel,
 		itemsCodeModel,
 		materialsCodeModel
 	};
@@ -97,7 +105,8 @@ static {
 		soundsClass,
 		charactersClass,
 		objectsClass,
-		terrainClass,
+		floorsClass,
+		wallsClass,
 		itemsClass,
 		materialsClass
 	};
@@ -360,34 +369,35 @@ private static void loadObjects(Element eRoot) {
 
 private static void loadFloors(Element eRoot) {
 	Element eFloors = (Element) eRoot.getElementsByTagName("floors").item(0);
-	JClass clsFloorType = terrainCodeModel.ref(TerrainType.class);
-	JFieldRef terrainTypeRef = objectsCodeModel.ref(TerrainType.TerrainClass.class).staticRef("FLOOR");
+	JClass clsFloorType = floorsCodeModel.ref(FloorType.class);
 	for (Element eFloor = (Element) eFloors.getFirstChild(); eFloor != null; eFloor = (Element) eFloor.getNextSibling()) {
 		String name = eFloor.getElementsByTagName("name").item(0).getFirstChild().getNodeValue();
-		terrainClass.field(
+		boolean isLiquid = false;
+		if (eFloor.getElementsByTagName("liquid").getLength() == 1) {
+			isLiquid = true;
+		}
+		floorsClass.field(
 			JMod.PUBLIC | JMod.STATIC | JMod.FINAL,
-			TerrainType.class,
+			FloorType.class,
 			name,
 			JExpr._new(clsFloorType)
 				.arg(JExpr.lit(name))
-				.arg(terrainTypeRef)
+				.arg(JExpr.lit(isLiquid))
 		);
 	}
 }
 
 private static void loadWalls(Element eRoot) {
-	Element eFloors = (Element) eRoot.getElementsByTagName("walls").item(0);
-	JClass clsFloorType = terrainCodeModel.ref(TerrainType.class);
-	JFieldRef terrainTypeRef = objectsCodeModel.ref(TerrainType.TerrainClass.class).staticRef("WALL");
-	for (Element eFloor = (Element) eFloors.getFirstChild(); eFloor != null; eFloor = (Element) eFloor.getNextSibling()) {
-		String name = eFloor.getElementsByTagName("name").item(0).getFirstChild().getNodeValue();
-		terrainClass.field(
+	Element eWalls = (Element) eRoot.getElementsByTagName("walls").item(0);
+	JClass clsWallType = wallsCodeModel.ref(WallType.class);
+	for (Element eWall = (Element) eWalls.getFirstChild(); eWall != null; eWall = (Element) eWall.getNextSibling()) {
+		String name = eWall.getElementsByTagName("name").item(0).getFirstChild().getNodeValue();
+		wallsClass.field(
 			JMod.PUBLIC | JMod.STATIC | JMod.FINAL,
-			TerrainType.class,
+			WallType.class,
 			name,
-			JExpr._new(clsFloorType)
+			JExpr._new(clsWallType)
 				.arg(JExpr.lit(name))
-				.arg(terrainTypeRef)
 		);
 	}
 }

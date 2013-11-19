@@ -1,8 +1,5 @@
 package tendiwa.core;
 
-import org.tendiwa.events.EventFovChange;
-import org.tendiwa.events.EventInitialTerrain;
-
 import static tendiwa.core.DSL.worldBuilder;
 
 public class World {

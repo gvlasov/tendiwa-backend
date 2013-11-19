@@ -292,7 +292,7 @@ public HashMap<Integer, Integer> findDoorAppropriateCells(Rectangle r, CardinalD
 	return cells;
 }
 
-public TerrainModifier buildBasis(TerrainType floor, ObjectType walls, ObjectType door) {
+public TerrainModifier buildBasis(FloorType floor, ObjectType walls, ObjectType door) {
 	TerrainModifier modifier = terrainModifier;
 	RectangleSystem rs = modifier.getRectangleSystem();
 	// if (notSimpleForm) {
@@ -363,7 +363,7 @@ protected Coordinate connectRoomsWithDoor(Rectangle r1, Rectangle r2, ObjectType
 	return new Coordinate(x, y);
 }
 
-protected void fillFloor(Rectangle r, TerrainType floor) {
+protected void fillFloor(Rectangle r, FloorType floor) {
 	settlement.square(r.x, r.y, r.width, r.height, floor, true);
 }
 

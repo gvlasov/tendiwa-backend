@@ -53,7 +53,12 @@ public EventFovChange(int xPrev, int yPrev, byte[][] visionPrevious, byte[][] vi
 					// If a point was known to be invisible, and now it is visible, then it is seen
 					int x = xPrev - Character.VISION_RANGE + i;
 					int y = yPrev - Character.VISION_RANGE + j;
-					seen.add(new RenderCell(x, y, Tendiwa.getWorld().getDefaultPlane().getTerrainElement(x, y)));
+					seen.add(new RenderCell(
+						x,
+						y,
+						Tendiwa.getWorld().getDefaultPlane().getFloor(x, y),
+						Tendiwa.getWorld().getDefaultPlane().getWall(x, y)
+					));
 				}
 			} else {
 				// If point is only in the previous cache
@@ -87,7 +92,12 @@ public EventFovChange(int xPrev, int yPrev, byte[][] visionPrevious, byte[][] vi
 				// If it wasn't known of point's visibility, and now it is visible, therefore it was seen.
 				int x = xPrev + dx - Character.VISION_RANGE + i;
 				int y = yPrev + dy - Character.VISION_RANGE + j;
-				seen.add(new RenderCell(x, y, Tendiwa.getWorld().getDefaultPlane().getTerrainElement(x, y)));
+				seen.add(new RenderCell(
+					x,
+					y,
+					Tendiwa.getWorld().getDefaultPlane().getFloor(x, y),
+					Tendiwa.getWorld().getDefaultPlane().getWall(x, y)
+				));
 			}
 		}
 	}

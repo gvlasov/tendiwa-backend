@@ -67,12 +67,12 @@ public short getId() {
 
 @Override
 public void place(HorizontalPlane plane, int x, int y) {
-	plane.setTerrainElement(this.id, x, y);
+	plane.setFloor(this.id, x, y);
 }
 
 @Override
 public boolean containedIn(HorizontalPlane plane, int x, int y) {
-	return plane.getTerrainElement(x, y) == this.id;
+	return plane.getFloor(x, y) == this.id;
 }
 
 @Override

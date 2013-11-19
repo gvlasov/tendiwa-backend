@@ -4,12 +4,14 @@ public class RenderCell {
 int x;
 int y;
 boolean visible;
-short terrain;
+short floor;
+short wall;
 
-public RenderCell(int x, int y, short terrain) {
+public RenderCell(int x, int y, short floor, short wall) {
 	this.x = x;
 	this.y = y;
-	this.terrain = terrain;
+	this.floor = floor;
+	this.wall = wall;
 	visible = true;
 }
 
@@ -29,8 +31,11 @@ public int getY() {
 	return y;
 }
 
-public short getTerrain() {
-	return terrain;
+public short getFloor() {
+	return floor;
+}
+public short getWall() {
+	return wall;
 }
 
 public static int getY(int coord) {
@@ -39,5 +44,9 @@ public static int getY(int coord) {
 
 public static int getX(Integer coord) {
 	return coord / Tendiwa.getWorld().getHeight();
+}
+
+public boolean hasWall() {
+	return wall != WallType.NO_WALL_ID;
 }
 }

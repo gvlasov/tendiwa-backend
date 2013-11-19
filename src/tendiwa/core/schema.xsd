@@ -6,8 +6,8 @@
 	</xs:annotation>
 	<xs:element name="root">
 		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="items">
+			<xs:all>
+				<xs:element name="items" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation xml:lang="en">
 							All items in module are described inside this element
@@ -31,10 +31,10 @@
 														<xs:annotation>
 															<xs:documentation xml:lang="en">
 																States that this item can be used as a ranged weapon;
-																this type of usade implies shooting some kind of missiles 
-																out of this item. If item doesn't shoot missiles, but 
+																this type of usade implies shooting some kind of missiles
+																out of this item. If item doesn't shoot missiles, but
 																"shoots itself" (e.g. a magical staff) then you should
-																not use item's &lt;invokable&gt; element rather than this 
+																not use item's &lt;invokable&gt; element rather than this
 																the "rangedWeapon" type flag.
 															</xs:documentation>
 														</xs:annotation>
@@ -178,7 +178,7 @@
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="characters">
+				<xs:element name="characters" minOccurs="0">
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="character" minOccurs="1" maxOccurs="unbounded">
@@ -208,7 +208,7 @@
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="objects">
+				<xs:element name="objects" minOccurs="0">
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="object" minOccurs="1" maxOccurs="unbounded">
@@ -267,10 +267,10 @@
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
-				<xs:element name="materials">
+				<xs:element name="materials" minOccurs="0">
 					<xs:complexType>
 						<xs:sequence>
-							<xs:element name="material" minOccurs="0" maxOccurs="unbounded">
+							<xs:element name="material" minOccurs="1" maxOccurs="unbounded">
 								<xs:complexType>
 									<xs:sequence>
 										<xs:element name="name" type="nameType"/>
@@ -282,7 +282,7 @@
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="sounds">
+				<xs:element name="sounds" minOccurs="0">
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="sound" minOccurs="1" maxOccurs="unbounded">
@@ -298,20 +298,21 @@
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="floors">
+				<xs:element name="floors" minOccurs="0">
 					<xs:complexType>
 						<xs:sequence>
-							<xs:element name="floor" maxOccurs="unbounded">
+							<xs:element name="floor" minOccurs="1" maxOccurs="unbounded">
 								<xs:complexType>
 									<xs:sequence>
 										<xs:element name="name" type="nameType" />
+                                        <xs:group ref="floorSolidLiquid"/>
 									</xs:sequence>
 								</xs:complexType>
 							</xs:element>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-			</xs:sequence>
+			</xs:all>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="sounds">
@@ -340,6 +341,12 @@
 			<xs:element name="nonLiquidAllowing"/>
 		</xs:choice>
 	</xs:group>
+    <xs:group name="floorSolidLiquid">
+        <xs:choice>
+            <xs:element name="solid"/>
+            <xs:element name="liquid"/>
+        </xs:choice>
+    </xs:group>
 	<xs:group name="craftableMatreialGroup">
 		<xs:choice>
 			<xs:element name="material">
@@ -367,10 +374,10 @@
 				Describes character's body represented by a
 				tree of body parts with one "root" body part (usually a torso)
 				and any number of "child" body parts that are
-				attached to the "root" part, each of which 
+				attached to the "root" part, each of which
 				can also host any number of body parts itself.
 				Each body part also can have a property "ability"
-				which describes an internal ability provided to a 
+				which describes an internal ability provided to a
 				character by having that body part. It means that if
 				the body part will appear missing, a character
 				will lose the ability (unless he has other body parts

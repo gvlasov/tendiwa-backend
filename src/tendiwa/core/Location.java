@@ -262,10 +262,10 @@ public ArrayList<Coordinate> polygon(ArrayList<Coordinate> coords, boolean mode)
 	return answer;
 }
 
-public void fillWithCells(TerrainType floor) {
+public void fillWithCells(FloorType floor) {
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
-			plane.setTerrainElement(floor.getId(), x + i, y + j);
+			plane.setFloor(floor.getId(), x + i, y + j);
 		}
 	}
 }

@@ -21,7 +21,12 @@ public EventInitialTerrain() {
 			if (visionCache[i][j] == Character.VISION_VISIBLE) {
 				int x = Tendiwa.getPlayer().getX() - Character.VISION_RANGE + i;
 				int y = Tendiwa.getPlayer().getY() - Character.VISION_RANGE + j;
-				seen.add(new RenderCell(x, y, Tendiwa.getWorld().getDefaultPlane().getTerrainElement(x, y)));
+				seen.add(new RenderCell(
+					x,
+					y,
+					Tendiwa.getWorld().getDefaultPlane().getFloor(x, y),
+					Tendiwa.getWorld().getDefaultPlane().getWall(x, y)
+				));
 			}
 		}
 	}

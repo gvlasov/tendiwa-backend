@@ -90,12 +90,19 @@ public int getChunkRoundedCoord(int coord) {
 		: Chunk.SIZE) - coord % Chunk.SIZE : coord - coord % Chunk.SIZE;
 }
 
-public short getTerrainElement(int x, int y) {
-	return getChunkWithCell(x, y).getTerrainElement(x, y);
+public short getFloor(int x, int y) {
+	return getChunkWithCell(x, y).getFloor(x, y);
+}
+public short getWall(int x, int y) {
+	return getChunkWithCell(x, y).getWall(x, y);
 }
 
 public Chunk.Passability getPassability(int x, int y) {
-	return TerrainType.getById(getChunkWithCell(x, y).getTerrainElement(x, y)).getPassability();
+	if (getChunkWithCell(x,y).getWall(x, y) != WallType.NO_WALL_ID) {
+		return Chunk.Passability.NO;
+	} else {
+		return Chunk.Passability.FREE;
+	}
 }
 
 public NonPlayerCharacter createCharacter(int absX, int absY, CharacterType characterType, String name, int fraction) {
@@ -138,8 +145,8 @@ public void removeObject(int x, int y) {
 	chunkWithCell.removeObject(x - chunkWithCell.x, y - chunkWithCell.y);
 }
 
-public void placeTerrainElement(short id, int x, int y) {
-	getChunkWithCell(x, y).setTerrainElement(id, x, y);
+public void placeFloor(short id, int x, int y) {
+	getChunkWithCell(x, y).setFloor(id, x, y);
 }
 
 public Character getCharacter(int x, int y) {
@@ -155,11 +162,15 @@ public void addCharacter(Character character) {
 	getChunkWithCell(character.x, character.y).addCharacter(character);
 }
 
-public void setTerrainElement(short id, int x, int y) {
-	getChunkWithCell(x, y).setTerrainElement(id, x, y);
+public void setFloor(short id, int x, int y) {
+	getChunkWithCell(x, y).setFloor(id, x, y);
 }
 
 public GameObject getGameObject(int x, int y) {
 	return getChunkWithCell(x, y).getGameObject(x, y);
+}
+
+public void placeWall(short id, int x, int y) {
+	getChunkWithCell(x,y).setWall(id, x, y);
 }
 }
