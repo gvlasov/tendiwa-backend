@@ -6,17 +6,49 @@
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8b4d96ac-5daf-4774-9e72-1ceab60ca879" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../client/shaders/opaque0transparent05depth.f.glsl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreen.java" afterPath="$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreen.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/Location.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/Location.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../MainModule/src/tendiwa/modules/MainModule.java" afterPath="$PROJECT_DIR$/../MainModule/src/tendiwa/modules/MainModule.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../client/src/org/tendiwa/client/WorldMapScreen.java" afterPath="$PROJECT_DIR$/../client/src/org/tendiwa/client/WorldMapScreen.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+    <list default="true" id="8b4d96ac-5daf-4774-9e72-1ceab60ca879" name="Default" comment="F">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../client/src/org/tendiwa/client/FovEdgeTransparent.java" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../client/.idea/.name" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../client/.idea/compiler.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../client/.idea/copyright/profiles_settings.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../client/.idea/dictionaries/ruslux.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../client/.idea/encodings.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../client/.idea/gradle.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../client/.idea/libraries/Andriodlibs.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../client/.idea/libraries/Desktoplibs.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../client/.idea/libraries/Mainlibs.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../client/.idea/misc.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../client/.idea/modules.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../client/.idea/scopes/scope_settings.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../client/.idea/uiDesigner.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../client/.idea/vcs.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../client/.idea/workspace.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/.name" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/ant.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/artifacts/tendiwa_jar.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/codeStyleSettings.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/compiler.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/copyright/profiles_settings.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/dictionaries/suseika.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/encodings.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/codemodel_2_6.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/google_gson_2_2.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/guava_15_0.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/java_websocket.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/jgrapht_0_8.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/log4j_1_2_1_2_16.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/scopes/scope_settings.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="" />
     </list>
     <ignored path="server.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1384927203853" ignored="false" />
+    <file path="/Dummy.txt" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1384935269247" ignored="false" />
     <file path="/fragment.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1384485404389" ignored="false" />
     <file path="/WaveRectangleSystem.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381954580765" ignored="false" />
     <file path="/LocationNearRectangle1.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1378959919082" ignored="false" />
@@ -590,66 +622,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="MainModule.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../MainModule/src/tendiwa/modules/MainModule.java">
+      <file leaf-file-name="GameScreen.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreen.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="29" column="21" selection-start="1138" selection-end="1138" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Location.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/tendiwa/core/Location.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="48" column="47" selection-start="1308" selection-end="1308" vertical-scroll-proportion="0.0">
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Chat.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/tendiwa/core/Chat.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="27" column="23" selection-start="806" selection-end="806" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TestLocationDrawer.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/../MainModule/src/tendiwa/modules/TestLocationDrawer.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="30" column="36" selection-start="892" selection-end="892" vertical-scroll-proportion="0.43837753">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Ocean.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../MainModule/src/tendiwa/modules/Ocean.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="8" column="13" selection-start="169" selection-end="169" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="HelperCoastline.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../MainModule/src/tendiwa/modules/HelperCoastline.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="6" column="12" selection-start="145" selection-end="145" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="World.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/tendiwa/core/World.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="26" column="23" selection-start="826" selection-end="826" vertical-scroll-proportion="0.0">
+            <state line="506" column="8" selection-start="19646" selection-end="19646" vertical-scroll-proportion="0.016722407">
               <folding />
             </state>
           </provider>
@@ -869,7 +845,26 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="client" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
       <pane id="PackagesPane">
         <subPane>
           <PATH>
@@ -922,58 +917,7 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="ProjectPane">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MainModule" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MainModule" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MainModule" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -1427,7 +1371,11 @@
       <created>1384873935634</created>
       <updated>1384873935634</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="Enough debugging wall beard shaders, let them be bugged.">
+      <created>1384935103064</created>
+      <updated>1384935103064</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="TodoView" selected-index="1">
@@ -1452,20 +1400,18 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="19" width="1276" height="1001" extended-state="0" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3290461" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3436831" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3875803" sideWeight="0.5" order="14" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.28586724" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.28586724" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3290461" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19837399" sideWeight="0.7141328" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.48929337" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19837399" sideWeight="0.7141328" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.18652038" sideWeight="0.6688103" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.15853658" sideWeight="0.61349034" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.38650963" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -1475,10 +1421,12 @@
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.35579938" sideWeight="0.65589154" order="2" side_tool="false" content_ui="combo" x="478" y="40" width="319" height="959" />
       <window_info id="Inspector" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Usages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3436831" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Documentation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" x="100" y="119" width="1076" height="801" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="15" side_tool="false" content_ui="tabs" />
       <window_info id="Problems" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.48929337" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Dependencies Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -1531,7 +1479,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Implying for ruur" />
+    <option name="LAST_COMMIT_MESSAGE" value="Enough debugging wall beard shaders, let them be bugged." />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -1545,7 +1493,6 @@
     <option name="UPDATE_FILTER_BY_SCOPE" value="false" />
     <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
     <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
-    <MESSAGE value="Modified build process further, resumed writing code generation code." />
     <MESSAGE value="Finished (for now) writing source code generation for resources" />
     <MESSAGE value="Moved all existing terrain generator classes to the module, got rid of two-int-argument entity placement approach in Location methods, made all code build seamlessly." />
     <MESSAGE value="Moved RandomRectangleSystem usage to RectangleSystemBuilder's method; added TerrainDiffusion to create transitions between 2 types of entities" />
@@ -1570,6 +1517,7 @@
     <MESSAGE value="Before switching back to separate storing of floor and wall ids." />
     <MESSAGE value="Switched back to separated walls and floors" />
     <MESSAGE value="Implying for ruur" />
+    <MESSAGE value="Enough debugging wall beard shaders, let them be bugged." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1620,65 +1568,42 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/../client/shaders/drawWithDepth0.f.glsl">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="11" selection-start="46" selection-end="46" vertical-scroll-proportion="0.05940594">
-          <folding />
-        </state>
+        <state line="2" column="11" selection-start="46" selection-end="46" vertical-scroll-proportion="0.05940594" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../client/shaders/drawWithDepth05.f.glsl">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="0" selection-start="221" selection-end="221" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="10" column="0" selection-start="221" selection-end="221" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="jar://$PROJECT_DIR$/../libs/libgdx/sources/gdx-backend-lwjgl-sources.jar!/com/badlogic/gdx/backends/lwjgl/LwjglApplication.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="129" column="12" selection-start="4492" selection-end="4492" vertical-scroll-proportion="0.67490494">
-          <folding />
-        </state>
+        <state line="129" column="12" selection-start="4492" selection-end="4492" vertical-scroll-proportion="0.67490494" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../client/shaders/writeOpaqueToDepth.f.glsl">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../client/shaders/drawWithRGB06.f.glsl">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreen.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="501" column="40" selection-start="19404" selection-end="19404" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../client/shaders/opaque0transparent05depth.f.glsl">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="0" selection-start="422" selection-end="422" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="15" column="0" selection-start="422" selection-end="422" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/WorldMapScreen.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="51" column="32" selection-start="1561" selection-end="1561" vertical-scroll-proportion="0.8190328">
-          <folding />
-        </state>
+        <state line="51" column="32" selection-start="1561" selection-end="1561" vertical-scroll-proportion="0.8190328" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../client/shaders/drawOpaqueToDepth05.glsl">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="116" selection-start="130" selection-end="130" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="6" column="116" selection-start="130" selection-end="130" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/tendiwa/core/World.java">
@@ -1690,44 +1615,37 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/tendiwa/core/Chat.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="23" selection-start="806" selection-end="806" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../MainModule/src/tendiwa/modules/HelperCoastline.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="12" selection-start="145" selection-end="145" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../MainModule/src/tendiwa/modules/Ocean.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="13" selection-start="169" selection-end="169" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="27" column="23" selection-start="806" selection-end="806" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/tendiwa/core/Location.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="48" column="47" selection-start="1308" selection-end="1308" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
+        <state line="48" column="47" selection-start="1308" selection-end="1308" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../MainModule/src/tendiwa/modules/MainModule.java">
+    <entry file="file://$PROJECT_DIR$/../MainModule/src/tendiwa/modules/Ocean.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="29" column="21" selection-start="1138" selection-end="1138" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="8" column="13" selection-start="169" selection-end="169" vertical-scroll-proportion="0.093603745" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../MainModule/src/tendiwa/modules/HelperCoastline.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="12" selection-start="145" selection-end="145" vertical-scroll-proportion="0.093603745" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../MainModule/src/tendiwa/modules/TestLocationDrawer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="30" column="36" selection-start="892" selection-end="892" vertical-scroll-proportion="0.43837753">
+        <state line="30" column="36" selection-start="892" selection-end="892" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../MainModule/src/tendiwa/modules/MainModule.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="29" column="21" selection-start="1138" selection-end="1138" vertical-scroll-proportion="0.5254777" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreen.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="506" column="8" selection-start="19646" selection-end="19646" vertical-scroll-proportion="0.016722407">
           <folding />
         </state>
       </provider>
