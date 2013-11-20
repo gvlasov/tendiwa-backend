@@ -46,7 +46,7 @@ public void line(int startX, int startY, int endX, int endY, PlaceableInCell pla
 		int x2 = cells[i + 1].x;
 		int y2 = cells[i + 1].y;
 
-		placeable.place(plane, x, y);
+		placeable.place(plane, this.x+x, this.y+y);
 		if (i < cells.length - 1 && x != x2 && y != y2) {
 			int cx = x + ((x2 > x) ? 1 : -1);
 			placeable.place(plane, this.x + cx, this.y + y);
