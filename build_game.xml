@@ -16,7 +16,7 @@ When you need to customize build process for a module, edit build.properties fil
         <jar destfile="game.jar">
             <zipgroupfileset dir="." includes="*.jar"/>
             <manifest>
-                <attribute name="Main-Class" value="org.tendiwa.client.DesktopStarter"/>
+                <attribute name="Main-Class" value="tendiwa.core.Tendiwa"/>
             </manifest>
         </jar>
     </target>

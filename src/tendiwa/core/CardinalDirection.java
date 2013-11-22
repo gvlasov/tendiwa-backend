@@ -32,6 +32,31 @@ public static CardinalDirection indexToDirection(int i) {
 }
 
 /**
+ * Returns a direction corresponding to a number. Clockwise: 0 is N, 1 is E, 2 is S, 3 is W.
+ *
+ * @param index
+ * 	A number in [0..3] range.
+ * @return A direction corresponding to that number.
+ * @throws IllegalArgumentException
+ * 	If {@code index} is not in range [0..3].
+ */
+public static CardinalDirection sideFromCardinalIndex(int index) {
+	if (index == 0) {
+		return N;
+	}
+	if (index == 1) {
+		return E;
+	}
+	if (index == 2) {
+		return S;
+	}
+	if (index == 3) {
+		return W;
+	}
+	throw new IllegalArgumentException("Only indices 0 to 3 inclusive are allowed (you provided index " + index + ")");
+}
+
+/**
  * <p> Returns an int corresponding to CardinalDirection. </p> <ul> <li>0 is {@link CardinalDirection#N}</li> <li>2 is
  * {@link CardinalDirection#E}</li> <li>4 is {@link CardinalDirection#S}</li> <li>6 is {@link CardinalDirection#W}</li>
  * </ul>
