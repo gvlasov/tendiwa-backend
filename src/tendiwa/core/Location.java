@@ -46,7 +46,7 @@ public void line(int startX, int startY, int endX, int endY, PlaceableInCell pla
 		int x2 = cells[i + 1].x;
 		int y2 = cells[i + 1].y;
 
-		placeable.place(plane, this.x+x, this.y+y);
+		placeable.place(plane, this.x + x, this.y + y);
 		if (i < cells.length - 1 && x != x2 && y != y2) {
 			int cx = x + ((x2 > x) ? 1 : -1);
 			placeable.place(plane, this.x + cx, this.y + y);
@@ -779,6 +779,14 @@ public void fillSideOfRectangle(Rectangle r, CardinalDirection side, PlaceableIn
 	line(startX, startY, endX, endY, placeable);
 }
 
+/**
+ * Fills a rectange area in location coordinates with some placeable entities.
+ *
+ * @param r
+ * 	A rectangle area in location coordinates, i.e. {0:0} is location's top left corner, not world's.
+ * @param placeable
+ * 	What to fill the rectanlge area with.
+ */
 public void fillRectangle(Rectangle r, PlaceableInCell placeable) {
 	/**
 	 * Fill rectngle with objects randomly. chance% of cells will be filled
@@ -789,7 +797,7 @@ public void fillRectangle(Rectangle r, PlaceableInCell placeable) {
 	try {
 		for (x = r.x; x < r.x + r.width; x++) {
 			for (y = r.y; y < r.y + r.height; y++) {
-				placeable.place(plane, x, y);
+				placeable.place(plane, this.x+x, this.y+y);
 			}
 		}
 	} catch (IndexOutOfBoundsException e) {

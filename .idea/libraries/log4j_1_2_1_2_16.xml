@@ -1,13 +1,15 @@
 <component name="libraryTable">
   <library name="log4j-1.2-1.2.16">
     <CLASSES>
-      <root url="jar:///usr/share/java/log4j-1.2-1.2.16.jar!/" />
+      <root url="jar:///usr/share/java/log4j-1.2-1.2.17.jar!/" />
     </CLASSES>
     <JAVADOC>
       <root url="file:///usr/share/doc/liblog4j1.2-java/api" />
     </JAVADOC>
     <SOURCES>
       <root url="file:///usr/share/doc/liblog4j1.2-java/api" />
+      <root url="file:///usr/share/java" />
     </SOURCES>
+    <jarDirectory url="file:///usr/share/java" recursive="false" type="SOURCES" />
   </library>
 </component>

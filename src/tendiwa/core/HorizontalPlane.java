@@ -93,12 +93,13 @@ public int getChunkRoundedCoord(int coord) {
 public short getFloor(int x, int y) {
 	return getChunkWithCell(x, y).getFloor(x, y);
 }
+
 public short getWall(int x, int y) {
 	return getChunkWithCell(x, y).getWall(x, y);
 }
 
 public Chunk.Passability getPassability(int x, int y) {
-	if (getChunkWithCell(x,y).getWall(x, y) != WallType.NO_WALL_ID) {
+	if (getChunkWithCell(x, y).getWall(x, y) != WallType.NO_WALL_ID) {
 		return Chunk.Passability.NO;
 	} else {
 		return Chunk.Passability.FREE;
@@ -171,6 +172,6 @@ public GameObject getGameObject(int x, int y) {
 }
 
 public void placeWall(short id, int x, int y) {
-	getChunkWithCell(x,y).setWall(id, x, y);
+	getChunkWithCell(x, y).setWall(id, x, y);
 }
 }
