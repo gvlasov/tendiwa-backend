@@ -174,4 +174,14 @@ public GameObject getGameObject(int x, int y) {
 public void placeWall(short id, int x, int y) {
 	getChunkWithCell(x, y).setWall(id, x, y);
 }
+
+public boolean hasAnyItems(int x, int y) {
+	Chunk chunk = getChunkWithCell(x, y);
+	return chunk.hasAnyItems(x - chunk.x, y - chunk.y);
+}
+
+public boolean hasCharacter(int x, int y) {
+	Chunk chunk = getChunkWithCell(x, y);
+	return chunk.hasCharacter(x - chunk.x, y - chunk.y);
+}
 }

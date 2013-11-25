@@ -158,24 +158,36 @@ public GameObject getGameObject(int x, int y) {
  * Places a UniqueItem on a certain cell in this Chunk.
  *
  * @param x
- * 	Relative coordinates of cell
+ * 	X coordinate of a cell in chunk coordinates.
  * @param y
- * 	Relative coordinates of cell
+ * 	Y coordinate of a cell in chunk coordinates.
  */
 public void addItem(UniqueItem item, int x, int y) {
-	items.get(x * Chunk.SIZE + y).add(item);
+	int key = x * Chunk.SIZE + y;
+	ItemCollection itemsInCell = items.get(key);
+	if (itemsInCell == null) {
+		itemsInCell = new ItemCollection();
+		items.put(key, itemsInCell);
+	}
+	itemsInCell.add(item);
 }
 
 /**
  * Places a ItemPile on a certain cell in this Chunk.
  *
  * @param x
- * 	Relative coordinates of cell
+ * 	X coordinate of a cell in chunk coordinates.
  * @param y
- * 	Relative coordinates of cell
+ * 	Y coordinate of a cell in chunk coordinates.
  */
 public void addItem(ItemPile item, int x, int y) {
-	items.get(x * SIZE + y).add(item);
+	int key = x * Chunk.SIZE + y;
+	ItemCollection itemsInCell = items.get(key);
+	if (itemsInCell == null) {
+		itemsInCell = new ItemCollection();
+		items.put(key, itemsInCell);
+	}
+	itemsInCell.add(item);
 }
 
 public boolean hasObject(int x, int y) {
@@ -231,9 +243,9 @@ public short getFloor(int x, int y) {
  * Returns id of a wall in the specified cell.
  *
  * @param x
- * 	X coordinate of cell.
+ * 	X coordinate of cell in chunk coordinates.
  * @param y
- * 	Y coordinate of cell.
+ * 	Y coordinate of cell in chunk coordinates.
  * @return Id of a wall in the specified cell.
  */
 public short getWall(int x, int y) {
@@ -242,6 +254,19 @@ public short getWall(int x, int y) {
 
 public void setWall(short id, int x, int y) {
 	walls[x - this.x][y - this.y] = id;
+}
+
+/**
+ * Checks if there are any items, either {@link ItemPile}s of {@link UniqueItem}s, in this cell.
+ *
+ * @param x
+ * 	X coordinate of cell in chunk coordinates.
+ * @param y
+ * 	Y coordinate of cell in chunk coordinates.
+ * @return Id of a wall in the specified cell.
+ */
+public boolean hasAnyItems(int x, int y) {
+	return items.containsKey(x * SIZE + y);
 }
 
 public enum Passability {

@@ -19,15 +19,13 @@ public final org.apache.log4j.Logger logger = Logger.getLogger("tendiwa");
 public final Server SERVER = Server.SERVER;
 public final TendiwaClient CLIENT;
 private final Thread SERVER_THREAD;
-private final String MODULES_CONF_FILE;
+private final String MODULES_CONF_FILE = "/modules.conf";
 private final String CLIENT_CONF_FILE;
 private final World WORLD;
 private final PlayerCharacter PLAYER;
 
 Tendiwa(String args[]) throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException {
 	// Run game server and client.
-	MODULES_CONF_FILE = "/modules.conf";
-
 	ClassLoader classLoader = Tendiwa.class.getClassLoader();
 
 	// Loading modules

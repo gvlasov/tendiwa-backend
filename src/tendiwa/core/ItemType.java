@@ -6,7 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 
-public class ItemType implements GsonForStaticDataSerializable {
+public class ItemType implements GsonForStaticDataSerializable, PlaceableInCell {
 private static int lastId = 0;
 private final String name;
 private final double weight;
@@ -85,5 +85,33 @@ public JsonElement serialize(JsonSerializationContext context) {
 
 public int getId() {
 	return id;
+}
+
+@Override
+public void place(HorizontalPlane terrain, int x, int y) {
+	if (stackable) {
+		terrain.addItem(createStackable(1), x, y);
+	} else {
+		terrain.addItem(createUnique(), x, y);
+	}
+}
+
+private UniqueItem createUnique() {
+	if (stackable) {
+		throw new RuntimeException("Attempting to create a unstackable item of an stackable type");
+	}
+	return new UniqueItem(this);
+}
+
+private ItemPile createStackable(int amount) {
+	if (!stackable) {
+		throw new RuntimeException("Attempting to create a stackable item of an unstackable type");
+	}
+	return new ItemPile(this, amount);
+}
+
+@Override
+public boolean containedIn(HorizontalPlane plane, int x, int y) {
+	return false;
 }
 }

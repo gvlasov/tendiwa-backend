@@ -797,7 +797,7 @@ public void fillRectangle(Rectangle r, PlaceableInCell placeable) {
 	try {
 		for (x = r.x; x < r.x + r.width; x++) {
 			for (y = r.y; y < r.y + r.height; y++) {
-				placeable.place(plane, this.x+x, this.y+y);
+				placeable.place(plane, this.x + x, this.y + y);
 			}
 		}
 	} catch (IndexOutOfBoundsException e) {

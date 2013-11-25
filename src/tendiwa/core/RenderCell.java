@@ -6,6 +6,7 @@ int y;
 boolean visible;
 short floor;
 short wall;
+RenderMiscellaneousCellContents contents;
 
 public RenderCell(int x, int y, short floor, short wall) {
 	this.x = x;

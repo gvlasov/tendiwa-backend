@@ -66,7 +66,7 @@ public TerrainTransition(Location location, EnhancedRectangle rectangle, Placeab
 					x = columnDynamicCoord;
 					y = segmentDynamicCoord;
 				}
-				from.place(location.getPlane(), location.x+x, location.y+y);
+				from.place(location.getPlane(), location.x + x, location.y + y);
 				i++;
 			}
 		}
@@ -99,7 +99,8 @@ public TerrainTransition(Location location, EnhancedRectangle rectangle, Placeab
 	}
 	// Most handling of ordinal directions was done in the previous loop on cardinal directions.
 	// Here we only need to handle the cases when there are no cardinal directions near an ordinal.
-	corners: for (Direction dir : fromDirections) {
+	corners:
+	for (Direction dir : fromDirections) {
 		if (dir.isCardinal()) {
 			continue;
 		}
@@ -117,13 +118,13 @@ public TerrainTransition(Location location, EnhancedRectangle rectangle, Placeab
 private void drawNoSideCorner(Location location, PlaceableInCell from, EnhancedRectangle rectangle, int depth, OrdinalDirection corner) {
 	EnhancedPoint diagonalLineStartPoint = rectangle.getCorner(corner);
 	CardinalDirection[] components = corner.opposite().getComponents();
-	for (int i=0; i<depth; i++) {
+	for (int i = 0; i < depth; i++) {
 		EnhancedPoint diagonalLineNextPoint = new EnhancedPoint(diagonalLineStartPoint);
-		for (int j=0; j<=i; j++,diagonalLineNextPoint = diagonalLineNextPoint.moveToSide(Directions.getDirectionBetween(components[0].opposite(), components[1]))) {
-			if (i == depth-1 && Chance.roll(20)) {
+		for (int j = 0; j <= i; j++, diagonalLineNextPoint = diagonalLineNextPoint.moveToSide(Directions.getDirectionBetween(components[0].opposite(), components[1]))) {
+			if (i == depth - 1 && Chance.roll(20)) {
 				continue;
 			}
-			from.place(location.getPlane(), diagonalLineNextPoint.x, diagonalLineNextPoint.y);
+			from.place(location.getPlane(), location.x + diagonalLineNextPoint.x, location.y + diagonalLineNextPoint.y);
 
 		}
 		diagonalLineStartPoint = diagonalLineStartPoint.newRelativePoint(components[0]);
@@ -159,7 +160,7 @@ private void drawSingleSideCorner(Location location, PlaceableInCell from, Enhan
 				cornerPoint.getDynamicCoord(rectangleSideOrientation) + i * segmentGrowing,
 				rectangleSideOrientation
 			);
-			from.place(location.getPlane(), cornerFormingCell.x, cornerFormingCell.y);
+			from.place(location.getPlane(), location.x + cornerFormingCell.x, location.y + cornerFormingCell.y);
 		}
 	}
 	EnhancedRectangle cornerRectangle = EnhancedRectangle.growFromPoint(cornerPoint.x, cornerPoint.y, corner.opposite(), depth, depth);
