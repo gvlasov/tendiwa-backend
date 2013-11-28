@@ -1,12 +1,11 @@
 package tendiwa.core;
 
 public class RenderCell {
-int x;
-int y;
+public final int x;
+public final int y;
 boolean visible;
 short floor;
 short wall;
-RenderMiscellaneousCellContents contents;
 
 public RenderCell(int x, int y, short floor, short wall) {
 	this.x = x;
@@ -14,6 +13,25 @@ public RenderCell(int x, int y, short floor, short wall) {
 	this.floor = floor;
 	this.wall = wall;
 	visible = true;
+}
+
+@Override
+public String toString() {
+	return "RenderCell{" +
+		"x=" + x +
+		", y=" + y +
+		", visible=" + visible +
+		", floor=" + floor +
+		", wall=" + wall +
+		'}';
+}
+
+public static int getY(int coord) {
+	return coord % Tendiwa.getWorld().getHeight();
+}
+
+public static int getX(Integer coord) {
+	return coord / Tendiwa.getWorld().getHeight();
 }
 
 public boolean isVisible() {
@@ -35,16 +53,9 @@ public int getY() {
 public short getFloor() {
 	return floor;
 }
+
 public short getWall() {
 	return wall;
-}
-
-public static int getY(int coord) {
-	return coord % Tendiwa.getWorld().getHeight();
-}
-
-public static int getX(Integer coord) {
-	return coord / Tendiwa.getWorld().getHeight();
 }
 
 public boolean hasWall() {

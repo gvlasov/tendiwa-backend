@@ -1,15 +1,16 @@
 package org.tendiwa.events;
 
+import com.google.common.collect.ImmutableList;
 import tendiwa.core.Character;
-import tendiwa.core.PlayerCharacter;
-import tendiwa.core.RenderCell;
-import tendiwa.core.Tendiwa;
-
-import java.util.LinkedList;
+import tendiwa.core.*;
 
 public class EventFovChange implements Event {
-public final LinkedList<RenderCell> seen = new LinkedList<>();
-public final LinkedList<Integer> unseen = new LinkedList<>();
+private final ImmutableList.Builder<RenderCell> seenBuilder = ImmutableList.<RenderCell>builder();
+private final ImmutableList.Builder<Integer> unseenBuilder = ImmutableList.<Integer>builder();
+private final ImmutableList.Builder<Item> seenItemsBuilder = ImmutableList.<Item>builder();
+public final ImmutableList<RenderCell> seen;
+public final ImmutableList<Integer> unseen;
+public final ImmutableList<Item> seenItems;
 
 /**
  * @param xPrev
@@ -46,19 +47,14 @@ public EventFovChange(int xPrev, int yPrev, byte[][] visionPrevious, byte[][] vi
 					// If a point was known to be visible, and now it is invisible, then it is unseen
 					int x = xPrev - Character.VISION_RANGE + i;
 					int y = yPrev - Character.VISION_RANGE + j;
-					unseen.add(x * worldHeight + y);
+					unseenBuilder.add(x * worldHeight + y);
 				} else if (visionPrevious[i][j] == Character.VISION_INVISIBLE
 					&& visionCurrent[i - dx][j - dy] == Character.VISION_VISIBLE
 					) {
 					// If a point was known to be invisible, and now it is visible, then it is seen
 					int x = xPrev - Character.VISION_RANGE + i;
 					int y = yPrev - Character.VISION_RANGE + j;
-					seen.add(new RenderCell(
-						x,
-						y,
-						Tendiwa.getWorld().getDefaultPlane().getFloor(x, y),
-						Tendiwa.getWorld().getDefaultPlane().getWall(x, y)
-					));
+					addCellToSeen(x, y);
 				}
 			} else {
 				// If point is only in the previous cache
@@ -67,7 +63,7 @@ public EventFovChange(int xPrev, int yPrev, byte[][] visionPrevious, byte[][] vi
 					// therefore it is invisible and must be unseen
 					int x = xPrev - Character.VISION_RANGE + i;
 					int y = yPrev - Character.VISION_RANGE + j;
-					unseen.add(x * worldHeight + y);
+					unseenBuilder.add(x * worldHeight + y);
 				}
 			}
 		}
@@ -92,13 +88,26 @@ public EventFovChange(int xPrev, int yPrev, byte[][] visionPrevious, byte[][] vi
 				// If it wasn't known of point's visibility, and now it is visible, therefore it was seen.
 				int x = xPrev + dx - Character.VISION_RANGE + i;
 				int y = yPrev + dy - Character.VISION_RANGE + j;
-				seen.add(new RenderCell(
-					x,
-					y,
-					Tendiwa.getWorld().getDefaultPlane().getFloor(x, y),
-					Tendiwa.getWorld().getDefaultPlane().getWall(x, y)
-				));
+				addCellToSeen(x, y);
 			}
+		}
+	}
+	unseen = unseenBuilder.build();
+	seen = seenBuilder.build();
+	seenItems = seenItemsBuilder.build();
+}
+
+private void addCellToSeen(int x, int y) {
+	HorizontalPlane plane = Tendiwa.getWorld().getDefaultPlane();
+	seenBuilder.add(new RenderCell(
+		x,
+		y,
+		plane.getFloor(x, y),
+		plane.getWall(x, y)
+	));
+	if (plane.hasAnyItems(x, y)) {
+		for (Item item : plane.getItems(x, y)) {
+			seenItemsBuilder.add(item);
 		}
 	}
 }

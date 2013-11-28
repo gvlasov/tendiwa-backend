@@ -5,6 +5,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import org.tendiwa.events.EventFovChange;
+import org.tendiwa.events.EventGetItem;
+import org.tendiwa.events.EventItemDisappear;
 import org.tendiwa.events.EventMove;
 import tendiwa.core.meta.Coordinate;
 import tendiwa.core.meta.Utils;
@@ -193,9 +195,11 @@ protected void takeOff(UniqueItem item) {
 /**
  * Pick up an item lying on the same cell where the character stands.
  */
-protected void pickUp(ItemPile pile) {
-	getItem(pile);
+public void pickUp(ItemPile pile) {
+	Tendiwa.getClientEventManager().event(new EventItemDisappear(x, y, pile));
 	plane.removeItem(pile, x, y);
+	Tendiwa.getClientEventManager().event(new EventGetItem(pile));
+	getItem(pile);
 	moveTime(500);
 	throw new UnsupportedOperationException();
 }
@@ -203,10 +207,9 @@ protected void pickUp(ItemPile pile) {
 /**
  * Pick up an item lying on the same cell where the character stands.
  */
-protected void pickUp(UniqueItem item) {
+public void pickUp(UniqueItem item) {
 	getItem(item);
-	Chunk chunk = plane.getChunkWithCell(x, y);
-	chunk.removeItem(item, x - chunk.getX(), y - chunk.getY());
+	plane.removeItem(item, x, y);
 	moveTime(500);
 	throw new UnsupportedOperationException();
 }
@@ -728,8 +731,8 @@ public void move(int x, int y) {
 	this.y = y;
 	plane.addCharacter(this);
 	timeStream.notifyNeighborsVisiblilty(this);
-	Tendiwa.getClientEventManager().event(new EventMove(x, y, this));
-	Tendiwa.getPlayer().computeFullVisionCache();
+	Tendiwa.getClientEventManager().event(new EventMove(xPrev, yPrev, this));
+	this.computeFullVisionCache();
 	Tendiwa.getClientEventManager().event(new EventFovChange(xPrev, yPrev, visionPrevious, visionCache));
 }
 
@@ -753,30 +756,15 @@ protected void removeEffect(CharacterEffect effect) {
 	effects.remove(effect);
 }
 
-public void getItem(UniqueItem item) {
+public void getItem(Item item) {
 	inventory.add(item);
-	throw new UnsupportedOperationException();
-}
-
-public void eventlessGetItem(UniqueItem item) {
-	inventory.add(item);
-}
-
-public void eventlessGetItem(ItemPile pile) {
-	inventory.add(pile);
-}
-
-public void getItem(ItemPile pile) {
-	inventory.add(pile);
-	throw new UnsupportedOperationException();
 }
 
 public void loseItem(UniqueItem item) {
-	if (inventory.hasUnique(item.id)) {
+	if (inventory.contains(item)) {
 		inventory.removeUnique(item);
-		throw new UnsupportedOperationException();
 	} else {
-		throw new Error("An attempt to lose an item width id "
+		throw new UnsupportedOperationException("An attempt to lose a unique item width id "
 			+ item.id
 			+ " that is neither in inventory nor in equipment");
 	}
@@ -813,10 +801,6 @@ protected void moveTime(int amount) {
 /* Checks */
 public boolean at(int atX, int atY) {
 	return x == atX && y == atY;
-}
-
-public boolean hasItem(int typeId, int amount) {
-	return inventory.hasPile(typeId, amount);
 }
 
 public boolean isEnemy(Character ch) {
@@ -904,6 +888,17 @@ public void computeFullVisionCache() {
 
 public byte[][] getVisionCache() {
 	return visionCache;
+}
+
+public HorizontalPlane getPlane() {
+	return plane;
+}
+
+public void pickUp(Item item) {
+	Tendiwa.getClientEventManager().event(new EventItemDisappear(x, y, item));
+	plane.getItems(x, y).removeItem(item);
+	Tendiwa.getClientEventManager().event(new EventGetItem(item));
+	getItem(item);
 }
 
 /* Nested classes */

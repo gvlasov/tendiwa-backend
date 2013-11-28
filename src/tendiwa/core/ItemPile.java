@@ -45,11 +45,6 @@ public String toString() {
 }
 
 @Override
-public int getParam() {
-	return amount;
-}
-
-@Override
 public JsonElement serialize(JsonSerializationContext context) {
 	JsonArray jArray = new JsonArray();
 	jArray.add(new JsonPrimitive(type.getId()));

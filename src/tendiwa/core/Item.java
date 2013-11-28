@@ -6,5 +6,4 @@ package tendiwa.core;
 public interface Item {
 public ItemType getType();
 
-public int getParam();
 }

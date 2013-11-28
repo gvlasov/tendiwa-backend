@@ -13,7 +13,6 @@ import java.util.Set;
 public class PlayerCharacter extends Character implements GsonForStaticDataSerializable {
 public static final long serialVersionUID = 96186762L;
 protected final String cls;
-public WebSocket connection;
 protected int str;
 protected int dex;
 protected int wis;
@@ -73,7 +72,6 @@ public void startConversation(int characterId) {
 	}
 }
 
-/* Travelling */
 public void goToAnotherLevel(HorizontalPlane newPlane, int x, int y) {
 	/**
 	 * Transports character to another level of current location.
