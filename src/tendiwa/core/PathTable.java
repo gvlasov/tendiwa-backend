@@ -126,6 +126,9 @@ public LinkedList<EnhancedPoint> getPath(int x, int y) {
 			}
 		}
 	}
+	if (path == null) {
+		throw new RuntimeException("Path is null, you wanted to check that");
+	}
 	return path;
 }
 
