@@ -100,7 +100,7 @@ public boolean isCellUnseen(int x, int y) {
 public void seeCell(RenderCell cell) {
 	assert cell != null;
 	int key = cellHash(cell.x, cell.y);
-	assert !cells.containsKey(key) || !cells.get(key).isVisible();
+	assert !cells.containsKey(key) || !cells.get(key).isVisible() : "Already is visible";
 	cells.put(key, cell);
 }
 

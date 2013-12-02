@@ -155,32 +155,14 @@ public GameObject getGameObject(int x, int y) {
 }
 
 /**
- * Places a UniqueItem on a certain cell in this Chunk.
+ * Places an Item on a certain cell in this Chunk.
  *
  * @param x
  * 	X coordinate of a cell in chunk coordinates.
  * @param y
  * 	Y coordinate of a cell in chunk coordinates.
  */
-public void addItem(UniqueItem item, int x, int y) {
-	int key = x * Chunk.SIZE + y;
-	ItemCollection itemsInCell = items.get(key);
-	if (itemsInCell == null) {
-		itemsInCell = new ItemCollection();
-		items.put(key, itemsInCell);
-	}
-	itemsInCell.add(item);
-}
-
-/**
- * Places a ItemPile on a certain cell in this Chunk.
- *
- * @param x
- * 	X coordinate of a cell in chunk coordinates.
- * @param y
- * 	Y coordinate of a cell in chunk coordinates.
- */
-public void addItem(ItemPile item, int x, int y) {
+public void addItem(Item item, int x, int y) {
 	int key = x * Chunk.SIZE + y;
 	ItemCollection itemsInCell = items.get(key);
 	if (itemsInCell == null) {
@@ -266,10 +248,11 @@ public void setWall(short id, int x, int y) {
  * @return Id of a wall in the specified cell.
  */
 public boolean hasAnyItems(int x, int y) {
-	return items.containsKey(x * SIZE + y);
+	int key = x * SIZE + y;
+	return items.containsKey(key) && items.get(key).size() > 0;
 }
 
 public enum Passability {
-	FREE, SEE, NO;
+	FREE, SEE, NO
 }
 }

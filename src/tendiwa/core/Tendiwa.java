@@ -107,7 +107,7 @@ public static TendiwaClient getClient() {
 }
 
 public static Server getServer() {
-	return INSTANCE.SERVER;
+	return Server.SERVER;
 }
 
 public static TendiwaClientEventManager getClientEventManager() {

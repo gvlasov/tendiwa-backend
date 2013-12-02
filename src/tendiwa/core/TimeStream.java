@@ -212,12 +212,11 @@ void removeObserver(Character aim, NonPlayerCharacter observer) {
  * status of this character as seen/unseen and remember where they have seen this aim last time.
  */
 public void notifyNeighborsVisiblilty(Character aim) {
-		/*
-		 * First each of NonPlayerCharacters in TimeStream tries to see the aim,
-		 * then all of the aim's observers try to unsee it. Then all the current
-		 * observers remember aim's coordinate.
-		 */
-
+	/*
+	 * First each of NonPlayerCharacters in TimeStream tries to see the aim,
+	 * then all of the aim's observers try to unsee it. Then all the current
+	 * observers remember aim's coordinate.
+	 */
 	for (NonPlayerCharacter neighbor : nonPlayerCharacters) {
 		// Need to copy observes because its contents will change in the next
 		// for loop.

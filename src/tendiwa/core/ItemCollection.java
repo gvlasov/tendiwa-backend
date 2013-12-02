@@ -16,26 +16,30 @@ public ItemCollection() {
 
 }
 
-public void add(Item item) {
+public Item add(Item item) {
 	if (item.getType().isStackable()) {
-		add((ItemPile) item);
+		return add((ItemPile) item);
 	} else {
-		add((UniqueItem) item);
+		return add((UniqueItem) item);
 	}
 }
 
-public void add(ItemPile item) {
+public ItemPile add(ItemPile item) {
 	ItemType type = item.getType();
 	if (items.containsKey(type)) {
 		// If there is already that type of items i a collection, change amount of the existing pile..
-		((ItemPile) items.get(type)).changeAmount(item.getAmount());
+		ItemPile itemPile = (ItemPile) items.get(type);
+		itemPile.changeAmount(item.getAmount());
+		return itemPile;
 	} else {
 		items.put(type, item);
+		return item;
 	}
 }
 
-public void add(UniqueItem item) {
+public UniqueItem add(UniqueItem item) {
 	items.put(item.getType(), item);
+	return item;
 }
 
 public void removePile(ItemPile pile) {
@@ -78,5 +82,12 @@ public void removeItem(Item item) {
 		throw new IllegalArgumentException("Can't remove an item that is not already in this ItemCollection");
 	}
 	items.remove(item.getType(), item);
+}
+
+@Override
+public String toString() {
+	return "ItemCollection{" +
+		"items=" + items.values() +
+		'}';
 }
 }

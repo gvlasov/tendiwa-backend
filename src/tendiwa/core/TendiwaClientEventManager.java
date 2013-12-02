@@ -14,4 +14,8 @@ void event(EventInitialTerrain eventInitialTerrain);
 void event(EventItemDisappear eventItemDisappear);
 
 void event(EventGetItem eventGetItem);
+
+void event(EventLoseItem eventLoseItem);
+
+void event(EventItemAppear eventItemAppear);
 }
