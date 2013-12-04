@@ -248,7 +248,7 @@ private boolean canComeTo(int toX, int toY) {
 public void action() {
 	getPathTableToAllSeenCharacters();
 	Coordinate characterCoord = new Coordinate(x, y);
-	if (body.getInjuryLevel() < 0.5) {
+	if (false) {
 		// If hp is too low, then retreat
 		Coordinate retreatCoord = getRetreatCoord();
 		step(retreatCoord.x, retreatCoord.y);

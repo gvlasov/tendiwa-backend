@@ -114,4 +114,17 @@ private ItemPile createStackable(int amount) {
 public boolean containedIn(HorizontalPlane plane, int x, int y) {
 	return false;
 }
+
+/**
+ * Returns apparel aspect of an item type. If this item type is not apparel, returns null.
+ *
+ * @return Apparel aspect of item type, or null if this item type is not apparel.
+ */
+public AspectApparel asApparel() {
+	return (AspectApparel) getAspect(AspectName.APPAREL);
+}
+
+public AspectWieldable asWieldable() {
+	return (AspectWieldable) getAspect(AspectName.WIELDABLE);
+}
 }

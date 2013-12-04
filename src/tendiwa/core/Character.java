@@ -32,9 +32,11 @@ public static final byte VISION_INVISIBLE = 2;
 public static final byte VISION_CACHE_WIDTH = (byte) (VISION_RANGE * 2 + 1);
 public final int id = new UniqueObject().id;
 public final ItemCollection inventory = new ItemCollection();
+public final Equipment equipment = new Equipment(2, ApparelSlot.values());
 protected final CharacterType characterType;
 protected final String name;
 protected final HashMap<Integer, Character.Effect> effects = new HashMap<>();
+private final Object renderLockObject = Tendiwa.getServer();
 /**
  * <p>Here is cached whether this Character sees a cell relative to his current position or not.</p> <p>{@code
  * visionCache[VISION_CACHE_WIDTH][VISION_CACHE_WIDTH]} is Character's current cell.</p>
@@ -60,7 +62,6 @@ private boolean isVisionCacheEmpty = true;
  * current turn.
  */
 private byte[][] visionPrevious = new byte[VISION_CACHE_WIDTH][VISION_CACHE_WIDTH];
-private Object renderLockObject = Tendiwa.getServer();
 
 public Character(HorizontalPlane plane, CharacterType characterType, int x, int y, String name) {
 	// Common character creation: with all attributes, in location.
@@ -171,23 +172,50 @@ protected void die() {
 	throw new UnsupportedOperationException();
 }
 
-protected void putOn(UniqueItem item, boolean omitEvent) {
-	// Tendiwa put on function
-	body.putOn(item);
-	inventory.removeUnique(item);
-	if (!omitEvent) {
-		// Sending for mobs. Sending for players is in
-		// PlayerCharacter.putOn()
-		throw new UnsupportedOperationException();
+public void putOn(UniqueItem item) {
+	synchronized (renderLockObject) {
+		inventory.removeUnique(item);
+		equipment.putOn(item);
+		if (isPlayer()) {
+			Tendiwa.getClientEventManager().event(new EventPutOn(this, item));
+		}
 	}
 	moveTime(500);
 }
 
-protected void takeOff(UniqueItem item) {
-	body.takeOff(item);
-	inventory.add(item);
+public boolean isPlayer() {
+	return this == Tendiwa.getPlayer();
+}
+
+public void wield(Item item) {
+	synchronized (renderLockObject) {
+		if (item.getType().isStackable()) {
+			ItemPile pile = new ItemPile(item.getType(), 1);
+			inventory.removePile(pile);
+			equipment.wield(pile);
+		} else {
+			inventory.removeItem(item);
+			equipment.wield(item);
+		}
+		Tendiwa.getClientEventManager().event(new EventWield(this, item));
+	}
+}
+
+public void cease(Item item) {
+	synchronized (renderLockObject) {
+		inventory.add(item);
+		equipment.cease(item);
+		Tendiwa.getClientEventManager().event(new EventUnwield(this, item));
+	}
+}
+
+public void takeOff(UniqueItem item) {
+	synchronized (renderLockObject) {
+		inventory.add(item);
+		equipment.takeOff(item);
+		Tendiwa.getClientEventManager().event(new EventTakeOff(this, item));
+	}
 	moveTime(500);
-	throw new UnsupportedOperationException();
 }
 
 /**
@@ -889,6 +917,10 @@ public void pickUp(Item item) {
 
 public ItemCollection getInventory() {
 	return inventory;
+}
+
+public Equipment getEquipment() {
+	return equipment;
 }
 
 /* Nested classes */

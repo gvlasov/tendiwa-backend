@@ -18,4 +18,12 @@ void event(EventGetItem eventGetItem);
 void event(EventLoseItem eventLoseItem);
 
 void event(EventItemAppear eventItemAppear);
+
+void event(EventPutOn eventPutOn);
+
+void event(EventWield eventWield);
+
+void event(EventTakeOff eventTakeOff);
+
+void event(EventUnwield eventUnwield);
 }

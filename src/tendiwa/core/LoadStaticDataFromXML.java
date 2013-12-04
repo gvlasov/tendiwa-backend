@@ -55,8 +55,6 @@ private static final String GENERATED_CLASS_COMMENT_TEXT = "Do not modify!\n\n" 
 	"This class was automatically generated.\n\n" +
 	"To define your own game resources, you need to describe them in data/*.xml files \n" +
 	"and then run build.";
-
-
 static {
 	// Define classes in code models
 	JDefinedClass itemsClass1;
@@ -249,7 +247,11 @@ private static void loadCharacters(Element eRoot) {
 		JClass clsCharacterAspect = charactersCodeModel.ref("tendiwa.core.CharacterAspect");
 		assert clsCharacterAspect != null;
 		JInvocation invSet = clsHashSet.staticInvoke("<CharacterAspect>builder");
-		for (Element eAspect = (Element) eCharacter.getElementsByTagName("aspects").item(0).getFirstChild(); eAspect != null; eAspect = (Element) eAspect.getNextSibling()) {
+		for (
+			Element eAspect = (Element) eCharacter.getElementsByTagName("aspects").item(0).getFirstChild();
+			eAspect != null;
+			eAspect = (Element) eAspect.getNextSibling()
+		) {
 			// For each aspect inside XML element <aspects/> add a
 			// CharacterAspect to CharacterType
 			String tagName = eAspect.getTagName();
@@ -258,6 +260,7 @@ private static void loadCharacters(Element eRoot) {
 				.arg(clsCharacterAspect.staticInvoke("getByName").arg(JExpr.lit(tagName)));
 		}
 		invSet = invSet.invoke("build");
+
 //		DirectedGraph<BodyPartTypeInstance, DefaultEdge> bodyGraph = xml2BodyGraph((Element) eCharacter.getElementsByTagName("body").item(0).getFirstChild());
 //		CharacterType characterType = new CharacterType(name, aspects, weight, height, bodyGraph);
 //		StaticData.add(characterType);
@@ -418,6 +421,9 @@ private static void loadItems(Element eRoot) {
 	JClass clsAspectRangedWeapon = itemsCodeModel.ref(AspectRangedWeapon.class);
 	JClass clsAspectApparel = itemsCodeModel.ref(AspectApparel.class);
 	JClass clsAspectContainer = itemsCodeModel.ref(AspectContainer.class);
+	JClass clsAspectWieldable = itemsCodeModel.ref(AspectWieldable.class);
+	JClass clsHandedness = itemsCodeModel.ref(Handedness.class);
+	JClass clsApparelSlots = itemsCodeModel.ref(ApparelSlot.class);
 	// This class is referred through a string because it is created dynamically in modules, not in framework.
 	JClass clsMaterialTypes = itemsCodeModel.ref("tendiwa.resources.MaterialTypes");
 
@@ -444,6 +450,7 @@ private static void loadItems(Element eRoot) {
 		}
 		// Parsing item type's aspects
 		Node nAspects = eItem.getElementsByTagName("aspects").item(0);
+		boolean wieldableSet = false;
 		if (nAspects != null) {
 			for (Element eAspect = (Element) nAspects.getFirstChild(); eAspect != null; eAspect = (Element) eAspect.getNextSibling()) {
 				if (eAspect.getNodeType() != ELEMENT_NODE) {
@@ -469,22 +476,21 @@ private static void loadItems(Element eRoot) {
 				}
 				if (eAspect.getTagName().equals("apparel")) {
 //					Graph<BodyPartTypeInstance, DefaultEdge> form = xml2BodyGraph((Element) eAspect.getElementsByTagName("form").item(0).getFirstChild());
-					HashSet<BodyPartType> covers = new HashSet<BodyPartType>();
-					HashSet<BodyPartType> blocks = new HashSet<BodyPartType>();
-					if (eAspect.getElementsByTagName("covers").getLength() > 0) {
-						for (Element eCovers = (Element) eAspect.getElementsByTagName("covers").item(0).getFirstChild(); eCovers != null; eCovers = (Element) eCovers.getNextSibling()) {
-							covers.add(BodyPartType.string2BodyPart(eCovers.getTagName()));
+					HashSet<String> slots = new HashSet<>();
+					if (eAspect.getElementsByTagName("slots").getLength() > 0) {
+						for (Element eCovers = (Element) eAspect.getElementsByTagName("slots").item(0).getFirstChild(); eCovers != null; eCovers = (Element) eCovers.getNextSibling()) {
+							slots.add(eCovers.getTagName().toUpperCase());
 						}
 					}
-					if (eAspect.getElementsByTagName("blocks").getLength() > 0) {
-						for (Element eBlocks = (Element) eAspect.getElementsByTagName("blocks").item(0).getFirstChild(); eBlocks != null; eBlocks = (Element) eBlocks.getNextSibling()) {
-							blocks.add(BodyPartType.string2BodyPart(eBlocks.getTagName()));
-						}
-					}
-//					aspects.add(new AspectApparel(form, covers, blocks));
+//					aspects.add(new AspectApparel(form, slots, blocks));
 
-					JExpression expApparel = JExpr
+					JInvocation expApparel = JExpr
 						._new(clsAspectApparel);
+					for (String slot : slots) {
+						JFieldRef expSlot = clsApparelSlots
+							.staticRef(slot);
+						expApparel.arg(expSlot);
+					}
 					expAspects = expAspects.invoke("add").arg(expApparel);
 
 				}
@@ -504,7 +510,22 @@ private static void loadItems(Element eRoot) {
 						.arg(JExpr.lit(liquidAllowing));
 					expAspects = expAspects.invoke("add").arg(expAspectContainer);
 				}
+
+				if (eAspect.getTagName().equals("wieldable")) {
+					wieldableSet = true;
+					String handedness = eAspect.getElementsByTagName("volume").item(0).getFirstChild().getNodeValue();
+					JExpression expAspectWieldable = JExpr
+						._new(clsAspectWieldable)
+						.arg(clsHandedness.staticRef(handedness));
+					expAspects = expAspects.invoke("add").arg(expAspectWieldable);
+				}
 			}
+		}
+		if (!wieldableSet) {
+			JExpression expAspectWieldable = JExpr
+				._new(clsAspectWieldable)
+				.arg(clsHandedness.staticRef("MAIN_HAND"));
+			expAspects = expAspects.invoke("add").arg(expAspectWieldable);
 		}
 //		ItemType itemType = new ItemType(name, aspects, weight, volume, material, stackable);
 //		StaticData.add(itemType);

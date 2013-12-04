@@ -66,19 +66,82 @@ public enum ApparelSlot {
 	 */
 	FINGER,
 	/**
-	 * A piece of bodywear that may go under another piece of bodywear. Examples: t-shirt, shirt, gambeson,
+	 * A piece of bodywear that may go under another (outer) piece of bodywear. Examples: t-shirt, shirt, gambeson,
 	 *
 	 * @see ApparelSlot#OUTER_BODYWEAR
 	 */
 	LOWER_BODYWEAR,
 	/**
-	 * A piece of bodywear that may go above another piece of bodywear and may not go below any piece of bodywear.
+	 * A piece of bodywear that may go above another (lower) piece of bodywear and may not go below any piece of bodywear.
 	 * Examples: jacket, fur coat, plate armour.
+	 *
+	 * @see ApparelSlot#LOWER_BODYWEAR
 	 */
 	OUTER_BODYWEAR,
 	/**
 	 * A piece of bodywear that is worn on breasts. Examples: brassiere, swimsuit.
 	 */
-	BREASTS
+	BREASTS;
+
+public static ApparelSlot string2slot(String string) {
+	if (string.equals("scarf")) {
+		return SCARF;
+	}
+	if (string.equals("headgear")) {
+		return HEADGEAR;
+	}
+	if (string.equals("back")) {
+		return BACK;
+	}
+	if (string.equals("breasts")) {
+		return BREASTS;
+	}
+	if (string.equals("cloak")) {
+		return CLOAK;
+	}
+	if (string.equals("ear")) {
+		return EAR;
+	}
+	if (string.equals("earrings")) {
+		return EARRINGS;
+	}
+	if (string.equals("face")) {
+		return FACE;
+	}
+	if (string.equals("feet")) {
+		return FEET;
+	}
+	if (string.equals("finger")) {
+		return FINGER;
+	}
+	if (string.equals("hand")) {
+		return HAND;
+	}
+	if (string.equals("legwear")) {
+		return LEGWEAR;
+	}
+	if (string.equals("lower_bodywear")) {
+		return LOWER_BODYWEAR;
+	}
+	if (string.equals("necklace")) {
+		return NECKLACE;
+	}
+	if (string.equals("outer_bodywear")) {
+		return OUTER_BODYWEAR;
+	}
+	if (string.equals("socks")) {
+		return SOCKS;
+	}
+	if (string.equals("underpants")) {
+		return UNDERPANTS;
+	}
+	if (string.equals("waist")) {
+		return WAIST;
+	}
+	if (string.equals("wrist")) {
+		return WRIST;
+	}
+	throw new RuntimeException("ApparelSlot for string \"" + string + "\" does not exist");
+}
 
 }
