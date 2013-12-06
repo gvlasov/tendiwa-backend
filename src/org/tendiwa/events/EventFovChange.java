@@ -5,18 +5,18 @@ import tendiwa.core.Character;
 import tendiwa.core.*;
 
 public class EventFovChange implements Event {
-private final ImmutableList.Builder<RenderCell> seenBuilder = ImmutableList.<RenderCell>builder();
-private final ImmutableList.Builder<Integer> unseenBuilder = ImmutableList.<Integer>builder();
-private final ImmutableList.Builder<Item> seenItemsBuilder = ImmutableList.<Item>builder();
+private final ImmutableList.Builder<RenderCell> seenBuilder = ImmutableList.builder();
+private final ImmutableList.Builder<Integer> unseenBuilder = ImmutableList.builder();
+private final ImmutableList.Builder<Item> seenItemsBuilder = ImmutableList.builder();
 public final ImmutableList<RenderCell> seen;
 public final ImmutableList<Integer> unseen;
 public final ImmutableList<Item> seenItems;
 
 /**
  * @param xPrev
- * 	X coordinate of {@link tendiwa.core.PlayerCharacter} on previous turn.
+ * 	X coordinate of {@link tendiwa.core.Character} on previous turn.
  * @param yPrev
- * 	Y coordinate of {@link tendiwa.core.PlayerCharacter} on previous turn.
+ * 	Y coordinate of {@link tendiwa.core.Character} on previous turn.
  * @param visionPrevious
  * 	Vision cache of PlayerCharacter on previous turn. {@code visionCurrent[Character.VISION_RANGE][Character.VISION_RANGE]}
  * 	is the point Character was standing at on previous turn.
@@ -26,7 +26,7 @@ public final ImmutableList<Item> seenItems;
  */
 public EventFovChange(int xPrev, int yPrev, byte[][] visionPrevious, byte[][] visionCurrent) {
 	int worldHeight = Tendiwa.getWorld().getHeight();
-	PlayerCharacter player = Tendiwa.getPlayer();
+	Character player = Tendiwa.getPlayerCharacter();
 	int dx = player.getX() - xPrev;
 	int dy = player.getY() - yPrev;
 	// Loop over points in previous cache

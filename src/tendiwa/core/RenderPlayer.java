@@ -1,6 +1,14 @@
 package tendiwa.core;
 
 public class RenderPlayer {
+private int x;
+private int y;
+
+public RenderPlayer(Character player) {
+	x = player.x;
+	y = player.y;
+}
+
 public int getY() {
 	return y;
 }
@@ -16,12 +24,5 @@ public int getX() {
 public void setX(int x) {
 	this.x = x;
 }
-
-private int x;
-	private int y;
-	public RenderPlayer(PlayerCharacter player) {
-		x = player.x;
-		y = player.y;
-	}
 
 }

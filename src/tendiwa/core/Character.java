@@ -11,7 +11,7 @@ import tendiwa.core.meta.Utils;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public abstract class Character implements PlaceableInCell, PathWalker, GsonForStaticDataSerializable {
+public class Character implements PlaceableInCell, PathWalker, GsonForStaticDataSerializable {
 public static final long serialVersionUID = 1832389411;
 public final static int FRACTION_NEUTRAL = -1, FRACTION_PLAYER = 1,
 	FRACTION_AGRESSIVE = 0;
@@ -33,9 +33,9 @@ public static final byte VISION_CACHE_WIDTH = (byte) (VISION_RANGE * 2 + 1);
 public final int id = new UniqueObject().id;
 public final ItemCollection inventory = new ItemCollection();
 public final Equipment equipment = new Equipment(2, ApparelSlot.values());
-protected final CharacterType characterType;
 protected final String name;
 protected final HashMap<Integer, Character.Effect> effects = new HashMap<>();
+final CharacterType type;
 private final Object renderLockObject = Tendiwa.getServer();
 /**
  * <p>Here is cached whether this Character sees a cell relative to his current position or not.</p> <p>{@code
@@ -45,7 +45,6 @@ public byte[][] visionCache = new byte[VISION_CACHE_WIDTH][VISION_CACHE_WIDTH];
 protected Body body;
 protected int actionPoints;
 protected int ep;
-protected int energy;
 protected int maxEp;
 protected int fraction;
 protected HorizontalPlane plane;
@@ -63,15 +62,15 @@ private boolean isVisionCacheEmpty = true;
  */
 private byte[][] visionPrevious = new byte[VISION_CACHE_WIDTH][VISION_CACHE_WIDTH];
 
-public Character(HorizontalPlane plane, CharacterType characterType, int x, int y, String name) {
+public Character(HorizontalPlane plane, CharacterType type, int x, int y, String name) {
 	// Common character creation: with all attributes, in location.
 	super();
+	this.type = type;
 	this.name = name;
 	this.plane = plane;
 	this.chunk = plane.getChunkWithCell(x, y);
 	fraction = 0;
 	isAlive = true;
-	this.characterType = characterType;
 	this.x = x;
 	this.y = y;
 }
@@ -184,13 +183,14 @@ public void putOn(UniqueItem item) {
 }
 
 public boolean isPlayer() {
-	return this == Tendiwa.getPlayer();
+	return this == Tendiwa.getPlayerCharacter();
 }
 
 public void wield(Item item) {
 	synchronized (renderLockObject) {
 		if (item.getType().isStackable()) {
-			ItemPile pile = new ItemPile(item.getType(), 1);
+			ItemPile itemPile = (ItemPile) item;
+			ItemPile pile = new ItemPile(itemPile.getType(), 1);
 			inventory.removePile(pile);
 			equipment.wield(pile);
 		} else {
@@ -694,10 +694,6 @@ public int hashCode() {
 	return id;
 }
 
-public CharacterType getType() {
-	return characterType;
-}
-
 public boolean isAlive() {
 	return isAlive;
 }
@@ -780,8 +776,18 @@ protected void removeEffect(CharacterEffect effect) {
 	effects.remove(effect);
 }
 
+public void say(String message) {
+	synchronized (renderLockObject) {
+		Tendiwa.getClient().getEventManager().event(new EventSay(message, this));
+	}
+}
+
 public void getItem(Item item) {
 	inventory.add(item);
+}
+
+public void getItem(ItemType type) {
+	getItem(type.createItem());
 }
 
 public void loseItem(Item item) {
@@ -826,6 +832,10 @@ public boolean isEnemy(Character ch) {
 
 public TimeStream getTimeStream() {
 	return timeStream;
+}
+
+public void setTimeStream(TimeStream timeStream) {
+	this.timeStream = timeStream;
 }
 
 public int getX() {
@@ -921,6 +931,10 @@ public ItemCollection getInventory() {
 
 public Equipment getEquipment() {
 	return equipment;
+}
+
+public CharacterType getType() {
+	return type;
 }
 
 /* Nested classes */

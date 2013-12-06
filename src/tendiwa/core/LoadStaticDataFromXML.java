@@ -513,7 +513,7 @@ private static void loadItems(Element eRoot) {
 
 				if (eAspect.getTagName().equals("wieldable")) {
 					wieldableSet = true;
-					String handedness = eAspect.getElementsByTagName("volume").item(0).getFirstChild().getNodeValue();
+					String handedness = eAspect.getFirstChild().getNodeName().toUpperCase();
 					JExpression expAspectWieldable = JExpr
 						._new(clsAspectWieldable)
 						.arg(clsHandedness.staticRef(handedness));

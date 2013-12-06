@@ -9,6 +9,6 @@ public RequestSay(String speech) {
 
 @Override
 public void process() {
-	Tendiwa.getPlayer().say(speech);
+	Tendiwa.getPlayerCharacter().say(speech);
 }
 }

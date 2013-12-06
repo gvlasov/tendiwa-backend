@@ -26,7 +26,6 @@ Location(HorizontalPlane plane, int x, int y, int width, int height) {
 	this.plane = plane;
 	this.width = width;
 	this.height = height;
-	Chat.initLocationChat(this);
 }
 
 public HorizontalPlane getPlane() {

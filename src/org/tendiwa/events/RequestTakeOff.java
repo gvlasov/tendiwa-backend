@@ -13,6 +13,6 @@ public RequestTakeOff(UniqueItem item) {
 
 @Override
 public void process() {
-	Tendiwa.getPlayer().takeOff(item);
+	Tendiwa.getPlayerCharacter().takeOff(item);
 }
 }

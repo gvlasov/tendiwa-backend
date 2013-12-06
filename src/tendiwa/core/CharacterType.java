@@ -1,80 +1,71 @@
 package tendiwa.core;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import com.google.common.collect.ImmutableSet;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
+import java.util.Set;
 
-public class CharacterType implements GsonForStaticDataSerializable {
-	private static short nextId = 0;
-	private short id;
-	private Set<CharacterAspect> aspects;
-	private String name;
-	private double weight;
-	private double height;
-	private DirectedGraph<BodyPartTypeInstance, DefaultEdge> bodyGraph;
-	public CharacterType(String name, Set<CharacterAspect> aspects, double weight, double height) {
-		this.id = nextId++;
-		this.name = name;
-		this.aspects = aspects;
-		this.weight = weight;
-		this.height = height;
-		this.bodyGraph = bodyGraph;
+public class CharacterType {
+private static short nextId = 0;
+private Set<CharacterAspect> aspects;
+private String name;
+private double weight;
+private double height;
+private DirectedGraph<BodyPartTypeInstance, DefaultEdge> bodyGraph;
+
+public CharacterType(String name, double weight, double height, CharacterAspect... aspects) {
+	this.name = name;
+	ImmutableSet.Builder<CharacterAspect> builder = ImmutableSet.builder();
+	for (CharacterAspect aspect : aspects) {
+		builder.add(aspect);
 	}
-	public short getId() {
-		return id;
-	}
-	/**
-	 * @return the aspects
-	 */
-	public HashSet<CharacterAspect> getAspects() {
-		return new HashSet<>(aspects);
-	}
-	/**
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
-	}
-	/**
-	 * @return the weight
-	 */
-	public double getWeight() {
-		return weight;
-	}
-	/**
-	 * @return the height
-	 */
-	public double getHeight() {
-		return height;
-	}
-	/**
-	 * @param height the height to set
-	 */
-	public void setHeight(double height) {
-		this.height = height;
-	}
-	public String toString() {
-		return name;
-	}
-	@Override
-	public JsonElement serialize(JsonSerializationContext context) {
-		JsonArray jArray = new JsonArray();
-		JsonArray jAspectsArray = new JsonArray();
-		for (CharacterAspect aspect : aspects) {
-			jAspectsArray.add(context.serialize(aspect));
-		}
-		jArray.add(new JsonPrimitive(name));
-		jArray.add(jAspectsArray);
-		jArray.add(new JsonPrimitive(weight));
-		jArray.add(new JsonPrimitive(height));
-		jArray.add(context.serialize(bodyGraph));
-		return jArray;
-	}
+	this.aspects = builder.build();
+	this.weight = weight;
+	this.height = height;
+}
+
+/**
+ * @return the aspects
+ */
+public Set<CharacterAspect> getAspects() {
+	return aspects;
+}
+
+public boolean hasAspect(CharacterAspect aspect) {
+	return aspects.contains(aspect);
+}
+
+/**
+ * @return the name
+ */
+public String getName() {
+	return name;
+}
+
+/**
+ * @return the weight
+ */
+public double getWeight() {
+	return weight;
+}
+
+/**
+ * @return the height
+ */
+public double getHeight() {
+	return height;
+}
+
+/**
+ * @param height
+ * 	the height to set
+ */
+public void setHeight(double height) {
+	this.height = height;
+}
+
+public String toString() {
+	return name;
+}
 }

@@ -59,8 +59,11 @@ public RenderCell getCell(int hash) {
  * @return True if there is a cell with given coordinates, false otherwise.
  */
 public boolean hasCell(int x, int y) {
-	assert x >= 0 && x < Tendiwa.getWorldWidth() && y >= 0 && y <= Tendiwa.getWorldHeight();
-	return cells.containsKey(cellHash(x, y));
+	if (x >= 0 && x < Tendiwa.getWorldWidth() && y >= 0 && y <= Tendiwa.getWorldHeight()) {
+		return cells.containsKey(cellHash(x, y));
+	} else {
+		return false;
+	}
 }
 
 /**

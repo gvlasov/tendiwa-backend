@@ -13,9 +13,9 @@ public RequestDrop(Item item) {
 
 @Override
 public void process() {
-	if (!Tendiwa.getPlayer().getInventory().contains(item)) {
+	if (!Tendiwa.getPlayerCharacter().getInventory().contains(item)) {
 		throw new RuntimeException("Attempt to drop an item that PlayerCharacter doens't have");
 	}
-	Tendiwa.getPlayer().drop(item);
+	Tendiwa.getPlayerCharacter().drop(item);
 }
 }

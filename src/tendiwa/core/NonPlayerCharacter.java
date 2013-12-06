@@ -367,7 +367,7 @@ public void action() {
 
 /* Getters */
 public String toString() {
-	return characterType.getName() + " " + name;
+	return type.getName() + " " + name;
 }
 
 /* Overriden methods */
@@ -538,7 +538,7 @@ public void setDialogue(Dialogue dialogue) {
 	this.dialogue = dialogue;
 }
 
-public void proceedToNextDialoguePoint(PlayerCharacter player,
+public void proceedToNextDialoguePoint(Character player,
                                        int answerIndex) {
 	DialoguePoint prevDP = dialogues.get(player);
 	dialogues.put(player, prevDP.getNextPoint(answerIndex, player));
@@ -555,7 +555,7 @@ public void proceedToNextDialoguePoint(PlayerCharacter player,
 	}
 }
 
-public void applyConversationStarting(PlayerCharacter player) {
+public void applyConversationStarting(Character player) {
 	DialoguePoint startDP;
 	if (dialogues.containsKey(player)) {
 		startDP = dialogues.get(player);

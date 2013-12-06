@@ -14,13 +14,13 @@ public final LinkedList<RenderCell> seen = new LinkedList<>();
  * client for displaying.
  */
 public EventInitialTerrain() {
-	Tendiwa.getPlayer().computeFullVisionCache();
-	byte[][] visionCache = Tendiwa.getPlayer().getVisionCache();
+	Tendiwa.getPlayerCharacter().computeFullVisionCache();
+	byte[][] visionCache = Tendiwa.getPlayerCharacter().getVisionCache();
 	for (int i = 0; i < Character.VISION_CACHE_WIDTH; i++) {
 		for (int j = 0; j < Character.VISION_CACHE_WIDTH; j++) {
 			if (visionCache[i][j] == Character.VISION_VISIBLE) {
-				int x = Tendiwa.getPlayer().getX() - Character.VISION_RANGE + i;
-				int y = Tendiwa.getPlayer().getY() - Character.VISION_RANGE + j;
+				int x = Tendiwa.getPlayerCharacter().getX() - Character.VISION_RANGE + i;
+				int y = Tendiwa.getPlayerCharacter().getY() - Character.VISION_RANGE + j;
 				seen.add(new RenderCell(
 					x,
 					y,

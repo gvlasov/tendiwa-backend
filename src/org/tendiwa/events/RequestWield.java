@@ -13,6 +13,6 @@ public RequestWield(Item item) {
 
 @Override
 public void process() {
-	Tendiwa.getPlayer().wield(item);
+	Tendiwa.getPlayerCharacter().wield(item);
 }
 }

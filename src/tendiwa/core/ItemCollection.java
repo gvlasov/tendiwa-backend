@@ -49,8 +49,8 @@ public void removePile(ItemPile pile) {
 	} else if (pile.getAmount() < pileInMap.getAmount()) {
 		pileInMap.setAmount(pileInMap.getAmount() - pile.getAmount());
 	} else {
-		throw new Error("Incorrect pile removing: type "
-			+ pile.getType().getId() + ", removing " + pile.getAmount()
+		throw new RuntimeException("Incorrect pile removing: type "
+			+ pile.getType().getResourceName() + ", removing " + pile.getAmount()
 			+ ", has " + pileInMap.getAmount());
 	}
 }

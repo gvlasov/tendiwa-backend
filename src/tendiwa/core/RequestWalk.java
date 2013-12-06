@@ -6,7 +6,7 @@ private final Direction dir;
 @Override
 public void process() {
 	int[] coords = dir.side2d();
-	PlayerCharacter player = Tendiwa.getPlayer();
+	Character player = Tendiwa.getPlayerCharacter();
 	player.move(player.x+coords[0], player.y+coords[1]);
 }
 

@@ -7,7 +7,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class Equipment implements Iterable<Item> {
-public static final UniqueItem nullItem = new UniqueItem(new ItemType("nullItem", ImmutableSet.<Aspect>builder().build(), 0, 0, null, false));
+public static final UniqueItem nullItem = new UniqueItem(null) {
+};
 /**
  * Items equipped on a character.
  */
@@ -41,14 +42,14 @@ public void putOn(UniqueItem item) {
 	if (!canPutOn(item)) {
 		throw new UnsupportedOperationException("Can't put on " + item);
 	}
-	for (ApparelSlot slot : item.getType().asApparel().getSlots()) {
+	for (ApparelSlot slot : ((Wearable) item.getType()).getSlots()) {
 		occupySlot(slot, item);
 	}
 }
 
 public void wield(int handId, Item item) {
-	Handedness handedness = item.getType().asWieldable().getHandedness();
-	if (handedness == Handedness.TWO_HAND) {
+	Handedness handedness = ((Wieldable) item).getHandedness();
+	if (handedness == Handedness.TWO_HANDS) {
 		throw new UnsupportedOperationException("You can't wield items that need more than 1 hand with this method.");
 	}
 	if (!canWield(item)) {
@@ -64,7 +65,7 @@ public void wield(Item item) {
 	if (!canWield(item)) {
 		throw new UnsupportedOperationException("Can't wield item " + item);
 	}
-	Handedness handedness = ((AspectWieldable) item.getType().getAspect(AspectName.WIELDABLE)).getHandedness();
+	Handedness handedness = ((Wieldable) item.getType()).getHandedness();
 	switch (handedness) {
 		case MAIN_HAND:
 			if (!tryWielding(Hand.RIGHT, item)) {
@@ -80,7 +81,7 @@ public void wield(Item item) {
 				}
 			}
 			break;
-		case TWO_HAND:
+		case TWO_HANDS:
 			for (int i = 0; i < wieldedItems.length; i += 2) {
 				if (wieldedItems[i] == null && wieldedItems[i + 1] == null) {
 					wieldedItems[i] = item;
@@ -113,25 +114,27 @@ public boolean canWield1HandedItem(int handId) {
  * @return True if an item can be wielded by equipment bearer, false if it can't.
  */
 public boolean canWield(Item item) {
-	Handedness handedness = item.getType().asWieldable().getHandedness();
-	int handsToWield;
-	int freeHands = 0;
-	switch (handedness) {
-		case MAIN_HAND:
-		case OFF_HAND:
-			handsToWield = 1;
-			break;
-		case TWO_HAND:
-			handsToWield = 2;
-			break;
-		default:
-			throw new RuntimeException();
-	}
-	for (int i = 0; i < wieldedItems.length; i++) {
-		if (wieldedItems[i] == null) {
-			freeHands++;
-			if (freeHands == handsToWield) {
-				return true;
+	if (item.getType().isWieldable()) {
+		Handedness handedness = ((Wieldable) item.getType()).getHandedness();
+		int handsToWield;
+		int freeHands = 0;
+		switch (handedness) {
+			case MAIN_HAND:
+			case OFF_HAND:
+				handsToWield = 1;
+				break;
+			case TWO_HANDS:
+				handsToWield = 2;
+				break;
+			default:
+				throw new RuntimeException();
+		}
+		for (int i = 0; i < wieldedItems.length; i++) {
+			if (wieldedItems[i] == null) {
+				freeHands++;
+				if (freeHands == handsToWield) {
+					return true;
+				}
 			}
 		}
 	}
@@ -147,7 +150,7 @@ public void cease(Item item) {
 		}
 	}
 	if (!itemUnwielded) {
-		throw new RuntimeException("Attempting to unwield an item that is not weilded");
+		throw new RuntimeException("Attempting to unwield an item that is not wielded");
 	}
 }
 
@@ -155,13 +158,16 @@ public void takeOff(UniqueItem item) {
 	if (!occupiedApparelSlots.values().contains(item)) {
 		throw new UnsupportedOperationException("Attempting to unequip an item " + item + " that is not equipped");
 	}
-	for (ApparelSlot slot : item.getType().asApparel().getSlots()) {
+	for (ApparelSlot slot : ((Wearable) item.getType()).getSlots()) {
 		occupiedApparelSlots.put(slot, nullItem);
 	}
 }
 
 public boolean canPutOn(UniqueItem item) {
-	for (ApparelSlot slot : item.getType().asApparel().getSlots()) {
+	if (!item.getType().isWearable()) {
+		return false;
+	}
+	for (ApparelSlot slot : ((Wearable) item.getType()).getSlots()) {
 		if (!occupiedApparelSlots.containsKey(slot)) {
 			throw new UnsupportedOperationException("Character doesn't have slot " + slot + " to equip item " + item);
 		}

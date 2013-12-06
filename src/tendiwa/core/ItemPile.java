@@ -1,16 +1,10 @@
 package tendiwa.core;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
-
-public class ItemPile implements Item, GsonForStaticDataSerializable {
+public class ItemPile extends Item {
 private int amount;
-private ItemType type;
 
-public ItemPile(ItemType type, int amount) {
-	this.type = type;
+public ItemPile(StackableItemType type, int amount) {
+	super(type);
 	this.amount = amount;
 }
 
@@ -32,28 +26,17 @@ public int setAmount(int amount) {
 }
 
 public int hashCode() {
-	return type.getId() * 100000 + amount;
-}
-
-public ItemPile separatePile(int amount) {
-	return new ItemPile(type, amount);
+	return getType().hashCode() * 100000 + amount;
 }
 
 @Override
 public String toString() {
-	return amount + " " + type.getName();
+	return amount + " " + getType().getResourceName();
 }
 
 @Override
-public JsonElement serialize(JsonSerializationContext context) {
-	JsonArray jArray = new JsonArray();
-	jArray.add(new JsonPrimitive(type.getId()));
-	jArray.add(new JsonPrimitive(amount));
-	return jArray;
+public StackableItemType getType() {
+	return (StackableItemType) type;
 }
 
-@Override
-public ItemType getType() {
-	return type;
-}
 }

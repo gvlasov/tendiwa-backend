@@ -6,18 +6,18 @@ import java.util.Set;
 
 /**
  * <p> TimeStream is an instance in which a group of characters acts separated from the rest of the world. This is the
- * key class for in-game turn-based time model: it makes different groups of {@link PlayerCharacter}s around the world
- * act independent. A TimeStream is much like a level in traditional rogue-likes, but it is not a static area as it
- * moves along with PlayerCharacters that form this TimeStream. </p> <p/> <p> A group of PlayerCharacters traveling
- * together forms a TimeStream around them. NonPlayerCharacters close to this group get into this TimeStream, thereby
- * starting acting synchronously with this group of PlayerCharacters. As a group of PlayeCharacters moves, TimeStream
- * moves too, releasing faraway Chunks and adding new Chunks reached by the group. NonPlayerCharacters in the Chunks
- * released by TimeStream also leave the TimeStream, thereby stopping acting until they again are loaded by another (or
- * the same) TimeStream. </p> <p/> <p> Shortly, this class does the following: </p> <ol> <li>Allocates a piece of
- * territory in which time flows synchronously;</li> <li>Determines the order of turns of characters inside this
- * territory;</li> <li>Sends data about what happens to clients if their characters are in this TimeStream;</li>
- * <li>Controls some aspects of {@link NonPlayerCharacter}s' behavior, like how they know about interesting entities
- * around them.</li> </ol>
+ * key class for in-game turn-based time model: it makes different groups of {@link Character}s around the world act
+ * independent. A TimeStream is much like a level in traditional rogue-likes, but it is not a static area as it moves
+ * along with PlayerCharacters that form this TimeStream. </p> <p/> <p> A group of PlayerCharacters traveling together
+ * forms a TimeStream around them. NonPlayerCharacters close to this group get into this TimeStream, thereby starting
+ * acting synchronously with this group of PlayerCharacters. As a group of PlayeCharacters moves, TimeStream moves too,
+ * releasing faraway Chunks and adding new Chunks reached by the group. NonPlayerCharacters in the Chunks released by
+ * TimeStream also leave the TimeStream, thereby stopping acting until they again are loaded by another (or the same)
+ * TimeStream. </p> <p/> <p> Shortly, this class does the following: </p> <ol> <li>Allocates a piece of territory in
+ * which time flows synchronously;</li> <li>Determines the order of turns of characters inside this territory;</li>
+ * <li>Sends data about what happens to clients if their characters are in this TimeStream;</li> <li>Controls some
+ * aspects of {@link NonPlayerCharacter}s' behavior, like how they know about interesting entities around them.</li>
+ * </ol>
  */
 public class TimeStream {
 /**
@@ -51,12 +51,13 @@ private HashSet<NonPlayerCharacter> nonPlayerCharacters = new HashSet<NonPlayerC
 /**
  * Initiate a TimeStream around one PlayerCharacter. Places a PlayerCharacter in this TimeStream, which makes
  * PlayerCharacter's client receive events from this TimeStream and determines PlayerCharacter's turn queue.
- *
- * @param character
  */
-public TimeStream(PlayerCharacter character) {
-	characters.add(character);
-	observers.put(character, new HashSet<NonPlayerCharacter>());
+public TimeStream() {
+	characters = new HashSet<>();
+}
+
+private void makeObservable() {
+
 }
 
 public HashSet<Character> getCharacters() {
@@ -74,11 +75,11 @@ public void addNonPlayerCharacter(NonPlayerCharacter character) {
 	characters.add(character);
 }
 
-public void removeCharacter(PlayerCharacter player) {
-	if (!characters.contains(player)) {
-		throw new Error("Player " + player + " is not in this time stream");
+public void removeCharacter(Character character) {
+	if (!characters.contains(character)) {
+		throw new Error("Character " + character + " is not in this time stream");
 	}
-	characters.remove(player);
+	characters.remove(character);
 }
 
 public void removeCharacter(NonPlayerCharacter character) {
@@ -238,5 +239,10 @@ public void claimCharacterDisappearance(Character character) {
 	for (NonPlayerCharacter ch : observers.get(character)) {
 		ch.tryToUnsee(character);
 	}
+}
+
+public void addCharacter(Character character) {
+	characters.add(character);
+	observers.put(character, new HashSet<NonPlayerCharacter>());
 }
 }

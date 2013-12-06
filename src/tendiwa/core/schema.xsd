@@ -135,6 +135,17 @@
                                                             </xs:sequence>
                                                         </xs:complexType>
                                                     </xs:element>
+                                                    <xs:element name="wieldable" minOccurs="0">
+                                                        <xs:complexType>
+                                                            <xs:sequence>
+                                                                <xs:choice>
+                                                                    <xs:element name="main_hand"/>
+                                                                    <xs:element name="off_hand"/>
+                                                                    <xs:element name="two_hands"/>
+                                                                </xs:choice>
+                                                            </xs:sequence>
+                                                        </xs:complexType>
+                                                    </xs:element>
                                                 </xs:all>
                                             </xs:complexType>
                                         </xs:element>

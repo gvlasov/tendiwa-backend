@@ -7,13 +7,15 @@ public class World {
 protected final int width;
 protected final int height;
 final HorizontalPlane defaultPlane;
-private PlayerCharacter playerCharacter;
+private Character playerCharacter;
+private TimeStream timeStream;
 
 public World(int width, int height) {
 	this.width = width;
 	this.height = height;
 	defaultPlane = new HorizontalPlane(width, height);
 	defaultPlane.touchChunks(0, 0, width, height);
+	this.timeStream = new TimeStream();
 }
 
 public static World create(WorldDrawer worldDrawer, int width, int height) {
@@ -54,19 +56,21 @@ private void checkIfLocationPlacesFillAllWorld(WorldRectangleBuilder builder) {
 	}
 }
 
-public PlayerCharacter getPlayerCharacter() {
+public Character getPlayer() {
 	assert playerCharacter != null;
 	return playerCharacter;
 }
 
-public void setPlayerCharacter(PlayerCharacter playerCharacter) {
+public void setPlayerCharacter(Character playerCharacter) {
 	while (defaultPlane.getPassability(playerCharacter.x, playerCharacter.y) == Chunk.Passability.NO) {
 		playerCharacter.x++;
 	}
 	this.playerCharacter = playerCharacter;
+	timeStream.addCharacter(playerCharacter);
+	playerCharacter.setTimeStream(timeStream);
 }
 
-public void placePlayerCharacter(PlayerCharacter player, int x, int y) {
+public void placePlayerCharacter(Character player, int x, int y) {
 	defaultPlane.placeCharacter(player, x, y);
 }
 
@@ -78,4 +82,12 @@ public int getHeight() {
 	return height;
 }
 
+public Character createCharacter(int x, int y, CharacterType type, String name) {
+	return new Character(defaultPlane, type, x, y, name);
+
+}
+
+public TimeStream getTimeStream() {
+	return timeStream;
+}
 }

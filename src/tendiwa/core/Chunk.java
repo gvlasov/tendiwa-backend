@@ -91,8 +91,8 @@ void removeCharacter(Character character) {
 
 public void removeObject(int x, int y) {
 	objects.remove(x * Chunk.SIZE + y);
-	if (Tendiwa.getPlayer().canSee(x, y) && Tendiwa.getPlayer().isVisionCacheEmpty()) {
-		Tendiwa.getPlayer().invalidateVisionCache();
+	if (Tendiwa.getPlayerCharacter().canSee(x, y) && Tendiwa.getPlayerCharacter().isVisionCacheEmpty()) {
+		Tendiwa.getPlayerCharacter().invalidateVisionCache();
 	}
 	throw new UnsupportedOperationException();
 }

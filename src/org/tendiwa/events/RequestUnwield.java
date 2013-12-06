@@ -13,6 +13,6 @@ public RequestUnwield(Item item) {
 
 @Override
 public void process() {
-	Tendiwa.getPlayer().cease(item);
+	Tendiwa.getPlayerCharacter().cease(item);
 }
 }

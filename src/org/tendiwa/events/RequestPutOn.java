@@ -13,6 +13,6 @@ public RequestPutOn(UniqueItem item) {
 
 @Override
 public void process() {
-	Tendiwa.getPlayer().putOn(item);
+	Tendiwa.getPlayerCharacter().putOn(item);
 }
 }
