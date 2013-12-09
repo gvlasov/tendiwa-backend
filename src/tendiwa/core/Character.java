@@ -244,7 +244,7 @@ public void drop(Item item) {
 	loseItem(item);
 	Chunk chunk = plane.getChunkWithCell(x, y);
 	chunk.addItem(item, x - chunk.getX(), y - chunk.getY());
-	Tendiwa.getClientEventManager().event(new EventItemAppear(item));
+	Tendiwa.getClientEventManager().event(new EventItemAppear(item, this.x, this.y));
 	moveTime(500);
 }
 
@@ -734,11 +734,8 @@ public String getName() {
  */
 public void move(int x, int y) {
 	// TODO: Move full vision cache computing to PlayerCharacter class.
-	// Copy cache
 	for (int i = 0; i < VISION_CACHE_WIDTH; i++) {
-		for (int j = 0; j < VISION_CACHE_WIDTH; j++) {
-			visionPrevious[i][j] = visionCache[i][j];
-		}
+		System.arraycopy(visionCache[i], 0, visionPrevious[i], 0, VISION_CACHE_WIDTH);
 	}
 	int xPrev = this.x;
 	int yPrev = this.y;
@@ -749,11 +746,13 @@ public void move(int x, int y) {
 		this.y = y;
 		plane.addCharacter(this);
 	}
+	Tendiwa.waitForAnimationToStartAndComplete();
 	synchronized (renderLockObject) {
 		timeStream.notifyNeighborsVisiblilty(this);
 		this.computeFullVisionCache();
 		Tendiwa.getClientEventManager().event(new EventFovChange(xPrev, yPrev, visionPrevious, visionCache));
 	}
+	Tendiwa.waitForAnimationToStartAndComplete();
 }
 
 public void getDamage(int amount, DamageType type) {
@@ -788,6 +787,13 @@ public void getItem(Item item) {
 
 public void getItem(ItemType type) {
 	getItem(type.createItem());
+}
+
+public void getItem(StackableItemType type, int amount) {
+	if (amount < 1) {
+		throw new IllegalArgumentException("Amount must be positive");
+	}
+	getItem(type.createItem(amount));
 }
 
 public void loseItem(Item item) {
@@ -919,10 +925,16 @@ public HorizontalPlane getPlane() {
 }
 
 public void pickUp(Item item) {
-	Tendiwa.getClientEventManager().event(new EventItemDisappear(x, y, item));
-	plane.getItems(x, y).removeItem(item);
-	Tendiwa.getClientEventManager().event(new EventGetItem(item));
-	getItem(item);
+	synchronized (renderLockObject) {
+		Tendiwa.getClientEventManager().event(new EventItemDisappear(x, y, item));
+		plane.getItems(x, y).removeItem(item);
+	}
+	Tendiwa.waitForAnimationToStartAndComplete();
+	synchronized (renderLockObject) {
+		Tendiwa.getClientEventManager().event(new EventGetItem(item));
+		getItem(item);
+	}
+	Tendiwa.waitForAnimationToStartAndComplete();
 }
 
 public ItemCollection getInventory() {
@@ -935,6 +947,23 @@ public Equipment getEquipment() {
 
 public CharacterType getType() {
 	return type;
+}
+
+public void thrust(Item item, int x, int y) {
+	assert inventory.contains(item);
+	synchronized (renderLockObject) {
+		loseItem(item);
+	}
+	Tendiwa.waitForAnimationToStartAndComplete();
+	synchronized (renderLockObject) {
+		Tendiwa.getClientEventManager().event(new EventItemFly(item, this.x, this.y, x, y));
+	}
+	Tendiwa.waitForAnimationToStartAndComplete();
+	synchronized (renderLockObject) {
+		Tendiwa.getClientEventManager().event(new EventItemAppear(item, x, y));
+		Chunk chunkWithCell = plane.getChunkWithCell(x, y);
+		chunkWithCell.addItem(item, x - chunkWithCell.getX(), y - chunkWithCell.getY());
+	}
 }
 
 /* Nested classes */

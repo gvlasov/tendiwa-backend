@@ -545,7 +545,6 @@ private static void loadItems(Element eRoot) {
 				.arg(expMaterial)
 				.arg(JExpr.lit(stackable))
 		);
-		System.out.println("Created item " + name);
 	}
 }
 

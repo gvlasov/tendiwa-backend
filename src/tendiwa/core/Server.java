@@ -43,7 +43,6 @@ public void run() {
 					requestQueue.notify();
 				}
 				turnComputing = false;
-				continue;
 			}
 		}
 	}

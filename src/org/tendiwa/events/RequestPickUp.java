@@ -12,7 +12,6 @@ public void process() {
 	HorizontalPlane plane = player.getPlane();
 	Iterator<Item> iterator = plane.getItems(player.getX(), player.getY()).iterator();
 	if (iterator.hasNext()) {
-		System.out.println("Pick up " + plane.getItems(player.getX(), player.getY()) + " " + player.inventory);
 		player.pickUp(iterator.next());
 	}
 }

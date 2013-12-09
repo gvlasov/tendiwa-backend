@@ -26,4 +26,6 @@ void event(EventWield eventWield);
 void event(EventTakeOff eventTakeOff);
 
 void event(EventUnwield eventUnwield);
+
+void event(EventItemFly eventItemFly);
 }

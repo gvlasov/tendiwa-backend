@@ -141,4 +141,20 @@ public static int getWorldHeight() {
 public static Character getPlayerCharacter() {
 	return INSTANCE.PLAYER;
 }
+
+public static void waitForAnimationToStartAndComplete() {
+	synchronized (INSTANCE) {
+		while (!getClient().isAnimationCompleted()) {
+			try {
+				INSTANCE.wait();
+			} catch (InterruptedException ignored) {
+			}
+		}
+	}
+}
+public static void signalAnimationCompleted() {
+	synchronized (INSTANCE) {
+		INSTANCE.notify();
+	}
+}
 }
