@@ -4,6 +4,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * ItemCollection stores a group of items, representing, for example, character's inventory or a heap of items lying on
@@ -28,7 +29,7 @@ public ItemPile add(ItemPile item) {
 	ItemType type = item.getType();
 	if (items.containsKey(type)) {
 		// If there is already that type of items i a collection, change amount of the existing pile..
-		ItemPile itemPile = (ItemPile) items.get(type);
+		ItemPile itemPile = (ItemPile) items.get(type).iterator().next();
 		itemPile.changeAmount(item.getAmount());
 		return itemPile;
 	} else {
@@ -89,5 +90,34 @@ public String toString() {
 	return "ItemCollection{" +
 		"items=" + items.values() +
 		'}';
+}
+
+/**
+ * <p>Remove one item from this ItemCollection.</p><p>If {@code Item}'s {@link ItemType} is {@link StackableItemType},
+ * then one piece will be extracted from that pile, removing that pile in case that was the last piece.</p><p>If {@code
+ * item}'s {@link ItemType} is {@link UniqueItemType}, then it will be simply removed from this ItemCollection.</p>
+ *
+ * @param item
+ * 	An item from this ItemCollection.
+ * @throws NoSuchElementException
+ * 	If {@code item} is not in this ItemCollection.
+ */
+public Item removeOne(Item item) {
+	if (!contains(item)) {
+		throw new NoSuchElementException(item + " is not in this ItemCollection");
+	}
+	if (item.getType().isStackable()) {
+		ItemPile pile = (ItemPile) item;
+		if (pile.getAmount() == 1) {
+			removePile(pile);
+			return pile;
+		} else {
+			pile.changeAmount(-1);
+			return new ItemPile(pile.getType(), 1);
+		}
+	} else {
+		removeUnique((UniqueItem) item);
+		return item;
+	}
 }
 }

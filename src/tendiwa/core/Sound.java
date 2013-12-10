@@ -14,7 +14,7 @@ import com.google.gson.JsonSerializationContext;
  * @author suseika
  * 
  */
-public class Sound implements GsonForStaticDataSerializable {
+public class Sound {
 	public SoundType type;
 	public int x;
 	public int y;
@@ -25,12 +25,4 @@ public class Sound implements GsonForStaticDataSerializable {
 		this.type = type;
 	}
 
-	@Override
-	public JsonElement serialize(JsonSerializationContext context) {
-		JsonArray jArray = new JsonArray();
-		jArray.add(new JsonPrimitive(x));
-		jArray.add(new JsonPrimitive(y));
-		jArray.add(new JsonPrimitive(type.getId()));
-		return jArray;
-	}
 }

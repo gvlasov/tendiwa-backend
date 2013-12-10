@@ -40,4 +40,22 @@ public boolean isWieldable() {
 	}
 	return true;
 }
+
+public boolean isRangedWeapon() {
+	try {
+		RangedWeapon test = (RangedWeapon) this;
+	} catch (ClassCastException e) {
+		return false;
+	}
+	return true;
+}
+
+public boolean isShootable() {
+	try {
+		Shootable test = (Shootable) this;
+	} catch (ClassCastException e) {
+		return false;
+	}
+	return true;
+}
 }

@@ -28,4 +28,6 @@ void event(EventTakeOff eventTakeOff);
 void event(EventUnwield eventUnwield);
 
 void event(EventItemFly eventItemFly);
+
+void event(EventSound eventSound);
 }

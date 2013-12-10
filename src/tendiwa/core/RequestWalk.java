@@ -7,7 +7,7 @@ private final Direction dir;
 public void process() {
 	int[] coords = dir.side2d();
 	Character player = Tendiwa.getPlayerCharacter();
-	player.move(player.x+coords[0], player.y+coords[1]);
+	player.move(player.x+coords[0], player.y+coords[1], MovingStyle.STEP);
 }
 
 public RequestWalk(Direction dir) {

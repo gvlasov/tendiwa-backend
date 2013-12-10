@@ -1,6 +1,7 @@
 package tendiwa.core;
 
 import com.google.common.collect.ImmutableSet;
+import tendiwa.core.meta.Condition;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -200,6 +201,34 @@ public void occupySlots(AspectApparel aspectApparel) {
 	for (ApparelSlot slot : aspectApparel.getSlots()) {
 
 	}
+}
+
+/**
+ * Returns first wielded item that passes some condition.
+ *
+ * @param condition
+ * 	Condition to pass.
+ * @return An item that is currently wielded and passes the condition, or null if there's no such item.
+ */
+public Item getWieldedWeaponThatIs(Condition<Item> condition) {
+	for (Item weapon : wieldedItems) {
+		if (weapon == nullItem || weapon == null) {
+			continue;
+		}
+		if (condition.check(weapon)) {
+			return weapon;
+		}
+	}
+	return null;
+}
+
+public boolean isWielded(Item weapon) {
+	for (int i = 0; i < wieldedItems.length; i++) {
+		if (wieldedItems[i] == weapon) {
+			return true;
+		}
+	}
+	return false;
 }
 
 private enum Hand {

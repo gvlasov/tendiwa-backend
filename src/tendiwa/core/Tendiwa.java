@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
-//import tendiwa.modules.SuseikaBrowserClientResourceBuilder;
 
 public class Tendiwa {
 private static Tendiwa INSTANCE;

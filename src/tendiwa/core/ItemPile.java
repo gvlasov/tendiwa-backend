@@ -8,11 +8,11 @@ public ItemPile(StackableItemType type, int amount) {
 	this.amount = amount;
 }
 
-public int changeAmount(int amount) {
-	if (this.amount + amount <= 0) {
-		throw new Error("Item's amount decreased by more than this item contained (" + this.amount + " - " + amount + ")");
+public int changeAmount(int difference) {
+	if (this.amount + difference <= 0) {
+		throw new Error("Item's amount decreased by more than this item contained (" + this.amount + " - " + difference + ")");
 	}
-	this.amount += amount;
+	this.amount += difference;
 	return this.amount;
 }
 
@@ -26,7 +26,7 @@ public int setAmount(int amount) {
 }
 
 public int hashCode() {
-	return getType().hashCode() * 100000 + amount;
+	return super.hashCode();
 }
 
 @Override

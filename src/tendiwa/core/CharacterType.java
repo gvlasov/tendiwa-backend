@@ -4,9 +4,10 @@ import com.google.common.collect.ImmutableSet;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
+import java.util.Collection;
 import java.util.Set;
 
-public class CharacterType {
+public abstract class CharacterType {
 private static short nextId = 0;
 private Set<CharacterAspect> aspects;
 private String name;
@@ -68,4 +69,6 @@ public void setHeight(double height) {
 public String toString() {
 	return name;
 }
+
+public abstract Collection<CharacterAction> getAvailableActions();
 }

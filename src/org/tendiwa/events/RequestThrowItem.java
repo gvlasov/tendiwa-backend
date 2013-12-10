@@ -17,6 +17,6 @@ public RequestThrowItem(Item item, int x, int y) {
 
 @Override
 public void process() {
-	Tendiwa.getPlayerCharacter().thrust(item, x, y);
+	Tendiwa.getPlayerCharacter().propel(item, x, y);
 }
 }

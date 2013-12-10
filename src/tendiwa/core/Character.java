@@ -9,6 +9,7 @@ import tendiwa.core.meta.Coordinate;
 import tendiwa.core.meta.Utils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 public class Character implements PlaceableInCell, PathWalker, GsonForStaticDataSerializable {
@@ -30,13 +31,13 @@ public static final byte VISION_VISIBLE = 1;
  */
 public static final byte VISION_INVISIBLE = 2;
 public static final byte VISION_CACHE_WIDTH = (byte) (VISION_RANGE * 2 + 1);
+public static final Object renderLockObject = Tendiwa.getServer();
 public final int id = new UniqueObject().id;
 public final ItemCollection inventory = new ItemCollection();
 public final Equipment equipment = new Equipment(2, ApparelSlot.values());
 protected final String name;
 protected final HashMap<Integer, Character.Effect> effects = new HashMap<>();
 final CharacterType type;
-private final Object renderLockObject = Tendiwa.getServer();
 /**
  * <p>Here is cached whether this Character sees a cell relative to his current position or not.</p> <p>{@code
  * visionCache[VISION_CACHE_WIDTH][VISION_CACHE_WIDTH]} is Character's current cell.</p>
@@ -281,7 +282,7 @@ protected void idle() {
 }
 
 protected void step(int x, int y) {
-	move(x, y);
+	move(x, y, MovingStyle.STEP);
 	if (state == CharacterState.RUNNING) {
 		changeEnergy(-30);
 		moveTime(200);
@@ -317,31 +318,12 @@ protected void push(Character character, Direction side) {
 	if (plane.getPassability(nx, ny) == Chunk.Passability.FREE) {
 		int bufX = character.x;
 		int bufY = character.y;
-		character.move(nx, ny);
+		character.move(nx, ny, MovingStyle.STEP);
 		if (!new Coordinate(x, y).isNear(nx, ny)) {
-			move(bufX, bufY);
+			move(bufX, bufY, MovingStyle.STEP);
 		}
 	}
 	moveTime(500);
-}
-
-protected void changePlaces(Character character) {
-	int prevX = x;
-	int prevY = y;
-	move(character.x, character.y);
-	character.move(prevX, prevY);
-	changeEnergy(-30);
-	// This event is needed for client to correctly
-	// handle characters' new positions in Terrain.cells
-	moveTime(500);
-	throw new UnsupportedOperationException();
-}
-
-protected void jump(int x, int y) {
-	move(x, y);
-	changeEnergy(-40);
-	moveTime(500);
-	throw new UnsupportedOperationException();
 }
 
 private void cacheVision(int x, int y, byte visible) {
@@ -732,7 +714,7 @@ public String getName() {
  * Note that this is not a character action, this method is also called when character blinks, being pushed and so on.
  * For action method, use Character.step.
  */
-public void move(int x, int y) {
+public void move(int x, int y, MovingStyle movingStyle) {
 	// TODO: Move full vision cache computing to PlayerCharacter class.
 	for (int i = 0; i < VISION_CACHE_WIDTH; i++) {
 		System.arraycopy(visionCache[i], 0, visionPrevious[i], 0, VISION_CACHE_WIDTH);
@@ -740,7 +722,7 @@ public void move(int x, int y) {
 	int xPrev = this.x;
 	int yPrev = this.y;
 	synchronized (renderLockObject) {
-		Tendiwa.getClientEventManager().event(new EventMove(xPrev, yPrev, this));
+		Tendiwa.getClientEventManager().event(new EventMove(xPrev, yPrev, this, movingStyle));
 		plane.removeCharacter(this);
 		this.x = x;
 		this.y = y;
@@ -949,14 +931,14 @@ public CharacterType getType() {
 	return type;
 }
 
-public void thrust(Item item, int x, int y) {
+public void propel(Item item, int x, int y) {
 	assert inventory.contains(item);
 	synchronized (renderLockObject) {
 		loseItem(item);
 	}
 	Tendiwa.waitForAnimationToStartAndComplete();
 	synchronized (renderLockObject) {
-		Tendiwa.getClientEventManager().event(new EventItemFly(item, this.x, this.y, x, y));
+		Tendiwa.getClientEventManager().event(new EventItemFly(item, this.x, this.y, x, y, EventItemFly.FlightStyle.CAST));
 	}
 	Tendiwa.waitForAnimationToStartAndComplete();
 	synchronized (renderLockObject) {
@@ -964,6 +946,41 @@ public void thrust(Item item, int x, int y) {
 		Chunk chunkWithCell = plane.getChunkWithCell(x, y);
 		chunkWithCell.addItem(item, x - chunkWithCell.getX(), y - chunkWithCell.getY());
 	}
+	Tendiwa.waitForAnimationToStartAndComplete();
+}
+
+/**
+ * Shoot an item (projectile) using another item (ranged weapon).
+ *
+ * @param weapon
+ * 	A weapon character is shooting with.
+ * @param projectile
+ * 	An item being propelled with a ranged weapon. A UniqueItem or the whole ItemPile. You don't need to extract one item
+ * 	from ItemPile if you want to shoot a projectile from an ItemPile.
+ */
+public void shoot(UniqueItem weapon, Item projectile, int toX, int toY) {
+	assert getEquipment().isWielded(weapon);
+	assert getInventory().contains(projectile);
+	Item removedItem;
+	synchronized (renderLockObject) {
+		removedItem = getInventory().removeOne(projectile);
+		Tendiwa.getClientEventManager().event(new EventLoseItem(removedItem));
+	}
+	Tendiwa.waitForAnimationToStartAndComplete();
+	synchronized (renderLockObject) {
+		Tendiwa.getClientEventManager().event(new EventItemFly(removedItem, this.x, this.y, toX, toY, EventItemFly.FlightStyle.PROPELLED));
+	}
+	Tendiwa.waitForAnimationToStartAndComplete();
+	synchronized (renderLockObject) {
+		Tendiwa.getClientEventManager().event(new EventItemAppear(removedItem, toX, toY));
+		Chunk chunkWithCell = plane.getChunkWithCell(toX, toY);
+		chunkWithCell.addItem(removedItem, toX - chunkWithCell.getX(), toY - chunkWithCell.getY());
+	}
+	Tendiwa.waitForAnimationToStartAndComplete();
+}
+
+public Collection<CharacterAction> getAvailableActions() {
+	return getType().getAvailableActions();
 }
 
 /* Nested classes */
@@ -977,4 +994,5 @@ public class Effect {
 		this.modifier = modifier;
 	}
 }
+
 }

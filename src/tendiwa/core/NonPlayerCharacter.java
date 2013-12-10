@@ -372,7 +372,7 @@ public String toString() {
 
 /* Overriden methods */
 public void move(int x, int y) {
-	super.move(x, y);
+	super.move(x, y, MovingStyle.STEP);
 	getVisibleEntities();
 }
 
