@@ -103,10 +103,6 @@ private boolean tryWielding(Hand hand, Item item) {
 	return false;
 }
 
-public boolean canWield1HandedItem(int handId) {
-	return wieldedItems[handId] == null;
-}
-
 /**
  * Checks if there is a hand free to wield a one-handed item,  or two hands to wield a two-handed item.
  *
