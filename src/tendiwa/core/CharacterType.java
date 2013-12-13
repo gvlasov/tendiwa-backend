@@ -70,5 +70,5 @@ public String toString() {
 	return name;
 }
 
-public abstract Collection<CharacterAction> getAvailableActions();
+public abstract Collection<CharacterAbility> getAvailableActions();
 }

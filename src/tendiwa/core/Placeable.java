@@ -20,7 +20,7 @@ EnhancedRectangle getBounds();
  * @param x
  * 	X-coordinate of the whole shape to be placed at.
  * @param y
- * 	Y-coordinate of the whole shape to ba placed at.
+ * 	Y-coordinate of the whole shape to be placed at.
  * @return Bounding rectangle of the whole shape placed at [x:y]
  */
 EnhancedRectangle place(RectangleSystemBuilder builder, int x, int y);
@@ -54,7 +54,8 @@ Placeable rotate(Rotation rotation);
 
 /**
  * Returns all rectangles this Placeable consists of.
- * @return
+ *
+ * @return All rectangles this Placeable consists of.
  */
 Iterable<EnhancedRectangle> getRectangles();
 }

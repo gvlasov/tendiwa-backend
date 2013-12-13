@@ -27,7 +27,7 @@ private static final TerrainDiffusionStopCondition DEFAULT_STOP_CONDITION = new 
  * @param from
  * 	Entities to come from border.
  */
-public TerrainTransition(Location location, EnhancedRectangle rectangle, PlaceableInCell from, int depth, HashSet<Direction> fromDirections, TerrainDiffusionStopCondition stopCondition) {
+public TerrainTransition(Location location, EnhancedRectangle rectangle, TypePlaceableInCell from, int depth, HashSet<Direction> fromDirections, TerrainDiffusionStopCondition stopCondition) {
 	for (Direction dir : fromDirections) {
 		if (!dir.isCardinal()) {
 			continue;
@@ -66,7 +66,7 @@ public TerrainTransition(Location location, EnhancedRectangle rectangle, Placeab
 					x = columnDynamicCoord;
 					y = segmentDynamicCoord;
 				}
-				from.place(location.getPlane(), location.x + x, location.y + y);
+				location.getPlane().place(from, location.x+x, location.y + y);
 				i++;
 			}
 		}
@@ -172,7 +172,7 @@ private interface TerrainDiffusionStopCondition {
 }
 
 public static class TerrainTransitionBuilder {
-	private PlaceableInCell from;
+	private TypePlaceableInCell from;
 	private HashSet<Direction> directions = new HashSet<>();
 	private int depth = -1;
 	private EnhancedRectangle rectangle;
@@ -193,7 +193,7 @@ public static class TerrainTransitionBuilder {
 		return this;
 	}
 
-	public TerrainTransitionBuilder setFrom(PlaceableInCell from) {
+	public TerrainTransitionBuilder setFrom(TypePlaceableInCell from) {
 		this.from = from;
 		return this;
 	}

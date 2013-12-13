@@ -1,61 +1,13 @@
 package tendiwa.core;
 
-public abstract class ItemType {
+public interface ItemType extends TypePlaceableInCell, Resourceable {
 
-protected ItemType() {
-}
+public Material getMaterial();
 
-public abstract Material getMaterial();
+public double getWeight();
 
-public abstract String getResourceName();
+public double getVolume();
 
-public abstract double getWeight();
+public boolean isStackable();
 
-public abstract double getVolume();
-
-public abstract boolean isStackable();
-
-public Item createItem() {
-	if (isStackable()) {
-		return ((StackableItemType) this).createItem();
-	} else {
-		return ((UniqueItemType) this).createItem();
-	}
-}
-
-public boolean isWearable() {
-	try {
-		Wearable test = (Wearable) this;
-	} catch (ClassCastException e) {
-		return false;
-	}
-	return true;
-}
-
-public boolean isWieldable() {
-	try {
-		Wieldable test = (Wieldable) this;
-	} catch (ClassCastException e) {
-		return false;
-	}
-	return true;
-}
-
-public boolean isRangedWeapon() {
-	try {
-		RangedWeapon test = (RangedWeapon) this;
-	} catch (ClassCastException e) {
-		return false;
-	}
-	return true;
-}
-
-public boolean isShootable() {
-	try {
-		Shootable test = (Shootable) this;
-	} catch (ClassCastException e) {
-		return false;
-	}
-	return true;
-}
 }

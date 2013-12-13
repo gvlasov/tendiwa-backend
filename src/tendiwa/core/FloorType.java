@@ -9,7 +9,7 @@ import com.google.gson.JsonSerializationContext;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FloorType implements PlaceableInCell, GsonForStaticDataSerializable {
+public class FloorType implements PlaceableInCell {
 protected static short lastId = 0;
 private static Map<Short, FloorType> byId = new HashMap<>();
 private final String name;
@@ -48,13 +48,6 @@ public static Map<Short, FloorType> getAll() {
 	return ImmutableMap.copyOf(byId);
 }
 
-
-@Override
-public JsonElement serialize(JsonSerializationContext context) {
-	JsonArray jArray = new JsonArray();
-	jArray.add(new JsonPrimitive(name));
-	return jArray;
-}
 
 public String getName() {
 	return name;

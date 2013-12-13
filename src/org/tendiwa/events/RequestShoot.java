@@ -11,7 +11,7 @@ private final int toY;
 public RequestShoot(UniqueItem rangedWeapon, Item projectile, int toX, int toY) {
 	this.toX = toX;
 	this.toY = toY;
-	if (!projectile.getType().isShootable()) {
+	if (!Items.isShootable(projectile.getType())) {
 		throw new RuntimeException("Projectile must be an item with shootable type");
 	}
 	this.rangedWeapon = rangedWeapon;

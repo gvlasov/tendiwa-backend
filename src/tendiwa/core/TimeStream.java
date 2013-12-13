@@ -1,5 +1,7 @@
 package tendiwa.core;
 
+import org.tendiwa.events.EventSound;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -92,7 +94,7 @@ public void removeCharacter(NonPlayerCharacter character) {
 }
 
 public void makeSound(int x, int y, SoundType type) {
-	throw new UnsupportedOperationException();
+	Tendiwa.getClientEventManager().event(new EventSound(type, x, y));
 }
 
 public Character getCharacterById(int characterId) {

@@ -1,16 +1,16 @@
 package org.tendiwa.events;
 
-import tendiwa.core.Item;
+import tendiwa.core.Projectile;
 
-public class EventItemFly implements Event {
-public final Item item;
+public class EventProjectileFly implements Event {
+public final Projectile item;
 public final int fromX;
 public final int fromY;
 public final int toX;
 public final int toY;
 public final FlightStyle style;
 
-public EventItemFly(Item item, int fromX, int fromY, int toX, int toY, FlightStyle style) {
+public EventProjectileFly(Projectile item, int fromX, int fromY, int toX, int toY, FlightStyle style) {
 	this.item = item;
 	this.fromX = fromX;
 	this.fromY = fromY;

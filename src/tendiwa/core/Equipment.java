@@ -111,7 +111,7 @@ private boolean tryWielding(Hand hand, Item item) {
  * @return True if an item can be wielded by equipment bearer, false if it can't.
  */
 public boolean canWield(Item item) {
-	if (item.getType().isWieldable()) {
+	if (Items.isWieldable(item.getType())) {
 		Handedness handedness = ((Wieldable) item.getType()).getHandedness();
 		int handsToWield;
 		int freeHands = 0;
@@ -161,7 +161,7 @@ public void takeOff(UniqueItem item) {
 }
 
 public boolean canPutOn(UniqueItem item) {
-	if (!item.getType().isWearable()) {
+	if (!Items.isWearable(item.getType())) {
 		return false;
 	}
 	for (ApparelSlot slot : ((Wearable) item.getType()).getSlots()) {

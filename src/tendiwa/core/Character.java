@@ -8,9 +8,9 @@ import org.tendiwa.events.*;
 import tendiwa.core.meta.Coordinate;
 import tendiwa.core.meta.Utils;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class Character implements PlaceableInCell, PathWalker, GsonForStaticDataSerializable {
 public static final long serialVersionUID = 1832389411;
@@ -52,11 +52,11 @@ protected HorizontalPlane plane;
 protected Chunk chunk;
 protected int x;
 protected int y;
-protected ArrayList<Integer> spells = new ArrayList<>();
 protected boolean isAlive;
 protected CharacterState state = CharacterState.DEFAULT;
 protected TimeStream timeStream;
 private boolean isVisionCacheEmpty = true;
+private Collection<Spell> spells = new HashSet<>();
 /**
  * Saves field of view on previous turn when it is needed to calculate diffirences between FOV on previous turn and
  * current turn.
@@ -161,9 +161,6 @@ protected void castSpell(int spellId, int x, int y) {
 	throw new UnsupportedOperationException();
 }
 
-public void learnSpell(int spellId) {
-	spells.add(spellId);
-}
 
 protected void die() {
 	isAlive = false;
@@ -768,14 +765,14 @@ public void getItem(Item item) {
 }
 
 public void getItem(ItemType type) {
-	getItem(type.createItem());
+	getItem(Items.createItem(type));
 }
 
-public void getItem(StackableItemType type, int amount) {
+public void getItem(ItemType type, int amount) {
 	if (amount < 1) {
 		throw new IllegalArgumentException("Amount must be positive");
 	}
-	getItem(type.createItem(amount));
+	getItem(Items.createItemPile(type, amount));
 }
 
 public void loseItem(Item item) {
@@ -938,7 +935,7 @@ public void propel(Item item, int x, int y) {
 	}
 	Tendiwa.waitForAnimationToStartAndComplete();
 	synchronized (renderLockObject) {
-		Tendiwa.getClientEventManager().event(new EventItemFly(item, this.x, this.y, x, y, EventItemFly.FlightStyle.CAST));
+		Tendiwa.getClientEventManager().event(new EventProjectileFly(item, this.x, this.y, x, y, EventProjectileFly.FlightStyle.CAST));
 	}
 	Tendiwa.waitForAnimationToStartAndComplete();
 	synchronized (renderLockObject) {
@@ -968,7 +965,7 @@ public void shoot(UniqueItem weapon, Item projectile, int toX, int toY) {
 	}
 	Tendiwa.waitForAnimationToStartAndComplete();
 	synchronized (renderLockObject) {
-		Tendiwa.getClientEventManager().event(new EventItemFly(removedItem, this.x, this.y, toX, toY, EventItemFly.FlightStyle.PROPELLED));
+		Tendiwa.getClientEventManager().event(new EventProjectileFly(removedItem, this.x, this.y, toX, toY, EventProjectileFly.FlightStyle.PROPELLED));
 	}
 	Tendiwa.waitForAnimationToStartAndComplete();
 	synchronized (renderLockObject) {
@@ -979,8 +976,16 @@ public void shoot(UniqueItem weapon, Item projectile, int toX, int toY) {
 	Tendiwa.waitForAnimationToStartAndComplete();
 }
 
-public Collection<CharacterAction> getAvailableActions() {
+public Collection<CharacterAbility> getAvailableActions() {
 	return getType().getAvailableActions();
+}
+
+public Collection<Spell> getSpells() {
+	return spells;
+}
+
+public void learnSpell(Spell spell) {
+	spells.add(spell);
 }
 
 /* Nested classes */

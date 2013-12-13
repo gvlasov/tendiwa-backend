@@ -3,7 +3,7 @@ package tendiwa.core;
 public class ItemPile extends Item {
 private int amount;
 
-public ItemPile(StackableItemType type, int amount) {
+public ItemPile(ItemType type, int amount) {
 	super(type);
 	this.amount = amount;
 }
@@ -33,10 +33,4 @@ public int hashCode() {
 public String toString() {
 	return amount + " " + getType().getResourceName();
 }
-
-@Override
-public StackableItemType getType() {
-	return (StackableItemType) type;
-}
-
 }

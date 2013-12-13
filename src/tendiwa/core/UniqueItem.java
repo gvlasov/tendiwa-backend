@@ -7,12 +7,8 @@ package tendiwa.core;
 public class UniqueItem extends Item {
 
 
-public UniqueItem(UniqueItemType type) {
+public UniqueItem(ItemType type) {
 	super(type);
 }
 
-@Override
-public UniqueItemType getType() {
-	return (UniqueItemType) type;
-}
 }

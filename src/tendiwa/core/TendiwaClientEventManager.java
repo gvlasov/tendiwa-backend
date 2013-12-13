@@ -27,7 +27,9 @@ void event(EventTakeOff eventTakeOff);
 
 void event(EventUnwield eventUnwield);
 
-void event(EventItemFly eventItemFly);
+void event(EventProjectileFly eventProjectileFly);
 
 void event(EventSound eventSound);
+
+void event(EventExplosion eventExplosion);
 }

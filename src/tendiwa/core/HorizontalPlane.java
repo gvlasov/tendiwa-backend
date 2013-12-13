@@ -184,4 +184,9 @@ public boolean hasCharacter(int x, int y) {
 	Chunk chunk = getChunkWithCell(x, y);
 	return chunk.hasCharacter(x - chunk.x, y - chunk.y);
 }
+
+public void place(TypePlaceableInCell entityType, int x, int y) {
+	EntityPlacer.place(entityType, x, y);
+
+}
 }
