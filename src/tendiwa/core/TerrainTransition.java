@@ -66,7 +66,7 @@ public TerrainTransition(Location location, EnhancedRectangle rectangle, TypePla
 					x = columnDynamicCoord;
 					y = segmentDynamicCoord;
 				}
-				location.getPlane().place(from, location.x+x, location.y + y);
+				location.getPlane().place(from, location.x + x, location.y + y);
 				i++;
 			}
 		}
@@ -115,7 +115,7 @@ public TerrainTransition(Location location, EnhancedRectangle rectangle, TypePla
 	}
 }
 
-private void drawNoSideCorner(Location location, PlaceableInCell from, EnhancedRectangle rectangle, int depth, OrdinalDirection corner) {
+private void drawNoSideCorner(Location location, TypePlaceableInCell from, EnhancedRectangle rectangle, int depth, OrdinalDirection corner) {
 	EnhancedPoint diagonalLineStartPoint = rectangle.getCorner(corner);
 	CardinalDirection[] components = corner.opposite().getComponents();
 	for (int i = 0; i < depth; i++) {
@@ -124,14 +124,14 @@ private void drawNoSideCorner(Location location, PlaceableInCell from, EnhancedR
 			if (i == depth - 1 && Chance.roll(20)) {
 				continue;
 			}
-			from.place(location.getPlane(), location.x + diagonalLineNextPoint.x, location.y + diagonalLineNextPoint.y);
+			EntityPlacer.place(location.getPlane(), from, location.x + diagonalLineNextPoint.x, location.y + diagonalLineNextPoint.y);
 
 		}
 		diagonalLineStartPoint = diagonalLineStartPoint.newRelativePoint(components[0]);
 	}
 }
 
-private void drawTwoSideCorner(Location location, PlaceableInCell from, EnhancedRectangle rectangle, int depth, OrdinalDirection corner) {
+private void drawTwoSideCorner(Location location, TypePlaceableInCell from, EnhancedRectangle rectangle, int depth, OrdinalDirection corner) {
 	EnhancedPoint cornerPoint = rectangle.getCorner(corner);
 	EnhancedRectangle cornerRec = EnhancedRectangle.growFromPoint(cornerPoint.x, cornerPoint.y, corner.opposite(), depth, depth);
 	location.square(cornerRec, from, true);
@@ -144,7 +144,7 @@ private void drawTwoSideCorner(Location location, PlaceableInCell from, Enhanced
  * 	Corner of {@code side}
  * @param side
  */
-private void drawSingleSideCorner(Location location, PlaceableInCell from, EnhancedRectangle rectangle, int depth, OrdinalDirection corner, CardinalDirection side) {
+private void drawSingleSideCorner(Location location, TypePlaceableInCell from, EnhancedRectangle rectangle, int depth, OrdinalDirection corner, CardinalDirection side) {
 	EnhancedPoint cornerPoint = rectangle.getCorner(corner);
 	CardinalDirection anotherComponent = corner.anotherComponent(side);
 	Orientation rectangleSideOrientation = anotherComponent.getOrientation();
@@ -160,7 +160,7 @@ private void drawSingleSideCorner(Location location, PlaceableInCell from, Enhan
 				cornerPoint.getDynamicCoord(rectangleSideOrientation) + i * segmentGrowing,
 				rectangleSideOrientation
 			);
-			from.place(location.getPlane(), location.x + cornerFormingCell.x, location.y + cornerFormingCell.y);
+			EntityPlacer.place(location.getPlane(), from, location.x + cornerFormingCell.x, location.y + cornerFormingCell.y);
 		}
 	}
 	EnhancedRectangle cornerRectangle = EnhancedRectangle.growFromPoint(cornerPoint.x, cornerPoint.y, corner.opposite(), depth, depth);

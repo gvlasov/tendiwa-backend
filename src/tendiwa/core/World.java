@@ -62,8 +62,12 @@ public Character getPlayer() {
 }
 
 public void setPlayerCharacter(Character playerCharacter) {
-	while (defaultPlane.getPassability(playerCharacter.x, playerCharacter.y) == Chunk.Passability.NO) {
-		playerCharacter.x++;
+	try {
+		while (defaultPlane.getPassability(playerCharacter.x, playerCharacter.y) == Passability.NO) {
+			playerCharacter.x++;
+		}
+	} catch (ArrayIndexOutOfBoundsException e) {
+		throw new RuntimeException("Could not place player character because the whole world is non-passable");
 	}
 	this.playerCharacter = playerCharacter;
 	timeStream.addCharacter(playerCharacter);

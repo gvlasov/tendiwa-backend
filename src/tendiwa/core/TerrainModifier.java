@@ -51,7 +51,7 @@ public void excludeRectanglesHaving(PlaceableInCell placeable) {
  * 	Type of entities to place in cells.
  * @see TerrainModifier#drawOuterBorders(PlaceableInCell)
  */
-public void drawInnerBorders(PlaceableInCell placeable) {
+public void drawInnerBorders(TypePlaceableInCell placeable) {
 	/*
 	 * For anyone who is going to read the code of this method: the code may be
 	 * really hard to understand, because it is hard to describe with words
@@ -328,7 +328,7 @@ public void drawInnerBorders(PlaceableInCell placeable) {
  * 	Entity to place in each drawn cell.
  * @see TerrainModifier#drawInnerBorders(PlaceableInCell)
  */
-public void drawOuterBorders(PlaceableInCell placeable) {
+public void drawOuterBorders(TypePlaceableInCell placeable) {
 	if (rs.getBorderWidth() < 1) {
 		throw new RuntimeException("Can't draw borders of RectangleSystem with borderWidth=" + rs.getBorderWidth());
 	}
@@ -358,7 +358,7 @@ public void drawOuterBorders(PlaceableInCell placeable) {
 	}
 }
 
-public void connectCornersWithLines(PlaceableInCell placeable, int padding, boolean considerBorderWidth) {
+public void connectCornersWithLines(TypePlaceableInCell placeable, int padding, boolean considerBorderWidth) {
 	Rectangle boundingRec = rs.getBounds();
 	ccwlLastCellHolder.center = new Coordinate(Math.round(boundingRec.x + boundingRec.width / 2), Math.round(boundingRec.y + boundingRec.height / 2));
 	ArrayList<Coordinate> corners = new ArrayList<>();
@@ -402,13 +402,13 @@ public void connectCornersWithLines(PlaceableInCell placeable, int padding, bool
 	}
 }
 
-public void fillContents(PlaceableInCell placeable) {
+public void fillContents(TypePlaceableInCell placeable) {
 	for (Rectangle r : rs.getRectangles()) {
 		location.square(r, placeable, true);
 	}
 }
 
-public void drawLines(PlaceableInCell placeable) {
+public void drawLines(TypePlaceableInCell placeable) {
 	Graph<EnhancedRectangle, RectangleSystem.Neighborship> graph = rs.getGraph();
 	for (RectangleSystem.Neighborship e : graph.edgeSet()) {
 		EnhancedPoint c1 = graph.getEdgeSource(e).getCenterPoint();

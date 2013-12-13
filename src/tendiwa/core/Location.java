@@ -32,9 +32,9 @@ public HorizontalPlane getPlane() {
 	return plane;
 }
 
-public void line(int startX, int startY, int endX, int endY, PlaceableInCell placeable) {
+public void line(int startX, int startY, int endX, int endY, TypePlaceableInCell placeable) {
 	if (startX == endX && startY == endY) {
-		placeable.place(plane, x + startX, y + startY);
+		EntityPlacer.place(plane, placeable, x + startX, y + startY);
 		return;
 	}
 	Coordinate[] cells = vector(startX, startY, endX, endY);
@@ -45,26 +45,26 @@ public void line(int startX, int startY, int endX, int endY, PlaceableInCell pla
 		int x2 = cells[i + 1].x;
 		int y2 = cells[i + 1].y;
 
-		placeable.place(plane, this.x + x, this.y + y);
+		EntityPlacer.place(plane, placeable, this.x + x, this.y + y);
 		if (i < cells.length - 1 && x != x2 && y != y2) {
 			int cx = x + ((x2 > x) ? 1 : -1);
-			placeable.place(plane, this.x + cx, this.y + y);
+			EntityPlacer.place(plane, placeable, this.x + cx, this.y + y);
 		}
 		if (i == size - 2) {
-			placeable.place(plane, this.x + x2, this.y + y2);
+			EntityPlacer.place(plane, placeable, this.x + x2, this.y + y2);
 		}
 	}
 }
 
-public void square(int startX, int startY, int w, int h, PlaceableInCell placeable) {
+public void square(int startX, int startY, int w, int h, TypePlaceableInCell placeable) {
 	square(startX, startY, w, h, placeable, false);
 }
 
-public void square(Rectangle r, PlaceableInCell placeable, boolean fill) {
+public void square(Rectangle r, TypePlaceableInCell placeable, boolean fill) {
 	square(r.x, r.y, r.width, r.height, placeable, fill);
 }
 
-public void square(int startX, int startY, int w, int h, PlaceableInCell placeable, boolean fill) {
+public void square(int startX, int startY, int w, int h, TypePlaceableInCell placeable, boolean fill) {
 	if (startX + w > getWidth() || startY + h > getHeight()) {
 		throw new LocationException("Square " + startX + "," + startY + "," + w + "," + h + " goes out of borders of a " + getWidth() + "*" + getHeight() + " location");
 	}
@@ -117,8 +117,8 @@ public ArrayList<Coordinate> getCircle(int cx, int cy, int r) {
 
 /**
  * Uses a {@link Segment} to drawWorld a rectangle. This method is almost identical to {@link Location#square(int, int,
- * int, int, PlaceableInCell)}, it is just more convenient to use when Segments are often used. The drawn rectangle's
- * top-left cell will be {segment.x;segment.y}.
+ * int, int, TypePlaceableInCell)}, it is just more convenient to use when Segments are often used. The drawn
+ * rectangle's top-left cell will be {segment.x;segment.y}.
  *
  * @param segment
  * 	A segment of cells to drawWorld.
@@ -128,7 +128,7 @@ public ArrayList<Coordinate> getCircle(int cx, int cy, int r) {
  * @param placeable
  * 	What to drawWorld in each cell
  */
-public void drawSegment(Segment segment, int width, PlaceableInCell placeable) {
+public void drawSegment(Segment segment, int width, TypePlaceableInCell placeable) {
 	if (segment.getOrientation().isHorizontal()) {
 		square(segment.getX(), segment.getY(), segment.getLength(), width, placeable, true);
 	} else {
@@ -264,12 +264,12 @@ public ArrayList<Coordinate> polygon(ArrayList<Coordinate> coords, boolean mode)
 public void fillWithCells(FloorType floor) {
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
-			plane.setFloor(floor.getId(), x + i, y + j);
+			plane.placeFloor(floor, x + i, y + j);
 		}
 	}
 }
 
-public ArrayList<Coordinate> closeCells(int startX, int startY, int length, Chunk.Passability pass, boolean noDiagonal) {
+public ArrayList<Coordinate> closeCells(int startX, int startY, int length, Passability pass, boolean noDiagonal) {
 	ArrayList<Coordinate> oldFront = new ArrayList<>();
 	ArrayList<Coordinate> newFront = new ArrayList<>();
 	ArrayList<Coordinate> answer = new ArrayList<>();
@@ -472,7 +472,7 @@ public int[][] getPathTable(int startX, int startY, int endX, int endY, boolean 
 				if (thisNumX == endX && thisNumY == endY) {
 					isPathFound = true;
 				}
-				if (plane.getPassability(thisNumX, thisNumY) == Chunk.Passability.FREE && !(thisNumX == startX && thisNumY == startY)) {
+				if (plane.getPassability(thisNumX, thisNumY) == Passability.FREE && !(thisNumX == startX && thisNumY == startY)) {
 					pathTable[thisNumX][thisNumY] = t + 1;
 					newFront.add(new Coordinate(thisNumX, thisNumY));
 				}
@@ -601,11 +601,11 @@ public ArrayList<Coordinate> getPath(int startX, int startY, int destinationX, i
  * @param placeable
  * @see Location#boldLine(int, int, int, int, PlaceableInCell, int)
  */
-public void boldLine(int startX, int startY, int endX, int endY, PlaceableInCell placeable) {
+public void boldLine(int startX, int startY, int endX, int endY, TypePlaceableInCell placeable) {
 	boldLine(startX, startY, endX, endY, placeable, 3);
 }
 
-public void boldLine(int startX, int startY, int endX, int endY, PlaceableInCell placeable, int w) {
+public void boldLine(int startX, int startY, int endX, int endY, TypePlaceableInCell placeable, int w) {
 	int dx;
 	int dy;
 	if (endX - startX == 0) {
@@ -691,10 +691,10 @@ protected CellCollection getCoast(int startX, int startY) {
 				if (thisNumX < 0 || thisNumX >= getWidth() || thisNumY < 0 || thisNumY >= getHeight() || pathTable[thisNumX][thisNumY] != 0) {
 					continue;
 				}
-				if (plane.getPassability(thisNumX, thisNumY) == Chunk.Passability.NO && !(thisNumX == startX && thisNumY == startY)) {
+				if (plane.getPassability(thisNumX, thisNumY) == Passability.NO && !(thisNumX == startX && thisNumY == startY)) {
 					pathTable[thisNumX][thisNumY] = t + 1;
 					newFront.add(new Coordinate(thisNumX, thisNumY));
-				} else if (plane.getPassability(thisNumX, thisNumY) != Chunk.Passability.NO) {
+				} else if (plane.getPassability(thisNumX, thisNumY) != Passability.NO) {
 					cells.add(new Coordinate(x, y));
 				}
 			}
@@ -709,14 +709,14 @@ public ArrayList<Coordinate> getCellsAroundCell(int x, int y) {
 	int x1[] = {x, x + 1, x + 1, x + 1, x, x - 1, x - 1, x - 1};
 	int y1[] = {y - 1, y - 1, y, y + 1, y + 1, y + 1, y, y - 1};
 	for (int i = 0; i < 8; i++) {
-		if (plane.getPassability(x1[i], y1[i]) == Chunk.Passability.FREE) {
+		if (plane.getPassability(x1[i], y1[i]) == Passability.FREE) {
 			answer.add(new Coordinate(x1[i], y1[i]));
 		}
 	}
 	return answer;
 }
 
-public void lineToRectangleBorder(int startX, int startY, CardinalDirection side, Rectangle r, PlaceableInCell placeable) {
+public void lineToRectangleBorder(int startX, int startY, CardinalDirection side, Rectangle r, TypePlaceableInCell placeable) {
 	if (!r.contains(startX, startY)) {
 		throw new Error("Rectangle " + r + " contains no point " + startX + ":" + startY);
 	}
@@ -745,7 +745,7 @@ public void lineToRectangleBorder(int startX, int startY, CardinalDirection side
 	line(startX, startY, endX, endY, placeable);
 }
 
-public void fillSideOfRectangle(Rectangle r, CardinalDirection side, PlaceableInCell placeable) {
+public void fillSideOfRectangle(Rectangle r, CardinalDirection side, TypePlaceableInCell placeable) {
 	int startX, startY, endX, endY;
 	switch (side) {
 		case N:
@@ -786,7 +786,7 @@ public void fillSideOfRectangle(Rectangle r, CardinalDirection side, PlaceableIn
  * @param placeable
  * 	What to fill the rectanlge area with.
  */
-public void fillRectangle(Rectangle r, PlaceableInCell placeable) {
+public void fillRectangle(Rectangle r, TypePlaceableInCell placeable) {
 	/**
 	 * Fill rectngle with objects randomly. chance% of cells will be filled
 	 * with these objects.
@@ -796,7 +796,7 @@ public void fillRectangle(Rectangle r, PlaceableInCell placeable) {
 	try {
 		for (x = r.x; x < r.x + r.width; x++) {
 			for (y = r.y; y < r.y + r.height; y++) {
-				placeable.place(plane, this.x + x, this.y + y);
+				EntityPlacer.place(plane, placeable, this.x + x, this.y + y);
 			}
 		}
 	} catch (IndexOutOfBoundsException e) {

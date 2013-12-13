@@ -2,6 +2,7 @@ package tendiwa.core;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import tendiwa.core.meta.Condition;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -93,9 +94,10 @@ public String toString() {
 }
 
 /**
- * <p>Remove one item from this ItemCollection.</p><p>If {@code Item}'s {@link ItemType} is {@link StackableItemType},
- * then one piece will be extracted from that pile, removing that pile in case that was the last piece.</p><p>If {@code
- * item}'s {@link ItemType} is {@link UniqueItemType}, then it will be simply removed from this ItemCollection.</p>
+ * <p>Remove one item from this ItemCollection.</p><p>If {@code Item}'s {@link ItemType} is {@link
+ * tendiwa.core.ItemType#isStackable()}, then one piece will be extracted from that pile, removing that pile in case
+ * that was the last piece.</p><p>If {@code item}'s {@link ItemType} is not {@link tendiwa.core.ItemType#isStackable()},
+ * then it will be simply removed from this ItemCollection.</p>
  *
  * @param item
  * 	An item from this ItemCollection.
@@ -119,5 +121,21 @@ public Item removeOne(Item item) {
 		removeUnique((UniqueItem) item);
 		return item;
 	}
+}
+
+/**
+ * Returns an item that satisfies a condition. First item that satisfies that condition will be picked.
+ *
+ * @param condition
+ * 	A condition to be satisfied.
+ * @return An item that satisfies a condition or null if no items satisfy that condition.
+ */
+public Item getItem(Condition<Item> condition) {
+	for (Item item : this) {
+		if (condition.check(item)) {
+			return item;
+		}
+	}
+	return null;
 }
 }

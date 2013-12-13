@@ -312,7 +312,7 @@ protected void push(Character character, Direction side) {
 	int[] d = side.side2d();
 	int nx = character.x + d[0];
 	int ny = character.y + d[1];
-	if (plane.getPassability(nx, ny) == Chunk.Passability.FREE) {
+	if (plane.getPassability(nx, ny) == Passability.FREE) {
 		int bufX = character.x;
 		int bufY = character.y;
 		character.move(nx, ny, MovingStyle.STEP);
@@ -356,7 +356,7 @@ public boolean initialCanSee(int x, int y) {
 		if (x == this.x) {
 			int dy = Math.abs(y - this.y) / (y - this.y);
 			for (int i = this.y + dy; i != y; i += dy) {
-				if (plane.getPassability(x, i) == Chunk.Passability.NO) {
+				if (plane.getPassability(x, i) == Passability.NO) {
 					cacheVision(x, y, VISION_INVISIBLE);
 					return false;
 				}
@@ -364,7 +364,7 @@ public boolean initialCanSee(int x, int y) {
 		} else {
 			int dx = Math.abs(x - this.x) / (x - this.x);
 			for (int i = this.x + dx; i != x; i += dx) {
-				if (plane.getPassability(i, y) == Chunk.Passability.NO) {
+				if (plane.getPassability(i, y) == Passability.NO) {
 					cacheVision(x, y, VISION_INVISIBLE);
 					return false;
 				}
@@ -376,7 +376,7 @@ public boolean initialCanSee(int x, int y) {
 		int yMin = Math.min(y, this.y);
 		int yMax = Math.max(y, this.y);
 		for (int i = yMin + 1; i < yMax; i++) {
-			if (plane.getPassability(x, i) == Chunk.Passability.NO) {
+			if (plane.getPassability(x, i) == Passability.NO) {
 				break;
 			}
 			if (i == yMax - 1) {
@@ -385,7 +385,7 @@ public boolean initialCanSee(int x, int y) {
 			}
 		}
 		for (int i = yMin + 1; i < yMax; i++) {
-			if (plane.getPassability(this.x, i) == Chunk.Passability.NO) {
+			if (plane.getPassability(this.x, i) == Passability.NO) {
 				break;
 			}
 			if (i == yMax - 1) {
@@ -399,7 +399,7 @@ public boolean initialCanSee(int x, int y) {
 		int xMin = Math.min(x, this.x);
 		int xMax = Math.max(x, this.x);
 		for (int i = xMin + 1; i < xMax; i++) {
-			if (plane.getPassability(i, y) == Chunk.Passability.NO) {
+			if (plane.getPassability(i, y) == Passability.NO) {
 				break;
 			}
 			if (i == xMax - 1) {
@@ -408,7 +408,7 @@ public boolean initialCanSee(int x, int y) {
 			}
 		}
 		for (int i = xMin + 1; i < xMax; i++) {
-			if (plane.getPassability(i, this.y) == Chunk.Passability.NO) {
+			if (plane.getPassability(i, this.y) == Passability.NO) {
 				break;
 			}
 			if (i == xMax - 1) {
@@ -427,7 +427,7 @@ public boolean initialCanSee(int x, int y) {
 		for (int i = 1; i < dMax; i++) {
 			cx += dx;
 			cy += dy;
-			if (plane.getPassability(cx, cy) == Chunk.Passability.NO) {
+			if (plane.getPassability(cx, cy) == Passability.NO) {
 				cacheVision(x, y, VISION_INVISIBLE);
 				return false;
 			}
@@ -459,7 +459,7 @@ public boolean initialCanSee(int x, int y) {
 				double xStart = start[j][0];
 				double yStart = start[j][1];
 				for (Coordinate c : rays) {
-					if (plane.getPassability(c.x, c.y) == Chunk.Passability.NO) {
+					if (plane.getPassability(c.x, c.y) == Passability.NO) {
 						if (c.x == x && c.y == y || c.x == x
 							&& c.y == y) {
 							continue;
@@ -497,14 +497,14 @@ public Coordinate getRayEnd(int endX, int endY) {
 		if (endX == this.x) {
 			int dy = Math.abs(endY - this.y) / (endY - this.y);
 			for (int i = this.y + dy; i != endY + dy; i += dy) {
-				if (plane.getPassability(endX, i) != Chunk.Passability.FREE) {
+				if (plane.getPassability(endX, i) != Passability.FREE) {
 					return new Coordinate(endX, i - dy);
 				}
 			}
 		} else {
 			int dx = Math.abs(endX - this.x) / (endX - this.x);
 			for (int i = this.x + dx; i != endX + dx; i += dx) {
-				if (plane.getPassability(i, endY) != Chunk.Passability.FREE) {
+				if (plane.getPassability(i, endY) != Passability.FREE) {
 					return new Coordinate(i - dx, endY);
 				}
 			}
@@ -514,7 +514,7 @@ public Coordinate getRayEnd(int endX, int endY) {
 		int dy = Math.abs(endY - this.y) / (endY - this.y);
 		int y1 = endY, y2 = endY;
 		for (int i = this.y + dy; i != endY + dy; i += dy) {
-			if (plane.getPassability(endX, i) != Chunk.Passability.FREE) {
+			if (plane.getPassability(endX, i) != Passability.FREE) {
 				y1 = i - dy;
 				break;
 			}
@@ -523,7 +523,7 @@ public Coordinate getRayEnd(int endX, int endY) {
 			}
 		}
 		for (int i = this.y + dy; i != endY + dy; i += dy) {
-			if (plane.getPassability(this.x, i) != Chunk.Passability.FREE) {
+			if (plane.getPassability(this.x, i) != Passability.FREE) {
 				y2 = i - dy;
 				break;
 			}
@@ -536,14 +536,14 @@ public Coordinate getRayEnd(int endX, int endY) {
 		}
 		if (answer.x == this.x
 			&& answer.y == y2
-			&& plane.getPassability(endX, endY) == Chunk.Passability.FREE) {
+			&& plane.getPassability(endX, endY) == Passability.FREE) {
 			// If answer is the furthest cell on the same line, but
 			// {endX:endY} is free
 			answer.x = endX;
 			answer.y = endY;
 		} else if (answer.x == this.x
 			&& answer.y == y2
-			&& plane.getPassability(endX, endY) == Chunk.Passability.NO) {
+			&& plane.getPassability(endX, endY) == Passability.NO) {
 			// If answer is the furthest cell on the same line, and
 			// {endX:endY} has no passage
 			answer.y = endY - dy;
@@ -553,7 +553,7 @@ public Coordinate getRayEnd(int endX, int endY) {
 		int dx = Math.abs(endX - this.x) / (endX - this.x);
 		int x1 = endX, x2 = endX;
 		for (int i = this.x + dx; i != endX + dx; i += dx) {
-			if (plane.getPassability(i, endY) != Chunk.Passability.FREE) {
+			if (plane.getPassability(i, endY) != Passability.FREE) {
 				x1 = i - dx;
 				break;
 			}
@@ -562,7 +562,7 @@ public Coordinate getRayEnd(int endX, int endY) {
 			}
 		}
 		for (int i = this.x + dx; i != endX + dx; i += dx) {
-			if (plane.getPassability(i, this.y) != Chunk.Passability.FREE) {
+			if (plane.getPassability(i, this.y) != Passability.FREE) {
 				x2 = i - dx;
 				break;
 			}
@@ -575,14 +575,14 @@ public Coordinate getRayEnd(int endX, int endY) {
 		}
 		if (answer.x == x2
 			&& answer.y == this.y
-			&& plane.getPassability(endX, endY) == Chunk.Passability.FREE) {
+			&& plane.getPassability(endX, endY) == Passability.FREE) {
 			// If answer is the furthest cell on the same line, but
 			// {endX:endY} is free
 			answer.x = endX;
 			answer.y = endY;
 		} else if (answer.x == x2
 			&& answer.y == this.y
-			&& plane.getPassability(endX, endY) == Chunk.Passability.NO) {
+			&& plane.getPassability(endX, endY) == Passability.NO) {
 			// If answer is the furthest cell on the same line, and
 			// {endX:endY} has no passage
 			answer.x = endX - dx;
@@ -598,7 +598,7 @@ public Coordinate getRayEnd(int endX, int endY) {
 		for (int i = 1; i <= dMax; i++) {
 			cx += dx;
 			cy += dy;
-			if (plane.getPassability(cx, cy) == Chunk.Passability.NO) {
+			if (plane.getPassability(cx, cy) == Passability.NO) {
 				return new Coordinate(cx - dx, cy - dy);
 			}
 
@@ -633,7 +633,7 @@ public Coordinate getRayEnd(int endX, int endY) {
 				double yStart = start[j][1];
 				for (Coordinate c : rays) {
 					try {
-						if (plane.getPassability(c.x, c.y) == Chunk.Passability.NO) {
+						if (plane.getPassability(c.x, c.y) == Passability.NO) {
 							if (Math.abs(((yStart - yEnd) * c.x
 								+ (xEnd - xStart) * c.y + (xStart
 								* yEnd - yStart * xEnd))
@@ -860,7 +860,7 @@ public boolean canStepOn(int x, int y) {
 		&& y >= 0
 		&& x < Tendiwa.getWorld().width
 		&& y < Tendiwa.getWorld().height
-		&& plane.getPassability(x, y) == Chunk.Passability.FREE;
+		&& plane.getPassability(x, y) == Passability.FREE;
 }
 
 public boolean canSee(int x, int y) {

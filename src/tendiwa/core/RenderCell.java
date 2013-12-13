@@ -4,10 +4,10 @@ public class RenderCell {
 public final int x;
 public final int y;
 boolean visible;
-short floor;
-short wall;
+FloorType floor;
+WallType wall;
 
-public RenderCell(int x, int y, short floor, short wall) {
+public RenderCell(int x, int y, FloorType floor, WallType wall) {
 	this.x = x;
 	this.y = y;
 	this.floor = floor;
@@ -50,15 +50,15 @@ public int getY() {
 	return y;
 }
 
-public short getFloor() {
+public FloorType getFloor() {
 	return floor;
 }
 
-public short getWall() {
+public WallType getWall() {
 	return wall;
 }
 
 public boolean hasWall() {
-	return wall != WallType.NO_WALL_ID;
+	return wall != null;
 }
 }

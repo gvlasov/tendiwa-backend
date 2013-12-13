@@ -73,7 +73,7 @@ private void setDestNearEntity(int eX, int eY) {
 	int dist = Integer.MAX_VALUE;
 	int curDestX = -1, curDestY = -1;
 	for (int i = 0; i < 8; i++) {
-		if (plane.getPassability(dists[i * 2], dists[i * 2 + 1]) == Chunk.Passability.FREE
+		if (plane.getPassability(dists[i * 2], dists[i * 2 + 1]) == Passability.FREE
 			&& pathTable[dists[i * 2] - dX][dists[i * 2 + 1] - dY] <= dist
 			&& (curDestX == -1 || characterCoord.distance(dists[i * 2],
 			dists[i * 2 + 1]) < characterCoord.distance(curDestX, curDestY))
@@ -209,7 +209,7 @@ private Coordinate getRetreatCoord() {
 	int[] d;
 	for (int i = 0; i < 8; i++) {
 		d = Directions.intToDirection(i).side2d();
-		if (plane.getPassability(x + d[0], y + d[1]) != Chunk.Passability.FREE) {
+		if (plane.getPassability(x + d[0], y + d[1]) != Passability.FREE) {
 			continue;
 		}
 		if (sides[i] < min) {
@@ -432,10 +432,10 @@ public boolean getPathTableToAllSeenCharacters() {
 					|| (thisNumX + dX == this.x && thisNumY + dY == this.y)) {
 					continue;
 				}
-				Chunk.Passability passability = plane.getPassability(thisNumX + dX, thisNumY + dY);
-				if ((passability == Chunk.Passability.FREE || !initialCanSee(
+				Passability passability = plane.getPassability(thisNumX + dX, thisNumY + dY);
+				if ((passability == Passability.FREE || !initialCanSee(
 					thisNumX + dX, thisNumY + dY)
-					&& passability != Chunk.Passability.NO)) {
+					&& passability != Passability.NO)) {
 					// Step to cell if character can see it and it is free
 					// or character cannot see it and it is not
 					// PASSABILITY_NO
@@ -575,7 +575,7 @@ class PathWalkerOverCharacters implements PathWalker {
 			&& y >= 0
 			&& x < Tendiwa.getWorld().width
 			&& y < Tendiwa.getWorld().height
-			&& (plane.getPassability(x, y) == Chunk.Passability.FREE
+			&& (plane.getPassability(x, y) == Passability.FREE
 			|| plane.getCharacter(x, y) != null);
 
 	}

@@ -90,19 +90,19 @@ public int getChunkRoundedCoord(int coord) {
 		: Chunk.SIZE) - coord % Chunk.SIZE : coord - coord % Chunk.SIZE;
 }
 
-public short getFloor(int x, int y) {
+public FloorType getFloor(int x, int y) {
 	return getChunkWithCell(x, y).getFloor(x, y);
 }
 
-public short getWall(int x, int y) {
+public WallType getWall(int x, int y) {
 	return getChunkWithCell(x, y).getWall(x, y);
 }
 
-public Chunk.Passability getPassability(int x, int y) {
-	if (getChunkWithCell(x, y).getWall(x, y) != WallType.NO_WALL_ID) {
-		return Chunk.Passability.NO;
+public Passability getPassability(int x, int y) {
+	if (getChunkWithCell(x, y).getWall(x, y) == null) {
+		return Passability.FREE;
 	} else {
-		return Chunk.Passability.FREE;
+		return Passability.NO;
 	}
 }
 
@@ -146,8 +146,8 @@ public void removeObject(int x, int y) {
 	chunkWithCell.removeObject(x - chunkWithCell.x, y - chunkWithCell.y);
 }
 
-public void placeFloor(short id, int x, int y) {
-	getChunkWithCell(x, y).setFloor(id, x, y);
+public void placeFloor(FloorType floor, int x, int y) {
+	getChunkWithCell(x, y).setFloor(floor, x, y);
 }
 
 public Character getCharacter(int x, int y) {
@@ -163,16 +163,12 @@ public void addCharacter(Character character) {
 	getChunkWithCell(character.x, character.y).addCharacter(character);
 }
 
-public void setFloor(short id, int x, int y) {
-	getChunkWithCell(x, y).setFloor(id, x, y);
-}
-
 public GameObject getGameObject(int x, int y) {
 	return getChunkWithCell(x, y).getGameObject(x, y);
 }
 
-public void placeWall(short id, int x, int y) {
-	getChunkWithCell(x, y).setWall(id, x, y);
+public void placeWall(WallType wall, int x, int y) {
+	getChunkWithCell(x, y).setWall(wall, x, y);
 }
 
 public boolean hasAnyItems(int x, int y) {
@@ -186,7 +182,12 @@ public boolean hasCharacter(int x, int y) {
 }
 
 public void place(TypePlaceableInCell entityType, int x, int y) {
-	EntityPlacer.place(entityType, x, y);
+	EntityPlacer.place(this, entityType, x, y);
 
+}
+
+public void placeObject(ObjectType o, int x, int y) {
+	Chunk chunk = getChunkWithCell(x, y);
+	chunk.setObject(o, x - chunk.x, y - chunk.y);
 }
 }

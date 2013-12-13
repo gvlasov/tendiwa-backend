@@ -83,7 +83,6 @@ public static void main(String args[]) throws ClassNotFoundException, IOExceptio
 		if (moduleDir == null) {
 			throw new RuntimeException("Modules directory not provided");
 		}
-		ModuleBuilder.generateResourcesCode(moduleDir);
 	} else {
 		INSTANCE = new Tendiwa(args);
 	}
@@ -151,6 +150,7 @@ public static void waitForAnimationToStartAndComplete() {
 		}
 	}
 }
+
 public static void signalAnimationCompleted() {
 	synchronized (INSTANCE) {
 		INSTANCE.notify();

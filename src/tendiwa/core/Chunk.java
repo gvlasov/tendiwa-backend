@@ -14,8 +14,8 @@ public final int y;
 public HorizontalPlane plane;
 protected HashMap<Integer, ItemCollection> items = new HashMap<>();
 Map<Integer, Character> characters = new HashMap<>();
-short[][] floors;
-short[][] walls;
+FloorType[][] floors;
+WallType[][] walls;
 Map<Integer, GameObject> objects = new HashMap<>();
 private ArrayList<SoundSource> soundSources = new ArrayList<>();
 transient private TimeStream timeStream;
@@ -23,8 +23,8 @@ transient private TimeStream timeStream;
 public Chunk(HorizontalPlane plane, int x, int y) {
 	this.x = x;
 	this.y = y;
-	this.floors = new short[SIZE][SIZE];
-	this.walls = new short[SIZE][SIZE];
+	this.floors = new FloorType[SIZE][SIZE];
+	this.walls = new WallType[SIZE][SIZE];
 	this.plane = plane;
 }
 
@@ -142,8 +142,8 @@ public boolean belongsToTimeStream(TimeStream timeStream) {
 	return this.timeStream == timeStream;
 }
 
-public void setFloor(short id, int x, int y) {
-	floors[x - this.x][y - this.y] = id;
+public void setFloor(FloorType floor, int x, int y) {
+	floors[x - this.x][y - this.y] = floor;
 }
 
 public Character getCharacter(int x, int y) {
@@ -203,7 +203,7 @@ public void removeItem(ItemPile item, int x, int y) {
 }
 
 public boolean isDoor(int x, int y) {
-	return getObject(x, y).getType().getObjectClass() == ObjectType.ObjectClass.DOOR;
+	return getObject(x, y).getType().getObjectClass() == ObjectClass.DOOR;
 }
 
 private GameObject getObject(int x, int y) {
@@ -217,7 +217,7 @@ private GameObject getObject(int x, int y) {
  * 	Absolute y coordinate.
  * @return Id of {@link FloorType} in that cell.
  */
-public short getFloor(int x, int y) {
+public FloorType getFloor(int x, int y) {
 	return floors[x - this.x][y - this.y];
 }
 
@@ -230,12 +230,12 @@ public short getFloor(int x, int y) {
  * 	Y coordinate of cell in chunk coordinates.
  * @return Id of a wall in the specified cell.
  */
-public short getWall(int x, int y) {
+public WallType getWall(int x, int y) {
 	return walls[x - this.x][y - this.y];
 }
 
-public void setWall(short id, int x, int y) {
-	walls[x - this.x][y - this.y] = id;
+public void setWall(WallType wall, int x, int y) {
+	walls[x - this.x][y - this.y] = wall;
 }
 
 /**
@@ -252,7 +252,7 @@ public boolean hasAnyItems(int x, int y) {
 	return items.containsKey(key) && items.get(key).size() > 0;
 }
 
-public enum Passability {
-	FREE, SEE, NO
+public void setObject(ObjectType objectType, int x, int y) {
+	objects.put(x * SIZE + y, new GameObject(objectType));
 }
 }

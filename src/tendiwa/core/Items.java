@@ -4,6 +4,7 @@ package tendiwa.core;
  * Utility class containing many useful actions for {@link ItemType} handling. Some methods that initially were in
  * ItemType class were moved here to allow ItemType to be an interface rather than an abstract class.
  */
+
 public class Items {
 
 public static Item createItem(ItemType type) {
@@ -26,12 +27,12 @@ public static boolean isWieldable(ItemType type) {
 	return type instanceof Wieldable;
 }
 
-public boolean isRangedWeapon(ItemType type) {
-	return type instanceof RangedWeapon;
-}
-
 public static boolean isShootable(ItemType type) {
 	return type instanceof Shootable;
+}
+
+public static boolean isRangedWeapon(ItemType type) {
+	return type instanceof RangedWeapon;
 }
 
 /**
