@@ -10,20 +10,22 @@ import java.util.List;
 import java.util.Properties;
 
 public class Tendiwa {
+private static final Object lock = new Object();
 private static Tendiwa INSTANCE;
 private static AssociationChangeNotification clientEventManager;
 private static int worldWidth;
 private static int worldHeight;
 public final org.apache.log4j.Logger logger = Logger.getLogger("tendiwa");
 public final Server SERVER = Server.SERVER;
-public final TendiwaClient CLIENT;
 private final Thread SERVER_THREAD;
 private final String MODULES_CONF_FILE = "/modules.conf";
 private final String CLIENT_CONF_FILE;
 private final World WORLD;
 private final Character PLAYER;
+public static TendiwaClient CLIENT;
 
 Tendiwa(String args[]) throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException {
+	CLIENT = new DummyClient();
 	// Run game server and client.
 	ClassLoader classLoader = Tendiwa.class.getClassLoader();
 
@@ -97,7 +99,7 @@ public static Thread getServerThread() {
 }
 
 public static TendiwaClient getClient() {
-	return INSTANCE.CLIENT;
+	return CLIENT;
 }
 
 public static Server getServer() {
@@ -105,7 +107,7 @@ public static Server getServer() {
 }
 
 public static TendiwaClientEventManager getClientEventManager() {
-	return INSTANCE.CLIENT.getEventManager();
+	return CLIENT.getEventManager();
 }
 
 public static Logger getLogger() {
@@ -141,10 +143,10 @@ public static Character getPlayerCharacter() {
 }
 
 public static void waitForAnimationToStartAndComplete() {
-	synchronized (INSTANCE) {
+	synchronized (lock) {
 		while (!getClient().isAnimationCompleted()) {
 			try {
-				INSTANCE.wait();
+				lock.wait();
 			} catch (InterruptedException ignored) {
 			}
 		}
@@ -152,8 +154,12 @@ public static void waitForAnimationToStartAndComplete() {
 }
 
 public static void signalAnimationCompleted() {
-	synchronized (INSTANCE) {
-		INSTANCE.notify();
+	synchronized (lock) {
+		lock.notify();
 	}
+}
+
+public static Object getLock() {
+	return lock;
 }
 }
