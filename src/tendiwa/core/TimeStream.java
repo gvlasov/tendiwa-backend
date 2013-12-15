@@ -41,11 +41,11 @@ HashSet<Chunk> chunks = new HashSet<>();
  *
  * @see TimeStream#notifyNeighborsVisiblilty(Character)
  */
-private HashMap<Character, HashSet<NonPlayerCharacter>> observers = new HashMap<Character, HashSet<NonPlayerCharacter>>();
+private HashMap<Character, HashSet<NonPlayerCharacter>> observers = new HashMap<>();
 /**
  * All the NonPlayerCharacters that take their turns in this TimeStream.
  */
-private HashSet<NonPlayerCharacter> nonPlayerCharacters = new HashSet<NonPlayerCharacter>();
+private HashSet<NonPlayerCharacter> nonPlayerCharacters = new HashSet<>();
 /**
  * Events, accumulated here in this ArrayList each turn, ready to send out to clients.
  */
@@ -67,14 +67,17 @@ public HashSet<Character> getCharacters() {
 }
 
 public void addNonPlayerCharacter(NonPlayerCharacter character) {
+	assert character.chunk != null;
 	if (!chunks.contains(character.chunk)) {
-		throw new Error(
+		throw new RuntimeException(
 			character
-				+ " must be in a timeStream's chunk to be added to timeStream"
+				+ " must be in a timeStream's chunk to be added to timeStream. "
 				+ "His chunk is " + character.chunk);
 	}
 	nonPlayerCharacters.add(character);
 	characters.add(character);
+	observers.put(character, new HashSet<NonPlayerCharacter>());
+	character.setTimeStream(this);
 }
 
 public void removeCharacter(Character character) {
@@ -128,6 +131,7 @@ public Character next() {
 		}
 		return next();
 	}
+	assert nextCharacter != null;
 	return nextCharacter;
 }
 
@@ -203,6 +207,7 @@ public void unloadUnusedChunks(HorizontalPlane plane) {
  * 	Value; who is he observed by;
  */
 void addObserver(Character aim, NonPlayerCharacter observer) {
+	System.out.println(aim+" "+observer);
 	observers.get(aim).add(observer);
 }
 
@@ -221,12 +226,13 @@ public void notifyNeighborsVisiblilty(Character aim) {
 	 * observers remember aim's coordinate.
 	 */
 	for (NonPlayerCharacter neighbor : nonPlayerCharacters) {
-		// Need to copy observes because its contents will change in the next
-		// for loop.
+		if (neighbor == aim) {
+			continue;
+		}
 		neighbor.tryToSee(aim);
 	}
 	HashSet<NonPlayerCharacter> currentObservers = observers.get(aim);
-	// Need to copy observes because its contents will change in the next
+	// Need to copy observers because its contents will change in the next
 	// for loop.
 	HashSet<NonPlayerCharacter> observersCopy = new HashSet<>(currentObservers);
 	for (NonPlayerCharacter neighbor : observersCopy) {
@@ -243,8 +249,9 @@ public void claimCharacterDisappearance(Character character) {
 	}
 }
 
-public void addCharacter(Character character) {
+public void addPlayerCharacter(Character character) {
 	characters.add(character);
+	character.setTimeStream(this);
 	observers.put(character, new HashSet<NonPlayerCharacter>());
 }
 }

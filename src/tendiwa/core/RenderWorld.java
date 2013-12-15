@@ -67,7 +67,7 @@ public boolean hasCell(int x, int y) {
 }
 
 /**
- * Checks if player can see a cell. Objective analog is {@link Character#canSee(int, int)}. Note that if this method
+ * Checks if player can see a cell. Objective analog is {@link Character#isCellVisible(int, int)}. Note that if this method
  * returns false, then cell can be either unseen or not yet seen.
  *
  * @param x
@@ -103,7 +103,7 @@ public boolean isCellUnseen(int x, int y) {
 public void seeCell(RenderCell cell) {
 	assert cell != null;
 	int key = cellHash(cell.x, cell.y);
-	assert !cells.containsKey(key) || !cells.get(key).isVisible() : "Already is visible";
+	assert !cells.containsKey(key) || !cells.get(key).isVisible() : "Cell "+cell.getX()+":"+cell.getY()+" is already visible";
 	cells.put(key, cell);
 }
 

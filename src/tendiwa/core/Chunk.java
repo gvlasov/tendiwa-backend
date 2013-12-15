@@ -82,16 +82,24 @@ protected NonPlayerCharacter createCharacter(int relX, int relY, CharacterType c
 }
 
 void addCharacter(Character character) {
-	characters.put(character.x * Chunk.SIZE + character.y, character);
+	int key = character.x * Chunk.SIZE + character.y;
+	if (characters.containsKey(key)) {
+		throw new RuntimeException("Trying to place character " + character + " in cell " + character.x + ":" + character.y + " where there is already character " + characters.get(key));
+	} else {
+		characters.put(key, character);
+	}
 }
 
 void removeCharacter(Character character) {
-	characters.remove(character.x * Chunk.SIZE + character.y);
+	Character removedCharacter = characters.remove(character.x * Chunk.SIZE + character.y);
+	if (removedCharacter == null) {
+		throw new RuntimeException("Character " + character + " can't be removed from chunk because it doesn't contain that character");
+	}
 }
 
 public void removeObject(int x, int y) {
 	objects.remove(x * Chunk.SIZE + y);
-	if (Tendiwa.getPlayerCharacter().canSee(x, y) && Tendiwa.getPlayerCharacter().isVisionCacheEmpty()) {
+	if (Tendiwa.getPlayerCharacter().isCellVisible(x, y) && Tendiwa.getPlayerCharacter().isVisionCacheEmpty()) {
 		Tendiwa.getPlayerCharacter().invalidateVisionCache();
 	}
 	throw new UnsupportedOperationException();
@@ -129,7 +137,7 @@ public void setTimeStream(TimeStream timeStream) {
 }
 
 public String toString() {
-	return "Chunk " + x + " " + y;
+	return "Chunk-" + x + ":" + y;
 }
 
 /**

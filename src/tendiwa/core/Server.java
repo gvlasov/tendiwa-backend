@@ -62,6 +62,9 @@ public World getWorld() {
 
 void setWorld(WorldProvider provider) {
 	this.WORLD = provider.createWorld();
+	for (Character character : WORLD.getTimeStream().getCharacters()) {
+		WORLD.getTimeStream().notifyNeighborsVisiblilty(character);
+	}
 }
 
 void stop() {

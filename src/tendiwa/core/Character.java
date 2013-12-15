@@ -8,6 +8,7 @@ import org.tendiwa.events.*;
 import tendiwa.core.meta.Coordinate;
 import tendiwa.core.meta.Utils;
 
+import java.awt.*;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -62,6 +63,7 @@ private Collection<Spell> spells = new HashSet<>();
  * current turn.
  */
 private byte[][] visionPrevious = new byte[VISION_CACHE_WIDTH][VISION_CACHE_WIDTH];
+private boolean visionCacheWritingEnabled = true;
 
 public Character(HorizontalPlane plane, CharacterType type, int x, int y, String name) {
 	// Common character creation: with all attributes, in location.
@@ -130,7 +132,6 @@ public static int getEndIndexOfRelativeTableY(int centerCoordinate, int tableRad
 protected void attack(Character aim) {
 	aim.getDamage(7, DamageType.PLAIN);
 	moveTime(500);
-	throw new UnsupportedOperationException();
 }
 
 protected void shootMissile(int toX, int toY, ItemPile missile) {
@@ -160,7 +161,6 @@ protected void castSpell(int spellId, int x, int y) {
 	// TODO Implement spellcasting
 	throw new UnsupportedOperationException();
 }
-
 
 protected void die() {
 	isAlive = false;
@@ -274,11 +274,12 @@ protected void putToContainer(UniqueItem item, Container container) {
 	throw new UnsupportedOperationException();
 }
 
-protected void idle() {
+public void idle() {
 	moveTime(500);
 }
 
 protected void step(int x, int y) {
+	System.out.println("step from " + this.x + " " + this.y + " to " + x + " " + y);
 	move(x, y, MovingStyle.STEP);
 	if (state == CharacterState.RUNNING) {
 		changeEnergy(-30);
@@ -324,6 +325,9 @@ protected void push(Character character, Direction side) {
 }
 
 private void cacheVision(int x, int y, byte visible) {
+	if (!visionCacheWritingEnabled) {
+		return;
+	}
 	visionCache[(byte) (x - this.x + VISION_RANGE)][(byte) (y - this.y + VISION_RANGE)] = visible;
 	isVisionCacheEmpty = false;
 }
@@ -332,6 +336,9 @@ private byte getVisionFromCache(int x, int y) {
 	return visionCache[(byte) (x - this.x + VISION_RANGE)][(byte) (y - this.y + VISION_RANGE)];
 }
 
+/**
+ * Player's vision cache gets invalidated in {@link tendiwa.core.Character#computeFullVisionCache()}.
+ */
 void invalidateVisionCache() {
 	for (byte i = 0; i < VISION_CACHE_WIDTH; i++) {
 		for (byte j = 0; j < VISION_CACHE_WIDTH; j++) {
@@ -341,6 +348,12 @@ void invalidateVisionCache() {
 	isVisionCacheEmpty = true;
 }
 
+public boolean canSee(int x, int y) {
+	visionCacheWritingEnabled = false;
+	boolean answer = initialCanSee(x, y);
+	visionCacheWritingEnabled = true;
+	return answer;
+}
 /* Vision */
 public boolean initialCanSee(int x, int y) {
 	Coordinate characterCoord = new Coordinate(this.x, this.y);
@@ -349,7 +362,12 @@ public boolean initialCanSee(int x, int y) {
 		return true;
 	}
 	if (Math.floor(characterCoord.distance(x, y)) > Character.VISION_RANGE) {
-		cacheVision(x, y, VISION_INVISIBLE);
+		// TODO: Cache this rectangle
+		if (EnhancedRectangle.rectangleByCenterPoint(new Point(this.x, this.y), Character.VISION_CACHE_WIDTH, Character.VISION_CACHE_WIDTH).contains(x, y)) {
+			// If coord is in a square of VISION_RANGE*VISION_RANGE,
+			// but is in its corner so it's too distant to be seen.
+			cacheVision(x, y, VISION_INVISIBLE);
+		}
 		return false;
 	}
 	if (x == this.x || y == this.y) {
@@ -712,10 +730,6 @@ public String getName() {
  * For action method, use Character.step.
  */
 public void move(int x, int y, MovingStyle movingStyle) {
-	// TODO: Move full vision cache computing to PlayerCharacter class.
-	for (int i = 0; i < VISION_CACHE_WIDTH; i++) {
-		System.arraycopy(visionCache[i], 0, visionPrevious[i], 0, VISION_CACHE_WIDTH);
-	}
 	int xPrev = this.x;
 	int yPrev = this.y;
 	synchronized (renderLockObject) {
@@ -726,16 +740,29 @@ public void move(int x, int y, MovingStyle movingStyle) {
 		plane.addCharacter(this);
 	}
 	Tendiwa.waitForAnimationToStartAndComplete();
-	synchronized (renderLockObject) {
-		timeStream.notifyNeighborsVisiblilty(this);
-		this.computeFullVisionCache();
-		Tendiwa.getClientEventManager().event(new EventFovChange(xPrev, yPrev, visionPrevious, visionCache));
+	timeStream.notifyNeighborsVisiblilty(this);
+	if (isPlayer()) {
+		synchronized (renderLockObject) {
+			for (int i = 0; i < VISION_CACHE_WIDTH; i++) {
+				System.arraycopy(visionCache[i], 0, visionPrevious[i], 0, VISION_CACHE_WIDTH);
+			}
+			this.computeFullVisionCache();
+			Tendiwa.getClientEventManager().event(new EventFovChange(xPrev, yPrev, visionPrevious, visionCache));
+		}
+		Tendiwa.waitForAnimationToStartAndComplete();
+	} else {
+		invalidateVisionCache();
 	}
-	Tendiwa.waitForAnimationToStartAndComplete();
+	moveTime(500);
+}
+
+public void spendActionPoints(int amount) {
+	actionPoints -= amount;
 }
 
 public void getDamage(int amount, DamageType type) {
-	throw new UnsupportedOperationException();
+	System.out.println("damage!");
+
 }
 
 protected void changeEnergy(int amount) {
@@ -794,6 +821,11 @@ public void removeEffect(int effectId) {
 }
 
 protected void moveTime(int amount) {
+	spendActionPoints(amount);
+	Character nextCharacter = timeStream.next();
+	if (!nextCharacter.isPlayer()) {
+		((NonPlayerCharacter) nextCharacter).action();
+	}
 	for (Character.Effect e : effects.values()) {
 		e.duration -= amount;
 		if (e.duration < 0) {
@@ -809,10 +841,11 @@ public boolean at(int atX, int atY) {
 }
 
 public boolean isEnemy(Character ch) {
-	if (fraction == FRACTION_NEUTRAL) {
-		return false;
-	}
-	return ch.fraction != fraction;
+//	if (fraction == FRACTION_NEUTRAL) {
+//		return false;
+//	}
+//	return ch.fraction != fraction;
+	return ch.isPlayer();
 }
 
 public TimeStream getTimeStream() {
@@ -863,7 +896,15 @@ public boolean canStepOn(int x, int y) {
 		&& plane.getPassability(x, y) == Passability.FREE;
 }
 
-public boolean canSee(int x, int y) {
+/**
+ * This method is package private because it returns values from cache which is invalid at the moment when a client
+ * receives an event.
+ *
+ * @param x
+ * @param y
+ * @return
+ */
+boolean isCellVisible(int x, int y) {
 //	return  EnhancedPoint.distance(x, y, this.x, this.y) < 7;
 	if (Math.abs(x - this.x) > VISION_RANGE) {
 		return false;
@@ -884,6 +925,7 @@ public boolean isVisionCacheEmpty() {
 }
 
 public void computeFullVisionCache() {
+	assert isPlayer();
 	int startX = getStartIndexOfRelativeTable(x, VISION_RANGE);
 	int startY = getStartIndexOfRelativeTable(y, VISION_RANGE);
 	int endX = getEndIndexOfRelativeTableX(x, VISION_RANGE);
@@ -988,6 +1030,11 @@ public void learnSpell(Spell spell) {
 	spells.add(spell);
 }
 
+@Override
+public String toString() {
+	return type.getResourceName();
+}
+
 /* Nested classes */
 public class Effect {
 	// Class that holds description of one current character's effect
@@ -999,5 +1046,4 @@ public class Effect {
 		this.modifier = modifier;
 	}
 }
-
 }

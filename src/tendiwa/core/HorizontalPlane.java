@@ -1,5 +1,9 @@
 package tendiwa.core;
 
+import com.google.common.collect.ImmutableSet;
+
+import java.util.Set;
+
 /**
  * <p> A HorizontalPlane is a single storey of the world, much like a single level of a dungeon in traditional
  * rogue-likes. It is a potentially infinite Cartesian plane with integral coordinates divided by square {@link Chunk}s.
@@ -38,7 +42,7 @@ public Chunk loadChunk(int x, int y) {
 }
 
 private Chunk loadChunkFromFilesystem(int chunkX, int chunkY) {
-	return null;
+	throw new UnsupportedOperationException();
 }
 
 public void touchChunk(int x, int y) {
@@ -99,7 +103,9 @@ public WallType getWall(int x, int y) {
 }
 
 public Passability getPassability(int x, int y) {
-	if (getChunkWithCell(x, y).getWall(x, y) == null) {
+	if (getChunkWithCell(x, y).getCharacter(x, y) != null) {
+		return Passability.SEE;
+	} else if (getChunkWithCell(x, y).getWall(x, y) == null) {
 		return Passability.FREE;
 	} else {
 		return Passability.NO;
@@ -189,5 +195,23 @@ public void place(TypePlaceableInCell entityType, int x, int y) {
 public void placeObject(ObjectType o, int x, int y) {
 	Chunk chunk = getChunkWithCell(x, y);
 	chunk.setObject(o, x - chunk.x, y - chunk.y);
+}
+
+public Set<Chunk> getChunksAroundCoordinate(int x, int y, int squareSide) {
+	int startChunkX = getChunkRoundedCoord(x - squareSide / 2);
+	int startChunkY = getChunkRoundedCoord(y - squareSide / 2);
+	int endChunkX = getChunkRoundedCoord(x + squareSide / 2);
+	int endChunkY = getChunkRoundedCoord(y + squareSide / 2);
+	ImmutableSet.Builder<Chunk> builder = ImmutableSet.builder();
+	for (int chunkX = startChunkX; chunkX <= endChunkX; chunkX++) {
+		for (int chunkY = startChunkY; chunkY < endChunkY; chunkY++) {
+			builder.add(getChunkAt(chunkX, chunkY));
+		}
+	}
+	return builder.build();
+}
+
+private Chunk getChunkAt(int chunkX, int chunkY) {
+	return chunks[chunkX/Chunk.SIZE][chunkY/Chunk.SIZE];
 }
 }

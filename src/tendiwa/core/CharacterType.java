@@ -7,7 +7,7 @@ import org.jgrapht.graph.DefaultEdge;
 import java.util.Collection;
 import java.util.Set;
 
-public abstract class CharacterType {
+public abstract class CharacterType implements Resourceable {
 private static short nextId = 0;
 private Set<CharacterAspect> aspects;
 private String name;
@@ -37,10 +37,8 @@ public boolean hasAspect(CharacterAspect aspect) {
 	return aspects.contains(aspect);
 }
 
-/**
- * @return the name
- */
-public String getName() {
+@Override
+public String getResourceName() {
 	return name;
 }
 

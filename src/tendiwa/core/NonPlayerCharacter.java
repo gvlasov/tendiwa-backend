@@ -97,24 +97,23 @@ private void setDestNearEntity(int eX, int eY) {
 	}
 }
 
+/**
+ * Searches for enemy in this.seenCharacters and puts him to this.activeEnemy
+ * <p/>
+ * First priority are enemies who this character can get to (not blocked by other characters or objects) . If none of
+ * such enemies found, then this.activeEnemy sets to a character who is visible, but not accessible.
+ * <p/>
+ * If no characters found at all, then this.activeEnemy is set to null.
+ *
+ * @return true if an enemy was found, false otherwise.
+ */
 private boolean getEnemy() {
-	/**
-	 * Searches for enemy in this.seenCharacters and puts him to
-	 * this.activeEnemy
-	 *
-	 * First priority are enemies who this character can get to (not blocked
-	 * by other characters or objects) . If none of such enemies found, then
-	 * this.activeEnemy sets to a character who is visible, but not
-	 * accessible.
-	 *
-	 * If no characters found at all, then this.activeEnemy is set to null.
-	 */
 	activeEnemy = null;
 		/*
 		 * If character had activeEnemy, but after getEnemy he hasn't found any,
 		 * then activeEnemy will remain null.
 		 */
-	double distanceToClosestCharacter = 9999999;
+	double distanceToClosestCharacter = Integer.MAX_VALUE;
 	Character unreachableEnemy = null;
 	Coordinate characterCoord = new Coordinate(x, y);
 	for (Character ch : seenCharacters) {
@@ -135,6 +134,7 @@ private boolean getEnemy() {
 	if (activeEnemy == null && unreachableEnemy != null) {
 		activeEnemy = unreachableEnemy;
 	}
+	System.out.println(activeEnemy);
 	return activeEnemy != null;
 }
 
@@ -228,7 +228,7 @@ private boolean canShoot() {
 	/**
 	 * Checks if this character is able to shoot an arrow or other missile.
 	 */
-	throw new Error("Unimplemented");
+	return false;
 }
 
 private boolean canComeTo(int toX, int toY) {
@@ -253,6 +253,7 @@ public void action() {
 		Coordinate retreatCoord = getRetreatCoord();
 		step(retreatCoord.x, retreatCoord.y);
 	} else if (getEnemy()) {
+		System.out.println(213123);
 		if (canShoot()) {
 			// shootMissile();
 			idle();
@@ -367,7 +368,7 @@ public void action() {
 
 /* Getters */
 public String toString() {
-	return type.getName() + " " + name;
+	return type.getResourceName() + " " + name;
 }
 
 /* Overriden methods */

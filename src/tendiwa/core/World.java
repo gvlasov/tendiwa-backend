@@ -1,5 +1,7 @@
 package tendiwa.core;
 
+import java.util.Set;
+
 import static tendiwa.core.DSL.worldBuilder;
 
 public class World {
@@ -70,7 +72,7 @@ public void setPlayerCharacter(Character playerCharacter) {
 		throw new RuntimeException("Could not place player character because the whole world is non-passable");
 	}
 	this.playerCharacter = playerCharacter;
-	timeStream.addCharacter(playerCharacter);
+	timeStream.addPlayerCharacter(playerCharacter);
 	playerCharacter.setTimeStream(timeStream);
 }
 
@@ -87,8 +89,22 @@ public int getHeight() {
 }
 
 public Character createCharacter(int x, int y, CharacterType type, String name) {
-	return new Character(defaultPlane, type, x, y, name);
+	NonPlayerCharacter character = new NonPlayerCharacter(defaultPlane, type, x, y, name);
+	defaultPlane.addCharacter(character);
+	timeStream.addNonPlayerCharacter(character);
+	return character;
 
+}
+
+public Character createPlayerCharacter(int x, int y, CharacterType type, String name) {
+	Character character = new Character(defaultPlane, type, x, y, name);
+	defaultPlane.addCharacter(character);
+	timeStream.addPlayerCharacter(character);
+	Set<Chunk> chunks = defaultPlane.getChunksAroundCoordinate(x, y, Chunk.SIZE * 5);
+	for (Chunk chunk : chunks) {
+		timeStream.addChunk(chunk);
+	}
+	return character;
 }
 
 public TimeStream getTimeStream() {

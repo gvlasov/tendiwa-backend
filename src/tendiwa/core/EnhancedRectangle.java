@@ -142,8 +142,8 @@ public static EnhancedRectangle rectangleContainingAllPonts(Collection<Point> po
  */
 public static EnhancedRectangle rectangleByCenterPoint(Point point, int width, int height) {
 	return new EnhancedRectangle(
-		point.x - width / 2 + (Chance.roll(50) ? -1 : 0),
-		point.y - height / 2 + (Chance.roll(50) ? -1 : 0),
+		point.x - width / 2,
+		point.y - height / 2,
 		width,
 		height);
 }
