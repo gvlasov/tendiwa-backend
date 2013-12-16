@@ -32,4 +32,6 @@ void event(EventProjectileFly eventProjectileFly);
 void event(EventSound eventSound);
 
 void event(EventExplosion eventExplosion);
+
+void event(EventGetDamage eventGetDamage);
 }

@@ -207,7 +207,6 @@ public void unloadUnusedChunks(HorizontalPlane plane) {
  * 	Value; who is he observed by;
  */
 void addObserver(Character aim, NonPlayerCharacter observer) {
-	System.out.println(aim+" "+observer);
 	observers.get(aim).add(observer);
 }
 

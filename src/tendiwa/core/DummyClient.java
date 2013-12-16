@@ -83,6 +83,11 @@ TendiwaClientEventManager manager = new TendiwaClientEventManager() {
 	public void event(EventExplosion eventExplosion) {
 		Tendiwa.signalAnimationCompleted();
 	}
+
+	@Override
+	public void event(EventGetDamage eventGetDamage) {
+		Tendiwa.signalAnimationCompleted();
+	}
 };
 
 @Override

@@ -14,6 +14,7 @@ private String name;
 private double weight;
 private double height;
 private DirectedGraph<BodyPartTypeInstance, DefaultEdge> bodyGraph;
+private int maxHp;
 
 public CharacterType(String name, double weight, double height, CharacterAspect... aspects) {
 	this.name = name;
@@ -42,6 +43,7 @@ public String getResourceName() {
 	return name;
 }
 
+
 /**
  * @return the weight
  */
@@ -69,4 +71,6 @@ public String toString() {
 }
 
 public abstract Collection<CharacterAbility> getAvailableActions();
+
+public abstract  int getMaxHp();
 }

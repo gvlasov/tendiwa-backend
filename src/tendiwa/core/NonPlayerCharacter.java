@@ -7,8 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-public class NonPlayerCharacter extends tendiwa.core.Character {
-public static final long serialVersionUID = 34638L;
+public class NonPlayerCharacter extends Character {
 private static final int PATH_TABLE_WIDTH = 41;
 private static final int MAX_PATH_TABLE_DEPTH = 20;
 private final HashMap<Character, Coordinate> lastSeenEnemyCoord = new HashMap<>();
@@ -44,7 +43,7 @@ public void updateObservation(Character character, int x, int y) {
 
 public void discoverDeath(Character character) {
 	/**
-	 * Removes particular craracter from this character's aims private data,
+	 * Removes particular character from this character's aims private data,
 	 * when that particular character is dead
 	 */
 	if (activeEnemy == character) {
@@ -134,7 +133,6 @@ private boolean getEnemy() {
 	if (activeEnemy == null && unreachableEnemy != null) {
 		activeEnemy = unreachableEnemy;
 	}
-	System.out.println(activeEnemy);
 	return activeEnemy != null;
 }
 
@@ -253,7 +251,6 @@ public void action() {
 		Coordinate retreatCoord = getRetreatCoord();
 		step(retreatCoord.x, retreatCoord.y);
 	} else if (getEnemy()) {
-		System.out.println(213123);
 		if (canShoot()) {
 			// shootMissile();
 			idle();
@@ -267,8 +264,6 @@ public void action() {
 			destX = activeEnemy.x;
 			destY = activeEnemy.y;
 			setDestNearEntity(activeEnemy.x, activeEnemy.y);
-			System.out.println(name + " goes to " + destX + " " + destY
-				+ " near " + activeEnemy.x + " " + activeEnemy.y);
 			if (destX == x && destY == y) {
 				idle();
 			} else {
@@ -380,17 +375,6 @@ public void move(int x, int y) {
 public void die() {
 	super.die();
 	timeStream.removeCharacter(this);
-}
-
-/* Pathfinding */
-public void showPathTable() {
-	for (int i = 0; i < PATH_TABLE_WIDTH; i++) {
-		for (int j = 0; j < PATH_TABLE_WIDTH; j++) {
-			System.out.println(pathTable[j][i] % 10);
-		}
-		System.out.println();
-	}
-	System.out.println("------");
 }
 
 public boolean getPathTableToAllSeenCharacters() {

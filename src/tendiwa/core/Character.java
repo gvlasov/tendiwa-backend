@@ -13,7 +13,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class Character implements PlaceableInCell, PathWalker, GsonForStaticDataSerializable {
+public class Character implements PlaceableInCell, PathWalker, GsonForStaticDataSerializable, DamageSource {
 public static final long serialVersionUID = 1832389411;
 public final static int FRACTION_NEUTRAL = -1, FRACTION_PLAYER = 1,
 	FRACTION_AGRESSIVE = 0;
@@ -64,6 +64,8 @@ private Collection<Spell> spells = new HashSet<>();
  */
 private byte[][] visionPrevious = new byte[VISION_CACHE_WIDTH][VISION_CACHE_WIDTH];
 private boolean visionCacheWritingEnabled = true;
+private int hp;
+private int maxHp;
 
 public Character(HorizontalPlane plane, CharacterType type, int x, int y, String name) {
 	// Common character creation: with all attributes, in location.
@@ -76,6 +78,8 @@ public Character(HorizontalPlane plane, CharacterType type, int x, int y, String
 	isAlive = true;
 	this.x = x;
 	this.y = y;
+	this.maxHp = type.getMaxHp();
+	this.hp = maxHp;
 }
 
 /**
@@ -130,7 +134,7 @@ public static int getEndIndexOfRelativeTableY(int centerCoordinate, int tableRad
 
 /* Actions */
 protected void attack(Character aim) {
-	aim.getDamage(7, DamageType.PLAIN);
+	aim.getDamage(7, DamageType.PLAIN, this);
 	moveTime(500);
 }
 
@@ -151,7 +155,7 @@ protected void shootMissile(int toX, int toY, UniqueItem item) {
 	plane.addItem(item, end.x, end.y);
 	Character character = plane.getCharacter(end.x, end.y);
 	if (character != null) {
-		character.getDamage(10, DamageType.PLAIN);
+		character.getDamage(10, DamageType.PLAIN, this);
 	}
 	throw new UnsupportedOperationException();
 }
@@ -279,7 +283,6 @@ public void idle() {
 }
 
 protected void step(int x, int y) {
-	System.out.println("step from " + this.x + " " + this.y + " to " + x + " " + y);
 	move(x, y, MovingStyle.STEP);
 	if (state == CharacterState.RUNNING) {
 		changeEnergy(-30);
@@ -354,6 +357,7 @@ public boolean canSee(int x, int y) {
 	visionCacheWritingEnabled = true;
 	return answer;
 }
+
 /* Vision */
 public boolean initialCanSee(int x, int y) {
 	Coordinate characterCoord = new Coordinate(this.x, this.y);
@@ -760,8 +764,12 @@ public void spendActionPoints(int amount) {
 	actionPoints -= amount;
 }
 
-public void getDamage(int amount, DamageType type) {
-	System.out.println("damage!");
+public void getDamage(int amount, DamageType type, DamageSource damageSource) {
+	this.hp -= amount;
+	synchronized (renderLockObject) {
+		Tendiwa.getClientEventManager().event(new EventGetDamage(this, amount, damageSource));
+	}
+	Tendiwa.waitForAnimationToStartAndComplete();
 
 }
 
@@ -785,6 +793,7 @@ public void say(String message) {
 	synchronized (renderLockObject) {
 		Tendiwa.getClient().getEventManager().event(new EventSay(message, this));
 	}
+	Tendiwa.waitForAnimationToStartAndComplete();
 }
 
 public void getItem(Item item) {
@@ -1035,7 +1044,14 @@ public String toString() {
 	return type.getResourceName();
 }
 
-/* Nested classes */
+public int getHP() {
+	return hp;
+}
+
+public int getMaxHP() {
+	return maxHp;
+}
+
 public class Effect {
 	// Class that holds description of one current character's effect
 	public int duration, modifier, effectId;
@@ -1045,5 +1061,10 @@ public class Effect {
 		this.duration = duration;
 		this.modifier = modifier;
 	}
+}
+
+@Override
+public DamageSourceType getSourceType() {
+	return DamageSourceType.CHARACTER;
 }
 }
