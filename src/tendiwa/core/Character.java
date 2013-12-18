@@ -1,9 +1,5 @@
 package tendiwa.core;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
 import org.tendiwa.events.*;
 import tendiwa.core.meta.Coordinate;
 import tendiwa.core.meta.Utils;
@@ -13,7 +9,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class Character implements PlaceableInCell, PathWalker, GsonForStaticDataSerializable, DamageSource {
+public class Character implements PlaceableInCell, PathWalker, DamageSource {
 public static final long serialVersionUID = 1832389411;
 public final static int FRACTION_NEUTRAL = -1, FRACTION_PLAYER = 1,
 	FRACTION_AGRESSIVE = 0;
@@ -767,7 +763,7 @@ public void spendActionPoints(int amount) {
 public void getDamage(int amount, DamageType type, DamageSource damageSource) {
 	this.hp -= amount;
 	synchronized (renderLockObject) {
-		Tendiwa.getClientEventManager().event(new EventGetDamage(this, amount, damageSource));
+		Tendiwa.getClientEventManager().event(new EventGetDamage(this, amount, damageSource, type));
 	}
 	Tendiwa.waitForAnimationToStartAndComplete();
 
@@ -871,16 +867,6 @@ public int getX() {
 
 public int getY() {
 	return y;
-}
-
-@Override
-public JsonElement serialize(JsonSerializationContext context) {
-	JsonArray jArray = new JsonArray();
-	jArray.add(new JsonPrimitive(name));
-	jArray.add(new JsonPrimitive(x));
-	jArray.add(new JsonPrimitive(y));
-	jArray.add(new JsonPrimitive(fraction));
-	return jArray;
 }
 
 @Override
@@ -1052,6 +1038,16 @@ public int getMaxHP() {
 	return maxHp;
 }
 
+@Override
+public String getLocalizationId() {
+	return getType().getLocalizationId();
+}
+
+@Override
+public DamageSourceType getSourceType() {
+	return DamageSourceType.CHARACTER;
+}
+
 public class Effect {
 	// Class that holds description of one current character's effect
 	public int duration, modifier, effectId;
@@ -1061,10 +1057,5 @@ public class Effect {
 		this.duration = duration;
 		this.modifier = modifier;
 	}
-}
-
-@Override
-public DamageSourceType getSourceType() {
-	return DamageSourceType.CHARACTER;
 }
 }

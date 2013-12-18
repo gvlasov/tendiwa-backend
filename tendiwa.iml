@@ -32,6 +32,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="liblexeme" level="project" />
   </component>
 </module>
 

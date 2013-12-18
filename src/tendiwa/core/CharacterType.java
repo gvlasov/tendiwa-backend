@@ -3,11 +3,12 @@ package tendiwa.core;
 import com.google.common.collect.ImmutableSet;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
+import org.tendiwa.lexeme.Localizable;
 
 import java.util.Collection;
 import java.util.Set;
 
-public abstract class CharacterType implements Resourceable {
+public abstract class CharacterType implements Resourceable, Localizable {
 private static short nextId = 0;
 private Set<CharacterAspect> aspects;
 private String name;
@@ -43,7 +44,6 @@ public String getResourceName() {
 	return name;
 }
 
-
 /**
  * @return the weight
  */
@@ -72,5 +72,10 @@ public String toString() {
 
 public abstract Collection<CharacterAbility> getAvailableActions();
 
-public abstract  int getMaxHp();
+public abstract int getMaxHp();
+
+@Override
+public String getLocalizationId() {
+	return getResourceName();
+}
 }

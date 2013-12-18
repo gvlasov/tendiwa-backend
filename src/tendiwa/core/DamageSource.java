@@ -1,6 +1,8 @@
 package tendiwa.core;
 
-public interface DamageSource {
+import org.tendiwa.lexeme.Localizable;
+
+public interface DamageSource extends Localizable {
 
 public DamageSourceType getSourceType();
 
