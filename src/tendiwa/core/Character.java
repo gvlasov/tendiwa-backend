@@ -290,7 +290,7 @@ protected void step(int x, int y) {
 }
 
 protected void makeSound(SoundType type) {
-	timeStream.makeSound(x, y, type);
+	timeStream.makeSound(x, y, type, this);
 }
 
 	/* Special actions */

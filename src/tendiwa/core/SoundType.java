@@ -1,6 +1,8 @@
 package tendiwa.core;
 
-public class SoundType {
+import org.tendiwa.lexeme.Localizable;
+
+public class SoundType implements Localizable {
 private String name;
 private int bass;
 private int mid;
@@ -41,4 +43,8 @@ public int getTreble() {
 	return treble;
 }
 
+@Override
+public String getLocalizationId() {
+	return name;
+}
 }

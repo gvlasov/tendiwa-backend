@@ -24,7 +24,7 @@ package tendiwa.core;
  * }
  * 
  * // And this is how we serialize such object:
- * System.out.println(GsonArbitraryArrays.toJson(new Warrior("sword", 36, true)));
+ * println(GsonArbitraryArrays.toJson(new Warrior("sword", 36, true)));
  * // prints ["sword", 36, true]
  */
 interface GsonArbitraryArraySerializable {

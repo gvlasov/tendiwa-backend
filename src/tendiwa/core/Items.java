@@ -34,6 +34,9 @@ public static boolean isShootable(ItemType type) {
 public static boolean isRangedWeapon(ItemType type) {
 	return type instanceof RangedWeapon;
 }
+public static boolean isStackable(ItemType type) {
+	return type.isStackable();
+}
 
 /**
  * <p>Converts ItemType to {@link Wearable}. Actual types of ItemTypes are usually not known to client at compile time,
@@ -153,7 +156,7 @@ public RangedWeapon asRangedWeapon(ItemType type) {
  * @throws NullPointerException
  * 	If {@code type == null}
  */
-public Shootable asShootable(ItemType type) {
+public static Shootable asShootable(ItemType type) {
 	if (type == null) {
 		throw new NullPointerException("Argument can't be null");
 	}
@@ -161,6 +164,19 @@ public Shootable asShootable(ItemType type) {
 		return (Shootable) type;
 	}
 	return null;
+}
+public static ItemPile asStackable(Item item) {
+	if (item == null) {
+		throw new NullPointerException("Argument can't be null");
+	}
+	if (isStackable(item)) {
+		return (ItemPile) item;
+	}
+	return null;
+}
+
+public static boolean isStackable(Item item) {
+	return item.getType().isStackable();
 }
 
 PlaceableInCell asPlaceableInCell(final ItemType type) {

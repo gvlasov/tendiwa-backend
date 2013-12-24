@@ -1,6 +1,7 @@
 package tendiwa.core;
 
 import org.tendiwa.events.EventSound;
+import org.tendiwa.lexeme.Localizable;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -96,8 +97,8 @@ public void removeCharacter(NonPlayerCharacter character) {
 	nonPlayerCharacters.remove(character);
 }
 
-public void makeSound(int x, int y, SoundType type) {
-	Tendiwa.getClientEventManager().event(new EventSound(type, x, y));
+public void makeSound(int x, int y, SoundType type, Localizable soundSource) {
+	Tendiwa.getClientEventManager().event(new EventSound(type, soundSource, x, y));
 }
 
 public Character getCharacterById(int characterId) {

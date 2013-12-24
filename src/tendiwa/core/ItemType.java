@@ -1,6 +1,8 @@
 package tendiwa.core;
 
-public interface ItemType extends TypePlaceableInCell, Resourceable {
+import org.tendiwa.lexeme.Localizable;
+
+public interface ItemType extends TypePlaceableInCell, Resourceable, Localizable {
 
 public Material getMaterial();
 
