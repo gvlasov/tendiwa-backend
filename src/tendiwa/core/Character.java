@@ -130,6 +130,10 @@ public static int getEndIndexOfRelativeTableY(int centerCoordinate, int tableRad
 
 /* Actions */
 protected void attack(Character aim) {
+	synchronized (renderLockObject) {
+		Tendiwa.getClientEventManager().event(new EventAttack(this, aim));
+	}
+	Tendiwa.waitForAnimationToStartAndComplete();
 	aim.getDamage(7, DamageType.PLAIN, this);
 	moveTime(500);
 }
