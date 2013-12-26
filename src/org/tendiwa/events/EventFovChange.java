@@ -5,12 +5,12 @@ import tendiwa.core.Character;
 import tendiwa.core.*;
 
 public class EventFovChange implements Event {
-private final ImmutableList.Builder<RenderCell> seenBuilder = ImmutableList.builder();
-private final ImmutableList.Builder<Integer> unseenBuilder = ImmutableList.builder();
-private final ImmutableList.Builder<Item> seenItemsBuilder = ImmutableList.builder();
 public final ImmutableList<RenderCell> seen;
 public final ImmutableList<Integer> unseen;
 public final ImmutableList<Item> seenItems;
+private final ImmutableList.Builder<RenderCell> seenBuilder = ImmutableList.builder();
+private final ImmutableList.Builder<Integer> unseenBuilder = ImmutableList.builder();
+private final ImmutableList.Builder<Item> seenItemsBuilder = ImmutableList.builder();
 
 /**
  * @param xPrev

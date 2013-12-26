@@ -11,10 +11,13 @@ import java.util.Properties;
 
 public class Tendiwa {
 private static final Object lock = new Object();
+private static final Object clientWaitLock = new Object();
+public static TendiwaClient CLIENT;
 private static Tendiwa INSTANCE;
 private static AssociationChangeNotification clientEventManager;
 private static int worldWidth;
 private static int worldHeight;
+private static boolean eventComputed = false;
 public final org.apache.log4j.Logger logger = Logger.getLogger("tendiwa");
 public final Server SERVER = Server.SERVER;
 private final Thread SERVER_THREAD;
@@ -22,7 +25,6 @@ private final String MODULES_CONF_FILE = "/modules.conf";
 private final String CLIENT_CONF_FILE;
 private final World WORLD;
 private final Character PLAYER;
-public static TendiwaClient CLIENT;
 
 Tendiwa(String args[]) throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException {
 	CLIENT = new DummyClient();
@@ -143,13 +145,16 @@ public static Character getPlayerCharacter() {
 }
 
 public static void waitForAnimationToStartAndComplete() {
+	eventComputed = true;
 	synchronized (lock) {
+		lock.notify();
 		while (!getClient().isAnimationCompleted()) {
 			try {
 				lock.wait();
 			} catch (InterruptedException ignored) {
 			}
 		}
+		eventComputed = false;
 	}
 }
 
@@ -161,5 +166,9 @@ public static void signalAnimationCompleted() {
 
 public static Object getLock() {
 	return lock;
+}
+
+public static boolean isEventComputed() {
+	return eventComputed;
 }
 }

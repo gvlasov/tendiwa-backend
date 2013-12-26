@@ -28,7 +28,7 @@ public static final byte VISION_VISIBLE = 1;
  */
 public static final byte VISION_INVISIBLE = 2;
 public static final byte VISION_CACHE_WIDTH = (byte) (VISION_RANGE * 2 + 1);
-public static final Object renderLockObject = Tendiwa.getServer();
+public static final Object renderLockObject = Tendiwa.getLock();
 public final int id = new UniqueObject().id;
 public final ItemCollection inventory = new ItemCollection();
 public final Equipment equipment = new Equipment(2, ApparelSlot.values());
@@ -98,9 +98,9 @@ public static int getStartIndexOfRelativeTable(int centerCoordinate, int tableRa
 
 /**
  * <p>Returns the last index on x axis of a relative table (a FOV table, for example) which resides inside world
- * recangle.</p> <p/> <p>There is only one method for the first index, but two methods for the last indices, because the
- * least world coordinate is 0 on both x and y axes, but the greatest is different (world.width or world.height) for x
- * and y axes.</p>
+ * rectangle.</p> <p/> <p>There is only one method for the first index, but two methods for the last indices, because
+ * the least world coordinate is 0 on both x and y axes, but the greatest is different (world.width or world.height) for
+ * x and y axes.</p>
  *
  * @param centerCoordinate
  * 	Absolute x coordinate of table's center in world coordinates.
@@ -731,7 +731,7 @@ public String getName() {
  * Changes character's position.
  * <p/>
  * Note that this is not a character action, this method is also called when character blinks, being pushed and so on.
- * For action method, use Character.step.
+ * For action method, use {@link Character#step(int, int)}.
  */
 public void move(int x, int y, MovingStyle movingStyle) {
 	int xPrev = this.x;

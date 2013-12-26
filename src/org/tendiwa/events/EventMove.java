@@ -25,4 +25,5 @@ public EventMove(int xPrev, int yPrev, Character character, MovingStyle movingSt
 	this.character = character;
 	this.movingStyle = movingStyle;
 }
+
 }
