@@ -1,5 +1,5 @@
 package tendiwa.core;
 
-public interface Projectile extends Resourceable {
+public interface Projectile extends Resourceable{
 
 }

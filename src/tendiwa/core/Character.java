@@ -1,6 +1,7 @@
 package tendiwa.core;
 
 import org.tendiwa.events.*;
+import tendiwa.core.meta.Chance;
 import tendiwa.core.meta.Coordinate;
 import tendiwa.core.meta.Utils;
 
@@ -36,8 +37,9 @@ protected final String name;
 protected final HashMap<Integer, Character.Effect> effects = new HashMap<>();
 final CharacterType type;
 /**
- * <p>Here is cached whether this Character sees a cell relative to his current position or not.</p> <p>{@code
- * visionCache[VISION_CACHE_WIDTH][VISION_CACHE_WIDTH]} is Character's current cell.</p>
+ * Here is cached whether this Character sees a cell relative to his current position or not.
+ * <p/>
+ * {@code visionCache[VISION_CACHE_WIDTH][VISION_CACHE_WIDTH]} is Character's current cell.
  */
 public byte[][] visionCache = new byte[VISION_CACHE_WIDTH][VISION_CACHE_WIDTH];
 protected Body body;
@@ -52,6 +54,11 @@ protected int y;
 protected boolean isAlive;
 protected CharacterState state = CharacterState.DEFAULT;
 protected TimeStream timeStream;
+/**
+ * Lazily created by {@link tendiwa.core.Character#getPathWalkerOverCharacters()}It is not static because it needs the
+ * {@link Character#plane} of NonPlayerCharacter.
+ */
+private PathWalkerOverCharacters pathWalkerOverCharacters;
 private boolean isVisionCacheEmpty = true;
 private Collection<Spell> spells = new HashSet<>();
 /**
@@ -128,8 +135,15 @@ public static int getEndIndexOfRelativeTableY(int centerCoordinate, int tableRad
 	return Math.min(tableRadius * 2 + 1, Tendiwa.getWorldHeight() - centerCoordinate + tableRadius);
 }
 
+public PathWalkerOverCharacters getPathWalkerOverCharacters() {
+	if (pathWalkerOverCharacters == null) {
+		pathWalkerOverCharacters = new PathWalkerOverCharacters();
+	}
+	return pathWalkerOverCharacters;
+}
+
 /* Actions */
-protected void attack(Character aim) {
+public void attack(Character aim) {
 	synchronized (renderLockObject) {
 		Tendiwa.getClientEventManager().event(new EventAttack(this, aim));
 	}
@@ -797,7 +811,10 @@ public void say(String message) {
 }
 
 public void getItem(Item item) {
-	inventory.add(item);
+	synchronized (renderLockObject) {
+		inventory.add(item);
+	}
+	Tendiwa.waitForAnimationToStartAndComplete();
 }
 
 public void getItem(ItemType type) {
@@ -812,8 +829,15 @@ public void getItem(ItemType type, int amount) {
 }
 
 public void loseItem(Item item) {
-	Tendiwa.getClient().getEventManager().event(new EventLoseItem(item));
-	inventory.removeItem(item);
+	synchronized (renderLockObject) {
+		Tendiwa.getClient().getEventManager().event(new EventLoseItem(item));
+		if (item.getType().isStackable()) {
+			inventory.removePile((ItemPile) item);
+		} else {
+			inventory.removeUnique((UniqueItem) item);
+		}
+	}
+	Tendiwa.waitForAnimationToStartAndComplete();
 }
 
 public void addEffect(int effectId, int duration, int modifier) {
@@ -850,11 +874,7 @@ public boolean at(int atX, int atY) {
 }
 
 public boolean isEnemy(Character ch) {
-//	if (fraction == FRACTION_NEUTRAL) {
-//		return false;
-//	}
-//	return ch.fraction != fraction;
-	return ch.isPlayer();
+	return ch.isPlayer() != this.isPlayer();
 }
 
 public TimeStream getTimeStream() {
@@ -999,22 +1019,53 @@ public void propel(Item item, int x, int y) {
 public void shoot(UniqueItem weapon, Item projectile, int toX, int toY) {
 	assert getEquipment().isWielded(weapon);
 	assert getInventory().contains(projectile);
-	Item removedItem;
+	Item removedItem = inventory.removeOne(projectile);
+	loseItem(removedItem);
+
+	ProjectileFlight flight = computeProjectileFlightEndCoordinate(weapon, projectile, toX, toY);
 	synchronized (renderLockObject) {
-		removedItem = getInventory().removeOne(projectile);
-		Tendiwa.getClientEventManager().event(new EventLoseItem(removedItem));
+		Tendiwa.getClientEventManager().event(new EventProjectileFly(
+			removedItem,
+			x,
+			y,
+			flight.endCoordinate.x,
+			flight.endCoordinate.y,
+			EventProjectileFly.FlightStyle.PROPELLED
+		));
 	}
 	Tendiwa.waitForAnimationToStartAndComplete();
-	synchronized (renderLockObject) {
-		Tendiwa.getClientEventManager().event(new EventProjectileFly(removedItem, this.x, this.y, toX, toY, EventProjectileFly.FlightStyle.PROPELLED));
+
+	if (flight.characterHit != null) {
+		flight.characterHit.getDamage(10, DamageType.PLAIN, this);
 	}
-	Tendiwa.waitForAnimationToStartAndComplete();
 	synchronized (renderLockObject) {
 		Tendiwa.getClientEventManager().event(new EventItemAppear(removedItem, toX, toY));
 		Chunk chunkWithCell = plane.getChunkWithCell(toX, toY);
 		chunkWithCell.addItem(removedItem, toX - chunkWithCell.getX(), toY - chunkWithCell.getY());
 	}
 	Tendiwa.waitForAnimationToStartAndComplete();
+}
+
+private ProjectileFlight computeProjectileFlightEndCoordinate(UniqueItem weapon, Item projectile, int toX, int toY) {
+	Coordinate endCoordinate = new Coordinate(toX, toY);
+	Coordinate[] vector = Chunk.vector(x, y, toX, toY);
+	Character characterHit = null;
+	for (int i=1; i<vector.length; i++) {
+		Coordinate c = vector[i];
+		if (plane.hasCharacter(c.x, c.y) &&
+			testProjectileHit(weapon, projectile, toX, toY)) {
+			characterHit = plane.getCharacter(c.x, c.y);
+			endCoordinate = c;
+		}
+	}
+	return new ProjectileFlight(
+		endCoordinate,
+		characterHit
+	);
+}
+
+private boolean testProjectileHit(UniqueItem weapon, Item projectile, int toX, int toY) {
+	return true;
 }
 
 public Collection<CharacterAbility> getAvailableActions() {
@@ -1052,6 +1103,34 @@ public DamageSourceType getSourceType() {
 	return DamageSourceType.CHARACTER;
 }
 
+/**
+ * Checks if there are any conditions that make current existing of this character dangerous. This method is supposed to
+ * be used to check if a multi-turn task in a client can continue.
+ *
+ * @return true if something threatens this character, false otherwise.
+ */
+public boolean isUnderAnyThreat() {
+	for (NonPlayerCharacter observer : timeStream.getObservers(this)) {
+		System.out.println("Observer " + observer + " " + isEnemy(observer));
+		if (isEnemy(observer)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+private class ProjectileFlight {
+
+	private final Coordinate endCoordinate;
+	private final Character characterHit;
+
+	public ProjectileFlight(Coordinate endCoordinate, Character characterHit) {
+
+		this.endCoordinate = endCoordinate;
+		this.characterHit = characterHit;
+	}
+}
+
 public class Effect {
 	// Class that holds description of one current character's effect
 	public int duration, modifier, effectId;
@@ -1060,6 +1139,20 @@ public class Effect {
 		this.effectId = effectId;
 		this.duration = duration;
 		this.modifier = modifier;
+	}
+}
+
+class PathWalkerOverCharacters implements PathWalker {
+
+	@Override
+	public boolean canStepOn(int x, int y) {
+		return x >= 0
+			&& y >= 0
+			&& x < Tendiwa.getWorld().width
+			&& y < Tendiwa.getWorld().height
+			&& (plane.getPassability(x, y) == Passability.FREE
+			|| plane.getCharacter(x, y) != null);
+
 	}
 }
 }

@@ -25,4 +25,5 @@ public String getResourceName() {
 public String getLocalizationId() {
 	return type.getLocalizationId();
 }
+
 }

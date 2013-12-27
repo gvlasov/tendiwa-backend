@@ -11,7 +11,6 @@ public class NonPlayerCharacter extends Character {
 private static final int PATH_TABLE_WIDTH = 41;
 private static final int MAX_PATH_TABLE_DEPTH = 20;
 private final HashMap<Character, Coordinate> lastSeenEnemyCoord = new HashMap<>();
-private final PathWalkerOverCharacters pathWalkerOverCharacters;
 public HashMap<Character, DialoguePoint> dialogues = new HashMap<>();
 protected HashSet<Character> seenCharacters = new HashSet<>();
 private int destX;
@@ -31,8 +30,8 @@ public NonPlayerCharacter(HorizontalPlane plane, CharacterType characterType, in
 	pathTable = new int[PATH_TABLE_WIDTH][PATH_TABLE_WIDTH];
 	destX = x;
 	destY = y;
-	pathWalkerOverCharacters = new PathWalkerOverCharacters();
 }
+
 
 /* Observations */
 public void updateObservation(Character character, int x, int y) {
@@ -286,7 +285,7 @@ public void action() {
 			imaginaryPathTable.getPath(activeEnemy.x, activeEnemy.y);
 			if (!imaginaryPathTable.cellComputed(activeEnemy.x, activeEnemy.y)) {
 				// If path is blocked by characters
-				imaginaryPathTable = Paths.getPathTable(x, y, pathWalkerOverCharacters, MAX_PATH_TABLE_DEPTH);
+				imaginaryPathTable = Paths.getPathTable(x, y, getPathWalkerOverCharacters(), MAX_PATH_TABLE_DEPTH);
 				LinkedList<EnhancedPoint> imaginaryPath = imaginaryPathTable.getPath(activeEnemy.x, activeEnemy.y);
 				EnhancedPoint firstStep = imaginaryPath.get(0);
 				if (plane.getCharacter(firstStep.x, firstStep.y) == null) {
@@ -307,7 +306,7 @@ public void action() {
 
 		if (!pathTable.cellComputed(lastSeenCoord.x, lastSeenCoord.y)) {
 			// If path is blocked by characters
-			LinkedList<EnhancedPoint> path = Paths.getPath(x, y, lastSeenCoord.x, lastSeenCoord.y, pathWalkerOverCharacters, MAX_PATH_TABLE_DEPTH);
+			LinkedList<EnhancedPoint> path = Paths.getPath(x, y, lastSeenCoord.x, lastSeenCoord.y, getPathWalkerOverCharacters(), MAX_PATH_TABLE_DEPTH);
 			EnhancedPoint firstStep = path.getFirst();
 			if (plane.getCharacter(firstStep.x, firstStep.y) == null) {
 				// If there is no character on first cell of imaginary path,
@@ -552,17 +551,4 @@ public void applyConversationStarting(Character player) {
 	throw new UnsupportedOperationException();
 }
 
-class PathWalkerOverCharacters implements PathWalker {
-
-	@Override
-	public boolean canStepOn(int x, int y) {
-		return x >= 0
-			&& y >= 0
-			&& x < Tendiwa.getWorld().width
-			&& y < Tendiwa.getWorld().height
-			&& (plane.getPassability(x, y) == Passability.FREE
-			|| plane.getCharacter(x, y) != null);
-
-	}
-}
 }

@@ -186,7 +186,7 @@ public boolean hasObject(int x, int y) {
 
 public boolean hasCharacter(int x, int y) {
 	for (Character character : characters.values()) {
-		if (character.x == x && character.y == y) {
+		if (character.getX() == x && character.getY() == y) {
 			return true;
 		}
 	}

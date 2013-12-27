@@ -4,6 +4,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import tendiwa.core.meta.Condition;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -45,7 +46,11 @@ public UniqueItem add(UniqueItem item) {
 }
 
 public void removePile(ItemPile pile) {
-	ItemPile pileInMap = (ItemPile) items.get(pile.getType());
+	Collection<Item> itemsOfThatType = items.get(pile.getType());
+	if (itemsOfThatType.isEmpty()) {
+		throw new RuntimeException("Can't remove an item of type " + pile.getType() + " because there are no items of that type in this ItemCollection");
+	}
+	ItemPile pileInMap = (ItemPile) itemsOfThatType.iterator().next();
 	if (pile == pileInMap || pileInMap.getAmount() == pile.getAmount()) {
 		items.removeAll(pile.getType());
 	} else if (pile.getAmount() < pileInMap.getAmount()) {

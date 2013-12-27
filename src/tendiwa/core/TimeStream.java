@@ -42,7 +42,7 @@ HashSet<Chunk> chunks = new HashSet<>();
  *
  * @see TimeStream#notifyNeighborsVisiblilty(Character)
  */
-private HashMap<Character, HashSet<NonPlayerCharacter>> observers = new HashMap<>();
+private HashMap<Character, Set<NonPlayerCharacter>> observers = new HashMap<>();
 /**
  * All the NonPlayerCharacters that take their turns in this TimeStream.
  */
@@ -231,7 +231,7 @@ public void notifyNeighborsVisiblilty(Character aim) {
 		}
 		neighbor.tryToSee(aim);
 	}
-	HashSet<NonPlayerCharacter> currentObservers = observers.get(aim);
+	Set<NonPlayerCharacter> currentObservers = observers.get(aim);
 	// Need to copy observers because its contents will change in the next
 	// for loop.
 	HashSet<NonPlayerCharacter> observersCopy = new HashSet<>(currentObservers);
@@ -253,5 +253,9 @@ public void addPlayerCharacter(Character character) {
 	characters.add(character);
 	character.setTimeStream(this);
 	observers.put(character, new HashSet<NonPlayerCharacter>());
+}
+
+Set<NonPlayerCharacter> getObservers(Character character) {
+	return observers.get(character);
 }
 }
