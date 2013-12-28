@@ -33,6 +33,7 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="liblexeme" level="project" />
+    <orderEntry type="library" name="artemis" level="project" />
   </component>
 </module>
 
