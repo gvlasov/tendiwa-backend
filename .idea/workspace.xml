@@ -7,90 +7,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8b4d96ac-5daf-4774-9e72-1ceab60ca879" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../MainModule/src/org/tendiwa/entities/ObjectTypes.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/tendiwa/core/Usable.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/101.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/101.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/120.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/120.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/16479511.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/16479511.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/16479561.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/16479561.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/200.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/200.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/201.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/201.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/202.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/202.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/203.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/203.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/300.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/300.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/301.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/301.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/302.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/302.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/307.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/307.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/308.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/308.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/309.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/309.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/310.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/310.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/311.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/311.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/312.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/312.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/313.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/313.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/314.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/314.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/315.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/315.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/316.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/316.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/400.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/400.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/401.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/401.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/402.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/402.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/403.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/ladder.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/41.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/41.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/41_v.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/41_v.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/42.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/42.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/42_v.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/42_v.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/43.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/43.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/43_v.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/43_v.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/44.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/44.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/51.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/51.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/52.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/52.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/53.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/53.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/54.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/54.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/55.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/55.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/56.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/56.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/57.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/57.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/60.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/60.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/61.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/61.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/62.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/62.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/63.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/63.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/70.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/70.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/71.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/71.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/72.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/72.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/73.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/73.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/74.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/74.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/75.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/75.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/76.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/76.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/77.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/77.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/78.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/78.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/79.PNG" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/79.PNG" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/80.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/80.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/81.PNG" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/81.PNG" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/82.PNG" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/82.PNG" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/83.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/83.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/90.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/90.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/9000.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/9000.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/mushroom_1.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/mushroom_1.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/../MainModule/data/images/objects/mushroom_2.png" afterPath="$PROJECT_DIR$/../MainModule/data/images/objects/stash/mushroom_2.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../MainModule/src/tendiwa/modules/BuildingsLocationDrawer.java" afterPath="$PROJECT_DIR$/../MainModule/src/tendiwa/modules/BuildingsLocationDrawer.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/Character.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/Character.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/Chunk.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/Chunk.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/drawing/DrawingAlgorithm.java" afterPath="$PROJECT_DIR$/src/tendiwa/drawing/DrawingAlgorithm.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../MainModule/src/tendiwa/modules/DrawingWorld.java" afterPath="$PROJECT_DIR$/../MainModule/src/tendiwa/modules/DrawingWorld.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/EnhancedRectangle.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/EnhancedRectangle.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/EntityPlacer.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/EntityPlacer.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/GameObject.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/GameObject.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/tendiwa/events/EventInitialTerrain.java" afterPath="$PROJECT_DIR$/src/org/tendiwa/events/EventInitialTerrain.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreen.java" afterPath="$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreen.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/HorizontalPlane.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/HorizontalPlane.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/Location.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/Location.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../MainModule/src/tendiwa/modules/MainModule.java" afterPath="$PROJECT_DIR$/../MainModule/src/tendiwa/modules/MainModule.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/ObjectType.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/ObjectType.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/Tendiwa.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/Tendiwa.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/TimeStream.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/TimeStream.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../client/src/org/tendiwa/client/TendiwaClientLibgdxEventManager.java" afterPath="$PROJECT_DIR$/../client/src/org/tendiwa/client/TendiwaClientLibgdxEventManager.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../client/src/org/tendiwa/client/WallsLayer.java" afterPath="$PROJECT_DIR$/../client/src/org/tendiwa/client/WallsLayer.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tendiwa/core/World.java" afterPath="$PROJECT_DIR$/src/tendiwa/core/World.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dictionaries/suseika.xml" afterPath="$PROJECT_DIR$/.idea/dictionaries/suseika.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="server.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1388536759063" ignored="false" />
+    <file path="/Dummy.txt" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1388595124216" ignored="false" />
     <file path="/fragment.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1388543562506" ignored="false" />
     <file path="/WaveRectangleSystem.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381954580765" ignored="false" />
     <file path="/LocationNearRectangle1.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1378959919082" ignored="false" />
@@ -401,7 +329,7 @@
     <file path="/TestCanvas.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1388536025653" ignored="false" />
     <file path="/RectangleSidePieceDemo.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1379694338082" ignored="false" />
     <file path="/RandomRectangleSystem.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381757567774" ignored="false" />
-    <file path="/HorizontalPlane.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1388545390640" ignored="false" />
+    <file path="/HorizontalPlane.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1388596256204" ignored="false" />
     <file path="/DrawingAlgorithm.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1388536667421" ignored="false" />
     <file path="/Rotation.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1379589768681" ignored="false" />
     <file path="/StepNearFromSide.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381866213668" ignored="false" />
@@ -433,7 +361,7 @@
     <file path="/EhancedRectangleTest.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1380812912620" ignored="false" />
     <file path="/RectanglesJunction.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381667283103" ignored="false" />
     <file path="/SuseikaWorld.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383314713139" ignored="false" />
-    <file path="/World.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1388538262895" ignored="false" />
+    <file path="/World.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1388596465940" ignored="false" />
     <file path="/WorldException.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1380920420064" ignored="false" />
     <file path="/Forest.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1386973302060" ignored="false" />
     <file path="/WorldRectangleBuilder.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1381948418708" ignored="false" />
@@ -510,7 +438,7 @@
     <file path="/WorldMapScreen.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1386973151982" ignored="false" />
     <file path="/ShaderTest.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1382554793578" ignored="false" />
     <file path="/invaders.g3dj" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1382553736612" ignored="false" />
-    <file path="/GameScreen.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1388450684036" ignored="false" />
+    <file path="/GameScreen.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1388596358036" ignored="false" />
     <file path="/BookFun.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1382735735441" ignored="false" />
     <file path="/ResourcesBuilder.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383100357452" ignored="false" />
     <file path="/ResourceBuilder.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1382801003865" ignored="false" />
@@ -542,7 +470,7 @@
     <file path="/module.conf" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383336017974" ignored="false" />
     <file path="/GameScreenInputProcessor.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1388104828728" ignored="false" />
     <file path="/TendiwaClientEventManager.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1388456677246" ignored="false" />
-    <file path="/TendiwaClientLibgdxEventManager.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1388457081007" ignored="false" />
+    <file path="/TendiwaClientLibgdxEventManager.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1388596331501" ignored="false" />
     <file path="/EventResult.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383419925024" ignored="false" />
     <file path="/RequestSay.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1386349396911" ignored="false" />
     <file path="/SoundType.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1387579531794" ignored="false" />
@@ -564,7 +492,7 @@
     <file path="/DrawingTerrain.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383698211784" ignored="false" />
     <file path="/Trail.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383698239244" ignored="false" />
     <file path="/RequestInitialTerrain.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1383777034889" ignored="false" />
-    <file path="/EventInitialTerrain.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1386349387207" ignored="false" />
+    <file path="/EventInitialTerrain.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1388596264484" ignored="false" />
     <file path="/fovTransition.fragment" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1384426847231" ignored="false" />
     <file path="/fovTransition.vertex" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1384425180846" ignored="false" />
     <file path="/FovTransitions.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1384490126624" ignored="false" />
@@ -585,7 +513,7 @@
     <file path="/WallType.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1388533733212" ignored="false" />
     <file path="/drawOpaqueToDepth05.glsl" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1384852796412" ignored="false" />
     <file path="/opaque0transparent05depth.f.glsl" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1384928475703" ignored="false" />
-    <file path="/WallsLayer.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1388450064103" ignored="false" />
+    <file path="/WallsLayer.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1388596403445" ignored="false" />
     <file path="/FloorToFloorTransitions.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1384968841931" ignored="false" />
     <file path="/TileTextureRegionProvider.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1384978843082" ignored="false" />
     <file path="/FloorLayer.java" changelist="8b4d96ac-5daf-4774-9e72-1ceab60ca879" time="1387168845512" ignored="false" />
@@ -841,7 +769,7 @@
       <file leaf-file-name="TimeStream.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/tendiwa/core/TimeStream.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="248" column="73" selection-start="8913" selection-end="8913" vertical-scroll-proportion="0.0">
+            <state line="223" column="60" selection-start="8089" selection-end="8089" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -851,37 +779,6 @@
         <entry file="file://$PROJECT_DIR$/../MainModule/src/tendiwa/modules/BuildingsLocationDrawer.java">
           <provider selected="true" editor-type-id="text-editor">
             <state line="24" column="29" selection-start="856" selection-end="856" vertical-scroll-proportion="0.0">
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Location.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/tendiwa/core/Location.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="859" column="19" selection-start="27000" selection-end="27000" vertical-scroll-proportion="0.0">
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DrawingWorld.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../MainModule/src/tendiwa/modules/DrawingWorld.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="38" column="36" selection-start="1378" selection-end="1378" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="EntityPlacer.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/tendiwa/core/EntityPlacer.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="37" column="44" selection-start="1349" selection-end="1349" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -890,7 +787,25 @@
       <file leaf-file-name="GameScreen.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreen.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="132" column="26" selection-start="4680" selection-end="4680" vertical-scroll-proportion="0.0">
+            <state line="162" column="0" selection-start="5824" selection-end="5824" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="EventInitialTerrain.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/org/tendiwa/events/EventInitialTerrain.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="17" column="23" selection-start="506" selection-end="506" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TendiwaClientLibgdxEventManager.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/TendiwaClientLibgdxEventManager.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="139" column="35" selection-start="4556" selection-end="4556" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -899,7 +814,7 @@
       <file leaf-file-name="WallsLayer.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/WallsLayer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="175" column="26" selection-start="7509" selection-end="7509" vertical-scroll-proportion="0.27322406">
+            <state line="22" column="26" selection-start="882" selection-end="882" vertical-scroll-proportion="0.24193548">
               <folding />
             </state>
           </provider>
@@ -908,38 +823,25 @@
       <file leaf-file-name="MainModule.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../MainModule/src/tendiwa/modules/MainModule.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="49" column="57" selection-start="1953" selection-end="1953" vertical-scroll-proportion="0.0">
-              <folding>
-                <marker date="1388546235793" expanded="true" signature="1775:2198" placeholder="//..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Character.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/tendiwa/core/Character.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="184" column="0" selection-start="7112" selection-end="7112" vertical-scroll-proportion="0.0">
+            <state line="49" column="57" selection-start="1957" selection-end="1957" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="HorizontalPlane.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/tendiwa/core/HorizontalPlane.java">
+      <file leaf-file-name="World.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/tendiwa/core/World.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="184" column="31" selection-start="5807" selection-end="5807" vertical-scroll-proportion="0.0">
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
+            <state line="160" column="49" selection-start="5128" selection-end="5128" vertical-scroll-proportion="0.0">
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Chunk.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/tendiwa/core/Chunk.java">
+      <file leaf-file-name="NonPlayerCharacter.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/tendiwa/core/NonPlayerCharacter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="240" column="20" selection-start="6557" selection-end="6557" vertical-scroll-proportion="0.0">
+            <state line="308" column="0" selection-start="10561" selection-end="10561" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -954,7 +856,7 @@
   </component>
   <component name="Git.Settings">
     <option name="SYNC_SETTING" value="SYNC" />
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../MainModule" />
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
         <entry key="$PROJECT_DIR$/../client" value="master" />
@@ -967,29 +869,29 @@
     </option>
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/src/tendiwa/core/EnhancedRectangle.java" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/src/tendiwa/core/Location.java" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/tendiwa/core/EnhancedRectangle.java" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/src/tendiwa/core/RectangleSystem.java" root0="SKIP_INSPECTION" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/src/tendiwa/core/Tendiwa.java" />
-        <option value="$PROJECT_DIR$/src/tendiwa/core/ObjectType.java" />
-        <option value="$PROJECT_DIR$/src/tendiwa/core/Usable.java" />
-        <option value="$PROJECT_DIR$/../MainModule/src/org/tendiwa/entities/ObjectTypes.java" />
-        <option value="$PROJECT_DIR$/src/tendiwa/core/EnhancedPoint.java" />
         <option value="$PROJECT_DIR$/src/tendiwa/core/GameObject.java" />
         <option value="$PROJECT_DIR$/src/tendiwa/drawing/DrawingAlgorithm.java" />
         <option value="$PROJECT_DIR$/src/tendiwa/core/Location.java" />
-        <option value="$PROJECT_DIR$/src/tendiwa/core/HorizontalPlane.java" />
         <option value="$PROJECT_DIR$/src/tendiwa/core/Chunk.java" />
         <option value="$PROJECT_DIR$/../MainModule/src/tendiwa/modules/DrawingWorld.java" />
         <option value="$PROJECT_DIR$/src/tendiwa/core/EntityPlacer.java" />
         <option value="$PROJECT_DIR$/../MainModule/src/tendiwa/modules/BuildingsLocationDrawer.java" />
-        <option value="$PROJECT_DIR$/../MainModule/src/tendiwa/modules/MainModule.java" />
         <option value="$PROJECT_DIR$/src/tendiwa/core/Character.java" />
         <option value="$PROJECT_DIR$/src/tendiwa/core/TimeStream.java" />
+        <option value="$PROJECT_DIR$/src/tendiwa/core/HorizontalPlane.java" />
+        <option value="$PROJECT_DIR$/src/org/tendiwa/events/EventInitialTerrain.java" />
+        <option value="$PROJECT_DIR$/../client/src/org/tendiwa/client/TendiwaClientLibgdxEventManager.java" />
+        <option value="$PROJECT_DIR$/../client/src/org/tendiwa/client/WallsLayer.java" />
+        <option value="$PROJECT_DIR$/src/tendiwa/core/World.java" />
+        <option value="$PROJECT_DIR$/../MainModule/src/tendiwa/modules/MainModule.java" />
+        <option value="$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreen.java" />
       </list>
     </option>
   </component>
@@ -1102,6 +1004,58 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="PackagesPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tendiwa" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tendiwa" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tendiwa" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="MainModule" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="MainModule" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tendiwa" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
       <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
@@ -1132,10 +1086,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tendiwa" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -1176,20 +1126,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="entities" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MainModule" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -1279,56 +1215,36 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-        </subPane>
-      </pane>
-      <pane id="PackagesPane">
-        <subPane>
           <PATH>
             <PATH_ELEMENT>
               <option name="myItemId" value="server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="tendiwa" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+              <option name="myItemId" value="client" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="client" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
               <option name="myItemId" value="server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="tendiwa" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+              <option name="myItemId" value="client" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="tendiwa" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MainModule" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MainModule" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tendiwa" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
@@ -1349,13 +1265,13 @@
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth2" value="110" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth1" value="107" />
     <property name="GoToClass.includeLibraries" value="false" />
-    <property name="options.splitter.details.proportions" value="0.3877551" />
     <property name="Downloaded.Files.Path" value="$PROJECT_DIR$/lib" />
+    <property name="options.splitter.details.proportions" value="0.3877551" />
     <property name="GoToFile.includeJavaFiles" value="false" />
-    <property name="ChangesBrowser.SHOW_FLATTEN" value="false" />
     <property name="options.lastSelected" value="editor.preferences.tabs" />
-    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="ChangesBrowser.SHOW_FLATTEN" value="false" />
     <property name="GenerateAntBuildDialog.forceTargetJdk" value="true" />
+    <property name="project.structure.side.proportion" value="0.2" />
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.includeInheritedMembers" value="false" />
     <property name="project.structure.last.edited" value="Libraries" />
@@ -1383,8 +1299,8 @@
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder2" value="2" />
     <property name="restartRequiresConfirmation" value="true" />
     <property name="GenerateAntBuildDialog.backupFiles" value="true" />
-    <property name="dynamic.classpath" value="false" />
     <property name="options.searchVisible" value="true" />
+    <property name="dynamic.classpath" value="false" />
   </component>
   <component name="RecentsManager">
     <key name="CreateTestDialog.RecentsKey">
@@ -1517,6 +1433,19 @@
       <option name="PORT" value="5005" />
       <method />
     </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <method />
+    </configuration>
     <configuration default="true" type="TestNG" factoryName="TestNG">
       <module name="" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
@@ -1542,19 +1471,6 @@
       <envs />
       <properties />
       <listeners />
-      <method />
-    </configuration>
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <module name="" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <option name="VM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
       <method />
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -1952,7 +1868,11 @@
       <created>1388536765227</created>
       <updated>1388536765227</updated>
     </task>
-    <option name="localTasksCounter" value="61" />
+    <task id="LOCAL-00061" summary="Objects placement">
+      <created>1388547916893</created>
+      <updated>1388547916893</updated>
+    </task>
+    <option name="localTasksCounter" value="62" />
     <servers />
   </component>
   <component name="TodoView" selected-index="1">
@@ -1982,7 +1902,6 @@
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3291536" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298217" sideWeight="0.6593521" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.34796575" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23658536" sideWeight="0.72698075" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.38543898" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.27301928" sideWeight="0.5" order="14" side_tool="true" content_ui="tabs" />
@@ -1993,14 +1912,15 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.18557537" sideWeight="0.6593521" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298217" sideWeight="0.6593521" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20081301" sideWeight="0.6520343" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2719486" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Documentation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" x="100" y="119" width="1076" height="801" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2699187" sideWeight="0.72805136" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2719486" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Inspector" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Documentation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" x="100" y="119" width="1076" height="801" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Usages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Problems" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Usages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.34796575" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Dependencies Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="15" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.35528454" sideWeight="0.72698075" order="2" side_tool="false" content_ui="combo" x="478" y="40" width="319" height="959" />
@@ -2056,7 +1976,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added post processing support to client, added Cigarette consumable class, fixed bug with graphics scaling in TestCanvas" />
+    <option name="LAST_COMMIT_MESSAGE" value="Objects placement" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -2070,7 +1990,6 @@
     <option name="UPDATE_FILTER_BY_SCOPE" value="false" />
     <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
     <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
-    <MESSAGE value="Extracted floor-drawing-related functionality to a separate class; rewrote floor transitions using TransitionPregenerator" />
     <MESSAGE value="Extracted cell net and cursor from GameScreen to their own classes" />
     <MESSAGE value="Water animated with fragment shader" />
     <MESSAGE value="Animated not yet seen cells" />
@@ -2095,6 +2014,7 @@
     <MESSAGE value="Player attacking in melee; move-to-attack; attacking by shooting a projectile; projectiles hitting obstacles." />
     <MESSAGE value="Removed unnecessary IDE files from repository" />
     <MESSAGE value="Added post processing support to client, added Cigarette consumable class, fixed bug with graphics scaling in TestCanvas" />
+    <MESSAGE value="Objects placement" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -2143,73 +2063,6 @@
     </buildFile>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/tendiwa/drawing/DrawingAlgorithm.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="19" column="27" selection-start="499" selection-end="499" vertical-scroll-proportion="0.37366548">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/Location.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="859" column="19" selection-start="27000" selection-end="27000" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../MainModule/src/tendiwa/modules/DrawingWorld.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="38" column="36" selection-start="1378" selection-end="1378" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/HorizontalPlane.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="184" column="31" selection-start="5807" selection-end="5807" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../MainModule/src/tendiwa/modules/BuildingsLocationDrawer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="24" column="29" selection-start="856" selection-end="856" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../MainModule/src/tendiwa/modules/MainModule.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="49" column="57" selection-start="1953" selection-end="1953" vertical-scroll-proportion="0.0">
-          <folding>
-            <marker date="1388546235793" expanded="true" signature="1775:2198" placeholder="//..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/Character.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="184" column="0" selection-start="7112" selection-end="7112" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../MainModule/data/images/objects/stash/41.png">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../MainModule/data/images/spells/3.png">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../MainModule/data/images/spells/1.png">
       <provider selected="true" editor-type-id="images">
         <state />
@@ -2218,13 +2071,6 @@
     <entry file="file://$PROJECT_DIR$/../MainModule/data/images/spells/healing.bmp">
       <provider selected="true" editor-type-id="images">
         <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/TimeStream.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="248" column="73" selection-start="8913" selection-end="8913" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/tendiwa/core/Chunk.java">
@@ -2241,16 +2087,86 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/HorizontalPlane.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="41" column="21" selection-start="1454" selection-end="1454" vertical-scroll-proportion="0.68421054">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/Character.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="184" column="0" selection-start="7112" selection-end="7112" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/tendiwa/events/EventInitialTerrain.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="17" column="23" selection-start="506" selection-end="506" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/TendiwaClientLibgdxEventManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="139" column="35" selection-start="4556" selection-end="4556" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/TimeStream.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="223" column="60" selection-start="8089" selection-end="8089" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../MainModule/src/tendiwa/modules/DrawingWorld.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="38" column="36" selection-start="1378" selection-end="1378" vertical-scroll-proportion="0.51369864">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../MainModule/src/tendiwa/modules/BuildingsLocationDrawer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="24" column="29" selection-start="856" selection-end="856" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/World.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="160" column="49" selection-start="5128" selection-end="5128" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/tendiwa/core/NonPlayerCharacter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="308" column="0" selection-start="10561" selection-end="10561" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../MainModule/src/tendiwa/modules/MainModule.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="49" column="57" selection-start="1957" selection-end="1957" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/GameScreen.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="132" column="26" selection-start="4680" selection-end="4680" vertical-scroll-proportion="0.0">
+        <state line="162" column="0" selection-start="5824" selection-end="5824" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../client/src/org/tendiwa/client/WallsLayer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="175" column="26" selection-start="7509" selection-end="7509" vertical-scroll-proportion="0.27322406">
+        <state line="22" column="26" selection-start="882" selection-end="882" vertical-scroll-proportion="0.24193548">
           <folding />
         </state>
       </provider>

@@ -24,6 +24,7 @@ public HorizontalPlane upperPlane;
 public HorizontalPlane lowerPlane;
 private int numberOfChunks = 0;
 private World world;
+private final int level;
 
 /**
  * @param width
@@ -33,11 +34,12 @@ private World world;
  * @param world
  * 	World in which this HorizontalPlane resides.
  */
-HorizontalPlane(int width, int height, World world) {
+HorizontalPlane(int width, int height, World world, int level) {
 	this.world = world;
 	chunks = new Chunk[width / Chunk.SIZE + 1][height / Chunk.SIZE + 1];
 	this.width = width;
 	this.height = height;
+	this.level = level;
 }
 
 public Chunk loadChunk(int x, int y) {
@@ -227,4 +229,7 @@ public World getWorld() {
 	return world;
 }
 
+public int getLevel() {
+	return level;
+}
 }

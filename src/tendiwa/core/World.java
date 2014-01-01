@@ -1,6 +1,5 @@
 package tendiwa.core;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -8,25 +7,20 @@ import static tendiwa.core.DSL.worldBuilder;
 
 public class World {
 
+private static final int defaultPlaneIndex = Integer.MAX_VALUE / 2;
 protected final int width;
 protected final int height;
 final HorizontalPlane defaultPlane;
 private Character playerCharacter;
 private TimeStream timeStream;
 private HashMap<Integer, HorizontalPlane> planes = new HashMap<>();
-private static final int defaultPlaneIndex = Integer.MAX_VALUE/2;
 
 public World(int width, int height) {
 	this.width = width;
 	this.height = height;
-	defaultPlane = initPlane();
+	defaultPlane = initPlane(0);
 	planes.put(0, defaultPlane);
 	this.timeStream = new TimeStream();
-}
-public HorizontalPlane initPlane() {
-	HorizontalPlane plane = new HorizontalPlane(width, height, this);
-	plane.touchChunks(0, 0, width, height);
-	return plane;
 }
 
 public static World create(WorldDrawer worldDrawer, int width, int height) {
@@ -43,6 +37,12 @@ public static World create(WorldDrawer worldDrawer, int width, int height) {
 	}
 //	world.checkIfLocationPlacesFillAllWorld(builder);
 	return world;
+}
+
+public HorizontalPlane initPlane(int level) {
+	HorizontalPlane plane = new HorizontalPlane(width, height, this, level);
+	plane.touchChunks(0, 0, width, height);
+	return plane;
 }
 
 public HorizontalPlane getDefaultPlane() {
@@ -145,9 +145,9 @@ public TimeStream getTimeStream() {
 
 /**
  * Lazily returns a HorizontalPlane with index {@code level}. Planes stack on top of each other, with default plane
- * having index 0. If plane with index {@code level} doesn't exist, this method creates that plane. If it does exist,
- * an existing plane is returned. However, to create a plane with index {@code level}, a plane with index {@code
- * level-1} must exist.
+ * having index 0. If plane with index {@code level} doesn't exist, this method creates that plane. If it does exist, an
+ * existing plane is returned. However, to create a plane with index {@code level}, a plane with index {@code level-1}
+ * must exist.
  *
  * @param level
  * 	Index of plane to retrieve.
@@ -158,7 +158,7 @@ public HorizontalPlane getPlane(int level) {
 		if (planes.get(level - 1) == null) {
 			throw new IllegalArgumentException("Can't create plane " + level + " because plane " + (level - 1) + " doesn't exist yet");
 		}
-		HorizontalPlane newPlane = initPlane();
+		HorizontalPlane newPlane = initPlane(level);
 		planes.put(level, newPlane);
 		return newPlane;
 	} else {
