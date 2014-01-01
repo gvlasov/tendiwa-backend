@@ -20,11 +20,11 @@ public class HorizontalPlane {
 protected final Chunk[][] chunks;
 private final int width;
 private final int height;
+private final int level;
 public HorizontalPlane upperPlane;
 public HorizontalPlane lowerPlane;
 private int numberOfChunks = 0;
 private World world;
-private final int level;
 
 /**
  * @param width
@@ -231,5 +231,9 @@ public World getWorld() {
 
 public int getLevel() {
 	return level;
+}
+
+public boolean hasWall(int x, int y) {
+	return getChunkWithCell(x, y).getWall(x, y) != null;
 }
 }
