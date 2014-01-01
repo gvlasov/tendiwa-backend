@@ -1,5 +1,6 @@
 package tendiwa.core;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 import static tendiwa.core.DSL.worldBuilder;
@@ -11,6 +12,7 @@ protected final int height;
 final HorizontalPlane defaultPlane;
 private Character playerCharacter;
 private TimeStream timeStream;
+private ArrayList<HorizontalPlane> planes = new ArrayList<>();
 
 public World(int width, int height) {
 	this.width = width;
@@ -132,5 +134,28 @@ public Character createPlayerCharacter(int x, int y, CharacterType type, String 
 
 public TimeStream getTimeStream() {
 	return timeStream;
+}
+
+/**
+ * Lazily returns a HorizontalPlane with index {@code height}. Planes stack on top of each other, with default plane
+ * having index 0. If plane with index {@code height} doesn't exist, this method creates that plane. If it does exist,
+ * an existing plane is returned. However, to create a plane with index {@code height}, a plane with index {@code
+ * height-1} must exist.
+ *
+ * @param height
+ * 	Index of plane to retrieve.
+ * @return An existing plane or a new plane, if a plane with that index doesn't exist.
+ */
+public HorizontalPlane getPlane(int height) {
+	if (planes.get(height) == null) {
+		if (planes.get(height - 1) == null) {
+			throw new IllegalArgumentException("Can't create plane " + height + " because plane " + (height - 1) + " doesn't exist yet");
+		}
+		HorizontalPlane newPlane = new HorizontalPlane(width, height);
+		planes.add(height, newPlane);
+		return newPlane;
+	} else {
+		return planes.get(height);
+	}
 }
 }

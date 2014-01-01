@@ -42,7 +42,7 @@ HashSet<Chunk> chunks = new HashSet<>();
  *
  * @see TimeStream#notifyNeighborsVisiblilty(Character)
  */
-private HashMap<Character, Set<NonPlayerCharacter>> observers = new HashMap<>();
+private HashMap<Character, Set<NonPlayerCharacter>> observersOf = new HashMap<>();
 /**
  * All the NonPlayerCharacters that take their turns in this TimeStream.
  */
@@ -77,7 +77,7 @@ public void addNonPlayerCharacter(NonPlayerCharacter character) {
 	}
 	nonPlayerCharacters.add(character);
 	characters.add(character);
-	observers.put(character, new HashSet<NonPlayerCharacter>());
+	observersOf.put(character, new HashSet<NonPlayerCharacter>());
 	character.setTimeStream(this);
 }
 
@@ -208,11 +208,7 @@ public void unloadUnusedChunks(HorizontalPlane plane) {
  * 	Value; who is he observed by;
  */
 void addObserver(Character aim, NonPlayerCharacter observer) {
-	observers.get(aim).add(observer);
-}
-
-void removeObserver(Character aim, NonPlayerCharacter observer) {
-	observers.get(aim).remove(observer);
+	observersOf.get(aim).add(observer);
 }
 
 /**
@@ -231,7 +227,7 @@ public void notifyNeighborsVisiblilty(Character aim) {
 		}
 		neighbor.tryToSee(aim);
 	}
-	Set<NonPlayerCharacter> currentObservers = observers.get(aim);
+	Set<NonPlayerCharacter> currentObservers = observersOf.get(aim);
 	// Need to copy observers because its contents will change in the next
 	// for loop.
 	HashSet<NonPlayerCharacter> observersCopy = new HashSet<>(currentObservers);
@@ -243,19 +239,39 @@ public void notifyNeighborsVisiblilty(Character aim) {
 	}
 }
 
+void removeObserver(Character aim, NonPlayerCharacter observer) {
+	observersOf.get(aim).remove(observer);
+}
+
 public void claimCharacterDisappearance(Character character) {
-	for (NonPlayerCharacter ch : observers.get(character)) {
-		ch.tryToUnsee(character);
+	for (NonPlayerCharacter ch : observersOf.get(character)) {
+		System.out.println(ch + " unsees " + character);
+		ch.unsee(character);
+		removeObserver(character, ch);
 	}
+	if (!character.isPlayer()) {
+		for (Character ch : observersOf.keySet()) {
+			removeObserver(ch, (NonPlayerCharacter) character);
+		}
+	}
+	observersOf.remove(character);
 }
 
 public void addPlayerCharacter(Character character) {
 	characters.add(character);
 	character.setTimeStream(this);
-	observers.put(character, new HashSet<NonPlayerCharacter>());
+	observersOf.put(character, new HashSet<NonPlayerCharacter>());
 }
 
+/**
+ * Returns what {@link NonPlayerCharacter} can currently see a particular Character (whether he is a NonPlayerCharacter
+ * or a player character).
+ *
+ * @param character
+ * 	A character to see.
+ * @return What non-player characters can see a {@code character}.
+ */
 Set<NonPlayerCharacter> getObservers(Character character) {
-	return observers.get(character);
+	return observersOf.get(character);
 }
 }

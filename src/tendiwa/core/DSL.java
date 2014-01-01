@@ -66,6 +66,10 @@ public static TestCanvas canvas() {
 	return TestCanvas.builder().build();
 }
 
+public static TestCanvas canvas(int scale) {
+	return TestCanvas.builder().setScale(scale).build();
+}
+
 public static PathBuilder path(RectangleSystemBuilder builder) {
 	return new PathBuilder(builder);
 }

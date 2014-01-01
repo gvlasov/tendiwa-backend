@@ -9,10 +9,15 @@ import java.awt.geom.AffineTransform;
 
 public abstract class DrawingAlgorithm<T> {
 protected TestCanvas canvas;
+private static final AffineTransform defaultTransform = new AffineTransform();
+static {
+	defaultTransform.setToScale(1, 1);
+}
 
 public abstract void draw(T shape);
 
 protected void drawPoint(int x, int y, Color color) {
+	System.out.println(canvas.scale);
 	if (canvas.scale == 1) {
 		canvas.image.setRGB(x, y, color.getRGB());
 	} else {
@@ -33,6 +38,7 @@ protected void drawRectangle(Rectangle r, Color color) {
 	g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 	g2d.setTransform(transform);
 	g2d.fill(r);
+	g2d.setTransform(defaultTransform);
 //		canvas.graphics.fillRect(
 //			r.x * canvas.scale,
 //			r.y * canvas.scale,

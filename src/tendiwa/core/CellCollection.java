@@ -95,7 +95,7 @@ public void clear() {
 		if (ch10.roll()) {
 			continue;
 		}
-		location.getPlane().removeObject(coo.x, coo.y);
+		location.getActivePlane().removeObject(coo.x, coo.y);
 
 	}
 }
@@ -115,7 +115,7 @@ public void setElements(PlaceableInCell placeable, int amount) {
 		}
 		int cellIndex = Chance.rand(0, cells.size() - 1);
 		Coordinate cell = cells.get(cellIndex);
-		placeable.place(location.getPlane(), cell.x, cell.y);
+		placeable.place(location.getActivePlane(), cell.x, cell.y);
 		unsetCell(cell);
 	}
 }
@@ -130,7 +130,7 @@ public void setObjects(ObjectType type, int amount) {
 		}
 		int cellIndex = Chance.rand(0, cells.size() - 1);
 		Coordinate cell = cells.get(cellIndex);
-		EntityPlacer.place(location.getPlane(), type, cell.x, cell.y);
+		EntityPlacer.place(location.getActivePlane(), type, cell.x, cell.y);
 		unsetCell(cell);
 	}
 }
@@ -142,7 +142,7 @@ public Coordinate getRandomCell() {
 public void fillWithElements(PlaceableInCell placeable) {
 	// TODO Auto-generated method stub
 	for (Coordinate c : cells) {
-		placeable.place(location.getPlane(), c.x, c.y);
+		placeable.place(location.getActivePlane(), c.x, c.y);
 	}
 }
 
@@ -154,7 +154,7 @@ public ArrayList<Coordinate> setElementsAndReport(PlaceableInCell placeable, int
 		}
 		int cellIndex = Chance.rand(0, cells.size() - 1);
 		Coordinate cell = cells.get(cellIndex);
-		placeable.place(location.getPlane(), cell.x, cell.y);
+		placeable.place(location.getActivePlane(), cell.x, cell.y);
 		unsetCell(cell);
 		coords.add(cell);
 	}
@@ -167,7 +167,7 @@ public Coordinate setElementAndReport(PlaceableInCell placeable) {
 	}
 	int cellIndex = Chance.rand(0, cells.size() - 1);
 	Coordinate cell = cells.get(cellIndex);
-	placeable.place(location.getPlane(), cell.x, cell.y);
+	placeable.place(location.getActivePlane(), cell.x, cell.y);
 	unsetCell(cell);
 	return cell;
 }
@@ -178,7 +178,7 @@ public Coordinate setObjectAndReport(ObjectType objectType) {
 	}
 	int cellIndex = Chance.rand(0, cells.size() - 1);
 	Coordinate cell = cells.get(cellIndex);
-	EntityPlacer.place(location.getPlane(), objectType, cell.x, cell.y);
+	EntityPlacer.place(location.getActivePlane(), objectType, cell.x, cell.y);
 
 	unsetCell(cell);
 	return cell;

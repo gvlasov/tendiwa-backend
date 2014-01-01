@@ -18,23 +18,39 @@ protected final int width;
 protected final int height;
 final int y;
 final int x;
-private HorizontalPlane plane;
+/**
+ * A HorizontalPlane where entities are placed.
+ */
+private HorizontalPlane activePlane;
 
-Location(HorizontalPlane plane, int x, int y, int width, int height) {
+Location(HorizontalPlane activePlane, int x, int y, int width, int height) {
 	this.x = x;
 	this.y = y;
-	this.plane = plane;
+	this.activePlane = activePlane;
 	this.width = width;
 	this.height = height;
 }
 
-public HorizontalPlane getPlane() {
-	return plane;
+public HorizontalPlane getActivePlane() {
+	return activePlane;
+}
+
+/**
+ * Changes active plane to another plane.
+ *
+ * @param height
+ * 	Vertical number of plane. If plane with that number doesn't exist, it is created with a call to this method. Plane
+ * 	{@code height-1} must exist to change to plane {@code height}.
+ * @throws IllegalArgumentException
+ * 	if there is no plane {@code height-1}.
+ */
+public void changePlane(int height) {
+	activePlane = Tendiwa.getWorld().getPlane(height);
 }
 
 public void line(int startX, int startY, int endX, int endY, TypePlaceableInCell placeable) {
 	if (startX == endX && startY == endY) {
-		EntityPlacer.place(plane, placeable, x + startX, y + startY);
+		EntityPlacer.place(activePlane, placeable, x + startX, y + startY);
 		return;
 	}
 	Coordinate[] cells = vector(startX, startY, endX, endY);
@@ -45,13 +61,13 @@ public void line(int startX, int startY, int endX, int endY, TypePlaceableInCell
 		int x2 = cells[i + 1].x;
 		int y2 = cells[i + 1].y;
 
-		EntityPlacer.place(plane, placeable, this.x + x, this.y + y);
+		EntityPlacer.place(activePlane, placeable, this.x + x, this.y + y);
 		if (i < cells.length - 1 && x != x2 && y != y2) {
 			int cx = x + ((x2 > x) ? 1 : -1);
-			EntityPlacer.place(plane, placeable, this.x + cx, this.y + y);
+			EntityPlacer.place(activePlane, placeable, this.x + cx, this.y + y);
 		}
 		if (i == size - 2) {
-			EntityPlacer.place(plane, placeable, this.x + x2, this.y + y2);
+			EntityPlacer.place(activePlane, placeable, this.x + x2, this.y + y2);
 		}
 	}
 }
@@ -161,10 +177,10 @@ public void circle(int cX, int cY, int r, PlaceableInCell placeable, boolean fil
 	} while (yCoord > 0);
 	int size = x.size();
 	for (int i = 0; i < size; i++) {
-		placeable.place(plane, this.x + cX + x.get(i), this.y + cY + y.get(i));
-		placeable.place(plane, this.x + cX - x.get(i), this.y + cY + y.get(i));
-		placeable.place(plane, this.x + cX + x.get(i), this.y + cY - y.get(i));
-		placeable.place(plane, this.x + cX - x.get(i), this.y + cY - y.get(i));
+		placeable.place(activePlane, this.x + cX + x.get(i), this.y + cY + y.get(i));
+		placeable.place(activePlane, this.x + cX - x.get(i), this.y + cY + y.get(i));
+		placeable.place(activePlane, this.x + cX + x.get(i), this.y + cY - y.get(i));
+		placeable.place(activePlane, this.x + cX - x.get(i), this.y + cY - y.get(i));
 	}
 }
 
@@ -264,7 +280,7 @@ public ArrayList<Coordinate> polygon(ArrayList<Coordinate> coords, boolean mode)
 public void fillWithCells(FloorType floor) {
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
-			plane.placeFloor(floor, x + i, y + j);
+			activePlane.placeFloor(floor, x + i, y + j);
 		}
 	}
 }
@@ -317,7 +333,7 @@ public ArrayList<Coordinate> closeCells(int startX, int startY, int length, Pass
 					continue;
 				}
 
-				if (plane.getPassability(thisNumX, thisNumY) != pass) {
+				if (activePlane.getPassability(thisNumX, thisNumY) != pass) {
 					continue;
 				}
 				if (Math.floor(EnhancedPoint.distance(startX, startY, thisNumX, thisNumY)) >= length) {
@@ -372,10 +388,10 @@ public ArrayList<Coordinate> getElementsAreaBorder(int startX, int startY, Place
 				if (thisNumX < 0 || thisNumX >= getWidth() || thisNumY < 0 || thisNumY >= getHeight() || pathTable[thisNumX][thisNumY] != 0 || EnhancedPoint.distance(startX, startY, thisNumX, thisNumY) > depth) {
 					continue;
 				}
-				if (placeable.containedIn(plane, thisNumX, thisNumY) && !(thisNumX == startX && thisNumY == startY)) {
+				if (placeable.containedIn(activePlane, thisNumX, thisNumY) && !(thisNumX == startX && thisNumY == startY)) {
 					pathTable[thisNumX][thisNumY] = t + 1;
 					newFront.add(new Coordinate(thisNumX, thisNumY));
-				} else if (!placeable.containedIn(plane, thisNumX, thisNumY)) {
+				} else if (!placeable.containedIn(activePlane, thisNumX, thisNumY)) {
 					cells.add(new Coordinate(x, y));
 				}
 			}
@@ -394,7 +410,7 @@ public void waveStructure(int startX, int startY, PlaceableInCell placeable, int
 		Arrays.fill(pathTable[i], 0);
 		Arrays.fill(canceled[i], 0);
 	}
-	placeable.place(plane, startX, startY);
+	placeable.place(activePlane, startX, startY);
 	int t = 0;
 	do {
 		int size = newFront.size();
@@ -422,7 +438,7 @@ public void waveStructure(int startX, int startY, PlaceableInCell placeable, int
 					canceled[thisNumX][thisNumY] = 1;
 					continue;
 				}
-				placeable.place(plane, thisNumX, thisNumY);
+				placeable.place(activePlane, thisNumX, thisNumY);
 				newFront.put(newFront.size(), new Coordinate(thisNumX, thisNumY));
 			}
 		}
@@ -472,7 +488,7 @@ public int[][] getPathTable(int startX, int startY, int endX, int endY, boolean 
 				if (thisNumX == endX && thisNumY == endY) {
 					isPathFound = true;
 				}
-				if (plane.getPassability(thisNumX, thisNumY) == Passability.FREE && !(thisNumX == startX && thisNumY == startY)) {
+				if (activePlane.getPassability(thisNumX, thisNumY) == Passability.FREE && !(thisNumX == startX && thisNumY == startY)) {
 					pathTable[thisNumX][thisNumY] = t + 1;
 					newFront.add(new Coordinate(thisNumX, thisNumY));
 				}
@@ -599,7 +615,6 @@ public ArrayList<Coordinate> getPath(int startX, int startY, int destinationX, i
  * @param endX
  * @param endY
  * @param placeable
- * @see Location#boldLine(int, int, int, int, PlaceableInCell, int)
  */
 public void boldLine(int startX, int startY, int endX, int endY, TypePlaceableInCell placeable) {
 	boldLine(startX, startY, endX, endY, placeable, 3);
@@ -660,7 +675,7 @@ public void drawPath(int startX, int startY, int endX, int endY, PlaceableInCell
 	int size = path.size();
 	for (int i = 0; i < size; i++) {
 		Coordinate coordinate = path.get(i);
-		placeable.place(plane, coordinate.x, coordinate.y);
+		placeable.place(activePlane, coordinate.x, coordinate.y);
 	}
 }
 
@@ -691,10 +706,10 @@ protected CellCollection getCoast(int startX, int startY) {
 				if (thisNumX < 0 || thisNumX >= getWidth() || thisNumY < 0 || thisNumY >= getHeight() || pathTable[thisNumX][thisNumY] != 0) {
 					continue;
 				}
-				if (plane.getPassability(thisNumX, thisNumY) == Passability.NO && !(thisNumX == startX && thisNumY == startY)) {
+				if (activePlane.getPassability(thisNumX, thisNumY) == Passability.NO && !(thisNumX == startX && thisNumY == startY)) {
 					pathTable[thisNumX][thisNumY] = t + 1;
 					newFront.add(new Coordinate(thisNumX, thisNumY));
-				} else if (plane.getPassability(thisNumX, thisNumY) != Passability.NO) {
+				} else if (activePlane.getPassability(thisNumX, thisNumY) != Passability.NO) {
 					cells.add(new Coordinate(x, y));
 				}
 			}
@@ -709,7 +724,7 @@ public ArrayList<Coordinate> getCellsAroundCell(int x, int y) {
 	int x1[] = {x, x + 1, x + 1, x + 1, x, x - 1, x - 1, x - 1};
 	int y1[] = {y - 1, y - 1, y, y + 1, y + 1, y + 1, y, y - 1};
 	for (int i = 0; i < 8; i++) {
-		if (plane.getPassability(x1[i], y1[i]) == Passability.FREE) {
+		if (activePlane.getPassability(x1[i], y1[i]) == Passability.FREE) {
 			answer.add(new Coordinate(x1[i], y1[i]));
 		}
 	}
@@ -796,7 +811,7 @@ public void fillRectangle(Rectangle r, TypePlaceableInCell placeable) {
 	try {
 		for (x = r.x; x < r.x + r.width; x++) {
 			for (y = r.y; y < r.y + r.height; y++) {
-				EntityPlacer.place(plane, placeable, this.x + x, this.y + y);
+				EntityPlacer.place(activePlane, placeable, this.x + x, this.y + y);
 			}
 		}
 	} catch (IndexOutOfBoundsException e) {
@@ -815,4 +830,34 @@ public int getHeight() {
 public TerrainTransition.TerrainTransitionBuilder transitionBuilder() {
 	return new TerrainTransition.TerrainTransitionBuilder().setLocation(this);
 }
+
+/**
+ * Places a single entity in a cell.
+ *
+ * @param placeable
+ * 	What to place in a cell.
+ * @param x
+ * 	X coordinate of a cell in location coordinates.
+ * @param y
+ * 	Y coordinate of a cell in location coordinates.
+ */
+public void place(TypePlaceableInCell placeable, int x, int y) {
+	assert placeable != null;
+	EntityPlacer.place(activePlane, placeable, x, y);
+}
+
+/**
+ * Places a single entity in a cell.
+ *
+ * @param placeable
+ * 	What to place in a cell.
+ * @param point
+ * 	Point in location coordinates.
+ */
+public void place(TypePlaceableInCell placeable, EnhancedPoint point) {
+	assert placeable != null;
+	assert point != null;
+	EntityPlacer.place(activePlane, placeable, point.x, point.y);
+}
+
 }

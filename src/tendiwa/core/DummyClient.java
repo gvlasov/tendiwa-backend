@@ -65,12 +65,12 @@ TendiwaClientEventManager manager = new TendiwaClientEventManager() {
 	}
 
 	@Override
-	public void event(EventUnwield eventUnwield) {
+	public void event(EventUnwield e) {
 		Tendiwa.signalAnimationCompleted();
 	}
 
 	@Override
-	public void event(EventProjectileFly eventProjectileFly) {
+	public void event(EventProjectileFly e) {
 		Tendiwa.signalAnimationCompleted();
 	}
 
@@ -80,17 +80,22 @@ TendiwaClientEventManager manager = new TendiwaClientEventManager() {
 	}
 
 	@Override
-	public void event(EventExplosion eventExplosion) {
+	public void event(EventExplosion e) {
 		Tendiwa.signalAnimationCompleted();
 	}
 
 	@Override
-	public void event(EventGetDamage eventGetDamage) {
+	public void event(EventGetDamage e) {
 		Tendiwa.signalAnimationCompleted();
 	}
 
 	@Override
 	public void event(EventAttack eventAttack) {
+		Tendiwa.signalAnimationCompleted();
+	}
+
+	@Override
+	public void event(EventDie e) {
 		Tendiwa.signalAnimationCompleted();
 	}
 };

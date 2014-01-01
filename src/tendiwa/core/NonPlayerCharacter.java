@@ -32,7 +32,6 @@ public NonPlayerCharacter(HorizontalPlane plane, CharacterType characterType, in
 	destY = y;
 }
 
-
 /* Observations */
 public void updateObservation(Character character, int x, int y) {
 	Coordinate c = lastSeenEnemyCoord.get(character);
@@ -472,24 +471,21 @@ void tryToSee(Character aim) {
 	}
 }
 
-/**
- * Checks if this character can see another character and, if he can, saves that another character as visible for this
- * character.
- *
- * @param aim
- */
 void tryToUnsee(Character aim) {
 	if (aim.isAlive() && !initialCanSee(aim.x, aim.y)) {
 		seenCharacters.remove(aim);
-		timeStream.removeObserver(aim, this);
 		if (isEnemy(aim)) {
 			unseenEnemies.add(aim);
 		}
 	}
 }
+void unsee(Character aim) {
+	assert seenCharacters.contains(aim);
+	seenCharacters.remove(aim);
+}
 
 /**
- * Tries to see/unsee all characters whithin vision range
+ * Tries to see/unsee all characters within vision range
  */
 public void getVisibleEntities() {
 	for (Character character : timeStream.characters) {

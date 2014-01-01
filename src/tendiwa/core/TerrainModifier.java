@@ -34,7 +34,7 @@ public void excludeRectanglesHaving(PlaceableInCell placeable) {
 	for (EnhancedRectangle r : rs.getRectangles()) {
 		for (int x = r.x; x < r.x + r.width; x++) {
 			for (int y = r.y; y < r.y + r.height; y++) {
-				if (placeable.containedIn(location.getPlane(), location.x + x, location.y + y)) {
+				if (placeable.containedIn(location.getActivePlane(), location.x + x, location.y + y)) {
 					rs.excludeRectangle(r);
 					continue keyLoop;
 				}

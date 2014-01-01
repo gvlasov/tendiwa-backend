@@ -27,7 +27,7 @@ private final World WORLD;
 private final Character PLAYER;
 
 Tendiwa(String args[]) throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException {
-	CLIENT = new DummyClient();
+	initWithDummyClient();
 	// Run game server and client.
 	ClassLoader classLoader = Tendiwa.class.getClassLoader();
 
@@ -78,6 +78,9 @@ Tendiwa(String args[]) throws ClassNotFoundException, IllegalAccessException, In
 	worldWidth = WORLD.getWidth();
 	worldHeight = WORLD.getHeight();
 	PLAYER = WORLD.getPlayer();
+}
+public static void initWithDummyClient() {
+	CLIENT = new DummyClient();
 }
 
 public static void main(String args[]) throws ClassNotFoundException, IOException, IllegalAccessException, InstantiationException {

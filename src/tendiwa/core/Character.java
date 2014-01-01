@@ -1,7 +1,6 @@
 package tendiwa.core;
 
 import org.tendiwa.events.*;
-import tendiwa.core.meta.Chance;
 import tendiwa.core.meta.Coordinate;
 import tendiwa.core.meta.Utils;
 
@@ -181,10 +180,14 @@ protected void castSpell(int spellId, int x, int y) {
 }
 
 protected void die() {
-	isAlive = false;
-	timeStream.claimCharacterDisappearance(this);
-	plane.getChunkWithCell(x, y).removeCharacter(this);
-	throw new UnsupportedOperationException();
+	synchronized (renderLockObject) {
+		isAlive = false;
+		timeStream.claimCharacterDisappearance(this);
+		plane.getChunkWithCell(x, y).removeCharacter(this);
+		Tendiwa.getClientEventManager().event(new EventDie(this));
+	}
+	Tendiwa.waitForAnimationToStartAndComplete();
+
 }
 
 public void putOn(UniqueItem item) {
@@ -710,6 +713,7 @@ public int hashCode() {
 }
 
 public boolean isAlive() {
+	assert isAlive;
 	return isAlive;
 }
 
@@ -784,6 +788,9 @@ public void getDamage(int amount, DamageType type, DamageSource damageSource) {
 		Tendiwa.getClientEventManager().event(new EventGetDamage(this, amount, damageSource, type));
 	}
 	Tendiwa.waitForAnimationToStartAndComplete();
+	if (hp >= 0) {
+		die();
+	}
 
 }
 
@@ -1050,7 +1057,7 @@ private ProjectileFlight computeProjectileFlightEndCoordinate(UniqueItem weapon,
 	Coordinate endCoordinate = new Coordinate(toX, toY);
 	Coordinate[] vector = Chunk.vector(x, y, toX, toY);
 	Character characterHit = null;
-	for (int i=1; i<vector.length; i++) {
+	for (int i = 1; i < vector.length; i++) {
 		Coordinate c = vector[i];
 		if (plane.hasCharacter(c.x, c.y) &&
 			testProjectileHit(weapon, projectile, toX, toY)) {
@@ -1111,8 +1118,8 @@ public DamageSourceType getSourceType() {
  */
 public boolean isUnderAnyThreat() {
 	for (NonPlayerCharacter observer : timeStream.getObservers(this)) {
-		System.out.println("Observer " + observer + " " + isEnemy(observer));
 		if (isEnemy(observer)) {
+			System.out.println(timeStream.getObservers(this));
 			return true;
 		}
 	}

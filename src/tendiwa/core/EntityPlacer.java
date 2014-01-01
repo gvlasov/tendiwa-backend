@@ -8,6 +8,9 @@ public static void place(HorizontalPlane plane, TypePlaceableInCell entityType, 
 	if (entityType instanceof FloorType) {
 		plane.placeFloor((FloorType) entityType, x, y);
 	} else if (entityType instanceof WallType) {
+		if (entityType == WallType.VOID) {
+			plane.placeWall(WallType.VOID, x, y);
+		}
 		plane.placeWall((WallType) entityType, x, y);
 	} else if (entityType instanceof ItemType) {
 		if (((ItemType) entityType).isStackable()) {

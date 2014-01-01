@@ -5,35 +5,37 @@ import org.tendiwa.events.*;
 public interface TendiwaClientEventManager {
 void event(EventMove e);
 
-void event(EventSay eventSay);
+void event(EventSay e);
 
-void event(EventFovChange eventFovChange);
+void event(EventFovChange e);
 
-void event(EventInitialTerrain eventInitialTerrain);
+void event(EventInitialTerrain e);
 
-void event(EventItemDisappear eventItemDisappear);
+void event(EventItemDisappear e);
 
-void event(EventGetItem eventGetItem);
+void event(EventGetItem e);
 
-void event(EventLoseItem eventLoseItem);
+void event(EventLoseItem e);
 
-void event(EventItemAppear eventItemAppear);
+void event(EventItemAppear e);
 
-void event(EventPutOn eventPutOn);
+void event(EventPutOn e);
 
-void event(EventWield eventWield);
+void event(EventWield e);
 
-void event(EventTakeOff eventTakeOff);
+void event(EventTakeOff e);
 
-void event(EventUnwield eventUnwield);
+void event(EventUnwield e);
 
-void event(EventProjectileFly eventProjectileFly);
+void event(EventProjectileFly e);
 
-void event(EventSound eventSound);
+void event(EventSound e);
 
-void event(EventExplosion eventExplosion);
+void event(EventExplosion e);
 
-void event(EventGetDamage eventGetDamage);
+void event(EventGetDamage e);
 
-void event(EventAttack eventAttack);
+void event(EventAttack e);
+
+void event(EventDie e);
 }

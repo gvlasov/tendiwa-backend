@@ -32,6 +32,6 @@ public static LocationDrawer getLocationDrawerFor(LocationPlace place) {
 			return drawer;
 		}
 	}
-	throw new LocationException("There is no LocationDrawer suitable for place "+place);
+	throw new LocationException("There is no LocationDrawer suitable for place "+place+" with features "+features);
 }
 }

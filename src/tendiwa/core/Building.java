@@ -92,7 +92,7 @@ public Coordinate placeDoor(EnhancedRectangle r, CardinalDirection side, ObjectT
 	 * Places door in the middle of particular side of room.
 	 */
 	Coordinate c = r.getMiddleOfSide(side).moveToSide(side, 1);
-	EntityPlacer.place(settlement.getPlane(), object, c.x, c.y);
+	EntityPlacer.place(settlement.getActivePlane(), object, c.x, c.y);
 	return c;
 }
 
@@ -101,7 +101,7 @@ public Coordinate placeDoor(EnhancedRectangle r, CardinalDirection side, Cardina
 	 * Places door in the particular cell on particular side of room
 	 */
 	Coordinate c = r.getCellFromSide(side, endOfSide, depth).moveToSide(side, 1);
-	EntityPlacer.place(settlement.getPlane(), door, c.x, c.y);
+	EntityPlacer.place(settlement.getActivePlane(), door, c.x, c.y);
 	return c;
 }
 
@@ -115,12 +115,12 @@ public Coordinate placeFrontDoor(CardinalDirection side, ObjectType door) {
 		ArrayList<Integer> xes = new ArrayList<>(cells.keySet());
 		dx = xes.get(Chance.rand(0, xes.size() - 1));
 		dy = cells.get(dx);
-		EntityPlacer.place(settlement.getPlane(), door, dx, dy);
+		EntityPlacer.place(settlement.getActivePlane(), door, dx, dy);
 	} else {
 		ArrayList<Integer> yes = new ArrayList<>(cells.keySet());
 		dy = yes.get(Chance.rand(0, yes.size() - 1));
 		dx = cells.get(dy);
-		EntityPlacer.place(settlement.getPlane(), door, dx, dy);
+		EntityPlacer.place(settlement.getActivePlane(), door, dx, dy);
 	}
 	switch (side) {
 		case N:
@@ -152,7 +152,7 @@ public Coordinate placeFrontDoor(EnhancedRectangle r, CardinalDirection side, Ob
 	 */
 	Coordinate doorCoord = r.getMiddleOfSide(side).moveToSide(side, 1);
 
-	EntityPlacer.place(settlement.getPlane(), door, doorCoord.x, doorCoord.y);
+	EntityPlacer.place(settlement.getActivePlane(), door, doorCoord.x, doorCoord.y);
 	lobby = r;
 	frontDoor = doorCoord;
 	return frontDoor;
@@ -173,7 +173,7 @@ public HashMap<Integer, Integer> findDoorAppropriateCells(CardinalDirection side
 		keys = new HashSet<>(cells.keySet());
 		for (int x : keys) {
 			int y = cells.get(x);
-			if (settlement.getPlane().getPassability(x, y + 1) != Passability.FREE) {
+			if (settlement.getActivePlane().getPassability(x, y + 1) != Passability.FREE) {
 				cells.remove(x);
 			}
 		}
@@ -189,7 +189,7 @@ public HashMap<Integer, Integer> findDoorAppropriateCells(CardinalDirection side
 		keys = new HashSet<Integer>(cells.keySet());
 		for (int y : keys) {
 			int x = cells.get(y);
-			if (settlement.getPlane().getPassability(x - 1, y) != Passability.FREE) {
+			if (settlement.getActivePlane().getPassability(x - 1, y) != Passability.FREE) {
 				cells.remove(y);
 			}
 		}
@@ -205,7 +205,7 @@ public HashMap<Integer, Integer> findDoorAppropriateCells(CardinalDirection side
 		keys = new HashSet<>(cells.keySet());
 		for (int x : keys) {
 			int y = cells.get(x);
-			if (settlement.getPlane().getPassability(x, y - 1) != Passability.FREE) {
+			if (settlement.getActivePlane().getPassability(x, y - 1) != Passability.FREE) {
 				cells.remove(x);
 			}
 		}
@@ -221,7 +221,7 @@ public HashMap<Integer, Integer> findDoorAppropriateCells(CardinalDirection side
 		keys = new HashSet<Integer>(cells.keySet());
 		for (int y : keys) {
 			int x = cells.get(y);
-			if (settlement.getPlane().getPassability(x + 1, y) != Passability.FREE) {
+			if (settlement.getActivePlane().getPassability(x + 1, y) != Passability.FREE) {
 				cells.remove(y);
 			}
 		}
@@ -242,7 +242,7 @@ public HashMap<Integer, Integer> findDoorAppropriateCells(Rectangle r, CardinalD
 		keys = new HashSet<>(cells.keySet());
 		for (int x : keys) {
 			y = cells.get(x);
-			if (settlement.getPlane().getPassability(x, y + 1) != Passability.FREE) {
+			if (settlement.getActivePlane().getPassability(x, y + 1) != Passability.FREE) {
 				cells.remove(x);
 			}
 		}
@@ -256,7 +256,7 @@ public HashMap<Integer, Integer> findDoorAppropriateCells(Rectangle r, CardinalD
 		keys = new HashSet<>(cells.keySet());
 		for (int y : keys) {
 			x = cells.get(y);
-			if (settlement.getPlane().getPassability(x - 1, y) != Passability.FREE) {
+			if (settlement.getActivePlane().getPassability(x - 1, y) != Passability.FREE) {
 				cells.remove(y);
 			}
 		}
@@ -270,7 +270,7 @@ public HashMap<Integer, Integer> findDoorAppropriateCells(Rectangle r, CardinalD
 		keys = new HashSet<>(cells.keySet());
 		for (int x : keys) {
 			y = cells.get(x);
-			if (settlement.getPlane().getPassability(x, y - 1) != Passability.FREE) {
+			if (settlement.getActivePlane().getPassability(x, y - 1) != Passability.FREE) {
 				cells.remove(x);
 			}
 		}
@@ -284,7 +284,7 @@ public HashMap<Integer, Integer> findDoorAppropriateCells(Rectangle r, CardinalD
 		keys = new HashSet<Integer>(cells.keySet());
 		for (int y : keys) {
 			x = cells.get(y);
-			if (settlement.getPlane().getPassability(x + 1, y) != Passability.FREE) {
+			if (settlement.getActivePlane().getPassability(x + 1, y) != Passability.FREE) {
 				cells.remove(y);
 			}
 		}
@@ -333,7 +333,7 @@ public TerrainModifier buildBasis(FloorType floor, ObjectType walls, ObjectType 
 
 	for (RectangleSystem.Neighborship e : graph.edgeSet()) {
 		Coordinate c = connectRoomsWithDoor(graph.getEdgeSource(e), graph.getEdgeTarget(e), door);
-		EntityPlacer.place(settlement.getPlane(), floor, c.x, c.y);
+		EntityPlacer.place(settlement.getActivePlane(), floor, c.x, c.y);
 	}
 	rooms = rs.getRectangles();
 	return modifier;
@@ -359,7 +359,7 @@ protected Coordinate connectRoomsWithDoor(Rectangle r1, Rectangle r2, ObjectType
 		// y - min.
 		x = Chance.rand(Math.max(r1.x, r2.x), Math.min(r1.x + r1.width - 1, r2.x + r2.width - 1));
 	}
-	EntityPlacer.place(settlement.getPlane(), door, x, y);
+	EntityPlacer.place(settlement.getActivePlane(), door, x, y);
 	return new Coordinate(x, y);
 }
 
@@ -368,7 +368,7 @@ protected void fillFloor(Rectangle r, FloorType floor) {
 }
 
 private boolean isDoor(int x, int y) {
-	GameObject gameObject = settlement.getPlane().getGameObject(x, y);
+	GameObject gameObject = settlement.getActivePlane().getGameObject(x, y);
 	return gameObject != null && gameObject.getType().getObjectClass() == ObjectClass.DOOR;
 }
 

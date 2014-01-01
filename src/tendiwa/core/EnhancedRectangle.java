@@ -1,7 +1,6 @@
 package tendiwa.core;
 
 import com.google.common.collect.ImmutableList;
-import tendiwa.core.meta.Chance;
 import tendiwa.core.meta.Coordinate;
 import tendiwa.core.meta.Range;
 
@@ -811,6 +810,39 @@ public RectangleSidePiece getCommonSidePiece(EnhancedRectangle neighbor) {
 	}
 	return new RectangleSidePiece(commonSidePiece.direction, x, y, commonPieceRange.getLength());
 
+}
+
+/**
+ * Returns a point that resides on a side of this rectangle.
+ *
+ * @return
+ */
+public EnhancedPoint getPointOnSide(CardinalDirection side, int shift) {
+	if (side == null) {
+		throw new NullPointerException("Argument `side` can't be null");
+	}
+	// Be default, shift shifts from left to right or from top to bottom.
+	if (shift < 0) {
+		// If shift is negative, then it will denote cell position from right to left in case side is N or S...
+		if (side.isVertical()) {
+			shift = width + shift - 1;
+		} else {
+			// Of from bottom to top if side is W or E.
+			shift = height + shift - 1;
+		}
+	}
+	switch (side) {
+		case N:
+			return new EnhancedPoint(x + shift, y);
+		case E:
+			return new EnhancedPoint(x + width - 1, y + shift);
+		case S:
+			return new EnhancedPoint(x + shift, y + height - 1);
+		case W:
+			return new EnhancedPoint(x, y + shift - 1);
+		default:
+			throw new UnsupportedOperationException();
+	}
 }
 
 /**
