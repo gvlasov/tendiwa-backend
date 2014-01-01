@@ -8,7 +8,6 @@ public interface ObjectType extends TypePlaceableInCell, Resourceable {
 
 public Passability getPassability();
 
-public ActionWithoutTarget onUse();
 
 public ObjectClass getObjectClass();
 

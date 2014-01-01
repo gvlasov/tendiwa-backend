@@ -245,9 +245,8 @@ void removeObserver(Character aim, NonPlayerCharacter observer) {
 
 public void claimCharacterDisappearance(Character character) {
 	for (NonPlayerCharacter ch : observersOf.get(character)) {
-		System.out.println(ch + " unsees " + character);
 		ch.unsee(character);
-		removeObserver(character, ch);
+//		removeObserver(character, ch); this caused concurrent modification
 	}
 	if (!character.isPlayer()) {
 		for (Character ch : observersOf.keySet()) {

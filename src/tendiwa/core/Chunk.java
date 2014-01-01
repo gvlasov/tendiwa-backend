@@ -260,7 +260,12 @@ public boolean hasAnyItems(int x, int y) {
 	return items.containsKey(key) && items.get(key).size() > 0;
 }
 
-public void setObject(ObjectType objectType, int x, int y) {
-	objects.put(x * SIZE + y, new GameObject(objectType));
+public void setObject(GameObject object, int x, int y) {
+	int key = x * SIZE + y;
+	if (objects.containsKey(key)) {
+		throw new UnsupportedOperationException("Can't place an object " + object + " to cell " + x + ":" + y
+			+ " because in that cell there is already an object " + objects.get(key));
+	}
+	objects.put(key, object);
 }
 }

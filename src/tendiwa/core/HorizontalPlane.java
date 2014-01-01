@@ -5,12 +5,16 @@ import com.google.common.collect.ImmutableSet;
 import java.util.Set;
 
 /**
- * <p> A HorizontalPlane is a single storey of the world, much like a single level of a dungeon in traditional
- * rogue-likes. It is a potentially infinite Cartesian plane with integral coordinates divided by square {@link Chunk}s.
- * No actions can be interplanar (you can't shoot an arrow from one plane to another), however characters can move from
- * one plane to another using stairs, shafts, teleportation or other means. </p> <p> Not to be mistaken with {@link
- * TimeStream} </p> <p> The purpose of HorizontalPlane is to store and access chunks of terrain located on the same
- * absolute height in the world. </p>
+ * The purpose of HorizontalPlane is to store and access chunks of terrain located on the same absolute height in the
+ * world.
+ * <p/>
+ * A HorizontalPlane is a single storey of the world, much like a single level of a dungeon in traditional rogue-likes.
+ * It is a potentially infinite Cartesian plane with integral coordinates divided by square {@link Chunk}s. No actions
+ * can be inter-planar (you can't shoot an arrow from one plane to another), however characters can move from one plane
+ * to another using stairs, shafts, teleportation or other means; and also certain interactions can be interplanar, for
+ * example, sound waves spreading.
+ * <p/>
+ * Not to be mistaken with {@link TimeStream}
  */
 public class HorizontalPlane {
 protected final Chunk[][] chunks;
@@ -19,14 +23,18 @@ private final int height;
 public HorizontalPlane upperPlane;
 public HorizontalPlane lowerPlane;
 private int numberOfChunks = 0;
+private World world;
 
 /**
  * @param width
  * 	Width of plane in cells.
  * @param height
  * 	Height of plane in cells.
+ * @param world
+ * 	World in which this HorizontalPlane resides.
  */
-public HorizontalPlane(int width, int height) {
+HorizontalPlane(int width, int height, World world) {
+	this.world = world;
 	chunks = new Chunk[width / Chunk.SIZE + 1][height / Chunk.SIZE + 1];
 	this.width = width;
 	this.height = height;
@@ -178,23 +186,23 @@ public void placeWall(WallType wall, int x, int y) {
 }
 
 public boolean hasAnyItems(int x, int y) {
-	Chunk chunk = getChunkWithCell(x, y);
-	return chunk.hasAnyItems(x - chunk.x, y - chunk.y);
+	return getChunkWithCell(x, y).hasAnyItems(x, y);
 }
 
 public boolean hasCharacter(int x, int y) {
-	Chunk chunk = getChunkWithCell(x, y);
-	return chunk.hasCharacter(x, y);
+	return getChunkWithCell(x, y).hasCharacter(x, y);
+}
+
+public boolean hasObject(int x, int y) {
+	return getChunkWithCell(x, y).hasObject(x, y);
 }
 
 public void place(TypePlaceableInCell entityType, int x, int y) {
 	EntityPlacer.place(this, entityType, x, y);
-
 }
 
-public void placeObject(ObjectType o, int x, int y) {
-	Chunk chunk = getChunkWithCell(x, y);
-	chunk.setObject(o, x - chunk.x, y - chunk.y);
+public void placeObject(GameObject gameObject, int x, int y) {
+	getChunkWithCell(x, y).setObject(gameObject, x, y);
 }
 
 public Set<Chunk> getChunksAroundCoordinate(int x, int y, int squareSide) {
@@ -212,6 +220,11 @@ public Set<Chunk> getChunksAroundCoordinate(int x, int y, int squareSide) {
 }
 
 private Chunk getChunkAt(int chunkX, int chunkY) {
-	return chunks[chunkX/Chunk.SIZE][chunkY/Chunk.SIZE];
+	return chunks[chunkX / Chunk.SIZE][chunkY / Chunk.SIZE];
 }
+
+public World getWorld() {
+	return world;
+}
+
 }

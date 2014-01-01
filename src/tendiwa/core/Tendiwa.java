@@ -48,12 +48,7 @@ Tendiwa(String args[]) throws ClassNotFoundException, IllegalAccessException, In
 		throw new RuntimeException("No world-creating modules provided");
 	}
 
-	// Creating world
-	WorldProvider worldProvider = (WorldProvider) modulesCreatingWorlds.get(0).newInstance();
-	Server.SERVER.setWorld(worldProvider);
-	if (SERVER.getWorld().getPlayer() == null) {
-		throw new RuntimeException("WorldProvider module did not specify the initial position of PlayerCharacter");
-	}
+	createWorld((WorldProvider) modulesCreatingWorlds.get(0).newInstance());
 
 	// Initializing client
 	CLIENT_CONF_FILE = "/client.conf";
@@ -79,6 +74,14 @@ Tendiwa(String args[]) throws ClassNotFoundException, IllegalAccessException, In
 	worldHeight = WORLD.getHeight();
 	PLAYER = WORLD.getPlayer();
 }
+
+public static void createWorld(WorldProvider worldProvider) {
+	Server.SERVER.setWorld(worldProvider);
+	if (Server.SERVER.getWorld().getPlayer() == null) {
+		throw new RuntimeException("WorldProvider module did not specify the initial position of player character");
+	}
+}
+
 public static void initWithDummyClient() {
 	CLIENT = new DummyClient();
 }
@@ -96,7 +99,7 @@ public static void main(String args[]) throws ClassNotFoundException, IOExceptio
 }
 
 public static World getWorld() {
-	return INSTANCE.WORLD;
+	return Server.SERVER.getWorld();
 }
 
 public static Thread getServerThread() {

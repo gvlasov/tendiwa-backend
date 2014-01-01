@@ -45,7 +45,7 @@ public HorizontalPlane getActivePlane() {
  * 	if there is no plane {@code height-1}.
  */
 public void changePlane(int height) {
-	activePlane = Tendiwa.getWorld().getPlane(height);
+	activePlane = activePlane.getWorld().getPlane(height);
 }
 
 public void line(int startX, int startY, int endX, int endY, TypePlaceableInCell placeable) {
@@ -843,7 +843,7 @@ public TerrainTransition.TerrainTransitionBuilder transitionBuilder() {
  */
 public void place(TypePlaceableInCell placeable, int x, int y) {
 	assert placeable != null;
-	EntityPlacer.place(activePlane, placeable, x, y);
+	EntityPlacer.place(activePlane, placeable, this.x + x, this.y + y);
 }
 
 /**
@@ -857,7 +857,7 @@ public void place(TypePlaceableInCell placeable, int x, int y) {
 public void place(TypePlaceableInCell placeable, EnhancedPoint point) {
 	assert placeable != null;
 	assert point != null;
-	EntityPlacer.place(activePlane, placeable, point.x, point.y);
+	EntityPlacer.place(activePlane, placeable, x + point.x, y + point.y);
 }
 
 }

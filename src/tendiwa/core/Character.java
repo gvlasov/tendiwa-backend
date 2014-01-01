@@ -1119,7 +1119,6 @@ public DamageSourceType getSourceType() {
 public boolean isUnderAnyThreat() {
 	for (NonPlayerCharacter observer : timeStream.getObservers(this)) {
 		if (isEnemy(observer)) {
-			System.out.println(timeStream.getObservers(this));
 			return true;
 		}
 	}

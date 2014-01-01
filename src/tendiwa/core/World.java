@@ -1,6 +1,7 @@
 package tendiwa.core;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Set;
 
 import static tendiwa.core.DSL.worldBuilder;
@@ -12,14 +13,20 @@ protected final int height;
 final HorizontalPlane defaultPlane;
 private Character playerCharacter;
 private TimeStream timeStream;
-private ArrayList<HorizontalPlane> planes = new ArrayList<>();
+private HashMap<Integer, HorizontalPlane> planes = new HashMap<>();
+private static final int defaultPlaneIndex = Integer.MAX_VALUE/2;
 
 public World(int width, int height) {
 	this.width = width;
 	this.height = height;
-	defaultPlane = new HorizontalPlane(width, height);
-	defaultPlane.touchChunks(0, 0, width, height);
+	defaultPlane = initPlane();
+	planes.put(0, defaultPlane);
 	this.timeStream = new TimeStream();
+}
+public HorizontalPlane initPlane() {
+	HorizontalPlane plane = new HorizontalPlane(width, height, this);
+	plane.touchChunks(0, 0, width, height);
+	return plane;
 }
 
 public static World create(WorldDrawer worldDrawer, int width, int height) {
@@ -137,25 +144,25 @@ public TimeStream getTimeStream() {
 }
 
 /**
- * Lazily returns a HorizontalPlane with index {@code height}. Planes stack on top of each other, with default plane
- * having index 0. If plane with index {@code height} doesn't exist, this method creates that plane. If it does exist,
- * an existing plane is returned. However, to create a plane with index {@code height}, a plane with index {@code
- * height-1} must exist.
+ * Lazily returns a HorizontalPlane with index {@code level}. Planes stack on top of each other, with default plane
+ * having index 0. If plane with index {@code level} doesn't exist, this method creates that plane. If it does exist,
+ * an existing plane is returned. However, to create a plane with index {@code level}, a plane with index {@code
+ * level-1} must exist.
  *
- * @param height
+ * @param level
  * 	Index of plane to retrieve.
  * @return An existing plane or a new plane, if a plane with that index doesn't exist.
  */
-public HorizontalPlane getPlane(int height) {
-	if (planes.get(height) == null) {
-		if (planes.get(height - 1) == null) {
-			throw new IllegalArgumentException("Can't create plane " + height + " because plane " + (height - 1) + " doesn't exist yet");
+public HorizontalPlane getPlane(int level) {
+	if (planes.get(level) == null) {
+		if (planes.get(level - 1) == null) {
+			throw new IllegalArgumentException("Can't create plane " + level + " because plane " + (level - 1) + " doesn't exist yet");
 		}
-		HorizontalPlane newPlane = new HorizontalPlane(width, height);
-		planes.add(height, newPlane);
+		HorizontalPlane newPlane = initPlane();
+		planes.put(level, newPlane);
 		return newPlane;
 	} else {
-		return planes.get(height);
+		return planes.get(level);
 	}
 }
 }

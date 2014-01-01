@@ -9,15 +9,18 @@ public static void place(HorizontalPlane plane, TypePlaceableInCell entityType, 
 		plane.placeFloor((FloorType) entityType, x, y);
 	} else if (entityType instanceof WallType) {
 		if (entityType == WallType.VOID) {
-			plane.placeWall(WallType.VOID, x, y);
+			plane.placeWall(null, x, y);
+		} else {
+			plane.placeWall((WallType) entityType, x, y);
 		}
-		plane.placeWall((WallType) entityType, x, y);
 	} else if (entityType instanceof ItemType) {
 		if (((ItemType) entityType).isStackable()) {
 			plane.addItem(new ItemPile((ItemType) entityType, 1), x, y);
 		} else {
 			plane.addItem(new UniqueItem((ItemType) entityType), x, y);
 		}
+	} else if (entityType instanceof ObjectType) {
+		plane.placeObject(new GameObject((ObjectType) entityType), x, y);
 	} else {
 		throw new UnsupportedOperationException(entityType.getClass().toString());
 	}

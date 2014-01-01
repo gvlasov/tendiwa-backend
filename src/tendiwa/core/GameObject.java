@@ -10,4 +10,11 @@ public GameObject(ObjectType type) {
 public ObjectType getType() {
 	return type;
 }
+
+@Override
+public String toString() {
+	return "GameObject{" +
+		"type=" + type +
+		'}';
+}
 }

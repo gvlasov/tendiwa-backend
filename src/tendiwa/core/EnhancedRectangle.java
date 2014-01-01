@@ -846,6 +846,17 @@ public EnhancedPoint getPointOnSide(CardinalDirection side, int shift) {
 }
 
 /**
+ * Creates a new {@link EnhancedRectangle} around the same central point but with dimensions reduced by {@code dSize*2}
+ * and shifted to {@link CardinalDirection#SE} by {@code dSize}.
+ *
+ * @param dSize
+ * @return
+ */
+public EnhancedRectangle shrink(int dSize) {
+	return new EnhancedRectangle(x+dSize, y-dSize, width-dSize*2, height-dSize*2);
+}
+
+/**
  * Finds out which side of this rectangle intersects by its dynamic coord an opposite side of another rectangle.
  *
  * @param r

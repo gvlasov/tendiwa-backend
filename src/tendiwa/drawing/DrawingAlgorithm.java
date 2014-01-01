@@ -17,7 +17,6 @@ static {
 public abstract void draw(T shape);
 
 protected void drawPoint(int x, int y, Color color) {
-	System.out.println(canvas.scale);
 	if (canvas.scale == 1) {
 		canvas.image.setRGB(x, y, color.getRGB());
 	} else {
