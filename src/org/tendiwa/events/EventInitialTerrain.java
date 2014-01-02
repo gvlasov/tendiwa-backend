@@ -27,7 +27,7 @@ public EventInitialTerrain() {
 					x,
 					y,
 					Tendiwa.getWorld().getDefaultPlane().getFloor(x, y),
-					Tendiwa.getWorld().getDefaultPlane().getWall(x, y)
+					Tendiwa.getWorld().getDefaultPlane().getGameObject(x, y)
 				));
 			}
 		}

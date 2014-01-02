@@ -4,7 +4,7 @@ public class EntityPlacer {
 public static final TypePlaceableInCell OBJECT_VOID = new TypePlaceableInCell() {
 };
 
-public static void place(HorizontalPlane plane, TypePlaceableInCell entityType, int x, int y) {
+public static <T extends TypePlaceableInCell> void place(HorizontalPlane plane, final T entityType, int x, int y) {
 	if (entityType instanceof FloorType) {
 		plane.placeFloor((FloorType) entityType, x, y);
 	} else if (entityType instanceof WallType) {
@@ -20,7 +20,12 @@ public static void place(HorizontalPlane plane, TypePlaceableInCell entityType, 
 			plane.addItem(new UniqueItem((ItemType) entityType), x, y);
 		}
 	} else if (entityType instanceof ObjectType) {
-		plane.placeObject(new GameObject((ObjectType) entityType), x, y);
+		plane.placeObject(new GameObject() {
+			@Override
+			public ObjectType getType() {
+				return (ObjectType) entityType;
+			}
+		}, x, y);
 	} else {
 		throw new UnsupportedOperationException(entityType.getClass().toString());
 	}

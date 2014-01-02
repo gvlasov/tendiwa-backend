@@ -1,10 +1,15 @@
 package tendiwa.core;
 
-public interface WallType extends TypePlaceableInCell, Resourceable {
+public interface WallType extends GameObject, TypePlaceableInCell, Resourceable {
 static WallType VOID = new WallType() {
 	@Override
 	public String getResourceName() {
-		return null;
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public ObjectType getType() {
+		throw new UnsupportedOperationException();
 	}
 };
 

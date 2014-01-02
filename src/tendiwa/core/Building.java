@@ -368,8 +368,9 @@ protected void fillFloor(Rectangle r, FloorType floor) {
 }
 
 private boolean isDoor(int x, int y) {
-	GameObject gameObject = settlement.getActivePlane().getGameObject(x, y);
-	return gameObject != null && gameObject.getType().getObjectClass() == ObjectClass.DOOR;
+//	GameObject gameObject = settlement.getActivePlane().getGameObject(x, y);
+//	return gameObject != null && gameObject.getType().getResourceName().equals("door");
+	throw new UnsupportedOperationException();
 }
 
 protected ArrayList<Coordinate> getCellsNearWalls(Rectangle r) {

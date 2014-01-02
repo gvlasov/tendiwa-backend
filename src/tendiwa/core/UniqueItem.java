@@ -11,4 +11,14 @@ public UniqueItem(ItemType type) {
 	super(type);
 }
 
+@Override
+public UniqueItem takeSingleItem() {
+	return this;
+}
+
+@Override
+public boolean isContainedIn(ItemCollection items) {
+	return items.items.containsValue(this);
+}
+
 }

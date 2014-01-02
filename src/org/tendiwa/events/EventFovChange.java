@@ -103,7 +103,7 @@ private void addCellToSeen(int x, int y) {
 		x,
 		y,
 		plane.getFloor(x, y),
-		plane.getWall(x, y)
+		plane.getGameObject(x, y)
 	));
 	if (plane.hasAnyItems(x, y)) {
 		for (Item item : plane.getItems(x, y)) {

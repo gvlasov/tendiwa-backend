@@ -48,7 +48,7 @@ public void changePlane(int height) {
 	activePlane = activePlane.getWorld().getPlane(height);
 }
 
-public void line(int startX, int startY, int endX, int endY, TypePlaceableInCell placeable) {
+public  void line(int startX, int startY, int endX, int endY, TypePlaceableInCell placeable) {
 	if (startX == endX && startY == endY) {
 		EntityPlacer.place(activePlane, placeable, x + startX, y + startY);
 		return;

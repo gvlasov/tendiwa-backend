@@ -1,20 +1,7 @@
 package tendiwa.core;
 
-public class GameObject {
-	private final ObjectType type;
+public interface GameObject {
 
-public GameObject(ObjectType type) {
-	this.type = type;
-}
+public ObjectType getType();
 
-public ObjectType getType() {
-	return type;
-}
-
-@Override
-public String toString() {
-	return "GameObject{" +
-		"type=" + type +
-		'}';
-}
 }

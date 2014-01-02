@@ -5,14 +5,22 @@ public final int x;
 public final int y;
 boolean visible;
 FloorType floor;
-WallType wall;
+GameObject object;
 
-public RenderCell(int x, int y, FloorType floor, WallType wall) {
+public RenderCell(int x, int y, FloorType floor, GameObject object) {
 	this.x = x;
 	this.y = y;
 	this.floor = floor;
-	this.wall = wall;
+	this.object = object;
 	visible = true;
+}
+
+public static int getY(int coord) {
+	return coord % Tendiwa.getWorld().getHeight();
+}
+
+public static int getX(Integer coord) {
+	return coord / Tendiwa.getWorld().getHeight();
 }
 
 @Override
@@ -22,16 +30,8 @@ public String toString() {
 		", y=" + y +
 		", visible=" + visible +
 		", floor=" + floor +
-		", wall=" + wall +
+		", object=" + object +
 		'}';
-}
-
-public static int getY(int coord) {
-	return coord % Tendiwa.getWorld().getHeight();
-}
-
-public static int getX(Integer coord) {
-	return coord / Tendiwa.getWorld().getHeight();
 }
 
 public boolean isVisible() {
@@ -54,11 +54,11 @@ public FloorType getFloor() {
 	return floor;
 }
 
-public WallType getWall() {
-	return wall;
+public GameObject getObject() {
+	return object;
 }
 
 public boolean hasWall() {
-	return wall != null;
+	return object != null && object instanceof WallType;
 }
 }

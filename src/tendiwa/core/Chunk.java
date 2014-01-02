@@ -15,8 +15,7 @@ public HorizontalPlane plane;
 protected HashMap<Integer, ItemCollection> items = new HashMap<>();
 Map<Integer, Character> characters = new HashMap<>();
 FloorType[][] floors;
-WallType[][] walls;
-Map<Integer, GameObject> objects = new HashMap<>();
+GameObject[][] objects;
 private ArrayList<SoundSource> soundSources = new ArrayList<>();
 transient private TimeStream timeStream;
 
@@ -24,7 +23,7 @@ public Chunk(HorizontalPlane plane, int x, int y) {
 	this.x = x;
 	this.y = y;
 	this.floors = new FloorType[SIZE][SIZE];
-	this.walls = new WallType[SIZE][SIZE];
+	this.objects = new GameObject[SIZE][SIZE];
 	this.plane = plane;
 }
 
@@ -98,7 +97,7 @@ void removeCharacter(Character character) {
 }
 
 public void removeObject(int x, int y) {
-	objects.remove(x * Chunk.SIZE + y);
+	objects[x - this.x][y - this.y] = null;
 	if (Tendiwa.getPlayerCharacter().isCellVisible(x, y) && Tendiwa.getPlayerCharacter().isVisionCacheEmpty()) {
 		Tendiwa.getPlayerCharacter().invalidateVisionCache();
 	}
@@ -159,7 +158,7 @@ public Character getCharacter(int x, int y) {
 }
 
 public GameObject getGameObject(int x, int y) {
-	return objects.get(x * SIZE + y);
+	return objects[x - this.x][y - this.y];
 }
 
 /**
@@ -181,7 +180,7 @@ public void addItem(Item item, int x, int y) {
 }
 
 public boolean hasObject(int x, int y) {
-	return objects.containsKey(x * SIZE + y);
+	return objects[x - this.x][y - this.y] != null;
 }
 
 public boolean hasCharacter(int x, int y) {
@@ -210,12 +209,8 @@ public void removeItem(ItemPile item, int x, int y) {
 	items.get(x * SIZE + y).removePile(item);
 }
 
-public boolean isDoor(int x, int y) {
-	return getObject(x, y).getType().getObjectClass() == ObjectClass.DOOR;
-}
-
 private GameObject getObject(int x, int y) {
-	return objects.get(x * SIZE + y);
+	return objects[x - this.x][y - this.y];
 }
 
 /**
@@ -238,12 +233,12 @@ public FloorType getFloor(int x, int y) {
  * 	Y coordinate of cell in chunk coordinates.
  * @return Id of a wall in the specified cell.
  */
-public WallType getWall(int x, int y) {
-	return walls[x - this.x][y - this.y];
+public GameObject getWall(int x, int y) {
+	return objects[x - this.x][y - this.y];
 }
 
 public void setWall(WallType wall, int x, int y) {
-	walls[x - this.x][y - this.y] = wall;
+	objects[x - this.x][y - this.y] = wall;
 }
 
 /**
@@ -261,11 +256,6 @@ public boolean hasAnyItems(int x, int y) {
 }
 
 public void setObject(GameObject object, int x, int y) {
-	int key = x * SIZE + y;
-	if (objects.containsKey(key)) {
-		throw new UnsupportedOperationException("Can't place an object " + object + " to cell " + x + ":" + y
-			+ " because in that cell there is already an object " + objects.get(key));
-	}
-	objects.put(key, object);
+	objects[x - this.x][y - this.y] = object;
 }
 }

@@ -1009,7 +1009,7 @@ public void propel(Item item, int x, int y) {
 	synchronized (renderLockObject) {
 		Tendiwa.getClientEventManager().event(new EventItemAppear(item, x, y));
 		Chunk chunkWithCell = plane.getChunkWithCell(x, y);
-		chunkWithCell.addItem(item, x - chunkWithCell.getX(), y - chunkWithCell.getY());
+		chunkWithCell.addItem(item, x, y);
 	}
 	Tendiwa.waitForAnimationToStartAndComplete();
 }
@@ -1026,13 +1026,12 @@ public void propel(Item item, int x, int y) {
 public void shoot(UniqueItem weapon, Item projectile, int toX, int toY) {
 	assert getEquipment().isWielded(weapon);
 	assert getInventory().contains(projectile);
-	Item removedItem = inventory.removeOne(projectile);
-	loseItem(removedItem);
+	loseItem(projectile);
 
 	ProjectileFlight flight = computeProjectileFlightEndCoordinate(weapon, projectile, toX, toY);
 	synchronized (renderLockObject) {
 		Tendiwa.getClientEventManager().event(new EventProjectileFly(
-			removedItem,
+			projectile,
 			x,
 			y,
 			flight.endCoordinate.x,
@@ -1046,9 +1045,9 @@ public void shoot(UniqueItem weapon, Item projectile, int toX, int toY) {
 		flight.characterHit.getDamage(10, DamageType.PLAIN, this);
 	}
 	synchronized (renderLockObject) {
-		Tendiwa.getClientEventManager().event(new EventItemAppear(removedItem, toX, toY));
+		Tendiwa.getClientEventManager().event(new EventItemAppear(projectile, toX, toY));
 		Chunk chunkWithCell = plane.getChunkWithCell(toX, toY);
-		chunkWithCell.addItem(removedItem, toX - chunkWithCell.getX(), toY - chunkWithCell.getY());
+		chunkWithCell.addItem(projectile, toX, toY);
 	}
 	Tendiwa.waitForAnimationToStartAndComplete();
 }

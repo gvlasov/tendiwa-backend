@@ -108,10 +108,6 @@ public FloorType getFloor(int x, int y) {
 	return getChunkWithCell(x, y).getFloor(x, y);
 }
 
-public WallType getWall(int x, int y) {
-	return getChunkWithCell(x, y).getWall(x, y);
-}
-
 public Passability getPassability(int x, int y) {
 	if (getChunkWithCell(x, y).getCharacter(x, y) != null) {
 		return Passability.SEE;
@@ -139,17 +135,17 @@ public void addItem(UniqueItem item, int x, int y) {
 
 public void removeItem(ItemPile pile, int x, int y) {
 	Chunk chunk = getChunkWithCell(x, y);
-	chunk.removeItem(pile, x - chunk.x, y - chunk.y);
+	chunk.removeItem(pile, x, y);
 }
 
 public void removeItem(UniqueItem item, int x, int y) {
 	Chunk chunk = getChunkWithCell(x, y);
-	chunk.removeItem(item, x - chunk.x, y - chunk.y);
+	chunk.removeItem(item, x, y);
 }
 
 public ItemCollection getItems(int x, int y) {
 	Chunk chunk = getChunkWithCell(x, y);
-	return chunk.getItems(x - chunk.x, y - chunk.y);
+	return chunk.getItems(x, y);
 }
 
 public void placeCharacter(Character character, int x, int y) {
@@ -234,6 +230,7 @@ public int getLevel() {
 }
 
 public boolean hasWall(int x, int y) {
-	return getChunkWithCell(x, y).getWall(x, y) != null;
+	GameObject wall = getChunkWithCell(x, y).getWall(x, y);
+	return wall != null && wall instanceof WallType;
 }
 }

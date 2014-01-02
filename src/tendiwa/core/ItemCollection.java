@@ -13,11 +13,11 @@ import java.util.NoSuchElementException;
  * the ground.
  */
 public class ItemCollection implements Iterable<Item> {
-protected final Multimap<ItemType, Item> items = HashMultimap.create();
-
 public ItemCollection() {
 
 }
+
+protected final Multimap<ItemType, Item> items = HashMultimap.create();
 
 public Item add(Item item) {
 	if (item.getType().isStackable()) {
@@ -67,7 +67,7 @@ public void removeUnique(UniqueItem item) {
 }
 
 public boolean contains(Item item) {
-	return items.containsValue(item);
+	return item.isContainedIn(this);
 }
 
 public boolean containsPile(ItemType type, int amount) {

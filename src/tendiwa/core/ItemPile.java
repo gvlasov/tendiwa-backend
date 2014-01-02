@@ -33,4 +33,14 @@ public int hashCode() {
 public String toString() {
 	return amount + " " + getType().getResourceName();
 }
+
+@Override
+public Item takeSingleItem() {
+	return new ItemPile(type, 1);
+}
+
+@Override
+public boolean isContainedIn(ItemCollection items) {
+	return items.items.containsKey(type) && ((ItemPile)items.items.get(type).iterator().next()).amount >= amount;
+}
 }
