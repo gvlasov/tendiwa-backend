@@ -1,8 +1,7 @@
 package tendiwa.core;
 
-public interface Spell<T extends ActionTargetType> extends Resourceable {
+public interface Spell<T extends ActionTargetType> extends CharacterAbility {
 
-public T getAction();
 public int getManaPointsRequired();
 
 }

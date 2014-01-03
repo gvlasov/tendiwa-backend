@@ -34,6 +34,7 @@
     </orderEntry>
     <orderEntry type="library" name="liblexeme" level="project" />
     <orderEntry type="library" name="artemis" level="project" />
+    <orderEntry type="library" name="groovy-1.8.6" level="application" />
   </component>
 </module>
 

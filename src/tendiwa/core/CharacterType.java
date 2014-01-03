@@ -3,29 +3,41 @@ package tendiwa.core;
 import com.google.common.collect.ImmutableSet;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
+import org.tendiwa.groovy.Registry;
 import org.tendiwa.lexeme.Localizable;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
-public abstract class CharacterType implements Resourceable, Localizable {
-private static short nextId = 0;
-private Set<CharacterAspect> aspects;
-private String name;
+public class CharacterType implements Resourceable, Localizable {
+public Set<CharacterAspect> aspects;
+public String name;
 private double weight;
 private double height;
 private DirectedGraph<BodyPartTypeInstance, DefaultEdge> bodyGraph;
 private int maxHp;
+private Collection<CharacterAbility> abilities;
 
-public CharacterType(String name, double weight, double height, CharacterAspect... aspects) {
+public CharacterType() {
+}
+public void name(String name) {
 	this.name = name;
-	ImmutableSet.Builder<CharacterAspect> builder = ImmutableSet.builder();
-	for (CharacterAspect aspect : aspects) {
-		builder.add(aspect);
-	}
-	this.aspects = builder.build();
+}
+public void weight(double weight) {
 	this.weight = weight;
+}
+public void height(double height) {
 	this.height = height;
+}
+public void aspects(CharacterAspect... aspects) {
+	this.aspects = ImmutableSet.copyOf(aspects);
+}
+public void actions(Collection<CharacterAbility> actions) {
+	this.abilities = ImmutableSet.copyOf(actions);
+}
+public void maxHp(int maxHp) {
+	this.maxHp = maxHp;
 }
 
 /**
@@ -70,9 +82,13 @@ public String toString() {
 	return name;
 }
 
-public abstract Collection<CharacterAbility> getAvailableActions();
+public Collection<CharacterAbility> getAvailableActions() {
+	return abilities;
+}
 
-public abstract int getMaxHp();
+public int getMaxHp() {
+	return maxHp;
+}
 
 @Override
 public String getLocalizationId() {

@@ -125,12 +125,12 @@ public NonPlayerCharacter createCharacter(int absX, int absY, CharacterType char
 
 public void addItem(ItemPile pile, int x, int y) {
 	Chunk chunk = getChunkWithCell(x, y);
-	chunk.addItem(pile, x - chunk.x, y - chunk.y);
+	chunk.addItem(pile, x, y);
 }
 
 public void addItem(UniqueItem item, int x, int y) {
 	Chunk chunk = getChunkWithCell(x, y);
-	chunk.addItem(item, x - chunk.x, y - chunk.y);
+	chunk.addItem(item, x, y);
 }
 
 public void removeItem(ItemPile pile, int x, int y) {
