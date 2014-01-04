@@ -5,6 +5,6 @@ package tendiwa.core;
  * items whose {@link tendiwa.core.Shootable#getAmmunitionType()} is identical to this RangedWeapon's {@link
  * tendiwa.core.RangedWeapon#getAmmunitionType()}.
  */
-public interface RangedWeapon extends Wieldable {
-public AmmunitionType getAmmunitionType();
+public class RangedWeapon {
+public AmmunitionType ammunitionType;
 }

@@ -3,7 +3,7 @@ package tendiwa.core;
 
 /**
  * Used to store BodyPartTypes in data structures that search for elements by
- * their hashCodes, for example in graphs. This type is used because
+ * their hashCodes, for example in graphs. This ammunitionType is used because
  * {@link BodyPartType} is enum and can't be instantiated
  */
 public class BodyPartTypeInstance {

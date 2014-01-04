@@ -16,7 +16,7 @@ import java.util.HashSet;
 
 
 /**
- * A special type of {@link Location} that has advanced instruments for placing {@link Building}s.
+ * A special ammunitionType of {@link Location} that has advanced instruments for placing {@link Building}s.
  * @author suseika
  *
  */
@@ -46,13 +46,13 @@ public class Settlement extends Location {
 			e.printStackTrace();
 		}
 
-		// if (type == BuildingType.TEST) {
+		// if (ammunitionType == BuildingType.TEST) {
 		// buildings.add(new TestBuilding(this, place));
-		// } else if (type == BuildingType.INN) {
+		// } else if (ammunitionType == BuildingType.INN) {
 		// buildings.add(new Inn(this, place));
-		// } else if (type == BuildingType.ONE_ROOM_HOUSE) {
+		// } else if (ammunitionType == BuildingType.ONE_ROOM_HOUSE) {
 		// buildings.add(new OneRoomHouse(this, place));
-		// } else if (type == BuildingType.TEMPLE) {
+		// } else if (ammunitionType == BuildingType.TEMPLE) {
 		// buildings.add(new Temple(this, place));
 		// }
 	}

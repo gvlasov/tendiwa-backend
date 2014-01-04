@@ -5,7 +5,7 @@ package tendiwa.core;
  * Implementing this interface allows {@link GsonArbitraryArrays} serialize 
  * objects into arrays of arbitrary types, like in example below. Fields of 
  * the serialized object don't have to be primitive types — they may also be any 
- * type that implements GsonArbitraryArraySerializable.
+ * ammunitionType that implements GsonArbitraryArraySerializable.
  * 
  * @example
  * // Imagine we need to serialize an instance of this class 

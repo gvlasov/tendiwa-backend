@@ -16,7 +16,7 @@ public class EffectsTypology {
 		EFF_SOUND_SOURCE = 5,
 		EFF_CONFUSE = 6,
 		
-		TYPE_ONTURN = 1,	// Computes each turn (most universal type)
+		TYPE_ONTURN = 1,	// Computes each turn (most universal ammunitionType)
 		TYPE_ONACTION = 2,	// Computes on each attack, spell, item usage and so on.
 		TYPE_ONMOVE = 3;	// Computes with each movement (not magical warp)
 	

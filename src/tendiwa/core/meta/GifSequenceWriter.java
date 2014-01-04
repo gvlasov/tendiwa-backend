@@ -167,14 +167,14 @@ public class GifSequenceWriter {
 			"/home/suseika/hello.gif"
 		};
 		if (args.length > 1) {
-			// grab the output image type from the first image in the sequence
+			// grab the output image ammunitionType from the first image in the sequence
 			BufferedImage firstImage = ImageIO.read(new File(args[0]));
 
 			// create a new BufferedOutputStream with the last argument
 			ImageOutputStream output = new FileImageOutputStream(new File(
 				args[args.length - 1]));
 
-			// create a gif sequence with the type of the first image, 1 second
+			// create a gif sequence with the ammunitionType of the first image, 1 second
 			// between frames, which loops continuously
 			GifSequenceWriter writer = new GifSequenceWriter(
 				output,

@@ -27,7 +27,7 @@ package tendiwa.core;
  * ResourceBuilders are supposed to be implemented by the developers of clients
  * based on the game's client core. Details of implementation fully depend on
  * the developers' needs. However, it is recommended for a resource builder to
- * validate staticDataDirectory: check that required staticDataDirectory exist for each game type,
+ * validate staticDataDirectory: check that required staticDataDirectory exist for each game ammunitionType,
  * or checks width/height of images. See
  * {@link SuseikaBrowserClientResourceBuilder} for example implementation.
  * </p>

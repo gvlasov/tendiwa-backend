@@ -547,7 +547,7 @@ private void buildEdgesWith(EnhancedRectangle r) {
 		for (Map.Entry<EnhancedRectangle, CardinalDirection> e : neighbors.get(1).entrySet()) {
 			addEdgeBetween(r, e.getKey(), e.getValue(), Neighborship.NeighborshipType.UNION);
 		}
-		// Final value of type is 2
+		// Final value of ammunitionType is 2
 //		System.out.println("Neighbours of "+shortDef(r)+" "+orientation+" are "+neighbors.keySet().stream().map(e -> shortDef(e)).collect(Collectors.toList()));
 		treeSet.add(r);
 	}
@@ -583,7 +583,7 @@ private void addEdgeBetween(EnhancedRectangle r1, EnhancedRectangle r2, Cardinal
  * 	Neighbors from which side of original rectangle are being found. If rectangles are supposed to touch N and S sides,
  * 	then orientation is VERTICAL, else it is HORIZONTAL.
  * @return List of two maps from a neighbor rectangle to a direction it is from original rectangle. First index of the
- *         list contains neighbors of type Near, second index contains neighbors of type United.
+ *         list contains neighbors of ammunitionType Near, second index contains neighbors of ammunitionType United.
  */
 private ArrayList<Map<EnhancedRectangle, CardinalDirection>> findNeighborsInSortedSet(EnhancedRectangle r, Orientation orientation) {
 	TreeSet<EnhancedRectangle> treeSet = sortedRectangles.get(orientation);
@@ -609,10 +609,10 @@ private ArrayList<Map<EnhancedRectangle, CardinalDirection>> findNeighborsInSort
 			distance = bufferRectangle.amountOfCellsBetween(r, orientation);
 			if (r.overlapsByDynamicRange(bufferRectangle, orientation)) {
 				if (distance == borderWidth) {
-					// Rectangles will have LocationNeighborship of type Near
+					// Rectangles will have LocationNeighborship of ammunitionType Near
 					nears.put(bufferRectangle, dir);
 				} else if (distance == 0) {
-					// Rectangles will have LocationNeighborship of type United
+					// Rectangles will have LocationNeighborship of ammunitionType United
 					uniteds.put(bufferRectangle, dir);
 				}
 			} else {

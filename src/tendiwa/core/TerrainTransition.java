@@ -5,7 +5,7 @@ import tendiwa.core.meta.Chance;
 import java.util.HashSet;
 
 /**
- * <p>This class creates smooth transitions from one type of terrain (or other {@link PlaceableInCell} entities) to
+ * <p>This class creates smooth transitions from one ammunitionType of terrain (or other {@link PlaceableInCell} entities) to
  * another.</p> <p>It takes a rectangle and marks several of its {@link Direction}s as a "from" directions, and from
  * those edges of the rectangle will gradually be placed tiles that contain certain placeable entities. They will head
  * to the middle of the rectangle and after several cells will be replaced by {@code to} entities.</p>

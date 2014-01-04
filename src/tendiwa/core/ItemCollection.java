@@ -30,7 +30,7 @@ public Item add(Item item) {
 public ItemPile add(ItemPile item) {
 	ItemType type = item.getType();
 	if (items.containsKey(type)) {
-		// If there is already that type of items in a collection, change amount of the existing pile..
+		// If there is already that ammunitionType of items in a collection, change amount of the existing pile..
 		ItemPile itemPile = (ItemPile) items.get(type).iterator().next();
 		itemPile.changeAmount(item.getAmount());
 		return itemPile;

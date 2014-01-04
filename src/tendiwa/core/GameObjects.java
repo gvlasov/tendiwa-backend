@@ -5,15 +5,10 @@ public static Usable asUsable(ObjectType type) {
 	if (type == null) {
 		throw new NullPointerException("Argument can't be null");
 	}
-	if (isUsable(type)) {
-
-		return (Usable) type;
-	} else {
-		return null;
-	}
+	return type.usableComponent;
 }
 
 private static boolean isUsable(ObjectType type) {
-	return type instanceof Usable;
+	return type.usableComponent != null;
 }
 }

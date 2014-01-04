@@ -14,7 +14,7 @@ public class Service {
 
 	public Service(Character dweller, int type, String name) {
 		// dweller - ������ ������
-		// type - ��� ������, ������ ���������
+		// ammunitionType - ��� ������, ������ ���������
 		// name - �������� ������, ������������ � �������
 		this.dweller = dweller;
 		this.type = type;

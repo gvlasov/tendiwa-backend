@@ -5,6 +5,11 @@ package tendiwa.core;
  * tendiwa.core.RangedWeapon#getAmmunitionType()} is identical to this Shootable's {@link
  * tendiwa.core.Shootable#getAmmunitionType()}.
  */
-public interface Shootable extends ItemType {
-public AmmunitionType getAmmunitionType();
+public class Shootable {
+
+public AmmunitionType ammunitionType;
+
+public AmmunitionType getAmmunitionType() {
+	return ammunitionType;
+}
 }

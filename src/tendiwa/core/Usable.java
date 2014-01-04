@@ -1,7 +1,17 @@
 package tendiwa.core;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
-public interface Usable extends ObjectType {
-public Collection<? extends CharacterAbility> getUsages();
+public class Usable {
+Collection<CharacterAbility> actions = new LinkedList<>();
+
+void addAction(CharacterAbility action) {
+	actions.add(action);
+}
+
+Collection<CharacterAbility> getActions() {
+	return actions;
+}
+
 }

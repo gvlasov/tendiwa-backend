@@ -20,19 +20,19 @@ public static ItemPile createItemPile(ItemType type, int amount) {
 }
 
 public static boolean isWearable(ItemType type) {
-	return type instanceof Wearable;
+	return type.componentWearable != null;
 }
 
 public static boolean isWieldable(ItemType type) {
-	return type instanceof Wieldable;
+	return type.componentWieldable != null;
 }
 
 public static boolean isShootable(ItemType type) {
-	return type instanceof Shootable;
+	return type.componentShootable != null;
 }
 
 public static boolean isRangedWeapon(ItemType type) {
-	return type instanceof RangedWeapon;
+	return type.componentRangedWeapon != null;
 }
 public static boolean isStackable(ItemType type) {
 	return type.isStackable();
@@ -40,14 +40,14 @@ public static boolean isStackable(ItemType type) {
 
 /**
  * <p>Converts ItemType to {@link Wearable}. Actual types of ItemTypes are usually not known to client at compile time,
- * and this method helps with identifying an item type. Example:</p>
+ * and this method helps with identifying an item ammunitionType. Example:</p>
  * <pre>
  * {@code
  *
- *  if (Items.isWearable(type) != null) {
- *      wear(Items.asWearable(type));
- *  } else if (Items.isWieldable(type)) {
- *      wield(Items.asWieldable(type));
+ *  if (Items.isWearable(ammunitionType) != null) {
+ *      wear(Items.asWearable(ammunitionType));
+ *  } else if (Items.isWieldable(ammunitionType)) {
+ *      wield(Items.asWieldable(ammunitionType));
  *  } else {
  *      ...
  *  }
@@ -55,31 +55,28 @@ public static boolean isStackable(ItemType type) {
  * </pre>
  *
  * @param type
- * 	An type that should be Wearable.
- * @return null if {@code !(type instanceof Wearable)}, or the Wearable if it is Wearable.
+ * 	An ammunitionType that should be Wearable.
+ * @return null if {@code !(ammunitionType instanceof Wearable)}, or the Wearable if it is Wearable.
  * @throws NullPointerException
- * 	If {@code type == null}
+ * 	If {@code ammunitionType == null}
  */
-public Wearable asWearable(ItemType type) {
+public static Wearable asWearable(ItemType type) {
 	if (type == null) {
 		throw new NullPointerException("Argument can't be null");
 	}
-	if (isWearable(type)) {
-		return (Wearable) type;
-	}
-	return null;
+	return type.componentWearable;
 }
 
 /**
  * <p>Converts ItemType to {@link Wieldable}. Actual types of ItemTypes are usually not known to client at compile time,
- * and this method helps with identifying an item type. Example:</p>
+ * and this method helps with identifying an item ammunitionType. Example:</p>
  * <pre>
  * {@code
  *
- *  if (Items.isWearable(type) != null) {
- *      wear(Items.asWearable(type));
- *  } else if (Items.isWieldable(type)) {
- *      wield(Items.asWieldable(type));
+ *  if (Items.isWearable(ammunitionType) != null) {
+ *      wear(Items.asWearable(ammunitionType));
+ *  } else if (Items.isWieldable(ammunitionType)) {
+ *      wield(Items.asWieldable(ammunitionType));
  *  } else {
  *      ...
  *  }
@@ -87,31 +84,28 @@ public Wearable asWearable(ItemType type) {
  * </pre>
  *
  * @param type
- * 	An type that should be Wieldable.
- * @return null if {@code !(type instanceof Wieldable)}, or the Wieldable if it is Wieldable.
+ * 	An ammunitionType that should be Wieldable.
+ * @return null if {@code !(ammunitionType instanceof Wieldable)}, or the Wieldable if it is Wieldable.
  * @throws NullPointerException
- * 	If {@code type == null}
+ * 	If {@code ammunitionType == null}
  */
-public Wieldable asWieldable(ItemType type) {
+public static Wieldable asWieldable(ItemType type) {
 	if (type == null) {
 		throw new NullPointerException("Argument can't be null");
 	}
-	if (isWieldable(type)) {
-		return (Wieldable) type;
-	}
-	return null;
+	return type.componentWieldable;
 }
 
 /**
  * <p>Converts ItemType to {@link RangedWeapon}. Actual types of ItemTypes are usually not known to client at compile
- * time, and this method helps with identifying an item type. Example:</p>
+ * time, and this method helps with identifying an item ammunitionType. Example:</p>
  * <pre>
  * {@code
  *
- *  if (Items.isWearable(type) != null) {
- *      wear(Items.asWearable(type));
- *  } else if (Items.isWieldable(type)) {
- *      wield(Items.asWieldable(type));
+ *  if (Items.isWearable(ammunitionType) != null) {
+ *      wear(Items.asWearable(ammunitionType));
+ *  } else if (Items.isWieldable(ammunitionType)) {
+ *      wield(Items.asWieldable(ammunitionType));
  *  } else {
  *      ...
  *  }
@@ -119,31 +113,28 @@ public Wieldable asWieldable(ItemType type) {
  * </pre>
  *
  * @param type
- * 	An type that should be RangedWeapon.
- * @return null if {@code !(type instanceof RangedWeapon)}, or the Wieldable if it is RangedWeapon.
+ * 	An ammunitionType that should be RangedWeapon.
+ * @return null if {@code !(ammunitionType instanceof RangedWeapon)}, or the Wieldable if it is RangedWeapon.
  * @throws NullPointerException
- * 	If {@code type == null}
+ * 	If {@code ammunitionType == null}
  */
 public RangedWeapon asRangedWeapon(ItemType type) {
 	if (type == null) {
 		throw new NullPointerException("Argument can't be null");
 	}
-	if (isRangedWeapon(type)) {
-		return (RangedWeapon) type;
-	}
-	return null;
+	return type.componentRangedWeapon;
 }
 
 /**
  * <p>Converts ItemType to {@link Shootable}. Actual types of ItemTypes are usually not known to client at compile time,
- * and this method helps with identifying an item type. Example:</p>
+ * and this method helps with identifying an item ammunitionType. Example:</p>
  * <pre>
  * {@code
  *
- *  if (Items.isWearable(type) != null) {
- *      wear(Items.asWearable(type));
- *  } else if (Items.isWieldable(type)) {
- *      wield(Items.asWieldable(type));
+ *  if (Items.isWearable(ammunitionType) != null) {
+ *      wear(Items.asWearable(ammunitionType));
+ *  } else if (Items.isWieldable(ammunitionType)) {
+ *      wield(Items.asWieldable(ammunitionType));
  *  } else {
  *      ...
  *  }
@@ -151,19 +142,16 @@ public RangedWeapon asRangedWeapon(ItemType type) {
  * </pre>
  *
  * @param type
- * 	An type that should be Shootable.
- * @return null if {@code !(type instanceof Shootable)}, or the Wieldable if it is Shootable.
+ * 	An ammunitionType that should be Shootable.
+ * @return null if {@code !(ammunitionType instanceof Shootable)}, or the Wieldable if it is Shootable.
  * @throws NullPointerException
- * 	If {@code type == null}
+ * 	If {@code ammunitionType == null}
  */
 public static Shootable asShootable(ItemType type) {
 	if (type == null) {
 		throw new NullPointerException("Argument can't be null");
 	}
-	if (isShootable(type)) {
-		return (Shootable) type;
-	}
-	return null;
+	return type.componentShootable;
 }
 public static ItemPile asStackable(Item item) {
 	if (item == null) {

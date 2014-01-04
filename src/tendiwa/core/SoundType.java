@@ -8,10 +8,22 @@ private int bass;
 private int mid;
 private int treble;
 
-public SoundType(String name, int bass, int mid, int treble) {
+public SoundType() {
+}
+
+public void name(String name) {
 	this.name = name;
+}
+
+public void bass(int bass) {
 	this.bass = bass;
+}
+
+public void mid(int mid) {
 	this.mid = mid;
+}
+
+public void treble(int treble) {
 	this.treble = treble;
 }
 

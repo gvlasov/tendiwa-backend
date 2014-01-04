@@ -349,7 +349,7 @@ public ArrayList<Coordinate> closeCells(int startX, int startY, int length, Pass
 }
 
 public ArrayList<Coordinate> getElementsAreaBorder(int startX, int startY, PlaceableInCell placeable, int depth, boolean noDiagonal) {
-	// �������� ������� ������� � ���������� ���� %type% ���� %val%, �������
+	// �������� ������� ������� � ���������� ���� %ammunitionType% ���� %val%, �������
 	// �� ����� ��� � %depth% ������� �� ��������� ������
 	// noDiagonal - �������� ������� ���������� ������ �� ������ �������,
 	// ��� �� ��� ������ ������.
@@ -430,7 +430,7 @@ public void waveStructure(int startX, int startY, PlaceableInCell placeable, int
 					continue;
 				}
 				// TODO: This has been making compile time errors so I commented it out : (
-//				if (getElement(thisNumX + 1, thisNumY, type) + getElement(thisNumX - 1, thisNumY, type) + getElement(thisNumX, thisNumY + 1, type) + getElement(thisNumX, thisNumY - 1, type) + getElement(thisNumX + 1, thisNumY + 1, type) + getElement(thisNumX - 1, thisNumY + 1, type) + getElement(thisNumX + 1, thisNumY - 1, type) + getElement(thisNumX - 1, thisNumY - 1, type) > 3 && t > 4) {
+//				if (getElement(thisNumX + 1, thisNumY, ammunitionType) + getElement(thisNumX - 1, thisNumY, ammunitionType) + getElement(thisNumX, thisNumY + 1, ammunitionType) + getElement(thisNumX, thisNumY - 1, ammunitionType) + getElement(thisNumX + 1, thisNumY + 1, ammunitionType) + getElement(thisNumX - 1, thisNumY + 1, ammunitionType) + getElement(thisNumX + 1, thisNumY - 1, ammunitionType) + getElement(thisNumX - 1, thisNumY - 1, ammunitionType) > 3 && t > 4) {
 //					continue;
 //				}
 				Chance chance = new Chance(15);
@@ -555,9 +555,9 @@ public ArrayList<Coordinate> getPath(int startX, int startY, int destinationX, i
 	return path;
 }
 
-//protected void cellularAutomataSmooth(int level, int type, PlaceableInCell formerContent, PlaceableInCell newContent) {
+//protected void cellularAutomataSmooth(int level, int ammunitionType, PlaceableInCell formerContent, PlaceableInCell newContent) {
 //	// Smooth the borders of terrain's areas consisting of
-//	// elements with %type% and %val%
+//	// elements with %ammunitionType% and %val%
 //	for (int l = 0; l < level; l++) {
 //		Cell[][] bufCells = new Cell[getWidth()][getHeight()];
 //		for (int i = 0; i < getHeight(); i++) {

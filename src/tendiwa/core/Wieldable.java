@@ -1,5 +1,9 @@
 package tendiwa.core;
 
-public interface Wieldable extends ItemType {
-	public Handedness getHandedness();
+public class Wieldable {
+public Handedness handedness;
+
+public Handedness getHandedness() {
+	return handedness;
+}
 }

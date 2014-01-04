@@ -43,13 +43,13 @@ public void putOn(UniqueItem item) {
 	if (!canPutOn(item)) {
 		throw new UnsupportedOperationException("Can't put on " + item);
 	}
-	for (ApparelSlot slot : ((Wearable) item.getType()).getSlots()) {
+	for (ApparelSlot slot : (Items.asWearable(item.getType())).getSlots()) {
 		occupySlot(slot, item);
 	}
 }
 
 public void wield(int handId, Item item) {
-	Handedness handedness = ((Wieldable) item).getHandedness();
+	Handedness handedness = (Items.asWieldable(item.getType())).getHandedness();
 	if (handedness == Handedness.TWO_HANDS) {
 		throw new UnsupportedOperationException("You can't wield items that need more than 1 hand with this method.");
 	}
@@ -66,7 +66,7 @@ public void wield(Item item) {
 	if (!canWield(item)) {
 		throw new UnsupportedOperationException("Can't wield item " + item);
 	}
-	Handedness handedness = ((Wieldable) item.getType()).getHandedness();
+	Handedness handedness = (Items.asWieldable(item.getType())).getHandedness();
 	switch (handedness) {
 		case MAIN_HAND:
 			if (!tryWielding(Hand.RIGHT, item)) {
@@ -112,7 +112,7 @@ private boolean tryWielding(Hand hand, Item item) {
  */
 public boolean canWield(Item item) {
 	if (Items.isWieldable(item.getType())) {
-		Handedness handedness = ((Wieldable) item.getType()).getHandedness();
+		Handedness handedness = (Items.asWieldable(item.getType())).getHandedness();
 		int handsToWield;
 		int freeHands = 0;
 		switch (handedness) {
@@ -155,7 +155,7 @@ public void takeOff(UniqueItem item) {
 	if (!occupiedApparelSlots.values().contains(item)) {
 		throw new UnsupportedOperationException("Attempting to unequip an item " + item + " that is not equipped");
 	}
-	for (ApparelSlot slot : ((Wearable) item.getType()).getSlots()) {
+	for (ApparelSlot slot : (Items.asWearable( item.getType())).getSlots()) {
 		occupiedApparelSlots.put(slot, nullItem);
 	}
 }
@@ -164,7 +164,7 @@ public boolean canPutOn(UniqueItem item) {
 	if (!Items.isWearable(item.getType())) {
 		return false;
 	}
-	for (ApparelSlot slot : ((Wearable) item.getType()).getSlots()) {
+	for (ApparelSlot slot : (Items.asWearable(item.getType())).getSlots()) {
 		if (!occupiedApparelSlots.containsKey(slot)) {
 			throw new UnsupportedOperationException("Character doesn't have slot " + slot + " to equip item " + item);
 		}

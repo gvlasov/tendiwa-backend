@@ -1,7 +1,10 @@
 package tendiwa.core;
 
-public interface Spell<T extends ActionTargetType> extends CharacterAbility {
+public class Spell<T extends ActionTargetType> extends CharacterAbility {
+int mana;
 
-public int getManaPointsRequired();
+public void mana(int mana) {
+	this.mana = mana;
+}
 
 }

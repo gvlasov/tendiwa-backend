@@ -20,7 +20,7 @@ enum BodyPartType {
 	TONGUE(17);
 	/**
 	 * An exclusive identivication number which is equal in client and server
-	 * used to identify a type of body part (but int a particular body part
+	 * used to identify a ammunitionType of body part (but int a particular body part
 	 * af a particular character!).
 	 */
 	final int id;
@@ -70,7 +70,7 @@ enum BodyPartType {
 		return super.toString().toLowerCase();
 	}
 	/**
-	 * Returns an id of this body part type.
+	 * Returns an id of this body part ammunitionType.
 	 * 
 	 * @return 
 	 */

@@ -3,7 +3,7 @@ package tendiwa.core;
 import java.awt.*;
 
 /**
- * Class represents an abstract intersection of two same type objects. One of
+ * Class represents an abstract intersection of two same ammunitionType objects. One of
  * the objects is implicitly considered horizontal, and another one vertical.
  * Intersection divides plane into 4 quadrants, and the purpose of the class is
  * to get coordinates of the points lying in a corner of each quadrant.

@@ -1,11 +1,22 @@
 package tendiwa.core;
 
 public class Material {
-private final int durability;
-private final int density;
+public String name;
+private int durability;
+private int density;
 
-public Material(int durability, int density) {
+public Material() {
+}
+
+public void name(String name) {
+	this.name = name;
+}
+
+public void durability(int durability) {
 	this.durability = durability;
+}
+
+public void density(int density) {
 	this.density = density;
 }
 

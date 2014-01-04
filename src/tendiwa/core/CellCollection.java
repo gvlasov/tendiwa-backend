@@ -21,14 +21,14 @@ public CellCollection(Collection<Coordinate> cls, Location loc) {
 	location = loc;
 }
 
-//	public Character setCharacter(String type, String name) {
+//	public Character setCharacter(String ammunitionType, String name) {
 //		if (!hasCells) {
 //			throw new Error("No more cells");
 //		}
 //		int cellIndex = Chance.rand(0, cells.size()-1);
 //		Coordinate cell = cells.get(cellIndex);
 //		unsetCell(cellIndex);
-//		return location.createCharacter(type, name, cell.x, cell.y);
+//		return location.createCharacter(ammunitionType, name, cell.x, cell.y);
 //	}
 public static ArrayList<Coordinate> rectangleToCellsList(Rectangle r) {
 	ArrayList<Coordinate> answer = new ArrayList<>();
@@ -47,8 +47,8 @@ public int size() {
 //	public void placeCharacters(ArrayList<GeneratorCharacterGroup> chs) {
 //		/*
 //		 * ���������� � ������� ���������� characters - ������ �� ���������,
-//		 * ������� ����� ����� ���� �� ���� �����: 1. "type" - ��� ������������
-//		 * ��������� 2. ["type",amount(,fraction)] - ��� � ����������
+//		 * ������� ����� ����� ���� �� ���� �����: 1. "ammunitionType" - ��� ������������
+//		 * ��������� 2. ["ammunitionType",amount(,fraction)] - ��� � ����������
 //		 * ����������� ����������, � ����� ������� � ������ ������ ���������
 //		 * ������ ���� ��������. ������ �������� ����������� �� ���������
 //		 * ������.
@@ -67,7 +67,7 @@ public int size() {
 //				int cellIndex = Chance.rand(0, cells.size()-1);
 //				Coordinate cell = cells.get(cellIndex);
 //				// ��������� ���������
-//				location.createCharacter(ch.type, ch.name, cell.x, cell.y);
+//				location.createCharacter(ch.ammunitionType, ch.name, cell.x, cell.y);
 //				unsetCell(cellIndex);
 //			}
 //		}
@@ -104,7 +104,7 @@ public void clear() {
  * Randomly puts some elements
  *
  * @param placeable
- * 	What type of entity to put.
+ * 	What ammunitionType of entity to put.
  * @param amount
  * 	Total amount of elements to put.
  */
