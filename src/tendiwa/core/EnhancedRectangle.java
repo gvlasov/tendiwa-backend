@@ -853,7 +853,7 @@ public EnhancedPoint getPointOnSide(CardinalDirection side, int shift) {
  * @return
  */
 public EnhancedRectangle shrink(int dSize) {
-	return new EnhancedRectangle(x+dSize, y-dSize, width-dSize*2, height-dSize*2);
+	return new EnhancedRectangle(x+dSize, y+dSize, width-dSize*2, height-dSize*2);
 }
 
 /**

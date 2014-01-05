@@ -72,6 +72,7 @@ private int maxHp;
 public Character(HorizontalPlane plane, CharacterType type, int x, int y, String name) {
 	// Common character creation: with all attributes, in location.
 	super();
+	assert type != null;
 	this.type = type;
 	this.name = name;
 	this.plane = plane;
@@ -81,6 +82,7 @@ public Character(HorizontalPlane plane, CharacterType type, int x, int y, String
 	this.x = x;
 	this.y = y;
 	this.maxHp = type.getMaxHp();
+	assert maxHp != 0;
 	this.hp = maxHp;
 }
 
@@ -148,7 +150,7 @@ public void attack(Character aim) {
 	}
 	Tendiwa.waitForAnimationToStartAndComplete();
 	aim.getDamage(7, DamageType.PLAIN, this);
-	moveTime(500);
+	moveInTime(500);
 }
 
 protected void shootMissile(int toX, int toY, ItemPile missile) {
@@ -174,7 +176,7 @@ protected void shootMissile(int toX, int toY, UniqueItem item) {
 }
 
 protected void castSpell(int spellId, int x, int y) {
-	moveTime(500);
+	moveInTime(500);
 	// TODO Implement spellcasting
 	throw new UnsupportedOperationException();
 }
@@ -198,7 +200,7 @@ public void putOn(UniqueItem item) {
 			Tendiwa.getClientEventManager().event(new EventPutOn(this, item));
 		}
 	}
-	moveTime(500);
+	moveInTime(500);
 }
 
 public boolean isPlayer() {
@@ -234,7 +236,7 @@ public void takeOff(UniqueItem item) {
 		equipment.takeOff(item);
 		Tendiwa.getClientEventManager().event(new EventTakeOff(this, item));
 	}
-	moveTime(500);
+	moveInTime(500);
 }
 
 /**
@@ -245,7 +247,7 @@ public void pickUp(ItemPile pile) {
 	plane.removeItem(pile, x, y);
 	Tendiwa.getClientEventManager().event(new EventGetItem(pile));
 	getItem(pile);
-	moveTime(500);
+	moveInTime(500);
 	throw new UnsupportedOperationException();
 }
 
@@ -255,7 +257,7 @@ public void pickUp(ItemPile pile) {
 public void pickUp(UniqueItem item) {
 	getItem(item);
 	plane.removeItem(item, x, y);
-	moveTime(500);
+	moveInTime(500);
 	throw new UnsupportedOperationException();
 }
 
@@ -264,48 +266,48 @@ public void drop(Item item) {
 	Chunk chunk = plane.getChunkWithCell(x, y);
 	chunk.addItem(item, x - chunk.getX(), y - chunk.getY());
 	Tendiwa.getClientEventManager().event(new EventItemAppear(item, this.x, this.y));
-	moveTime(500);
+	moveInTime(500);
 }
 
 protected void takeFromContainer(ItemPile pile, Container container) {
 	getItem(pile);
 	container.removePile(pile);
-	moveTime(500);
+	moveInTime(500);
 	throw new UnsupportedOperationException();
 }
 
 protected void takeFromContainer(UniqueItem item, Container container) {
 	getItem(item);
 	container.removeUnique(item);
-	moveTime(500);
+	moveInTime(500);
 	throw new UnsupportedOperationException();
 }
 
 protected void putToContainer(ItemPile pile, Container container) {
 	loseItem(pile);
 	container.add(pile);
-	moveTime(500);
+	moveInTime(500);
 	throw new UnsupportedOperationException();
 }
 
 protected void putToContainer(UniqueItem item, Container container) {
 	loseItem(item);
 	container.add(item);
-	moveTime(500);
+	moveInTime(500);
 	throw new UnsupportedOperationException();
 }
 
 public void idle() {
-	moveTime(500);
+	moveInTime(500);
 }
 
 protected void step(int x, int y) {
 	move(x, y, MovingStyle.STEP);
 	if (state == CharacterState.RUNNING) {
 		changeEnergy(-30);
-		moveTime(200);
+		moveInTime(200);
 	} else {
-		moveTime(500);
+		moveInTime(500);
 	}
 
 }
@@ -341,7 +343,7 @@ protected void push(Character character, Direction side) {
 			move(bufX, bufY, MovingStyle.STEP);
 		}
 	}
-	moveTime(500);
+	moveInTime(500);
 }
 
 private void cacheVision(int x, int y, byte visible) {
@@ -765,17 +767,41 @@ public void move(int x, int y, MovingStyle movingStyle) {
 	timeStream.notifyNeighborsVisiblilty(this);
 	if (isPlayer()) {
 		synchronized (renderLockObject) {
-			for (int i = 0; i < VISION_CACHE_WIDTH; i++) {
-				System.arraycopy(visionCache[i], 0, visionPrevious[i], 0, VISION_CACHE_WIDTH);
-			}
-			this.computeFullVisionCache();
+			storeVisionCacheToPreviousVisionCache();
+			computeFullVisionCache();
 			Tendiwa.getClientEventManager().event(new EventFovChange(xPrev, yPrev, visionPrevious, visionCache));
 		}
 		Tendiwa.waitForAnimationToStartAndComplete();
 	} else {
 		invalidateVisionCache();
 	}
-	moveTime(500);
+	moveInTime(500);
+}
+
+private void storeVisionCacheToPreviousVisionCache() {
+	for (int i = 0; i < VISION_CACHE_WIDTH; i++) {
+		System.arraycopy(visionCache[i], 0, visionPrevious[i], 0, VISION_CACHE_WIDTH);
+	}
+}
+
+/**
+ * Moves this Character to another vertical plane of a world
+ *
+ * @param dz
+ * 	How many planes to go up. May be negative to go down.
+ */
+public void moveByPlane(int dz) {
+	synchronized (renderLockObject) {
+		plane.removeCharacter(this);
+		plane = Tendiwa.getWorld().getPlane(plane.getLevel() + dz);
+		plane.addCharacter(this);
+		invalidateVisionCache();
+		storeVisionCacheToPreviousVisionCache();
+		computeFullVisionCache();
+		Tendiwa.getClientEventManager().event(new EventMoveToPlane());
+	}
+	Tendiwa.waitForAnimationToStartAndComplete();
+	moveInTime(500);
 }
 
 public void spendActionPoints(int amount) {
@@ -825,6 +851,7 @@ public void getItem(Item item) {
 }
 
 public void getItem(ItemType type) {
+	assert type != null;
 	getItem(Items.createItem(type));
 }
 
@@ -860,7 +887,7 @@ public void removeEffect(int effectId) {
 	throw new UnsupportedOperationException();
 }
 
-protected void moveTime(int amount) {
+protected void moveInTime(int amount) {
 	spendActionPoints(amount);
 	Character nextCharacter = timeStream.next();
 	if (!nextCharacter.isPlayer()) {

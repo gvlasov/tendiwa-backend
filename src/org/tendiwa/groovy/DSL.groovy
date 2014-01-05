@@ -4,16 +4,16 @@ import tendiwa.core.*
 
 class DSL {
 
-    def static characters = new Registry<CharacterType>();
-    def static characterAbilities = new Registry<CharacterAbility>()
-    def static soundTypes = new Registry<SoundType>()
-    def static spells = new Registry<Spell>()
-    def static objectTypes = new Registry<ObjectType>()
-    def static floorTypes = new Registry<FloorType>()
-    def static wallTypes = new Registry<WallType>()
-    def static materials = new Registry<Material>()
-    def static itemTypes = new Registry<ItemType>()
-    def static ammunitionTypes = new Registry<AmmunitionType>()
+    def static characters = Registry.characters;
+    def static characterAbilities = Registry.characterAbilities;
+    def static soundTypes = Registry.soundTypes
+    def static spells = Registry.spells
+    def static objectTypes = Registry.objectTypes
+    def static floorTypes = Registry.floorTypes
+    def static wallTypes = Registry.wallTypes
+    def static materials = Registry.materials
+    def static itemTypes = Registry.itemTypes
+    def static ammunitionTypes = Registry.ammunitionTypes
 
     def static newCharacterType(closure) {
         CharacterType type = new CharacterType()

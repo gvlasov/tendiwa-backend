@@ -24,8 +24,8 @@ public void action(CharacterAbility action) {
 	assert action != null;
 	if (usableComponent == null) {
 		usableComponent = new Usable();
-		usableComponent.addAction(action);
 	}
+	usableComponent.addAction(action);
 }
 
 public Passability getPassability() {

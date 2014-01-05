@@ -10,7 +10,7 @@ void addAction(CharacterAbility action) {
 	actions.add(action);
 }
 
-Collection<CharacterAbility> getActions() {
+public Collection<CharacterAbility> getActions() {
 	return actions;
 }
 

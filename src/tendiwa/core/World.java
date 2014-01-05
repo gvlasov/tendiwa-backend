@@ -78,31 +78,12 @@ public void setPlayerCharacter(Character playerCharacter) {
 	playerCharacter.setTimeStream(timeStream);
 }
 
-public void placePlayerCharacter(Character player, int x, int y) {
-	defaultPlane.placeCharacter(player, x, y);
-}
-
 public int getWidth() {
 	return width;
 }
 
 public int getHeight() {
 	return height;
-}
-
-public Character createCharacter(int x, int y, CharacterType type, String name) {
-	NonPlayerCharacter character = new NonPlayerCharacter(defaultPlane, type, x, y, name);
-	try {
-		while (defaultPlane.getPassability(character.x, character.y) == Passability.NO) {
-			character.x++;
-		}
-	} catch (ArrayIndexOutOfBoundsException e) {
-		throw new RuntimeException("Could not place a character because the whole world is non-passable");
-	}
-	defaultPlane.addCharacter(character);
-	timeStream.addNonPlayerCharacter(character);
-	return character;
-
 }
 
 /**

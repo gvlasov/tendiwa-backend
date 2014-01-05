@@ -855,7 +855,7 @@ public void place(TypePlaceableInCell placeable, int x, int y) {
  * 	Point in location coordinates.
  */
 public void place(TypePlaceableInCell placeable, EnhancedPoint point) {
-	assert placeable != null;
+	assert placeable != null : "Trying to place a null object";
 	assert point != null;
 	EntityPlacer.place(activePlane, placeable, x + point.x, y + point.y);
 }

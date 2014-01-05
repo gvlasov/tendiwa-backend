@@ -98,7 +98,7 @@ public EventFovChange(int xPrev, int yPrev, byte[][] visionPrevious, byte[][] vi
 }
 
 private void addCellToSeen(int x, int y) {
-	HorizontalPlane plane = Tendiwa.getWorld().getDefaultPlane();
+	HorizontalPlane plane = Tendiwa.getPlayerCharacter().getPlane();
 	seenBuilder.add(new RenderCell(
 		x,
 		y,

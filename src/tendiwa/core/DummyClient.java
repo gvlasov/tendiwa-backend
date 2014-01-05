@@ -98,6 +98,11 @@ TendiwaClientEventManager manager = new TendiwaClientEventManager() {
 	public void event(EventDie e) {
 		Tendiwa.signalAnimationCompleted();
 	}
+
+	@Override
+	public void event(EventMoveToPlane eventMoveToPlane) {
+		Tendiwa.signalAnimationCompleted();
+	}
 };
 
 @Override

@@ -8,6 +8,7 @@ FloorType floor;
 GameObject object;
 
 public RenderCell(int x, int y, FloorType floor, GameObject object) {
+	assert floor != null;
 	this.x = x;
 	this.y = y;
 	this.floor = floor;

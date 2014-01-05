@@ -57,6 +57,6 @@ public int getTreble() {
 
 @Override
 public String getLocalizationId() {
-	return name;
+	return "to " + name;
 }
 }

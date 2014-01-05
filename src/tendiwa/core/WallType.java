@@ -12,7 +12,7 @@ private static final ObjectType wallObjectType = new ObjectType() {
 		return "wall_type";
 	}
 };
-static WallType VOID = new WallType() {
+public static WallType VOID = new WallType() {
 	@Override
 	public String getResourceName() {
 		throw new UnsupportedOperationException();

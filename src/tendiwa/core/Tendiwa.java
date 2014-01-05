@@ -35,14 +35,15 @@ Tendiwa(String args[]) throws ClassNotFoundException, IllegalAccessException, In
 	String[] modules = Module.getModulesFromConfig(MODULES_CONF_FILE);
 	List<Class<?>> modulesCreatingWorlds = new LinkedList<>();
 	for (String module : modules) {
-		Class<?> moduleClass = classLoader.loadClass("tendiwa.modules." + module);
-		if (!Module.class.isAssignableFrom(moduleClass)) {
-			logger.warn(moduleClass + " is not a module class");
-			continue;
-		}
-		if (WorldProvider.class.isAssignableFrom(moduleClass)) {
-			modulesCreatingWorlds.add(moduleClass);
-		}
+//		Class<?> moduleClass = classLoader.loadClass("tendiwa.modules." + module);
+//		if (!Module.class.isAssignableFrom(moduleClass)) {
+//			logger.warn(moduleClass + " is not a module class");
+//			continue;
+//		}
+//		if (WorldProvider.class.isAssignableFrom(moduleClass)) {
+//			modulesCreatingWorlds.add(moduleClass);
+//		}
+		modulesCreatingWorlds.add(new ScriptShell(module).getModuleClass());
 	}
 	if (modulesCreatingWorlds.size() == 0) {
 		throw new RuntimeException("No world-creating modules provided");

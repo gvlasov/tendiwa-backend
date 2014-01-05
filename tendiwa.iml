@@ -35,6 +35,15 @@
     <orderEntry type="library" name="liblexeme" level="project" />
     <orderEntry type="library" name="artemis" level="project" />
     <orderEntry type="library" name="groovy-1.8.6" level="application" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/../MainModule/resources" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
 

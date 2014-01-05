@@ -5,6 +5,7 @@ public static final TypePlaceableInCell OBJECT_VOID = new TypePlaceableInCell() 
 };
 
 public static <T extends TypePlaceableInCell> void place(HorizontalPlane plane, final T entityType, int x, int y) {
+	assert entityType != null;
 	if (entityType instanceof FloorType) {
 		plane.placeFloor((FloorType) entityType, x, y);
 	} else if (entityType instanceof WallType) {

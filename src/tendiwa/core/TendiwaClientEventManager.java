@@ -38,4 +38,6 @@ void event(EventGetDamage e);
 void event(EventAttack e);
 
 void event(EventDie e);
+
+void event(EventMoveToPlane eventMoveToPlane);
 }

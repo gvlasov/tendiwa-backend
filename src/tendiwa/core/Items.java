@@ -118,7 +118,7 @@ public static Wieldable asWieldable(ItemType type) {
  * @throws NullPointerException
  * 	If {@code ammunitionType == null}
  */
-public RangedWeapon asRangedWeapon(ItemType type) {
+public static RangedWeapon asRangedWeapon(ItemType type) {
 	if (type == null) {
 		throw new NullPointerException("Argument can't be null");
 	}

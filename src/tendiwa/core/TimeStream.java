@@ -98,6 +98,7 @@ public void removeCharacter(NonPlayerCharacter character) {
 }
 
 public void makeSound(int x, int y, SoundType type, Localizable soundSource) {
+	assert type != null;
 	Tendiwa.getClientEventManager().event(new EventSound(type, soundSource, x, y));
 }
 
