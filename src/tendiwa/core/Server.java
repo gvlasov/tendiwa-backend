@@ -1,8 +1,5 @@
 package tendiwa.core;
 
-import java.util.LinkedList;
-import java.util.Queue;
-
 /**
  * Server receives requests from the {@link TendiwaClient}, calls core methods on receiving such a request, sends
  * resulting {@link org.tendiwa.events.Event}s to the client's receiving end and then sleeps until more requests are
@@ -10,18 +7,15 @@ import java.util.Queue;
  */
 public enum Server implements Runnable {
 	SERVER;
-private static final Queue<Request> requestQueue = new LinkedList<>();
+private static Request currentRequest;
 private World WORLD;
-private boolean stopped;
+private boolean stopped = false;
 private int sleepTime = 100;
-private boolean turnComputing = false;
+private boolean hasRequestProcessing = false;
 
-public static void receive(Request request) {
-	request.process();
-}
 
-public static boolean isTurnComputing() {
-	return SERVER.turnComputing;
+public static boolean hasRequestToProcess() {
+	return SERVER.hasRequestProcessing;
 }
 
 public void setSleepTime(int sleepTime) {
@@ -31,28 +25,24 @@ public void setSleepTime(int sleepTime) {
 @Override
 public void run() {
 	while (!stopped) {
-		if (requestQueue.isEmpty()) {
-			try {
-				Thread.sleep(sleepTime);
-			} catch (InterruptedException e) {
-				turnComputing = true;
-				synchronized (requestQueue) {
-					if (!requestQueue.isEmpty()) {
-						requestQueue.remove().process();
-					}
-					requestQueue.notify();
-				}
-				turnComputing = false;
+		try {
+			Thread.sleep(sleepTime);
+		} catch (InterruptedException e) {
+			if (currentRequest != null) {
+				currentRequest.process();
+				currentRequest = null;
 			}
+			hasRequestProcessing = false;
 		}
 	}
 }
 
 public void pushRequest(Request request) {
-	requestQueue.offer(request);
-	if (requestQueue.size() == 1) {
-		Tendiwa.getServerThread().interrupt();
-	}
+	assert currentRequest == null : "Pushed "+request.getClass().getName()+" when there is already a request "+currentRequest.getClass().getName()
+		+"; hasRequestProcessing = "+ hasRequestProcessing;
+	hasRequestProcessing = true;
+	currentRequest = request;
+	Tendiwa.getServerThread().interrupt();
 }
 
 public World getWorld() {
@@ -67,7 +57,4 @@ void setWorld(WorldProvider provider) {
 	}
 }
 
-void stop() {
-	stopped = true;
-}
 }

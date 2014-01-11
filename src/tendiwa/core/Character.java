@@ -66,8 +66,8 @@ private Collection<Spell> spells = new HashSet<>();
  */
 private byte[][] visionPrevious = new byte[VISION_CACHE_WIDTH][VISION_CACHE_WIDTH];
 private boolean visionCacheWritingEnabled = true;
-private int hp;
-private int maxHp;
+protected int hp;
+protected int maxHp;
 
 public Character(HorizontalPlane plane, CharacterType type, int x, int y, String name) {
 	// Common character creation: with all attributes, in location.
@@ -814,10 +814,9 @@ public void getDamage(int amount, DamageType type, DamageSource damageSource) {
 		Tendiwa.getClientEventManager().event(new EventGetDamage(this, amount, damageSource, type));
 	}
 	Tendiwa.waitForAnimationToStartAndComplete();
-	if (hp >= 0) {
+	if (hp <= 0) {
 		die();
 	}
-
 }
 
 protected void changeEnergy(int amount) {

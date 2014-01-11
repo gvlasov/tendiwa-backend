@@ -31,6 +31,17 @@ Location(HorizontalPlane activePlane, int x, int y, int width, int height) {
 	this.height = height;
 }
 
+public void squareOfThin(EnhancedRectangle r, BorderObjectType type) {
+	for (int i = 0; i < r.width; i++) {
+		activePlane.setBorderObject(r.x + i, r.y, Directions.N, type);
+		activePlane.setBorderObject(r.x + i, r.y + r.height - 1, Directions.S, type);
+	}
+	for (int i = 0; i < r.height; i++) {
+		activePlane.setBorderObject(r.x, r.y + i, Directions.W, type);
+		activePlane.setBorderObject(r.x + r.width - 1, r.y + i, Directions.E, type);
+	}
+}
+
 public HorizontalPlane getActivePlane() {
 	return activePlane;
 }
@@ -48,7 +59,7 @@ public void changePlane(int height) {
 	activePlane = activePlane.getWorld().getPlane(height);
 }
 
-public  void line(int startX, int startY, int endX, int endY, TypePlaceableInCell placeable) {
+public void line(int startX, int startY, int endX, int endY, TypePlaceableInCell placeable) {
 	if (startX == endX && startY == endY) {
 		EntityPlacer.place(activePlane, placeable, x + startX, y + startY);
 		return;

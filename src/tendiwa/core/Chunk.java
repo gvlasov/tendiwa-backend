@@ -13,6 +13,7 @@ public final int x;
 public final int y;
 public HorizontalPlane plane;
 protected HashMap<Integer, ItemCollection> items = new HashMap<>();
+protected HashMap<Integer, BorderObject> borderObjects = new HashMap<>();
 Map<Integer, Character> characters = new HashMap<>();
 FloorType[][] floors;
 GameObject[][] objects;
@@ -55,6 +56,45 @@ public static Coordinate[] vector(int startX, int startY, int endX, int endY) {
 		result[i] = new Coordinate(Math.round(x[i]), Math.round(y[i]));
 	}
 	return result;
+}
+
+public BorderObject getBorderObject(int x, int y, CardinalDirection side) {
+	assert side != null;
+	if (side != Directions.N && side != Directions.W) {
+		if (side == Directions.E) {
+			side = Directions.W;
+			x += 1;
+		} else {
+			assert side == Directions.S;
+			side = Directions.N;
+			y += 1;
+		}
+	}
+	// At this point, side is either N or W
+	int key = getBorderObjectIndex(x, y, side);
+	return borderObjects.get(key);
+}
+
+private int getBorderObjectIndex(int x, int y, CardinalDirection side) {
+	return x * SIZE * 2 + y * 2 + (side == Directions.N ? 1 : 0);
+}
+
+public BorderObject setBorderObject(int x, int y, CardinalDirection side, BorderObjectType type) {
+	assert side != null;
+	if (side != Directions.N && side != Directions.W) {
+		if (side == Directions.E) {
+			side = Directions.W;
+			x += 1;
+		} else {
+			assert side == Directions.S;
+			side = Directions.N;
+			y += 1;
+		}
+	}
+	int key = getBorderObjectIndex(x, y, side);
+	BorderObject value = new BorderObject(type);
+	borderObjects.put(key, value);
+	return value;
 }
 
 public int getX() {

@@ -11,6 +11,8 @@ public final ImmutableList<Item> seenItems;
 private final ImmutableList.Builder<RenderCell> seenBuilder = ImmutableList.builder();
 private final ImmutableList.Builder<Integer> unseenBuilder = ImmutableList.builder();
 private final ImmutableList.Builder<Item> seenItemsBuilder = ImmutableList.builder();
+public final ImmutableList<RenderBorder> seenBorders;
+private final ImmutableList.Builder<RenderBorder> seenBordersBuilder = ImmutableList.builder();
 
 /**
  * @param xPrev
@@ -95,6 +97,7 @@ public EventFovChange(int xPrev, int yPrev, byte[][] visionPrevious, byte[][] vi
 	unseen = unseenBuilder.build();
 	seen = seenBuilder.build();
 	seenItems = seenItemsBuilder.build();
+	seenBorders = seenBordersBuilder.build();
 }
 
 private void addCellToSeen(int x, int y) {

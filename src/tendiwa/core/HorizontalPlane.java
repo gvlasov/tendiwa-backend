@@ -204,8 +204,8 @@ public void placeObject(GameObject gameObject, int x, int y) {
 }
 
 public Set<Chunk> getChunksAroundCoordinate(int x, int y, int squareSide) {
-	int startChunkX = getChunkRoundedCoord(x - squareSide / 2);
-	int startChunkY = getChunkRoundedCoord(y - squareSide / 2);
+	int startChunkX = Math.max(0, getChunkRoundedCoord(x - squareSide / 2));
+	int startChunkY = Math.max(0, getChunkRoundedCoord(y - squareSide / 2));
 	int endChunkX = getChunkRoundedCoord(x + squareSide / 2);
 	int endChunkY = getChunkRoundedCoord(y + squareSide / 2);
 	ImmutableSet.Builder<Chunk> builder = ImmutableSet.builder();
@@ -232,5 +232,13 @@ public int getLevel() {
 public boolean hasWall(int x, int y) {
 	GameObject wall = getChunkWithCell(x, y).getWall(x, y);
 	return wall != null && wall instanceof WallType;
+}
+
+public BorderObject setBorderObject(int x, int y, CardinalDirection side, BorderObjectType type) {
+	return getChunkWithCell(x, y).setBorderObject(x, y, side, type);
+}
+
+public BorderObject getBorderObject(int x, int y, CardinalDirection side) {
+	return getChunkWithCell(x, y).getBorderObject(x, y, side);
 }
 }

@@ -17,6 +17,7 @@ private static Registry<ObjectType> objectTypes = new Registry<>();
 private static Registry<Spell> spells = new Registry<>();
 private static Registry<SoundType> soundTypes = new Registry<>();
 private static Registry<CharacterType> characters = new Registry<>();
+private static Registry<CharacterType> borderObjectTypes = new Registry<>();
 private Map<String, T> map = new HashMap<>();
 static {
 	wallTypes.map.put("void", WallType.VOID);

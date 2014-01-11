@@ -32,7 +32,6 @@ public NonPlayerCharacter(HorizontalPlane plane, CharacterType characterType, in
 	destY = y;
 }
 
-/* Observations */
 public void updateObservation(Character character, int x, int y) {
 	Coordinate c = lastSeenEnemyCoord.get(character);
 	c.x = x;
@@ -134,17 +133,17 @@ private boolean getEnemy() {
 	return activeEnemy != null;
 }
 
-private boolean getEnemyToChase() {
-	/**
-	 * Sets one of unseen enemies to enemyToChase
-	 */
+/**
+ * Sets one of unseen enemies to {@link NonPlayerCharacter#enemyToChase}.
+ */
+private boolean getUnseenEnemyToChase() {
 	enemyToChase = null;
 		/*
-		 * If character had enemyToChase, but after getEnemyToChase he hasn't
+		 * If character had enemyToChase, but after getUnseenEnemyToChase he hasn't
 		 * found any, then enemyToChase will remain null.
 		 */
 	Coordinate characterCoord = new Coordinate(x, y);
-	double distanceToClosestCharacter = 9999999;
+	double distanceToClosestCharacter = Integer.MAX_VALUE;
 	for (Character ch : unseenEnemies) {
 		// Get closest unseen character position
 		double distanceToAnotherCharacter = characterCoord.distance(lastSeenEnemyCoord
@@ -199,7 +198,7 @@ private Coordinate getRetreatCoord() {
 		sides[sideL3.toInt()] = 1;
 		sides[sideR3.toInt()] = 1;
 	}
-	// Find index with minumum value and go to that side
+	// Find index with minimum value and go to that side
 	int min = Integer.MAX_VALUE;
 	int indexMin = -1;
 	int[] d;
@@ -227,6 +226,13 @@ private boolean canShoot() {
 	return false;
 }
 
+/**
+ * Checks if there is any cell around cell {toX:toY} where this character can come near.
+ *
+ * @param toX
+ * @param toY
+ * @return
+ */
 private boolean canComeTo(int toX, int toY) {
 	int dX = this.x - (PATH_TABLE_WIDTH - 1) / 2;
 	int dY = this.y - (PATH_TABLE_WIDTH - 1) / 2;
@@ -241,13 +247,20 @@ private boolean canComeTo(int toX, int toY) {
 		|| pathTable[toX - 1 - dX][toY - 1 - dY] != 0;
 }
 
+private boolean isShouldRetreat() {
+	return false;
+}
+
+private void retreat() {
+	Coordinate retreatCoord = getRetreatCoord();
+	step(retreatCoord.x, retreatCoord.y);
+}
+
 public void action() {
 	getPathTableToAllSeenCharacters();
 	Coordinate characterCoord = new Coordinate(x, y);
-	if (false) {
-		// If hp is too low, then retreat
-		Coordinate retreatCoord = getRetreatCoord();
-		step(retreatCoord.x, retreatCoord.y);
+	if (isShouldRetreat()) {
+		retreat();
 	} else if (getEnemy()) {
 		if (canShoot()) {
 			// shootMissile();
@@ -277,9 +290,6 @@ public void action() {
 				/* */// Maybe this part should be main, and main part should be
 			// deleted?!
 			// If we always use imaginary table.
-			int dX = this.x - (PATH_TABLE_WIDTH - 1) / 2;
-			int dY = this.y - (PATH_TABLE_WIDTH - 1) / 2;
-
 			PathTable imaginaryPathTable = Paths.getPathTable(x, y, this, MAX_PATH_TABLE_DEPTH);
 			imaginaryPathTable.getPath(activeEnemy.x, activeEnemy.y);
 			if (!imaginaryPathTable.cellComputed(activeEnemy.x, activeEnemy.y)) {
@@ -298,14 +308,14 @@ public void action() {
 				idle();
 			}
 		}
-	} else if (getEnemyToChase()) {
+	} else if (getUnseenEnemyToChase()) {
 		Coordinate lastSeenCoord = lastSeenEnemyCoord.get(enemyToChase);
 		PathTable pathTable = Paths.getPathTable(x, y, this, MAX_PATH_TABLE_DEPTH);
-		pathTable.getPath(lastSeenCoord.x, lastSeenCoord.y);
 
 		if (!pathTable.cellComputed(lastSeenCoord.x, lastSeenCoord.y)) {
 			// If path is blocked by characters
 			LinkedList<EnhancedPoint> path = Paths.getPath(x, y, lastSeenCoord.x, lastSeenCoord.y, getPathWalkerOverCharacters(), MAX_PATH_TABLE_DEPTH);
+			assert path != null : lastSeenCoord;
 			EnhancedPoint firstStep = path.getFirst();
 			if (plane.getCharacter(firstStep.x, firstStep.y) == null) {
 				// If there is no character on first cell of imaginary path,
@@ -334,29 +344,11 @@ public void action() {
 			// time
 			lastSeenEnemyCoord.remove(enemyToChase);
 			unseenEnemies.remove(enemyToChase);
-			getEnemyToChase();
+			getUnseenEnemyToChase();
 		}
 	} else {
 		idle();
 	}
-	// Wandering
-	// destX = x + (Chance.roll(50) ? 1 : -1);
-	// destY = y + (Chance.roll(50) ? 1 : -1);
-	// while (true) {
-	// if (
-	// destX>=location.width || destX<0 || destY>=location.height ||
-	// destY<0 ||
-	// location.cells[destX][destY].object()!=0 ||
-	// location.cells[destX][destY].character()!=null
-	// ) {
-	// destX = x + (Chance.roll(50) ? 1 : -1);
-	// destY = y + (Chance.roll(50) ? 1 : -1);
-	// } else {
-	// break;
-	// }
-	// }
-	// getPathTable();
-	// move(destX, destY);
 }
 
 /* Getters */
@@ -364,12 +356,13 @@ public String toString() {
 	return type.getResourceName() + " " + name;
 }
 
-/* Overriden methods */
+/* Overridden methods */
 public void move(int x, int y) {
 	super.move(x, y, MovingStyle.STEP);
 	getVisibleEntities();
 }
 
+@Override
 public void die() {
 	super.die();
 	timeStream.removeCharacter(this);
@@ -382,8 +375,8 @@ public boolean getPathTableToAllSeenCharacters() {
 	 */
 	int dX = this.x - (PATH_TABLE_WIDTH - 1) / 2;
 	int dY = this.y - (PATH_TABLE_WIDTH - 1) / 2;
-	ArrayList<Coordinate> oldFront = new ArrayList<Coordinate>();
-	ArrayList<Coordinate> newFront = new ArrayList<Coordinate>();
+	ArrayList<Coordinate> oldFront = new ArrayList<>();
+	ArrayList<Coordinate> newFront = new ArrayList<>();
 	newFront.add(new Coordinate(x, y));
 	for (int i = 0; i < PATH_TABLE_WIDTH; i++) {
 		for (int j = 0; j < PATH_TABLE_WIDTH; j++) {
@@ -393,20 +386,20 @@ public boolean getPathTableToAllSeenCharacters() {
 	pathTable[x - dX][y - dY] = 0;
 	int t = 0;
 	int charactersLeft = seenCharacters.size();
-	HashSet<Character> foundCharacters = new HashSet<Character>();
+	HashSet<Character> foundCharacters = new HashSet<>();
 	do {
 		oldFront = newFront;
-		newFront = new ArrayList<Coordinate>();
+		newFront = new ArrayList<>();
 		for (int i = 0; i < oldFront.size(); i++) {
 			int x = oldFront.get(i).x;
 			int y = oldFront.get(i).y;
-			int[] adjactentX = new int[]{x + 1, x, x, x - 1, x + 1,
+			int[] adjacentX = new int[]{x + 1, x, x, x - 1, x + 1,
 				x + 1, x - 1, x - 1};
-			int[] adjactentY = new int[]{y, y - 1, y + 1, y, y + 1,
+			int[] adjacentY = new int[]{y, y - 1, y + 1, y, y + 1,
 				y - 1, y + 1, y - 1};
 			for (int j = 0; j < 8; j++) {
-				int thisNumX = adjactentX[j] - dX;
-				int thisNumY = adjactentY[j] - dY;
+				int thisNumX = adjacentX[j] - dX;
+				int thisNumY = adjacentY[j] - dY;
 				if (thisNumX < 0
 					|| thisNumX >= PATH_TABLE_WIDTH
 					|| thisNumY < 0
@@ -423,8 +416,8 @@ public boolean getPathTableToAllSeenCharacters() {
 					// or character cannot see it and it is not
 					// PASSABILITY_NO
 					pathTable[thisNumX][thisNumY] = t + 1;
-					newFront.add(new Coordinate(adjactentX[j],
-						adjactentY[j]));
+					newFront.add(new Coordinate(adjacentX[j],
+						adjacentY[j]));
 				} else {
 					Character characterInCell = plane.getCharacter(thisNumX + dX, thisNumY + dY);
 					if (seenCharacters.contains(characterInCell)
@@ -440,15 +433,7 @@ public boolean getPathTableToAllSeenCharacters() {
 	return true;
 }
 
-
-
-	/* Dialogues */
-	/* Visibility */
-
-/**
- * Checks if this NonPlayerCharacter currently observes another Character
- */
-public boolean canSee(Character aim) {
+public boolean isCurrentlyObserving(Character aim) {
 	return seenCharacters.contains(aim);
 }
 
@@ -479,6 +464,7 @@ void tryToUnsee(Character aim) {
 		}
 	}
 }
+
 void unsee(Character aim) {
 	assert seenCharacters.contains(aim);
 	seenCharacters.remove(aim);

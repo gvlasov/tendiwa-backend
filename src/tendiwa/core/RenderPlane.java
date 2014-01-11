@@ -2,11 +2,10 @@ package tendiwa.core;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.SimpleGraph;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This class is supposed to be used by anyone who creates his own Tendiwa client. It uses the philosophical metaphor of
@@ -16,11 +15,81 @@ import java.util.Map;
  */
 public class RenderPlane {
 private final int worldHeight;
+private final HorizontalPlane backendPlane;
 private Map<Integer, RenderCell> cells = new HashMap<>();
 private Multimap<Integer, RememberedItem> unseenItems = HashMultimap.create();
+private Map<Integer, BorderObject> visibleBorderObjects = new HashMap<>();
+private Map<Integer, BorderObject> unseenBorderObjects = new HashMap<>();
 
-public RenderPlane() {
+public RenderPlane(HorizontalPlane backendPlane) {
 	this.worldHeight = Tendiwa.getWorldHeight();
+	this.backendPlane = backendPlane;
+}
+
+public void updateBorderObjectsVisibility() {
+	SimpleGraph<Integer, DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class);
+	System.out.println("cells size " + cells.size());
+	// Find all visible pairs of cells that are neighbors by a cardinal side.
+	for (Map.Entry<Integer, RenderCell> e : cells.entrySet()) {
+		Integer hash = e.getKey();
+
+		graph.addVertex(hash);
+		int[] coords = cellHashToCoords(hash);
+		Set<Integer> vertices = graph.vertexSet();
+		for (CardinalDirection dir : CardinalDirection.values()) {
+			int[] dCoords = dir.side2d();
+			Integer vertex = cellHash(coords[0] + dCoords[0], coords[1] + dCoords[1]);
+			if (vertices.contains(vertex)) {
+				graph.addEdge(hash, vertex);
+			}
+		}
+	}
+	Map<Integer, BorderObject> currentlyVisibleBorderObjects = new HashMap<>();
+	for (DefaultEdge e : graph.edgeSet()) {
+		int[] coordsSource = cellHashToCoords(graph.getEdgeSource(e));
+		int[] coordsTarget = cellHashToCoords(graph.getEdgeTarget(e));
+		CardinalDirection direction = (CardinalDirection) Directions.shiftToDirection(coordsSource[0] - coordsTarget[0], coordsSource[1] - coordsTarget[1]);
+		BorderObject borderObject = backendPlane.getBorderObject(coordsSource[0], coordsSource[1], direction);
+		if (borderObject != null) {
+			currentlyVisibleBorderObjects.put(
+				borderHash(coordsSource[0], coordsSource[1], direction),
+				borderObject
+			);
+		}
+	}
+	System.out.println("Currently vis obj size: " + currentlyVisibleBorderObjects.size());
+	for (Map.Entry<Integer, BorderObject> e : currentlyVisibleBorderObjects.entrySet()) {
+		if (visibleBorderObjects.containsValue(e.getValue())) {
+			// See currently visible border object
+			visibleBorderObjects.put(e.getKey(), e.getValue());
+		}
+		if (unseenBorderObjects.containsKey(e.getKey())) {
+			// Forget unseeing currently visible border object
+			unseenBorderObjects.remove(e.getKey());
+		}
+	}
+	// Unsee previously visible border objects
+	for (Map.Entry<Integer, BorderObject> e : visibleBorderObjects.entrySet()) {
+		if (!currentlyVisibleBorderObjects.containsKey(e.getKey())) {
+			visibleBorderObjects.remove(e.getKey());
+			unseenBorderObjects.put(e.getKey(), e.getValue());
+		}
+	}
+}
+
+private int borderHash(int x, int y, CardinalDirection side) {
+	assert side != null;
+	if (side != Directions.N && side != Directions.W) {
+		if (side == Directions.E) {
+			side = Directions.W;
+			x += 1;
+		} else {
+			assert side == Directions.S;
+			side = Directions.N;
+			y += 1;
+		}
+	}
+	return (side == Directions.N ? 1 : 0) + y * 2 + x * worldHeight * 2;
 }
 
 /**
@@ -67,8 +136,8 @@ public boolean hasCell(int x, int y) {
 }
 
 /**
- * Checks if player can see a cell. Objective analog is {@link Character#isCellVisible(int, int)}. Note that if this method
- * returns false, then cell can be either unseen or not yet seen.
+ * Checks if player can see a cell. Objective analog is {@link Character#isCellVisible(int, int)}. Note that if this
+ * method returns false, then cell can be either unseen or not yet seen.
  *
  * @param x
  * 	X coordinate of cell in world coordinates.
@@ -103,7 +172,7 @@ public boolean isCellUnseen(int x, int y) {
 public void seeCell(RenderCell cell) {
 	assert cell != null;
 	int key = cellHash(cell.x, cell.y);
-	assert !cells.containsKey(key) || !cells.get(key).isVisible() : "Cell "+cell.getX()+":"+cell.getY()+" is already visible";
+	assert !cells.containsKey(key) || !cells.get(key).isVisible() : "Cell " + cell.getX() + ":" + cell.getY() + " is already visible";
 	cells.put(key, cell);
 }
 
@@ -137,6 +206,10 @@ public boolean hasAnyUnseenItems(int x, int y) {
 
 private int cellHash(int x, int y) {
 	return x * worldHeight + y;
+}
+
+private int[] cellHashToCoords(int hash) {
+	return new int[]{hash / worldHeight, hash % worldHeight};
 }
 
 public Collection<RememberedItem> getUnseenItems(int x, int y) {

@@ -14,6 +14,7 @@ class DSL {
     def static materials = Registry.materials
     def static itemTypes = Registry.itemTypes
     def static ammunitionTypes = Registry.ammunitionTypes
+    def static borderObjectTypes = Registry.borderObjectTypes
 
     def static newCharacterType(closure) {
         CharacterType type = new CharacterType()
@@ -89,6 +90,13 @@ class DSL {
         closure.delegate = type
         closure()
         ammunitionTypes[type.name] = type
+        return type;
+    }
+    def static newBorderObjectType(closure) {
+        BorderObjectType type = new BorderObjectType() {}
+        closure.delegate = type
+        closure()
+        borderObjectTypes[type.name] = type
         return type;
     }
 }
