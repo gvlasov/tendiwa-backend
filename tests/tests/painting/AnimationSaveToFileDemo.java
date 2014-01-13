@@ -2,7 +2,7 @@ package tests.painting;
 
 import java.awt.Rectangle;
 
-import tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.TestCanvas;
 
 public class AnimationSaveToFileDemo {
 	public static void main(String[] args) {

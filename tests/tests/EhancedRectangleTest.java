@@ -1,13 +1,13 @@
 package tests;
 
 import org.junit.Test;
-import tendiwa.core.*;
+import org.tendiwa.core.*;
 
 import java.awt.*;
 import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
-import static tendiwa.core.DSL.*;
+import static org.tendiwa.core.DSL.*;
 
 public class EhancedRectangleTest {
 

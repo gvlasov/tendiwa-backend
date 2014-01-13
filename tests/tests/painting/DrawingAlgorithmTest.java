@@ -1,14 +1,14 @@
 package tests.painting;
 
 import com.google.common.collect.Lists;
-import tendiwa.drawing.DrawingAlgorithm;
-import tendiwa.drawing.DrawingRectangle;
-import tendiwa.drawing.DrawingRectangleSystem;
-import tendiwa.drawing.TestCanvas;
-import tendiwa.core.EnhancedRectangle;
-import tendiwa.core.Placeable;
-import tendiwa.core.RectangleSystem;
-import tendiwa.core.RecursivelySplitRectangleSystemFactory;
+import org.tendiwa.drawing.DrawingAlgorithm;
+import org.tendiwa.drawing.DrawingRectangle;
+import org.tendiwa.drawing.DrawingRectangleSystem;
+import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.core.EnhancedRectangle;
+import org.tendiwa.core.Placeable;
+import org.tendiwa.core.RectangleSystem;
+import org.tendiwa.core.RecursivelySplitRectangleSystemFactory;
 
 import java.awt.*;
 import java.util.Collection;

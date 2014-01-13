@@ -1,9 +1,9 @@
 package tests.painting;
 
-import tendiwa.core.meta.Range;
-import tendiwa.core.EnhancedRectangle;
-import tendiwa.core.RectangleSystem;
-import tendiwa.core.WaveRectangleSystem;
+import org.tendiwa.core.meta.Range;
+import org.tendiwa.core.EnhancedRectangle;
+import org.tendiwa.core.RectangleSystem;
+import org.tendiwa.core.WaveRectangleSystem;
 
 import java.io.IOException;
 

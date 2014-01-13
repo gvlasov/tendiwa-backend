@@ -2,15 +2,15 @@ package tests;
 
 import com.google.common.collect.Sets;
 import org.junit.Test;
-import tendiwa.core.Directions;
-import tendiwa.core.EnhancedRectangle;
-import tendiwa.core.RectangleSidePiece;
+import org.tendiwa.core.Directions;
+import org.tendiwa.core.EnhancedRectangle;
+import org.tendiwa.core.RectangleSidePiece;
 
 import java.util.Set;
 
 import static org.junit.Assert.*;
-import static tendiwa.core.Directions.E;
-import static tendiwa.core.Directions.W;
+import static org.tendiwa.core.Directions.E;
+import static org.tendiwa.core.Directions.W;
 
 public class RectangleSidePieceTest {
 	@Test

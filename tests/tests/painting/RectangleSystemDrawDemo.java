@@ -1,10 +1,10 @@
 package tests.painting;
 
-import tendiwa.drawing.DrawingRectangleSystem;
-import tendiwa.drawing.TestCanvas;
-import tendiwa.drawing.TestCanvasBuilder;
-import tendiwa.core.RectangleSystem;
-import tendiwa.core.RecursivelySplitRectangleSystemFactory;
+import org.tendiwa.drawing.DrawingRectangleSystem;
+import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.TestCanvasBuilder;
+import org.tendiwa.core.RectangleSystem;
+import org.tendiwa.core.RecursivelySplitRectangleSystemFactory;
 
 import java.awt.*;
 

@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
-import tendiwa.core.Directions;
+import org.tendiwa.core.Directions;
 
 public class SideTest extends TestCase {
 

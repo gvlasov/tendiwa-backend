@@ -1,5 +1,16 @@
 package org.tendiwa.groovy
 
+import org.tendiwa.core.AmmunitionType
+import org.tendiwa.core.BorderObjectType
+import org.tendiwa.core.CharacterAbility
+import org.tendiwa.core.CharacterType
+import org.tendiwa.core.FloorType
+import org.tendiwa.core.ItemType
+import org.tendiwa.core.Material
+import org.tendiwa.core.ObjectType
+import org.tendiwa.core.SoundType
+import org.tendiwa.core.Spell
+import org.tendiwa.core.WallType
 import tendiwa.core.*
 
 class DSL {

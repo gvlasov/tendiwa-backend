@@ -8,9 +8,9 @@
             <fileset dir="bin/">
                 <exclude name="tests/**"/>
             </fileset>
-            <fileset file="src/tendiwa/core/schema.xsd"/>
+            <fileset file="src/org/tendiwa/core/schema.xsd"/>
             <manifest>
-                <attribute name="Main-Class" value="tendiwa.core.Tendiwa"/>
+                <attribute name="Main-Class" value="org.tendiwa.core.Tendiwa"/>
             </manifest>
         </jar>
     </target>

@@ -16,7 +16,7 @@ When you need to customize build process for a module, edit build.properties fil
         <jar destfile="game.jar">
             <zipgroupfileset dir="." includes="*.jar"/>
             <manifest>
-                <attribute name="Main-Class" value="tendiwa.core.Tendiwa"/>
+                <attribute name="Main-Class" value="org.tendiwa.core.Tendiwa"/>
             </manifest>
         </jar>
     </target>
@@ -60,7 +60,7 @@ When you need to customize build process for a module, edit build.properties fil
             <flattenmapper/>
         </copy>
         <!--Generate sources-->
-        <java classname="tendiwa.core.Tendiwa" failonerror="true">
+        <java classname="org.tendiwa.core.Tendiwa" failonerror="true">
             <arg value="--ontology"/>
             <arg value="${tmpdir}"/>
             <classpath>

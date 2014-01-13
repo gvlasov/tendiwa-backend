@@ -2,10 +2,10 @@ package tests.painting;
 
 import java.awt.Point;
 
-import tendiwa.core.meta.Range;
-import tendiwa.drawing.TestCanvas;
-import tendiwa.drawing.TestCanvasBuilder;
-import tendiwa.core.FuckingTrailRectangleSystem;
+import org.tendiwa.core.meta.Range;
+import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.TestCanvasBuilder;
+import org.tendiwa.core.FuckingTrailRectangleSystem;
 
 public class TrailingRectnalgeSystemDrawTest {
 	public static void main(String[] args) {

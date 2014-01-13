@@ -5,8 +5,8 @@ import java.awt.Point;
 import org.junit.Test;
 
 
-import tendiwa.core.meta.Range;
-import tendiwa.core.FuckingTrailRectangleSystem;
+import org.tendiwa.core.meta.Range;
+import org.tendiwa.core.FuckingTrailRectangleSystem;
 
 public class TrailRectnagleSystemTest {
 

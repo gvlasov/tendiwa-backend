@@ -1,6 +1,6 @@
 package org.tendiwa.groovy;
 
-import tendiwa.core.*;
+import org.tendiwa.core.*;
 
 import java.util.HashMap;
 import java.util.Iterator;

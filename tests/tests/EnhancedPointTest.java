@@ -7,9 +7,9 @@ import java.awt.Point;
 import org.junit.Assert;
 import org.junit.Test;
 
-import tendiwa.core.Directions;
-import tendiwa.core.EnhancedPoint;
-import tendiwa.core.Orientation;
+import org.tendiwa.core.Directions;
+import org.tendiwa.core.EnhancedPoint;
+import org.tendiwa.core.Orientation;
 
 public class EnhancedPointTest extends Assert {
 

@@ -2,9 +2,9 @@ package tests.painting;
 
 import java.awt.Rectangle;
 
-import tendiwa.drawing.TestCanvas;
-import tendiwa.core.GrowingRectangleSystem;
-import tendiwa.core.RectangleSystem;
+import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.core.GrowingRectangleSystem;
+import org.tendiwa.core.RectangleSystem;
 
 public class TrailDrawTest {
 public static void main(String[] args) {

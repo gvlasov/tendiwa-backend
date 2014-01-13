@@ -8,7 +8,7 @@ import java.util.Collection;
 
 import org.junit.Test;
 
-import tendiwa.core.meta.Range;
+import org.tendiwa.core.meta.Range;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;

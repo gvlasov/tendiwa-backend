@@ -1,16 +1,17 @@
 package tests.painting;
 
 import org.jgrapht.graph.SimpleGraph;
-import tendiwa.drawing.DrawingRectangle;
-import tendiwa.drawing.DrawingRectangleSystem;
-import tendiwa.drawing.TestCanvas;
-import tendiwa.core.EnhancedRectangle;
-import tendiwa.core.RectangleSystemBuilder;
-import tendiwa.core.RectanglesJunction;
+import org.tendiwa.drawing.DrawingRectangle;
+import org.tendiwa.drawing.DrawingRectangleSystem;
+import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.core.EnhancedRectangle;
+import org.tendiwa.core.RectangleSystemBuilder;
+import org.tendiwa.core.RectanglesJunction;
 
 import java.awt.*;
 
-import static tendiwa.core.DSL.*;
+import static org.tendiwa.core.DSL.*;
+
 public class RectanglesUnionDemo {
 public static void main(String[] args) {
 	RectangleSystemBuilder builder = builder(10)

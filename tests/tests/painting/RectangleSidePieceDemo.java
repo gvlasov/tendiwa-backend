@@ -1,10 +1,10 @@
 package tests.painting;
 
-import tendiwa.drawing.DrawingRectangle;
-import tendiwa.drawing.TestCanvas;
-import tendiwa.drawing.TestCanvasBuilder;
-import tendiwa.core.Directions;
-import tendiwa.core.EnhancedRectangle;
+import org.tendiwa.drawing.DrawingRectangle;
+import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.TestCanvasBuilder;
+import org.tendiwa.core.Directions;
+import org.tendiwa.core.EnhancedRectangle;
 
 import java.awt.*;
 

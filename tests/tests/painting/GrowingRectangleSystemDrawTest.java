@@ -1,7 +1,7 @@
 package tests.painting;
 
-import tendiwa.core.*;
-import tendiwa.drawing.TestCanvas;
+import org.tendiwa.core.*;
+import org.tendiwa.drawing.TestCanvas;
 
 public class GrowingRectangleSystemDrawTest {
 	public static void main(String[] args) {
