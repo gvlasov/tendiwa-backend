@@ -1,6 +1,8 @@
 package org.tendiwa.core;
 
-import java.lang.*;
+import org.tendiwa.core.vision.ModifiableCellVisionCache;
+import org.tendiwa.core.vision.Seer;
+
 import java.util.LinkedList;
 
 public class EventInitialTerrain implements Event {
@@ -15,14 +17,14 @@ public final int zLevel;
 public EventInitialTerrain() {
 	HorizontalPlane plane = Tendiwa.getWorld().getPlayer().getPlane();
 	zLevel = plane.getLevel();
-	byte[][] visionCache = Tendiwa.getPlayerCharacter().getVisionCache();
-	int visibilityRecWorldStartX = Tendiwa.getPlayerCharacter().getX() - Character.VISION_RANGE;
-	int visibilityRecWorldStartY = Tendiwa.getPlayerCharacter().getY() - Character.VISION_RANGE;
-	for (int i = 0; i < Character.VISION_CACHE_WIDTH; i++) {
-		for (int j = 0; j < Character.VISION_CACHE_WIDTH; j++) {
-			if (visionCache[i][j] == Character.VISION_VISIBLE) {
-				int x = visibilityRecWorldStartX + i;
-				int y = visibilityRecWorldStartY + j;
+	Seer seer = Tendiwa.getPlayerCharacter().getSeer();
+	byte[][] visionCache = seer.getVisionCache().getContent();
+	EnhancedPoint startPoint = seer.getVisionRecStartPoint();
+	for (int i = 0; i < ModifiableCellVisionCache.VISION_CACHE_WIDTH; i++) {
+		for (int j = 0; j < ModifiableCellVisionCache.VISION_CACHE_WIDTH; j++) {
+			if (visionCache[i][j] == Seer.VISION_VISIBLE) {
+				int x = startPoint.x + i;
+				int y = startPoint.y + j;
 				seenCells.add(new RenderCell(
 					x,
 					y,
@@ -32,27 +34,29 @@ public EventInitialTerrain() {
 			}
 		}
 	}
-	int actualWorldStartX = Math.max(0, visibilityRecWorldStartX);
-	int actualWorldStartY = Math.max(0, visibilityRecWorldStartY);
-	int actualWorldEndX = Math.min(Tendiwa.getWorldWidth() - 1, visibilityRecWorldStartX + Character.VISION_CACHE_WIDTH - 1);
-	int actualWorldEndY = Math.min(Tendiwa.getWorldHeight() - 1, visibilityRecWorldStartY + Character.VISION_CACHE_WIDTH - 1);
+	EnhancedRectangle actualVisionRec = seer.getVisionRectangle();
+	int actualWorldStartX = actualVisionRec.getX();
+	int actualWorldStartY = actualVisionRec.getY();
+	int actualWorldEndX = actualVisionRec.getMaxX();
+	int actualWorldEndY = actualVisionRec.getMaxY();
 
 	for (int i = actualWorldStartX; i < actualWorldEndX; i++) {
 		for (int j = actualWorldStartY; j < actualWorldEndY; j++) {
 			BorderObject borderObjectW = plane.getBorderObject(i + 1, j, Directions.W);
-			boolean cellIsVisible = visionCache[i - visibilityRecWorldStartX][j - visibilityRecWorldStartY] == Character.VISION_VISIBLE;
+			boolean cellIsVisible = visionCache[i - startPoint.x][j - startPoint.y] == Seer.VISION_VISIBLE;
 			if (cellIsVisible
-				&& visionCache[i - visibilityRecWorldStartX + 1][j - visibilityRecWorldStartY] == Character.VISION_VISIBLE
+				&& visionCache[i - startPoint.x + 1][j - startPoint.y] == Seer.VISION_VISIBLE
 				) {
 				seenBorders.add(new RenderBorder(i + 1, j, Directions.W, borderObjectW));
 			}
 			BorderObject borderObjectN = plane.getBorderObject(i, j + 1, Directions.N);
 			if (cellIsVisible
-				&& visionCache[i - visibilityRecWorldStartX][j - visibilityRecWorldStartY + 1] == Character.VISION_VISIBLE
+				&& visionCache[i - startPoint.x][j - startPoint.y + 1] == Seer.VISION_VISIBLE
 				) {
 				seenBorders.add(new RenderBorder(i, j + 1, Directions.N, borderObjectN));
 			}
 		}
 	}
 }
+
 }

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import static org.junit.Assert.assertEquals;
 import static org.tendiwa.core.DSL.*;
 
-public class EhancedRectangleTest {
+public class EnhancedRectangleTest {
 
 @Test
 public void testRectangleContainingPoints() {
@@ -19,24 +19,24 @@ public void testRectangleContainingPoints() {
 	points.add(new Point(23, 29));
 	points.add(new Point(23, 13));
 	points.add(new Point(22, 0));
-	Rectangle r = EnhancedRectangle.rectangleContainingAllPonts(points);
-	assertEquals(r, new Rectangle(1, 0, 23, 30));
+	EnhancedRectangle r = EnhancedRectangle.rectangleContainingAllPonts(points);
+	assertEquals(r, new EnhancedRectangle(1, 0, 23, 30));
 }
 
 @Test
 public void testGrowFromPoint() {
 	assertEquals(
 		EnhancedRectangle.growFromPoint(0, 0, Directions.SE, 10, 10),
-		new Rectangle(0, 0, 10, 10));
+		new EnhancedRectangle(0, 0, 10, 10));
 	assertEquals(
 		EnhancedRectangle.growFromPoint(20, 20, Directions.SW, 10, 10),
-		new Rectangle(11, 20, 10, 10));
+		new EnhancedRectangle(11, 20, 10, 10));
 	assertEquals(
 		EnhancedRectangle.growFromPoint(20, 20, Directions.NW, 10, 10),
-		new Rectangle(11, 11, 10, 10));
+		new EnhancedRectangle(11, 11, 10, 10));
 	assertEquals(
 		EnhancedRectangle.growFromPoint(20, 20, Directions.NE, 10, 10),
-		new Rectangle(20, 11, 10, 10));
+		new EnhancedRectangle(20, 11, 10, 10));
 
 }
 

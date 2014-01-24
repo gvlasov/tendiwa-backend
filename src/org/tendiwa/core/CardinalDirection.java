@@ -15,22 +15,6 @@ public static final int[] dx = new int[]{0, 1, 0, -1};
 public static final int[] dy = new int[]{-1, 0, 1, 0};
 public static final List<CardinalDirection> ALL = Arrays.asList(N, E, S, W);
 
-public static CardinalDirection indexToDirection(int i) {
-	if (i == 0) {
-		return N;
-	}
-	if (i == 1) {
-		return E;
-	}
-	if (i == 2) {
-		return S;
-	}
-	if (i == 3) {
-		return W;
-	}
-	throw new IllegalArgumentException("Index must be in [0,3]");
-}
-
 /**
  * Returns a direction corresponding to a number. Clockwise: 0 is N, 1 is E, 2 is S, 3 is W.
  *
@@ -57,9 +41,15 @@ public static CardinalDirection sideFromCardinalIndex(int index) {
 }
 
 /**
- * <p> Returns an int corresponding to CardinalDirection. </p> <ul> <li>0 is {@link CardinalDirection#N}</li> <li>2 is
- * {@link CardinalDirection#E}</li> <li>4 is {@link CardinalDirection#S}</li> <li>6 is {@link CardinalDirection#W}</li>
- * </ul>
+ * Returns an int corresponding to CardinalDirection.
+ * <p/>
+ * {@link CardinalDirection#N} is 0
+ * <p/>
+ * {@link CardinalDirection#E} is 2
+ * <p/>
+ * {@link CardinalDirection#S} is 4
+ * <p/>
+ * {@link CardinalDirection#W} is 6
  *
  * @see {@link OrdinalDirection#toInt()}
  */
@@ -168,6 +158,12 @@ public String toString() {
 	}
 }
 
+/**
+ * Returns orientation of a CardinalDirection.
+ *
+ * @return {@link Orientation#VERTICAL} if this is {@link Directions#N} or {@link Directions#S}, or {@link
+ *         Orientation#HORIZONTAL} if this is {@link Directions#W} or {@link Directions#E}.
+ */
 public Orientation getOrientation() {
 	switch (this) {
 		case N:
@@ -178,6 +174,7 @@ public Orientation getOrientation() {
 	}
 }
 
+@Override
 public int[] side2d() {
 	switch (this) {
 		case N:
@@ -192,31 +189,39 @@ public int[] side2d() {
 			return new int[]{
 				0, 1
 			};
-		case W:
 		default:
+			assert this == W;
 			return new int[]{
 				-1, 0
 			};
 	}
 }
 
+@Override
 public boolean isOpposite(Direction direction) {
 	if (direction == null) {
 		throw new NullPointerException();
 	}
 	switch (this) {
 		case N:
-			return direction == S ? true : false;
+			return direction == S;
 		case E:
-			return direction == W ? true : false;
+			return direction == W;
 		case S:
-			return direction == N ? true : false;
-		case W:
+			return direction == N;
 		default:
-			return direction == E ? true : false;
+			assert this == W;
+			return direction == E;
 	}
 }
 
+/**
+ * Returns true if going this direction increases value of x or y coordinate, or false if it decreases coordinate
+ * <p/>
+ * (Going some CardinalDirection can't leave coordinate the same or increase one while decreasing another).
+ *
+ * @return true if this direction is {@link Directions#E} or {@link Directions#S}, false otherwise.
+ */
 public boolean isGrowing() {
 	switch (this) {
 		case E:
@@ -228,6 +233,11 @@ public boolean isGrowing() {
 	}
 }
 
+/**
+ * Returns true if an arrow pointing in this direction would be vertical.
+ *
+ * @return true if this direction is {@link Directions#N} or {@link Directions#S}, false otherwise.
+ */
 public boolean isVertical() {
 	switch (this) {
 		case N:
@@ -300,14 +310,16 @@ public int closestCoordOf(int a, int b) {
 }
 
 /**
- * <p> Returns the coordinate that lies further in this direction. That is, </p>
+ * Returns the coordinate that lies further in this direction.
  *
  * @param a
+ * 	One value.
  * @param b
- * @return If this direction is a growing one, returns the greatest of two integers, otherwise returns the least.
+ * 	Another value (order doesn't matter).
+ * @return If this direction is a growing one ({@link org.tendiwa.core.CardinalDirection#isGrowing()}), returns the
+ *         greatest of two integers, otherwise returns the least.
  * @see CardinalDirection#isGrowing()
  * @see CardinalDirection#closestCoordOf(int, int)
- * @see
  */
 public int furthestCoordOf(int a, int b) {
 	if (isGrowing()) {
@@ -317,6 +329,14 @@ public int furthestCoordOf(int a, int b) {
 	}
 }
 
+/**
+ * Returns 0 for {@link Directions#N}, 1 for {@link Directions#E}, 2 for {@link Directions#S} and 3 for {@link
+ * Directions#W}.
+ * <p/>
+ * This method is convenient when you need to store values corresponding to CardinalSides in an array.
+ *
+ * @return 0 for N, 1 for E, 2 for S and 3 for W.
+ */
 public int getCardinalIndex() {
 	if (this == N) {
 		return 0;
@@ -339,4 +359,5 @@ public int getCardinalIndex() {
 public boolean isHorizontal() {
 	return this == E || this == W;
 }
+
 }

@@ -35,11 +35,11 @@ public class StepAwayFromFromSideMargin {
                 EnhancedRectangle existingRec = builder.getRectangleByPointer(pointer).getBounds();
                 int staticCoord = existingRec.getStaticCoordOfSide(side) + (builder.rs.borderWidth + 1 + margin) * side.getGrowing();
                 if (side == Directions.N) {
-                    staticCoord -= placeableBounds.height;
+                    staticCoord -= placeableBounds.getHeight();
                 } else if (side == Directions.W) {
-                    staticCoord -= placeableBounds.width;
                 }
-                int dynamicCoord = (side.isVertical() ? existingRec.x : existingRec.y) + (existingRec.getDimensionBySide(side) - placeableBounds.getDimensionBySide(side)) / 2;
+	            staticCoord -= placeableBounds.getWidth();
+	            int dynamicCoord = (side.isVertical() ? existingRec.getX() : existingRec.getY()) + (existingRec.getDimensionBySide(side) - placeableBounds.getDimensionBySide(side)) / 2;
                 int x, y;
                 if (side.isVertical()) {
                     x = dynamicCoord;

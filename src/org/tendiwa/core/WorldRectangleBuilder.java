@@ -43,7 +43,7 @@ public WorldRectangleBuilder setLocationFeatures(int index, LocationFeature feat
 private WorldRectangleBuilder setLocationFeatures(Placeable placeable, LocationFeature feature) {
 	for (EnhancedRectangle rectangle : placeable.getRectangles()) {
 		if (!rs.getRectangles().contains(rectangle)) {
-			throw new IllegalArgumentException("Rectangle " + rectangle + " from argument " + placeable + " is not present in this WorldRectangleBuilder");
+			throw new IllegalArgumentException("Rectangle " + rectangle + " from argument " + placeable + " is not present in this WorldRectangleBuilder ("+rs.getRectangles()+")");
 		}
 		List<LocationFeature> values;
 		if (!locationFeatures.containsKey(rectangle)) {
@@ -68,7 +68,7 @@ public WorldRectangleBuilder place(String name, Placeable what, Placement where)
 
 @Override
 /**
- * <p>Builds and returns the rectangle system of all rectanlges added to this WorldRectangleBuilder.</p>
+ * <p>Builds and returns the rectangle system of all rectangles added to this WorldRectangleBuilder.</p>
  * <p>If this method is called on a WorldRectangleBuilder that has already been built (its done() has been invoked), then this method doesn't build the RectanlgeSystem again, but returns the existing RectangleSystem.</p>
  *
  * @return The built rectangle system.

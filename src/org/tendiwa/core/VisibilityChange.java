@@ -3,14 +3,14 @@ package org.tendiwa.core;
 import com.google.common.collect.ImmutableList;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
+import org.tendiwa.core.vision.BorderVisionCache;
+import org.tendiwa.core.vision.CellVisionCache;
+import org.tendiwa.core.vision.ModifiableCellVisionCache;
+import org.tendiwa.core.vision.Seer;
 
-class VisibilityChange implements Event {
-private ImmutableList<RenderCell> seenCells;
-private ImmutableList<Integer> unseenCells;
-private ImmutableList<Item> seenItems;
-private ImmutableList<RenderBorder> seenBorders;
-private ImmutableList<RenderBorder> unseenBorders;
-
+class VisibilityChange {
+private final BorderVisionCache borderVisionCurrent;
+private final BorderVisionCache borderVisionPrevious;
 private final ImmutableList.Builder<RenderCell> seenBuilder = ImmutableList.builder();
 private final ImmutableList.Builder<Integer> unseenBuilder = ImmutableList.builder();
 private final ImmutableList.Builder<Item> seenItemsBuilder = ImmutableList.builder();
@@ -22,9 +22,16 @@ private final int dy;
 private final Character player;
 private final int xPrev;
 private final int yPrev;
-private final byte[][] visionPrevious;
-private final byte[][] visionCurrent;
+private final CellVisionCache visionPrevious;
+private final CellVisionCache visionCurrent;
+private ImmutableList<RenderCell> seenCells;
+private ImmutableList<Integer> unseenCells;
+private ImmutableList<Item> seenItems;
+private ImmutableList<RenderBorder> seenBorders;
+private ImmutableList<RenderBorder> unseenBorders;
 private boolean eventCreated = false;
+private byte[][] visionPreviousContent;
+private byte[][] visionCurrentContent;
 
 /**
  * @param xPrev
@@ -38,55 +45,60 @@ private boolean eventCreated = false;
  * 	Vision cache of PlayerCharacter on current turn. {@code visionCurrent[Character.VISION_RANGE][Character.VISION_RANGE]}
  * 	is the point Character is standing on current turn.
  */
-public VisibilityChange(int xPrev, int yPrev, byte[][] visionPrevious, byte[][] visionCurrent) {
+public VisibilityChange(int xPrev, int yPrev, CellVisionCache visionPrevious, CellVisionCache visionCurrent, BorderVisionCache borderPrevious, BorderVisionCache borderCurrent) {
 	this.xPrev = xPrev;
 	this.yPrev = yPrev;
 	this.visionPrevious = visionPrevious;
 	this.visionCurrent = visionCurrent;
+	this.borderVisionCurrent = borderCurrent;
+	this.borderVisionPrevious = borderPrevious;
 	plane = Tendiwa.getPlayerCharacter().getPlane();
 	player = Tendiwa.getPlayerCharacter();
 	dx = player.getX() - xPrev;
 	dy = player.getY() - yPrev;
 	compute();
 }
+
 private void compute() {
 	int worldHeight = Tendiwa.getWorld().getHeight();
 	// Loop over points in previous cache
-	int startIndexX = Character.getStartIndexOfRelativeTable(xPrev, Character.VISION_RANGE);
-	int startIndexY = Character.getStartIndexOfRelativeTable(yPrev, Character.VISION_RANGE);
-	int endPrevX = Character.getEndIndexOfRelativeTableX(xPrev, Character.VISION_RANGE);
-	int endPrevY = Character.getEndIndexOfRelativeTableY(yPrev, Character.VISION_RANGE);
+	int startIndexX = Seer.getStartIndexOfRelativeTable(xPrev, Seer.VISION_RANGE);
+	int startIndexY = Seer.getStartIndexOfRelativeTable(yPrev, Seer.VISION_RANGE);
+	int endPrevX = Seer.getEndIndexOfRelativeTableX(xPrev, Seer.VISION_RANGE);
+	int endPrevY = Character.getEndIndexOfRelativeTableY(yPrev, Seer.VISION_RANGE);
+	visionPreviousContent = visionPrevious.getContent();
+	visionCurrentContent = visionCurrent.getContent();
 	for (int i = startIndexX; i < endPrevX; i++) {
 		for (int j = startIndexY; j < endPrevY; j++) {
 			boolean pointIsInBothCaches = i - dx >= 0
 				&& j - dy >= 0
-				&& i - dx < Character.VISION_CACHE_WIDTH
-				&& j - dy < Character.VISION_CACHE_WIDTH;
+				&& i - dx < ModifiableCellVisionCache.VISION_CACHE_WIDTH
+				&& j - dy < ModifiableCellVisionCache.VISION_CACHE_WIDTH;
 			if (pointIsInBothCaches) {
-				if (visionPrevious[i][j] == Character.VISION_VISIBLE
-					&& visionCurrent[i - dx][j - dy] == Character.VISION_INVISIBLE
+				if (visionPreviousContent[i][j] == Seer.VISION_VISIBLE
+					&& visionCurrentContent[i - dx][j - dy] == Seer.VISION_INVISIBLE
 					) {
 					// If a point was known to be visible, and now it is invisible, then it is unseen
-					int x = xPrev - Character.VISION_RANGE + i;
-					int y = yPrev - Character.VISION_RANGE + j;
+					int x = xPrev - Seer.VISION_RANGE + i;
+					int y = yPrev - Seer.VISION_RANGE + j;
 					if (plane.containsCell(x, y)) {
 						unseenBuilder.add(x * worldHeight + y);
 					}
-				} else if (visionPrevious[i][j] == Character.VISION_INVISIBLE
-					&& visionCurrent[i - dx][j - dy] == Character.VISION_VISIBLE
+				} else if (visionPreviousContent[i][j] == Seer.VISION_INVISIBLE
+					&& visionCurrentContent[i - dx][j - dy] == Seer.VISION_VISIBLE
 					) {
 					// If a point was known to be invisible, and now it is visible, then it is seen
-					int x = xPrev - Character.VISION_RANGE + i;
-					int y = yPrev - Character.VISION_RANGE + j;
+					int x = xPrev - Seer.VISION_RANGE + i;
+					int y = yPrev - Seer.VISION_RANGE + j;
 					addCellToSeen(x, y);
 				}
 			} else {
 				// If point is only in the previous cache
-				if (visionPrevious[i][j] == Character.VISION_VISIBLE) {
+				if (visionPreviousContent[i][j] == Seer.VISION_VISIBLE) {
 					// If a point was known to be visible, and now it is not known of its visibility,
 					// therefore it is invisible and must be unseen
-					int x = xPrev - Character.VISION_RANGE + i;
-					int y = yPrev - Character.VISION_RANGE + j;
+					int x = xPrev - Seer.VISION_RANGE + i;
+					int y = yPrev - Seer.VISION_RANGE + j;
 					if (plane.containsCell(x, y)) {
 						unseenBuilder.add(x * worldHeight + y);
 					}
@@ -95,25 +107,25 @@ private void compute() {
 		}
 	}
 	// Loop over points in the new cache that are _not_ in the previous cache
-	int startPlayerX = Character.getStartIndexOfRelativeTable(player.getX(), Character.VISION_RANGE);
-	int startPlayerY = Character.getStartIndexOfRelativeTable(player.getY(), Character.VISION_RANGE);
-	int endPlayerX = Character.getEndIndexOfRelativeTableX(player.getX(), Character.VISION_RANGE);
-	int endPlayerY = Character.getEndIndexOfRelativeTableY(player.getY(), Character.VISION_RANGE);
+	int startPlayerX = Seer.getStartIndexOfRelativeTable(player.getX(), Seer.VISION_RANGE);
+	int startPlayerY = Seer.getStartIndexOfRelativeTable(player.getY(), Seer.VISION_RANGE);
+	int endPlayerX = Seer.getEndIndexOfRelativeTableX(player.getX(), Seer.VISION_RANGE);
+	int endPlayerY = Character.getEndIndexOfRelativeTableY(player.getY(), Seer.VISION_RANGE);
 	for (int i = startPlayerX; i < endPlayerX; i++) {
 		for (int j = startPlayerY; j < endPlayerY; j++) {
 			// Condition from previous loop with reversed dx
 			boolean pointIsInBothCaches = i + dx >= 0
 				&& j + dy >= 0
-				&& i + dx < Character.VISION_CACHE_WIDTH
-				&& j + dy < Character.VISION_CACHE_WIDTH;
+				&& i + dx < ModifiableCellVisionCache.VISION_CACHE_WIDTH
+				&& j + dy < ModifiableCellVisionCache.VISION_CACHE_WIDTH;
 			if (pointIsInBothCaches) {
 				// Points that are in both caches are already computed
 				continue;
 			}
-			if (visionCurrent[i][j] == Character.VISION_VISIBLE) {
+			if (visionCurrentContent[i][j] == Seer.VISION_VISIBLE) {
 				// If it wasn't known of point's visibility, and now it is visible, therefore it was seen.
-				int x = xPrev + dx - Character.VISION_RANGE + i;
-				int y = yPrev + dy - Character.VISION_RANGE + j;
+				int x = xPrev + dx - Seer.VISION_RANGE + i;
+				int y = yPrev + dy - Seer.VISION_RANGE + j;
 				addCellToSeen(x, y);
 			}
 		}
@@ -121,30 +133,30 @@ private void compute() {
 	unseenCells = unseenBuilder.build();
 	seenCells = seenBuilder.build();
 	seenItems = seenItemsBuilder.build();
-	int worldPrevVisionSquareStartX = xPrev - Character.VISION_RANGE;
-	int worldPrevVisionSquareStartY = yPrev - Character.VISION_RANGE;
+	int worldPrevVisionSquareStartX = xPrev - Seer.VISION_RANGE;
+	int worldPrevVisionSquareStartY = yPrev - Seer.VISION_RANGE;
 	SimpleGraph<EnhancedPoint, DefaultEdge> graphPrevious = getVisibleBordersGraph(
 		worldPrevVisionSquareStartX,
 		worldPrevVisionSquareStartY,
-		visionPrevious
+		visionPreviousContent
 	);
 	SimpleGraph<EnhancedPoint, DefaultEdge> graphCurrent = getVisibleBordersGraph(
 		worldPrevVisionSquareStartX + dx,
 		worldPrevVisionSquareStartY + dy,
-		visionCurrent
+		visionCurrentContent
 	);
 	for (RenderCell seenCell : seenCells) {
 		EnhancedPoint vertex = new EnhancedPoint(seenCell.x, seenCell.y);
-		assert graphCurrent.containsVertex(vertex) : "No vertex " + vertex + " in " + graphCurrent.vertexSet();
+		assert graphCurrent.containsVertex(vertex) : "No seen vertex " + vertex + " in " + graphCurrent.vertexSet();
 		for (DefaultEdge edge : graphCurrent.edgesOf(vertex)) {
 			EnhancedPoint anotherPoint = graphCurrent.getEdgeSource(edge).equals(vertex) ? graphCurrent.getEdgeTarget(edge) : graphCurrent.getEdgeSource(edge);
 			CardinalDirection side = (CardinalDirection) Directions.shiftToDirection(seenCell.x - anotherPoint.x, seenCell.y - anotherPoint.y);
-			if (side.isHorizontal() && anotherPoint.x == worldPrevVisionSquareStartX + dx + Character.VISION_CACHE_WIDTH - 1) {
+			if (side.isHorizontal() && anotherPoint.x == worldPrevVisionSquareStartX + dx + ModifiableCellVisionCache.VISION_CACHE_WIDTH - 1) {
 				continue;
-			} else if (side.isVertical() && anotherPoint.y == worldPrevVisionSquareStartY + dy + Character.VISION_CACHE_WIDTH - 1) {
+			} else if (side.isVertical() && anotherPoint.y == worldPrevVisionSquareStartY + dy + ModifiableCellVisionCache.VISION_CACHE_WIDTH - 1) {
 				continue;
 			}
-			if (visionCurrent[anotherPoint.x - (worldPrevVisionSquareStartX + dx)][anotherPoint.y - (worldPrevVisionSquareStartY + dy)] == Character.VISION_VISIBLE
+			if (visionCurrentContent[anotherPoint.x - (worldPrevVisionSquareStartX + dx)][anotherPoint.y - (worldPrevVisionSquareStartY + dy)] == Seer.VISION_VISIBLE
 				&& plane.hasBorderObject(anotherPoint.x, anotherPoint.y, side)
 				) {
 				seenBordersBuilder.add(new RenderBorder(
@@ -159,16 +171,16 @@ private void compute() {
 	for (int hash : unseenCells) {
 		int[] coords = Chunk.cellHashToCoords(hash, worldHeight);
 		EnhancedPoint vertex = new EnhancedPoint(coords[0], coords[1]);
-		assert graphPrevious.containsVertex(vertex) : "No vertex " + vertex + " in " + graphPrevious.vertexSet();
+		assert graphPrevious.containsVertex(vertex) : "No unseen vertex " + vertex + " in " + graphPrevious.vertexSet();
 		for (DefaultEdge edge : graphPrevious.edgesOf(vertex)) {
 			EnhancedPoint anotherPoint = graphPrevious.getEdgeSource(edge).equals(vertex) ? graphPrevious.getEdgeTarget(edge) : graphPrevious.getEdgeSource(edge);
 			CardinalDirection side = (CardinalDirection) Directions.shiftToDirection(coords[0] - anotherPoint.x, coords[1] - anotherPoint.y);
-			if (side.isHorizontal() && anotherPoint.x == worldPrevVisionSquareStartX + Character.VISION_CACHE_WIDTH - 1) {
+			if (side.isHorizontal() && anotherPoint.x == worldPrevVisionSquareStartX + ModifiableCellVisionCache.VISION_CACHE_WIDTH - 1) {
 				continue;
-			} else if (side.isVertical() && anotherPoint.y == worldPrevVisionSquareStartY + Character.VISION_CACHE_WIDTH - 1) {
+			} else if (side.isVertical() && anotherPoint.y == worldPrevVisionSquareStartY + ModifiableCellVisionCache.VISION_CACHE_WIDTH - 1) {
 				continue;
 			}
-			if (visionPrevious[anotherPoint.x - worldPrevVisionSquareStartX][anotherPoint.y - worldPrevVisionSquareStartY] == Character.VISION_VISIBLE
+			if (visionPreviousContent[anotherPoint.x - worldPrevVisionSquareStartX][anotherPoint.y - worldPrevVisionSquareStartY] == Seer.VISION_VISIBLE
 				&& plane.hasBorderObject(anotherPoint.x, anotherPoint.y, side)
 				) {
 				unseenBordersBuilder.add(new RenderBorder(
@@ -183,6 +195,7 @@ private void compute() {
 	seenBorders = seenBordersBuilder.build();
 	unseenBorders = unseenBordersBuilder.build();
 }
+
 public EventFovChange createEvent() {
 	if (eventCreated) {
 		throw new RuntimeException("Event for this VisibilityChange has already been created");
@@ -198,22 +211,21 @@ public EventFovChange createEvent() {
 	);
 }
 
-public SimpleGraph<EnhancedPoint, DefaultEdge> getVisibleBordersGraph(int startWorldX, int startWorldY, byte[][] relativeVisibility) {
+public SimpleGraph<EnhancedPoint, DefaultEdge> getVisibleBordersGraph(int startWorldX, int startWorldY, byte[][] relativeVisibilityContent) {
 	SimpleGraph<EnhancedPoint, DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class);
-	int l = relativeVisibility[0].length; // Loop over all rows and column except of last row and last column
+	int l = relativeVisibilityContent[0].length; // Loop over all rows and column except of last row and last column
 	for (int i = 0; i < l; i++) {
 		for (int j = 0; j < l; j++) {
 			EnhancedPoint currentVertex = new EnhancedPoint(i + startWorldX, j + startWorldY);
 			EnhancedPoint vertexFromEast = new EnhancedPoint(i + startWorldX + 1, j + startWorldY);
 			EnhancedPoint vertexFromSouth = new EnhancedPoint(i + startWorldX, j + startWorldY + 1);
-			if (j+1 < l && relativeVisibility[i][j] == Character.VISION_VISIBLE && relativeVisibility[i][j + 1] == Character.VISION_VISIBLE) {
-				graph.addVertex(currentVertex);
+			graph.addVertex(currentVertex);
+			if (j + 1 < l && relativeVisibilityContent[i][j] == Seer.VISION_VISIBLE && relativeVisibilityContent[i][j + 1] == Seer.VISION_VISIBLE) {
 				graph.addVertex(vertexFromSouth);
 				// Border between two horizontal neighbors
 				graph.addEdge(currentVertex, vertexFromSouth);
 			}
-			if (i+1 < l && relativeVisibility[i][j] == Character.VISION_VISIBLE && relativeVisibility[i + 1][j] == Character.VISION_VISIBLE) {
-				graph.addVertex(currentVertex);
+			if (i + 1 < l && relativeVisibilityContent[i][j] == Seer.VISION_VISIBLE && relativeVisibilityContent[i + 1][j] == Seer.VISION_VISIBLE) {
 				graph.addVertex(vertexFromEast);
 				// Border between two vertical neighbors
 				graph.addEdge(currentVertex, vertexFromEast);

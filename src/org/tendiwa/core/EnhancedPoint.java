@@ -30,6 +30,48 @@ public static EnhancedPoint fromStaticAndDynamic(int staticCoord, int dynamicCoo
 	}
 }
 
+public static boolean isNear(int startX, int startY, int endX, int endY) {
+	int ableX = Math.abs(startX - endX);
+	int ableY = Math.abs(startY - endY);
+	return (ableX == 1 && ableY == 0) || (ableY == 1 && ableX == 0) || (ableY == 1 && ableX == 1);
+}
+
+/**
+ * Returns distance in cells between two points, rounded down to be integer (actual distance is of a type double).
+ *
+ * @param startX
+ * 	X coordinate of point 1
+ * @param startY
+ * 	Y coordinate of point 1
+ * @param endX
+ * 	X coordinate of point 2
+ * @param endY
+ * 	Y coordinate of point 2
+ * @return Distance between two points, rounded down.
+ * @see EnhancedPoint#distanceDouble(int, int, int, int)
+ */
+public static int distanceInt(int startX, int startY, int endX, int endY) {
+	return (int) Math.sqrt(Math.pow(startX - endX, 2) + Math.pow(startY - endY, 2));
+}
+
+/**
+ * Returns exact distance between two points.
+ *
+ * @param startX
+ * 	X coordinate of point 1
+ * @param startY
+ * 	Y coordinate of point 1
+ * @param endX
+ * 	X coordinate of point 2
+ * @param endY
+ * 	Y coordinate of point 2
+ * @return Exact distance between two points.
+ * @see {@link EnhancedPoint#distanceInt(int, int, int, int)}  for inexact distance, rounded down to.
+ */
+public static double distanceDouble(int startX, int startY, int endX, int endY) {
+	return Math.sqrt(Math.pow(startX - endX, 2) + Math.pow(startY - endY, 2));
+}
+
 @Override
 public String toString() {
 	return x + ":" + y;
@@ -131,15 +173,6 @@ public EnhancedPoint newRelativePointByOrientaton(int dStatic, int dDynamic, Ori
 		return new EnhancedPoint(x + dDynamic, y + dStatic);
 	}
 	return new EnhancedPoint(x + dStatic, y + dDynamic);
-}
-
-public static boolean isNear(int startX, int startY, int endX, int endY) {
-	int ableX = Math.abs(startX - endX);
-	int ableY = Math.abs(startY - endY);
-	return (ableX == 1 && ableY == 0) || (ableY == 1 && ableX == 0) || (ableY == 1 && ableX == 1);
-}
-public static int distance(int startX, int startY, int endX, int endY) {
-	return (int) Math.sqrt(Math.pow(startX - endX, 2) + Math.pow(startY - endY, 2));
 }
 
 }

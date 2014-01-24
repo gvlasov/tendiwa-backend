@@ -2,6 +2,7 @@ package org.tendiwa.drawing;
 
 import org.tendiwa.core.Chunk;
 import org.tendiwa.core.EnhancedPoint;
+import org.tendiwa.core.EnhancedRectangle;
 import org.tendiwa.core.meta.Coordinate;
 
 import java.awt.*;
@@ -29,14 +30,14 @@ protected void drawPoint(int x, int y, Color color) {
 	}
 }
 
-protected void drawRectangle(Rectangle r, Color color) {
+protected void drawRectangle(EnhancedRectangle r, Color color) {
 	canvas.graphics.setColor(color);
 	Graphics2D g2d = (Graphics2D) canvas.graphics;
 	AffineTransform transform = new AffineTransform();
 	transform.setToScale(canvas.scale, canvas.scale);
 	g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 	g2d.setTransform(transform);
-	g2d.fill(r);
+	g2d.fill(r.toAwtRectangle());
 	g2d.setTransform(defaultTransform);
 //		canvas.graphics.fillRect(
 //			r.x * canvas.scale,

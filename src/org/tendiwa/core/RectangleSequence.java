@@ -35,10 +35,10 @@ public RectangleSequence() {
 public EnhancedRectangle place(RectangleSystemBuilder builder, int x, int y) {
 	for (EnhancedRectangle r : content) {
 		EnhancedRectangle actualRec = getActualRectangle(r, x, y);
-		builder.placeRectangle(actualRec, DSL.atPoint(actualRec.x, actualRec.y));
+		builder.placeRectangle(actualRec, DSL.atPoint(actualRec.getX(), actualRec.getY()));
 	}
 	EnhancedRectangle bounds = getBounds();
-	return new EnhancedRectangle(x, y, bounds.width, bounds.height);
+	return new EnhancedRectangle(x, y, bounds.getWidth(), bounds.getHeight());
 }
 
 @Override
@@ -68,7 +68,7 @@ public Placeable rotate(Rotation rotation) {
 	}
 	RectangleSequence newRs = new RectangleSequence();
 	for (EnhancedRectangle r : content) {
-		newRs.addRectangle(new EnhancedRectangle(transform.createTransformedShape(r).getBounds()));
+		newRs.addRectangle(new EnhancedRectangle(transform.createTransformedShape(r.toAwtRectangle()).getBounds()));
 	}
 	return newRs;
 }
@@ -88,18 +88,18 @@ public final EnhancedRectangle getBounds() {
 	int minY = Integer.MAX_VALUE;
 	int maxX = Integer.MIN_VALUE;
 	int maxY = Integer.MIN_VALUE;
-	for (Rectangle r : content) {
-		if (r.x < minX) {
-			minX = r.x;
+	for (EnhancedRectangle r : content) {
+		if (r.getX() < minX) {
+			minX = r.getX();
 		}
-		if (r.y < minY) {
-			minY = r.y;
+		if (r.getY() < minY) {
+			minY = r.getY();
 		}
-		if (r.x + r.width - 1 > maxX) {
-			maxX = r.x + r.width - 1;
+		if (r.getX() + r.getWidth() - 1 > maxX) {
+			maxX = r.getX() + r.getWidth() - 1;
 		}
-		if (r.y + r.height - 1 > maxY) {
-			maxY = r.y + r.height - 1;
+		if (r.getY() + r.getHeight() - 1 > maxY) {
+			maxY = r.getY() + r.getHeight() - 1;
 		}
 	}
 	return new EnhancedRectangle(minX, minY, maxX - minX + 1, maxY - minY + 1);
@@ -118,8 +118,8 @@ public final EnhancedRectangle getBounds() {
  */
 EnhancedRectangle getActualRectangle(EnhancedRectangle r, int x, int y) {
 	assert content.contains(r);
-	Rectangle boundingRec = getBounds();
-	return new EnhancedRectangle(x + r.x - boundingRec.x, y + r.y - boundingRec.y, r.width, r.height);
+	EnhancedRectangle boundingRec = getBounds();
+	return new EnhancedRectangle(x + r.getX() - boundingRec.getX(), y + r.getY() - boundingRec.getY(), r.getWidth(), r.getHeight());
 }
 
 /**

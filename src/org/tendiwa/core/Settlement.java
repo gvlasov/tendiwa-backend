@@ -69,7 +69,7 @@ public class Settlement extends Location {
 		// Settlement::quarters
 		// in: индекс пярмоугольника, на котором строится квартал, в
 		// Settlement::rectangles
-		quarters.add(RecursivelySplitRectangleSystemFactory.create(r.x + 1, r.y + 1, r.width - 2, r.height - 2, minWidth, borderWidth));
+		quarters.add(RecursivelySplitRectangleSystemFactory.create(r.getX() + 1, r.getY() + 1, r.getWidth() - 2, r.getHeight() - 2, minWidth, borderWidth));
 	}
 	public Service createService(Character dweller, int type, String name) {
 		Service service = new Service(dweller, type, name);
@@ -258,20 +258,20 @@ public class Settlement extends Location {
 				return false;
 			}
 
-			public boolean isRectangleNearRoad(Rectangle rectangle) {
+			public boolean isRectangleNearRoad(EnhancedRectangle rectangle) {
 				/**
 				 * Checks if this road goes along one of the borders of a
 				 * rectangle
 				 */
 				EnhancedRectangle ra = new EnhancedRectangle(rectangle);
 				if (orientation.isVertical()) {
-					if (Utils.integersRangeIntersection(rectangle.y, rectangle.y + rectangle.height - 1, start.y, end.y) > 0 && ra.distanceToLine(start, end) == width / 2 + 1) {
+					if (Utils.integersRangeIntersection(rectangle.getY(), rectangle.getY() + rectangle.getHeight() - 1, start.y, end.y) > 0 && ra.distanceToLine(start, end) == width / 2 + 1) {
 						// If road line and rectangle overlap in y-axis,
 						// and road is close enough to rectangle
 						return true;
 					}
 				} else {
-					if (Utils.integersRangeIntersection(rectangle.x, rectangle.x + rectangle.width - 1, start.x, end.x) > 0 && ra.distanceToLine(start, end) == width / 2 + 1) {
+					if (Utils.integersRangeIntersection(rectangle.getX(), rectangle.getX() + rectangle.getWidth() - 1, start.x, end.x) > 0 && ra.distanceToLine(start, end) == width / 2 + 1) {
 						// Same for x-axis
 						return true;
 					}

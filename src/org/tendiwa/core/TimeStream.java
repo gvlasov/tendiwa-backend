@@ -1,6 +1,7 @@
 package org.tendiwa.core;
 
 import org.tendiwa.lexeme.Localizable;
+import org.tendiwa.core.vision.Seer;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -167,7 +168,7 @@ public HashSet<NonPlayerCharacter> getNearbyNonPlayerCharacters(Character charac
 	for (NonPlayerCharacter neighbor : nonPlayerCharacters) {
 		// Quickly select characters that could be seen (including this Seer
 		// itself)
-		if (Math.abs(neighbor.x - character.x) <= Character.VISION_RANGE && Math.abs(neighbor.y - character.y) <= Character.VISION_RANGE) {
+		if (Math.abs(neighbor.x - character.x) <= Seer.VISION_RANGE && Math.abs(neighbor.y - character.y) <= Seer.VISION_RANGE) {
 			answer.add(neighbor);
 		}
 	}

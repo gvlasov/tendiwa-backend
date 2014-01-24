@@ -24,10 +24,10 @@ private static final Comparator<EnhancedRectangle> COMPARATOR_VERTICAL = new Rec
 public static Comparator<EnhancedRectangle> horizontalRectangleComparator = new Comparator<EnhancedRectangle>() {
 	@Override
 	public int compare(EnhancedRectangle r1, EnhancedRectangle r2) {
-		if (r1.x > r2.x) {
+		if (r1.getX() > r2.getX()) {
 			return 1;
 		}
-		if (r1.x < r2.x) {
+		if (r1.getX() < r2.getX()) {
 			return -1;
 		}
 		return 0;
@@ -36,10 +36,10 @@ public static Comparator<EnhancedRectangle> horizontalRectangleComparator = new 
 public static Comparator<EnhancedRectangle> verticalRectangleComparator = new Comparator<EnhancedRectangle>() {
 	@Override
 	public int compare(EnhancedRectangle r1, EnhancedRectangle r2) {
-		if (r1.y > r2.y) {
+		if (r1.getY() > r2.getY()) {
 			return 1;
 		}
-		if (r1.y < r2.y) {
+		if (r1.getY() < r2.getY()) {
 			return -1;
 		}
 		return 0;
@@ -81,20 +81,20 @@ public RectangleSystem(int borderWidth) {
  * @see RectangleSystem#areRectanglesUnited(EnhancedRectangle, EnhancedRectangle)
  */
 static boolean areRectanglesInXCells(EnhancedRectangle r1, EnhancedRectangle r2, int amount) {
-	if (r1.x + r1.width + amount == r2.x || r2.x + r2.width + amount == r1.x) {
+	if (r1.getX() + r1.getWidth() + amount == r2.getX() || r2.getX() + r2.getWidth() + amount == r1.getX()) {
 		// Rectangles share a vertical line
-		int a1 = r1.y;
-		int a2 = r1.y + r1.height - 1;
-		int b1 = r2.y;
-		int b2 = r2.y + r2.height - 1;
+		int a1 = r1.getY();
+		int a2 = r1.getY() + r1.getHeight() - 1;
+		int b1 = r2.getY();
+		int b2 = r2.getY() + r2.getHeight() - 1;
 		int intersection = Utils.integersRangeIntersection(a1, a2, b1, b2);
 		return intersection >= 1;
-	} else if (r1.y + r1.height + amount == r2.y || r2.y + r2.height + amount == r1.y) {
+	} else if (r1.getY() + r1.getHeight() + amount == r2.getY() || r2.getY() + r2.getHeight() + amount == r1.getY()) {
 		// Rectangles share a horizontal line
-		int a1 = r1.x;
-		int a2 = r1.x + r1.width - 1;
-		int b1 = r2.x;
-		int b2 = r2.x + r2.width - 1;
+		int a1 = r1.getX();
+		int a2 = r1.getX() + r1.getWidth() - 1;
+		int b1 = r2.getX();
+		int b2 = r2.getX() + r2.getWidth() - 1;
 		int intersection = Utils.integersRangeIntersection(a1, a2, b1, b2);
 		return intersection >= 1;
 	} else {
@@ -144,16 +144,16 @@ public EnhancedRectangle findRectangleByCell(int x, int y) {
  * @return Side from which neighbor is located relatively to a rectangle.
  */
 CardinalDirection getNeighborSide(EnhancedRectangle rectangle, EnhancedRectangle neighbor) {
-	if (rectangle.y == neighbor.y + neighbor.height + borderWidth) {
+	if (rectangle.getY() == neighbor.getY() + neighbor.getHeight() + borderWidth) {
 		return CardinalDirection.N;
 	}
-	if (rectangle.x + rectangle.width + borderWidth == neighbor.x) {
+	if (rectangle.getX() + rectangle.getWidth() + borderWidth == neighbor.getX()) {
 		return CardinalDirection.E;
 	}
-	if (rectangle.y + rectangle.height + borderWidth == neighbor.y) {
+	if (rectangle.getY() + rectangle.getHeight() + borderWidth == neighbor.getY()) {
 		return CardinalDirection.S;
 	}
-	if (rectangle.x == neighbor.x + neighbor.width + borderWidth) {
+	if (rectangle.getX() == neighbor.getX() + neighbor.getWidth() + borderWidth) {
 		return CardinalDirection.W;
 	}
 	throw new RuntimeException(
@@ -186,27 +186,27 @@ public ImmutableSet<Segment> getSegmentsFreeFromNeighbors(EnhancedRectangle r, C
 	// rectangle r.
 	if (side == CardinalDirection.N) {
 		segments.add(new Segment(
-			r.x,
-			r.y,
-			r.width,
+			r.getX(),
+			r.getY(),
+			r.getWidth(),
 			Orientation.HORIZONTAL
 		));
 	} else if (side == CardinalDirection.E) {
 		segments.add(new Segment(
-			r.x + r.width - 1,
-			r.y,
-			r.height,
+			r.getX() + r.getWidth() - 1,
+			r.getY(),
+			r.getHeight(),
 			Orientation.VERTICAL
 		));
 	} else if (side == Directions.S) {
 		segments.add(new Segment(
-			r.x,
-			r.y + r.height - 1,
-			r.width,
+			r.getX(),
+			r.getY() + r.getHeight() - 1,
+			r.getWidth(),
 			Orientation.HORIZONTAL));
 	} else {
 		// if (direction == DirectionOldSide.W)
-		segments.add(new Segment(r.x, r.y, r.height, Orientation.VERTICAL));
+		segments.add(new Segment(r.getX(), r.getY(), r.getHeight(), Orientation.VERTICAL));
 	}
 	int splitSegmentStartCoord, splitSegmentLength;
 	// For each neighbor from that direction, we split our initial segment
@@ -215,24 +215,24 @@ public ImmutableSet<Segment> getSegmentsFreeFromNeighbors(EnhancedRectangle r, C
 	// touches
 	// our initial segment.
 	for (int i = 0, l = rectanglesFromThatSide.size(); i < l; i++) {
-		Rectangle neighbor = rectanglesFromThatSide.get(i);
+		EnhancedRectangle neighbor = rectanglesFromThatSide.get(i);
 		switch (side) {
 			case N:
-				splitSegmentStartCoord = neighbor.x - borderWidth;
-				splitSegmentLength = neighbor.width + borderWidth * 2;
+				splitSegmentStartCoord = neighbor.getX() - borderWidth;
+				splitSegmentLength = neighbor.getWidth() + borderWidth * 2;
 				break;
 			case E:
-				splitSegmentStartCoord = neighbor.y - borderWidth;
-				splitSegmentLength = neighbor.height + borderWidth * 2;
+				splitSegmentStartCoord = neighbor.getY() - borderWidth;
+				splitSegmentLength = neighbor.getHeight() + borderWidth * 2;
 				break;
 			case S:
-				splitSegmentStartCoord = neighbor.x - borderWidth;
-				splitSegmentLength = neighbor.width + borderWidth * 2;
+				splitSegmentStartCoord = neighbor.getX() - borderWidth;
+				splitSegmentLength = neighbor.getWidth() + borderWidth * 2;
 				break;
 			case W:
 			default:
-				splitSegmentStartCoord = neighbor.y - borderWidth;
-				splitSegmentLength = neighbor.height + borderWidth * 2;
+				splitSegmentStartCoord = neighbor.getY() - borderWidth;
+				splitSegmentLength = neighbor.getHeight() + borderWidth * 2;
 		}
 		// Now, there may be a situation when the whole direction segment is
 		// eliminated, and there are still rectangles from that direction.
@@ -306,47 +306,47 @@ Set<EnhancedRectangle> getRectanglesCloseToSide(EnhancedRectangle r, CardinalDir
 				 * each case checks if a neighbor rectangle touches _side_ (not
 				 * border!) of the rectangle r with its direction _or_ border.
 				 */
-			if (neighbor.y + neighbor.height + borderWidth == r.y && Utils
+			if (neighbor.getY() + neighbor.getHeight() + borderWidth == r.getY() && Utils
 				.integersRangeIntersection(
-					neighbor.x - borderWidth,
-					neighbor.x + neighbor.width - 1 + borderWidth,
-					r.x,
-					r.x + r.width - 1) > 0) {
+					neighbor.getX() - borderWidth,
+					neighbor.getX() + neighbor.getWidth() - 1 + borderWidth,
+					r.getX(),
+					r.getX() + r.getWidth() - 1) > 0) {
 				rectanglesFromThatSide.add(neighbor);
 			}
 		}
 
 	} else if (side == CardinalDirection.E) {
 		for (EnhancedRectangle neighbor : content) {
-			if (neighbor.x == r.x + r.width + borderWidth && Utils
+			if (neighbor.getX() == r.getX() + r.getWidth() + borderWidth && Utils
 				.integersRangeIntersection(
-					neighbor.y - borderWidth,
-					neighbor.y + neighbor.height - 1 + borderWidth,
-					r.y,
-					r.y + r.height - 1) > 0) {
+					neighbor.getY() - borderWidth,
+					neighbor.getY() + neighbor.getHeight() - 1 + borderWidth,
+					r.getY(),
+					r.getY() + r.getHeight() - 1) > 0) {
 				rectanglesFromThatSide.add(neighbor);
 			}
 		}
 	} else if (side == CardinalDirection.S) {
 		for (EnhancedRectangle neighbor : content) {
-			if (neighbor.y == r.y + r.height + borderWidth && Utils
+			if (neighbor.getY() == r.getY() + r.getHeight() + borderWidth && Utils
 				.integersRangeIntersection(
-					neighbor.x - borderWidth,
-					neighbor.x + neighbor.width - 1 + borderWidth,
-					r.x,
-					r.x + r.width - 1) > 0) {
+					neighbor.getX() - borderWidth,
+					neighbor.getX() + neighbor.getWidth() - 1 + borderWidth,
+					r.getX(),
+					r.getX() + r.getWidth() - 1) > 0) {
 				rectanglesFromThatSide.add(neighbor);
 			}
 		}
 	} else {
 		// if (direction == SideTest.W)
 		for (EnhancedRectangle neighbor : content) {
-			if (neighbor.x + neighbor.width + borderWidth == r.x && Utils
+			if (neighbor.getX() + neighbor.getWidth() + borderWidth == r.getX() && Utils
 				.integersRangeIntersection(
-					neighbor.y - borderWidth,
-					neighbor.y + neighbor.height - 1 + borderWidth,
-					r.y,
-					r.y + r.height - 1) > 0) {
+					neighbor.getY() - borderWidth,
+					neighbor.getY() + neighbor.getHeight() - 1 + borderWidth,
+					r.getY(),
+					r.getY() + r.getHeight() - 1) > 0) {
 				rectanglesFromThatSide.add(neighbor);
 			}
 		}
@@ -382,12 +382,12 @@ public Set<EnhancedRectangle> getRectanglesCloseToSideOrBorder(EnhancedRectangle
 				 * each case checks if a neighbor rectangle touches _side_ (not
 				 * border!) of the rectangle r with its direction _or_ border.
 				 */
-			if (neighbor.y + neighbor.height + borderWidth == r.y && Utils
+			if (neighbor.getY() + neighbor.getHeight() + borderWidth == r.getY() && Utils
 				.integersRangeIntersection(
-					neighbor.x - borderWidth,
-					neighbor.x + neighbor.width - 1 + borderWidth,
-					r.x - borderWidth,
-					r.x + r.width - 1 + borderWidth) > 0) {
+					neighbor.getX() - borderWidth,
+					neighbor.getX() + neighbor.getWidth() - 1 + borderWidth,
+					r.getX() - borderWidth,
+					r.getX() + r.getWidth() - 1 + borderWidth) > 0) {
 				rectanglesFromThatSide.add(neighbor);
 			}
 		}
@@ -395,12 +395,12 @@ public Set<EnhancedRectangle> getRectanglesCloseToSideOrBorder(EnhancedRectangle
 	} else if (side == CardinalDirection.E) {
 		for (EnhancedRectangle neighbor : content) {
 			if (
-				neighbor.x == r.x + r.width + borderWidth
+				neighbor.getX() == r.getX() + r.getWidth() + borderWidth
 					&& Utils.integersRangeIntersection(
-					neighbor.y - borderWidth,
-					neighbor.y + neighbor.height - 1 + borderWidth,
-					r.y - borderWidth,
-					r.y + r.height - 1 + borderWidth
+					neighbor.getY() - borderWidth,
+					neighbor.getY() + neighbor.getHeight() - 1 + borderWidth,
+					r.getY() - borderWidth,
+					r.getY() + r.getHeight() - 1 + borderWidth
 				) > 0
 				) {
 				rectanglesFromThatSide.add(neighbor);
@@ -408,24 +408,24 @@ public Set<EnhancedRectangle> getRectanglesCloseToSideOrBorder(EnhancedRectangle
 		}
 	} else if (side == CardinalDirection.S) {
 		for (EnhancedRectangle neighbor : content) {
-			if (neighbor.y == r.y + r.height + borderWidth && Utils
+			if (neighbor.getY() == r.getY() + r.getHeight() + borderWidth && Utils
 				.integersRangeIntersection(
-					neighbor.x - borderWidth,
-					neighbor.x + neighbor.width - 1 + borderWidth,
-					r.x - borderWidth,
-					r.x + r.width - 1 + borderWidth) > 0) {
+					neighbor.getX() - borderWidth,
+					neighbor.getX() + neighbor.getWidth() - 1 + borderWidth,
+					r.getX() - borderWidth,
+					r.getX() + r.getWidth() - 1 + borderWidth) > 0) {
 				rectanglesFromThatSide.add(neighbor);
 			}
 		}
 	} else {
 		// if (direction == SideTest.W)
 		for (EnhancedRectangle neighbor : content) {
-			if (neighbor.x + neighbor.width + borderWidth == r.x && Utils
+			if (neighbor.getX() + neighbor.getWidth() + borderWidth == r.getX() && Utils
 				.integersRangeIntersection(
-					neighbor.y - borderWidth,
-					neighbor.y + neighbor.height - 1 + borderWidth,
-					r.y - borderWidth,
-					r.y + r.height - 1 + borderWidth) > 0) {
+					neighbor.getY() - borderWidth,
+					neighbor.getY() + neighbor.getHeight() - 1 + borderWidth,
+					r.getY() - borderWidth,
+					r.getY() + r.getHeight() - 1 + borderWidth) > 0) {
 				rectanglesFromThatSide.add(neighbor);
 			}
 		}
@@ -506,26 +506,26 @@ Segment getAdjacencySegment(EnhancedRectangle r1, EnhancedRectangle r2) {
 	CardinalDirection side = getNeighborSide(r1, r2);
 	switch (side) {
 		case N:
-			return new Segment(Math.max(r1.x, r2.x), r1.y, Math.min(
-				r1.x + r1.width - r2.x,
-				r2.x + r2.width - r1.x), Orientation.HORIZONTAL);
+			return new Segment(Math.max(r1.getX(), r2.getX()), r1.getY(), Math.min(
+				r1.getX() + r1.getWidth() - r2.getX(),
+				r2.getX() + r2.getWidth() - r1.getX()), Orientation.HORIZONTAL);
 		case E:
 			return new Segment(
-				r1.x + r1.width - 1,
-				Math.max(r1.y, r2.y),
-				Math.min(r1.y + r1.height - r2.y, r2.y + r2.height - r2.y),
+				r1.getX() + r1.getWidth() - 1,
+				Math.max(r1.getY(), r2.getY()),
+				Math.min(r1.getY() + r1.getHeight() - r2.getY(), r2.getY() + r2.getHeight() - r2.getY()),
 				Orientation.VERTICAL);
 		case S:
 			return new Segment(
-				Math.max(r1.x, r2.x),
-				r1.y + r1.height - 1,
-				Math.min(r1.x + r1.width - r2.x, r2.x + r2.width - r1.x),
+				Math.max(r1.getX(), r2.getX()),
+				r1.getY() + r1.getHeight() - 1,
+				Math.min(r1.getX() + r1.getWidth() - r2.getX(), r2.getX() + r2.getWidth() - r1.getX()),
 				Orientation.HORIZONTAL);
 		case W:
 		default:
-			return new Segment(r1.x, Math.max(r1.y, r2.y), Math.min(
-				r1.y + r1.height - r2.y,
-				r2.y + r2.height - r1.y), Orientation.VERTICAL);
+			return new Segment(r1.getX(), Math.max(r1.getY(), r2.getY()), Math.min(
+				r1.getY() + r1.getHeight() - r2.getY(),
+				r2.getY() + r2.getHeight() - r1.getY()), Orientation.VERTICAL);
 	}
 }
 
@@ -554,9 +554,9 @@ private void buildEdgesWith(EnhancedRectangle r) {
 }
 
 private String shortDef(EnhancedRectangle r) {
-	CardinalDirection dir1 = r.y == 0 ? CardinalDirection.N : CardinalDirection.S;
-	CardinalDirection dir2 = r.x == 0 ? CardinalDirection.W : CardinalDirection.E;
-	return "[" + dir1 + " " + dir2 + " " + r.width + " " + r.height + "]";
+	CardinalDirection dir1 = r.getY() == 0 ? CardinalDirection.N : CardinalDirection.S;
+	CardinalDirection dir2 = r.getX() == 0 ? CardinalDirection.W : CardinalDirection.E;
+	return "[" + dir1 + " " + dir2 + " " + r.getWidth() + " " + r.getHeight() + "]";
 }
 
 /**
@@ -803,8 +803,8 @@ public void nibbleSystem(int depth, int chance) {
  * 	Radius of a circle.
  * @return A Set of removed rectangles.
  */
-public Set<Rectangle> removeRectanglesInCircle(int x, int y, int radius) {
-	Set<Rectangle> answer = new HashSet<>();
+public Set<EnhancedRectangle> removeRectanglesInCircle(int x, int y, int radius) {
+	Set<EnhancedRectangle> answer = new HashSet<>();
 	Set<EnhancedRectangle> copy = new HashSet<>(content);
 	for (EnhancedRectangle r : copy) {
 		if (r.isInCircle(x, y, radius)) {
@@ -844,65 +844,65 @@ public EnhancedRectangle splitRectangle(EnhancedRectangle r, Orientation orienta
 		// Vertically
 		if (negativeWidth) {
 			// This will be the width of the old EnhancedRectangle
-			widthOrHeight = r.width + widthOrHeight - borderWidth;
+			widthOrHeight = r.getWidth() + widthOrHeight - borderWidth;
 		}
-		if (widthOrHeight > r.width) {
+		if (widthOrHeight > r.getWidth()) {
 			throw new IllegalArgumentException(
 				"Width " + widthOrHeight + " in vertical splitting is too big");
 		}
 		if (widthOrHeight < 1) {
-			widthOrHeight = widthOrHeight + borderWidth - r.width;
+			widthOrHeight = widthOrHeight + borderWidth - r.getWidth();
 			throw new IllegalArgumentException(
 				"Width " + widthOrHeight + " in vertical splitting is too big");
 		}
-		int newStartX = r.x + widthOrHeight + borderWidth;
+		int newStartX = r.getX() + widthOrHeight + borderWidth;
 		if (reverseAreas) {
-			newRec = new EnhancedRectangle(r.x, r.y, widthOrHeight, r.height);
+			newRec = new EnhancedRectangle(r.getX(), r.getY(), widthOrHeight, r.getHeight());
 			resizeRectangle(r,
 				newStartX,
-				r.y,
-				r.width - widthOrHeight - borderWidth,
-				r.height);
+				r.getY(),
+				r.getWidth() - widthOrHeight - borderWidth,
+				r.getHeight());
 		} else {
 			newRec = new EnhancedRectangle(
 				newStartX,
-				r.y,
-				r.width - widthOrHeight - borderWidth,
-				r.height);
-			resizeRectangle(r, widthOrHeight, r.height);
+				r.getY(),
+				r.getWidth() - widthOrHeight - borderWidth,
+				r.getHeight());
+			resizeRectangle(r, widthOrHeight, r.getHeight());
 		}
 	} else {
 		// Horizontally
 		if (negativeWidth) {
 			// This will be the width of the old EnhancedRectangle
-			widthOrHeight = r.height + widthOrHeight - borderWidth;
+			widthOrHeight = r.getHeight() + widthOrHeight - borderWidth;
 		}
-		if (widthOrHeight > r.height) {
+		if (widthOrHeight > r.getHeight()) {
 			throw new IllegalArgumentException(
 				"Width " + widthOrHeight + " in horizontal splitting is too big");
 		}
 		if (widthOrHeight < 1) {
-			widthOrHeight = widthOrHeight + borderWidth - r.height;
+			widthOrHeight = widthOrHeight + borderWidth - r.getHeight();
 			throw new IllegalArgumentException(
 				"Width " + widthOrHeight + " in horizontal splitting is too big");
 		}
-		int newStartY = r.y + widthOrHeight + borderWidth;
+		int newStartY = r.getY() + widthOrHeight + borderWidth;
 		// Though argument is called width, it is height if a rectangle
 		// is split vertically
 		if (reverseAreas) {
-			newRec = new EnhancedRectangle(r.x, r.y, r.width, widthOrHeight);
+			newRec = new EnhancedRectangle(r.getX(), r.getY(), r.getWidth(), widthOrHeight);
 			resizeRectangle(r,
-				r.x,
+				r.getX(),
 				newStartY,
-				r.width,
-				r.height - widthOrHeight - borderWidth);
+				r.getWidth(),
+				r.getHeight() - widthOrHeight - borderWidth);
 		} else {
 			newRec = new EnhancedRectangle(
-				r.x,
+				r.getX(),
 				newStartY,
-				r.width,
-				r.height - widthOrHeight - borderWidth);
-			resizeRectangle(r, r.width, widthOrHeight);
+				r.getWidth(),
+				r.getHeight() - widthOrHeight - borderWidth);
+			resizeRectangle(r, r.getWidth(), widthOrHeight);
 		}
 	}
 	return addRectangle(newRec);
@@ -921,8 +921,8 @@ public EnhancedRectangle splitRectangle(EnhancedRectangle r, Orientation orienta
  */
 private void resizeRectangle(EnhancedRectangle r, int newWidth, int newHeight) {
 	excludeRectangle(r);
-	r.width = newWidth;
-	r.height = newHeight;
+	r.setWidth(newWidth);
+	r.setHeight(newHeight);
 	addRectangle(r);
 }
 
@@ -942,10 +942,10 @@ private void resizeRectangle(EnhancedRectangle r, int newWidth, int newHeight) {
  */
 private void resizeRectangle(EnhancedRectangle r, int newX, int newY, int newWidth, int newHeight) {
 	excludeRectangle(r);
-	r.x = newX;
-	r.y = newY;
-	r.width = newWidth;
-	r.height = newHeight;
+	r.setX(newX);
+	r.setY(newY);
+	r.setWidth(newWidth);
+	r.setHeight(newHeight);
 	addRectangle(r);
 }
 
@@ -995,11 +995,11 @@ public void expandRectanglesToBorder(int depth) {
 		throw new Error(
 			"border width " + borderWidth + " is too thin for expanding each rectangle by " + depth);
 	}
-	for (Rectangle r : content) {
-		r.x -= depth;
-		r.y -= depth;
-		r.width += depth * 2;
-		r.height += depth * 2;
+	for (EnhancedRectangle r : content) {
+		r.setX(r.getX() - depth);
+		r.setY(r.getY()- depth);
+		r.setWidth(r.getWidth() + depth * 2);
+		r.setHeight(r.getHeight() + depth * 2);
 	}
 	borderWidth -= depth * 2;
 }

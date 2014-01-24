@@ -11,18 +11,35 @@ import java.util.Collection;
 /**
  * Adds more geometry methods to Rectangle. Unlike {@link Rectangle}, this class can't be of zero width or height.
  */
-public class EnhancedRectangle extends Rectangle implements Placeable {
+public class EnhancedRectangle implements Placeable {
 private static final long serialVersionUID = -3818700857263511272L;
+private int x;
+private int y;
+private int width;
+private int height;
 
 public EnhancedRectangle(int x, int y, int width, int height) {
-	super(x, y, width, height);
+	this.x = x;
+	this.y = y;
+	this.width = width;
+	this.height = height;
 	if (width == 0 || height == 0) {
 		throw new IllegalArgumentException("Width or height can't be 0");
 	}
 }
 
+public EnhancedRectangle(EnhancedRectangle r) {
+	this.x = r.x;
+	this.y = r.y;
+	this.width = r.width;
+	this.height = r.height;
+}
+
 public EnhancedRectangle(Rectangle r) {
-	super(r);
+	this.x = r.x;
+	this.y = r.y;
+	this.width = r.width;
+	this.height = r.height;
 	if (r.width == 0 || r.height == 0) {
 		throw new IllegalArgumentException("Width or height can't be 0");
 	}
@@ -206,12 +223,35 @@ public static EnhancedRectangle growFromIntersection(IntercellularLinesIntersect
  * 	how far will the new rectangle be shifted by x-axis from the original one.
  * @return a new {@link EnhancedRectangle} with width and height equal to {@code r}'s.
  */
-public static EnhancedRectangle rectangleMovedFromOriginal(Rectangle r, int dx, int dy) {
+public static EnhancedRectangle rectangleMovedFromOriginal(EnhancedRectangle r, int dx, int dy) {
 	if (r == null) {
 		throw new NullPointerException();
 	}
 	return new EnhancedRectangle(r.x + dx, r.y + dy, r.width, r.height);
 
+}
+
+public boolean intersects(EnhancedRectangle r) {
+	int tw = this.width;
+	int th = this.height;
+	int rw = r.width;
+	int rh = r.height;
+	if (rw <= 0 || rh <= 0 || tw <= 0 || th <= 0) {
+		return false;
+	}
+	int tx = this.x;
+	int ty = this.y;
+	int rx = r.x;
+	int ry = r.y;
+	rw += rx;
+	rh += ry;
+	tw += tx;
+	th += ty;
+	//      overflow || intersect
+	return ((rw < rx || rw > tx) &&
+		(rh < ry || rh > ty) &&
+		(tw < tx || tw > rx) &&
+		(th < ty || th > ry));
 }
 
 public Segment getSideAsSegment(CardinalDirection side) {
@@ -348,29 +388,24 @@ public Coordinate getCellFromSide(CardinalDirection side, CardinalDirection endO
 public EnhancedRectangle stretch(CardinalDirection side, int amount) {
 	switch (side) {
 		case N:
-			this.setBounds(
+			return new EnhancedRectangle(
 				this.x,
 				this.y - amount,
 				this.width,
 				this.height + amount);
-			break;
 		case E:
-			this.setSize(this.width + amount, this.height);
-			break;
+			return new EnhancedRectangle(this.x, this.y, this.width + amount, this.height);
 		case S:
-			this.setSize(this.width, this.height + amount);
-			break;
+			return new EnhancedRectangle(this.x, this.y, this.width, this.height + amount);
 		case W:
-			this.setBounds(
+			return new EnhancedRectangle(
 				this.x - amount,
 				this.y,
 				this.width + amount,
 				this.height);
-			break;
 		default:
 			throw new IllegalArgumentException();
 	}
-	return this;
 }
 
 /**
@@ -444,6 +479,14 @@ public boolean isInCircle(int cx, int cy, int radius) {
  */
 public EnhancedPoint getCenterPoint() {
 	return new EnhancedPoint(x + width / 2, y + height / 2);
+}
+
+public int getCenterX() {
+	return x + width / 2;
+}
+
+public int getCenterY() {
+	return y + height / 2;
 }
 
 /**
@@ -853,7 +896,79 @@ public EnhancedPoint getPointOnSide(CardinalDirection side, int shift) {
  * @return
  */
 public EnhancedRectangle shrink(int dSize) {
-	return new EnhancedRectangle(x+dSize, y+dSize, width-dSize*2, height-dSize*2);
+	return new EnhancedRectangle(x + dSize, y + dSize, width - dSize * 2, height - dSize * 2);
+}
+
+public int getMaxX() {
+	return x + width - 1;
+}
+
+public int getMaxY() {
+	return y + width - 1;
+}
+
+public int getX() {
+	return x;
+}
+
+public void setX(int newX) {
+	this.x = newX;
+}
+
+public int getY() {
+	return y;
+}
+
+public void setY(int y) {
+	this.y = y;
+}
+
+public boolean contains(int x, int y) {
+	return x >= this.x && x < this.x + this.width && y >= this.y && y < this.y + this.height;
+}
+
+public int getWidth() {
+	return width;
+}
+
+public void setWidth(int width) {
+	this.width = width;
+}
+
+public int getHeight() {
+	return height;
+}
+
+public void setHeight(int height) {
+	this.height = height;
+}
+
+public Rectangle toAwtRectangle() {
+	return new Rectangle(x, y, width, height);
+}
+
+@Override
+public boolean equals(Object o) {
+	if (this == o) return true;
+	if (o == null || getClass() != o.getClass()) return false;
+
+	EnhancedRectangle that = (EnhancedRectangle) o;
+
+	if (height != that.height) return false;
+	if (width != that.width) return false;
+	if (x != that.x) return false;
+	if (y != that.y) return false;
+
+	return true;
+}
+
+@Override
+public int hashCode() {
+	int result = x;
+	result = 31 * result + y;
+	result = 31 * result + width;
+	result = 31 * result + height;
+	return result;
 }
 
 /**

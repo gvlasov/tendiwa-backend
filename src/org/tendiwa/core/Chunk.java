@@ -110,6 +110,7 @@ public BorderObject getBorderObject(int x, int y, CardinalDirection side) {
 
 public BorderObject setBorderObject(int x, int y, CardinalDirection side, BorderObjectType type) {
 	assert side != null;
+	assert type != null;
 	if (side != Directions.N && side != Directions.W) {
 		if (side == Directions.E) {
 			side = Directions.W;
@@ -121,9 +122,14 @@ public BorderObject setBorderObject(int x, int y, CardinalDirection side, Border
 		}
 	}
 	int key = cellHash(x, y);
-	BorderObject value = new BorderObject(type);
-	borderObjects.put(key, side, value);
-	return value;
+	if (type == BorderObjectType.VOID) {
+		borderObjects.remove(key, side);
+		return null;
+	} else {
+		BorderObject value = new BorderObject(type);
+		borderObjects.put(key, side, value);
+		return value;
+	}
 }
 
 public int getX() {
@@ -167,8 +173,8 @@ void removeCharacter(Character character) {
 
 public void removeObject(int x, int y) {
 	objects[x - this.x][y - this.y] = null;
-	if (Tendiwa.getPlayerCharacter().isCellVisible(x, y) && Tendiwa.getPlayerCharacter().isVisionCacheEmpty()) {
-		Tendiwa.getPlayerCharacter().invalidateVisionCache();
+	if (Tendiwa.getPlayerCharacter().getSeer().canSee(x, y) && Tendiwa.getPlayerCharacter().getSeer().getVisionCache().isVisionCacheEmpty()) {
+		Tendiwa.getPlayerCharacter().getSeer().invalidateVisionCache();
 	}
 	throw new UnsupportedOperationException();
 }

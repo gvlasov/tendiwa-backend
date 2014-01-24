@@ -5,7 +5,6 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -13,6 +12,7 @@ import java.util.Properties;
 public class Tendiwa {
 private static final Object lock = new Object();
 private static final Object clientWaitLock = new Object();
+private static final String MODULES_CONF_FILE = "/modules.conf";
 public static TendiwaClient CLIENT;
 private static Tendiwa INSTANCE;
 private static AssociationChangeNotification clientEventManager;
@@ -22,10 +22,10 @@ private static boolean eventComputed = false;
 public final org.apache.log4j.Logger logger = Logger.getLogger("org/tendiwa");
 public final Server SERVER = Server.SERVER;
 private final Thread SERVER_THREAD;
-private final String MODULES_CONF_FILE = "/modules.conf";
 private final String CLIENT_CONF_FILE;
 private final World WORLD;
 private final Character PLAYER;
+private static List<Class<?>> modulesCreatingWorlds;
 
 Tendiwa(String args[]) throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException {
 	initWithDummyClient();
@@ -33,23 +33,7 @@ Tendiwa(String args[]) throws ClassNotFoundException, IllegalAccessException, In
 	ClassLoader classLoader = Tendiwa.class.getClassLoader();
 
 	// Loading modules
-	String[] modules = Module.getModulesFromConfig(MODULES_CONF_FILE);
-	List<Class<?>> modulesCreatingWorlds = new LinkedList<>();
-	for (String module : modules) {
-//		Class<?> moduleClass = classLoader.loadClass("tendiwa.modules." + module);
-//		if (!Module.class.isAssignableFrom(moduleClass)) {
-//			logger.warn(moduleClass + " is not a module class");
-//			continue;
-//		}
-//		if (WorldProvider.class.isAssignableFrom(moduleClass)) {
-//			modulesCreatingWorlds.add(moduleClass);
-//		}
-		modulesCreatingWorlds.add(new ScriptShell(module).getModuleClass());
-	}
-	if (modulesCreatingWorlds.size() == 0) {
-		throw new RuntimeException("No world-creating modules provided");
-	}
-
+	List<Class<?>> modulesCreatingWorlds = loadModules();
 	createWorld((WorldProvider) modulesCreatingWorlds.get(0).newInstance());
 
 	// Initializing client
@@ -75,6 +59,33 @@ Tendiwa(String args[]) throws ClassNotFoundException, IllegalAccessException, In
 	worldWidth = WORLD.getWidth();
 	worldHeight = WORLD.getHeight();
 	PLAYER = WORLD.getPlayer();
+}
+
+public static List<Class<?>> loadModules() {
+	String[] modules = Module.getModulesFromConfig(MODULES_CONF_FILE);
+	modulesCreatingWorlds = new LinkedList<>();
+	for (String module : modules) {
+//		Class<?> moduleClass = classLoader.loadClass("tendiwa.modules." + module);
+//		if (!Module.class.isAssignableFrom(moduleClass)) {
+//			logger.warn(moduleClass + " is not a module class");
+//			continue;
+//		}
+//		if (WorldProvider.class.isAssignableFrom(moduleClass)) {
+//			modulesCreatingWorlds.add(moduleClass);
+//		}
+		modulesCreatingWorlds.add(new ScriptShell(module).getModuleClass());
+	}
+	if (modulesCreatingWorlds.size() == 0) {
+		throw new RuntimeException("No world-creating modules provided");
+	}
+	return modulesCreatingWorlds;
+}
+public static Module getMainModule() {
+	try {
+		return (Module) modulesCreatingWorlds.iterator().next().newInstance();
+	} catch (InstantiationException | IllegalAccessException e) {
+		throw new RuntimeException(e);
+	}
 }
 
 public static void createWorld(WorldProvider worldProvider) {

@@ -29,7 +29,7 @@ public static DrawingAlgorithm<RectangleSystem> withColors(final Color... colors
 
 		@Override
 		public void draw(RectangleSystem rs) {
-			for (Rectangle r : rs) {
+			for (EnhancedRectangle r : rs) {
 				drawRectangle(r, iter.next());
 			}
 		}
@@ -42,7 +42,7 @@ public static DrawingAlgorithm<RectangleSystem> graphAndRectangles(final Color g
 
 		@Override
 		public void draw(RectangleSystem rs) {
-			for (Rectangle r : rs) {
+			for (EnhancedRectangle r : rs) {
 				drawRectangle(r, iter.next());
 			}
 			Graph<EnhancedRectangle, RectangleSystem.Neighborship> graph = rs.getGraph();
@@ -67,7 +67,7 @@ public static DrawingAlgorithm<RectangleSystem> neighborsUnionsAndRectangles(fin
 
 		@Override
 		public void draw(RectangleSystem rs) {
-			for (Rectangle r : rs) {
+			for (EnhancedRectangle r : rs) {
 				drawRectangle(r, iter.next());
 			}
 			Graph<EnhancedRectangle, RectangleSystem.Neighborship> graph = rs.getGraph();

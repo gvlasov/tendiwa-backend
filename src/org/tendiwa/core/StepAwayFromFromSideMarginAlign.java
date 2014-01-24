@@ -19,15 +19,15 @@ public class StepAwayFromFromSideMarginAlign implements Placement {
         EnhancedRectangle existingRec = builder.getRectangleByPointer(pointer).getBounds();
         int staticCoord = existingRec.getStaticCoordOfSide(side) + (builder.rs.borderWidth + 1 + margin) * side.getGrowing();
         if (side == Directions.N) {
-            staticCoord -= placeableBounds.height;
+            staticCoord -= placeableBounds.getHeight();
         } else if (side == Directions.W) {
-            staticCoord -= placeableBounds.width;
+            staticCoord -= placeableBounds.getWidth();
         }
-        int dynamicCoord = (side.isVertical() ? existingRec.x : existingRec.y);
+        int dynamicCoord = (side.isVertical() ? existingRec.getX() : existingRec.getY());
         if (alignmentSide == Directions.E) {
-            dynamicCoord += existingRec.width - placeableBounds.width;
+            dynamicCoord += existingRec.getWidth() - placeableBounds.getWidth();
         } else if (alignmentSide == Directions.S) {
-            dynamicCoord += existingRec.height - placeableBounds.height;
+            dynamicCoord += existingRec.getHeight() - placeableBounds.getHeight();
         }
         int x, y;
         if (side.isVertical()) {

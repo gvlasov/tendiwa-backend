@@ -32,8 +32,8 @@ public RectangleSystem getRectangleSystem() {
 public void excludeRectanglesHaving(PlaceableInCell placeable) {
 	keyLoop:
 	for (EnhancedRectangle r : rs.getRectangles()) {
-		for (int x = r.x; x < r.x + r.width; x++) {
-			for (int y = r.y; y < r.y + r.height; y++) {
+		for (int x = r.getX(); x < r.getX() + r.getWidth(); x++) {
+			for (int y = r.getY(); y < r.getY() + r.getHeight(); y++) {
 				if (placeable.containedIn(location.getActivePlane(), location.x + x, location.y + y)) {
 					rs.excludeRectangle(r);
 					continue keyLoop;
@@ -49,7 +49,7 @@ public void excludeRectanglesHaving(PlaceableInCell placeable) {
  *
  * @param placeable
  * 	Type of entities to place in cells.
- * @see TerrainModifier#drawOuterBorders(PlaceableInCell)
+ * @see TerrainModifier#drawOuterBorders(TypePlaceableInCell)
  */
 public void drawInnerBorders(TypePlaceableInCell placeable) {
 	/*
@@ -145,17 +145,17 @@ public void drawInnerBorders(TypePlaceableInCell placeable) {
 				Segment segment;
 				switch (side2) {
 					case N:
-						segment = new Segment(r2.x, r2.y, r2.width, Orientation.HORIZONTAL);
+						segment = new Segment(r2.getX(), r2.getY(), r2.getWidth(), Orientation.HORIZONTAL);
 						break;
 					case E:
-						segment = new Segment(r2.x + r2.width - 1, r2.y, r2.height, Orientation.VERTICAL);
+						segment = new Segment(r2.getX() + r2.getWidth() - 1, r2.getY(), r2.getHeight(), Orientation.VERTICAL);
 						break;
 					case S:
-						segment = new Segment(r2.x, r2.y + r2.height - 1, r2.width, Orientation.HORIZONTAL);
+						segment = new Segment(r2.getX(), r2.getY() + r2.getHeight() - 1, r2.getWidth(), Orientation.HORIZONTAL);
 						break;
 					case W:
 					default:
-						segment = new Segment(r2.x, r2.y, r2.height, Orientation.VERTICAL);
+						segment = new Segment(r2.getX(), r2.getY(), r2.getHeight(), Orientation.VERTICAL);
 				}
 				segments.add(segment);
 			}
@@ -205,13 +205,13 @@ public void drawInnerBorders(TypePlaceableInCell placeable) {
 				Set<EnhancedRectangle> neighborsW = rs.getNeighborsFromSide(r1, Directions.W);
 				Set<EnhancedRectangle> neighborsE = rs.getNeighborsFromSide(r1, Directions.E);
 				for (EnhancedRectangle r : neighborsW) {
-					if (r.y == r1.y) {
+					if (r.getY() == r1.getY()) {
 						hasPrevSameLineNeighbor = true;
 						break;
 					}
 				}
 				for (EnhancedRectangle r : neighborsE) {
-					if (r.y == r1.y) {
+					if (r.getY() == r1.getY()) {
 						hasNextSameLineNeighbor = true;
 						break;
 					}
@@ -220,13 +220,13 @@ public void drawInnerBorders(TypePlaceableInCell placeable) {
 				Set<EnhancedRectangle> neighborsN = rs.getNeighborsFromSide(r1, Directions.N);
 				Set<EnhancedRectangle> neighborsS = rs.getNeighborsFromSide(r1, Directions.S);
 				for (EnhancedRectangle r : neighborsN) {
-					if (r.x + r.width == r1.x + r1.width) {
+					if (r.getX() + r.getWidth() == r1.getX() + r1.getWidth()) {
 						hasPrevSameLineNeighbor = true;
 						break;
 					}
 				}
 				for (EnhancedRectangle r : neighborsS) {
-					if (r.x + r.width == r1.x + r1.width) {
+					if (r.getX() + r.getWidth() == r1.getX() + r1.getWidth()) {
 						hasNextSameLineNeighbor = true;
 						break;
 					}
@@ -235,13 +235,13 @@ public void drawInnerBorders(TypePlaceableInCell placeable) {
 				Set<EnhancedRectangle> neighborsW = rs.getNeighborsFromSide(r1, Directions.W);
 				Set<EnhancedRectangle> neighborsE = rs.getNeighborsFromSide(r1, Directions.E);
 				for (EnhancedRectangle r : neighborsW) {
-					if (r.y + r.height == r1.y + r1.height) {
+					if (r.getY() + r.getHeight() == r1.getY() + r1.getHeight()) {
 						hasPrevSameLineNeighbor = true;
 						break;
 					}
 				}
 				for (EnhancedRectangle r : neighborsE) {
-					if (r.y + r.height == r1.y + r1.height) {
+					if (r.getY() + r.getHeight() == r1.getY() + r1.getHeight()) {
 						hasNextSameLineNeighbor = true;
 						break;
 					}
@@ -250,13 +250,13 @@ public void drawInnerBorders(TypePlaceableInCell placeable) {
 				Set<EnhancedRectangle> neighborsN = rs.getNeighborsFromSide(r1, Directions.N);
 				Set<EnhancedRectangle> neighborsS = rs.getNeighborsFromSide(r1, Directions.S);
 				for (EnhancedRectangle r : neighborsN) {
-					if (r.x == r1.x) {
+					if (r.getX() == r1.getX()) {
 						hasPrevSameLineNeighbor = true;
 						break;
 					}
 				}
 				for (EnhancedRectangle r : neighborsS) {
-					if (r.x == r1.x) {
+					if (r.getX() == r1.getX()) {
 						hasNextSameLineNeighbor = true;
 						break;
 					}
@@ -270,23 +270,23 @@ public void drawInnerBorders(TypePlaceableInCell placeable) {
 			 */
 			if (side == Directions.N || side == Directions.S) {
 				Segment segment = segments.get(0);
-				if (segment.getX() < r1.x) {
-					segment.changeLength(-(r1.x - (hasPrevSameLineNeighbor ? 1 : 0) - segment.x));
-					segment.x = r1.x - (hasPrevSameLineNeighbor ? 1 : 0);
+				if (segment.getX() < r1.getX()) {
+					segment.changeLength(-(r1.getX() - (hasPrevSameLineNeighbor ? 1 : 0) - segment.x));
+					segment.x = r1.getX() - (hasPrevSameLineNeighbor ? 1 : 0);
 				}
 				segment = segments.get(segments.size() - 1);
-				if (segment.x + segment.length > r1.x + r1.width) {
-					segment.length = segment.length - (segment.x + segment.length - (r1.x + r1.width)) + (hasNextSameLineNeighbor ? 1 : 0);
+				if (segment.x + segment.length > r1.getX() + r1.getWidth()) {
+					segment.length = segment.length - (segment.x + segment.length - (r1.getX() + r1.getWidth())) + (hasNextSameLineNeighbor ? 1 : 0);
 				}
 			} else if (side == Directions.E || side == Directions.W) {
 				Segment segment = segments.get(0);
-				if (segment.y < r1.y) {
-					segment.length -= r1.y - (hasPrevSameLineNeighbor ? 1 : 0) - segment.y;
-					segment.y = r1.y - (hasPrevSameLineNeighbor ? 1 : 0);
+				if (segment.y < r1.getY()) {
+					segment.length -= r1.getY() - (hasPrevSameLineNeighbor ? 1 : 0) - segment.y;
+					segment.y = r1.getY() - (hasPrevSameLineNeighbor ? 1 : 0);
 				}
 				segment = segments.get(segments.size() - 1);
-				if (segment.y + segment.length > r1.y + r1.height) {
-					segment.length = segment.length - (segment.y + segment.length - (r1.y + r1.height)) + (hasNextSameLineNeighbor ? 1 : 0);
+				if (segment.y + segment.length > r1.getY() + r1.getHeight()) {
+					segment.length = segment.length - (segment.y + segment.length - (r1.getY() + r1.getHeight())) + (hasNextSameLineNeighbor ? 1 : 0);
 				}
 			}
 			/*
@@ -326,7 +326,7 @@ public void drawInnerBorders(TypePlaceableInCell placeable) {
  *
  * @param placeable
  * 	Entity to place in each drawn cell.
- * @see TerrainModifier#drawInnerBorders(PlaceableInCell)
+ * @see TerrainModifier#drawInnerBorders(TypePlaceableInCell)
  */
 public void drawOuterBorders(TypePlaceableInCell placeable) {
 	if (rs.getBorderWidth() < 1) {
@@ -359,8 +359,8 @@ public void drawOuterBorders(TypePlaceableInCell placeable) {
 }
 
 public void connectCornersWithLines(TypePlaceableInCell placeable, int padding, boolean considerBorderWidth) {
-	Rectangle boundingRec = rs.getBounds();
-	ccwlLastCellHolder.center = new Coordinate(Math.round(boundingRec.x + boundingRec.width / 2), Math.round(boundingRec.y + boundingRec.height / 2));
+	EnhancedRectangle boundingRec = rs.getBounds();
+	ccwlLastCellHolder.center = new Coordinate(Math.round(boundingRec.getX() + boundingRec.getWidth() / 2), Math.round(boundingRec.getY() + boundingRec.getHeight() / 2));
 	ArrayList<Coordinate> corners = new ArrayList<>();
 	Comparator<Coordinate> comparator = new Comparator<Coordinate>() {
 		@Override
@@ -375,17 +375,17 @@ public void connectCornersWithLines(TypePlaceableInCell placeable, int padding, 
 		boolean s = sides.contains(Directions.S);
 		boolean w = sides.contains(Directions.W);
 		if (n && e) {
-			corners.add(new Coordinate(r.x + r.width - 1 + (considerBorderWidth ? rs.getBorderWidth() : 0) + padding, r.y + (considerBorderWidth ? -rs.getBorderWidth() : 0) - padding));
+			corners.add(new Coordinate(r.getX() + r.getWidth() - 1 + (considerBorderWidth ? rs.getBorderWidth() : 0) + padding, r.getY() + (considerBorderWidth ? -rs.getBorderWidth() : 0) - padding));
 
 		}
 		if (e && s) {
-			corners.add(new Coordinate(r.x + r.width - 1 + (considerBorderWidth ? rs.getBorderWidth() : 0) + padding, r.y + r.height - 1 + (considerBorderWidth ? rs.getBorderWidth() : 0) + padding));
+			corners.add(new Coordinate(r.getX() + r.getWidth() - 1 + (considerBorderWidth ? rs.getBorderWidth() : 0) + padding, r.getY() + r.getHeight() - 1 + (considerBorderWidth ? rs.getBorderWidth() : 0) + padding));
 		}
 		if (s && w) {
-			corners.add(new Coordinate(r.x + (considerBorderWidth ? -rs.getBorderWidth() : 0) - padding, r.y + r.height - 1 + (considerBorderWidth ? rs.getBorderWidth() : 0) + padding));
+			corners.add(new Coordinate(r.getX() + (considerBorderWidth ? -rs.getBorderWidth() : 0) - padding, r.getY() + r.getHeight() - 1 + (considerBorderWidth ? rs.getBorderWidth() : 0) + padding));
 		}
 		if (w && n) {
-			corners.add(new Coordinate(r.x + (considerBorderWidth ? -rs.getBorderWidth() : 0) - padding, r.y + (considerBorderWidth ? -rs.getBorderWidth() : 0) - padding));
+			corners.add(new Coordinate(r.getX() + (considerBorderWidth ? -rs.getBorderWidth() : 0) - padding, r.getY() + (considerBorderWidth ? -rs.getBorderWidth() : 0) - padding));
 		}
 	}
 	Collections.sort(corners, comparator);
@@ -403,7 +403,7 @@ public void connectCornersWithLines(TypePlaceableInCell placeable, int padding, 
 }
 
 public void fillContents(TypePlaceableInCell placeable) {
-	for (Rectangle r : rs.getRectangles()) {
+	for (EnhancedRectangle r : rs.getRectangles()) {
 		location.square(r, placeable, true);
 	}
 }

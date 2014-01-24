@@ -29,16 +29,6 @@ Location(HorizontalPlane activePlane, int x, int y, int width, int height) {
 	this.height = height;
 }
 
-public void squareOfThin(EnhancedRectangle r, BorderObjectType type) {
-	for (int i = 0; i < r.width; i++) {
-		activePlane.setBorderObject(r.x + i, r.y, Directions.N, type);
-		activePlane.setBorderObject(r.x + i, r.y + r.height - 1, Directions.S, type);
-	}
-	for (int i = 0; i < r.height; i++) {
-		activePlane.setBorderObject(r.x, r.y + i, Directions.W, type);
-		activePlane.setBorderObject(r.x + r.width - 1, r.y + i, Directions.E, type);
-	}
-}
 
 public HorizontalPlane getActivePlane() {
 	return activePlane;
@@ -85,8 +75,8 @@ public void square(int startX, int startY, int w, int h, TypePlaceableInCell pla
 	square(startX, startY, w, h, placeable, false);
 }
 
-public void square(Rectangle r, TypePlaceableInCell placeable, boolean fill) {
-	square(r.x, r.y, r.width, r.height, placeable, fill);
+public void square(EnhancedRectangle r, TypePlaceableInCell placeable, boolean fill) {
+	square(r.getX(), r.getY(), r.getWidth(), r.getHeight(), placeable, fill);
 }
 
 public void square(int startX, int startY, int w, int h, TypePlaceableInCell placeable, boolean fill) {
@@ -345,7 +335,7 @@ public ArrayList<Coordinate> closeCells(int startX, int startY, int length, Pass
 				if (activePlane.getPassability(thisNumX, thisNumY) != pass) {
 					continue;
 				}
-				if (Math.floor(EnhancedPoint.distance(startX, startY, thisNumX, thisNumY)) >= length) {
+				if (Math.floor(EnhancedPoint.distanceInt(startX, startY, thisNumX, thisNumY)) >= length) {
 					continue;
 				}
 				newFront.add(new Coordinate(thisNumX, thisNumY));
@@ -394,7 +384,7 @@ public ArrayList<Coordinate> getElementsAreaBorder(int startX, int startY, Place
 			for (int j = 0; j < numOfSides; j++) {
 				int thisNumX = x + adjactentX[j];
 				int thisNumY = y + adjactentY[j];
-				if (thisNumX < 0 || thisNumX >= getWidth() || thisNumY < 0 || thisNumY >= getHeight() || pathTable[thisNumX][thisNumY] != 0 || EnhancedPoint.distance(startX, startY, thisNumX, thisNumY) > depth) {
+				if (thisNumX < 0 || thisNumX >= getWidth() || thisNumY < 0 || thisNumY >= getHeight() || pathTable[thisNumX][thisNumY] != 0 || EnhancedPoint.distanceInt(startX, startY, thisNumX, thisNumY) > depth) {
 					continue;
 				}
 				if (placeable.containedIn(activePlane, thisNumX, thisNumY) && !(thisNumX == startX && thisNumY == startY)) {
@@ -551,7 +541,7 @@ public ArrayList<Coordinate> getPath(int startX, int startY, int destinationX, i
 			if (thisNumY < 0 || thisNumY >= getHeight()) {
 				continue;
 			}
-			if (pathTable[thisNumX][thisNumY] == j - 1 && (currentNumX == -1 || EnhancedPoint.distance(thisNumX, thisNumY, destinationX, destinationY) < EnhancedPoint.distance(currentNumX, currentNumY, destinationX, destinationY))) {
+			if (pathTable[thisNumX][thisNumY] == j - 1 && (currentNumX == -1 || EnhancedPoint.distanceInt(thisNumX, thisNumY, destinationX, destinationY) < EnhancedPoint.distanceInt(currentNumX, currentNumY, destinationX, destinationY))) {
 				// ���� ������ � ���� ������� �������� ���������� �����,
 				// ������� �� ��
 				currentNumX = thisNumX;
@@ -869,4 +859,20 @@ public void place(TypePlaceableInCell placeable, EnhancedPoint point) {
 	EntityPlacer.place(activePlane, placeable, x + point.x, y + point.y);
 }
 
+public void lineOfThin(RectangleSidePiece line, BorderObjectType type) {
+	for (EnhancedPoint point : line.getSegment()) {
+		System.out.println(type+" "+point);
+		activePlane.setBorderObject(point.x, point.y, line.getDirection(), type);
+	}
+}
+public void squareOfThin(EnhancedRectangle r, BorderObjectType type) {
+	for (int i = 0; i < r.getWidth(); i++) {
+		activePlane.setBorderObject(r.getX() + i, r.getY(), Directions.N, type);
+		activePlane.setBorderObject(r.getX() + i, r.getY() + r.getHeight() - 1, Directions.S, type);
+	}
+	for (int i = 0; i < r.getHeight(); i++) {
+		activePlane.setBorderObject(r.getX(), r.getY() + i, Directions.W, type);
+		activePlane.setBorderObject(r.getX() + r.getWidth() - 1, r.getY() + i, Directions.E, type);
+	}
+}
 }

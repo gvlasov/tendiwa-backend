@@ -1,6 +1,7 @@
 package org.tendiwa.core;
 
 import org.tendiwa.core.meta.Coordinate;
+import org.tendiwa.core.vision.Seer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -409,7 +410,7 @@ public boolean getPathTableToAllSeenCharacters() {
 					continue;
 				}
 				Passability passability = plane.getPassability(thisNumX + dX, thisNumY + dY);
-				if ((passability == Passability.FREE || !initialCanSee(
+				if ((passability == Passability.FREE || !seer.canSee(
 					thisNumX + dX, thisNumY + dY)
 					&& passability != Passability.NO)) {
 					// Step to cell if character can see it and it is free
@@ -444,7 +445,7 @@ public boolean isCurrentlyObserving(Character aim) {
  * @param aim
  */
 void tryToSee(Character aim) {
-	if (aim.isAlive() && initialCanSee(aim.x, aim.y)) {
+	if (aim.isAlive() && seer.canSee(aim.x, aim.y)) {
 		seenCharacters.add(aim);
 		timeStream.addObserver(aim, this);
 		if (unseenEnemies.contains(aim)) {
@@ -457,7 +458,7 @@ void tryToSee(Character aim) {
 }
 
 void tryToUnsee(Character aim) {
-	if (aim.isAlive() && !initialCanSee(aim.x, aim.y)) {
+	if (aim.isAlive() && !seer.canSee(aim.x, aim.y)) {
 		seenCharacters.remove(aim);
 		if (isEnemy(aim)) {
 			unseenEnemies.add(aim);
@@ -478,8 +479,8 @@ public void getVisibleEntities() {
 		// Quickly select characters that could be seen (including this
 		// character, because it's just easier to remove this character
 		// later)
-		if (Math.abs(character.x - x) <= Character.VISION_RANGE
-			&& Math.abs(character.y - y) <= Character.VISION_RANGE) {
+		if (Math.abs(character.x - x) <= Seer.VISION_RANGE
+			&& Math.abs(character.y - y) <= Seer.VISION_RANGE) {
 			// If another character is probably in this character's vision
 			// range, try to see that another character
 			tryToSee(character);

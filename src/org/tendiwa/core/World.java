@@ -9,11 +9,13 @@ private static final int defaultPlaneIndex = Integer.MAX_VALUE / 2;
 protected final int width;
 protected final int height;
 final HorizontalPlane defaultPlane;
+private final EnhancedRectangle rectangle;
 private Character playerCharacter;
 private TimeStream timeStream;
 private HashMap<Integer, HorizontalPlane> planes = new HashMap<>();
 
 public World(int width, int height) {
+	this.rectangle = new EnhancedRectangle(0, 0, width, height);
 	this.width = width;
 	this.height = height;
 	defaultPlane = initPlane(0);
@@ -29,7 +31,7 @@ public static World create(WorldDrawer worldDrawer, int width, int height) {
 	for (LocationPlace place : builder.rectanglesToPlaces.values()) {
 		LocationDrawer locationDrawer = ResourcesRegistry.getLocationDrawerFor(place);
 		locationDrawer.draw(
-			new Location(world.defaultPlane, place.x, place.y, place.width, place.height),
+			new Location(world.defaultPlane, place.getX(), place.getY(), place.getWidth(), place.getHeight()),
 			place
 		);
 	}
@@ -50,8 +52,8 @@ public HorizontalPlane getDefaultPlane() {
 private void checkIfLocationPlacesFillAllWorld(WorldRectangleBuilder builder) {
 	boolean filled[][] = new boolean[width][height];
 	for (LocationPlace place : builder.rectanglesToPlaces.values()) {
-		for (int x = place.x; x < place.width; x++) {
-			for (int y = place.y; y < place.height; y++) {
+		for (int x = place.getX(); x < place.getWidth(); x++) {
+			for (int y = place.getY(); y < place.getHeight(); y++) {
 				filled[x][y] = true;
 			}
 		}
@@ -75,7 +77,6 @@ public void setPlayerCharacter(Character playerCharacter) {
 	timeStream.addPlayerCharacter(playerCharacter);
 	playerCharacter.setTimeStream(timeStream);
 }
-
 
 public int getWidth() {
 	return width;
@@ -159,5 +160,10 @@ public HorizontalPlane getPlane(int level) {
 	} else {
 		return planes.get(level);
 	}
+}
+
+public EnhancedRectangle asRectangle() {
+	return rectangle;
+
 }
 }

@@ -21,9 +21,9 @@ public class StepNearFromSide {
                 EnhancedRectangle existingRec = builder.getRectangleByPointer(pointer).getBounds();
                 EnhancedRectangle placeableBounds = placeable.getBounds();
                 int staticCoord = existingRec.getStaticCoordOfSide(fromSide) + (builder.rs.borderWidth + 1) * fromSide.getGrowing();
-                int dynamicCoord = (fromSide.isVertical() ? existingRec.x : existingRec.y) + (existingRec.getDimensionBySide(fromSide) - placeableBounds.getDimensionBySide(fromSide)) / 2;
                 int x, y;
-                if (fromSide.isVertical()) {
+	            int dynamicCoord = (fromSide.isVertical() ? existingRec.getX() : existingRec.getY()) + (existingRec.getDimensionBySide(fromSide) - placeableBounds.getDimensionBySide(fromSide)) / 2;
+	            if (fromSide.isVertical()) {
                     x = dynamicCoord;
                     y = staticCoord;
                 } else {

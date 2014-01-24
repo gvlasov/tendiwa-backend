@@ -24,15 +24,15 @@ public Placement shift(final int shift) {
 			EnhancedRectangle existingRec = builder.getRectangleByPointer(pointer).getBounds();
 			int staticCoord = existingRec.getStaticCoordOfSide(fromSide) + fromSide.getGrowing();
 			if (fromSide == Directions.N) {
-				staticCoord -= placeableBounds.height;
+				staticCoord -= placeableBounds.getHeight();
 			} else if (fromSide == Directions.W) {
-				staticCoord -= placeableBounds.width - 1;
+				staticCoord -= placeableBounds.getWidth() - 1;
 			}
-			int dynamicCoord = (fromSide.isVertical() ? existingRec.x : existingRec.y) + shift * alignSide.getGrowing();
+			int dynamicCoord = (fromSide.isVertical() ? existingRec.getX() : existingRec.getY()) + shift * alignSide.getGrowing();
 			if (alignSide == Directions.E) {
-				dynamicCoord += existingRec.width - placeableBounds.width;
+				dynamicCoord += existingRec.getWidth() - placeableBounds.getWidth();
 			} else if (alignSide == Directions.S) {
-				dynamicCoord += existingRec.height - placeableBounds.height;
+				dynamicCoord += existingRec.getHeight() - placeableBounds.getHeight();
 			}
 			int x, y;
 			if (fromSide.isVertical()) {

@@ -20,20 +20,20 @@ public class StepNear {
                 int x, y;
                 switch (corner) {
                     case NE:
-                        x = existingRec.x + existingRec.width + builder.rs.borderWidth;
-                        y = existingRec.y - placeableBounds.height - builder.rs.borderWidth;
+                        x = existingRec.getX() + existingRec.getWidth() + builder.rs.borderWidth;
+                        y = existingRec.getY() - placeableBounds.getHeight() - builder.rs.borderWidth;
                         break;
                     case NW:
-                        x = existingRec.x - placeableBounds.width - builder.rs.borderWidth;
-                        y = existingRec.y - placeableBounds.height - builder.rs.borderWidth;
+                        x = existingRec.getX() - placeableBounds.getWidth() - builder.rs.borderWidth;
+                        y = existingRec.getY() - placeableBounds.getHeight() - builder.rs.borderWidth;
                         break;
                     case SE:
-                        x = existingRec.x + existingRec.width + builder.rs.borderWidth;
-                        y = existingRec.y + existingRec.height + builder.rs.borderWidth;
+                        x = existingRec.getX() + existingRec.getWidth() + builder.rs.borderWidth;
+                        y = existingRec.getY() + existingRec.getHeight() + builder.rs.borderWidth;
                         break;
                     case SW:
-                        y = existingRec.y + existingRec.height + builder.rs.borderWidth;
-                        x = existingRec.x - placeableBounds.width - builder.rs.borderWidth;
+                        y = existingRec.getY() + existingRec.getHeight() + builder.rs.borderWidth;
+                        x = existingRec.getX() - placeableBounds.getWidth() - builder.rs.borderWidth;
                         break;
                     default:
                         throw new Error();

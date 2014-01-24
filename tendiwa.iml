@@ -44,6 +44,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="la4j" level="project" />
   </component>
 </module>
 

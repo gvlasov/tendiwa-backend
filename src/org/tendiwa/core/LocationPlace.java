@@ -6,8 +6,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Represents a place where user will drawWorld a location. This class is supposed to hold properties assigned to it at the
- * world generation stage: {@link LocationFeature}, {@link PathSegment}s.
+ * Represents a place where user will drawWorld a location. This class is supposed to hold properties assigned to it at
+ * the world generation stage: {@link LocationFeature}, {@link PathSegment}s.
  */
 public class LocationPlace extends EnhancedRectangle {
 private final WorldRectangleBuilder worldBuilder;
@@ -57,7 +57,8 @@ public ImmutableSet<LocationNeighborship> getNeighborships() {
  * @param neighborship
  * 	A neighbor of this LocationPlace to get a common RectangleSidePiece of. Defines one dimension of the resulting
  * 	rectangle.
- * @param anotherDimension Another dimension of the new rectangle.
+ * @param anotherDimension
+ * 	Another dimension of the new rectangle.
  * @return A rectangle on border of this Location place that covers all common border segment with a neighbor
  *         LocationPlace.
  */
@@ -65,10 +66,10 @@ public EnhancedRectangle getRectangleInFrontOfNeighbor(LocationNeighborship neig
 	EnhancedRectangle absoluteCoordinatesRec = getCommonSidePiece(neighborship.getPlace())
 		.createRectangle(anotherDimension);
 	return new EnhancedRectangle(
-		absoluteCoordinatesRec.x-x,
-		absoluteCoordinatesRec.y-y,
-		absoluteCoordinatesRec.width,
-		absoluteCoordinatesRec.height
+		absoluteCoordinatesRec.getX() - getX(),
+		absoluteCoordinatesRec.getY() - getY(),
+		absoluteCoordinatesRec.getWidth(),
+		absoluteCoordinatesRec.getHeight()
 	);
 
 }

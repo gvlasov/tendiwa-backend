@@ -15,7 +15,7 @@ public class BuildingPlace extends EnhancedRectangle {
 	public static final long serialVersionUID = 83682932346L;
 
 	public final HashSet<Settlement.RoadSystem.Road> closeRoads = new HashSet<Settlement.RoadSystem.Road>();
-	public BuildingPlace(Rectangle rectangle, Settlement.QuarterSystem.Quarter quarter) {
+	public BuildingPlace(EnhancedRectangle rectangle, Settlement.QuarterSystem.Quarter quarter) {
 		super(rectangle);
 		for (Settlement.RoadSystem.Road road : quarter.closeRoads) {
 			if (road.isRectangleNearRoad(this)) {

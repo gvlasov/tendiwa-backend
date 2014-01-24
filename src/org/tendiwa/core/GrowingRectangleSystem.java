@@ -16,7 +16,7 @@ public class GrowingRectangleSystem extends RectangleSystem {
 		super(borderWidth);
 	}
 
-	public GrowingRectangleSystem(int borderWidth, Rectangle r) {
+	public GrowingRectangleSystem(int borderWidth, EnhancedRectangle r) {
 		this(borderWidth);
 		addRectangle(new EnhancedRectangle(r));
 	}
@@ -38,7 +38,7 @@ public class GrowingRectangleSystem extends RectangleSystem {
 	 *            offset moves. the rectangle to the south, and negative — to
 	 *            the north.
 	 */
-	public void grow(Rectangle r, CardinalDirection side, int width, int height, int offset) {
+	public void grow(EnhancedRectangle r, CardinalDirection side, int width, int height, int offset) {
 		addRectangle(create(r, side, width, height, offset));
 	}
 	/**
@@ -57,26 +57,26 @@ public class GrowingRectangleSystem extends RectangleSystem {
 	 * @param offset
 	 * @return New rectangle.
 	 */
-	protected EnhancedRectangle create(Rectangle r, CardinalDirection side, int width, int height, int offset) {
+	protected EnhancedRectangle create(EnhancedRectangle r, CardinalDirection side, int width, int height, int offset) {
 		int startX = 0;
 		int startY = 0;
 		switch (side) {
 			case N:
-				startX = r.x + offset;
-				startY = r.y - borderWidth - height;
+				startX = r.getX() + offset;
+				startY = r.getY() - borderWidth - height;
 				break;
 			case E:
-				startX = r.x + r.width + borderWidth;
-				startY = r.y + offset;
+				startX = r.getX() + r.getWidth() + borderWidth;
+				startY = r.getY() + offset;
 				break;
 			case S:
-				startX = r.x + offset;
-				startY = r.y + r.height + borderWidth;
+				startX = r.getX() + offset;
+				startY = r.getY() + r.getHeight() + borderWidth;
 				break;
 			case W:
 			default:
-				startX = r.x - borderWidth - width;
-				startY = r.y + offset;
+				startX = r.getX() - borderWidth - width;
+				startY = r.getY() + offset;
 				break;
 		}
 		return new EnhancedRectangle(startX, startY, width, height);
