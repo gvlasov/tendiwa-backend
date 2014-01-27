@@ -1,26 +1,12 @@
 package org.tendiwa.core.vision;
 
 import org.tendiwa.core.*;
-import org.tendiwa.core.Character;
 import org.tendiwa.core.meta.*;
 
 import java.awt.*;
 
 public class Seer {
 public static final int VISION_RANGE = 11;
-/**
- * Value for {@link Seer#visionCache} meaning that vision of particular cell is not computed for current character's
- * position yet.
- */
-public static final byte VISION_NOT_COMPUTED = 0;
-/**
- * Value for {@link Seer#visionCache} meaning that a particular cell is visible from this Character's current
- */
-public static final byte VISION_VISIBLE = 1;
-/**
- * Value for {@link Seer#visionCache} meaning that a particular cell is invisible from this Character's current
- */
-public static final byte VISION_INVISIBLE = 2;
 private final static double EPSILON = 0.01;
 private final static double visionSourceDiameter = 0.7;
 public final ModifiableCellVisionCache visionCache;
@@ -43,7 +29,7 @@ public Seer(CellPosition character, SightPassabilityCriteria vision) {
 	this.visionCache = new ModifiableCellVisionCache(character);
 	this.visionPrevious = new CellVisionCache();
 	this.borderVision = new ModifiableBorderVisionCache(character);
-	this.borderVisionPrevious = new BorderVisionCache();
+	this.borderVisionPrevious = new BorderVisionCache(character);
 }
 
 /**
@@ -82,6 +68,22 @@ public static int getEndIndexOfRelativeTableX(int centerCoordinate, int tableRad
 	return Math.min(tableRadius * 2 + 1, Tendiwa.getWorldWidth() - centerCoordinate + tableRadius);
 }
 
+/**
+ * <p>Returns the last index on y axis of a relative table (a FOV table, for example) which resides inside world
+ * recangle.</p> <p/> <p>There is only one method for the first index, but two methods for the last indices, because the
+ * least world coordinate is 0 on both x and y axes, but the greatest is different (world.width or world.height) for x
+ * and y axes.</p>
+ *
+ * @param centerCoordinate
+ * 	Absolute y coordinate of table's center in world coordinates.
+ * @param tableRadius
+ * 	{@code (table_width-1)/2}
+ * @return Last index in relative table's coordinates on x axis that resides inside world rectangle.
+ */
+public static int getEndIndexOfRelativeTableY(int centerCoordinate, int tableRadius) {
+	return Math.min(tableRadius * 2 + 1, Tendiwa.getWorldHeight() - centerCoordinate + tableRadius);
+}
+
 public static double getAngle(int fromX, int fromY, int toX, int toY) {
 	return Math.atan2(toY - fromY, toX - fromX);
 }
@@ -105,7 +107,7 @@ private boolean isCellVisible(int x, int y, Border excluded) {
 
 	if (x == character.getX() && y == character.getY()) {
 		if (excluded == null) {
-			visionCache.cacheVision(x, y, VISION_VISIBLE);
+			visionCache.cacheVision(x, y, Visibility.VISIBLE);
 		}
 		return true;
 	}
@@ -115,7 +117,7 @@ private boolean isCellVisible(int x, int y, Border excluded) {
 			// If coord is in a square of VISION_RANGE*VISION_RANGE,
 			// but is in its corner so it's too distant to be seen.
 			if (excluded == null) {
-				visionCache.cacheVision(x, y, VISION_INVISIBLE);
+				visionCache.cacheVision(x, y, Visibility.INVISIBLE);
 			}
 		}
 		return false;
@@ -152,13 +154,13 @@ private boolean isCellVisible(int x, int y, Border excluded) {
 		ranges.splitWith(Math.min(transStartX, transEndX), Math.max(transStartX, transEndX));
 		if (ranges.size() == 0) {
 			if (excluded == null) {
-				visionCache.cacheVision(x, y, VISION_INVISIBLE);
+				visionCache.cacheVision(x, y, Visibility.INVISIBLE);
 			}
 			return false;
 		}
 	}
 	if (excluded == null) {
-		visionCache.cacheVision(x, y, VISION_VISIBLE);
+		visionCache.cacheVision(x, y, Visibility.VISIBLE);
 	}
 	return true;
 }
@@ -434,12 +436,22 @@ public boolean canSee(int x, int y) {
 	if (Math.abs(y - character.getY()) > VISION_RANGE) {
 		return false;
 	}
-	byte visionFromCache = visionCache.getVisionFromCache(x, y);
-	if (visionFromCache == VISION_NOT_COMPUTED) {
+	Visibility visionFromCache = visionCache.getVisionFromCache(x, y);
+	if (visionFromCache == Visibility.NOT_COMPUTED) {
 		return isCellVisible(x, y, null);
 	} else {
-		return visionFromCache == VISION_VISIBLE;
+		return visionFromCache == Visibility.VISIBLE;
 	}
+}
+
+public Visibility canSeeBorder(Border border) {
+	if (Math.abs(border.x - character.getX()) > VISION_RANGE) {
+		return Visibility.INVISIBLE;
+	}
+	if (Math.abs(border.y - character.getY()) > VISION_RANGE) {
+		return Visibility.INVISIBLE;
+	}
+	return borderVision.get(border);
 }
 
 /**
@@ -450,9 +462,9 @@ public void computeFullVisionCache() {
 	int startX = getStartIndexOfRelativeTable(character.getX(), VISION_RANGE);
 	int startY = getStartIndexOfRelativeTable(character.getY(), VISION_RANGE);
 	int endX = getEndIndexOfRelativeTableX(character.getX(), VISION_RANGE);
-	int endY = Character.getEndIndexOfRelativeTableY(character.getY(), VISION_RANGE);
+	int endY = getEndIndexOfRelativeTableY(character.getY(), VISION_RANGE);
 	computeCellVision(startX, startY, endX, endY);
-	computeBorderVision(startX, startY, endX, endY);
+	computeAllBordersVisibility(startX, startY, endX, endY);
 	obstaclesCache.invalidate();
 }
 
@@ -472,41 +484,55 @@ private void computeCellVision(int startX, int startY, int endX, int endY) {
  * @param endX
  * @param endY
  */
-private void computeBorderVision(int startX, int startY, int endX, int endY) {
-	for (int i = startX; i < endX + 1; i++) {
-		for (int j = startY; j < endY + 1; j++) {
+private void computeAllBordersVisibility(int startX, int startY, int endX, int endY) {
+	for (int i = startX; i < endX; i++) {
+		for (int j = startY; j < endY; j++) {
 			int actualWorldX = character.getX() - VISION_RANGE + i;
 			int actualWorldY = character.getY() - VISION_RANGE + j;
-			isBorderVisible(actualWorldX, actualWorldY, Directions.N);
-			isBorderVisible(actualWorldX, actualWorldY, Directions.W);
+			computeBorderVisibility(actualWorldX, actualWorldY, Directions.N);
+			computeBorderVisibility(actualWorldX, actualWorldY, Directions.W);
 		}
 	}
 
 }
 
-private boolean isBorderVisible(int x, int y, CardinalDirection side) {
+private boolean computeBorderVisibility(int x, int y, CardinalDirection side) {
 	assert !side.isGrowing();
-	byte vision1 = visionCache.getVisionFromCache(x, y);
+	Visibility visionCloserToSeer = visionCache.getVisionFromCache(x, y);
 	int[] dCoords = side.side2d();
 	int xNeighbor = x + dCoords[0];
 	int yNeighbor = y + dCoords[1];
+	// x and y are inside vision rectangle, but xNeighbor and yNeighbor may be outside.
 	if (!getVisionRectangle().contains(xNeighbor, yNeighbor)) {
-		borderVision.cacheBorderVision(x, y, side, VISION_INVISIBLE);
+		borderVision.cacheBorderVision(x, y, side, Visibility.INVISIBLE);
 		return false;
 	}
-	System.out.println(xNeighbor + " " + yNeighbor);
-	byte vision2 = visionCache.getVisionFromCache(xNeighbor, yNeighbor);
-	if (vision1 == VISION_VISIBLE && vision2 == VISION_VISIBLE) {
-		borderVision.cacheBorderVision(x, y, side, VISION_VISIBLE);
+	Visibility visionFurtherToSeer = visionCache.getVisionFromCache(xNeighbor, yNeighbor);
+	if (visionCloserToSeer == Visibility.INVISIBLE && visionFurtherToSeer == Visibility.VISIBLE) {
+		int ibuf = x;
+		x = xNeighbor;
+		xNeighbor = ibuf;
+
+		ibuf = y;
+		y = yNeighbor;
+		yNeighbor = ibuf;
+
+		Visibility buf = visionCloserToSeer;
+		visionCloserToSeer = visionFurtherToSeer;
+		visionFurtherToSeer = buf;
+	}
+	if (visionCloserToSeer == Visibility.VISIBLE && visionFurtherToSeer == Visibility.VISIBLE) {
+		borderVision.cacheBorderVision(x, y, side, Visibility.VISIBLE);
 		return true;
-	} else if (vision1 == VISION_INVISIBLE) {
-		borderVision.cacheBorderVision(x, y, side, VISION_INVISIBLE);
+	} else if (visionCloserToSeer == Visibility.INVISIBLE) {
+		assert visionFurtherToSeer == Visibility.INVISIBLE;
+		borderVision.cacheBorderVision(x, y, side, Visibility.INVISIBLE);
 		return false;
 	} else {
-		assert vision1 == VISION_VISIBLE && vision2 == VISION_INVISIBLE;
+		assert visionCloserToSeer == Visibility.VISIBLE && visionFurtherToSeer != Visibility.VISIBLE : visionCloserToSeer+" "+visionFurtherToSeer;
 		Border obstacle = obstaclesCache.findObstacleBorder(x, y, side);
 		boolean canSee = isCellVisible(xNeighbor, yNeighbor, obstacle);
-		borderVision.cacheBorderVision(x, y, side, canSee ? VISION_VISIBLE : VISION_INVISIBLE);
+		borderVision.cacheBorderVision(x, y, side, canSee ? Visibility.VISIBLE : Visibility.INVISIBLE);
 		return canSee;
 	}
 }
@@ -533,14 +559,14 @@ public BorderVisionCache getPreviousBorderVisionCache() {
  * @return Minimum rectangle where this Seer's vision range is contained.
  */
 public EnhancedRectangle getVisionRectangle() {
-	EnhancedPoint startPoint = getVisionRecStartPoint();
+	EnhancedPoint startPoint = getActualVisionRecStartPoint();
 	int actualWorldEndX = Math.min(
 		Tendiwa.getWorldWidth() - 1,
-		startPoint.x + ModifiableCellVisionCache.VISION_CACHE_WIDTH - 1
+		Tendiwa.getPlayerCharacter().getX() - Seer.VISION_RANGE + ModifiableCellVisionCache.VISION_CACHE_WIDTH - 1
 	);
 	int actualWorldEndY = Math.min(
 		Tendiwa.getWorldHeight() - 1,
-		startPoint.y + ModifiableCellVisionCache.VISION_CACHE_WIDTH - 1
+		Tendiwa.getPlayerCharacter().getY() - Seer.VISION_RANGE + ModifiableCellVisionCache.VISION_CACHE_WIDTH - 1
 	);
 	return new EnhancedRectangle(
 		startPoint.x,
@@ -555,7 +581,18 @@ public EnhancedRectangle getVisionRectangle() {
  *
  * @return North-western point of a rectangle that contains the vision range of this Seer.
  */
-public EnhancedPoint getVisionRecStartPoint() {
+public EnhancedPoint getActualVisionRecStartPoint() {
+	return new EnhancedPoint(
+		Math.max(0, Tendiwa.getPlayerCharacter().getX() - Seer.VISION_RANGE),
+		Math.max(0, Tendiwa.getPlayerCharacter().getY() - Seer.VISION_RANGE)
+	);
+}
+/**
+ * Returns north-western point of a rectangle that contains the vision range of this Seer.
+ *
+ * @return North-western point of a rectangle that contains the vision range of this Seer.
+ */
+public EnhancedPoint getTheoreticalVisionRecStartPoint() {
 	return new EnhancedPoint(
 		Tendiwa.getPlayerCharacter().getX() - Seer.VISION_RANGE,
 		Tendiwa.getPlayerCharacter().getY() - Seer.VISION_RANGE

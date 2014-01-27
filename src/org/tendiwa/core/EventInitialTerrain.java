@@ -1,7 +1,6 @@
 package org.tendiwa.core;
 
-import org.tendiwa.core.vision.ModifiableCellVisionCache;
-import org.tendiwa.core.vision.Seer;
+import org.tendiwa.core.vision.*;
 
 import java.util.LinkedList;
 
@@ -18,13 +17,14 @@ public EventInitialTerrain() {
 	HorizontalPlane plane = Tendiwa.getWorld().getPlayer().getPlane();
 	zLevel = plane.getLevel();
 	Seer seer = Tendiwa.getPlayerCharacter().getSeer();
-	byte[][] visionCache = seer.getVisionCache().getContent();
-	EnhancedPoint startPoint = seer.getVisionRecStartPoint();
-	for (int i = 0; i < ModifiableCellVisionCache.VISION_CACHE_WIDTH; i++) {
-		for (int j = 0; j < ModifiableCellVisionCache.VISION_CACHE_WIDTH; j++) {
-			if (visionCache[i][j] == Seer.VISION_VISIBLE) {
-				int x = startPoint.x + i;
-				int y = startPoint.y + j;
+	Visibility[][] visionCache = seer.getVisionCache().getContent();
+	EnhancedPoint startPoint = seer.getActualVisionRecStartPoint();
+	EnhancedPoint theoreticalStartPoint = seer.getTheoreticalVisionRecStartPoint();
+	for (int i = startPoint.x-theoreticalStartPoint.x; i < ModifiableCellVisionCache.VISION_CACHE_WIDTH; i++) {
+		for (int j = startPoint.y-theoreticalStartPoint.y; j < ModifiableCellVisionCache.VISION_CACHE_WIDTH; j++) {
+			if (visionCache[i][j] == Visibility.VISIBLE) {
+				int x = theoreticalStartPoint.x + i;
+				int y = theoreticalStartPoint.y + j;
 				seenCells.add(new RenderCell(
 					x,
 					y,
@@ -35,26 +35,11 @@ public EventInitialTerrain() {
 		}
 	}
 	EnhancedRectangle actualVisionRec = seer.getVisionRectangle();
-	int actualWorldStartX = actualVisionRec.getX();
-	int actualWorldStartY = actualVisionRec.getY();
-	int actualWorldEndX = actualVisionRec.getMaxX();
-	int actualWorldEndY = actualVisionRec.getMaxY();
+	BorderVisionCache borderVisionCache = seer.getBorderVisionCache();
 
-	for (int i = actualWorldStartX; i < actualWorldEndX; i++) {
-		for (int j = actualWorldStartY; j < actualWorldEndY; j++) {
-			BorderObject borderObjectW = plane.getBorderObject(i + 1, j, Directions.W);
-			boolean cellIsVisible = visionCache[i - startPoint.x][j - startPoint.y] == Seer.VISION_VISIBLE;
-			if (cellIsVisible
-				&& visionCache[i - startPoint.x + 1][j - startPoint.y] == Seer.VISION_VISIBLE
-				) {
-				seenBorders.add(new RenderBorder(i + 1, j, Directions.W, borderObjectW));
-			}
-			BorderObject borderObjectN = plane.getBorderObject(i, j + 1, Directions.N);
-			if (cellIsVisible
-				&& visionCache[i - startPoint.x][j - startPoint.y + 1] == Seer.VISION_VISIBLE
-				) {
-				seenBorders.add(new RenderBorder(i, j + 1, Directions.N, borderObjectN));
-			}
+	for (BorderVisibility border : borderVisionCache) {
+		if (border.visibility == Visibility.VISIBLE) {
+			seenBorders.add(new RenderBorder(border.x, border.y, border.side, plane.getBorderObject(border)));
 		}
 	}
 }

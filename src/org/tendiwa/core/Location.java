@@ -861,7 +861,6 @@ public void place(TypePlaceableInCell placeable, EnhancedPoint point) {
 
 public void lineOfThin(RectangleSidePiece line, BorderObjectType type) {
 	for (EnhancedPoint point : line.getSegment()) {
-		System.out.println(type+" "+point);
 		activePlane.setBorderObject(point.x, point.y, line.getDirection(), type);
 	}
 }

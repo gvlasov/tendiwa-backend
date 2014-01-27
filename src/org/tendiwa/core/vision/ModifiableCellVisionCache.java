@@ -9,18 +9,14 @@ boolean isVisionCacheEmpty = true;
 
 ModifiableCellVisionCache(CellPosition character) {
 	this.character = character;
+	invalidate();
 }
 
-static boolean isVisionValue(byte vision) {
-	return vision >= Seer.VISION_NOT_COMPUTED && vision <= Seer.VISION_INVISIBLE;
-}
-
-void cacheVision(int x, int y, byte vision) {
-	assert isVisionValue(vision);
+void cacheVision(int x, int y, Visibility vision) {
 	if (!visionCacheWritingEnabled) {
 		return;
 	}
-	visionCache[(byte) (x - character.getX() + Seer.VISION_RANGE)][(byte) (y - character.getY() + Seer.VISION_RANGE)] = vision;
+	visionCache[ x - character.getX() + Seer.VISION_RANGE][ y - character.getY() + Seer.VISION_RANGE] = vision;
 	isVisionCacheEmpty = false;
 }
 
@@ -30,14 +26,14 @@ void cacheVision(int x, int y, byte vision) {
 public void invalidate() {
 	for (byte i = 0; i < VISION_CACHE_WIDTH; i++) {
 		for (byte j = 0; j < VISION_CACHE_WIDTH; j++) {
-			visionCache[i][j] = Seer.VISION_NOT_COMPUTED;
+			visionCache[i][j] = Visibility.NOT_COMPUTED;
 		}
 	}
 	isVisionCacheEmpty = true;
 }
 
-byte getVisionFromCache(int x, int y) {
-	return visionCache[(byte) (x - character.getX() + Seer.VISION_RANGE)][(byte) (y - character.getY() + Seer.VISION_RANGE)];
+Visibility getVisionFromCache(int x, int y) {
+	return visionCache[ x - character.getX() + Seer.VISION_RANGE][y - character.getY() + Seer.VISION_RANGE];
 }
 
 public void disableWriting() {

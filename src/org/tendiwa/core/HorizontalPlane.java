@@ -242,6 +242,13 @@ public BorderObject getBorderObject(int x, int y, CardinalDirection side) {
 	return getChunkWithCell(x, y).getBorderObject(x, y, side);
 }
 
+public BorderObject getBorderObject(Border border) {
+	return getChunkWithCell(border.x, border.y).getBorderObject(border);
+}
+public boolean hasBorderObject(Border border) {
+	return  getChunkWithCell(border.x, border.y).hasBorderObject(border.x, border.y, border.side);
+}
+
 public boolean hasBorderObject(int x, int y, CardinalDirection side) {
 	assert side != null;
 	if (side != Directions.N && side != Directions.W) {
@@ -264,4 +271,5 @@ public boolean hasBorderObject(int x, int y, CardinalDirection side) {
 public boolean containsCell(int x, int y) {
 	return x >= 0 && y >= 0 && x < Tendiwa.getWorldWidth() && y < Tendiwa.getWorldHeight();
 }
+
 }

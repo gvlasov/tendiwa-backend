@@ -58,4 +58,13 @@ public int hashCode() {
 public EnhancedPoint toPoint() {
 	return new EnhancedPoint(x, y);
 }
+
+@Override
+public String toString() {
+	return "Border{" +
+		"side=" + side +
+		", x=" + x +
+		", y=" + y +
+		'}';
+}
 }

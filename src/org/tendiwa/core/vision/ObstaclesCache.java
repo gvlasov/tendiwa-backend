@@ -44,16 +44,13 @@ void buildObstacles() {
 	for (int x = startX; x <= endX; x++) {
 		for (int y = startY; y <= endY; y++) {
 			boolean[] sideOccupied = new boolean[]{false, false, false, false};
+			EnhancedPoint objectPosition = new EnhancedPoint(x, y);
 			if (plane.getPassability(x, y) == Passability.NO) {
-				EnhancedPoint objectPosition = new EnhancedPoint(x, y);
 				sideOccupied[0] = true;
 				sideOccupied[1] = true;
 				sideOccupied[2] = true;
 				sideOccupied[3] = true;
-				addObstacle(objectPosition, Directions.N);
-				addObstacle(objectPosition, Directions.E);
-				addObstacle(objectPosition, Directions.S);
-				addObstacle(objectPosition, Directions.W);
+				addObjectObstacles(objectPosition);
 			}
 			for (CardinalDirection side : CardinalDirection.values()) {
 				if (side.isGrowing()) {
@@ -62,15 +59,9 @@ void buildObstacles() {
 				if (sideOccupied[side.getCardinalIndex()]) {
 					continue;
 				}
-				if (plane.hasBorderObject(x, y, side)) {
-					Border obstacle = new Border(x, y, side);
-					obstacles.add(obstacle);
-					if (isOnBorderOfSeersCell(x, y, side)) {
-						obstaclesOnSeersCellBorder.put(
-							obstacle,
-							getSideOfObstacleRelativeToSeerPosition(x, y, side)
-						);
-					}
+				Border border = new Border(x, y, side);
+				if (plane.hasBorderObject(border)) {
+					addSingleBorderObstacle(border);
 				}
 			}
 		}
@@ -78,19 +69,28 @@ void buildObstacles() {
 	built = true;
 }
 
+private void addObjectObstacles(EnhancedPoint objectPosition) {
+	for (CardinalDirection side : CardinalDirection.values()) {
+		Border border = new Border(objectPosition.x, objectPosition.y, side);
+		addSingleBorderObstacle(border);
+		obstacleToObjectPosition.put(border, objectPosition);
+	}
+}
+
 /**
  * Created an obstacle on a side of a point.
  *
- * @param objectPosition
- * 	Point where the obstacle resides.
- * @param side
- * 	Side from which obstacle resides.
+ * @param border
  */
-private void addObstacle(EnhancedPoint objectPosition, CardinalDirection side) {
-	Border obstacle = new Border(objectPosition.x, objectPosition.y, side);
-	obstacles.add(obstacle);
-	obstacleToObjectPosition.put(obstacle, objectPosition);
-	objectPositionToObstacle.put(objectPosition, obstacle);
+private void addSingleBorderObstacle(Border border) {
+	obstacles.add(border);
+	objectPositionToObstacle.put(border.toPoint(), border);
+	if (isOnBorderOfSeersCell(border)) {
+		obstaclesOnSeersCellBorder.put(
+			border,
+			getSideOfObstacleRelativeToSeerPosition(border)
+		);
+	}
 }
 
 /**
@@ -107,27 +107,26 @@ boolean isObstacleInSeersCell(Border obstacleBorder) {
 
 /**
  * Checks if
- * @param x
- * @param y
- * @param side
+ *
+ * @param border
  * @return
  */
-private boolean isOnBorderOfSeersCell(int x, int y, CardinalDirection side) {
-	boolean sameX = x == character.getX();
-	boolean sameY = y == character.getY();
+private boolean isOnBorderOfSeersCell(Border border) {
+	boolean sameX = border.x == character.getX();
+	boolean sameY = border.y == character.getY();
 	if (sameX && sameY) {
 		return true;
 	}
-	if (sameY && x - character.getX() == 1 && side == Directions.W) {
+	if (sameY && border.x - character.getX() == 1 && border.side == Directions.W) {
 		return true;
 	}
-	if (sameY && x - character.getX() == -1 && side == Directions.E) {
+	if (sameY && border.x - character.getX() == -1 && border.side == Directions.E) {
 		return true;
 	}
-	if (sameX && y - character.getY() == 1 && side == Directions.N) {
+	if (sameX && border.y - character.getY() == 1 && border.side == Directions.N) {
 		return true;
 	}
-	if (sameX && y - character.getY() == -1 && side == Directions.S) {
+	if (sameX && border.y - character.getY() == -1 && border.side == Directions.S) {
 		return true;
 	}
 	return false;
@@ -136,16 +135,11 @@ private boolean isOnBorderOfSeersCell(int x, int y, CardinalDirection side) {
 /**
  * If Obstacle in in Seer's cell, returns {@code side}, otherwise returns {@code side.opposite()}.
  *
- * @param x
- * 	X coordinate of an Obstacle's {@link BorderObject} in world coordinates.
- * @param y
- * 	Y coordinate of an Obstacle's {@link BorderObject} in world coordinates.
- * @param side
- * 	Side of BorderObject as it is stored in a {@link HorizontalPlane}.
+ * @param border
  * @return Side of obstacle relative to Seer's position.
  */
-private CardinalDirection getSideOfObstacleRelativeToSeerPosition(int x, int y, CardinalDirection side) {
-	return character.getX() == x && character.getY() == y ? side : side.opposite();
+private CardinalDirection getSideOfObstacleRelativeToSeerPosition(Border border) {
+	return character.getX() == border.x && character.getY() == border.y ? border.side : border.side.opposite();
 }
 
 boolean isBuilt() {
@@ -158,8 +152,8 @@ public Iterator<Border> iterator() {
 }
 
 /**
- * Checks if this obstacleBorder is a side to the object we're trying to see. In this case, this obstacleBorder doesn't
- * block vision, so we can see the object itself.
+ * Checks if this obstacleBorder is on a side of the object we're trying to see. In this case, this obstacleBorder
+ * doesn't block vision, so we can see the object itself.
  *
  * @param obstacleBorder
  * 	Untransformed obstacleBorder.
@@ -173,7 +167,6 @@ boolean isTargetObjectObstacle(Border obstacleBorder, int targetX, int targetY) 
 	EnhancedPoint objectPosition = obstacleToObjectPosition.get(obstacleBorder);
 	return objectPosition != null && objectPosition.x == targetX && objectPosition.y == targetY;
 }
-
 
 CardinalDirection getSideOfObstacleOnSeersCellBorder(Border obstacle) {
 	return obstaclesOnSeersCellBorder.get(obstacle);

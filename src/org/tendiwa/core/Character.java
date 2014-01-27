@@ -58,21 +58,6 @@ public Character(HorizontalPlane plane, CharacterType type, int x, int y, String
 	this.hp = maxHp;
 }
 
-/**
- * <p>Returns the last index on y axis of a relative table (a FOV table, for example) which resides inside world
- * recangle.</p> <p/> <p>There is only one method for the first index, but two methods for the last indices, because the
- * least world coordinate is 0 on both x and y axes, but the greatest is different (world.width or world.height) for x
- * and y axes.</p>
- *
- * @param centerCoordinate
- * 	Absolute y coordinate of table's center in world coordinates.
- * @param tableRadius
- * 	{@code (table_width-1)/2}
- * @return Last index in relative table's coordinates on x axis that resides inside world rectangle.
- */
-public static int getEndIndexOfRelativeTableY(int centerCoordinate, int tableRadius) {
-	return Math.min(tableRadius * 2 + 1, Tendiwa.getWorldHeight() - centerCoordinate + tableRadius);
-}
 
 public PathWalkerOverCharacters getPathWalkerOverCharacters() {
 	if (pathWalkerOverCharacters == null) {

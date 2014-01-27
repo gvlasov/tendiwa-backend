@@ -172,10 +172,23 @@ public void unseeAllCells() {
 }
 
 public boolean hasUnseenBorderObject(RenderBorder border) {
-	return unseenBorderObjects.contains(Chunk.cellHash(border.getX(), border.getY(), Tendiwa.getWorldHeight()), border.getSide());
+	return unseenBorderObjects.contains(
+		Chunk.cellHash(border.getX(), border.getY(), Tendiwa.getWorldHeight()),
+		border.getSide()
+	);
 }
 
 public void addUnseenBorder(RenderBorder border) {
-	unseenBorderObjects.put(Chunk.cellHash(border.getX(), border.getY(), Tendiwa.getWorldHeight()), border.getSide(), border);
+	unseenBorderObjects.put(
+		Chunk.cellHash(border.getX(), border.getY(), Tendiwa.getWorldHeight()),
+		border.getSide(),
+		border
+	);
+}
+public void removeUnseenBorder(RenderBorder border) {
+	unseenBorderObjects.remove(
+		Chunk.cellHash(border.getX(), border.getY(), Tendiwa.getWorldHeight()),
+		border.getSide()
+	);
 }
 }

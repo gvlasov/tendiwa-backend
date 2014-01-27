@@ -108,6 +108,10 @@ public BorderObject getBorderObject(int x, int y, CardinalDirection side) {
 	return borderObjects.get(key, side);
 }
 
+public BorderObject getBorderObject(Border border) {
+	return borderObjects.get(cellHash(border.x, border.y), border.side);
+}
+
 public BorderObject setBorderObject(int x, int y, CardinalDirection side, BorderObjectType type) {
 	assert side != null;
 	assert type != null;
