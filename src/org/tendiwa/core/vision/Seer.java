@@ -463,6 +463,7 @@ public void computeFullVisionCache() {
 	int startY = getStartIndexOfRelativeTable(character.getY(), VISION_RANGE);
 	int endX = getEndIndexOfRelativeTableX(character.getX(), VISION_RANGE);
 	int endY = getEndIndexOfRelativeTableY(character.getY(), VISION_RANGE);
+	borderVision.saveCurrentCenterCoordinates(character);
 	computeCellVision(startX, startY, endX, endY);
 	computeAllBordersVisibility(startX, startY, endX, endY);
 	obstaclesCache.invalidate();
@@ -489,8 +490,8 @@ private void computeAllBordersVisibility(int startX, int startY, int endX, int e
 		for (int j = startY; j < endY; j++) {
 			int actualWorldX = character.getX() - VISION_RANGE + i;
 			int actualWorldY = character.getY() - VISION_RANGE + j;
-			computeBorderVisibility(actualWorldX, actualWorldY, Directions.N);
 			computeBorderVisibility(actualWorldX, actualWorldY, Directions.W);
+			computeBorderVisibility(actualWorldX, actualWorldY, Directions.N);
 		}
 	}
 
@@ -498,6 +499,8 @@ private void computeAllBordersVisibility(int startX, int startY, int endX, int e
 
 private boolean computeBorderVisibility(int x, int y, CardinalDirection side) {
 	assert !side.isGrowing();
+	int xOriginal = x;
+	int yOriginal = y;
 	Visibility visionCloserToSeer = visionCache.getVisionFromCache(x, y);
 	int[] dCoords = side.side2d();
 	int xNeighbor = x + dCoords[0];
@@ -529,10 +532,10 @@ private boolean computeBorderVisibility(int x, int y, CardinalDirection side) {
 		borderVision.cacheBorderVision(x, y, side, Visibility.INVISIBLE);
 		return false;
 	} else {
-		assert visionCloserToSeer == Visibility.VISIBLE && visionFurtherToSeer != Visibility.VISIBLE : visionCloserToSeer+" "+visionFurtherToSeer;
-		Border obstacle = obstaclesCache.findObstacleBorder(x, y, side);
+		assert visionCloserToSeer == Visibility.VISIBLE && visionFurtherToSeer != Visibility.VISIBLE : visionCloserToSeer + " " + visionFurtherToSeer;
+		Border obstacle = obstaclesCache.findObstacleBorder(xOriginal, yOriginal, side);
 		boolean canSee = isCellVisible(xNeighbor, yNeighbor, obstacle);
-		borderVision.cacheBorderVision(x, y, side, canSee ? Visibility.VISIBLE : Visibility.INVISIBLE);
+		borderVision.cacheBorderVision(xOriginal, yOriginal, side, canSee ? Visibility.VISIBLE : Visibility.INVISIBLE);
 		return canSee;
 	}
 }
@@ -562,11 +565,11 @@ public EnhancedRectangle getVisionRectangle() {
 	EnhancedPoint startPoint = getActualVisionRecStartPoint();
 	int actualWorldEndX = Math.min(
 		Tendiwa.getWorldWidth() - 1,
-		Tendiwa.getPlayerCharacter().getX() - Seer.VISION_RANGE + ModifiableCellVisionCache.VISION_CACHE_WIDTH - 1
+		Tendiwa.getPlayerCharacter().getX() - Seer.VISION_RANGE + ModifiableCellVisionCache.VISION_CACHE_WIDTH
 	);
 	int actualWorldEndY = Math.min(
 		Tendiwa.getWorldHeight() - 1,
-		Tendiwa.getPlayerCharacter().getY() - Seer.VISION_RANGE + ModifiableCellVisionCache.VISION_CACHE_WIDTH - 1
+		Tendiwa.getPlayerCharacter().getY() - Seer.VISION_RANGE + ModifiableCellVisionCache.VISION_CACHE_WIDTH
 	);
 	return new EnhancedRectangle(
 		startPoint.x,
@@ -587,6 +590,7 @@ public EnhancedPoint getActualVisionRecStartPoint() {
 		Math.max(0, Tendiwa.getPlayerCharacter().getY() - Seer.VISION_RANGE)
 	);
 }
+
 /**
  * Returns north-western point of a rectangle that contains the vision range of this Seer.
  *

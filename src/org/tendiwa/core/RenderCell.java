@@ -1,5 +1,9 @@
 package org.tendiwa.core;
 
+/**
+ * Holds contents and visibility of a particular cell. Instances of this class are sent from backend to a frontend. Once
+ * frontend receives a RenderCell, it can alter its contents, but backend will never alter RenderCells.
+ */
 public class RenderCell {
 public final int x;
 public final int y;
@@ -7,6 +11,12 @@ boolean visible;
 FloorType floor;
 GameObject object;
 
+/**
+ * @param x
+ * @param y
+ * @param floor
+ * @param object
+ */
 public RenderCell(int x, int y, FloorType floor, GameObject object) {
 	assert floor != null;
 	this.x = x;

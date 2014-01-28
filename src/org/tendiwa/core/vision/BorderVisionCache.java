@@ -12,12 +12,17 @@ import java.util.Iterator;
  *
  */
 public class BorderVisionCache implements Iterable<BorderVisibility> {
-private static final int WIDTH = ModifiableCellVisionCache.VISION_CACHE_WIDTH + 1;
-private final CellPosition center;
-Visibility[] borderVision = new Visibility[WIDTH * WIDTH * 2];
+protected static final int WIDTH = ModifiableCellVisionCache.VISION_CACHE_WIDTH + 1;
+protected static final int BORDER_VISION_CACHE_SIZE = WIDTH * WIDTH * 2;
+protected CellPosition center;
+Visibility[] borderVision = new Visibility[BORDER_VISION_CACHE_SIZE];
 
 BorderVisionCache(CellPosition center) {
 	this.center = center;
+	invalidate();
+}
+
+void invalidate() {
 	Arrays.fill(borderVision, Visibility.NOT_COMPUTED);
 }
 
@@ -83,8 +88,23 @@ public Iterator<BorderVisibility> iterator() {
 }
 
 public boolean isVisible(Border border) {
-	Visibility visibility = borderVision[getBorderCacheIndex(border.x, border.y, border.side)];
+	int borderCacheIndex = getBorderCacheIndex(border.x, border.y, border.side);
+	if (!isBorderInsideVisionRectangle(borderCacheIndex)) {
+		return false;
+	}
+	Visibility visibility = borderVision[borderCacheIndex];
 	assert visibility != null;
 	return visibility == Visibility.VISIBLE;
+}
+
+/**
+ * Checks if there is an item in array {@link BorderVisionCache#borderVision} for a Border with given index
+ *
+ * @param borderIndex
+ * 	Result of {@link BorderVisionCache#getBorderCacheIndex(int, int, org.tendiwa.core.CardinalDirection)}.
+ * @return true if border is inside visibility rectangle (and not on rectangle's border itself), false otherwise.
+ */
+private boolean isBorderInsideVisionRectangle(int borderIndex) {
+	return borderIndex >= 0 && borderIndex < BORDER_VISION_CACHE_SIZE;
 }
 }

@@ -342,6 +342,7 @@ public void move(int x, int y, MovingStyle movingStyle) {
 	if (isPlayer()) {
 		synchronized (renderLockObject) {
 			seer.storeVisionCacheToPreviousVisionCache();
+			seer.invalidateVisionCache();
 			seer.computeFullVisionCache();
 			VisibilityChange visibilityChange = new VisibilityChange(
 				xPrev,
@@ -360,9 +361,6 @@ public void move(int x, int y, MovingStyle movingStyle) {
 	moveInTime(500);
 }
 
-private void storeVisionCacheToPreviousVisionCache() {
-	seer.storeVisionCacheToPreviousVisionCache();
-}
 
 /**
  * Moves this Character to another vertical plane of a world

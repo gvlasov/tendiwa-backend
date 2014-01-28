@@ -12,7 +12,7 @@ private final ImmutableList.Builder<RenderCell> seenBuilder = ImmutableList.buil
 private final ImmutableList.Builder<Integer> unseenBuilder = ImmutableList.builder();
 private final ImmutableList.Builder<Item> seenItemsBuilder = ImmutableList.builder();
 private final ImmutableList.Builder<RenderBorder> seenBordersBuilder = ImmutableList.builder();
-private final ImmutableList.Builder<RenderBorder> unseenBordersBuilder = ImmutableList.builder();
+private final ImmutableList.Builder<Border> unseenBordersBuilder = ImmutableList.builder();
 private final HorizontalPlane plane;
 private final int dx;
 private final int dy;
@@ -25,7 +25,7 @@ private ImmutableList<RenderCell> seenCells;
 private ImmutableList<Integer> unseenCells;
 private ImmutableList<Item> seenItems;
 private ImmutableList<RenderBorder> seenBorders;
-private ImmutableList<RenderBorder> unseenBorders;
+private ImmutableList<Border> unseenBorders;
 private boolean eventCreated = false;
 private Visibility[][] visionPreviousContent;
 private Visibility[][] visionCurrentContent;
@@ -201,12 +201,7 @@ private void compute() {
 	}
 	for (BorderVisibility border : borderVisionPrevious) {
 		if (border.visibility == Visibility.VISIBLE && !borderVisionCurrent.isVisible(border)) {
-			unseenBordersBuilder.add(new RenderBorder(
-				border.x,
-				border.y,
-				border.side,
-				plane.getBorderObject(border)
-			));
+			unseenBordersBuilder.add(new Border(border.x, border.y, border.side));
 		}
 	}
 	seenBorders = seenBordersBuilder.build();

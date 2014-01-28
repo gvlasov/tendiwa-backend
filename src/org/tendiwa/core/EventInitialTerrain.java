@@ -1,12 +1,13 @@
 package org.tendiwa.core;
 
+import com.google.common.collect.ImmutableList;
 import org.tendiwa.core.vision.*;
 
 import java.util.LinkedList;
 
 public class EventInitialTerrain implements Event {
-public final LinkedList<RenderCell> seenCells = new LinkedList<>();
-public final LinkedList<RenderBorder> seenBorders = new LinkedList<>();
+public final ImmutableList<RenderCell> seenCells;
+public final ImmutableList<RenderBorder> seenBorders;
 public final int zLevel;
 
 /**
@@ -14,6 +15,8 @@ public final int zLevel;
  * client for displaying.
  */
 public EventInitialTerrain() {
+	ImmutableList.Builder<RenderCell> seenCellsBuilder = ImmutableList.builder();
+	ImmutableList.Builder<RenderBorder> seenBordersBuilder = ImmutableList.builder();
 	HorizontalPlane plane = Tendiwa.getWorld().getPlayer().getPlane();
 	zLevel = plane.getLevel();
 	Seer seer = Tendiwa.getPlayerCharacter().getSeer();
@@ -25,7 +28,7 @@ public EventInitialTerrain() {
 			if (visionCache[i][j] == Visibility.VISIBLE) {
 				int x = theoreticalStartPoint.x + i;
 				int y = theoreticalStartPoint.y + j;
-				seenCells.add(new RenderCell(
+				seenCellsBuilder.add(new RenderCell(
 					x,
 					y,
 					plane.getFloor(x, y),
@@ -34,14 +37,15 @@ public EventInitialTerrain() {
 			}
 		}
 	}
-	EnhancedRectangle actualVisionRec = seer.getVisionRectangle();
 	BorderVisionCache borderVisionCache = seer.getBorderVisionCache();
 
 	for (BorderVisibility border : borderVisionCache) {
 		if (border.visibility == Visibility.VISIBLE) {
-			seenBorders.add(new RenderBorder(border.x, border.y, border.side, plane.getBorderObject(border)));
+			seenBordersBuilder.add(new RenderBorder(border.x, border.y, border.side, plane.getBorderObject(border)));
 		}
 	}
+	seenCells = seenCellsBuilder.build();
+	seenBorders = seenBordersBuilder.build();
 }
 
 }

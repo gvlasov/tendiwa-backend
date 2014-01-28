@@ -11,14 +11,14 @@ public final ImmutableList<RenderCell> seenCells;
 public final ImmutableList<Integer> unseenCells;
 public final ImmutableList<Item> seenItems;
 public final ImmutableList<RenderBorder> seenBorders;
-public final ImmutableList<RenderBorder> unseenBorders;
+public final ImmutableList<Border> unseenBorders;
 
 EventFovChange(
 	ImmutableList<RenderCell> seenCells,
 	ImmutableList<Integer> unseenCells,
 	ImmutableList<Item> seenItems,
 	ImmutableList<RenderBorder> seenBorders,
-	ImmutableList<RenderBorder> unseenBorders
+	ImmutableList<Border> unseenBorders
 ) {
 
 	this.seenCells = seenCells;

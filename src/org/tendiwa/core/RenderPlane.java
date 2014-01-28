@@ -1,9 +1,6 @@
 package org.tendiwa.core;
 
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Table;
+import com.google.common.collect.*;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -21,10 +18,10 @@ private final int worldHeight;
 private final HorizontalPlane backendPlane;
 private Map<Integer, RenderCell> cells = new HashMap<>();
 private Multimap<Integer, RememberedItem> unseenItems = HashMultimap.create();
-private Table<Integer, CardinalDirection, RenderBorder> visibleBorderObjects = HashBasedTable.create();
 private Table<Integer, CardinalDirection, RenderBorder> unseenBorderObjects = HashBasedTable.create();
+private Map<Border, RenderBorder> borders = new HashMap<>();
 
-public RenderPlane(HorizontalPlane backendPlane) {
+RenderPlane(HorizontalPlane backendPlane) {
 	this.worldHeight = Tendiwa.getWorldHeight();
 	this.backendPlane = backendPlane;
 }
@@ -73,8 +70,8 @@ public boolean hasCell(int x, int y) {
 }
 
 /**
- * Checks if player can see a cell. Objective analog is {@link Character#isCellVisible(int, int)}. Note that if this
- * method returns false, then cell can be either unseen or not yet seen.
+ * Checks if player can see a cell. Objective analog is {@link org.tendiwa.core.vision.Seer#isCellVisible(int, int,
+ * Border)}. Note that if this method returns false, then cell can be either unseen or not yet seen.
  *
  * @param x
  * 	X coordinate of cell in world coordinates.
@@ -98,19 +95,6 @@ public boolean isCellVisible(int x, int y) {
  */
 public boolean isCellUnseen(int x, int y) {
 	return hasCell(x, y) && !getCell(x, y).isVisible();
-}
-
-/**
- * Adds a new cell to subjective world (if a cell with that coordinates has not been seen yet), or sees an unseen cell.
- *
- * @param cell
- * 	A new cell.
- */
-public void seeCell(RenderCell cell) {
-	assert cell != null;
-	int key = cellHash(cell.x, cell.y);
-	assert !cells.containsKey(key) || !cells.get(key).isVisible() : "Cell " + cell.getX() + ":" + cell.getY() + " is already visible";
-	cells.put(key, cell);
 }
 
 public void addUnseenItem(int x, int y, Item item) {
@@ -137,10 +121,6 @@ public boolean hasAnyUnseenItems(int hash) {
 	return unseenItems.containsKey(hash);
 }
 
-public boolean hasAnyUnseenItems(int x, int y) {
-	return unseenItems.containsKey(cellHash(x, y));
-}
-
 private int cellHash(int x, int y) {
 	return x * worldHeight + y;
 }
@@ -151,18 +131,6 @@ private int[] cellHashToCoords(int hash) {
 
 public Collection<RememberedItem> getUnseenItems(int x, int y) {
 	return unseenItems.get(cellHash(x, y));
-}
-
-/**
- * Forgets about unseen items in a particular cell.
- *
- * @param x
- * 	X coordinate of cell in world coordinates.
- * @param y
- * 	Y coordinate of cell in world coordinates.
- */
-public void removeUnseenItems(int x, int y) {
-	unseenItems.removeAll(cellHash(x, y));
 }
 
 public void unseeAllCells() {
@@ -178,17 +146,119 @@ public boolean hasUnseenBorderObject(RenderBorder border) {
 	);
 }
 
-public void addUnseenBorder(RenderBorder border) {
+public void addUnseenBorder(Border border) {
 	unseenBorderObjects.put(
-		Chunk.cellHash(border.getX(), border.getY(), Tendiwa.getWorldHeight()),
-		border.getSide(),
-		border
+		Chunk.cellHash(border.x, border.y, Tendiwa.getWorldHeight()),
+		border.side,
+		borders.get(border)
 	);
 }
-public void removeUnseenBorder(RenderBorder border) {
+
+public boolean isBorderVisible(Border border) {
+	return borders.containsKey(border);
+}
+
+public void seeBorder(RenderBorder border) {
+	assert !borders.containsKey(border);
+	borders.put(new Border(border.x, border.y, border.side), border);
+}
+
+private void unseeBorders(ImmutableList<Border> unseenBorders) {
+	for (Border border : unseenBorders) {
+		assert borders.containsKey(border) : border;
+		borders.get(border).setVisible(false);
+		addUnseenBorder(border);
+	}
+
+}
+private void seeBorders(ImmutableList<RenderBorder> seenBorders) {
+	for (RenderBorder border : seenBorders) {
+		System.out.println(border);
+		seeBorder(border);
+		if (hasUnseenBorderObject(border) && border.getObject() == null) {
+			removeUnseenBorder(border);
+		}
+	}
+	System.out.println(borders.containsKey(new Border(16, 1, Directions.N)));
+}
+
+private void unseeCells(ImmutableList<Integer> unseenCells) {
+	for (int key : unseenCells) {
+		RenderCell cell = getCell(key);
+		cell.setVisible(false);
+		HorizontalPlane plane = Tendiwa.getPlayerCharacter().getPlane();
+		if (plane.hasAnyItems(cell.x, cell.y)) {
+			for (Item item : plane.getItems(cell.x, cell.y)) {
+				addUnseenItem(cell.x, cell.y, item);
+			}
+		}
+	}
+}
+
+public void updateFieldOfView(EventFovChange event) {
+	System.out.println(borders.containsKey(new Border(16, 1, Directions.N)));
+	unseeCells(event.unseenCells);
+	seeCells(event.seenCells);
+	unseeBorders(event.unseenBorders);
+	seeBorders(event.seenBorders);
+
+}
+
+private void seeCells(ImmutableList<RenderCell> seenCells) {
+	for (RenderCell cell : seenCells) {
+		seeCell(cell);
+		if (hasAnyUnseenItems(cell.x, cell.y)) {
+			removeUnseenItems(cell.x, cell.y);
+		}
+	}
+}
+
+/**
+ * Adds a new cell to subjective world (if a cell with that coordinates has not been seen yet), or sees an unseen cell.
+ *
+ * @param cell
+ * 	A new cell.
+ */
+public void seeCell(RenderCell cell) {
+	assert cell != null;
+	int key = cellHash(cell.x, cell.y);
+	assert !cells.containsKey(key) || !cells.get(key).isVisible() : "Cell " + cell.getX() + ":" + cell.getY() + " is already visible";
+	cells.put(key, cell);
+}
+
+public boolean hasAnyUnseenItems(int x, int y) {
+	return unseenItems.containsKey(cellHash(x, y));
+}
+
+/**
+ * Forgets about unseen items in a particular cell.
+ *
+ * @param x
+ * 	X coordinate of cell in world coordinates.
+ * @param y
+ * 	Y coordinate of cell in world coordinates.
+ */
+public void removeUnseenItems(int x, int y) {
+	unseenItems.removeAll(cellHash(x, y));
+}
+
+
+/**
+ * Removes BorderObject from RenderBorder when you had seen there was an object, but after awhile saw that border again
+ * and there wasn't any object any more.
+ *
+ * @param border
+ */
+private void removeUnseenBorder(RenderBorder border) {
 	unseenBorderObjects.remove(
 		Chunk.cellHash(border.getX(), border.getY(), Tendiwa.getWorldHeight()),
 		border.getSide()
 	);
+}
+
+public void initFieldOfView(EventInitialTerrain e) {
+	seeCells(e.seenCells);
+	seeBorders(e.seenBorders);
+
 }
 }
