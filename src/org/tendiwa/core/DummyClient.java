@@ -1,5 +1,7 @@
 package org.tendiwa.core;
 
+import org.tendiwa.core.events.*;
+
 /**
  * Event manager that does nothing on all events just telling then backend to proceed. Used to handle events before any
  * client is attached to a backend so events can be issued (for example, to do actions right in a {@link Module} after

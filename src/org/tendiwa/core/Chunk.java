@@ -3,6 +3,7 @@ package org.tendiwa.core;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import org.tendiwa.core.meta.Coordinate;
+import org.tendiwa.core.vision.Seer;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ public class Chunk implements Serializable {
 public static final byte SIZE = 32;
 public final int x;
 public final int y;
+private final Seer playerSeer;
 public HorizontalPlane plane;
 protected HashMap<Integer, ItemCollection> items = new HashMap<>();
 protected Table<Integer, CardinalDirection, BorderObject> borderObjects = HashBasedTable.create();
@@ -22,7 +24,8 @@ GameObject[][] objects;
 private ArrayList<SoundSource> soundSources = new ArrayList<>();
 transient private TimeStream timeStream;
 
-public Chunk(HorizontalPlane plane, int x, int y) {
+public Chunk(Seer playerSeer, HorizontalPlane plane, int x, int y) {
+	this.playerSeer = playerSeer;
 	this.x = x;
 	this.y = y;
 	this.floors = new FloorType[SIZE][SIZE];
@@ -177,8 +180,8 @@ void removeCharacter(Character character) {
 
 public void removeObject(int x, int y) {
 	objects[x - this.x][y - this.y] = null;
-	if (Tendiwa.getPlayerCharacter().getSeer().canSee(x, y) && Tendiwa.getPlayerCharacter().getSeer().getVisionCache().isVisionCacheEmpty()) {
-		Tendiwa.getPlayerCharacter().getSeer().invalidateVisionCache();
+	if (playerSeer.canSee(x, y) && playerSeer.getVisionCache().isVisionCacheEmpty()) {
+		playerSeer.invalidateVisionCache();
 	}
 	throw new UnsupportedOperationException();
 }

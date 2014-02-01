@@ -26,14 +26,6 @@ public RenderCell(int x, int y, FloorType floor, GameObject object) {
 	visible = true;
 }
 
-public static int getY(int coord) {
-	return coord % Tendiwa.getWorld().getHeight();
-}
-
-public static int getX(Integer coord) {
-	return coord / Tendiwa.getWorld().getHeight();
-}
-
 @Override
 public String toString() {
 	return "RenderCell{" +

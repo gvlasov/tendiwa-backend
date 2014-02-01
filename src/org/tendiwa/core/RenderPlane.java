@@ -1,6 +1,8 @@
 package org.tendiwa.core;
 
 import com.google.common.collect.*;
+import org.tendiwa.core.events.EventFovChange;
+import org.tendiwa.core.events.EventInitialTerrain;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -171,6 +173,7 @@ private void unseeBorders(ImmutableList<Border> unseenBorders) {
 	}
 
 }
+
 private void seeBorders(ImmutableList<RenderBorder> seenBorders) {
 	for (RenderBorder border : seenBorders) {
 		System.out.println(border);
@@ -186,9 +189,8 @@ private void unseeCells(ImmutableList<Integer> unseenCells) {
 	for (int key : unseenCells) {
 		RenderCell cell = getCell(key);
 		cell.setVisible(false);
-		HorizontalPlane plane = Tendiwa.getPlayerCharacter().getPlane();
-		if (plane.hasAnyItems(cell.x, cell.y)) {
-			for (Item item : plane.getItems(cell.x, cell.y)) {
+		if (backendPlane.hasAnyItems(cell.x, cell.y)) {
+			for (Item item : backendPlane.getItems(cell.x, cell.y)) {
 				addUnseenItem(cell.x, cell.y, item);
 			}
 		}
@@ -241,7 +243,6 @@ public boolean hasAnyUnseenItems(int x, int y) {
 public void removeUnseenItems(int x, int y) {
 	unseenItems.removeAll(cellHash(x, y));
 }
-
 
 /**
  * Removes BorderObject from RenderBorder when you had seen there was an object, but after awhile saw that border again

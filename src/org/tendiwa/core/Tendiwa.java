@@ -2,6 +2,7 @@ package org.tendiwa.core;
 
 import com.sun.nio.sctp.AssociationChangeNotification;
 import org.apache.log4j.Logger;
+import org.tendiwa.core.observation.Observable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,7 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
-public class Tendiwa {
+public class Tendiwa extends Observable {
 private static final Object lock = new Object();
 private static final Object clientWaitLock = new Object();
 private static final String MODULES_CONF_FILE = "/modules.conf";
@@ -19,13 +20,13 @@ private static AssociationChangeNotification clientEventManager;
 private static int worldWidth;
 private static int worldHeight;
 private static boolean eventComputed = false;
+private static List<Class<?>> modulesCreatingWorlds;
 public final org.apache.log4j.Logger logger = Logger.getLogger("org/tendiwa");
 public final Server SERVER = Server.SERVER;
 private final Thread SERVER_THREAD;
 private final String CLIENT_CONF_FILE;
 private final World WORLD;
 private final Character PLAYER;
-private static List<Class<?>> modulesCreatingWorlds;
 
 Tendiwa(String args[]) throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException {
 	initWithDummyClient();
@@ -42,7 +43,7 @@ Tendiwa(String args[]) throws ClassNotFoundException, IllegalAccessException, In
 	Properties properties = new Properties();
 	if (clientConfStream == null) {
 		// Use default properties
-		properties.setProperty("client", "org.tendiwa.client.TendiwaGame");
+		properties.setProperty("client", "org.tendiwa.client.TendiwaLibgdxClientProvider");
 	} else {
 		properties.load(clientConfStream);
 	}
@@ -52,7 +53,7 @@ Tendiwa(String args[]) throws ClassNotFoundException, IllegalAccessException, In
 	SERVER_THREAD.start();
 
 	// Starting client
-	CLIENT = (TendiwaClient) classLoader.loadClass(properties.getProperty("client")).newInstance();
+	CLIENT = ((TendiwaClientProvider) classLoader.loadClass(properties.getProperty("client")).newInstance()).getClient();
 	CLIENT.startup();
 
 	WORLD = Server.SERVER.getWorld();
@@ -80,6 +81,7 @@ public static List<Class<?>> loadModules() {
 	}
 	return modulesCreatingWorlds;
 }
+
 public static Module getMainModule() {
 	try {
 		return (Module) modulesCreatingWorlds.iterator().next().newInstance();
@@ -111,7 +113,7 @@ public static void main(String args[]) throws ClassNotFoundException, IOExceptio
 	}
 }
 
-public static World getWorld() {
+public World getWorld() {
 	return Server.SERVER.getWorld();
 }
 
@@ -123,12 +125,8 @@ public static TendiwaClient getClient() {
 	return CLIENT;
 }
 
-public static Server getServer() {
+public Server getServer() {
 	return Server.SERVER;
-}
-
-public static TendiwaClientEventManager getClientEventManager() {
-	return CLIENT.getEventManager();
 }
 
 public static Logger getLogger() {
@@ -159,7 +157,7 @@ public static int getWorldHeight() {
 	return worldHeight;
 }
 
-public static Character getPlayerCharacter() {
+public Character getPlayerCharacter() {
 	return INSTANCE.PLAYER;
 }
 
@@ -189,5 +187,9 @@ public static Object getLock() {
 
 public static boolean isEventComputed() {
 	return eventComputed;
+}
+
+public static Tendiwa getInstance() {
+	return INSTANCE;
 }
 }

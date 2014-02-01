@@ -1,4 +1,7 @@
-package org.tendiwa.core;
+package org.tendiwa.core.events;
+
+import org.tendiwa.core.Item;
+import org.tendiwa.core.observation.Event;
 
 public class EventItemDisappear implements Event {
 public final int x;

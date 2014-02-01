@@ -3,6 +3,7 @@ package org.tendiwa.core.vision;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.tendiwa.core.*;
+import org.tendiwa.core.Character;
 import org.tendiwa.core.meta.CellPosition;
 
 import java.util.*;
@@ -22,10 +23,12 @@ private boolean built;
 private Map<Border, CardinalDirection> obstaclesOnSeersCellBorder = new HashMap<>();
 private Map<Border, EnhancedPoint> obstacleToObjectPosition = new HashMap<>();
 private Multimap<EnhancedPoint, Border> objectPositionToObstacle = HashMultimap.create();
-private CellPosition character;
+private CellPosition position;
+private final Character chas;
 
-ObstaclesCache(CellPosition character) {
-	this.character = character;
+ObstaclesCache(CellPosition position, Character character) {
+	this.position = position;
+	this.chas = character;
 }
 
 /**
@@ -36,11 +39,11 @@ void buildObstacles() {
 	obstaclesOnSeersCellBorder.clear();
 	obstacleToObjectPosition.clear();
 	objectPositionToObstacle.clear();
-	HorizontalPlane plane = Tendiwa.getPlayerCharacter().getPlane();
-	int endX = Math.min(Tendiwa.getWorldWidth() - 1, character.getX() + Seer.VISION_RANGE);
-	int endY = Math.min(Tendiwa.getWorldHeight() - 1, character.getY() + Seer.VISION_RANGE);
-	int startX = Math.max(0, character.getX() - Seer.VISION_RANGE);
-	int startY = Math.max(0, character.getY() - Seer.VISION_RANGE);
+	HorizontalPlane plane = chas.getPlane();
+	int endX = Math.min(Tendiwa.getWorldWidth() - 1, position.getX() + Seer.VISION_RANGE);
+	int endY = Math.min(Tendiwa.getWorldHeight() - 1, position.getY() + Seer.VISION_RANGE);
+	int startX = Math.max(0, position.getX() - Seer.VISION_RANGE);
+	int startY = Math.max(0, position.getY() - Seer.VISION_RANGE);
 	for (int x = startX; x <= endX; x++) {
 		for (int y = startY; y <= endY; y++) {
 			boolean[] sideOccupied = new boolean[]{false, false, false, false};
@@ -112,21 +115,21 @@ boolean isObstacleInSeersCell(Border obstacleBorder) {
  * @return
  */
 private boolean isOnBorderOfSeersCell(Border border) {
-	boolean sameX = border.x == character.getX();
-	boolean sameY = border.y == character.getY();
+	boolean sameX = border.x == position.getX();
+	boolean sameY = border.y == position.getY();
 	if (sameX && sameY) {
 		return true;
 	}
-	if (sameY && border.x - character.getX() == 1 && border.side == Directions.W) {
+	if (sameY && border.x - position.getX() == 1 && border.side == Directions.W) {
 		return true;
 	}
-	if (sameY && border.x - character.getX() == -1 && border.side == Directions.E) {
+	if (sameY && border.x - position.getX() == -1 && border.side == Directions.E) {
 		return true;
 	}
-	if (sameX && border.y - character.getY() == 1 && border.side == Directions.N) {
+	if (sameX && border.y - position.getY() == 1 && border.side == Directions.N) {
 		return true;
 	}
-	if (sameX && border.y - character.getY() == -1 && border.side == Directions.S) {
+	if (sameX && border.y - position.getY() == -1 && border.side == Directions.S) {
 		return true;
 	}
 	return false;
@@ -139,7 +142,7 @@ private boolean isOnBorderOfSeersCell(Border border) {
  * @return Side of obstacle relative to Seer's position.
  */
 private CardinalDirection getSideOfObstacleRelativeToSeerPosition(Border border) {
-	return character.getX() == border.x && character.getY() == border.y ? border.side : border.side.opposite();
+	return position.getX() == border.x && position.getY() == border.y ? border.side : border.side.opposite();
 }
 
 boolean isBuilt() {

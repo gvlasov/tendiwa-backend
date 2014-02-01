@@ -1,5 +1,7 @@
-package org.tendiwa.core;
+package org.tendiwa.core.events;
 
+import org.tendiwa.core.SoundType;
+import org.tendiwa.core.observation.Event;
 import org.tendiwa.lexeme.Localizable;
 
 public class EventSound implements Event {

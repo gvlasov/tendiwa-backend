@@ -3,6 +3,7 @@ package org.tendiwa.core;
 import com.google.common.collect.ImmutableList;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
+import org.tendiwa.core.events.EventFovChange;
 import org.tendiwa.core.vision.*;
 
 class VisibilityChange {
@@ -17,6 +18,7 @@ private final HorizontalPlane plane;
 private final int dx;
 private final int dy;
 private final Character player;
+private final World world;
 private final int xPrev;
 private final int yPrev;
 private final CellVisionCache visionPrevious;
@@ -27,8 +29,6 @@ private ImmutableList<Item> seenItems;
 private ImmutableList<RenderBorder> seenBorders;
 private ImmutableList<Border> unseenBorders;
 private boolean eventCreated = false;
-private Visibility[][] visionPreviousContent;
-private Visibility[][] visionCurrentContent;
 
 /**
  * @param xPrev
@@ -42,29 +42,30 @@ private Visibility[][] visionCurrentContent;
  * 	Vision cache of PlayerCharacter on current turn. {@code visionCurrent[Character.VISION_RANGE][Character.VISION_RANGE]}
  * 	is the point Character is standing on current turn.
  */
-public VisibilityChange(int xPrev, int yPrev, CellVisionCache visionPrevious, CellVisionCache visionCurrent, BorderVisionCache borderPrevious, BorderVisionCache borderCurrent) {
+public VisibilityChange(World world, Character character, int xPrev, int yPrev, CellVisionCache visionPrevious, CellVisionCache visionCurrent, BorderVisionCache borderPrevious, BorderVisionCache borderCurrent) {
+	this.world = world;
 	this.xPrev = xPrev;
 	this.yPrev = yPrev;
 	this.visionPrevious = visionPrevious;
 	this.visionCurrent = visionCurrent;
 	this.borderVisionCurrent = borderCurrent;
 	this.borderVisionPrevious = borderPrevious;
-	plane = Tendiwa.getPlayerCharacter().getPlane();
-	player = Tendiwa.getPlayerCharacter();
+	plane = character.getPlane();
+	player = character;
 	dx = player.getX() - xPrev;
 	dy = player.getY() - yPrev;
 	compute();
 }
 
 private void compute() {
-	int worldHeight = Tendiwa.getWorld().getHeight();
+	int worldHeight = world.getHeight();
 	// Loop over points in previous cache
 	int startIndexX = Seer.getStartIndexOfRelativeTable(xPrev, Seer.VISION_RANGE);
 	int startIndexY = Seer.getStartIndexOfRelativeTable(yPrev, Seer.VISION_RANGE);
 	int endPrevX = Seer.getEndIndexOfRelativeTableX(xPrev, Seer.VISION_RANGE);
 	int endPrevY = Seer.getEndIndexOfRelativeTableY(yPrev, Seer.VISION_RANGE);
-	visionPreviousContent = visionPrevious.getContent();
-	visionCurrentContent = visionCurrent.getContent();
+	Visibility[][] visionPreviousContent = visionPrevious.getContent();
+	Visibility[][] visionCurrentContent = visionCurrent.getContent();
 	for (int i = startIndexX; i < endPrevX; i++) {
 		for (int j = startIndexY; j < endPrevY; j++) {
 			boolean pointIsInBothCaches = i - dx >= 0
@@ -223,32 +224,7 @@ public EventFovChange createEvent() {
 	);
 }
 
-public SimpleGraph<EnhancedPoint, DefaultEdge> getVisibleBordersGraph(int startWorldX, int startWorldY, Visibility[][] relativeVisibilityContent) {
-	SimpleGraph<EnhancedPoint, DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class);
-	int l = relativeVisibilityContent[0].length; // Loop over all rows and column except of last row and last column
-	for (int i = 0; i < l; i++) {
-		for (int j = 0; j < l; j++) {
-			EnhancedPoint currentVertex = new EnhancedPoint(i + startWorldX, j + startWorldY);
-			EnhancedPoint vertexFromEast = new EnhancedPoint(i + startWorldX + 1, j + startWorldY);
-			EnhancedPoint vertexFromSouth = new EnhancedPoint(i + startWorldX, j + startWorldY + 1);
-			graph.addVertex(currentVertex);
-			if (j + 1 < l && relativeVisibilityContent[i][j] == Visibility.VISIBLE && relativeVisibilityContent[i][j + 1] == Visibility.VISIBLE) {
-				graph.addVertex(vertexFromSouth);
-				// Border between two horizontal neighbors
-				graph.addEdge(currentVertex, vertexFromSouth);
-			}
-			if (i + 1 < l && relativeVisibilityContent[i][j] == Visibility.VISIBLE && relativeVisibilityContent[i + 1][j] == Visibility.VISIBLE) {
-				graph.addVertex(vertexFromEast);
-				// Border between two vertical neighbors
-				graph.addEdge(currentVertex, vertexFromEast);
-			}
-		}
-	}
-	return graph;
-}
-
 private void addCellToSeen(int x, int y) {
-	HorizontalPlane plane = Tendiwa.getPlayerCharacter().getPlane();
 	seenBuilder.add(new RenderCell(
 		x,
 		y,

@@ -4,7 +4,7 @@ import java.lang.*;
 
 /**
  * Server receives requests from the {@link TendiwaClient}, calls core methods on receiving such a request, sends
- * resulting {@link Event}s to the client's receiving end and then sleeps until more requests are
+ * resulting {@link org.tendiwa.core.observation.Event}s to the client's receiving end and then sleeps until more requests are
  * done by client.
  */
 public enum Server implements Runnable {

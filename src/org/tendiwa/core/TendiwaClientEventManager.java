@@ -1,5 +1,7 @@
 package org.tendiwa.core;
 
+import org.tendiwa.core.events.*;
+
 public interface TendiwaClientEventManager {
 void event(EventMove e);
 

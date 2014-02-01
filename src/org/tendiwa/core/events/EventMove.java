@@ -1,7 +1,11 @@
-package org.tendiwa.core;
+package org.tendiwa.core.events;
+
+import org.tendiwa.core.*;
+import org.tendiwa.core.Character;
+import org.tendiwa.core.observation.Event;
 
 public class EventMove implements Event {
-public final Character character;
+public final org.tendiwa.core.Character character;
 public final MovingStyle movingStyle;
 public final int xPrev;
 public final int yPrev;

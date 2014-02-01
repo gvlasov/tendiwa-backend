@@ -1,4 +1,7 @@
-package org.tendiwa.core;
+package org.tendiwa.core.events;
+
+import org.tendiwa.core.Projectile;
+import org.tendiwa.core.observation.Event;
 
 public class EventProjectileFly implements Event {
 public final Projectile item;

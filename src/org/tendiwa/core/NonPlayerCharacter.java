@@ -1,6 +1,7 @@
 package org.tendiwa.core;
 
 import org.tendiwa.core.meta.Coordinate;
+import org.tendiwa.core.observation.Observable;
 import org.tendiwa.core.vision.Seer;
 
 import java.util.ArrayList;
@@ -22,10 +23,9 @@ private HashSet<Character> unseenEnemies = new HashSet<>();
 private int[][] pathTable;
 private Dialogue dialogue;
 
-public NonPlayerCharacter(HorizontalPlane plane, CharacterType characterType, int x, int y, String name) {
-	super(plane, characterType, x, y, name);
-	Chunk chunk = plane.getChunkWithCell(x, y);
-	this.chunk = chunk;
+public NonPlayerCharacter(World world, Observable backend, HorizontalPlane plane, CharacterType type, int x, int y, String name) {
+	super(world, backend, plane, type, x, y, name);
+	this.chunk = plane.getChunkWithCell(x, y);
 	ep = 100;
 	maxEp = 100;
 	pathTable = new int[PATH_TABLE_WIDTH][PATH_TABLE_WIDTH];

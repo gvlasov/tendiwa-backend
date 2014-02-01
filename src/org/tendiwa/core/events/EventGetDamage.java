@@ -1,7 +1,11 @@
-package org.tendiwa.core;
+package org.tendiwa.core.events;
+
+import org.tendiwa.core.*;
+import org.tendiwa.core.Character;
+import org.tendiwa.core.observation.Event;
 
 public class EventGetDamage implements Event {
-public final Character character;
+public final org.tendiwa.core.Character character;
 public final int amount;
 public final DamageSource damageSource;
 public final DamageType damageType;

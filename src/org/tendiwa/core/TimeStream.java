@@ -1,5 +1,6 @@
 package org.tendiwa.core;
 
+import org.tendiwa.core.events.EventSound;
 import org.tendiwa.lexeme.Localizable;
 import org.tendiwa.core.vision.Seer;
 
@@ -99,7 +100,7 @@ public void removeCharacter(NonPlayerCharacter character) {
 
 public void makeSound(int x, int y, SoundType type, Localizable soundSource) {
 	assert type != null;
-	Tendiwa.getClientEventManager().event(new EventSound(type, soundSource, x, y));
+	Tendiwa.getInstance().emitEvent(new EventSound(type, soundSource, x, y));
 }
 
 public Character getCharacterById(int characterId) {

@@ -1,7 +1,9 @@
 package org.tendiwa.core;
 
+import org.tendiwa.core.events.*;
 import org.tendiwa.core.meta.CellPosition;
 import org.tendiwa.core.meta.Coordinate;
+import org.tendiwa.core.observation.Observable;
 import org.tendiwa.core.vision.Seer;
 import org.tendiwa.core.vision.SightPassabilityCriteria;
 
@@ -10,8 +12,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public class Character implements CellPosition, PlaceableInCell, PathWalker, DamageSource {
-public final static int FRACTION_NEUTRAL = -1, FRACTION_PLAYER = 1,
-	FRACTION_AGRESSIVE = 0;
 public static final Object renderLockObject = Tendiwa.getLock();
 public final int id = new UniqueObject().id;
 public final ItemCollection inventory = new ItemCollection();
@@ -20,6 +20,8 @@ public final Seer seer = new Seer(this, new CharacterVisionCriteria());
 protected final String name;
 protected final HashMap<Integer, Character.Effect> effects = new HashMap<>();
 final CharacterType type;
+private final World world;
+private final Observable backend;
 protected Body body;
 protected int actionPoints;
 protected int ep;
@@ -41,9 +43,11 @@ protected int maxHp;
 private PathWalkerOverCharacters pathWalkerOverCharacters;
 private Collection<Spell> spells = new HashSet<>();
 
-public Character(HorizontalPlane plane, CharacterType type, int x, int y, String name) {
+public Character(World world, Observable backend, HorizontalPlane plane, CharacterType type, int x, int y, String name) {
 	// Common character creation: with all attributes, in location.
 	super();
+	this.world = world;
+	this.backend = backend;
 	assert type != null;
 	this.type = type;
 	this.name = name;
@@ -58,7 +62,6 @@ public Character(HorizontalPlane plane, CharacterType type, int x, int y, String
 	this.hp = maxHp;
 }
 
-
 public PathWalkerOverCharacters getPathWalkerOverCharacters() {
 	if (pathWalkerOverCharacters == null) {
 		pathWalkerOverCharacters = new PathWalkerOverCharacters();
@@ -69,7 +72,7 @@ public PathWalkerOverCharacters getPathWalkerOverCharacters() {
 /* Actions */
 public void attack(Character aim) {
 	synchronized (renderLockObject) {
-		Tendiwa.getClientEventManager().event(new EventAttack(this, aim));
+		Tendiwa.getInstance().emitEvent(new EventAttack(this, aim));
 	}
 	Tendiwa.waitForAnimationToStartAndComplete();
 	aim.getDamage(7, DamageType.PLAIN, this);
@@ -109,7 +112,7 @@ protected void die() {
 		isAlive = false;
 		timeStream.claimCharacterDisappearance(this);
 		plane.getChunkWithCell(x, y).removeCharacter(this);
-		Tendiwa.getClientEventManager().event(new EventDie(this));
+		Tendiwa.getInstance().emitEvent(new EventDie(this));
 	}
 	Tendiwa.waitForAnimationToStartAndComplete();
 
@@ -120,14 +123,14 @@ public void putOn(UniqueItem item) {
 		inventory.removeUnique(item);
 		equipment.putOn(item);
 		if (isPlayer()) {
-			Tendiwa.getClientEventManager().event(new EventPutOn(this, item));
+			Tendiwa.getInstance().emitEvent(new EventPutOn(this, item));
 		}
 	}
 	moveInTime(500);
 }
 
 public boolean isPlayer() {
-	return this == Tendiwa.getPlayerCharacter();
+	return this == world.getPlayer();
 }
 
 public void wield(Item item) {
@@ -141,7 +144,7 @@ public void wield(Item item) {
 			inventory.removeItem(item);
 			equipment.wield(item);
 		}
-		Tendiwa.getClientEventManager().event(new EventWield(this, item));
+		Tendiwa.getInstance().emitEvent(new EventWield(this, item));
 	}
 }
 
@@ -149,7 +152,7 @@ public void cease(Item item) {
 	synchronized (renderLockObject) {
 		inventory.add(item);
 		equipment.cease(item);
-		Tendiwa.getClientEventManager().event(new EventUnwield(this, item));
+		Tendiwa.getInstance().emitEvent(new EventUnwield(this, item));
 	}
 }
 
@@ -157,7 +160,7 @@ public void takeOff(UniqueItem item) {
 	synchronized (renderLockObject) {
 		inventory.add(item);
 		equipment.takeOff(item);
-		Tendiwa.getClientEventManager().event(new EventTakeOff(this, item));
+		Tendiwa.getInstance().emitEvent(new EventTakeOff(this, item));
 	}
 	moveInTime(500);
 }
@@ -166,9 +169,9 @@ public void takeOff(UniqueItem item) {
  * Pick up an item lying on the same cell where the character stands.
  */
 public void pickUp(ItemPile pile) {
-	Tendiwa.getClientEventManager().event(new EventItemDisappear(x, y, pile));
+	Tendiwa.getInstance().emitEvent(new EventItemDisappear(x, y, pile));
 	plane.removeItem(pile, x, y);
-	Tendiwa.getClientEventManager().event(new EventGetItem(pile));
+	Tendiwa.getInstance().emitEvent(new EventGetItem(pile));
 	getItem(pile);
 	moveInTime(500);
 	throw new UnsupportedOperationException();
@@ -188,7 +191,7 @@ public void drop(Item item) {
 	loseItem(item);
 	Chunk chunk = plane.getChunkWithCell(x, y);
 	chunk.addItem(item, x - chunk.getX(), y - chunk.getY());
-	Tendiwa.getClientEventManager().event(new EventItemAppear(item, this.x, this.y));
+	Tendiwa.getInstance().emitEvent(new EventItemAppear(item, this.x, this.y));
 	moveInTime(500);
 }
 
@@ -331,7 +334,7 @@ public void move(int x, int y, MovingStyle movingStyle) {
 	int xPrev = this.x;
 	int yPrev = this.y;
 	synchronized (renderLockObject) {
-		Tendiwa.getClientEventManager().event(new EventMove(xPrev, yPrev, this, movingStyle));
+		Tendiwa.getInstance().emitEvent(new EventMove(xPrev, yPrev, this, movingStyle));
 		plane.removeCharacter(this);
 		this.x = x;
 		this.y = y;
@@ -352,7 +355,7 @@ public void move(int x, int y, MovingStyle movingStyle) {
 				seer.getPreviousBorderVisionCache(),
 				seer.getBorderVisionCache()
 			);
-			Tendiwa.getClientEventManager().event(visibilityChange.createEvent());
+			Tendiwa.getInstance().emitEvent(visibilityChange.createEvent());
 		}
 		Tendiwa.waitForAnimationToStartAndComplete();
 	} else {
@@ -360,7 +363,6 @@ public void move(int x, int y, MovingStyle movingStyle) {
 	}
 	moveInTime(500);
 }
-
 
 /**
  * Moves this Character to another vertical plane of a world
@@ -371,12 +373,12 @@ public void move(int x, int y, MovingStyle movingStyle) {
 public void moveByPlane(int dz) {
 	synchronized (renderLockObject) {
 		plane.removeCharacter(this);
-		plane = Tendiwa.getWorld().getPlane(plane.getLevel() + dz);
+		plane = world.getPlane(plane.getLevel() + dz);
 		plane.addCharacter(this);
 		seer.invalidateVisionCache();
 		seer.storeVisionCacheToPreviousVisionCache();
 		seer.computeFullVisionCache();
-		Tendiwa.getClientEventManager().event(new EventMoveToPlane());
+		Tendiwa.getInstance().emitEvent(new EventMoveToPlane());
 	}
 	Tendiwa.waitForAnimationToStartAndComplete();
 	moveInTime(500);
@@ -389,7 +391,7 @@ public void spendActionPoints(int amount) {
 public void getDamage(int amount, DamageType type, DamageSource damageSource) {
 	this.hp -= amount;
 	synchronized (renderLockObject) {
-		Tendiwa.getClientEventManager().event(new EventGetDamage(this, amount, damageSource, type));
+		Tendiwa.getInstance().emitEvent(new EventGetDamage(this, amount, damageSource, type));
 	}
 	Tendiwa.waitForAnimationToStartAndComplete();
 	if (hp <= 0) {
@@ -415,7 +417,7 @@ protected void removeEffect(CharacterEffect effect) {
 
 public void say(String message) {
 	synchronized (renderLockObject) {
-		Tendiwa.getClient().getEventManager().event(new EventSay(message, this));
+		Tendiwa.getInstance().emitEvent(new EventSay(message, this));
 	}
 	Tendiwa.waitForAnimationToStartAndComplete();
 }
@@ -441,7 +443,7 @@ public void getItem(ItemType type, int amount) {
 
 public void loseItem(Item item) {
 	synchronized (renderLockObject) {
-		Tendiwa.getClient().getEventManager().event(new EventLoseItem(item));
+		Tendiwa.getInstance().emitEvent(new EventLoseItem(item));
 		if (item.getType().isStackable()) {
 			inventory.removePile((ItemPile) item);
 		} else {
@@ -523,8 +525,8 @@ public boolean containedIn(HorizontalPlane plane, int x, int y) {
 public boolean canStepOn(int x, int y) {
 	return x >= 0
 		&& y >= 0
-		&& x < Tendiwa.getWorld().width
-		&& y < Tendiwa.getWorld().height
+		&& x < world.width
+		&& y < world.height
 		&& plane.getPassability(x, y) == Passability.FREE;
 }
 
@@ -534,12 +536,12 @@ public HorizontalPlane getPlane() {
 
 public void pickUp(Item item) {
 	synchronized (renderLockObject) {
-		Tendiwa.getClientEventManager().event(new EventItemDisappear(x, y, item));
+		backend.emitEvent(new EventItemDisappear(x, y, item));
 		plane.getItems(x, y).removeItem(item);
 	}
 	Tendiwa.waitForAnimationToStartAndComplete();
 	synchronized (renderLockObject) {
-		Tendiwa.getClientEventManager().event(new EventGetItem(item));
+		backend.emitEvent(new EventGetItem(item));
 		getItem(item);
 	}
 	Tendiwa.waitForAnimationToStartAndComplete();
@@ -564,11 +566,11 @@ public void propel(Item item, int x, int y) {
 	}
 	Tendiwa.waitForAnimationToStartAndComplete();
 	synchronized (renderLockObject) {
-		Tendiwa.getClientEventManager().event(new EventProjectileFly(item, this.x, this.y, x, y, EventProjectileFly.FlightStyle.CAST));
+		backend.emitEvent(new EventProjectileFly(item, this.x, this.y, x, y, EventProjectileFly.FlightStyle.CAST));
 	}
 	Tendiwa.waitForAnimationToStartAndComplete();
 	synchronized (renderLockObject) {
-		Tendiwa.getClientEventManager().event(new EventItemAppear(item, x, y));
+		backend.emitEvent(new EventItemAppear(item, x, y));
 		Chunk chunkWithCell = plane.getChunkWithCell(x, y);
 		chunkWithCell.addItem(item, x, y);
 	}
@@ -591,7 +593,7 @@ public void shoot(UniqueItem weapon, Item projectile, int toX, int toY) {
 
 	ProjectileFlight flight = computeProjectileFlightEndCoordinate(weapon, projectile, toX, toY);
 	synchronized (renderLockObject) {
-		Tendiwa.getClientEventManager().event(new EventProjectileFly(
+		backend.emitEvent(new EventProjectileFly(
 			projectile,
 			x,
 			y,
@@ -606,7 +608,7 @@ public void shoot(UniqueItem weapon, Item projectile, int toX, int toY) {
 		flight.characterHit.getDamage(10, DamageType.PLAIN, this);
 	}
 	synchronized (renderLockObject) {
-		Tendiwa.getClientEventManager().event(new EventItemAppear(projectile, toX, toY));
+		backend.emitEvent(new EventItemAppear(projectile, toX, toY));
 		Chunk chunkWithCell = plane.getChunkWithCell(toX, toY);
 		chunkWithCell.addItem(projectile, toX, toY);
 	}
@@ -689,6 +691,14 @@ public Seer getSeer() {
 	return seer;
 }
 
+public int getHp() {
+	return hp;
+}
+
+public int getMaxHp() {
+	return maxHp;
+}
+
 private class ProjectileFlight {
 
 	private final Coordinate endCoordinate;
@@ -718,8 +728,8 @@ class PathWalkerOverCharacters implements PathWalker {
 	public boolean canStepOn(int x, int y) {
 		return x >= 0
 			&& y >= 0
-			&& x < Tendiwa.getWorld().width
-			&& y < Tendiwa.getWorld().height
+			&& x < world.width
+			&& y < world.height
 			&& (plane.getPassability(x, y) == Passability.FREE
 			|| plane.getCharacter(x, y) != null);
 
