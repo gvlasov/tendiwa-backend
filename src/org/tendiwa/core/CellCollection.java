@@ -89,17 +89,6 @@ protected void unsetCell(Coordinate cell) {
 	}
 }
 
-public void clear() {
-	Chance ch10 = new Chance(10);
-	for (Coordinate coo : cells) {
-		if (ch10.roll()) {
-			continue;
-		}
-		location.getActivePlane().removeObject(coo.x, coo.y);
-
-	}
-}
-
 /**
  * Randomly puts some elements
  *

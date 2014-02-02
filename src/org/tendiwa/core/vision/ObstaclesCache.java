@@ -3,7 +3,6 @@ package org.tendiwa.core.vision;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.tendiwa.core.*;
-import org.tendiwa.core.Character;
 import org.tendiwa.core.meta.CellPosition;
 
 import java.util.*;
@@ -18,17 +17,17 @@ import java.util.*;
  * each side of a cell GameObject resides in).
  */
 class ObstaclesCache implements Iterable<Border> {
+private final ObstacleFindingStrategy strategy;
 private Collection<Border> obstacles = new LinkedList<>();
 private boolean built;
 private Map<Border, CardinalDirection> obstaclesOnSeersCellBorder = new HashMap<>();
 private Map<Border, EnhancedPoint> obstacleToObjectPosition = new HashMap<>();
 private Multimap<EnhancedPoint, Border> objectPositionToObstacle = HashMultimap.create();
 private CellPosition position;
-private final Character chas;
 
-ObstaclesCache(CellPosition position, Character character) {
+ObstaclesCache(CellPosition position, ObstacleFindingStrategy strategy) {
 	this.position = position;
-	this.chas = character;
+	this.strategy = strategy;
 }
 
 /**
@@ -39,7 +38,6 @@ void buildObstacles() {
 	obstaclesOnSeersCellBorder.clear();
 	obstacleToObjectPosition.clear();
 	objectPositionToObstacle.clear();
-	HorizontalPlane plane = chas.getPlane();
 	int endX = Math.min(Tendiwa.getWorldWidth() - 1, position.getX() + Seer.VISION_RANGE);
 	int endY = Math.min(Tendiwa.getWorldHeight() - 1, position.getY() + Seer.VISION_RANGE);
 	int startX = Math.max(0, position.getX() - Seer.VISION_RANGE);
@@ -48,7 +46,7 @@ void buildObstacles() {
 		for (int y = startY; y <= endY; y++) {
 			boolean[] sideOccupied = new boolean[]{false, false, false, false};
 			EnhancedPoint objectPosition = new EnhancedPoint(x, y);
-			if (plane.getPassability(x, y) == Passability.NO) {
+			if (strategy.isCellBlockingVision(x, y)) {
 				sideOccupied[0] = true;
 				sideOccupied[1] = true;
 				sideOccupied[2] = true;
@@ -63,7 +61,7 @@ void buildObstacles() {
 					continue;
 				}
 				Border border = new Border(x, y, side);
-				if (plane.hasBorderObject(border)) {
+				if (strategy.isBorderBlockingVision(border)) {
 					addSingleBorderObstacle(border);
 				}
 			}

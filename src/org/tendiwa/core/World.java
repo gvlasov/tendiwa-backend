@@ -86,8 +86,7 @@ public int getHeight() {
 	return height;
 }
 
-public Character createCharacter(int x, int y, CharacterType type, String name) {
-	NonPlayerCharacter character = new NonPlayerCharacter(this, defaultPlane, type, x, y, name);
+public Character addCharacter(NonPlayerCharacter character) {
 	try {
 		while (defaultPlane.getPassability(character.x, character.y) == Passability.NO) {
 			character.x++;
@@ -104,21 +103,11 @@ public Character createCharacter(int x, int y, CharacterType type, String name) 
 /**
  * Creates a new {@link Character}, makes it the player character.
  *
- * @param x
- * 	X coordinate of player in world coordinates. Will be shifted to the east if {x:y} is occupied by something
- * 	non-passable.
- * @param y
- * 	Y coordinate of player in world coordinates
- * @param type
- * 	Player's speices.
- * @param name
- * 	Name of a player.
- * @return A new Character which is set to be World's player character.
  * @throws RuntimeException
  * 	If the cell {x:y} was not passable and neither were all the cells from it till {width-1:y}
  */
-public Character createPlayerCharacter(int x, int y, CharacterType type, String name) {
-	playerCharacter = new Character(defaultPlane, type, x, y, name);
+public Character addPlayerCharacter(Character character) {
+	playerCharacter = character;
 	try {
 		while (defaultPlane.getPassability(playerCharacter.x, playerCharacter.y) == Passability.NO) {
 			playerCharacter.x++;
@@ -128,7 +117,7 @@ public Character createPlayerCharacter(int x, int y, CharacterType type, String 
 	}
 	defaultPlane.addCharacter(playerCharacter);
 	timeStream.addPlayerCharacter(playerCharacter);
-	Set<Chunk> chunks = defaultPlane.getChunksAroundCoordinate(x, y, Chunk.SIZE * 5);
+	Set<Chunk> chunks = defaultPlane.getChunksAroundCoordinate(character.getX(), character.getY(), Chunk.SIZE * 5);
 	for (Chunk chunk : chunks) {
 		timeStream.addChunk(chunk);
 	}

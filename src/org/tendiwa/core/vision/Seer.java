@@ -22,10 +22,10 @@ private final ObstaclesCache obstaclesCache;
 private final ModifiableBorderVisionCache borderVision;
 private final BorderVisionCache borderVisionPrevious;
 
-public Seer(CellPosition character, SightPassabilityCriteria vision) {
+public Seer(CellPosition character, SightPassabilityCriteria vision, ObstacleFindingStrategy strategy) {
 	this.character = character;
 	this.vision = vision;
-	this.obstaclesCache = new ObstaclesCache(character);
+	this.obstaclesCache = new ObstaclesCache(character, strategy);
 	this.visionCache = new ModifiableCellVisionCache(character);
 	this.visionPrevious = new CellVisionCache();
 	this.borderVision = new ModifiableBorderVisionCache(character);
@@ -565,11 +565,11 @@ public EnhancedRectangle getVisionRectangle() {
 	EnhancedPoint startPoint = getActualVisionRecStartPoint();
 	int actualWorldEndX = Math.min(
 		Tendiwa.getWorldWidth() - 1,
-		Tendiwa.getPlayerCharacter().getX() - Seer.VISION_RANGE + ModifiableCellVisionCache.VISION_CACHE_WIDTH
+		character.getX() - Seer.VISION_RANGE + ModifiableCellVisionCache.VISION_CACHE_WIDTH
 	);
 	int actualWorldEndY = Math.min(
 		Tendiwa.getWorldHeight() - 1,
-		Tendiwa.getPlayerCharacter().getY() - Seer.VISION_RANGE + ModifiableCellVisionCache.VISION_CACHE_WIDTH
+		character.getY() - Seer.VISION_RANGE + ModifiableCellVisionCache.VISION_CACHE_WIDTH
 	);
 	return new EnhancedRectangle(
 		startPoint.x,
@@ -586,8 +586,8 @@ public EnhancedRectangle getVisionRectangle() {
  */
 public EnhancedPoint getActualVisionRecStartPoint() {
 	return new EnhancedPoint(
-		Math.max(0, Tendiwa.getPlayerCharacter().getX() - Seer.VISION_RANGE),
-		Math.max(0, Tendiwa.getPlayerCharacter().getY() - Seer.VISION_RANGE)
+		Math.max(0, character.getX() - Seer.VISION_RANGE),
+		Math.max(0, character.getY() - Seer.VISION_RANGE)
 	);
 }
 
@@ -598,8 +598,8 @@ public EnhancedPoint getActualVisionRecStartPoint() {
  */
 public EnhancedPoint getTheoreticalVisionRecStartPoint() {
 	return new EnhancedPoint(
-		Tendiwa.getPlayerCharacter().getX() - Seer.VISION_RANGE,
-		Tendiwa.getPlayerCharacter().getY() - Seer.VISION_RANGE
+		character.getX() - Seer.VISION_RANGE,
+		character.getY() - Seer.VISION_RANGE
 	);
 }
 }

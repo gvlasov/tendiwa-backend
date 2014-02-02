@@ -1,9 +1,15 @@
 package org.tendiwa.core.events;
 
-import org.tendiwa.core.observation.Event;
+import org.tendiwa.core.HorizontalPlane;
+import org.tendiwa.core.vision.Seer;
 
-public class EventMoveToPlane implements Event {
+public class EventMoveToPlane extends EventInitialTerrain {
 
-public EventMoveToPlane() {
+/**
+ * Answer to initial request after World has just been loaded. Collects terrain around PlayerCharacter to send it to
+ * client for displaying.
+ */
+public EventMoveToPlane(HorizontalPlane plane, Seer seer) {
+	super(plane, seer);
 }
 }

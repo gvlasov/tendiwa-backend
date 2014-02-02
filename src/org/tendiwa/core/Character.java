@@ -16,7 +16,7 @@ public static final Object renderLockObject = Tendiwa.getLock();
 public final int id = new UniqueObject().id;
 public final ItemCollection inventory = new ItemCollection();
 public final Equipment equipment = new Equipment(2, ApparelSlot.values());
-public final Seer seer = new Seer(this, new CharacterVisionCriteria());
+public final Seer seer;
 protected final String name;
 protected final HashMap<Integer, Character.Effect> effects = new HashMap<>();
 final CharacterType type;
@@ -60,6 +60,7 @@ public Character(World world, Observable backend, HorizontalPlane plane, Charact
 	this.maxHp = type.getMaxHp();
 	assert maxHp != 0;
 	this.hp = maxHp;
+	this.seer =  new Seer(this, new CharacterVisionCriteria(), new DefaultObstacleFindingStrategy(this));
 }
 
 public PathWalkerOverCharacters getPathWalkerOverCharacters() {
@@ -348,6 +349,8 @@ public void move(int x, int y, MovingStyle movingStyle) {
 			seer.invalidateVisionCache();
 			seer.computeFullVisionCache();
 			VisibilityChange visibilityChange = new VisibilityChange(
+				world,
+				this,
 				xPrev,
 				yPrev,
 				seer.getPreviousVisionCache(),

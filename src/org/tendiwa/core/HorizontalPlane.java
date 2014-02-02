@@ -118,11 +118,6 @@ public Passability getPassability(int x, int y) {
 	}
 }
 
-public NonPlayerCharacter createCharacter(int absX, int absY, CharacterType characterType, String name, int fraction) {
-	Chunk chunk = getChunkWithCell(absX, absY);
-	return chunk.createCharacter(absX - chunk.x, absY - chunk.y, characterType, name, fraction);
-}
-
 public void addItem(ItemPile pile, int x, int y) {
 	Chunk chunk = getChunkWithCell(x, y);
 	chunk.addItem(pile, x, y);

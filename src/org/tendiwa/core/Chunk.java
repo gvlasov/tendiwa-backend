@@ -14,7 +14,6 @@ public class Chunk implements Serializable {
 public static final byte SIZE = 32;
 public final int x;
 public final int y;
-private final Seer playerSeer;
 public HorizontalPlane plane;
 protected HashMap<Integer, ItemCollection> items = new HashMap<>();
 protected Table<Integer, CardinalDirection, BorderObject> borderObjects = HashBasedTable.create();
@@ -24,8 +23,7 @@ GameObject[][] objects;
 private ArrayList<SoundSource> soundSources = new ArrayList<>();
 transient private TimeStream timeStream;
 
-public Chunk(Seer playerSeer, HorizontalPlane plane, int x, int y) {
-	this.playerSeer = playerSeer;
+public Chunk(HorizontalPlane plane, int x, int y) {
 	this.x = x;
 	this.y = y;
 	this.floors = new FloorType[SIZE][SIZE];
@@ -147,21 +145,6 @@ public int getY() {
 	return y;
 }
 
-protected NonPlayerCharacter createCharacter(int relX, int relY, CharacterType characterType, String name, int fraction) {
-	NonPlayerCharacter character = new NonPlayerCharacter(plane, characterType, x + relX, y + relY, name);
-	character.setFraction(fraction);
-	addCharacter(character);
-		/*
-		 * timeStream.fireEvent(new EventCharacterAppear( character.getId(),
-		 * character.x, character.y, character.getType().getId(),
-		 * character.name, character.getEffects(), character.getEquipment(),
-		 * character.getFraction()));
-		 */
-	timeStream.notifyNeighborsVisiblilty(character);
-	character.getVisibleEntities();
-	return character;
-}
-
 void addCharacter(Character character) {
 	int key = cellHash(character.x, character.y);
 	if (characters.containsKey(key)) {
@@ -180,9 +163,9 @@ void removeCharacter(Character character) {
 
 public void removeObject(int x, int y) {
 	objects[x - this.x][y - this.y] = null;
-	if (playerSeer.canSee(x, y) && playerSeer.getVisionCache().isVisionCacheEmpty()) {
-		playerSeer.invalidateVisionCache();
-	}
+//	if (playerSeer.canSee(x, y) && playerSeer.getVisionCache().isVisionCacheEmpty()) {
+//		playerSeer.invalidateVisionCache();
+//	}
 	throw new UnsupportedOperationException();
 }
 
