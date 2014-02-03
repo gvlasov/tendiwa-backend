@@ -20,7 +20,7 @@ public final Seer seer;
 protected final String name;
 protected final HashMap<Integer, Character.Effect> effects = new HashMap<>();
 final CharacterType type;
-private final World world;
+private World world;
 private final Observable backend;
 protected Body body;
 protected int actionPoints;
@@ -28,7 +28,6 @@ protected int ep;
 protected int maxEp;
 protected int fraction;
 protected HorizontalPlane plane;
-protected Chunk chunk;
 protected int x;
 protected int y;
 protected boolean isAlive;
@@ -43,16 +42,13 @@ protected int maxHp;
 private PathWalkerOverCharacters pathWalkerOverCharacters;
 private Collection<Spell> spells = new HashSet<>();
 
-public Character(World world, Observable backend, HorizontalPlane plane, CharacterType type, int x, int y, String name) {
+public Character(Observable backend, CharacterType type, int x, int y, String name) {
 	// Common character creation: with all attributes, in location.
 	super();
-	this.world = world;
 	this.backend = backend;
 	assert type != null;
 	this.type = type;
 	this.name = name;
-	this.plane = plane;
-	this.chunk = plane.getChunkWithCell(x, y);
 	fraction = 0;
 	isAlive = true;
 	this.x = x;
@@ -60,7 +56,13 @@ public Character(World world, Observable backend, HorizontalPlane plane, Charact
 	this.maxHp = type.getMaxHp();
 	assert maxHp != 0;
 	this.hp = maxHp;
-	this.seer =  new Seer(this, new CharacterVisionCriteria(), new DefaultObstacleFindingStrategy(this));
+	this.seer = new Seer(this, new CharacterVisionCriteria(), new DefaultObstacleFindingStrategy(this));
+}
+public void setPlane(HorizontalPlane plane) {
+	this.plane = plane;
+}
+public void setWorld(World world) {
+	this.world = world;
 }
 
 public PathWalkerOverCharacters getPathWalkerOverCharacters() {
@@ -73,7 +75,7 @@ public PathWalkerOverCharacters getPathWalkerOverCharacters() {
 /* Actions */
 public void attack(Character aim) {
 	synchronized (renderLockObject) {
-		Tendiwa.getInstance().emitEvent(new EventAttack(this, aim));
+		backend.emitEvent(new EventAttack(this, aim));
 	}
 	Tendiwa.waitForAnimationToStartAndComplete();
 	aim.getDamage(7, DamageType.PLAIN, this);
@@ -113,7 +115,7 @@ protected void die() {
 		isAlive = false;
 		timeStream.claimCharacterDisappearance(this);
 		plane.getChunkWithCell(x, y).removeCharacter(this);
-		Tendiwa.getInstance().emitEvent(new EventDie(this));
+		backend.emitEvent(new EventDie(this));
 	}
 	Tendiwa.waitForAnimationToStartAndComplete();
 
@@ -124,7 +126,7 @@ public void putOn(UniqueItem item) {
 		inventory.removeUnique(item);
 		equipment.putOn(item);
 		if (isPlayer()) {
-			Tendiwa.getInstance().emitEvent(new EventPutOn(this, item));
+			backend.emitEvent(new EventPutOn(this, item));
 		}
 	}
 	moveInTime(500);
@@ -145,7 +147,7 @@ public void wield(Item item) {
 			inventory.removeItem(item);
 			equipment.wield(item);
 		}
-		Tendiwa.getInstance().emitEvent(new EventWield(this, item));
+		backend.emitEvent(new EventWield(this, item));
 	}
 }
 
@@ -153,7 +155,7 @@ public void cease(Item item) {
 	synchronized (renderLockObject) {
 		inventory.add(item);
 		equipment.cease(item);
-		Tendiwa.getInstance().emitEvent(new EventUnwield(this, item));
+		backend.emitEvent(new EventUnwield(this, item));
 	}
 }
 
@@ -161,7 +163,7 @@ public void takeOff(UniqueItem item) {
 	synchronized (renderLockObject) {
 		inventory.add(item);
 		equipment.takeOff(item);
-		Tendiwa.getInstance().emitEvent(new EventTakeOff(this, item));
+		backend.emitEvent(new EventTakeOff(this, item));
 	}
 	moveInTime(500);
 }
@@ -170,9 +172,9 @@ public void takeOff(UniqueItem item) {
  * Pick up an item lying on the same cell where the character stands.
  */
 public void pickUp(ItemPile pile) {
-	Tendiwa.getInstance().emitEvent(new EventItemDisappear(x, y, pile));
+	backend.emitEvent(new EventItemDisappear(x, y, pile));
 	plane.removeItem(pile, x, y);
-	Tendiwa.getInstance().emitEvent(new EventGetItem(pile));
+	backend.emitEvent(new EventGetItem(pile));
 	getItem(pile);
 	moveInTime(500);
 	throw new UnsupportedOperationException();
@@ -192,7 +194,7 @@ public void drop(Item item) {
 	loseItem(item);
 	Chunk chunk = plane.getChunkWithCell(x, y);
 	chunk.addItem(item, x - chunk.getX(), y - chunk.getY());
-	Tendiwa.getInstance().emitEvent(new EventItemAppear(item, this.x, this.y));
+	backend.emitEvent(new EventItemAppear(item, this.x, this.y));
 	moveInTime(500);
 }
 
@@ -335,7 +337,7 @@ public void move(int x, int y, MovingStyle movingStyle) {
 	int xPrev = this.x;
 	int yPrev = this.y;
 	synchronized (renderLockObject) {
-		Tendiwa.getInstance().emitEvent(new EventMove(xPrev, yPrev, this, movingStyle));
+		backend.emitEvent(new EventMove(xPrev, yPrev, this, movingStyle));
 		plane.removeCharacter(this);
 		this.x = x;
 		this.y = y;
@@ -358,7 +360,7 @@ public void move(int x, int y, MovingStyle movingStyle) {
 				seer.getPreviousBorderVisionCache(),
 				seer.getBorderVisionCache()
 			);
-			Tendiwa.getInstance().emitEvent(visibilityChange.createEvent());
+			backend.emitEvent(visibilityChange.createEvent());
 		}
 		Tendiwa.waitForAnimationToStartAndComplete();
 	} else {
@@ -381,7 +383,7 @@ public void moveByPlane(int dz) {
 		seer.invalidateVisionCache();
 		seer.storeVisionCacheToPreviousVisionCache();
 		seer.computeFullVisionCache();
-		Tendiwa.getInstance().emitEvent(new EventMoveToPlane());
+		backend.emitEvent(new EventMoveToPlane(plane, seer));
 	}
 	Tendiwa.waitForAnimationToStartAndComplete();
 	moveInTime(500);
@@ -394,7 +396,7 @@ public void spendActionPoints(int amount) {
 public void getDamage(int amount, DamageType type, DamageSource damageSource) {
 	this.hp -= amount;
 	synchronized (renderLockObject) {
-		Tendiwa.getInstance().emitEvent(new EventGetDamage(this, amount, damageSource, type));
+		backend.emitEvent(new EventGetDamage(this, amount, damageSource, type));
 	}
 	Tendiwa.waitForAnimationToStartAndComplete();
 	if (hp <= 0) {
@@ -420,7 +422,7 @@ protected void removeEffect(CharacterEffect effect) {
 
 public void say(String message) {
 	synchronized (renderLockObject) {
-		Tendiwa.getInstance().emitEvent(new EventSay(message, this));
+		backend.emitEvent(new EventSay(message, this));
 	}
 	Tendiwa.waitForAnimationToStartAndComplete();
 }
@@ -446,7 +448,7 @@ public void getItem(ItemType type, int amount) {
 
 public void loseItem(Item item) {
 	synchronized (renderLockObject) {
-		Tendiwa.getInstance().emitEvent(new EventLoseItem(item));
+		backend.emitEvent(new EventLoseItem(item));
 		if (item.getType().isStackable()) {
 			inventory.removePile((ItemPile) item);
 		} else {

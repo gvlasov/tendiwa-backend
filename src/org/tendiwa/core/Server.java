@@ -52,7 +52,7 @@ public World getWorld() {
 	return WORLD;
 }
 
-void setWorld(WorldProvider provider) {
+void setWorld(WorldProvidingModule provider) {
 	this.WORLD = provider.createWorld();
 	for (Character character : WORLD.getTimeStream().getCharacters()) {
 		WORLD.getTimeStream().notifyNeighborsVisiblilty(character);

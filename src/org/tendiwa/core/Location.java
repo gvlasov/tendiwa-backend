@@ -21,7 +21,7 @@ final int x;
  */
 private HorizontalPlane activePlane;
 
-Location(HorizontalPlane activePlane, int x, int y, int width, int height) {
+public Location(HorizontalPlane activePlane, int x, int y, int width, int height) {
 	this.x = x;
 	this.y = y;
 	this.activePlane = activePlane;

@@ -45,6 +45,7 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="la4j" level="project" />
+    <orderEntry type="library" name="guice-4.0-beta2" level="project" />
   </component>
 </module>
 

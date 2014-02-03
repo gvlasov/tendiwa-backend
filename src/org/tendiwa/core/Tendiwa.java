@@ -1,15 +1,24 @@
 package org.tendiwa.core;
 
+import com.google.inject.Guice;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.Singleton;
+import com.google.inject.name.Named;
 import com.sun.nio.sctp.AssociationChangeNotification;
 import org.apache.log4j.Logger;
+import org.tendiwa.core.events.EventWield;
+import org.tendiwa.core.factories.CharacterFactory;
 import org.tendiwa.core.observation.Observable;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
+@Singleton
 public class Tendiwa extends Observable {
 private static final Object lock = new Object();
 private static final Object clientWaitLock = new Object();
@@ -28,14 +37,19 @@ private final String CLIENT_CONF_FILE;
 private final World WORLD;
 private final Character PLAYER;
 
-Tendiwa(String args[]) throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException {
-	initWithDummyClient();
+@Inject
+public Tendiwa(@Named("backend_injector") Injector injector) {
+	initEmitters();
 	// Run game server and client.
 	ClassLoader classLoader = Tendiwa.class.getClassLoader();
 
 	// Loading modules
 	List<Class<?>> modulesCreatingWorlds = loadModules();
-	createWorld((WorldProvider) modulesCreatingWorlds.get(0).newInstance());
+	try {
+		createWorld((WorldProvidingModule) modulesCreatingWorlds.get(0).getConstructor(CharacterFactory.class).newInstance(new CharacterFactory(this)));
+	} catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+		throw new RuntimeException(e);
+	}
 
 	// Initializing client
 	CLIENT_CONF_FILE = "/client.conf";
@@ -45,7 +59,11 @@ Tendiwa(String args[]) throws ClassNotFoundException, IllegalAccessException, In
 		// Use default properties
 		properties.setProperty("client", "org.tendiwa.client.TendiwaLibgdxClientProvider");
 	} else {
-		properties.load(clientConfStream);
+		try {
+			properties.load(clientConfStream);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	// Starting server
@@ -53,13 +71,30 @@ Tendiwa(String args[]) throws ClassNotFoundException, IllegalAccessException, In
 	SERVER_THREAD.start();
 
 	// Starting client
-	CLIENT = ((TendiwaClientProvider) classLoader.loadClass(properties.getProperty("client")).newInstance()).getClient();
+	try {
+		CLIENT = ((TendiwaClientProvider) classLoader.loadClass(properties.getProperty("client")).newInstance()).getClient();
+	} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+		e.printStackTrace();
+	}
 	CLIENT.startup();
 
 	WORLD = Server.SERVER.getWorld();
 	worldWidth = WORLD.getWidth();
 	worldHeight = WORLD.getHeight();
 	PLAYER = WORLD.getPlayer();
+}
+
+public static void main(String args[]) {
+	if (args.length > 0 && args[0].equals("--ontology")) {
+		// Ontology building utility
+		String moduleDir = args[1];
+		if (moduleDir == null) {
+			throw new RuntimeException("Modules directory not provided");
+		}
+	} else {
+		Injector injector = Guice.createInjector(new TendiwaBackendModule());
+		injector.getInstance(Tendiwa.class);
+	}
 }
 
 public static List<Class<?>> loadModules() {
@@ -71,7 +106,7 @@ public static List<Class<?>> loadModules() {
 //			logger.warn(moduleClass + " is not a module class");
 //			continue;
 //		}
-//		if (WorldProvider.class.isAssignableFrom(moduleClass)) {
+//		if (WorldProvidingModule.class.isAssignableFrom(moduleClass)) {
 //			modulesCreatingWorlds.add(moduleClass);
 //		}
 		modulesCreatingWorlds.add(new ScriptShell(module).getModuleClass());
@@ -90,31 +125,11 @@ public static Module getMainModule() {
 	}
 }
 
-public static void createWorld(WorldProvider worldProvider) {
-	Server.SERVER.setWorld(worldProvider);
+public static void createWorld(WorldProvidingModule worldProvidingModule) {
+	Server.SERVER.setWorld(worldProvidingModule);
 	if (Server.SERVER.getWorld().getPlayer() == null) {
-		throw new RuntimeException("WorldProvider module did not specify the initial position of player character");
+		throw new RuntimeException("WorldProvidingModule module did not specify the initial position of player character");
 	}
-}
-
-public static void initWithDummyClient() {
-	CLIENT = new DummyClient();
-}
-
-public static void main(String args[]) throws ClassNotFoundException, IOException, IllegalAccessException, InstantiationException {
-	if (args.length > 0 && args[0].equals("--ontology")) {
-		// Ontology building utility
-		String moduleDir = args[1];
-		if (moduleDir == null) {
-			throw new RuntimeException("Modules directory not provided");
-		}
-	} else {
-		INSTANCE = new Tendiwa(args);
-	}
-}
-
-public World getWorld() {
-	return Server.SERVER.getWorld();
 }
 
 public static Thread getServerThread() {
@@ -123,10 +138,6 @@ public static Thread getServerThread() {
 
 public static TendiwaClient getClient() {
 	return CLIENT;
-}
-
-public Server getServer() {
-	return Server.SERVER;
 }
 
 public static Logger getLogger() {
@@ -157,20 +168,16 @@ public static int getWorldHeight() {
 	return worldHeight;
 }
 
-public Character getPlayerCharacter() {
-	return INSTANCE.PLAYER;
-}
-
 public static void waitForAnimationToStartAndComplete() {
 	eventComputed = true;
 	synchronized (lock) {
 		lock.notify();
-		while (!getClient().isAnimationCompleted()) {
-			try {
-				lock.wait();
-			} catch (InterruptedException ignored) {
-			}
+//		while (!getClient().isAnimationCompleted()) {
+		try {
+			lock.wait();
+		} catch (InterruptedException ignored) {
 		}
+//		}
 		eventComputed = false;
 	}
 }
@@ -191,5 +198,21 @@ public static boolean isEventComputed() {
 
 public static Tendiwa getInstance() {
 	return INSTANCE;
+}
+
+private void initEmitters() {
+	createEventEmitter(EventWield.class);
+}
+
+public World getWorld() {
+	return Server.SERVER.getWorld();
+}
+
+public Server getServer() {
+	return Server.SERVER;
+}
+
+public Character getPlayerCharacter() {
+	return INSTANCE.PLAYER;
 }
 }

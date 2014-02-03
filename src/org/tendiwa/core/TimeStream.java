@@ -69,13 +69,13 @@ public HashSet<Character> getCharacters() {
 }
 
 public void addNonPlayerCharacter(NonPlayerCharacter character) {
-	assert character.chunk != null;
-	if (!chunks.contains(character.chunk)) {
-		throw new RuntimeException(
-			character
-				+ " must be in a timeStream's chunk to be added to timeStream. "
-				+ "His chunk is " + character.chunk);
-	}
+//	assert character.chunk != null;
+//	if (!chunks.contains(character.chunk)) {
+//		throw new RuntimeException(
+//			character
+//				+ " must be in a timeStream's chunk to be added to timeStream. "
+//				+ "His chunk is " + character.chunk);
+//	}
 	nonPlayerCharacters.add(character);
 	characters.add(character);
 	observersOf.put(character, new HashSet<NonPlayerCharacter>());

@@ -10,6 +10,11 @@ import java.util.Map;
 public class WorldRectangleBuilder extends RectangleSystemBuilder {
 
 public Map<EnhancedRectangle, List<LocationFeature>> locationFeatures = new HashMap<>();
+
+public ImmutableMap<EnhancedRectangle, LocationPlace> getRectanglesToPlaces() {
+	return rectanglesToPlaces;
+}
+
 ImmutableMap<EnhancedRectangle, LocationPlace> rectanglesToPlaces;
 
 WorldRectangleBuilder() {

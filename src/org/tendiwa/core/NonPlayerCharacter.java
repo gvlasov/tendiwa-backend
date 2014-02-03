@@ -23,9 +23,8 @@ private HashSet<Character> unseenEnemies = new HashSet<>();
 private int[][] pathTable;
 private Dialogue dialogue;
 
-public NonPlayerCharacter(World world, Observable backend, HorizontalPlane plane, CharacterType type, int x, int y, String name) {
-	super(world, backend, plane, type, x, y, name);
-	this.chunk = plane.getChunkWithCell(x, y);
+public NonPlayerCharacter(Observable backend, CharacterType type, int x, int y, String name) {
+	super(backend, type, x, y, name);
 	ep = 100;
 	maxEp = 100;
 	pathTable = new int[PATH_TABLE_WIDTH][PATH_TABLE_WIDTH];

@@ -1,5 +1,7 @@
 package org.tendiwa.core;
 
+import org.tendiwa.core.dependencies.PlayerCharacterProvider;
+
 import java.util.HashMap;
 import java.util.Set;
 
@@ -10,11 +12,13 @@ protected final int width;
 protected final int height;
 final HorizontalPlane defaultPlane;
 private final EnhancedRectangle rectangle;
+private final PlayerCharacterProvider playerCharacterProvider;
 private Character playerCharacter;
 private TimeStream timeStream;
 private HashMap<Integer, HorizontalPlane> planes = new HashMap<>();
 
-public World(int width, int height) {
+public World(PlayerCharacterProvider playerCharacterProvider, int width, int height) {
+	this.playerCharacterProvider = playerCharacterProvider;
 	this.rectangle = new EnhancedRectangle(0, 0, width, height);
 	this.width = width;
 	this.height = height;
@@ -23,21 +27,6 @@ public World(int width, int height) {
 	this.timeStream = new TimeStream();
 }
 
-public static World create(WorldDrawer worldDrawer, int width, int height) {
-	WorldRectangleBuilder builder = DSL.worldBuilder();
-	worldDrawer.drawWorld(builder, width, height);
-	World world = new World(width, height);
-	builder.done();
-	for (LocationPlace place : builder.rectanglesToPlaces.values()) {
-		LocationDrawer locationDrawer = ResourcesRegistry.getLocationDrawerFor(place);
-		locationDrawer.draw(
-			new Location(world.defaultPlane, place.getX(), place.getY(), place.getWidth(), place.getHeight()),
-			place
-		);
-	}
-//	world.checkIfLocationPlacesFillAllWorld(builder);
-	return world;
-}
 
 public HorizontalPlane initPlane(int level) {
 	HorizontalPlane plane = new HorizontalPlane(width, height, this, level);
@@ -74,6 +63,7 @@ public Character getPlayer() {
 
 public void setPlayerCharacter(Character playerCharacter) {
 	this.playerCharacter = playerCharacter;
+	playerCharacter.setPlane(defaultPlane);
 	timeStream.addPlayerCharacter(playerCharacter);
 	playerCharacter.setTimeStream(timeStream);
 }

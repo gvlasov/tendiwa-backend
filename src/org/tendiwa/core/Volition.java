@@ -11,16 +11,17 @@ import java.util.Iterator;
 public class Volition {
 private final Seer playerSeer;
 private final Character player;
+private final World world;
 
-Volition(Seer playerSeer, Character player) {
-
+Volition(Seer playerSeer, Character player, World world) {
 	this.playerSeer = playerSeer;
 	this.player = player;
+	this.world = world;
 }
 
 public void requestSurroundings() {
 	playerSeer.computeFullVisionCache();
-	Tendiwa.getInstance().emitEvent(new EventInitialTerrain(player.getPlane(), playerSeer));
+	Tendiwa.getInstance().emitEvent(new EventInitialTerrain(player, world, player.getPlane(), playerSeer));
 }
 
 public void actionToCell(ActionToCell action, int x, int y) {

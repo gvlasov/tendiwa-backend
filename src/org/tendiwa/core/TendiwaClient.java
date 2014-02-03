@@ -9,19 +9,4 @@ public interface TendiwaClient {
  */
 
 public void startup();
-
-/**
- * Returns an object that manages events received from server.
- *
- * @return Event manager.
- * @see ServerEvent
- */
-TendiwaClientEventManager getEventManager();
-
-/**
- * Returns false if client is animating or is about to animate something, true otherwise.
- *
- * @return Whether there are queued animations in a client.
- */
-boolean isAnimationCompleted();
 }
