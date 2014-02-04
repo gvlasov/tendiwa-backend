@@ -11,6 +11,7 @@ private final static double EPSILON = 0.01;
 private final static double visionSourceDiameter = 0.7;
 public final ModifiableCellVisionCache visionCache;
 final CellVisionCache visionPrevious;
+private final World world;
 private final CellPosition character;
 private final SightPassabilityCriteria vision;
 /**
@@ -22,10 +23,11 @@ private final ObstaclesCache obstaclesCache;
 private final ModifiableBorderVisionCache borderVision;
 private final BorderVisionCache borderVisionPrevious;
 
-public Seer(CellPosition character, SightPassabilityCriteria vision, ObstacleFindingStrategy strategy) {
+public Seer(World world, CellPosition character, SightPassabilityCriteria vision, ObstacleFindingStrategy strategy) {
+	this.world = world;
 	this.character = character;
 	this.vision = vision;
-	this.obstaclesCache = new ObstaclesCache(character, strategy);
+	this.obstaclesCache = new ObstaclesCache(world, character, strategy);
 	this.visionCache = new ModifiableCellVisionCache(character);
 	this.visionPrevious = new CellVisionCache();
 	this.borderVision = new ModifiableBorderVisionCache(character);
@@ -64,8 +66,8 @@ public static int getStartIndexOfRelativeTable(int centerCoordinate, int tableRa
  * 	{@code (table_width-1)/2}
  * @return Last index in relative table's coordinates on x axis that resides inside world rectangle.
  */
-public static int getEndIndexOfRelativeTableX(int centerCoordinate, int tableRadius) {
-	return Math.min(tableRadius * 2 + 1, Tendiwa.getWorldWidth() - centerCoordinate + tableRadius);
+public int getEndIndexOfRelativeTableX(int centerCoordinate, int tableRadius) {
+	return Math.min(tableRadius * 2 + 1, world.getWidth() - centerCoordinate + tableRadius);
 }
 
 /**
@@ -80,8 +82,8 @@ public static int getEndIndexOfRelativeTableX(int centerCoordinate, int tableRad
  * 	{@code (table_width-1)/2}
  * @return Last index in relative table's coordinates on x axis that resides inside world rectangle.
  */
-public static int getEndIndexOfRelativeTableY(int centerCoordinate, int tableRadius) {
-	return Math.min(tableRadius * 2 + 1, Tendiwa.getWorldHeight() - centerCoordinate + tableRadius);
+public int getEndIndexOfRelativeTableY(int centerCoordinate, int tableRadius) {
+	return Math.min(tableRadius * 2 + 1, world.getHeight() - centerCoordinate + tableRadius);
 }
 
 public static double getAngle(int fromX, int fromY, int toX, int toY) {
@@ -564,11 +566,11 @@ public BorderVisionCache getPreviousBorderVisionCache() {
 public EnhancedRectangle getVisionRectangle() {
 	EnhancedPoint startPoint = getActualVisionRecStartPoint();
 	int actualWorldEndX = Math.min(
-		Tendiwa.getWorldWidth() - 1,
+		world.getWidth() - 1,
 		character.getX() - Seer.VISION_RANGE + ModifiableCellVisionCache.VISION_CACHE_WIDTH
 	);
 	int actualWorldEndY = Math.min(
-		Tendiwa.getWorldHeight() - 1,
+		world.getHeight() - 1,
 		character.getY() - Seer.VISION_RANGE + ModifiableCellVisionCache.VISION_CACHE_WIDTH
 	);
 	return new EnhancedRectangle(

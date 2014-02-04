@@ -18,6 +18,7 @@ import java.util.*;
  */
 class ObstaclesCache implements Iterable<Border> {
 private final ObstacleFindingStrategy strategy;
+private final World world;
 private Collection<Border> obstacles = new LinkedList<>();
 private boolean built;
 private Map<Border, CardinalDirection> obstaclesOnSeersCellBorder = new HashMap<>();
@@ -25,7 +26,8 @@ private Map<Border, EnhancedPoint> obstacleToObjectPosition = new HashMap<>();
 private Multimap<EnhancedPoint, Border> objectPositionToObstacle = HashMultimap.create();
 private CellPosition position;
 
-ObstaclesCache(CellPosition position, ObstacleFindingStrategy strategy) {
+ObstaclesCache(World world, CellPosition position, ObstacleFindingStrategy strategy) {
+	this.world = world;
 	this.position = position;
 	this.strategy = strategy;
 }
@@ -38,8 +40,8 @@ void buildObstacles() {
 	obstaclesOnSeersCellBorder.clear();
 	obstacleToObjectPosition.clear();
 	objectPositionToObstacle.clear();
-	int endX = Math.min(Tendiwa.getWorldWidth() - 1, position.getX() + Seer.VISION_RANGE);
-	int endY = Math.min(Tendiwa.getWorldHeight() - 1, position.getY() + Seer.VISION_RANGE);
+	int endX = Math.min(world.getWidth() - 1, position.getX() + Seer.VISION_RANGE);
+	int endY = Math.min(world.getHeight() - 1, position.getY() + Seer.VISION_RANGE);
 	int startX = Math.max(0, position.getX() - Seer.VISION_RANGE);
 	int startY = Math.max(0, position.getY() - Seer.VISION_RANGE);
 	for (int x = startX; x <= endX; x++) {

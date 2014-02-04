@@ -16,15 +16,15 @@ import java.util.Map;
  * World} in backend.
  */
 public class RenderPlane {
-private final int worldHeight;
 private final HorizontalPlane backendPlane;
+private final World world;
 private Map<Integer, RenderCell> cells = new HashMap<>();
 private Multimap<Integer, RememberedItem> unseenItems = HashMultimap.create();
 private Table<Integer, CardinalDirection, RenderBorder> unseenBorderObjects = HashBasedTable.create();
 private Map<Border, RenderBorder> borders = new HashMap<>();
 
-RenderPlane(HorizontalPlane backendPlane) {
-	this.worldHeight = Tendiwa.getWorldHeight();
+RenderPlane(World world, HorizontalPlane backendPlane) {
+	this.world = world;
 	this.backendPlane = backendPlane;
 }
 
@@ -64,7 +64,7 @@ public RenderCell getCell(int hash) {
  * @return True if there is a cell with given coordinates, false otherwise.
  */
 public boolean hasCell(int x, int y) {
-	if (x >= 0 && x < Tendiwa.getWorldWidth() && y >= 0 && y <= Tendiwa.getWorldHeight()) {
+	if (x >= 0 && x <= world.getWidth() && y >= 0 && y <= world.getHeight()) {
 		return cells.containsKey(cellHash(x, y));
 	} else {
 		return false;
@@ -124,11 +124,11 @@ public boolean hasAnyUnseenItems(int hash) {
 }
 
 private int cellHash(int x, int y) {
-	return x * worldHeight + y;
+	return x * world.getHeight() + y;
 }
 
 private int[] cellHashToCoords(int hash) {
-	return new int[]{hash / worldHeight, hash % worldHeight};
+	return new int[]{hash / world.getHeight(), hash % world.getHeight()};
 }
 
 public Collection<RememberedItem> getUnseenItems(int x, int y) {
@@ -143,14 +143,14 @@ public void unseeAllCells() {
 
 public boolean hasUnseenBorderObject(RenderBorder border) {
 	return unseenBorderObjects.contains(
-		Chunk.cellHash(border.getX(), border.getY(), Tendiwa.getWorldHeight()),
+		Chunk.cellHash(border.getX(), border.getY(), world.getHeight()),
 		border.getSide()
 	);
 }
 
 public void addUnseenBorder(Border border) {
 	unseenBorderObjects.put(
-		Chunk.cellHash(border.x, border.y, Tendiwa.getWorldHeight()),
+		Chunk.cellHash(border.x, border.y, world.getHeight()),
 		border.side,
 		borders.get(border)
 	);
@@ -252,7 +252,7 @@ public void removeUnseenItems(int x, int y) {
  */
 private void removeUnseenBorder(RenderBorder border) {
 	unseenBorderObjects.remove(
-		Chunk.cellHash(border.getX(), border.getY(), Tendiwa.getWorldHeight()),
+		Chunk.cellHash(border.getX(), border.getY(), world.getHeight()),
 		border.getSide()
 	);
 }

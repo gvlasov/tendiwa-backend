@@ -39,13 +39,13 @@ public void run() {
 	}
 }
 
-public void pushRequest(Request request) {
-	assert currentRequest == null : "Pushed "+request.getClass().getName()+" when there is already a request "+currentRequest.getClass().getName()
-		+"; hasRequestProcessing = "+ hasRequestProcessing;
-	hasRequestProcessing = true;
-	currentRequest = request;
-	Tendiwa.getServerThread().interrupt();
-}
+//public void pushRequest(Request request) {
+//	assert currentRequest == null : "Pushed "+request.getClass().getName()+" when there is already a request "+currentRequest.getClass().getName()
+//		+"; hasRequestProcessing = "+ hasRequestProcessing;
+//	hasRequestProcessing = true;
+//	currentRequest = request;
+//	Tendiwa.getServerThread().interrupt();
+//}
 
 public World getWorld() {
 	assert WORLD != null;

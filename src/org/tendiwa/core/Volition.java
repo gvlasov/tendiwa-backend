@@ -1,7 +1,9 @@
 package org.tendiwa.core;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import org.tendiwa.core.events.EventInitialTerrain;
-import org.tendiwa.core.vision.Seer;
+import org.tendiwa.core.observation.Observable;
 
 import java.util.Iterator;
 
@@ -9,19 +11,20 @@ import java.util.Iterator;
  * Human-user expresses his intentions to do various things in game via calling corresponding methods of this class.
  */
 public class Volition {
-private final Seer playerSeer;
+private final Observable model;
 private final Character player;
 private final World world;
 
-Volition(Seer playerSeer, Character player, World world) {
-	this.playerSeer = playerSeer;
+@Inject
+Volition(@Named("tendiwa") Observable model, @Named("player") Character player, @Named("current_player_world") World world) {
+	this.model = model;
 	this.player = player;
 	this.world = world;
 }
 
 public void requestSurroundings() {
-	playerSeer.computeFullVisionCache();
-	Tendiwa.getInstance().emitEvent(new EventInitialTerrain(player, world, player.getPlane(), playerSeer));
+	player.getSeer().computeFullVisionCache();
+	model.emitEvent(new EventInitialTerrain(player, world, player.getPlane(), player.getSeer()));
 }
 
 public void actionToCell(ActionToCell action, int x, int y) {

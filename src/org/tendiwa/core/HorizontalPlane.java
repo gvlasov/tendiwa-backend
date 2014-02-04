@@ -256,7 +256,7 @@ public boolean hasBorderObject(int x, int y, CardinalDirection side) {
 			y += 1;
 		}
 	}
-	if (x == Tendiwa.getWorldWidth() && side == Directions.W || y == Tendiwa.getWorldHeight() && side == Directions.N) {
+	if (x == world.getWidth() && side == Directions.W || y == world.getHeight() && side == Directions.N) {
 //		throw new IllegalArgumentException("South side of southest cell row and east side of eastest cell column can't have border objects");
 		return false;
 	}
@@ -264,7 +264,7 @@ public boolean hasBorderObject(int x, int y, CardinalDirection side) {
 }
 
 public boolean containsCell(int x, int y) {
-	return x >= 0 && y >= 0 && x < Tendiwa.getWorldWidth() && y < Tendiwa.getWorldHeight();
+	return x >= 0 && y >= 0 && x < world.getWidth() && y < world.getHeight();
 }
 
 }

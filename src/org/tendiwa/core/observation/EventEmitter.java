@@ -6,7 +6,7 @@ import java.util.Set;
 public class EventEmitter<T extends Event> {
 private final Observable observable;
 private Set<Observer<T>> subscribers = new HashSet<>();
-private Set<Observer<T>> done = new HashSet<>();
+private Set<Observer<T>> subscribersCheckedOut = new HashSet<>();
 
 EventEmitter(Observable observable) {
 	this.observable = observable;
@@ -28,16 +28,19 @@ void subscribe(Observer<T> observer) {
  * @param observer
  */
 public void done(Observer<T> observer) {
-	if (done.contains(observer)) {
+	if (subscribersCheckedOut.contains(observer)) {
 		throw new RuntimeException("Duplicated done message from observer "+observer);
 	}
 	if (!subscribers.contains(observer)) {
 		throw new RuntimeException("Observer "+observer+" is not the one emitter "+this+" sends events to");
 	}
-	done.add(observer);
-	if (done.size() == subscribers.size()) {
+	subscribersCheckedOut.add(observer);
+	if (areAllSubscribersCheckedOut()) {
 		observable.observersCheckedOut(this);
-		done.clear();
+		subscribersCheckedOut.clear();
 	}
+}
+public boolean areAllSubscribersCheckedOut() {
+	return subscribersCheckedOut.size() == subscribers.size();
 }
 }

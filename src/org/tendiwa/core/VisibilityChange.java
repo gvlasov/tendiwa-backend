@@ -1,8 +1,6 @@
 package org.tendiwa.core;
 
 import com.google.common.collect.ImmutableList;
-import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.core.events.EventFovChange;
 import org.tendiwa.core.vision.*;
 
@@ -21,6 +19,7 @@ private final Character player;
 private final World world;
 private final int xPrev;
 private final int yPrev;
+private final Seer seer;
 private final CellVisionCache visionPrevious;
 private final CellVisionCache visionCurrent;
 private ImmutableList<RenderCell> seenCells;
@@ -42,10 +41,11 @@ private boolean eventCreated = false;
  * 	Vision cache of PlayerCharacter on current turn. {@code visionCurrent[Character.VISION_RANGE][Character.VISION_RANGE]}
  * 	is the point Character is standing on current turn.
  */
-public VisibilityChange(World world, Character character, int xPrev, int yPrev, CellVisionCache visionPrevious, CellVisionCache visionCurrent, BorderVisionCache borderPrevious, BorderVisionCache borderCurrent) {
+public VisibilityChange(World world, Character character, int xPrev, int yPrev, Seer seer, CellVisionCache visionPrevious, CellVisionCache visionCurrent, BorderVisionCache borderPrevious, BorderVisionCache borderCurrent) {
 	this.world = world;
 	this.xPrev = xPrev;
 	this.yPrev = yPrev;
+	this.seer = seer;
 	this.visionPrevious = visionPrevious;
 	this.visionCurrent = visionCurrent;
 	this.borderVisionCurrent = borderCurrent;
@@ -62,8 +62,8 @@ private void compute() {
 	// Loop over points in previous cache
 	int startIndexX = Seer.getStartIndexOfRelativeTable(xPrev, Seer.VISION_RANGE);
 	int startIndexY = Seer.getStartIndexOfRelativeTable(yPrev, Seer.VISION_RANGE);
-	int endPrevX = Seer.getEndIndexOfRelativeTableX(xPrev, Seer.VISION_RANGE);
-	int endPrevY = Seer.getEndIndexOfRelativeTableY(yPrev, Seer.VISION_RANGE);
+	int endPrevX = seer.getEndIndexOfRelativeTableX(xPrev, Seer.VISION_RANGE);
+	int endPrevY = seer.getEndIndexOfRelativeTableY(yPrev, Seer.VISION_RANGE);
 	Visibility[][] visionPreviousContent = visionPrevious.getContent();
 	Visibility[][] visionCurrentContent = visionCurrent.getContent();
 	for (int i = startIndexX; i < endPrevX; i++) {
@@ -107,8 +107,8 @@ private void compute() {
 	// Loop over points in the new cache that are _not_ in the previous cache
 	int startPlayerX = Seer.getStartIndexOfRelativeTable(player.getX(), Seer.VISION_RANGE);
 	int startPlayerY = Seer.getStartIndexOfRelativeTable(player.getY(), Seer.VISION_RANGE);
-	int endPlayerX = Seer.getEndIndexOfRelativeTableX(player.getX(), Seer.VISION_RANGE);
-	int endPlayerY = Seer.getEndIndexOfRelativeTableY(player.getY(), Seer.VISION_RANGE);
+	int endPlayerX = seer.getEndIndexOfRelativeTableX(player.getX(), Seer.VISION_RANGE);
+	int endPlayerY = seer.getEndIndexOfRelativeTableY(player.getY(), Seer.VISION_RANGE);
 	for (int i = startPlayerX; i < endPlayerX; i++) {
 		for (int j = startPlayerY; j < endPlayerY; j++) {
 			// Condition from previous loop with reversed dx
@@ -226,6 +226,7 @@ public EventFovChange createEvent() {
 
 private void addCellToSeen(int x, int y) {
 	seenBuilder.add(new RenderCell(
+		world,
 		x,
 		y,
 		plane.getFloor(x, y),

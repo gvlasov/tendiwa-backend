@@ -23,8 +23,8 @@ private HashSet<Character> unseenEnemies = new HashSet<>();
 private int[][] pathTable;
 private Dialogue dialogue;
 
-public NonPlayerCharacter(Observable backend, CharacterType type, int x, int y, String name) {
-	super(backend, type, x, y, name);
+public NonPlayerCharacter(Observable backend, int x, int y, CharacterType type, String name) {
+	super(backend, x, y, type, name);
 	ep = 100;
 	maxEp = 100;
 	pathTable = new int[PATH_TABLE_WIDTH][PATH_TABLE_WIDTH];

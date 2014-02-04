@@ -7,6 +7,7 @@ package org.tendiwa.core;
 public class RenderCell {
 public final int x;
 public final int y;
+private final int worldHeight;
 boolean visible;
 FloorType floor;
 GameObject object;
@@ -17,13 +18,15 @@ GameObject object;
  * @param floor
  * @param object
  */
-public RenderCell(int x, int y, FloorType floor, GameObject object) {
+public RenderCell(World world, int x, int y, FloorType floor, GameObject object) {
 	assert floor != null;
 	this.x = x;
 	this.y = y;
 	this.floor = floor;
 	this.object = object;
 	visible = true;
+	this.worldHeight = world.getHeight();
+
 }
 
 @Override
@@ -81,7 +84,7 @@ public boolean equals(Object o) {
 @Override
 public int hashCode() {
 	int result = x;
-	result = Tendiwa.getWorldHeight() * result + y;
+	result = worldHeight * result + y;
 	return result;
 }
 }

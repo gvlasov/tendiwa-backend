@@ -34,6 +34,7 @@ public EventInitialTerrain(Character player, World world, HorizontalPlane plane,
 				int x = theoreticalStartPoint.x + i;
 				int y = theoreticalStartPoint.y + j;
 				seenCellsBuilder.add(new RenderCell(
+					world,
 					x,
 					y,
 					plane.getFloor(x, y),

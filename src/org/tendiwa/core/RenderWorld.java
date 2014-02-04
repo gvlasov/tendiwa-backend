@@ -1,5 +1,7 @@
 package org.tendiwa.core;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import org.tendiwa.core.events.EventFovChange;
 import org.tendiwa.core.events.EventInitialTerrain;
 import org.tendiwa.core.events.EventMoveToPlane;
@@ -15,7 +17,8 @@ private final World world;
 Map<Integer, RenderPlane> planes = new HashMap<>();
 private RenderPlane currentPlane;
 
-RenderWorld(Observable model, final World world) {
+@Inject
+RenderWorld(@Named("tendiwa") Observable model, @Named("current_player_world") final World world) {
 	this.world = world;
 	model.subscribe(new Observer<EventFovChange>() {
 		@Override
@@ -49,7 +52,7 @@ RenderWorld(Observable model, final World world) {
 }
 
 public RenderPlane createPlane(int zLevel) {
-	RenderPlane value = new RenderPlane(world.getPlane(zLevel));
+	RenderPlane value = new RenderPlane(world, world.getPlane(zLevel));
 	planes.put(zLevel, value);
 	return value;
 }

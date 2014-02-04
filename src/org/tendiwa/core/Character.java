@@ -1,5 +1,8 @@
 package org.tendiwa.core;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.name.Named;
 import org.tendiwa.core.events.*;
 import org.tendiwa.core.meta.CellPosition;
 import org.tendiwa.core.meta.Coordinate;
@@ -20,7 +23,6 @@ public final Seer seer;
 protected final String name;
 protected final HashMap<Integer, Character.Effect> effects = new HashMap<>();
 final CharacterType type;
-private World world;
 private final Observable backend;
 protected Body body;
 protected int actionPoints;
@@ -35,6 +37,7 @@ protected CharacterState state = CharacterState.DEFAULT;
 protected TimeStream timeStream;
 protected int hp;
 protected int maxHp;
+private World world;
 /**
  * Lazily created by {@link Character#getPathWalkerOverCharacters()}It is not static because it needs the {@link
  * Character#plane} of NonPlayerCharacter.
@@ -42,7 +45,14 @@ protected int maxHp;
 private PathWalkerOverCharacters pathWalkerOverCharacters;
 private Collection<Spell> spells = new HashSet<>();
 
-public Character(Observable backend, CharacterType type, int x, int y, String name) {
+@Inject
+public Character(
+	@Named("tendiwa") Observable backend,
+	@Assisted int x,
+	@Assisted int y,
+	@Assisted CharacterType type,
+	@Assisted String name
+) {
 	// Common character creation: with all attributes, in location.
 	super();
 	this.backend = backend;
@@ -56,13 +66,7 @@ public Character(Observable backend, CharacterType type, int x, int y, String na
 	this.maxHp = type.getMaxHp();
 	assert maxHp != 0;
 	this.hp = maxHp;
-	this.seer = new Seer(this, new CharacterVisionCriteria(), new DefaultObstacleFindingStrategy(this));
-}
-public void setPlane(HorizontalPlane plane) {
-	this.plane = plane;
-}
-public void setWorld(World world) {
-	this.world = world;
+	this.seer = new Seer(world, this, new CharacterVisionCriteria(), new DefaultObstacleFindingStrategy(this));
 }
 
 public PathWalkerOverCharacters getPathWalkerOverCharacters() {
@@ -77,7 +81,7 @@ public void attack(Character aim) {
 	synchronized (renderLockObject) {
 		backend.emitEvent(new EventAttack(this, aim));
 	}
-	Tendiwa.waitForAnimationToStartAndComplete();
+	backend.waitForAnimationToStartAndComplete();
 	aim.getDamage(7, DamageType.PLAIN, this);
 	moveInTime(500);
 }
@@ -117,7 +121,7 @@ protected void die() {
 		plane.getChunkWithCell(x, y).removeCharacter(this);
 		backend.emitEvent(new EventDie(this));
 	}
-	Tendiwa.waitForAnimationToStartAndComplete();
+	backend.waitForAnimationToStartAndComplete();
 
 }
 
@@ -245,8 +249,6 @@ protected void makeSound(SoundType type) {
 	timeStream.makeSound(x, y, type, this);
 }
 
-	/* Special actions */
-
 protected void enterState(CharacterState state) {
 	this.state = state;
 	throw new UnsupportedOperationException();
@@ -275,6 +277,8 @@ protected void push(Character character, Direction side) {
 	moveInTime(500);
 }
 
+	/* Special actions */
+
 /**
  * Player's vision cache gets invalidated in {@link Seer#computeFullVisionCache()}.
  */
@@ -283,9 +287,6 @@ public boolean canSee(int x, int y) {
 	return seer.canSee(x, y);
 }
 
-
-/* Getters */
-
 public Coordinate[] rays(int startX, int startY, int endX, int endY) {
 	return seer.rays(startX, startY, endX, endY);
 }
@@ -293,6 +294,9 @@ public Coordinate[] rays(int startX, int startY, int endX, int endY) {
 public int hashCode() {
 	return id;
 }
+
+
+/* Getters */
 
 public boolean isAlive() {
 	assert isAlive;
@@ -317,7 +321,6 @@ public int getFraction() {
 public void setFraction(int fraction) {
 	this.fraction = fraction;
 }
-	/* Setters */
 
 public int getId() {
 	return id;
@@ -326,6 +329,7 @@ public int getId() {
 public String getName() {
 	return name;
 }
+	/* Setters */
 
 /**
  * Changes character's position.
@@ -343,7 +347,7 @@ public void move(int x, int y, MovingStyle movingStyle) {
 		this.y = y;
 		plane.addCharacter(this);
 	}
-	Tendiwa.waitForAnimationToStartAndComplete();
+	backend.waitForAnimationToStartAndComplete();
 	timeStream.notifyNeighborsVisiblilty(this);
 	if (isPlayer()) {
 		synchronized (renderLockObject) {
@@ -355,6 +359,7 @@ public void move(int x, int y, MovingStyle movingStyle) {
 				this,
 				xPrev,
 				yPrev,
+				seer,
 				seer.getPreviousVisionCache(),
 				seer.getVisionCache(),
 				seer.getPreviousBorderVisionCache(),
@@ -362,7 +367,7 @@ public void move(int x, int y, MovingStyle movingStyle) {
 			);
 			backend.emitEvent(visibilityChange.createEvent());
 		}
-		Tendiwa.waitForAnimationToStartAndComplete();
+		backend.waitForAnimationToStartAndComplete();
 	} else {
 		seer.invalidateVisionCache();
 	}
@@ -383,9 +388,9 @@ public void moveByPlane(int dz) {
 		seer.invalidateVisionCache();
 		seer.storeVisionCacheToPreviousVisionCache();
 		seer.computeFullVisionCache();
-		backend.emitEvent(new EventMoveToPlane(plane, seer));
+		backend.emitEvent(new EventMoveToPlane(this, world, plane, seer));
 	}
-	Tendiwa.waitForAnimationToStartAndComplete();
+	backend.waitForAnimationToStartAndComplete();
 	moveInTime(500);
 }
 
@@ -398,7 +403,7 @@ public void getDamage(int amount, DamageType type, DamageSource damageSource) {
 	synchronized (renderLockObject) {
 		backend.emitEvent(new EventGetDamage(this, amount, damageSource, type));
 	}
-	Tendiwa.waitForAnimationToStartAndComplete();
+	backend.waitForAnimationToStartAndComplete();
 	if (hp <= 0) {
 		die();
 	}
@@ -424,14 +429,14 @@ public void say(String message) {
 	synchronized (renderLockObject) {
 		backend.emitEvent(new EventSay(message, this));
 	}
-	Tendiwa.waitForAnimationToStartAndComplete();
+	backend.waitForAnimationToStartAndComplete();
 }
 
 public void getItem(Item item) {
 	synchronized (renderLockObject) {
 		inventory.add(item);
 	}
-	Tendiwa.waitForAnimationToStartAndComplete();
+	backend.waitForAnimationToStartAndComplete();
 }
 
 public void getItem(ItemType type) {
@@ -455,7 +460,7 @@ public void loseItem(Item item) {
 			inventory.removeUnique((UniqueItem) item);
 		}
 	}
-	Tendiwa.waitForAnimationToStartAndComplete();
+	backend.waitForAnimationToStartAndComplete();
 }
 
 public void addEffect(int effectId, int duration, int modifier) {
@@ -539,17 +544,21 @@ public HorizontalPlane getPlane() {
 	return plane;
 }
 
+public void setPlane(HorizontalPlane plane) {
+	this.plane = plane;
+}
+
 public void pickUp(Item item) {
 	synchronized (renderLockObject) {
 		backend.emitEvent(new EventItemDisappear(x, y, item));
 		plane.getItems(x, y).removeItem(item);
 	}
-	Tendiwa.waitForAnimationToStartAndComplete();
+	backend.waitForAnimationToStartAndComplete();
 	synchronized (renderLockObject) {
 		backend.emitEvent(new EventGetItem(item));
 		getItem(item);
 	}
-	Tendiwa.waitForAnimationToStartAndComplete();
+	backend.waitForAnimationToStartAndComplete();
 }
 
 public ItemCollection getInventory() {
@@ -569,17 +578,17 @@ public void propel(Item item, int x, int y) {
 	synchronized (renderLockObject) {
 		loseItem(item);
 	}
-	Tendiwa.waitForAnimationToStartAndComplete();
+	backend.waitForAnimationToStartAndComplete();
 	synchronized (renderLockObject) {
 		backend.emitEvent(new EventProjectileFly(item, this.x, this.y, x, y, EventProjectileFly.FlightStyle.CAST));
 	}
-	Tendiwa.waitForAnimationToStartAndComplete();
+	backend.waitForAnimationToStartAndComplete();
 	synchronized (renderLockObject) {
 		backend.emitEvent(new EventItemAppear(item, x, y));
 		Chunk chunkWithCell = plane.getChunkWithCell(x, y);
 		chunkWithCell.addItem(item, x, y);
 	}
-	Tendiwa.waitForAnimationToStartAndComplete();
+	backend.waitForAnimationToStartAndComplete();
 }
 
 /**
@@ -607,7 +616,7 @@ public void shoot(UniqueItem weapon, Item projectile, int toX, int toY) {
 			EventProjectileFly.FlightStyle.PROPELLED
 		));
 	}
-	Tendiwa.waitForAnimationToStartAndComplete();
+	backend.waitForAnimationToStartAndComplete();
 
 	if (flight.characterHit != null) {
 		flight.characterHit.getDamage(10, DamageType.PLAIN, this);
@@ -617,7 +626,7 @@ public void shoot(UniqueItem weapon, Item projectile, int toX, int toY) {
 		Chunk chunkWithCell = plane.getChunkWithCell(toX, toY);
 		chunkWithCell.addItem(projectile, toX, toY);
 	}
-	Tendiwa.waitForAnimationToStartAndComplete();
+	backend.waitForAnimationToStartAndComplete();
 }
 
 private ProjectileFlight computeProjectileFlightEndCoordinate(UniqueItem weapon, Item projectile, int toX, int toY) {
@@ -702,6 +711,14 @@ public int getHp() {
 
 public int getMaxHp() {
 	return maxHp;
+}
+
+public World getWorld() {
+	return world;
+}
+
+public void setWorld(World world) {
+	this.world = world;
 }
 
 private class ProjectileFlight {
