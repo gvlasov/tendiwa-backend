@@ -16,7 +16,7 @@ public void setCharacter(Character playerCharacter) {
 
 @Override
 public Character get() {
-	assert playerCharacter != null;
+//	assert playerCharacter != null;
 	return playerCharacter;
 }
 }

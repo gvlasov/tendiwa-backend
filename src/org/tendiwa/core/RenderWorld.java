@@ -5,6 +5,7 @@ import com.google.inject.name.Named;
 import org.tendiwa.core.events.EventFovChange;
 import org.tendiwa.core.events.EventInitialTerrain;
 import org.tendiwa.core.events.EventMoveToPlane;
+import org.tendiwa.core.factories.RenderPlaneFactory;
 import org.tendiwa.core.observation.EventEmitter;
 import org.tendiwa.core.observation.Observable;
 import org.tendiwa.core.observation.Observer;
@@ -14,12 +15,14 @@ import java.util.Map;
 
 public class RenderWorld {
 private final World world;
+private final RenderPlaneFactory renderPlaneFactory;
 Map<Integer, RenderPlane> planes = new HashMap<>();
 private RenderPlane currentPlane;
 
 @Inject
-RenderWorld(@Named("tendiwa") Observable model, @Named("current_player_world") final World world) {
+RenderWorld(@Named("tendiwa") Observable model, @Named("current_player_world") final World world, RenderPlaneFactory renderPlaneFactory) {
 	this.world = world;
+	this.renderPlaneFactory = renderPlaneFactory;
 	model.subscribe(new Observer<EventFovChange>() {
 		@Override
 		public void update(EventFovChange event, EventEmitter<EventFovChange> emitter) {
@@ -34,7 +37,6 @@ RenderWorld(@Named("tendiwa") Observable model, @Named("current_player_world") f
 		}
 	}, EventInitialTerrain.class);
 	model.subscribe(new Observer<EventMoveToPlane>() {
-
 		@Override
 		public void update(EventMoveToPlane event, EventEmitter<EventMoveToPlane> emitter) {
 			getCurrentPlane().unseeAllCells();
@@ -48,11 +50,10 @@ RenderWorld(@Named("tendiwa") Observable model, @Named("current_player_world") f
 
 		}
 	}, EventMoveToPlane.class);
-
 }
 
 public RenderPlane createPlane(int zLevel) {
-	RenderPlane value = new RenderPlane(world, world.getPlane(zLevel));
+	RenderPlane value = renderPlaneFactory.create(world, world.getPlane(zLevel));
 	planes.put(zLevel, value);
 	return value;
 }

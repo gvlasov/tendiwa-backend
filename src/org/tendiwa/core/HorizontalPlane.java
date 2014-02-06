@@ -34,6 +34,7 @@ private World world;
  * @param world
  * 	World in which this HorizontalPlane resides.
  */
+
 HorizontalPlane(int width, int height, World world, int level) {
 	this.world = world;
 	chunks = new Chunk[width / Chunk.SIZE + 1][height / Chunk.SIZE + 1];

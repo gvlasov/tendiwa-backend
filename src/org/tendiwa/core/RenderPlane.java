@@ -1,6 +1,8 @@
 package org.tendiwa.core;
 
 import com.google.common.collect.*;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import org.tendiwa.core.events.EventFovChange;
 import org.tendiwa.core.events.EventInitialTerrain;
 
@@ -23,7 +25,11 @@ private Multimap<Integer, RememberedItem> unseenItems = HashMultimap.create();
 private Table<Integer, CardinalDirection, RenderBorder> unseenBorderObjects = HashBasedTable.create();
 private Map<Border, RenderBorder> borders = new HashMap<>();
 
-RenderPlane(World world, HorizontalPlane backendPlane) {
+@Inject
+RenderPlane(
+	@Assisted World world,
+	@Assisted HorizontalPlane backendPlane
+) {
 	this.world = world;
 	this.backendPlane = backendPlane;
 }

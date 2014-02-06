@@ -10,11 +10,8 @@ import org.tendiwa.core.events.EventSelectPlayerCharacter;
 import org.tendiwa.core.events.EventWield;
 import org.tendiwa.core.observation.Observable;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
 
 @Singleton
 public class Tendiwa extends Observable {
@@ -26,46 +23,12 @@ private static List<Class<? extends Module>> modulesCreatingWorlds;
 private static Injector injector;
 public final org.apache.log4j.Logger logger = Logger.getLogger("org/tendiwa");
 public final Server SERVER = Server.SERVER;
-private final Thread SERVER_THREAD;
-private final String CLIENT_CONF_FILE;
+private Thread SERVER_THREAD;
 
 @Inject
 public Tendiwa() {
 	initEmitters();
-	// Run game server and client.
-	ClassLoader classLoader = Tendiwa.class.getClassLoader();
 
-	// Loading modules
-	List<Class<? extends Module>> modulesCreatingWorlds = loadModules();
-	WorldProvidingModule worldProvidingModule = (WorldProvidingModule) getInjector().getInstance(modulesCreatingWorlds.get(0));
-	createWorld(worldProvidingModule);
-
-	// Initializing client
-	CLIENT_CONF_FILE = "/client.conf";
-	InputStream clientConfStream = Tendiwa.class.getResourceAsStream(CLIENT_CONF_FILE);
-	Properties properties = new Properties();
-	if (clientConfStream == null) {
-		// Use default properties
-		properties.setProperty("client", "org.tendiwa.client.TendiwaLibgdxClient");
-	} else {
-		try {
-			properties.load(clientConfStream);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	// Starting server
-	SERVER_THREAD = new Thread(Server.SERVER);
-	SERVER_THREAD.start();
-
-//	// Starting client
-//	try {
-//		CLIENT = ((TendiwaClient) classLoader.loadClass(properties.getProperty("client")).newInstance());
-//	} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-//		e.printStackTrace();
-//	}
-//	CLIENT.startup();
 }
 
 public static Injector getInjector() {
@@ -131,6 +94,13 @@ private void initEmitters() {
 }
 
 public void start() {
+	// Loading modules
+	List<Class<? extends Module>> modulesCreatingWorlds = loadModules();
+	WorldProvidingModule worldProvidingModule = (WorldProvidingModule) getInjector().getInstance(modulesCreatingWorlds.get(0));
+	createWorld(worldProvidingModule);
 
+	// Starting server
+	SERVER_THREAD = new Thread(Server.SERVER);
+	SERVER_THREAD.start();
 }
 }

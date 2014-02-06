@@ -48,8 +48,8 @@ private Collection<Spell> spells = new HashSet<>();
 @Inject
 public Character(
 	@Named("tendiwa") Observable backend,
-	@Assisted int x,
-	@Assisted int y,
+	@Assisted("x") int x,
+	@Assisted("y") int y,
 	@Assisted CharacterType type,
 	@Assisted String name
 ) {
