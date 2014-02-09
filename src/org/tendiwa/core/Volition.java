@@ -16,7 +16,11 @@ private final Character player;
 private final World world;
 
 @Inject
-Volition(@Named("tendiwa") Observable model, @Named("player") Character player, @Named("current_player_world") World world) {
+Volition(
+	@Named("tendiwa") Observable model,
+	@Named("player") Character player,
+	@Named("current_player_world") World world
+) {
 	this.model = model;
 	this.player = player;
 	this.world = world;
@@ -41,7 +45,7 @@ public void attack(Character aim) {
 
 public void drop(Item item) {
 	if (!player.getInventory().contains(item)) {
-		throw new RuntimeException("Attempt to drop an item that PlayerCharacter doens't have");
+		throw new RuntimeException("Attempt to drop an item that PlayerCharacter doesn't have");
 	}
 	player.drop(item);
 }

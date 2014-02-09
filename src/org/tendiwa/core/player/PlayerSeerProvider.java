@@ -1,21 +1,25 @@
-package org.tendiwa.core;
+package org.tendiwa.core.player;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import org.tendiwa.core.dependencies.PlayerCharacterProvider;
+import org.tendiwa.core.vision.Seer;
 
 @Singleton
-public class PlayerWorldProvider implements Provider<World> {
+public class PlayerSeerProvider implements Provider<Seer> {
 private final PlayerCharacterProvider playerCharacterProvider;
 
 @Inject
-PlayerWorldProvider(PlayerCharacterProvider playerCharacterProvider) {
+PlayerSeerProvider(
+	PlayerCharacterProvider playerCharacterProvider
+) {
+
 	this.playerCharacterProvider = playerCharacterProvider;
 }
 
 @Override
-public World get() {
-	return playerCharacterProvider.get().getWorld();
+public Seer get() {
+	return playerCharacterProvider.get().getSeer();
 }
 }

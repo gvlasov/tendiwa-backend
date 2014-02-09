@@ -11,7 +11,7 @@ private final static double EPSILON = 0.01;
 private final static double visionSourceDiameter = 0.7;
 public final ModifiableCellVisionCache visionCache;
 final CellVisionCache visionPrevious;
-private final World world;
+private World world;
 private final CellPosition character;
 private final SightPassabilityCriteria vision;
 /**
@@ -23,15 +23,18 @@ private final ObstaclesCache obstaclesCache;
 private final ModifiableBorderVisionCache borderVision;
 private final BorderVisionCache borderVisionPrevious;
 
-public Seer(World world, CellPosition character, SightPassabilityCriteria vision, ObstacleFindingStrategy strategy) {
-	this.world = world;
+public Seer(CellPosition character, SightPassabilityCriteria vision, ObstacleFindingStrategy strategy) {
 	this.character = character;
 	this.vision = vision;
-	this.obstaclesCache = new ObstaclesCache(world, character, strategy);
+	this.obstaclesCache = new ObstaclesCache(null, character, strategy);
 	this.visionCache = new ModifiableCellVisionCache(character);
 	this.visionPrevious = new CellVisionCache();
 	this.borderVision = new ModifiableBorderVisionCache(character);
 	this.borderVisionPrevious = new BorderVisionCache(character);
+}
+public void setWorld(World world) {
+	this.world = world;
+	obstaclesCache.setWorld(world);
 }
 
 /**

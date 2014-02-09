@@ -43,7 +43,7 @@ public <T extends Event> void emitEvent(T event) {
 }
 
 private <T extends Event> EventEmitter getEventEmitter(Class<T> clazz) {
-	assert eventEmitters.containsKey(clazz) : clazz.getCanonicalName();
+	assert eventEmitters.containsKey(clazz) : "No emitter for event class " + clazz.getCanonicalName();
 	return eventEmitters.get(clazz);
 
 }

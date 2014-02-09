@@ -10,7 +10,6 @@ import java.lang.*;
 public enum Server implements Runnable {
 	SERVER;
 private static Request currentRequest;
-private World WORLD;
 private boolean stopped = false;
 private int sleepTime = 100;
 private boolean hasRequestProcessing = false;
@@ -47,16 +46,6 @@ public void run() {
 //	Tendiwa.getServerThread().interrupt();
 //}
 
-public World getWorld() {
-	assert WORLD != null;
-	return WORLD;
-}
 
-void setWorld(WorldProvidingModule provider) {
-	this.WORLD = provider.createWorld();
-	for (Character character : WORLD.getTimeStream().getCharacters()) {
-		WORLD.getTimeStream().notifyNeighborsVisiblilty(character);
-	}
-}
 
 }

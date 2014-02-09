@@ -16,24 +16,10 @@ protected void configure() {
 	bind(Tendiwa.class).in(Scopes.SINGLETON);
 	bind(PlayerCharacterProvider.class)
 		.in(Scopes.SINGLETON);
-	bind(Character.class)
-		.annotatedWith(Names.named("player"))
-		.toProvider(PlayerCharacterProvider.class);
 	bind(Observable.class)
 		.annotatedWith(Names.named("tendiwa"))
 		.to(Tendiwa.class);
-	bind(World.class)
-		.annotatedWith(Names.named("current_player_world"))
-		.toProvider(PlayerWorldProvider.class);
-	bind(Seer.class)
-		.annotatedWith(Names.named("player_seer"))
-		.toProvider(PlayerSeerProvider.class);
-	bind(TimeStream.class)
-		.annotatedWith(Names.named("player_time_stream"))
-		.to(TimeStream.class)
-		.in(Scopes.SINGLETON);
 	install(new FactoryModuleBuilder()
-		.implement(Character.class, Character.class)
 		.build(CharacterFactory.class));
 	install(new FactoryModuleBuilder()
 		.build(TimeStreamFactory.class));

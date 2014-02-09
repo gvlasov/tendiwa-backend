@@ -66,7 +66,7 @@ public Character(
 	this.maxHp = type.getMaxHp();
 	assert maxHp != 0;
 	this.hp = maxHp;
-	this.seer = new Seer(world, this, new CharacterVisionCriteria(), new DefaultObstacleFindingStrategy(this));
+	this.seer = new Seer(this, new CharacterVisionCriteria(), new DefaultObstacleFindingStrategy(this));
 }
 
 public PathWalkerOverCharacters getPathWalkerOverCharacters() {
@@ -719,6 +719,7 @@ public World getWorld() {
 
 public void setWorld(World world) {
 	this.world = world;
+	seer.setWorld(world);
 }
 
 private class ProjectileFlight {

@@ -12,7 +12,6 @@ private final PlayerCharacterProvider playerCharacterProvider;
 
 @Inject
 PlayerSeerProvider(PlayerCharacterProvider playerCharacterProvider) {
-
 	this.playerCharacterProvider = playerCharacterProvider;
 }
 

@@ -6,9 +6,9 @@ import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import com.sun.nio.sctp.AssociationChangeNotification;
 import org.apache.log4j.Logger;
-import org.tendiwa.core.events.EventSelectPlayerCharacter;
-import org.tendiwa.core.events.EventWield;
+import org.tendiwa.core.events.*;
 import org.tendiwa.core.observation.Observable;
+import org.tendiwa.core.player.PlayerModule;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -28,12 +28,11 @@ private Thread SERVER_THREAD;
 @Inject
 public Tendiwa() {
 	initEmitters();
-
 }
 
 public static Injector getInjector() {
 	if (injector == null) {
-		injector = Guice.createInjector(new TendiwaBackendModule());
+		injector = Guice.createInjector(new TendiwaBackendModule(), new PlayerModule());
 	}
 	return injector;
 }
@@ -81,23 +80,34 @@ public static Module getMainModule() {
 	}
 }
 
-public static void createWorld(WorldProvidingModule worldProvidingModule) {
-	Server.SERVER.setWorld(worldProvidingModule);
-	if (Server.SERVER.getWorld().getPlayer() == null) {
-		throw new RuntimeException("WorldProvidingModule module did not specify the initial position of player character");
-	}
-}
-
 private void initEmitters() {
 	createEventEmitter(EventWield.class);
+	createEventEmitter(EventGetDamage.class);
+	createEventEmitter(EventGetItem.class);
+	createEventEmitter(EventLoseItem.class);
+	createEventEmitter(EventFovChange.class);
 	createEventEmitter(EventSelectPlayerCharacter.class);
+	createEventEmitter(EventInitialTerrain.class);
+	createEventEmitter(EventMoveToPlane.class);
+	createEventEmitter(EventPutOn.class);
+	createEventEmitter(EventTakeOff.class);
+	createEventEmitter(EventWield.class);
+	createEventEmitter(EventUnwield.class);
+	createEventEmitter(EventMove.class);
+	createEventEmitter(EventItemAppear.class);
+	createEventEmitter(EventItemDisappear.class);
+	createEventEmitter(EventSound.class);
+	createEventEmitter(EventDie.class);
+	createEventEmitter(EventAttack.class);
+	createEventEmitter(EventAttack.class);
+	createEventEmitter(EventProjectileFly.class);
 }
 
 public void start() {
 	// Loading modules
 	List<Class<? extends Module>> modulesCreatingWorlds = loadModules();
 	WorldProvidingModule worldProvidingModule = (WorldProvidingModule) getInjector().getInstance(modulesCreatingWorlds.get(0));
-	createWorld(worldProvidingModule);
+	worldProvidingModule.createWorld();
 
 	// Starting server
 	SERVER_THREAD = new Thread(Server.SERVER);

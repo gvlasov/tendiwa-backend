@@ -18,7 +18,7 @@ import java.util.*;
  */
 class ObstaclesCache implements Iterable<Border> {
 private final ObstacleFindingStrategy strategy;
-private final World world;
+private World world;
 private Collection<Border> obstacles = new LinkedList<>();
 private boolean built;
 private Map<Border, CardinalDirection> obstaclesOnSeersCellBorder = new HashMap<>();
@@ -26,7 +26,11 @@ private Map<Border, EnhancedPoint> obstacleToObjectPosition = new HashMap<>();
 private Multimap<EnhancedPoint, Border> objectPositionToObstacle = HashMultimap.create();
 private CellPosition position;
 
-ObstaclesCache(World world, CellPosition position, ObstacleFindingStrategy strategy) {
+ObstaclesCache(
+	World world,
+	CellPosition position,
+	ObstacleFindingStrategy strategy
+) {
 	this.world = world;
 	this.position = position;
 	this.strategy = strategy;
@@ -199,5 +203,9 @@ Border findObstacleBorder(int x, int y, CardinalDirection side) {
 		}
 	}
 	return null;
+}
+
+public void setWorld(World world) {
+	this.world = world;
 }
 }

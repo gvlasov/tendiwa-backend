@@ -1,6 +1,7 @@
 package org.tendiwa.core;
 
 import com.google.inject.name.Named;
+import org.tendiwa.core.dependencies.PlayerCharacterProvider;
 import org.tendiwa.core.factories.TimeStreamFactory;
 
 import java.util.HashMap;
@@ -14,6 +15,7 @@ protected final int height;
 final HorizontalPlane defaultPlane;
 private final EnhancedRectangle rectangle;
 private final TimeStreamFactory timeStreamFactory;
+private final PlayerCharacterProvider playerCharacterProvider;
 private Character playerCharacter;
 private TimeStream timeStream;
 private HashMap<Integer, HorizontalPlane> planes = new HashMap<>();
@@ -21,9 +23,11 @@ private HashMap<Integer, HorizontalPlane> planes = new HashMap<>();
 public World(
 	int width,
 	int height,
-	TimeStreamFactory timeStreamFactory
+	TimeStreamFactory timeStreamFactory,
+    PlayerCharacterProvider playerCharacterProvider
 ) {
 	this.timeStreamFactory = timeStreamFactory;
+	this.playerCharacterProvider = playerCharacterProvider;
 	this.rectangle = new EnhancedRectangle(0, 0, width, height);
 	this.width = width;
 	this.height = height;
@@ -64,13 +68,6 @@ public Character getPlayer() {
 	return playerCharacter;
 }
 
-public void setPlayerCharacter(Character playerCharacter) {
-	this.playerCharacter = playerCharacter;
-	this.timeStream = timeStreamFactory.create();
-	playerCharacter.setPlane(defaultPlane);
-	timeStream.addPlayerCharacter(playerCharacter);
-	playerCharacter.setTimeStream(timeStream);
-}
 
 public int getWidth() {
 	return width;
