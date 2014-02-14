@@ -1,9 +1,6 @@
 package org.tendiwa.core;
 
-import com.google.inject.name.Named;
-import org.tendiwa.core.dependencies.PlayerCharacterProvider;
-import org.tendiwa.core.factories.TimeStreamFactory;
-
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -14,20 +11,13 @@ protected final int width;
 protected final int height;
 final HorizontalPlane defaultPlane;
 private final EnhancedRectangle rectangle;
-private final TimeStreamFactory timeStreamFactory;
-private final PlayerCharacterProvider playerCharacterProvider;
 private Character playerCharacter;
-private TimeStream timeStream;
 private HashMap<Integer, HorizontalPlane> planes = new HashMap<>();
 
 public World(
 	int width,
-	int height,
-	TimeStreamFactory timeStreamFactory,
-    PlayerCharacterProvider playerCharacterProvider
+	int height
 ) {
-	this.timeStreamFactory = timeStreamFactory;
-	this.playerCharacterProvider = playerCharacterProvider;
 	this.rectangle = new EnhancedRectangle(0, 0, width, height);
 	this.width = width;
 	this.height = height;
@@ -68,7 +58,6 @@ public Character getPlayer() {
 	return playerCharacter;
 }
 
-
 public int getWidth() {
 	return width;
 }
@@ -86,7 +75,7 @@ public Character addCharacter(NonPlayerCharacter character) {
 		throw new RuntimeException("Could not place a character because the whole world is non-passable");
 	}
 	defaultPlane.addCharacter(character);
-	timeStream.addNonPlayerCharacter(character);
+//	timeStream.addNonPlayerCharacter(character);
 	return character;
 
 }
@@ -107,16 +96,12 @@ public Character addPlayerCharacter(Character character) {
 		throw new RuntimeException("Could not place player character because the whole world is non-passable");
 	}
 	defaultPlane.addCharacter(playerCharacter);
-	timeStream.addPlayerCharacter(playerCharacter);
+//	timeStream.addPlayerCharacter(playerCharacter);
 	Set<Chunk> chunks = defaultPlane.getChunksAroundCoordinate(character.getX(), character.getY(), Chunk.SIZE * 5);
 	for (Chunk chunk : chunks) {
-		timeStream.addChunk(chunk);
+//		timeStream.addChunk(chunk);
 	}
 	return playerCharacter;
-}
-
-public TimeStream getTimeStream() {
-	return timeStream;
 }
 
 /**
@@ -145,5 +130,9 @@ public HorizontalPlane getPlane(int level) {
 public EnhancedRectangle asRectangle() {
 	return rectangle;
 
+}
+
+public Collection<HorizontalPlane> getPlanes() {
+	return planes.values();
 }
 }

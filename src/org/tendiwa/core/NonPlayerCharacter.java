@@ -2,6 +2,7 @@ package org.tendiwa.core;
 
 import org.tendiwa.core.meta.Coordinate;
 import org.tendiwa.core.observation.Observable;
+import org.tendiwa.core.player.SinglePlayerMode;
 import org.tendiwa.core.vision.Seer;
 
 import java.util.ArrayList;
@@ -23,8 +24,8 @@ private HashSet<Character> unseenEnemies = new HashSet<>();
 private int[][] pathTable;
 private Dialogue dialogue;
 
-public NonPlayerCharacter(Observable backend, int x, int y, CharacterType type, String name) {
-	super(backend, x, y, type, name);
+public NonPlayerCharacter(SinglePlayerMode singlePlayerMode, Observable backend, int x, int y, CharacterType type, String name) {
+	super(backend, x, y, type, name, singlePlayerMode);
 	ep = 100;
 	maxEp = 100;
 	pathTable = new int[PATH_TABLE_WIDTH][PATH_TABLE_WIDTH];

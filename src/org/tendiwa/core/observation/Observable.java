@@ -7,39 +7,45 @@ import java.util.Set;
 
 public abstract class Observable {
 
-private static final Object lock = new Object();
+private final Object lock = new Object();
 private final Map<Class<? extends Event>, EventEmitter<? extends Event>> eventEmitters = new HashMap<>();
 private final Set<EventEmitter<? extends Event>> checkedOutEmitters = new HashSet<>();
 private boolean isBusy = false;
 
-public static Object getLock() {
+public Object getLock() {
 	return lock;
 }
 
 public <T extends Event> void createEventEmitter(Class<T> eventType) {
-	eventEmitters.put(eventType, new EventEmitter<T>(this));
+	assert !eventEmitters.containsKey(eventType);
+	EventEmitter<T> emitter = new EventEmitter<>(this);
+	eventEmitters.put(eventType, emitter);
+	boolean add = checkedOutEmitters.add(emitter);
+	assert add;
 }
 
 public <T extends Event> void subscribe(Observer<T> observer, Class<T> clazz) {
 	getEventEmitter(clazz).subscribe(observer);
 }
 
-public <T extends Event> void emitEvent(T event) {
+public synchronized <T extends Event> void emitEvent(T event) {
 	isBusy = true;
+	checkedOutEmitters.clear();
 	getEventEmitter(event.getClass()).emitEvent(event);
 	boolean alreadyReady = true;
-	for (EventEmitter emitter : eventEmitters.values()) {
-		if (!emitter.areAllSubscribersCheckedOut()) {
+	for (Map.Entry<Class<? extends Event>, EventEmitter<? extends Event>> e : eventEmitters.entrySet()) {
+		if (!e.getValue().areAllSubscribersCheckedOut()) {
 			alreadyReady = false;
-			break;
+		} else {
+			checkedOutEmitters.add(e.getValue());
 		}
 	}
 	if (alreadyReady) {
 		isBusy = false;
 		checkedOutEmitters.addAll(eventEmitters.values());
 		onAllEmittersCheckedOut();
-		checkedOutEmitters.clear();
 	}
+	this.notify();
 }
 
 private <T extends Event> EventEmitter getEventEmitter(Class<T> clazz) {
@@ -54,19 +60,22 @@ private <T extends Event> EventEmitter getEventEmitter(Class<T> clazz) {
 	if (areAllEmittersCheckedOut()) {
 		isBusy = false;
 		onAllEmittersCheckedOut();
-		checkedOutEmitters.clear();
+//		checkedOutEmitters.clear();
 	}
 }
 
 public boolean areAllEmittersCheckedOut() {
-	return !isBusy;
+	return checkedOutEmitters.size() == eventEmitters.size();
 }
 
 public void waitForAnimationToStartAndComplete() {
+	System.out.println("backend try wait");
 	synchronized (lock) {
 		if (!areAllEmittersCheckedOut()) {
+			System.out.println("backend wait");
 			try {
 				lock.wait();
+				System.out.println("backend woken in " + Thread.currentThread().getName());
 			} catch (InterruptedException ignored) {
 			}
 		}
@@ -75,6 +84,7 @@ public void waitForAnimationToStartAndComplete() {
 
 public void onAllEmittersCheckedOut() {
 	synchronized (lock) {
+		System.out.println("notify from " + Thread.currentThread().getName());
 		lock.notify();
 	}
 }

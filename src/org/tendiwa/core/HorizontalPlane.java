@@ -1,7 +1,9 @@
 package org.tendiwa.core;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterators;
 
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -241,8 +243,9 @@ public BorderObject getBorderObject(int x, int y, CardinalDirection side) {
 public BorderObject getBorderObject(Border border) {
 	return getChunkWithCell(border.x, border.y).getBorderObject(border);
 }
+
 public boolean hasBorderObject(Border border) {
-	return  getChunkWithCell(border.x, border.y).hasBorderObject(border.x, border.y, border.side);
+	return getChunkWithCell(border.x, border.y).hasBorderObject(border.x, border.y, border.side);
 }
 
 public boolean hasBorderObject(int x, int y, CardinalDirection side) {
@@ -268,4 +271,19 @@ public boolean containsCell(int x, int y) {
 	return x >= 0 && y >= 0 && x < world.getWidth() && y < world.getHeight();
 }
 
+public Iterable<Chunk> getChunks() {
+	final Chunk[] chunks1 = new Chunk[chunks.length * chunks[0].length];
+	int i = 0;
+	for (Chunk[] row : chunks) {
+		for (Chunk chunk : row) {
+			chunks1[i++] = chunk;
+		}
+	}
+	return new Iterable<Chunk>() {
+		@Override
+		public Iterator<Chunk> iterator() {
+			return Iterators.forArray(chunks1);
+		}
+	};
+}
 }

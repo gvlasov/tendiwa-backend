@@ -182,13 +182,11 @@ private void unseeBorders(ImmutableList<Border> unseenBorders) {
 
 private void seeBorders(ImmutableList<RenderBorder> seenBorders) {
 	for (RenderBorder border : seenBorders) {
-		System.out.println(border);
 		seeBorder(border);
 		if (hasUnseenBorderObject(border) && border.getObject() == null) {
 			removeUnseenBorder(border);
 		}
 	}
-	System.out.println(borders.containsKey(new Border(16, 1, Directions.N)));
 }
 
 private void unseeCells(ImmutableList<Integer> unseenCells) {
@@ -204,7 +202,6 @@ private void unseeCells(ImmutableList<Integer> unseenCells) {
 }
 
 public void updateFieldOfView(EventFovChange event) {
-	System.out.println(borders.containsKey(new Border(16, 1, Directions.N)));
 	unseeCells(event.unseenCells);
 	seeCells(event.seenCells);
 	unseeBorders(event.unseenBorders);
@@ -230,7 +227,9 @@ private void seeCells(ImmutableList<RenderCell> seenCells) {
 public void seeCell(RenderCell cell) {
 	assert cell != null;
 	int key = cellHash(cell.x, cell.y);
-	assert !cells.containsKey(key) || !cells.get(key).isVisible() : "Cell " + cell.getX() + ":" + cell.getY() + " is already visible";
+	assert !cells.containsKey(key)
+		|| !cells.get(key).isVisible()
+		: "Cell " + cell.getX() + ":" + cell.getY() + " is already visible";
 	cells.put(key, cell);
 }
 
@@ -266,6 +265,5 @@ private void removeUnseenBorder(RenderBorder border) {
 public void initFieldOfView(EventInitialTerrain e) {
 	seeCells(e.seenCells);
 	seeBorders(e.seenBorders);
-
 }
 }

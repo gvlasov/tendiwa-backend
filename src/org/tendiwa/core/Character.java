@@ -6,7 +6,9 @@ import com.google.inject.name.Named;
 import org.tendiwa.core.events.*;
 import org.tendiwa.core.meta.CellPosition;
 import org.tendiwa.core.meta.Coordinate;
+import org.tendiwa.core.observation.Event;
 import org.tendiwa.core.observation.Observable;
+import org.tendiwa.core.player.SinglePlayerMode;
 import org.tendiwa.core.vision.Seer;
 import org.tendiwa.core.vision.SightPassabilityCriteria;
 
@@ -15,7 +17,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public class Character implements CellPosition, PlaceableInCell, PathWalker, DamageSource {
-public static final Object renderLockObject = Tendiwa.getLock();
 public final int id = new UniqueObject().id;
 public final ItemCollection inventory = new ItemCollection();
 public final Equipment equipment = new Equipment(2, ApparelSlot.values());
@@ -24,6 +25,7 @@ protected final String name;
 protected final HashMap<Integer, Character.Effect> effects = new HashMap<>();
 final CharacterType type;
 private final Observable backend;
+private final SinglePlayerMode singlePlayerMode;
 protected Body body;
 protected int actionPoints;
 protected int ep;
@@ -51,11 +53,13 @@ public Character(
 	@Assisted("x") int x,
 	@Assisted("y") int y,
 	@Assisted CharacterType type,
-	@Assisted String name
+	@Assisted String name,
+	SinglePlayerMode singlePlayerMode
 ) {
 	// Common character creation: with all attributes, in location.
 	super();
 	this.backend = backend;
+	this.singlePlayerMode = singlePlayerMode;
 	assert type != null;
 	this.type = type;
 	this.name = name;
@@ -78,12 +82,22 @@ public PathWalkerOverCharacters getPathWalkerOverCharacters() {
 
 /* Actions */
 public void attack(Character aim) {
-	synchronized (renderLockObject) {
+	synchronized (backend.getLock()) {
 		backend.emitEvent(new EventAttack(this, aim));
 	}
 	backend.waitForAnimationToStartAndComplete();
 	aim.getDamage(7, DamageType.PLAIN, this);
 	moveInTime(500);
+}
+
+public void emitEvent(Event event) {
+	backend.emitEvent(event);
+}
+public void actAndWait(Runnable runnable) {
+	synchronized (backend.getLock()) {
+		runnable.run();
+	}
+	backend.waitForAnimationToStartAndComplete();
 }
 
 protected void shootMissile(int toX, int toY, ItemPile missile) {
@@ -115,33 +129,28 @@ protected void castSpell(int spellId, int x, int y) {
 }
 
 protected void die() {
-	synchronized (renderLockObject) {
+	synchronized (backend.getLock()) {
 		isAlive = false;
 		timeStream.claimCharacterDisappearance(this);
 		plane.getChunkWithCell(x, y).removeCharacter(this);
 		backend.emitEvent(new EventDie(this));
 	}
 	backend.waitForAnimationToStartAndComplete();
-
 }
 
 public void putOn(UniqueItem item) {
-	synchronized (renderLockObject) {
+	synchronized (backend.getLock()) {
 		inventory.removeUnique(item);
 		equipment.putOn(item);
-		if (isPlayer()) {
-			backend.emitEvent(new EventPutOn(this, item));
-		}
+//		if (isPlayer()) {
+		backend.emitEvent(new EventPutOn(this, item));
+//		}
 	}
 	moveInTime(500);
 }
 
-public boolean isPlayer() {
-	return this == world.getPlayer();
-}
-
 public void wield(Item item) {
-	synchronized (renderLockObject) {
+	synchronized (backend.getLock()) {
 		if (item.getType().isStackable()) {
 			ItemPile itemPile = (ItemPile) item;
 			ItemPile pile = new ItemPile(itemPile.getType(), 1);
@@ -156,7 +165,7 @@ public void wield(Item item) {
 }
 
 public void cease(Item item) {
-	synchronized (renderLockObject) {
+	synchronized (backend.getLock()) {
 		inventory.add(item);
 		equipment.cease(item);
 		backend.emitEvent(new EventUnwield(this, item));
@@ -164,7 +173,7 @@ public void cease(Item item) {
 }
 
 public void takeOff(UniqueItem item) {
-	synchronized (renderLockObject) {
+	synchronized (backend.getLock()) {
 		inventory.add(item);
 		equipment.takeOff(item);
 		backend.emitEvent(new EventTakeOff(this, item));
@@ -340,17 +349,17 @@ public String getName() {
 public void move(int x, int y, MovingStyle movingStyle) {
 	int xPrev = this.x;
 	int yPrev = this.y;
-	synchronized (renderLockObject) {
-		backend.emitEvent(new EventMove(xPrev, yPrev, this, movingStyle));
+	synchronized (backend.getLock()) {
 		plane.removeCharacter(this);
 		this.x = x;
 		this.y = y;
 		plane.addCharacter(this);
+		backend.emitEvent(new EventMove(xPrev, yPrev, this, movingStyle));
 	}
 	backend.waitForAnimationToStartAndComplete();
 	timeStream.notifyNeighborsVisiblilty(this);
-	if (isPlayer()) {
-		synchronized (renderLockObject) {
+	if (singlePlayerMode.isPlayer(this)) {
+		synchronized (backend.getLock()) {
 			seer.storeVisionCacheToPreviousVisionCache();
 			seer.invalidateVisionCache();
 			seer.computeFullVisionCache();
@@ -381,7 +390,7 @@ public void move(int x, int y, MovingStyle movingStyle) {
  * 	How many planes to go up. May be negative to go down.
  */
 public void moveByPlane(int dz) {
-	synchronized (renderLockObject) {
+	synchronized (backend.getLock()) {
 		plane.removeCharacter(this);
 		plane = world.getPlane(plane.getLevel() + dz);
 		plane.addCharacter(this);
@@ -400,7 +409,7 @@ public void spendActionPoints(int amount) {
 
 public void getDamage(int amount, DamageType type, DamageSource damageSource) {
 	this.hp -= amount;
-	synchronized (renderLockObject) {
+	synchronized (backend.getLock()) {
 		backend.emitEvent(new EventGetDamage(this, amount, damageSource, type));
 	}
 	backend.waitForAnimationToStartAndComplete();
@@ -426,14 +435,14 @@ protected void removeEffect(CharacterEffect effect) {
 }
 
 public void say(String message) {
-	synchronized (renderLockObject) {
+	synchronized (backend.getLock()) {
 		backend.emitEvent(new EventSay(message, this));
 	}
 	backend.waitForAnimationToStartAndComplete();
 }
 
 public void getItem(Item item) {
-	synchronized (renderLockObject) {
+	synchronized (backend.getLock()) {
 		inventory.add(item);
 	}
 	backend.waitForAnimationToStartAndComplete();
@@ -452,7 +461,7 @@ public void getItem(ItemType type, int amount) {
 }
 
 public void loseItem(Item item) {
-	synchronized (renderLockObject) {
+	synchronized (backend.getLock()) {
 		backend.emitEvent(new EventLoseItem(item));
 		if (item.getType().isStackable()) {
 			inventory.removePile((ItemPile) item);
@@ -479,7 +488,7 @@ public void removeEffect(int effectId) {
 protected void moveInTime(int amount) {
 	spendActionPoints(amount);
 	Character nextCharacter = timeStream.next();
-	if (!nextCharacter.isPlayer()) {
+	if (!singlePlayerMode.isPlayer(nextCharacter)) {
 		((NonPlayerCharacter) nextCharacter).action();
 	}
 	for (Character.Effect e : effects.values()) {
@@ -497,7 +506,7 @@ public boolean at(int atX, int atY) {
 }
 
 public boolean isEnemy(Character ch) {
-	return ch.isPlayer() != this.isPlayer();
+	return singlePlayerMode.isPlayer(ch) != singlePlayerMode.isPlayer(this);
 }
 
 public TimeStream getTimeStream() {
@@ -549,12 +558,12 @@ public void setPlane(HorizontalPlane plane) {
 }
 
 public void pickUp(Item item) {
-	synchronized (renderLockObject) {
+	synchronized (backend.getLock()) {
 		backend.emitEvent(new EventItemDisappear(x, y, item));
 		plane.getItems(x, y).removeItem(item);
 	}
 	backend.waitForAnimationToStartAndComplete();
-	synchronized (renderLockObject) {
+	synchronized (backend.getLock()) {
 		backend.emitEvent(new EventGetItem(item));
 		getItem(item);
 	}
@@ -575,15 +584,15 @@ public CharacterType getType() {
 
 public void propel(Item item, int x, int y) {
 	assert inventory.contains(item);
-	synchronized (renderLockObject) {
+	synchronized (backend.getLock()) {
 		loseItem(item);
 	}
 	backend.waitForAnimationToStartAndComplete();
-	synchronized (renderLockObject) {
+	synchronized (backend.getLock()) {
 		backend.emitEvent(new EventProjectileFly(item, this.x, this.y, x, y, EventProjectileFly.FlightStyle.CAST));
 	}
 	backend.waitForAnimationToStartAndComplete();
-	synchronized (renderLockObject) {
+	synchronized (backend.getLock()) {
 		backend.emitEvent(new EventItemAppear(item, x, y));
 		Chunk chunkWithCell = plane.getChunkWithCell(x, y);
 		chunkWithCell.addItem(item, x, y);
@@ -606,7 +615,7 @@ public void shoot(UniqueItem weapon, Item projectile, int toX, int toY) {
 	loseItem(projectile);
 
 	ProjectileFlight flight = computeProjectileFlightEndCoordinate(weapon, projectile, toX, toY);
-	synchronized (renderLockObject) {
+	synchronized (backend.getLock()) {
 		backend.emitEvent(new EventProjectileFly(
 			projectile,
 			x,
@@ -621,7 +630,7 @@ public void shoot(UniqueItem weapon, Item projectile, int toX, int toY) {
 	if (flight.characterHit != null) {
 		flight.characterHit.getDamage(10, DamageType.PLAIN, this);
 	}
-	synchronized (renderLockObject) {
+	synchronized (backend.getLock()) {
 		backend.emitEvent(new EventItemAppear(projectile, toX, toY));
 		Chunk chunkWithCell = plane.getChunkWithCell(toX, toY);
 		chunkWithCell.addItem(projectile, toX, toY);

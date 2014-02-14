@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.tendiwa.core.events.EventSound;
 import org.tendiwa.core.observation.Observable;
+import org.tendiwa.core.player.SinglePlayerMode;
 import org.tendiwa.lexeme.Localizable;
 import org.tendiwa.core.vision.Seer;
 
@@ -32,6 +33,7 @@ public class TimeStream {
  */
 public static int BASE_ENERGY = 500;
 private final Observable model;
+private final SinglePlayerMode singlePlayerMode;
 /**
  * All the Characters that take their turns in this TimeStream, both PlayerCharacters and NonPlayerCharacters.
  */
@@ -61,8 +63,12 @@ private HashSet<NonPlayerCharacter> nonPlayerCharacters = new HashSet<>();
  * PlayerCharacter's client receive events from this TimeStream and determines PlayerCharacter's turn queue.
  */
 @Inject
-public TimeStream(@Named("tendiwa") Observable model) {
+public TimeStream(
+	@Named("tendiwa") Observable model,
+    SinglePlayerMode singlePlayerMode
+) {
 	this.model = model;
+	this.singlePlayerMode = singlePlayerMode;
 	characters = new HashSet<>();
 }
 
@@ -256,7 +262,7 @@ public void claimCharacterDisappearance(Character character) {
 		ch.unsee(character);
 //		removeObserver(character, ch); this caused concurrent modification
 	}
-	if (!character.isPlayer()) {
+	if (!singlePlayerMode.isPlayer(character)) {
 		for (Character ch : observersOf.keySet()) {
 			removeObserver(ch, (NonPlayerCharacter) character);
 		}

@@ -1,22 +1,28 @@
 package org.tendiwa.core;
 
-import java.lang.*;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 /**
  * Server receives requests from the {@link TendiwaClient}, calls core methods on receiving such a request, sends
- * resulting {@link org.tendiwa.core.observation.Event}s to the client's receiving end and then sleeps until more requests are
- * done by client.
+ * resulting {@link org.tendiwa.core.observation.Event}s to the client's receiving end and then sleeps until more
+ * requests are done by client.
  */
-public enum Server implements Runnable {
-	SERVER;
+@Singleton
+public class Server extends Thread {
 private static Request currentRequest;
 private boolean stopped = false;
 private int sleepTime = 100;
 private boolean hasRequestProcessing = false;
 
+@Inject
+Server(
+) {
+	setName("Tendiwa Backend");
+}
 
-public static boolean hasRequestToProcess() {
-	return SERVER.hasRequestProcessing;
+public boolean hasRequestToProcess() {
+	return hasRequestProcessing;
 }
 
 public void setSleepTime(int sleepTime) {
@@ -38,6 +44,14 @@ public void run() {
 	}
 }
 
+public void passRequest(Request request) {
+	assert currentRequest == null : "Pushed " + request.getClass().getName() + " when there is already a request " + currentRequest.getClass().getName()
+		+ "; hasRequestProcessing = " + hasRequestProcessing;
+	hasRequestProcessing = true;
+	currentRequest = request;
+	interrupt();
+}
+
 //public void pushRequest(Request request) {
 //	assert currentRequest == null : "Pushed "+request.getClass().getName()+" when there is already a request "+currentRequest.getClass().getName()
 //		+"; hasRequestProcessing = "+ hasRequestProcessing;
@@ -45,7 +59,5 @@ public void run() {
 //	currentRequest = request;
 //	Tendiwa.getServerThread().interrupt();
 //}
-
-
 
 }

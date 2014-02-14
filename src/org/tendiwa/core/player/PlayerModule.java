@@ -19,7 +19,7 @@ protected void configure() {
 		.toProvider(PlayerWorldProvider.class);
 	bind(TimeStream.class)
 		.annotatedWith(Names.named("player"))
-		.to(TimeStream.class)
+		.toProvider(PlayerTimeStreamProvider.class)
 		.in(Scopes.SINGLETON);
 	bind(Seer.class)
 		.annotatedWith(Names.named("player_seer"))

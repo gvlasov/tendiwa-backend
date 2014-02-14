@@ -6,11 +6,8 @@ import org.tendiwa.core.dependencies.PlayerCharacterProvider;
 import org.tendiwa.core.events.EventFovChange;
 import org.tendiwa.core.events.EventInitialTerrain;
 import org.tendiwa.core.events.EventMoveToPlane;
-import org.tendiwa.core.events.EventSelectPlayerCharacter;
 import org.tendiwa.core.factories.RenderPlaneFactory;
-import org.tendiwa.core.observation.EventEmitter;
-import org.tendiwa.core.observation.Observable;
-import org.tendiwa.core.observation.Observer;
+import org.tendiwa.core.observation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,30 +20,32 @@ private RenderPlane currentPlane;
 
 @Inject
 RenderWorld(
-	@Named("tendiwa") Observable model,
+	ThreadProxy model,
 	@Named("current_player_world") final World world,
 	RenderPlaneFactory renderPlaneFactory,
-    PlayerCharacterProvider playerCharacterProvider
+	PlayerCharacterProvider playerCharacterProvider
 ) {
 	this.world = world;
 	this.renderPlaneFactory = renderPlaneFactory;
 	setCurrentPlane(playerCharacterProvider.get().getPlane());
 	model.subscribe(new Observer<EventFovChange>() {
 		@Override
-		public void update(EventFovChange event, EventEmitter<EventFovChange> emitter) {
+		public void update(EventFovChange event, Finishable<EventFovChange> emitter) {
 			getCurrentPlane().updateFieldOfView(event);
+			emitter.done(this);
 		}
 	}, EventFovChange.class);
 	model.subscribe(new Observer<EventInitialTerrain>() {
 		@Override
-		public void update(EventInitialTerrain event, EventEmitter<EventInitialTerrain> emitter) {
+		public void update(EventInitialTerrain event, Finishable<EventInitialTerrain> emitter) {
 			setCurrentPlane(world.getPlane(event.zLevel));
 			getCurrentPlane().initFieldOfView(event);
+			emitter.done(this);
 		}
 	}, EventInitialTerrain.class);
 	model.subscribe(new Observer<EventMoveToPlane>() {
 		@Override
-		public void update(EventMoveToPlane event, EventEmitter<EventMoveToPlane> emitter) {
+		public void update(EventMoveToPlane event, Finishable<EventMoveToPlane> emitter) {
 			getCurrentPlane().unseeAllCells();
 			setCurrentPlane(world.getPlane(event.zLevel));
 			for (RenderCell cell : event.seenCells) {
@@ -55,15 +54,17 @@ RenderWorld(
 					getCurrentPlane().removeUnseenItems(cell.x, cell.y);
 				}
 			}
+			emitter.done(this);
 
 		}
 	}, EventMoveToPlane.class);
-	model.subscribe(new Observer<EventSelectPlayerCharacter>() {
+	model.subscribe(new Observer<EventInitialTerrain>() {
 		@Override
-		public void update(EventSelectPlayerCharacter event, EventEmitter<EventSelectPlayerCharacter> emitter) {
+		public void update(EventInitialTerrain event, Finishable<EventInitialTerrain> emitter) {
 			setCurrentPlane(event.player.getPlane());
+			emitter.done(this);
 		}
-	}, EventSelectPlayerCharacter.class);
+	}, EventInitialTerrain.class);
 }
 
 public RenderPlane createPlane(int zLevel) {

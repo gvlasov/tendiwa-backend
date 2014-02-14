@@ -7,6 +7,7 @@ import org.tendiwa.core.vision.Seer;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -331,5 +332,9 @@ private int cellHash(int x, int y) {
 public boolean hasBorderObject(int x, int y, CardinalDirection side) {
 	assert side == Directions.N || side == Directions.W;
 	return borderObjects.contains(cellHash(x, y), side);
+}
+
+public Collection<Character> getCharacters() {
+	return characters.values();
 }
 }
