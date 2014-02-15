@@ -69,13 +69,10 @@ public boolean areAllEmittersCheckedOut() {
 }
 
 public void waitForAnimationToStartAndComplete() {
-	System.out.println("backend try wait");
 	synchronized (lock) {
 		if (!areAllEmittersCheckedOut()) {
-			System.out.println("backend wait");
 			try {
 				lock.wait();
-				System.out.println("backend woken in " + Thread.currentThread().getName());
 			} catch (InterruptedException ignored) {
 			}
 		}
@@ -84,7 +81,6 @@ public void waitForAnimationToStartAndComplete() {
 
 public void onAllEmittersCheckedOut() {
 	synchronized (lock) {
-		System.out.println("notify from " + Thread.currentThread().getName());
 		lock.notify();
 	}
 }

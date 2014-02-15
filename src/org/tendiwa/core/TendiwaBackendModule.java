@@ -6,6 +6,7 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
 import org.tendiwa.core.dependencies.PlayerCharacterProvider;
 import org.tendiwa.core.factories.CharacterFactory;
+import org.tendiwa.core.factories.NpcFactory;
 import org.tendiwa.core.factories.TimeStreamFactory;
 import org.tendiwa.core.observation.Observable;
 import org.tendiwa.core.observation.ThreadProxy;
@@ -26,6 +27,8 @@ protected void configure() {
 		.in(Scopes.SINGLETON);
 	install(new FactoryModuleBuilder()
 		.build(CharacterFactory.class));
+	install(new FactoryModuleBuilder()
+		.build(NpcFactory.class));
 	install(new FactoryModuleBuilder()
 		.build(TimeStreamFactory.class));
 }

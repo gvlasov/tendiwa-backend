@@ -26,11 +26,14 @@ TimeStreamManager(
 }
 
 public void populate(World world) {
+	TimeStream playerTimeStream = createTimeStream();
 	for (HorizontalPlane horizontalPlane : world.getPlanes()) {
 		for (Chunk chunk : horizontalPlane.getChunks()) {
 			for (Character character : chunk.getCharacters()) {
 				if (singlePlayerMode.isPlayer(character)) {
-					createTimeStream().addPlayerCharacter(character);
+					playerTimeStream.addPlayerCharacter(character);
+				} else {
+					playerTimeStream.addNonPlayerCharacter((NonPlayerCharacter) character);
 				}
 			}
 		}

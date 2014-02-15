@@ -20,6 +20,8 @@ private final RequestPickUp.Factory requestPickUpFactory;
 private final RequestPropel.Factory requestPropelFactory;
 private final RequestActionToCell.Factory requestActionToCellFactory;
 private final RequestActionWithoutTarget.Factory requestActionWithoutTargetFactory;
+private final RequestAttack.Factory requestAttackFactory;
+private final RequestIdle.Factory requestIdleFactory;
 private final Server server;
 
 @Inject
@@ -33,6 +35,8 @@ Volition(
 	RequestPropel.Factory requestPropelFactory,
 	RequestActionToCell.Factory requestActionToCellFactory,
 	RequestActionWithoutTarget.Factory requestActionWithoutTargetFactory,
+	RequestAttack.Factory requestAttackFactory,
+	RequestIdle.Factory requestIdleFactory,
 	Server server
 ) {
 	this.model = model;
@@ -44,6 +48,8 @@ Volition(
 	this.requestPropelFactory = requestPropelFactory;
 	this.requestActionToCellFactory = requestActionToCellFactory;
 	this.requestActionWithoutTargetFactory = requestActionWithoutTargetFactory;
+	this.requestAttackFactory = requestAttackFactory;
+	this.requestIdleFactory = requestIdleFactory;
 	this.server = server;
 }
 
@@ -61,7 +67,7 @@ public void actionWithoutTarget(ActionWithoutTarget action) {
 }
 
 public void attack(Character aim) {
-	player.attack(aim);
+	server.passRequest(requestAttackFactory.create(aim));
 }
 
 public void drop(Item item) {
@@ -69,10 +75,11 @@ public void drop(Item item) {
 		throw new RuntimeException("Attempt to drop an item that PlayerCharacter doesn't have");
 	}
 	player.drop(item);
+	throw new UnsupportedOperationException();
 }
 
 public void idle() {
-	player.idle();
+	server.passRequest(requestIdleFactory.create());
 }
 
 public void pickUp() {
@@ -81,10 +88,12 @@ public void pickUp() {
 
 public void putOn(UniqueItem item) {
 	player.putOn(item);
+	throw new UnsupportedOperationException();
 }
 
 public void say(String speech) {
 	player.say(speech);
+	throw new UnsupportedOperationException();
 }
 
 public void shoot(UniqueItem rangedWeapon, Item projectile, int toX, int toY) {
@@ -93,6 +102,7 @@ public void shoot(UniqueItem rangedWeapon, Item projectile, int toX, int toY) {
 
 public void takeOff(UniqueItem item) {
 	player.takeOff(item);
+	throw new UnsupportedOperationException();
 }
 
 public void propel(Item item, int x, int y) {
@@ -101,6 +111,7 @@ public void propel(Item item, int x, int y) {
 
 public void unwield(Item item) {
 	player.cease(item);
+	throw new UnsupportedOperationException();
 }
 
 public void move(Direction direction) {
@@ -109,5 +120,6 @@ public void move(Direction direction) {
 
 public void wield(Item item) {
 	player.wield(item);
+	throw new UnsupportedOperationException();
 }
 }

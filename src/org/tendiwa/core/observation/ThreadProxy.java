@@ -26,7 +26,7 @@ public <T extends Event> void subscribe(final Observer<T> observer, Class<T> cla
 	}, clazz);
 }
 
-public void waitForNextEventInCurrenFrame() {
+public void waitForNextEventInCurrentFrame() {
 	waitForNext = true;
 }
 
@@ -35,7 +35,6 @@ public void executeCollected() {
 		LinkedList<ProxyOccurrence> oldCollected = new LinkedList<>(collected);
 		collected.clear();
 		for (final ProxyOccurrence occurrence : oldCollected) {
-//			System.out.println(occurrence.event.getClass().getSimpleName()+" update");
 			occurrence.proxiedObserver.update(occurrence.event, new Finishable() {
 				@Override
 				public void done(Observer observer) {
@@ -46,10 +45,8 @@ public void executeCollected() {
 		if (waitForNext) {
 			if (collected.isEmpty()) {
 				synchronized (underlyingObservable) {
-					System.out.println("frontend wait");
 					try {
 						underlyingObservable.wait();
-						System.out.println("frontend woken");
 					} catch (InterruptedException ignored) {
 					}
 				}

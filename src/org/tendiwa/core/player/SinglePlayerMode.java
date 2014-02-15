@@ -18,8 +18,8 @@ SinglePlayerMode(
 }
 
 public void setPlayerCharacter(Character playerCharacter, World world) {
-	playerCharacter.setPlane(world.getDefaultPlane());
-	playerCharacter.setWorld(world);
+//	playerCharacter.setPlane(world.getDefaultPlane());
+//	playerCharacter.setWorld(world);
 	playerCharacterProvider.setCharacter(playerCharacter);
 //	model.emitEvent(new EventSelectPlayerCharacter(playerCharacter, world));
 }

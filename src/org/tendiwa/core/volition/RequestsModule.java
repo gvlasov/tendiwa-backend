@@ -18,5 +18,9 @@ protected void configure() {
 		.build(RequestActionToCell.Factory.class));
 	install(new FactoryModuleBuilder()
 		.build(RequestActionWithoutTarget.Factory.class));
+	install(new FactoryModuleBuilder()
+		.build(RequestAttack.Factory.class));
+	install(new FactoryModuleBuilder()
+		.build(RequestIdle.Factory.class));
 }
 }

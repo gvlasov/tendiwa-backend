@@ -152,6 +152,8 @@ void addCharacter(Character character) {
 		throw new RuntimeException("Trying to place character " + character + " in cell " + character.x + ":" + character.y + " where there is already character " + characters.get(key));
 	} else {
 		characters.put(key, character);
+		character.setPlane(plane);
+		character.setWorld(plane.getWorld());
 	}
 }
 

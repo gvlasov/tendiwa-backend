@@ -1,5 +1,8 @@
 package org.tendiwa.core;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.name.Named;
 import org.tendiwa.core.meta.Coordinate;
 import org.tendiwa.core.observation.Observable;
 import org.tendiwa.core.player.SinglePlayerMode;
@@ -24,7 +27,15 @@ private HashSet<Character> unseenEnemies = new HashSet<>();
 private int[][] pathTable;
 private Dialogue dialogue;
 
-public NonPlayerCharacter(SinglePlayerMode singlePlayerMode, Observable backend, int x, int y, CharacterType type, String name) {
+@Inject
+public NonPlayerCharacter(
+	SinglePlayerMode singlePlayerMode,
+	@Named("tendiwa") Observable backend,
+	@Assisted("x") int x,
+	@Assisted("y") int y,
+	@Assisted CharacterType type,
+	@Assisted String name
+) {
 	super(backend, x, y, type, name, singlePlayerMode);
 	ep = 100;
 	maxEp = 100;
