@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import org.tendiwa.core.EnhancedPoint;
 import org.tendiwa.core.Orientation;
-import org.tendiwa.core.Segment;
+import org.tendiwa.geometry.Segment;
 
 import com.google.common.collect.Lists;
 

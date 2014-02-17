@@ -1,8 +1,11 @@
 package org.tendiwa.core;
 
 import org.tendiwa.core.meta.Chance;
-import org.tendiwa.core.meta.Coordinate;
-import org.tendiwa.core.terrain.settlements.BuildingPlace;
+import org.tendiwa.core.settlements.BuildingPlace;
+import org.tendiwa.geometry.EnhancedRectangle;
+import org.tendiwa.geometry.RectangleSidePiece;
+import org.tendiwa.geometry.RectangleSystem;
+import org.tendiwa.geometry.Segment;
 
 import java.awt.*;
 import java.util.*;
@@ -52,7 +55,7 @@ public void line(int startX, int startY, int endX, int endY, TypePlaceableInCell
 		EntityPlacer.place(activePlane, placeable, x + startX, y + startY);
 		return;
 	}
-	Coordinate[] cells = Chunk.vector(startX, startY, endX, endY);
+	EnhancedPoint[] cells = Chunk.vector(startX, startY, endX, endY);
 	int size = cells.length;
 	for (int i = 0; i < size - 1; i++) {
 		int x = cells[i].x;
@@ -100,8 +103,8 @@ public void square(int startX, int startY, int w, int h, TypePlaceableInCell pla
 	}
 }
 
-public ArrayList<Coordinate> getCircle(int cx, int cy, int r) {
-	ArrayList<Coordinate> answer = new ArrayList<>();
+public ArrayList<EnhancedPoint> getCircle(int cx, int cy, int r) {
+	ArrayList<EnhancedPoint> answer = new ArrayList<>();
 	int d = -r / 2;
 	int xCoord = 0;
 	int yCoord = r;
@@ -122,16 +125,16 @@ public ArrayList<Coordinate> getCircle(int cx, int cy, int r) {
 	} while (yCoord > 0);
 	int size = x.size();
 	for (int i = 0; i < size; i++) {
-		answer.add(new Coordinate(cx + x.get(i), cy + y.get(i)));
-		answer.add(new Coordinate(cx - x.get(i), cy + y.get(i)));
-		answer.add(new Coordinate(cx + x.get(i), cy - y.get(i)));
-		answer.add(new Coordinate(cx - x.get(i), cy - y.get(i)));
+		answer.add(new EnhancedPoint(cx + x.get(i), cy + y.get(i)));
+		answer.add(new EnhancedPoint(cx - x.get(i), cy + y.get(i)));
+		answer.add(new EnhancedPoint(cx + x.get(i), cy - y.get(i)));
+		answer.add(new EnhancedPoint(cx - x.get(i), cy - y.get(i)));
 	}
 	return answer;
 }
 
 /**
- * Uses a {@link Segment} to drawWorld a rectangle. This method is almost identical to {@link Location#square(int, int,
+ * Uses a {@link org.tendiwa.geometry.Segment} to drawWorld a rectangle. This method is almost identical to {@link Location#square(int, int,
  * int, int, TypePlaceableInCell)}, it is just more convenient to use when Segments are often used. The drawn
  * rectangle's top-left cell will be {segment.x;segment.y}.
  *
@@ -187,7 +190,7 @@ public TerrainModifier getTerrainModifier(RectangleSystem rs) {
 	return new TerrainModifier(this, rs);
 }
 
-public CellCollection getCellCollection(ArrayList<Coordinate> cls) {
+public CellCollection getCellCollection(ArrayList<EnhancedPoint> cls) {
 	return new CellCollection(cls, this);
 }
 
@@ -203,19 +206,19 @@ public <T extends Building> void placeBuilding(T building) {
 }
 
 // From TerrainGenerator
-public ArrayList<Coordinate> polygon(ArrayList<Coordinate> coords) {
+public ArrayList<EnhancedPoint> polygon(ArrayList<EnhancedPoint> coords) {
 	return polygon(coords, false);
 }
 
-public ArrayList<Coordinate> polygon(ArrayList<Coordinate> coords, boolean mode) {
-	ArrayList<Coordinate> answer = new ArrayList<>();
+public ArrayList<EnhancedPoint> polygon(ArrayList<EnhancedPoint> coords, boolean mode) {
+	ArrayList<EnhancedPoint> answer = new ArrayList<>();
 
 	int size = coords.size();
-	Coordinate[] v;
+	EnhancedPoint[] v;
 	int vSize;
 	for (int i = 0; i < size; i++) {
-		Coordinate coord = coords.get(i);
-		Coordinate nextCoord = coords.get((i == size - 1) ? 0 : i + 1);
+		EnhancedPoint coord = coords.get(i);
+		EnhancedPoint nextCoord = coords.get((i == size - 1) ? 0 : i + 1);
 		v = Chunk.vector(coord.x, coord.y, nextCoord.x, nextCoord.y);
 		vSize = v.length;
 		for (int j = 0; j < vSize - 1; j++) {
@@ -225,16 +228,16 @@ public ArrayList<Coordinate> polygon(ArrayList<Coordinate> coords, boolean mode)
 	int startX = (int) Math.floor((coords.get(0).x + coords.get(1).x + coords.get(2).x) / 3);
 	int startY = (int) Math.floor((coords.get(0).y + coords.get(1).y + coords.get(2).y) / 3);
 	if (!mode) {
-		HashSet<Coordinate> oldFront = new HashSet<>();
-		HashSet<Coordinate> newFront = new HashSet<>();
-		newFront.add(new Coordinate(startX, startY));
+		HashSet<EnhancedPoint> oldFront = new HashSet<>();
+		HashSet<EnhancedPoint> newFront = new HashSet<>();
+		newFront.add(new EnhancedPoint(startX, startY));
 		int[][] pathTable = new int[getWidth()][getHeight()];
 		for (int i = 0; i < getWidth(); i++) {
 			Arrays.fill(pathTable[i], 0);
 		}
-		Iterator<Coordinate> it = answer.iterator();
+		Iterator<EnhancedPoint> it = answer.iterator();
 		while (it.hasNext()) {
-			Coordinate cell = it.next();
+			EnhancedPoint cell = it.next();
 			pathTable[cell.x][cell.y] = 2;
 		}
 		answer = new ArrayList<>();
@@ -244,7 +247,7 @@ public ArrayList<Coordinate> polygon(ArrayList<Coordinate> coords, boolean mode)
 			size = oldFront.size();
 			it = oldFront.iterator();
 			while (it.hasNext()) {
-				Coordinate cell = it.next();
+				EnhancedPoint cell = it.next();
 				int x = cell.x;
 				int y = cell.y;
 				int[] adjactentX = {x + 1, x, x, x - 1};
@@ -265,9 +268,9 @@ public ArrayList<Coordinate> polygon(ArrayList<Coordinate> coords, boolean mode)
 					// continue;
 					// }
 					if (pathTable[thisNumX][thisNumY] == 0) {
-						newFront.add(new Coordinate(thisNumX, thisNumY));
+						newFront.add(new EnhancedPoint(thisNumX, thisNumY));
 					}
-					answer.add(new Coordinate(thisNumX, thisNumY));
+					answer.add(new EnhancedPoint(thisNumX, thisNumY));
 					pathTable[thisNumX][thisNumY] = 1;
 				}
 			}
@@ -284,12 +287,12 @@ public void fillWithCells(FloorType floor) {
 	}
 }
 
-public ArrayList<Coordinate> closeCells(int startX, int startY, int length, Passability pass, boolean noDiagonal) {
-	ArrayList<Coordinate> oldFront = new ArrayList<>();
-	ArrayList<Coordinate> newFront = new ArrayList<>();
-	ArrayList<Coordinate> answer = new ArrayList<>();
-	answer.add(new Coordinate(startX, startY));
-	newFront.add(new Coordinate(startX, startY));
+public ArrayList<EnhancedPoint> closeCells(int startX, int startY, int length, Passability pass, boolean noDiagonal) {
+	ArrayList<EnhancedPoint> oldFront = new ArrayList<>();
+	ArrayList<EnhancedPoint> newFront = new ArrayList<>();
+	ArrayList<EnhancedPoint> answer = new ArrayList<>();
+	answer.add(new EnhancedPoint(startX, startY));
+	newFront.add(new EnhancedPoint(startX, startY));
 	int[][] pathTable = new int[width][height];
 	for (int i = 0; i < width; i++) {
 		Arrays.fill(pathTable[i], 0);
@@ -306,11 +309,11 @@ public ArrayList<Coordinate> closeCells(int startX, int startY, int length, Pass
 	}
 	do {
 		oldFront = newFront;
-		newFront = new ArrayList<Coordinate>();
-		Iterator<Coordinate> it = oldFront.iterator();
+		newFront = new ArrayList<EnhancedPoint>();
+		Iterator<EnhancedPoint> it = oldFront.iterator();
 		while (it.hasNext()) {
 			// ������� ����� �� ������ ��������� ������ �� ������ ������
-			Coordinate c = it.next();
+			EnhancedPoint c = it.next();
 			int x = c.x;
 			int y = c.y;
 
@@ -338,8 +341,8 @@ public ArrayList<Coordinate> closeCells(int startX, int startY, int length, Pass
 				if (Math.floor(EnhancedPoint.distanceInt(startX, startY, thisNumX, thisNumY)) >= length) {
 					continue;
 				}
-				newFront.add(new Coordinate(thisNumX, thisNumY));
-				answer.add(new Coordinate(thisNumX, thisNumY));
+				newFront.add(new EnhancedPoint(thisNumX, thisNumY));
+				answer.add(new EnhancedPoint(thisNumX, thisNumY));
 				pathTable[thisNumX][thisNumY] = 1;
 			}
 		}
@@ -347,17 +350,17 @@ public ArrayList<Coordinate> closeCells(int startX, int startY, int length, Pass
 	return answer;
 }
 
-public ArrayList<Coordinate> getElementsAreaBorder(int startX, int startY, PlaceableInCell placeable, int depth, boolean noDiagonal) {
+public ArrayList<EnhancedPoint> getElementsAreaBorder(int startX, int startY, PlaceableInCell placeable, int depth, boolean noDiagonal) {
 	// �������� ������� ������� � ���������� ���� %ammunitionType% ���� %val%, �������
 	// �� ����� ��� � %depth% ������� �� ��������� ������
 	// noDiagonal - �������� ������� ���������� ������ �� ������ �������,
 	// ��� �� ��� ������ ������.
 	int[][] pathTable = new int[getWidth()][getHeight()];
-	ArrayList<Coordinate> cells = new ArrayList<>();
-	ArrayList<Coordinate> oldFront = new ArrayList<>();
-	ArrayList<Coordinate> newFront = new ArrayList<>();
+	ArrayList<EnhancedPoint> cells = new ArrayList<>();
+	ArrayList<EnhancedPoint> oldFront = new ArrayList<>();
+	ArrayList<EnhancedPoint> newFront = new ArrayList<>();
 	// �� ����� ������ �������� ������
-	newFront.add(new Coordinate(startX, startY));
+	newFront.add(new EnhancedPoint(startX, startY));
 	for (int i = 0; i < getWidth(); i++) {
 		for (int j = 0; j < getHeight(); j++) {
 			pathTable[i][j] = 0;
@@ -389,9 +392,9 @@ public ArrayList<Coordinate> getElementsAreaBorder(int startX, int startY, Place
 				}
 				if (placeable.containedIn(activePlane, thisNumX, thisNumY) && !(thisNumX == startX && thisNumY == startY)) {
 					pathTable[thisNumX][thisNumY] = t + 1;
-					newFront.add(new Coordinate(thisNumX, thisNumY));
+					newFront.add(new EnhancedPoint(thisNumX, thisNumY));
 				} else if (!placeable.containedIn(activePlane, thisNumX, thisNumY)) {
-					cells.add(new Coordinate(x, y));
+					cells.add(new EnhancedPoint(x, y));
 				}
 			}
 		}
@@ -401,8 +404,8 @@ public ArrayList<Coordinate> getElementsAreaBorder(int startX, int startY, Place
 }
 
 public void waveStructure(int startX, int startY, PlaceableInCell placeable, int maxSize) {
-	Hashtable<Integer, Coordinate> newFront = new Hashtable<>();
-	newFront.put(0, new Coordinate(startX, startY));
+	Hashtable<Integer, EnhancedPoint> newFront = new Hashtable<>();
+	newFront.put(0, new EnhancedPoint(startX, startY));
 	int[][] canceled = new int[getWidth()][getHeight()];
 	int[][] pathTable = new int[getWidth()][getHeight()];
 	for (int i = 0; i < getWidth(); i++) {
@@ -414,7 +417,7 @@ public void waveStructure(int startX, int startY, PlaceableInCell placeable, int
 	do {
 		int size = newFront.size();
 		for (int i = 0; i < size; i++) {
-			Coordinate c = newFront.get(i);
+			EnhancedPoint c = newFront.get(i);
 			int x = c.x;
 			int y = c.y;
 			int[] adjactentX = {x + 1, x, x, x - 1};
@@ -438,23 +441,23 @@ public void waveStructure(int startX, int startY, PlaceableInCell placeable, int
 					continue;
 				}
 				placeable.place(activePlane, thisNumX, thisNumY);
-				newFront.put(newFront.size(), new Coordinate(thisNumX, thisNumY));
+				newFront.put(newFront.size(), new EnhancedPoint(thisNumX, thisNumY));
 			}
 		}
 		t++;
 	} while (newFront.size() > 0 && t < maxSize);
 }
 
-public CellCollection newCellCollection(Collection<Coordinate> cls) {
+public CellCollection newCellCollection(Collection<EnhancedPoint> cls) {
 	return new CellCollection(cls, this);
 }
 
 public int[][] getPathTable(int startX, int startY, int endX, int endY, boolean noDiagonal) {
 	int[][] pathTable = new int[getWidth()][getHeight()];
 	boolean isPathFound = false;
-	ArrayList<Coordinate> oldFront = new ArrayList<>();
-	ArrayList<Coordinate> newFront = new ArrayList<>();
-	newFront.add(new Coordinate(startX, startY));
+	ArrayList<EnhancedPoint> oldFront = new ArrayList<>();
+	ArrayList<EnhancedPoint> newFront = new ArrayList<>();
+	newFront.add(new EnhancedPoint(startX, startY));
 	for (int i = 0; i < getWidth(); i++) {
 		for (int j = 0; j < getHeight(); j++) {
 			pathTable[i][j] = 0;
@@ -474,7 +477,7 @@ public int[][] getPathTable(int startX, int startY, int endX, int endY, boolean 
 	}
 	do {
 		oldFront = newFront;
-		newFront = new ArrayList<Coordinate>();
+		newFront = new ArrayList<EnhancedPoint>();
 		for (int i = 0; i < oldFront.size(); i++) {
 			int x = oldFront.get(i).x;
 			int y = oldFront.get(i).y;
@@ -489,7 +492,7 @@ public int[][] getPathTable(int startX, int startY, int endX, int endY, boolean 
 				}
 				if (activePlane.getPassability(thisNumX, thisNumY) == Passability.FREE && !(thisNumX == startX && thisNumY == startY)) {
 					pathTable[thisNumX][thisNumY] = t + 1;
-					newFront.add(new Coordinate(thisNumX, thisNumY));
+					newFront.add(new EnhancedPoint(thisNumX, thisNumY));
 				}
 			}
 		}
@@ -498,20 +501,20 @@ public int[][] getPathTable(int startX, int startY, int endX, int endY, boolean 
 	return pathTable;
 }
 
-public ArrayList<Coordinate> getPath(int startX, int startY, int destinationX, int destinationY, boolean noDiagonal) {
+public ArrayList<EnhancedPoint> getPath(int startX, int startY, int destinationX, int destinationY, boolean noDiagonal) {
 	// �������� ���� �� ������ � ���� ������� ��������� (0 - ������ ��� � �.
 	// �.)
 	if (destinationX == startX && destinationY == startY) {
 		throw new Error("Getting path to itself");
 	}
 	int[][] pathTable = getPathTable(startX, startY, destinationX, destinationY, noDiagonal);
-	ArrayList<Coordinate> path = new ArrayList<Coordinate>();
-	if (Coordinate.isNear(startX, startY, destinationX, destinationY)) {
-		path.add(new Coordinate(destinationX, destinationY));
+	ArrayList<EnhancedPoint> path = new ArrayList<EnhancedPoint>();
+	if (EnhancedPoint.isNear(startX, startY, destinationX, destinationY)) {
+		path.add(new EnhancedPoint(destinationX, destinationY));
 		return path;
 	}
 	// ���������� ����
-	path.add(new Coordinate(startX, startY));
+	path.add(new EnhancedPoint(startX, startY));
 	int currentNumX = destinationX;
 	int currentNumY = destinationY;
 	int x = currentNumX;
@@ -529,7 +532,7 @@ public ArrayList<Coordinate> getPath(int startX, int startY, int destinationX, i
 	for (int j = pathTable[currentNumX][currentNumY]; j > 0; j = pathTable[currentNumX][currentNumY]) {
 		// �������: �� ���-�� ����� �� ������ dest �� ��������� ������ (���
 		// 1)
-		path.add(0, new Coordinate(currentNumX, currentNumY));
+		path.add(0, new EnhancedPoint(currentNumX, currentNumY));
 		currentNumX = -1;
 		for (int i = 0; i < numOfSides; i++) {
 			// ��� ������ �� ��������� ������ (�, �, �, �)
@@ -670,20 +673,20 @@ public void boldLine(int startX, int startY, int endX, int endY, TypePlaceableIn
 }
 
 public void drawPath(int startX, int startY, int endX, int endY, PlaceableInCell placeable) {
-	ArrayList<Coordinate> path = getPath(startX, startY, endX, endY, true);
+	ArrayList<EnhancedPoint> path = getPath(startX, startY, endX, endY, true);
 	int size = path.size();
 	for (int i = 0; i < size; i++) {
-		Coordinate coordinate = path.get(i);
+		EnhancedPoint coordinate = path.get(i);
 		placeable.place(activePlane, coordinate.x, coordinate.y);
 	}
 }
 
 protected CellCollection getCoast(int startX, int startY) {
 	int[][] pathTable = new int[getWidth()][getHeight()];
-	ArrayList<Coordinate> cells = new ArrayList<Coordinate>();
-	ArrayList<Coordinate> oldFront = new ArrayList<Coordinate>();
-	ArrayList<Coordinate> newFront = new ArrayList<>();
-	newFront.add(new Coordinate(startX, startY));
+	ArrayList<EnhancedPoint> cells = new ArrayList<EnhancedPoint>();
+	ArrayList<EnhancedPoint> oldFront = new ArrayList<EnhancedPoint>();
+	ArrayList<EnhancedPoint> newFront = new ArrayList<>();
+	newFront.add(new EnhancedPoint(startX, startY));
 	for (int i = 0; i < getWidth(); i++) {
 		for (int j = 0; j < getHeight(); j++) {
 			pathTable[i][j] = 0;
@@ -707,9 +710,9 @@ protected CellCollection getCoast(int startX, int startY) {
 				}
 				if (activePlane.getPassability(thisNumX, thisNumY) == Passability.NO && !(thisNumX == startX && thisNumY == startY)) {
 					pathTable[thisNumX][thisNumY] = t + 1;
-					newFront.add(new Coordinate(thisNumX, thisNumY));
+					newFront.add(new EnhancedPoint(thisNumX, thisNumY));
 				} else if (activePlane.getPassability(thisNumX, thisNumY) != Passability.NO) {
-					cells.add(new Coordinate(x, y));
+					cells.add(new EnhancedPoint(x, y));
 				}
 			}
 		}
@@ -718,13 +721,13 @@ protected CellCollection getCoast(int startX, int startY) {
 	return newCellCollection(cells);
 }
 
-public ArrayList<Coordinate> getCellsAroundCell(int x, int y) {
-	ArrayList<Coordinate> answer = new ArrayList<Coordinate>();
+public ArrayList<EnhancedPoint> getCellsAroundCell(int x, int y) {
+	ArrayList<EnhancedPoint> answer = new ArrayList<EnhancedPoint>();
 	int x1[] = {x, x + 1, x + 1, x + 1, x, x - 1, x - 1, x - 1};
 	int y1[] = {y - 1, y - 1, y, y + 1, y + 1, y + 1, y, y - 1};
 	for (int i = 0; i < 8; i++) {
 		if (activePlane.getPassability(x1[i], y1[i]) == Passability.FREE) {
-			answer.add(new Coordinate(x1[i], y1[i]));
+			answer.add(new EnhancedPoint(x1[i], y1[i]));
 		}
 	}
 	return answer;

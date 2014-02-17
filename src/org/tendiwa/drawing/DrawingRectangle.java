@@ -1,8 +1,8 @@
 package org.tendiwa.drawing;
 
 import com.google.common.collect.Iterables;
-import org.tendiwa.core.EnhancedRectangle;
-import org.tendiwa.core.Placeable;
+import org.tendiwa.geometry.EnhancedRectangle;
+import org.tendiwa.geometry.Placeable;
 
 import java.awt.*;
 import java.util.Iterator;

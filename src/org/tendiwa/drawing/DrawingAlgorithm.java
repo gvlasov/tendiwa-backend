@@ -2,8 +2,7 @@ package org.tendiwa.drawing;
 
 import org.tendiwa.core.Chunk;
 import org.tendiwa.core.EnhancedPoint;
-import org.tendiwa.core.EnhancedRectangle;
-import org.tendiwa.core.meta.Coordinate;
+import org.tendiwa.geometry.EnhancedRectangle;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -72,7 +71,7 @@ protected <T> void drawObject(T shape, DrawingAlgorithm<T> algorithm) {
 }
 
 protected <T> void drawLine(EnhancedPoint p1, EnhancedPoint p2, Color color) {
-	for (Coordinate coordinate : Chunk.vector(p1.x, p1.y, p2.x, p2.y)) {
+	for (EnhancedPoint coordinate : Chunk.vector(p1.x, p1.y, p2.x, p2.y)) {
 		drawPoint(coordinate.x, coordinate.y, color);
 	}
 }

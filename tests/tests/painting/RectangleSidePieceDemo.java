@@ -1,21 +1,33 @@
 package tests.painting;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+import org.jukito.JukitoRunner;
+import org.jukito.UseModules;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.tendiwa.core.Directions;
+import org.tendiwa.drawing.DrawingModule;
 import org.tendiwa.drawing.DrawingRectangle;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.TestCanvasBuilder;
-import org.tendiwa.core.Directions;
-import org.tendiwa.core.EnhancedRectangle;
+import org.tendiwa.geometry.EnhancedRectangle;
 
 import java.awt.*;
 
+@RunWith(JukitoRunner.class)
+@UseModules(DrawingModule.class)
 public class RectangleSidePieceDemo {
-    public static void main(String[] args) {
-        TestCanvas canvas = new TestCanvasBuilder().setScale(3).setSize(1024,768).build();
-        EnhancedRectangle r1 = new EnhancedRectangle(5, 5, 15, 5);
-        EnhancedRectangle r2 = r1.getSideAsSidePiece(Directions.S).createRectangle(4);
-        canvas.draw(r1);
-        canvas.draw(r2, DrawingRectangle.withColor(Color.YELLOW));
-        canvas.draw(r1.getSideAsSidePiece(Directions.S));
-        canvas.draw(r2.getSideAsSidePiece(Directions.N));
-    }
+@Inject
+@Named("default")
+TestCanvas canvas;
+
+@Test
+public void draw() {
+	EnhancedRectangle r1 = new EnhancedRectangle(5, 5, 15, 5);
+	EnhancedRectangle r2 = r1.getSideAsSidePiece(Directions.S).createRectangle(4);
+	canvas.draw(r1);
+	canvas.draw(r2, DrawingRectangle.withColor(Color.YELLOW));
+	canvas.draw(r1.getSideAsSidePiece(Directions.S));
+	canvas.draw(r2.getSideAsSidePiece(Directions.N));
+}
 }

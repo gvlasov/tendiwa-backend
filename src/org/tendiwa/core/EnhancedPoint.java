@@ -72,6 +72,13 @@ public static double distanceDouble(int startX, int startY, int endX, int endY) 
 	return Math.sqrt(Math.pow(startX - endX, 2) + Math.pow(startY - endY, 2));
 }
 
+public boolean isNear(int x, int y) {
+
+	int ableX = Math.abs(this.x - x);
+	int ableY = Math.abs(this.y - y);
+	return (ableX == 1 && ableY == 0) || (ableY == 1 && ableX == 0) || (ableY == 1 && ableX == 1);
+}
+
 @Override
 public String toString() {
 	return x + ":" + y;

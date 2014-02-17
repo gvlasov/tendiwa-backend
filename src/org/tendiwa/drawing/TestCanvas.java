@@ -2,10 +2,11 @@ package org.tendiwa.drawing;
 
 import com.google.common.collect.Iterables;
 import com.google.common.io.Files;
-import org.tendiwa.core.meta.GifSequenceWriter;
+import com.google.inject.Inject;
 import org.tendiwa.core.Directions;
-import org.tendiwa.core.EnhancedRectangle;
-import org.tendiwa.core.RectangleSystem;
+import org.tendiwa.geometry.EnhancedRectangle;
+import org.tendiwa.geometry.RectangleSystem;
+import org.tendiwa.core.meta.GifSequenceWriter;
 
 import javax.imageio.IIOException;
 import javax.imageio.stream.FileImageOutputStream;
@@ -40,7 +41,7 @@ public final int height;
 public final int width;
 final int scale;
 private final JFrame frame;
-private final HashMap<Class<?>, DrawingAlgorithm<?>> defaultDrawingAlgorithms;
+private final DefaultDrawingAlgorithms defaultDrawingAlgorithms;
 private final JLayeredPane panel;
 private final int fps;
 Graphics graphics;
@@ -50,17 +51,25 @@ private GifSequenceWriter gifSequenceWriter;
 private File tempFile;
 private ImageOutputStream imageOutput;
 
-TestCanvas() throws FileNotFoundException, IOException {
-	this(
-		TestCanvasBuilder.DEFAULT_SCALE,
-		TestCanvasBuilder.DEFAULT_WIDHT,
-		TestCanvasBuilder.DEFAULT_HEIGHT,
-		DefaultDrawingAlgorithms.algorithms,
-		true,
-		TestCanvasBuilder.DEFAULT_FPS);
-}
+//TestCanvas() throws FileNotFoundException, IOException {
+//	this(
+//		TestCanvasBuilder.DEFAULT_SCALE,
+//		TestCanvasBuilder.DEFAULT_WIDHT,
+//		TestCanvasBuilder.DEFAULT_HEIGHT,
+//		DefaultDrawingAlgorithms.algorithms,
+//		true,
+//		TestCanvasBuilder.DEFAULT_FPS);
+//}
 
-TestCanvas(int scale, int width, int height, HashMap<Class<?>, DrawingAlgorithm<?>> defaultDrawingAlgorithms, boolean visibility, int fps) throws FileNotFoundException, IOException {
+@Inject
+public TestCanvas(
+	int scale,
+	int width,
+	int height,
+	DefaultDrawingAlgorithms defaultDrawingAlgorithms,
+	boolean visibility,
+	int fps
+) throws IOException {
 	this.scale = scale;
 	this.defaultDrawingAlgorithms = defaultDrawingAlgorithms;
 	this.width = width;
@@ -110,10 +119,6 @@ public static String colorName(Color colorParam) {
 	return "NO_MATCH";
 }
 
-public static TestCanvasBuilder builder() {
-	return new TestCanvasBuilder();
-}
-
 private void initGifWriter() {
 	imageOutput = null;
 
@@ -141,7 +146,7 @@ private void initGifWriter() {
 }
 
 public void setSize(int width, int height) {
-	Collection<Component> components = new ArrayList<Component>();
+	Collection<Component> components = new ArrayList<>();
 	components.add(frame);
 	components.add(panel);
 	Collections.addAll(components, panel.getComponents());
@@ -151,8 +156,8 @@ public void setSize(int width, int height) {
 }
 
 /**
- * Sets the layer of image on which pixels will be drawn. This method is usually called with one layer in the
- * beginning of some drawing method, and with the default layer in the end of that method.
+ * Sets the layer of image on which pixels will be drawn. This method is usually called with one layer in the beginning
+ * of some drawing method, and with the default layer in the end of that method.
  *
  * @param layer
  * 	The layer to drawWorld on.
@@ -165,8 +170,8 @@ private void setLayer(Layer layer) {
 }
 
 public Dimension getSize(RectangleSystem rs) {
-	Set<Integer> farthestPointsX = new HashSet<Integer>();
-	Set<Integer> farthestPointsY = new HashSet<Integer>();
+	Set<Integer> farthestPointsX = new HashSet<>();
+	Set<Integer> farthestPointsY = new HashSet<>();
 	for (EnhancedRectangle r : rs) {
 		Point p = r.getCorner(Directions.SE);
 		farthestPointsX.add(p.x);
@@ -222,8 +227,8 @@ public <T> void draw(T what, Layer where) {
 
 /**
  * <p> Draws an object on this TestCanvas on its default layer using a predefined default algorithm. </p> <p> This
- * overloading of {@code drawWorld} method is intended to be the most convenient to API users for drawing objects on
- * a canvas. However, if you need runtime safety, you'd probably better use {@link TestCanvas#draw(Object,
+ * overloading of {@code drawWorld} method is intended to be the most convenient to API users for drawing objects on a
+ * canvas. However, if you need runtime safety, you'd probably better use {@link TestCanvas#draw(Object,
  * DrawingAlgorithm, Layer)}, because it specifies the exact drawing algorithm, and thus won't throw any exceptions.
  * </p>
  *
@@ -232,7 +237,6 @@ public <T> void draw(T what, Layer where) {
  * @throws IllegalArgumentException
  * 	if {@code what} can't be drawn because TestCanvas doesn't know of any default algorithm to drawWorld objects of
  * 	{@code what} 's class.
- * @see TestCanvasBuilder#setDefaultDrawingAlgorithmForClass(Class, DrawingAlgorithm)
  */
 public <T> void draw(T what) {
 	if (what == null) {
@@ -246,15 +250,13 @@ public <T> void draw(T what) {
 /**
  * @param what
  * 	An object which will later be drawn.
- * @return A default drawing algorithm for {@code what}'s class, or null if an algorithm for that class was not
- *         set.
- * @see TestCanvasBuilder#setDefaultDrawingAlgorithmForClass(Class, DrawingAlgorithm)
+ * @return A default drawing algorithm for {@code what}'s class, or null if an algorithm for that class was not set.
  */
 @SuppressWarnings("unchecked")
 private <T> DrawingAlgorithm<T> getDefaultDrawingAlgorithmOfClass(T what) {
 	assert what != null;
 	Class<?> classOfWhat = null;
-	for (Class<?> cls : defaultDrawingAlgorithms.keySet()) {
+	for (Class<?> cls : defaultDrawingAlgorithms) {
 		if (cls.isInstance(what)) {
 			classOfWhat = cls;
 			break;
@@ -287,11 +289,9 @@ public void saveFrame() {
 }
 
 /**
- * <p> Saves animation of frames made with {@link TestCanvas#saveFrame()} to a file with a specified destination.
- * </p>
+ * <p> Saves animation of frames made with {@link TestCanvas#saveFrame()} to a file with a specified destination. </p>
  * <p/>
- * This method does not create a file, but rather moves a previously formed temporary file to the destination
- * location.
+ * This method does not create a file, but rather moves a previously formed temporary file to the destination location.
  *
  * @param filename
  */

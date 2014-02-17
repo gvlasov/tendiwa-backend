@@ -1,22 +1,23 @@
 package tests.painting;
 
+import com.google.inject.Inject;
+import org.jukito.JukitoRunner;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.tendiwa.geometry.RectangleSystem;
+import org.tendiwa.geometry.RecursivelySplitRectangleSystemFactory;
 import org.tendiwa.drawing.DrawingRectangleSystem;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.TestCanvasBuilder;
-import org.tendiwa.core.RectangleSystem;
-import org.tendiwa.core.RecursivelySplitRectangleSystemFactory;
 
 import java.awt.*;
 
+@RunWith(JukitoRunner.class)
 public class RectangleSystemDrawDemo {
-public static TestCanvas canvas = new TestCanvasBuilder()
-	.setSize(1280, 1024)
-	.setDefaultDrawingAlgorithmForClass(
-		RectangleSystem.class,
-		DrawingRectangleSystem.withColors(Color.BLACK, Color.DARK_GRAY, Color.LIGHT_GRAY)
-	)
-	.build();
-public static void main(String[] args) {
+@Inject
+TestCanvas canvas;
+
+@Test
+void draw() {
 	long start = System.currentTimeMillis();
 	RectangleSystem rs = RecursivelySplitRectangleSystemFactory.create(5, 5, 1260, 800, 1, 30);
 //	RectangleSystem rs = builder(0)
@@ -35,7 +36,7 @@ public static void main(String[] args) {
 	// rs.addRectangleArea(10, 20, 30, 40);
 	// RectangleArea r = rs.rectangleList().iterator().next();
 	// rs.splitRectangle(r, Orientation.VERTICAL, 10, false);
-	System.out.println(System.currentTimeMillis()-start);
+	System.out.println(System.currentTimeMillis() - start);
 	start = System.currentTimeMillis();
 	canvas.draw(rs, DrawingRectangleSystem.graphAndRectangles(
 		Color.RED,
@@ -44,6 +45,6 @@ public static void main(String[] args) {
 		Color.GRAY,
 		Color.LIGHT_GRAY)
 	);
-	System.out.println(System.currentTimeMillis()-start);
+	System.out.println(System.currentTimeMillis() - start);
 }
 }

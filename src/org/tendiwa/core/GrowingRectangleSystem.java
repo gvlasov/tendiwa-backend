@@ -1,6 +1,7 @@
 package org.tendiwa.core;
 
-import java.awt.*;
+import org.tendiwa.geometry.EnhancedRectangle;
+import org.tendiwa.geometry.RectangleSystem;
 
 /**
  * A RectangleSystem that is constructed by setting an "initial" rectangle and

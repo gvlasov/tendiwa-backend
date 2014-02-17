@@ -1,6 +1,8 @@
 package org.tendiwa.core;
 
 import org.tendiwa.core.meta.Chance;
+import org.tendiwa.geometry.EnhancedRectangle;
+import org.tendiwa.geometry.Segment;
 
 import java.util.HashSet;
 
@@ -59,7 +61,7 @@ public TerrainTransition(Location location, EnhancedRectangle rectangle, TypePla
 					break;
 				}
 				int x, y;
-				if (segmentWithoutCorners.orientation.isHorizontal()) {
+				if (segmentWithoutCorners.getOrientation().isHorizontal()) {
 					x = segmentDynamicCoord;
 					y = columnDynamicCoord;
 				} else {

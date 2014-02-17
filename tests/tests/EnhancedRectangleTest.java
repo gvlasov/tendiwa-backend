@@ -2,12 +2,15 @@ package tests;
 
 import org.junit.Test;
 import org.tendiwa.core.*;
+import org.tendiwa.geometry.EnhancedRectangle;
+import org.tendiwa.geometry.RectangleSystemBuilder;
+import org.tendiwa.geometry.Segment;
 
 import java.awt.*;
 import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
-import static org.tendiwa.core.DSL.*;
+import static org.tendiwa.geometry.DSL.*;
 
 public class EnhancedRectangleTest {
 

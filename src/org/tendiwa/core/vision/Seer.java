@@ -2,6 +2,7 @@ package org.tendiwa.core.vision;
 
 import org.tendiwa.core.*;
 import org.tendiwa.core.meta.*;
+import org.tendiwa.geometry.EnhancedRectangle;
 
 import java.awt.*;
 
@@ -250,28 +251,28 @@ public void invalidateVisionCache() {
 	obstaclesCache.invalidate();
 }
 
-public Coordinate getRayEnd(int endX, int endY) {
-	Coordinate characterCoord = new Coordinate(character.getX(), character.getY());
+public EnhancedPoint getRayEnd(int endX, int endY) {
+	EnhancedPoint characterCoord = new EnhancedPoint(character.getX(), character.getY());
 	if (characterCoord.isNear(endX, endY) || character.getX() == endX && character.getY() == endY) {
-		return new Coordinate(endX, endY);
+		return new EnhancedPoint(endX, endY);
 	}
 	if (endX == character.getX() || endY == character.getY()) {
 		if (endX == character.getX()) {
 			int dy = Math.abs(endY - character.getY()) / (endY - character.getY());
 			for (int i = character.getY() + dy; i != endY + dy; i += dy) {
 				if (!vision.canSee(endX, i)) {
-					return new Coordinate(endX, i - dy);
+					return new EnhancedPoint(endX, i - dy);
 				}
 			}
 		} else {
 			int dx = Math.abs(endX - character.getX()) / (endX - character.getX());
 			for (int i = character.getX() + dx; i != endX + dx; i += dx) {
 				if (!vision.canSee(i, endY)) {
-					return new Coordinate(i - dx, endY);
+					return new EnhancedPoint(i - dx, endY);
 				}
 			}
 		}
-		return new Coordinate(endX, endY);
+		return new EnhancedPoint(endX, endY);
 	} else if (Math.abs(endX - character.getX()) == 1) {
 		int dy = Math.abs(endY - character.getY()) / (endY - character.getY());
 		int y1 = endY, y2 = endY;
@@ -281,7 +282,7 @@ public Coordinate getRayEnd(int endX, int endY) {
 				break;
 			}
 			if (i == endY) {
-				return new Coordinate(endX, endY);
+				return new EnhancedPoint(endX, endY);
 			}
 		}
 		for (int i = character.getY() + dy; i != endY + dy; i += dy) {
@@ -290,11 +291,11 @@ public Coordinate getRayEnd(int endX, int endY) {
 				break;
 			}
 		}
-		Coordinate answer;
+		EnhancedPoint answer;
 		if (characterCoord.distance(endX, y1) > characterCoord.distance(character.getX(), y2)) {
-			answer = new Coordinate(endX, y1);
+			answer = new EnhancedPoint(endX, y1);
 		} else {
-			answer = new Coordinate(character.getX(), y2);
+			answer = new EnhancedPoint(character.getX(), y2);
 		}
 		if (answer.x == character.getX()
 			&& answer.y == y2
@@ -320,7 +321,7 @@ public Coordinate getRayEnd(int endX, int endY) {
 				break;
 			}
 			if (i == endX) {
-				return new Coordinate(endX, endY);
+				return new EnhancedPoint(endX, endY);
 			}
 		}
 		for (int i = character.getX() + dx; i != endX + dx; i += dx) {
@@ -329,11 +330,11 @@ public Coordinate getRayEnd(int endX, int endY) {
 				break;
 			}
 		}
-		Coordinate answer;
+		EnhancedPoint answer;
 		if (characterCoord.distance(x1, endY) > characterCoord.distance(x2, character.getY())) {
-			answer = new Coordinate(x1, endY);
+			answer = new EnhancedPoint(x1, endY);
 		} else {
-			answer = new Coordinate(x2, character.getY());
+			answer = new EnhancedPoint(x2, character.getY());
 		}
 		if (answer.x == x2
 			&& answer.y == character.getY()
@@ -361,11 +362,11 @@ public Coordinate getRayEnd(int endX, int endY) {
 			cx += dx;
 			cy += dy;
 			if (!vision.canSee(cx, cy)) {
-				return new Coordinate(cx - dx, cy - dy);
+				return new EnhancedPoint(cx - dx, cy - dy);
 			}
 
 		}
-		return new Coordinate(endX, endY);
+		return new EnhancedPoint(endX, endY);
 	} else {
 		double[][] start = new double[2][2];
 		double[] end = new double[4];
@@ -379,7 +380,7 @@ public Coordinate getRayEnd(int endX, int endY) {
 		// start[0][1]=this.y;
 		// start[1][0]=this.x;
 		start[1][1] = (endY > character.getY()) ? character.getY() + 0.5 : character.getY() - 0.5;
-		Coordinate[] rays = rays(character.getX(), character.getY(), endX, endY);
+		EnhancedPoint[] rays = rays(character.getX(), character.getY(), endX, endY);
 		int breakX = character.getX(), breakY = character.getY();
 		jump:
 		for (int k = 0; k < 3; k++) {
@@ -393,7 +394,7 @@ public Coordinate getRayEnd(int endX, int endY) {
 				double yEnd = end[endNumY];
 				double xStart = start[j][0];
 				double yStart = start[j][1];
-				for (Coordinate c : rays) {
+				for (EnhancedPoint c : rays) {
 					try {
 						if (!vision.canSee(c.x, c.y)) {
 							if (Math.abs(((yStart - yEnd) * c.x
@@ -414,14 +415,14 @@ public Coordinate getRayEnd(int endX, int endY) {
 						throw new Error();
 					}
 				}
-				return new Coordinate(endX, endY);
+				return new EnhancedPoint(endX, endY);
 			}
 		}
-		return new Coordinate(breakX, breakY);
+		return new EnhancedPoint(breakX, breakY);
 	}
 }
 
-public Coordinate[] rays(int startX, int startY, int endX, int endY) {
+public EnhancedPoint[] rays(int startX, int startY, int endX, int endY) {
 	return Utils.concatAll(
 		Chunk.vector(startX, startY, endX, endY),
 		Chunk.vector(startX, startY + (endY > startY ? 1 : -1), endX + (endX > startX ? -1 : 1), endY),

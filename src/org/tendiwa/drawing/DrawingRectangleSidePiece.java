@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.util.Iterator;
 
 import org.tendiwa.core.EnhancedPoint;
-import org.tendiwa.core.RectangleSidePiece;
+import org.tendiwa.geometry.RectangleSidePiece;
 
 import com.google.common.collect.Iterables;
 

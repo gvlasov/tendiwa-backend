@@ -5,7 +5,6 @@ import com.google.inject.assistedinject.Assisted;
 import com.google.inject.name.Named;
 import org.tendiwa.core.events.*;
 import org.tendiwa.core.meta.CellPosition;
-import org.tendiwa.core.meta.Coordinate;
 import org.tendiwa.core.observation.Event;
 import org.tendiwa.core.observation.Observable;
 import org.tendiwa.core.player.SinglePlayerMode;
@@ -93,6 +92,7 @@ public void attack(Character aim) {
 public void emitEvent(Event event) {
 	backend.emitEvent(event);
 }
+
 public void actAndWait(Runnable runnable) {
 	synchronized (backend.getLock()) {
 		runnable.run();
@@ -102,7 +102,7 @@ public void actAndWait(Runnable runnable) {
 
 protected void shootMissile(int toX, int toY, ItemPile missile) {
 	loseItem(missile);
-	Coordinate end = seer.getRayEnd(toX, toY);
+	EnhancedPoint end = seer.getRayEnd(toX, toY);
 	plane.addItem(missile, end.x, end.y);
 //	Cell aimCell = plane.getCell(toX, toY);
 //	if (aimCell.character() != null) {
@@ -113,7 +113,7 @@ protected void shootMissile(int toX, int toY, ItemPile missile) {
 
 protected void shootMissile(int toX, int toY, UniqueItem item) {
 	loseItem(item);
-	Coordinate end = seer.getRayEnd(toX, toY);
+	EnhancedPoint end = seer.getRayEnd(toX, toY);
 	plane.addItem(item, end.x, end.y);
 	Character character = plane.getCharacter(end.x, end.y);
 	if (character != null) {
@@ -279,7 +279,7 @@ protected void push(Character character, Direction side) {
 		int bufX = character.x;
 		int bufY = character.y;
 		character.move(nx, ny, MovingStyle.STEP);
-		if (!new Coordinate(x, y).isNear(nx, ny)) {
+		if (!new EnhancedPoint(x, y).isNear(nx, ny)) {
 			move(bufX, bufY, MovingStyle.STEP);
 		}
 	}
@@ -296,7 +296,7 @@ public boolean canSee(int x, int y) {
 	return seer.canSee(x, y);
 }
 
-public Coordinate[] rays(int startX, int startY, int endX, int endY) {
+public EnhancedPoint[] rays(int startX, int startY, int endX, int endY) {
 	return seer.rays(startX, startY, endX, endY);
 }
 
@@ -639,11 +639,11 @@ public void shoot(UniqueItem weapon, Item projectile, int toX, int toY) {
 }
 
 private ProjectileFlight computeProjectileFlightEndCoordinate(UniqueItem weapon, Item projectile, int toX, int toY) {
-	Coordinate endCoordinate = new Coordinate(toX, toY);
-	Coordinate[] vector = Chunk.vector(x, y, toX, toY);
+	EnhancedPoint endCoordinate = new EnhancedPoint(toX, toY);
+	EnhancedPoint[] vector = Chunk.vector(x, y, toX, toY);
 	Character characterHit = null;
 	for (int i = 1; i < vector.length; i++) {
-		Coordinate c = vector[i];
+		EnhancedPoint c = vector[i];
 		if (plane.hasCharacter(c.x, c.y) &&
 			testProjectileHit(weapon, projectile, toX, toY)) {
 			characterHit = plane.getCharacter(c.x, c.y);
@@ -733,10 +733,10 @@ public void setWorld(World world) {
 
 private class ProjectileFlight {
 
-	private final Coordinate endCoordinate;
+	private final EnhancedPoint endCoordinate;
 	private final Character characterHit;
 
-	public ProjectileFlight(Coordinate endCoordinate, Character characterHit) {
+	public ProjectileFlight(EnhancedPoint endCoordinate, Character characterHit) {
 
 		this.endCoordinate = endCoordinate;
 		this.characterHit = characterHit;

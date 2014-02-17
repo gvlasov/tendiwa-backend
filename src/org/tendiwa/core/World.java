@@ -1,5 +1,7 @@
 package org.tendiwa.core;
 
+import org.tendiwa.geometry.EnhancedRectangle;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;

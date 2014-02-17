@@ -1,6 +1,7 @@
 package org.tendiwa.core;
 
 import com.google.common.collect.ImmutableMap;
+import org.tendiwa.geometry.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,7 +18,7 @@ public ImmutableMap<EnhancedRectangle, LocationPlace> getRectanglesToPlaces() {
 
 ImmutableMap<EnhancedRectangle, LocationPlace> rectanglesToPlaces;
 
-WorldRectangleBuilder() {
+public WorldRectangleBuilder() {
 	super(0);
 }
 
@@ -36,7 +37,7 @@ public WorldRectangleBuilder setLocationFeatures(int index, LocationFeature feat
 /**
  * <p>Sets a particular LocationFeature to all EnhancedRectangles a {@code placeable} consists of.</p> <p>If {@code
  * placeable} is an EnhancedRectangle, for example, it will affect a single rectangle — itself. If {@code placeable} is
- * a {@link RectangleSequence}, then LocationFeature will be added to each EnhancedRectangle that
+ * a {@link org.tendiwa.geometry.RectangleSequence}, then LocationFeature will be added to each EnhancedRectangle that
  * RectangleSequence consists of.</p>
  *
  * @param placeable

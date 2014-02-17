@@ -3,22 +3,22 @@ package org.tendiwa.drawing;
 import com.google.common.collect.Iterables;
 import org.jgrapht.Graph;
 import org.tendiwa.core.CardinalDirection;
-import org.tendiwa.core.EnhancedRectangle;
-import org.tendiwa.core.RectangleSystem;
-import org.tendiwa.core.Segment;
+import org.tendiwa.geometry.EnhancedRectangle;
+import org.tendiwa.geometry.RectangleSystem;
+import org.tendiwa.geometry.Segment;
 
 import java.awt.*;
 import java.util.Iterator;
 
 /**
  * A static utility class that provides methods for creating {@link DrawingAlgorithm}s for drawing {@link
- * org.tendiwa.core.RectangleSystem}s.
+ * org.tendiwa.geometry.RectangleSystem}s.
  *
  * @author suseika
  */
 public class DrawingRectangleSystem {
 /**
- * Draws each rectangle of a {@link org.tendiwa.core.RectangleSystem} cycling over all colors.
+ * Draws each rectangle of a {@link org.tendiwa.geometry.RectangleSystem} cycling over all colors.
  *
  * @param colors
  * @return drawing algorithm

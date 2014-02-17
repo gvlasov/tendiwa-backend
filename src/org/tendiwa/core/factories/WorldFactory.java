@@ -10,7 +10,7 @@ public WorldFactory() {
 }
 
 public World create(WorldDrawer worldDrawer, int width, int height) {
-	WorldRectangleBuilder builder = DSL.worldBuilder();
+	WorldRectangleBuilder builder = new WorldRectangleBuilder();
 	worldDrawer.drawWorld(builder, width, height);
 	World world = new World(width, height);
 	builder.done();

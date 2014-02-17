@@ -2,6 +2,7 @@ package org.tendiwa.core;
 
 import org.tendiwa.core.meta.Chance;
 import org.tendiwa.core.meta.Range;
+import org.tendiwa.geometry.EnhancedRectangle;
 
 import java.awt.*;
 import java.util.*;

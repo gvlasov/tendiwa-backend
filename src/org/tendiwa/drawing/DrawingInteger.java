@@ -1,6 +1,6 @@
 package org.tendiwa.drawing;
 
-import org.tendiwa.core.EnhancedRectangle;
+import org.tendiwa.geometry.EnhancedRectangle;
 import org.tendiwa.core.Orientation;
 
 import java.awt.*;

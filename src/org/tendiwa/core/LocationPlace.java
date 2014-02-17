@@ -1,6 +1,8 @@
 package org.tendiwa.core;
 
 import com.google.common.collect.ImmutableSet;
+import org.tendiwa.geometry.EnhancedRectangle;
+import org.tendiwa.geometry.RectangleSystem;
 
 import java.util.HashSet;
 import java.util.Set;

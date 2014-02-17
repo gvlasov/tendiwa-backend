@@ -3,8 +3,10 @@ package org.tendiwa.core;
 import org.jgrapht.Graph;
 import org.tendiwa.core.meta.Utils;
 import org.tendiwa.core.meta.Coordinate;
+import org.tendiwa.geometry.EnhancedRectangle;
+import org.tendiwa.geometry.RectangleSystem;
+import org.tendiwa.geometry.Segment;
 
-import java.awt.*;
 import java.util.*;
 
 /**

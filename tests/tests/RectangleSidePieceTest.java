@@ -3,8 +3,8 @@ package tests;
 import com.google.common.collect.Sets;
 import org.junit.Test;
 import org.tendiwa.core.Directions;
-import org.tendiwa.core.EnhancedRectangle;
-import org.tendiwa.core.RectangleSidePiece;
+import org.tendiwa.geometry.EnhancedRectangle;
+import org.tendiwa.geometry.RectangleSidePiece;
 
 import java.util.Set;
 

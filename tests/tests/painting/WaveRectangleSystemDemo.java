@@ -1,15 +1,28 @@
 package tests.painting;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+import org.jukito.JukitoRunner;
+import org.jukito.UseModules;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.tendiwa.core.meta.Range;
-import org.tendiwa.core.EnhancedRectangle;
-import org.tendiwa.core.RectangleSystem;
-import org.tendiwa.core.WaveRectangleSystem;
+import org.tendiwa.drawing.DrawingModule;
+import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.geometry.EnhancedRectangle;
+import org.tendiwa.geometry.RectangleSystem;
+import org.tendiwa.geometry.WaveRectangleSystem;
 
 import java.io.IOException;
 
+@RunWith(JukitoRunner.class)
+@UseModules(DrawingModule.class)
 public class WaveRectangleSystemDemo {
-
-public static void main(String[] args) throws IOException {
+@Inject
+@Named("default")
+TestCanvas canvas;
+@Test
+public void draw() throws InterruptedException {
 	RectangleSystem irs = new RectangleSystem(0);
 	// Е
 //		irs.addRectangleArea(8, 10, 4, 20);
@@ -32,9 +45,9 @@ public static void main(String[] args) throws IOException {
 	int tries = 1;
 	for (int i = 0; i < (WaveRectangleSystem.DEBUG ? 1 : tries); i++) {
 		WaveRectangleSystem rs = new WaveRectangleSystem(
-				0,
-				new Range(7, 20),
-				irs);
+			0,
+			new Range(7, 20),
+			irs);
 		if (tries == 1) {
 			rs.canvas.show();
 		}
@@ -50,6 +63,8 @@ public static void main(String[] args) throws IOException {
 	// trail.addNextRectangle(r);
 	// }
 	// drawWorld(trail);
+	Thread.sleep(40000);
+
 }
 
 }

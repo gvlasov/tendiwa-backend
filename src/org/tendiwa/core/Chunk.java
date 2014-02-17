@@ -32,19 +32,19 @@ public Chunk(HorizontalPlane plane, int x, int y) {
 	this.plane = plane;
 }
 
-public static Coordinate[] vector(int startX, int startY, int endX, int endY) {
+public static EnhancedPoint[] vector(int startX, int startY, int endX, int endY) {
 	int l = Math.round(Math.max(Math.abs(endX - startX),
 		Math.abs(endY - startY)));
 	float x[] = new float[l + 2];
 	float y[] = new float[l + 2];
-	Coordinate result[] = new Coordinate[l + 1];
+	EnhancedPoint result[] = new EnhancedPoint[l + 1];
 
 	x[0] = startX;
 	y[0] = startY;
 
 	if (startX == endX && startY == endY) {
-		result = new Coordinate[1];
-		result[0] = new Coordinate(startX, startY);
+		result = new EnhancedPoint[1];
+		result[0] = new EnhancedPoint(startX, startY);
 		return result;
 	}
 	float dx = (endX - startX) / (float) l;
@@ -57,7 +57,7 @@ public static Coordinate[] vector(int startX, int startY, int endX, int endY) {
 	y[l + 1] = endY;
 
 	for (int i = 0; i <= l; i++) {
-		result[i] = new Coordinate(Math.round(x[i]), Math.round(y[i]));
+		result[i] = new EnhancedPoint(Math.round(x[i]), Math.round(y[i]));
 	}
 	return result;
 }
