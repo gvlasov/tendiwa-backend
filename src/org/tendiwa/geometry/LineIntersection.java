@@ -19,20 +19,20 @@ public class LineIntersection extends Intersection {
 		y = horizontal.constantCoord;
 	}
 	@Override
-	public Point getCornerPointOfQuarter(OrdinalDirection side) {
+	public Cell getCornerPointOfQuarter(OrdinalDirection side) {
 		if (side == null) {
 			throw new NullPointerException();
 		}
 		switch (side) {
 			case NE:
-				return new Point(x,y);
+				return new Cell(x,y);
 			case SE:
-				return new Point(x, y+1);
+				return new Cell(x, y+1);
 			case SW:
-				return new Point(x-1, y+1);
+				return new Cell(x-1, y+1);
 			case NW:
 			default:
-				return new Point(x-1, y);
+				return new Cell(x-1, y);
 		}
 	}
 

@@ -6,7 +6,7 @@ import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.tendiwa.geometry.EnhancedRectangle;
+import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.drawing.DrawingModule;
 import org.tendiwa.drawing.TestCanvas;
 
@@ -19,7 +19,7 @@ TestCanvas canvas;
 
 @Test
 public void world() {
-	canvas.draw(new EnhancedRectangle(0, 0, 15, 17));
+	canvas.draw(new Rectangle(0, 0, 15, 17));
 
 }
 }

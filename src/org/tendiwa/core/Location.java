@@ -3,8 +3,8 @@ package org.tendiwa.core;
 import org.tendiwa.core.meta.Chance;
 import org.tendiwa.core.settlements.BuildingPlace;
 import org.tendiwa.geometry.*;
+import org.tendiwa.geometry.Rectangle;
 
-import java.awt.*;
 import java.util.*;
 
 /**
@@ -75,7 +75,7 @@ public void square(int startX, int startY, int w, int h, TypePlaceableInCell pla
 	square(startX, startY, w, h, placeable, false);
 }
 
-public void square(EnhancedRectangle r, TypePlaceableInCell placeable, boolean fill) {
+public void square(Rectangle r, TypePlaceableInCell placeable, boolean fill) {
 	square(r.getX(), r.getY(), r.getWidth(), r.getHeight(), placeable, fill);
 }
 
@@ -730,7 +730,7 @@ public ArrayList<Cell> getCellsAroundCell(int x, int y) {
 	return answer;
 }
 
-public void lineToRectangleBorder(int startX, int startY, CardinalDirection side, Rectangle r, TypePlaceableInCell placeable) {
+public void lineToRectangleBorder(int startX, int startY, CardinalDirection side, java.awt.Rectangle r, TypePlaceableInCell placeable) {
 	if (!r.contains(startX, startY)) {
 		throw new Error("Rectangle " + r + " contains no point " + startX + ":" + startY);
 	}
@@ -759,7 +759,7 @@ public void lineToRectangleBorder(int startX, int startY, CardinalDirection side
 	line(startX, startY, endX, endY, placeable);
 }
 
-public void fillSideOfRectangle(Rectangle r, CardinalDirection side, TypePlaceableInCell placeable) {
+public void fillSideOfRectangle(java.awt.Rectangle r, CardinalDirection side, TypePlaceableInCell placeable) {
 	int startX, startY, endX, endY;
 	switch (side) {
 		case N:
@@ -800,7 +800,7 @@ public void fillSideOfRectangle(Rectangle r, CardinalDirection side, TypePlaceab
  * @param placeable
  * 	What to fill the rectanlge area with.
  */
-public void fillRectangle(Rectangle r, TypePlaceableInCell placeable) {
+public void fillRectangle(java.awt.Rectangle r, TypePlaceableInCell placeable) {
 	/**
 	 * Fill rectngle with objects randomly. chance% of cells will be filled
 	 * with these objects.
@@ -864,7 +864,7 @@ public void lineOfThin(RectangleSidePiece line, BorderObjectType type) {
 		activePlane.setBorderObject(point.getX(), point.getY(), line.getDirection(), type);
 	}
 }
-public void squareOfThin(EnhancedRectangle r, BorderObjectType type) {
+public void squareOfThin(Rectangle r, BorderObjectType type) {
 	for (int i = 0; i < r.getWidth(); i++) {
 		activePlane.setBorderObject(r.getX() + i, r.getY(), Directions.N, type);
 		activePlane.setBorderObject(r.getX() + i, r.getY() + r.getHeight() - 1, Directions.S, type);

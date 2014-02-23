@@ -8,8 +8,8 @@ import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.core.CardinalDirection;
 import org.tendiwa.core.Directions;
 import org.tendiwa.core.Orientation;
-import org.tendiwa.core.meta.Utils;
 import org.tendiwa.core.meta.Chance;
+import org.tendiwa.core.meta.Utils;
 
 import java.util.*;
 
@@ -21,11 +21,11 @@ import java.util.*;
  * side).</p>
  */
 public class RectangleSystem extends RectangleSequence {
-private static final Comparator<EnhancedRectangle> COMPARATOR_HORIZONTAL = new RectangleComparator(Orientation.HORIZONTAL);
-private static final Comparator<EnhancedRectangle> COMPARATOR_VERTICAL = new RectangleComparator(Orientation.VERTICAL);
-public static Comparator<EnhancedRectangle> horizontalRectangleComparator = new Comparator<EnhancedRectangle>() {
+private static final Comparator<Rectangle> COMPARATOR_HORIZONTAL = new RectangleComparator(Orientation.HORIZONTAL);
+private static final Comparator<Rectangle> COMPARATOR_VERTICAL = new RectangleComparator(Orientation.VERTICAL);
+public static Comparator<Rectangle> horizontalRectangleComparator = new Comparator<Rectangle>() {
 	@Override
-	public int compare(EnhancedRectangle r1, EnhancedRectangle r2) {
+	public int compare(Rectangle r1, Rectangle r2) {
 		if (r1.getX() > r2.getX()) {
 			return 1;
 		}
@@ -35,9 +35,9 @@ public static Comparator<EnhancedRectangle> horizontalRectangleComparator = new 
 		return 0;
 	}
 };
-public static Comparator<EnhancedRectangle> verticalRectangleComparator = new Comparator<EnhancedRectangle>() {
+public static Comparator<Rectangle> verticalRectangleComparator = new Comparator<Rectangle>() {
 	@Override
-	public int compare(EnhancedRectangle r1, EnhancedRectangle r2) {
+	public int compare(Rectangle r1, Rectangle r2) {
 		if (r1.getY() > r2.getY()) {
 			return 1;
 		}
@@ -47,7 +47,7 @@ public static Comparator<EnhancedRectangle> verticalRectangleComparator = new Co
 		return 0;
 	}
 };
-private final Map<Orientation, TreeSet<EnhancedRectangle>> sortedRectangles;
+private final Map<Orientation, TreeSet<Rectangle>> sortedRectangles;
 /**
  * Amount of cells between two neighbor rectangles. RectangleSystem must obey this rule: to successfully done it,
  * neighbor rectangles must be %borderWidth% cells away from each other.
@@ -56,7 +56,7 @@ protected int borderWidth;
 /**
  * The main part of a RectangleSystem — a graph that depicts connections between neighbor EnhancedRectangles.
  */
-protected SimpleGraph<EnhancedRectangle, Neighborship> graph;
+protected SimpleGraph<Rectangle, Neighborship> graph;
 private OuterSegments outerSegments = new OuterSegments();
 
 public RectangleSystem(int borderWidth) {
@@ -64,12 +64,12 @@ public RectangleSystem(int borderWidth) {
 	this.borderWidth = borderWidth;
 	graph = new SimpleGraph<>(Neighborship.class);
 	sortedRectangles = new HashMap<>();
-	sortedRectangles.put(Orientation.HORIZONTAL, new TreeSet<EnhancedRectangle>(COMPARATOR_HORIZONTAL));
-	sortedRectangles.put(Orientation.VERTICAL, new TreeSet<EnhancedRectangle>(COMPARATOR_VERTICAL));
+	sortedRectangles.put(Orientation.HORIZONTAL, new TreeSet<Rectangle>(COMPARATOR_HORIZONTAL));
+	sortedRectangles.put(Orientation.VERTICAL, new TreeSet<Rectangle>(COMPARATOR_VERTICAL));
 }
 
 /**
- * Checks if two {@link EnhancedRectangle}s have exactly {@code amount} cells between their closest sides, and these
+ * Checks if two {@link Rectangle}s have exactly {@code amount} cells between their closest sides, and these
  * sides overlap by dynamic coordinate. Such rectangles are considered to be "near" in this individual RectangleSystem.
  *
  * @param r1
@@ -79,10 +79,10 @@ public RectangleSystem(int borderWidth) {
  * @param amount
  * 	Expected amount of cells
  * @return true if distance between rectangles is {@code cells}, false otherwise
- * @see RectangleSystem#areRectanglesNear(EnhancedRectangle, EnhancedRectangle)
- * @see RectangleSystem#areRectanglesUnited(EnhancedRectangle, EnhancedRectangle)
+ * @see RectangleSystem#areRectanglesNear(Rectangle, Rectangle)
+ * @see RectangleSystem#areRectanglesUnited(Rectangle, Rectangle)
  */
-static boolean areRectanglesInXCells(EnhancedRectangle r1, EnhancedRectangle r2, int amount) {
+static boolean areRectanglesInXCells(Rectangle r1, Rectangle r2, int amount) {
 	if (r1.getX() + r1.getWidth() + amount == r2.getX() || r2.getX() + r2.getWidth() + amount == r1.getX()) {
 		// Rectangles share a vertical line
 		int a1 = r1.getY();
@@ -105,11 +105,11 @@ static boolean areRectanglesInXCells(EnhancedRectangle r1, EnhancedRectangle r2,
 	}
 }
 
-public Graph<EnhancedRectangle, Neighborship> getGraph() {
+public Graph<Rectangle, Neighborship> getGraph() {
 	return graph;
 }
 
-public ImmutableMap<EnhancedRectangle, Collection<CardinalDirection>> getOuterSides() {
+public ImmutableMap<Rectangle, Collection<CardinalDirection>> getOuterSides() {
 	return outerSegments.getAllOuterSides();
 }
 
@@ -126,8 +126,8 @@ public int getBorderWidth() {
  * 	Y-coordinate of a cell
  * @return A rectangle that contains cell [x:y].
  */
-public EnhancedRectangle findRectangleByCell(int x, int y) {
-	for (EnhancedRectangle r : graph.vertexSet()) {
+public Rectangle findRectangleByCell(int x, int y) {
+	for (Rectangle r : graph.vertexSet()) {
 		if (r.contains(x, y)) {
 			return r;
 		}
@@ -137,7 +137,7 @@ public EnhancedRectangle findRectangleByCell(int x, int y) {
 }
 
 /**
- * Finds out from which {@link CardinalDirection} is a rectangle located relatively to another EnhancedRectangle.
+ * Finds out from which {@link CardinalDirection} is a rectangle located relatively to another Rectangle.
  *
  * @param rectangle
  * 	One rectangle
@@ -145,7 +145,7 @@ public EnhancedRectangle findRectangleByCell(int x, int y) {
  * 	Another rectangle
  * @return Side from which neighbor is located relatively to a rectangle.
  */
-CardinalDirection getNeighborSide(EnhancedRectangle rectangle, EnhancedRectangle neighbor) {
+CardinalDirection getNeighborSide(Rectangle rectangle, Rectangle neighbor) {
 	if (rectangle.getY() == neighbor.getY() + neighbor.getHeight() + borderWidth) {
 		return CardinalDirection.N;
 	}
@@ -171,8 +171,8 @@ CardinalDirection getNeighborSide(EnhancedRectangle rectangle, EnhancedRectangle
  * 	A side of that rectangle.
  * @return A set of all such segments (a zero-length one if a rectangle is not outer)
  */
-public ImmutableSet<Segment> getSegmentsFreeFromNeighbors(EnhancedRectangle r, CardinalDirection side) {
-	ArrayList<EnhancedRectangle> rectanglesFromThatSide = new ArrayList<>(getRectanglesCloseToSide(r, side));
+public ImmutableSet<Segment> getSegmentsFreeFromNeighbors(Rectangle r, CardinalDirection side) {
+	ArrayList<Rectangle> rectanglesFromThatSide = new ArrayList<>(getRectanglesCloseToSide(r, side));
 	// Sort neighbors from that direction from top to bottom or from left to right
 	if (side == CardinalDirection.N || side == CardinalDirection.S) {
 		Collections.sort(
@@ -217,7 +217,7 @@ public ImmutableSet<Segment> getSegmentsFreeFromNeighbors(EnhancedRectangle r, C
 	// touches
 	// our initial segment.
 	for (int i = 0, l = rectanglesFromThatSide.size(); i < l; i++) {
-		EnhancedRectangle neighbor = rectanglesFromThatSide.get(i);
+		Rectangle neighbor = rectanglesFromThatSide.get(i);
 		switch (side) {
 			case N:
 				splitSegmentStartCoord = neighbor.getX() - borderWidth;
@@ -239,7 +239,7 @@ public ImmutableSet<Segment> getSegmentsFreeFromNeighbors(EnhancedRectangle r, C
 		// Now, there may be a situation when the whole direction segment is
 		// eliminated, and there are still rectangles from that direction.
 		// If number of segments here reaches 0, it means that this
-		// direction of EnhancedRectangle has no neighbor-free segments. Now we
+		// direction of Rectangle has no neighbor-free segments. Now we
 		// can safely break the loop and go straight to the "return" part.
 		if (segments.size() == 0) {
 			break;
@@ -267,7 +267,7 @@ public ImmutableSet<Segment> getSegmentsFreeFromNeighbors(EnhancedRectangle r, C
 	return ImmutableSet.copyOf(segments);
 }
 
-public ImmutableSet<RectangleSidePiece> getSidePiecesFreeFromNeighbours(EnhancedRectangle r, CardinalDirection side) {
+public ImmutableSet<RectangleSidePiece> getSidePiecesFreeFromNeighbours(Rectangle r, CardinalDirection side) {
 	ImmutableSet<Segment> segmentsFreeFromNeighbors = getSegmentsFreeFromNeighbors(r, side);
 	Builder<RectangleSidePiece> answer = ImmutableSet.builder();
 	for (Segment segment : segmentsFreeFromNeighbors) {
@@ -290,10 +290,10 @@ public ImmutableSet<RectangleSidePiece> getSidePiecesFreeFromNeighbours(Enhanced
  * @param side
  * 	A side of that rectangle.
  * @return A set of rectangles that touch a given rectangle
- * @see RectangleSystem#getNeighborsFromSide(EnhancedRectangle, CardinalDirection)
+ * @see RectangleSystem#getNeighborsFromSide(Rectangle, CardinalDirection)
  */
-Set<EnhancedRectangle> getRectanglesCloseToSide(EnhancedRectangle r, CardinalDirection side) {
-	Set<EnhancedRectangle> rectanglesFromThatSide = new HashSet<>();
+Set<Rectangle> getRectanglesCloseToSide(Rectangle r, CardinalDirection side) {
+	Set<Rectangle> rectanglesFromThatSide = new HashSet<>();
 	// TODO: Add somewhere examples of such rectangles as in comment below.
 		/*
 		 * Not only neighbors can shorten free segments, but also the rectangles
@@ -302,7 +302,7 @@ Set<EnhancedRectangle> getRectanglesCloseToSide(EnhancedRectangle r, CardinalDir
 		 * the neighbors.
 		 */
 	if (side == CardinalDirection.N) {
-		for (EnhancedRectangle neighbor : content) {
+		for (Rectangle neighbor : content) {
 		        /*
 		         * The part starting from Utils.integersRangeIntersection in
 				 * each case checks if a neighbor rectangle touches _side_ (not
@@ -319,7 +319,7 @@ Set<EnhancedRectangle> getRectanglesCloseToSide(EnhancedRectangle r, CardinalDir
 		}
 
 	} else if (side == CardinalDirection.E) {
-		for (EnhancedRectangle neighbor : content) {
+		for (Rectangle neighbor : content) {
 			if (neighbor.getX() == r.getX() + r.getWidth() + borderWidth && Utils
 				.integersRangeIntersection(
 					neighbor.getY() - borderWidth,
@@ -330,7 +330,7 @@ Set<EnhancedRectangle> getRectanglesCloseToSide(EnhancedRectangle r, CardinalDir
 			}
 		}
 	} else if (side == CardinalDirection.S) {
-		for (EnhancedRectangle neighbor : content) {
+		for (Rectangle neighbor : content) {
 			if (neighbor.getY() == r.getY() + r.getHeight() + borderWidth && Utils
 				.integersRangeIntersection(
 					neighbor.getX() - borderWidth,
@@ -342,7 +342,7 @@ Set<EnhancedRectangle> getRectanglesCloseToSide(EnhancedRectangle r, CardinalDir
 		}
 	} else {
 		// if (direction == SideTest.W)
-		for (EnhancedRectangle neighbor : content) {
+		for (Rectangle neighbor : content) {
 			if (neighbor.getX() + neighbor.getWidth() + borderWidth == r.getX() && Utils
 				.integersRangeIntersection(
 					neighbor.getY() - borderWidth,
@@ -365,11 +365,11 @@ Set<EnhancedRectangle> getRectanglesCloseToSide(EnhancedRectangle r, CardinalDir
  * @param side
  * 	A side of that rectangle.
  * @return A set of rectangles that touch {@code r}.
- * @see RectangleSystem#getRectanglesCloseToSide(EnhancedRectangle, CardinalDirection)
- * @see RectangleSystem#getNeighborsFromSide(EnhancedRectangle, CardinalDirection)
+ * @see RectangleSystem#getRectanglesCloseToSide(Rectangle, CardinalDirection)
+ * @see RectangleSystem#getNeighborsFromSide(Rectangle, CardinalDirection)
  */
-public Set<EnhancedRectangle> getRectanglesCloseToSideOrBorder(EnhancedRectangle r, CardinalDirection side) {
-	Set<EnhancedRectangle> rectanglesFromThatSide = new HashSet<>();
+public Set<Rectangle> getRectanglesCloseToSideOrBorder(Rectangle r, CardinalDirection side) {
+	Set<Rectangle> rectanglesFromThatSide = new HashSet<>();
 	// TODO: Add somewhere examples of such rectangles as in comment below.
 	    /*
 	     * Not only neighbors can shorten free segments, but also the rectangles
@@ -378,7 +378,7 @@ public Set<EnhancedRectangle> getRectanglesCloseToSideOrBorder(EnhancedRectangle
 		 * the neighbors.
 		 */
 	if (side == CardinalDirection.N) {
-		for (EnhancedRectangle neighbor : content) {
+		for (Rectangle neighbor : content) {
 		        /*
 		         * The part starting from Utils.integersRangeIntersection in
 				 * each case checks if a neighbor rectangle touches _side_ (not
@@ -395,7 +395,7 @@ public Set<EnhancedRectangle> getRectanglesCloseToSideOrBorder(EnhancedRectangle
 		}
 
 	} else if (side == CardinalDirection.E) {
-		for (EnhancedRectangle neighbor : content) {
+		for (Rectangle neighbor : content) {
 			if (
 				neighbor.getX() == r.getX() + r.getWidth() + borderWidth
 					&& Utils.integersRangeIntersection(
@@ -409,7 +409,7 @@ public Set<EnhancedRectangle> getRectanglesCloseToSideOrBorder(EnhancedRectangle
 			}
 		}
 	} else if (side == CardinalDirection.S) {
-		for (EnhancedRectangle neighbor : content) {
+		for (Rectangle neighbor : content) {
 			if (neighbor.getY() == r.getY() + r.getHeight() + borderWidth && Utils
 				.integersRangeIntersection(
 					neighbor.getX() - borderWidth,
@@ -421,7 +421,7 @@ public Set<EnhancedRectangle> getRectanglesCloseToSideOrBorder(EnhancedRectangle
 		}
 	} else {
 		// if (direction == SideTest.W)
-		for (EnhancedRectangle neighbor : content) {
+		for (Rectangle neighbor : content) {
 			if (neighbor.getX() + neighbor.getWidth() + borderWidth == r.getX() && Utils
 				.integersRangeIntersection(
 					neighbor.getY() - borderWidth,
@@ -442,21 +442,21 @@ public Set<EnhancedRectangle> getRectanglesCloseToSideOrBorder(EnhancedRectangle
  *
  * @return A set of outer rectangles.
  */
-public Set<EnhancedRectangle> outerRectanglesSet() {
+public Set<Rectangle> outerRectanglesSet() {
 	return outerSegments.getOuterRectangles();
 }
 
 /**
- * Returns a set of EnhancedRectangles that touch a given EnhancedRectangle from a particular direction.
+ * Returns a set of EnhancedRectangles that touch a given Rectangle from a particular direction.
  *
  * @param r
- * 	A EnhancedRectangle to seek neighbors of.
+ * 	A Rectangle to seek neighbors of.
  * @param side
  * 	From which direction to seek for neighbors.
  * @return All neighbors from that direction.
  */
-public Set<EnhancedRectangle> getNeighborsFromSide(EnhancedRectangle r, CardinalDirection side) {
-	Builder<EnhancedRectangle> builder = ImmutableSet.builder();
+public Set<Rectangle> getNeighborsFromSide(Rectangle r, CardinalDirection side) {
+	Builder<Rectangle> builder = ImmutableSet.builder();
 	assert graph.containsVertex(r);
 	for (Neighborship e : graph.edgesOf(r)) {
 		if (graph.getEdgeSource(e).equals(r) && getNeighborSide(
@@ -479,8 +479,8 @@ public Set<EnhancedRectangle> getNeighborsFromSide(EnhancedRectangle r, Cardinal
  * 	A rectangle from this rectangle system.
  * @return A set of all neighbors of that rectangle.
  */
-public ImmutableSet<EnhancedRectangle> getNeighbors(EnhancedRectangle r) {
-	Builder<EnhancedRectangle> neighbors = ImmutableSet.builder();
+public ImmutableSet<Rectangle> getNeighbors(Rectangle r) {
+	Builder<Rectangle> neighbors = ImmutableSet.builder();
 	for (Neighborship e : graph.edgesOf(r)) {
 		if (graph.getEdgeSource(e) == r) {
 			neighbors.add(graph.getEdgeTarget(e));
@@ -492,7 +492,7 @@ public ImmutableSet<EnhancedRectangle> getNeighbors(EnhancedRectangle r) {
 }
 
 /**
- * Returns a segment inside EnhancedRectangle r1 by which r1 touches r2.
+ * Returns a segment inside Rectangle r1 by which r1 touches r2.
  *
  * @param r1
  * 	A rectangle from this rectangle system.
@@ -500,7 +500,7 @@ public ImmutableSet<EnhancedRectangle> getNeighbors(EnhancedRectangle r) {
  * 	Another rectangle from this rectangle system.
  * @return A segment that lies inside r1 close to its borders, and is located in front of r2.
  */
-Segment getAdjacencySegment(EnhancedRectangle r1, EnhancedRectangle r2) {
+Segment getAdjacencySegment(Rectangle r1, Rectangle r2) {
 	if (!areRectanglesNear(r1, r2)) {
 		throw new IllegalArgumentException(
 			"Both rectangles must be near each other: " + r1 + " " + r2);
@@ -532,21 +532,21 @@ Segment getAdjacencySegment(EnhancedRectangle r1, EnhancedRectangle r2) {
 }
 
 @Override
-public EnhancedRectangle addRectangle(EnhancedRectangle r) {
+public Rectangle addRectangle(Rectangle r) {
 	super.addRectangle(r);
 	graph.addVertex(r);
 	buildEdgesWith(r);
 	return r;
 }
 
-private void buildEdgesWith(EnhancedRectangle r) {
+private void buildEdgesWith(Rectangle r) {
 	for (Orientation orientation : Orientation.values()) {
-		TreeSet<EnhancedRectangle> treeSet = sortedRectangles.get(orientation);
-		ArrayList<Map<EnhancedRectangle, CardinalDirection>> neighbors = findNeighborsInSortedSet(r, orientation);
-		for (Map.Entry<EnhancedRectangle, CardinalDirection> e : neighbors.get(0).entrySet()) {
+		TreeSet<Rectangle> treeSet = sortedRectangles.get(orientation);
+		ArrayList<Map<Rectangle, CardinalDirection>> neighbors = findNeighborsInSortedSet(r, orientation);
+		for (Map.Entry<Rectangle, CardinalDirection> e : neighbors.get(0).entrySet()) {
 			addEdgeBetween(r, e.getKey(), e.getValue(), Neighborship.NeighborshipType.NEIGHBORSHIP);
 		}
-		for (Map.Entry<EnhancedRectangle, CardinalDirection> e : neighbors.get(1).entrySet()) {
+		for (Map.Entry<Rectangle, CardinalDirection> e : neighbors.get(1).entrySet()) {
 			addEdgeBetween(r, e.getKey(), e.getValue(), Neighborship.NeighborshipType.UNION);
 		}
 		// Final value of ammunitionType is 2
@@ -555,7 +555,7 @@ private void buildEdgesWith(EnhancedRectangle r) {
 	}
 }
 
-private String shortDef(EnhancedRectangle r) {
+private String shortDef(Rectangle r) {
 	CardinalDirection dir1 = r.getY() == 0 ? CardinalDirection.N : CardinalDirection.S;
 	CardinalDirection dir2 = r.getX() == 0 ? CardinalDirection.W : CardinalDirection.E;
 	return "[" + dir1 + " " + dir2 + " " + r.getWidth() + " " + r.getHeight() + "]";
@@ -572,7 +572,7 @@ private String shortDef(EnhancedRectangle r) {
  * @param sourceRecOccupiedSide
  * 	Which side of source rectangle is occupied by destination rectangle.
  */
-private void addEdgeBetween(EnhancedRectangle r1, EnhancedRectangle r2, CardinalDirection sourceRecOccupiedSide, Neighborship.NeighborshipType type) {
+private void addEdgeBetween(Rectangle r1, Rectangle r2, CardinalDirection sourceRecOccupiedSide, Neighborship.NeighborshipType type) {
 	graph.addEdge(r1, r2, new Neighborship(sourceRecOccupiedSide, type));
 }
 
@@ -587,18 +587,18 @@ private void addEdgeBetween(EnhancedRectangle r1, EnhancedRectangle r2, Cardinal
  * @return List of two maps from a neighbor rectangle to a direction it is from original rectangle. First index of the
  *         list contains neighbors of ammunitionType Near, second index contains neighbors of ammunitionType United.
  */
-private ArrayList<Map<EnhancedRectangle, CardinalDirection>> findNeighborsInSortedSet(EnhancedRectangle r, Orientation orientation) {
-	TreeSet<EnhancedRectangle> treeSet = sortedRectangles.get(orientation);
-	ArrayList<Map<EnhancedRectangle, CardinalDirection>> answer = new ArrayList<>();
-	Map<EnhancedRectangle, CardinalDirection> nears = new HashMap<>();
-	Map<EnhancedRectangle, CardinalDirection> uniteds = new HashMap<>();
+private ArrayList<Map<Rectangle, CardinalDirection>> findNeighborsInSortedSet(Rectangle r, Orientation orientation) {
+	TreeSet<Rectangle> treeSet = sortedRectangles.get(orientation);
+	ArrayList<Map<Rectangle, CardinalDirection>> answer = new ArrayList<>();
+	Map<Rectangle, CardinalDirection> nears = new HashMap<>();
+	Map<Rectangle, CardinalDirection> uniteds = new HashMap<>();
 	answer.add(nears);
 	answer.add(uniteds);
 	int distance = 0;
 	CardinalDirection decreasingSide = orientation.isHorizontal() ? CardinalDirection.W : CardinalDirection.N;
 	CardinalDirection increasingSide = orientation.isHorizontal() ? CardinalDirection.E : CardinalDirection.S;
 	for (CardinalDirection dir : new CardinalDirection[]{decreasingSide, increasingSide}) {
-		EnhancedRectangle bufferRectangle;
+		Rectangle bufferRectangle;
 		for (bufferRectangle = dir == decreasingSide ? treeSet.lower(r) : treeSet.higher(r);
 		     bufferRectangle != null && distance <= borderWidth;
 		     bufferRectangle = dir == decreasingSide ? treeSet.lower(bufferRectangle) : treeSet.higher(bufferRectangle)
@@ -611,10 +611,10 @@ private ArrayList<Map<EnhancedRectangle, CardinalDirection>> findNeighborsInSort
 			distance = bufferRectangle.amountOfCellsBetween(r, orientation);
 			if (r.overlapsByDynamicRange(bufferRectangle, orientation)) {
 				if (distance == borderWidth) {
-					// Rectangles will have LocationNeighborship of ammunitionType Near
+					// Rectangles will have LocationNeighborship of type Near
 					nears.put(bufferRectangle, dir);
 				} else if (distance == 0) {
-					// Rectangles will have LocationNeighborship of ammunitionType United
+					// Rectangles will have LocationNeighborship of type United
 					uniteds.put(bufferRectangle, dir);
 				}
 			} else {
@@ -627,7 +627,7 @@ private ArrayList<Map<EnhancedRectangle, CardinalDirection>> findNeighborsInSort
 	return answer;
 }
 
-private boolean areProbableNeighborsByOrientation(EnhancedRectangle r1, EnhancedRectangle r2, Orientation orientation) {
+private boolean areProbableNeighborsByOrientation(Rectangle r1, Rectangle r2, Orientation orientation) {
 	if (!areRectanglesNear(r1, r2) && !areRectanglesUnited(r1, r2)) {
 		return false;
 	} else if (r1.overlapsByDynamicRange(r2, orientation.reverted())) {
@@ -636,7 +636,7 @@ private boolean areProbableNeighborsByOrientation(EnhancedRectangle r1, Enhanced
 	return true;
 }
 
-private Orientation getOrientationOfTouching(EnhancedRectangle r1, EnhancedRectangle r2) {
+private Orientation getOrientationOfTouching(Rectangle r1, Rectangle r2) {
 	assert areRectanglesNear(r1, r2);
 	return getNeighborSide(r1, r2).getOrientation();
 }
@@ -645,17 +645,20 @@ private Orientation getOrientationOfTouching(EnhancedRectangle r1, EnhancedRecta
  * Excludes a rectangle from this system. Neighbor rectangles of the excluded rectangle will become outer.
  *
  * @param r
- * 	A EnhancedRectangle that exists in this RectangleSystem.
+ * 	A Rectangle that exists in this RectangleSystem.
  */
 @Override
-public void excludeRectangle(EnhancedRectangle r) {
+public void excludeRectangle(Rectangle r) {
 	super.excludeRectangle(r);
-	for (EnhancedRectangle neighbor : getNeighbors(r)) {
+	for (Rectangle neighbor : getNeighbors(r)) {
 		assert graph.containsEdge(neighbor, r);
 		outerSegments.uncomputeSide(neighbor, getNeighborSide(neighbor, r));
 	}
 	outerSegments.uncomputeRectangle(r);
 	graph.removeVertex(r);
+	for (Set<Rectangle> set : sortedRectangles.values()) {
+		set.remove(r);
+	}
 }
 
 /**
@@ -666,12 +669,12 @@ public void excludeRectangle(EnhancedRectangle r) {
  * @return true if {@code r} is outer, false if it is inner.
  * @see OuterSegments
  */
-public boolean isRectangleOuter(EnhancedRectangle r) {
+public boolean isRectangleOuter(Rectangle r) {
 	return outerSegments.getOuterSidesOf(r).size() > 0;
 }
 
 /**
- * Checks if two {@link EnhancedRectangle}s have exactly {@code borderWidth} cells between their closest sides, and
+ * Checks if two {@link Rectangle}s have exactly {@code borderWidth} cells between their closest sides, and
  * these sides overlap by dynamic coordinate. Such rectangles are considered to be "near" in this individual
  * RectangleSystem.
  *
@@ -680,14 +683,14 @@ public boolean isRectangleOuter(EnhancedRectangle r) {
  * @param r2
  * 	Another rectangle from this rectangle system.
  * @return true if distance between rectangles is {@code cells}, false otherwise
- * @see RectangleSystem#areRectanglesUnited(EnhancedRectangle, EnhancedRectangle)
+ * @see RectangleSystem#areRectanglesUnited(Rectangle, Rectangle)
  */
-public boolean areRectanglesNear(EnhancedRectangle r1, EnhancedRectangle r2) {
+public boolean areRectanglesNear(Rectangle r1, Rectangle r2) {
 	return areRectanglesInXCells(r1, r2, borderWidth);
 }
 
 /**
- * Checks if two {@link EnhancedRectangle}s have exactly {@code borderWidth} cells between their closest sides, and
+ * Checks if two {@link Rectangle}s have exactly {@code borderWidth} cells between their closest sides, and
  * these sides overlap by dynamic coordinate. Such rectangles are considered to be "near" in this individual
  * RectangleSystem.
  *
@@ -696,31 +699,31 @@ public boolean areRectanglesNear(EnhancedRectangle r1, EnhancedRectangle r2) {
  * @param r2
  * 	Another rectangle from this rectangle system.
  * @return true if distance between rectangles is {@code cells}, false otherwise
- * @see RectangleSystem#areRectanglesNear(EnhancedRectangle, EnhancedRectangle)
+ * @see RectangleSystem#areRectanglesNear(Rectangle, Rectangle)
  */
-private boolean areRectanglesUnited(EnhancedRectangle r1, EnhancedRectangle r2) {
+private boolean areRectanglesUnited(Rectangle r1, Rectangle r2) {
 	return areRectanglesInXCells(r1, r2, 0);
 }
 
 /**
- * Checks if a EnhancedRectangle exists in this RectangleSystem.
+ * Checks if a Rectangle exists in this RectangleSystem.
  *
  * @param r
  * 	A rectangle.
  * @return True if {@code r} exists in this rectangle system, false otherwise.
  */
-public boolean hasRectangle(EnhancedRectangle r) {
+public boolean hasRectangle(Rectangle r) {
 	return content.contains(r);
 }
 
 /**
- * Make this EnhancedRectangle's graph into a directed tree. The shape of a tree will be determined randomly, but a root
+ * Make this Rectangle's graph into a directed tree. The shape of a tree will be determined randomly, but a root
  * vertex can be set.
  */
 public void convertGraphToDirectedTree() {
 	// Randomly select an existing vertex to be a root vertex of a tree
-	EnhancedRectangle rootVertex = null;
-	for (EnhancedRectangle r : graph.vertexSet()) {
+	Rectangle rootVertex = null;
+	for (Rectangle r : graph.vertexSet()) {
 		rootVertex = r;
 		break;
 	}
@@ -728,15 +731,15 @@ public void convertGraphToDirectedTree() {
 	     * Another graph that will contain the same vertices that this.graph,
 		 * but with single tree-form edges.
 		 */
-	SimpleGraph<EnhancedRectangle, Neighborship> graph2 = new SimpleGraph<>(Neighborship.class);
+	SimpleGraph<Rectangle, Neighborship> graph2 = new SimpleGraph<>(Neighborship.class);
 	graph2.addVertex(rootVertex);
 	// Vertex set of the new graph
-	Set<EnhancedRectangle> newVertexSet = graph2.vertexSet();
+	Set<Rectangle> newVertexSet = graph2.vertexSet();
 	for (int i = 0, l = graph.vertexSet().size(); i < l; i++) {
 		loop:
-		for (EnhancedRectangle r : newVertexSet) {// Select a random
+		for (Rectangle r : newVertexSet) {// Select a random
 			for (Neighborship e : graph.edgesOf(r)) {
-				EnhancedRectangle r2 = graph.getEdgeTarget(e);
+				Rectangle r2 = graph.getEdgeTarget(e);
 				if (r2 == r) {
 					r2 = graph.getEdgeSource(e);
 				}
@@ -782,13 +785,13 @@ public void convertDoubleEdgesToSingle() {
  */
 public void nibbleSystem(int depth, int chance) {
 	for (int k = 0; k < depth; k++) {
-		Set<EnhancedRectangle> removedRectangles = new HashSet<>();
-		for (EnhancedRectangle r : outerRectanglesSet()) {
+		Set<Rectangle> removedRectangles = new HashSet<>();
+		for (Rectangle r : outerRectanglesSet()) {
 			if (Chance.roll(chance)) {
 				removedRectangles.add(r);
 			}
 		}
-		for (EnhancedRectangle r : removedRectangles) {
+		for (Rectangle r : removedRectangles) {
 			excludeRectangle(r);
 		}
 	}
@@ -805,10 +808,10 @@ public void nibbleSystem(int depth, int chance) {
  * 	Radius of a circle.
  * @return A Set of removed rectangles.
  */
-public Set<EnhancedRectangle> removeRectanglesInCircle(int x, int y, int radius) {
-	Set<EnhancedRectangle> answer = new HashSet<>();
-	Set<EnhancedRectangle> copy = new HashSet<>(content);
-	for (EnhancedRectangle r : copy) {
+public Set<Rectangle> removeRectanglesInCircle(int x, int y, int radius) {
+	Set<Rectangle> answer = new HashSet<>();
+	Set<Rectangle> copy = new HashSet<>(content);
+	for (Rectangle r : copy) {
 		if (r.isInCircle(x, y, radius)) {
 			excludeRectangle(r);
 			answer.add(r);
@@ -818,11 +821,13 @@ public Set<EnhancedRectangle> removeRectanglesInCircle(int x, int y, int radius)
 }
 
 /**
- * <p> Splits rectangle into two rectangles, one of them being the initial rectangle, and another one a new rectangle.
- * Rectangle under current number will be the left one (if dir == DirectionToBERemoved.V) or the top one (if dir ==
- * DirectionToBERemoved.H). </p> <p> If width < 0, then a rectangle width width/height = -width from right side/bottom
- * will be cut off, and under current number still stay right/bottom rectangle, but the old one will still be the
- * left/top one, and the returned one will be the right/bottom one. </p>
+ * Splits rectangle into two rectangles, one of them being the initial rectangle, and another one a new rectangle.
+ * Rectangle under current number will be the left one (if dir == DirectionToBeRemoved.V) or the top one (if dir ==
+ * DirectionToBERemoved.H).
+ * <p/>
+ * If width < 0, then a rectangle width width/height = -width from right side/bottom will be cut off, and under current
+ * number still stay right/bottom rectangle, but the old one will still be the left/top one, and the returned one will
+ * be the right/bottom one.
  *
  * @param r
  * 	A rectangle from this RectangleSystem.
@@ -832,20 +837,20 @@ public Set<EnhancedRectangle> removeRectanglesInCircle(int x, int y, int radius)
  * 	How much to cut.
  * @return A new rectangle that was created by splitting the old one.
  */
-public EnhancedRectangle splitRectangle(EnhancedRectangle r, Orientation orientation, int widthOrHeight, boolean reverseAreas) {
+public Rectangle splitRectangle(Rectangle r, Orientation orientation, int widthOrHeight, boolean reverseAreas) {
 	// TODO: Optimize size() calls
 	if (widthOrHeight == 0) {
 		throw new IllegalArgumentException("Argument width can't be 0");
 	}
 	if (!hasRectangle(r)) {
-		throw new IllegalArgumentException("EnhancedRectangle " + r + " doesn't exist in this RectangleSystem");
+		throw new IllegalArgumentException("Rectangle " + r + " doesn't exist in this RectangleSystem");
 	}
 	boolean negativeWidth = widthOrHeight < 0;
-	EnhancedRectangle newRec;
+	Rectangle newRec;
 	if (orientation.isVertical()) {
 		// Vertically
 		if (negativeWidth) {
-			// This will be the width of the old EnhancedRectangle
+			// This will be the width of the old Rectangle
 			widthOrHeight = r.getWidth() + widthOrHeight - borderWidth;
 		}
 		if (widthOrHeight > r.getWidth()) {
@@ -859,14 +864,14 @@ public EnhancedRectangle splitRectangle(EnhancedRectangle r, Orientation orienta
 		}
 		int newStartX = r.getX() + widthOrHeight + borderWidth;
 		if (reverseAreas) {
-			newRec = new EnhancedRectangle(r.getX(), r.getY(), widthOrHeight, r.getHeight());
+			newRec = new Rectangle(r.getX(), r.getY(), widthOrHeight, r.getHeight());
 			resizeRectangle(r,
 				newStartX,
 				r.getY(),
 				r.getWidth() - widthOrHeight - borderWidth,
 				r.getHeight());
 		} else {
-			newRec = new EnhancedRectangle(
+			newRec = new Rectangle(
 				newStartX,
 				r.getY(),
 				r.getWidth() - widthOrHeight - borderWidth,
@@ -876,7 +881,7 @@ public EnhancedRectangle splitRectangle(EnhancedRectangle r, Orientation orienta
 	} else {
 		// Horizontally
 		if (negativeWidth) {
-			// This will be the width of the old EnhancedRectangle
+			// This will be the width of the old Rectangle
 			widthOrHeight = r.getHeight() + widthOrHeight - borderWidth;
 		}
 		if (widthOrHeight > r.getHeight()) {
@@ -892,14 +897,14 @@ public EnhancedRectangle splitRectangle(EnhancedRectangle r, Orientation orienta
 		// Though argument is called width, it is height if a rectangle
 		// is split vertically
 		if (reverseAreas) {
-			newRec = new EnhancedRectangle(r.getX(), r.getY(), r.getWidth(), widthOrHeight);
+			newRec = new Rectangle(r.getX(), r.getY(), r.getWidth(), widthOrHeight);
 			resizeRectangle(r,
 				r.getX(),
 				newStartY,
 				r.getWidth(),
 				r.getHeight() - widthOrHeight - borderWidth);
 		} else {
-			newRec = new EnhancedRectangle(
+			newRec = new Rectangle(
 				r.getX(),
 				newStartY,
 				r.getWidth(),
@@ -921,11 +926,10 @@ public EnhancedRectangle splitRectangle(EnhancedRectangle r, Orientation orienta
  * @param newHeight
  * 	New height
  */
-private void resizeRectangle(EnhancedRectangle r, int newWidth, int newHeight) {
+private void resizeRectangle(Rectangle r, int newWidth, int newHeight) {
 	excludeRectangle(r);
-	r.setWidth(newWidth);
-	r.setHeight(newHeight);
-	addRectangle(r);
+	Rectangle newR = new Rectangle(r.getX(), r.getY(), newWidth, newHeight);
+	addRectangle(newR);
 }
 
 /**
@@ -942,16 +946,13 @@ private void resizeRectangle(EnhancedRectangle r, int newWidth, int newHeight) {
  * @param newHeight
  * 	New height
  */
-private void resizeRectangle(EnhancedRectangle r, int newX, int newY, int newWidth, int newHeight) {
+private void resizeRectangle(Rectangle r, int newX, int newY, int newWidth, int newHeight) {
 	excludeRectangle(r);
-	r.setX(newX);
-	r.setY(newY);
-	r.setWidth(newWidth);
-	r.setHeight(newHeight);
-	addRectangle(r);
+	Rectangle newR = new Rectangle(newX, newY, newWidth, newHeight);
+	addRectangle(newR);
 }
 
-public EnhancedRectangle cutRectangleFromSide(EnhancedRectangle rectangleToCut, CardinalDirection side, int depth) {
+public Rectangle cutRectangleFromSide(Rectangle rectangleToCut, CardinalDirection side, int depth) {
 	if (depth < 1) {
 		throw new IllegalArgumentException(
 			"Depth must be 1 or greater; it is now " + depth);
@@ -985,31 +986,10 @@ public EnhancedRectangle cutRectangleFromSide(EnhancedRectangle rectangleToCut, 
 	}
 }
 
-/**
- * Changes {@link RectangleSystem#borderWidth} of this RectangleSystem and expands all EnhancedRectangles by that amount
- * of cells to still be neighbors with their neighbors.
- *
- * @param depth
- * 	Difference between the old borderWidth and the desired borderWidth.
- */
-public void expandRectanglesToBorder(int depth) {
-	if (borderWidth < depth * 2) {
-		throw new Error(
-			"border width " + borderWidth + " is too thin for expanding each rectangle by " + depth);
-	}
-	for (EnhancedRectangle r : content) {
-		r.setX(r.getX() - depth);
-		r.setY(r.getY()- depth);
-		r.setWidth(r.getWidth() + depth * 2);
-		r.setHeight(r.getHeight() + depth * 2);
-	}
-	borderWidth -= depth * 2;
-}
-
-public EnhancedRectangle findRectangleWithMostNeigbors() {
-	EnhancedRectangle answer = null;
+public Rectangle findRectangleWithMostNeigbors() {
+	Rectangle answer = null;
 	int maxNumberOfEdges = 0;
-	for (EnhancedRectangle r : graph.vertexSet()) {
+	for (Rectangle r : graph.vertexSet()) {
 		int size = graph.edgesOf(r).size();
 		if (size > maxNumberOfEdges) {
 			answer = r;
@@ -1023,22 +1003,22 @@ public EnhancedRectangle findRectangleWithMostNeigbors() {
 }
 
 /**
- * Returns an iterable object that allows iteration over all neighbors of a certain EnhancedRectangle in a certain
+ * Returns an iterable object that allows iteration over all neighbors of a certain Rectangle in a certain
  * order.
  *
  * @param r
  * 	A rectangle whose neighbors you need to iterate over.
  * @see NeighboursIterable
  */
-public NeighboursIterable getNeighboursIterable(EnhancedRectangle r) {
+public NeighboursIterable getNeighboursIterable(Rectangle r) {
 	return new NeighboursIterable(this, r);
 }
 
-public Collection<Segment> getOuterSegmentsOf(EnhancedRectangle r, CardinalDirection side) {
+public Collection<Segment> getOuterSegmentsOf(Rectangle r, CardinalDirection side) {
 	return outerSegments.getOuterSegmentsOf(r, side);
 }
 
-private static class RectangleComparator implements Comparator<EnhancedRectangle> {
+private static class RectangleComparator implements Comparator<Rectangle> {
 
 	private final Orientation orientation;
 
@@ -1047,12 +1027,12 @@ private static class RectangleComparator implements Comparator<EnhancedRectangle
 	}
 
 	@Override
-	public int compare(EnhancedRectangle o1, EnhancedRectangle o2) {
+	public int compare(Rectangle o1, Rectangle o2) {
 		int staticCoord1 = o1.getMinStaticCoord(orientation);
 		int staticCoord2 = o2.getMinStaticCoord(orientation);
 		if (staticCoord1 == staticCoord2) {
 			int dDynamicCoord = o1.getMinDynamicCoord(orientation) - o2.getMinDynamicCoord(orientation);
-			assert dDynamicCoord != 0 || o1 == o2;
+			assert dDynamicCoord != 0 || o1 == o2 : o1 + " " + o2;
 			return dDynamicCoord;
 		} else {
 			return staticCoord1 - staticCoord2;
@@ -1083,10 +1063,10 @@ public static class Neighborship {
 }
 
 class OuterSegments {
-	final Map<EnhancedRectangle, Map<CardinalDirection, ImmutableSet<Segment>>> recsToSegments = new HashMap<>();
-	private Map<EnhancedRectangle, Set<CardinalDirection>> allOuterSides;
+	final Map<Rectangle, Map<CardinalDirection, ImmutableSet<Segment>>> recsToSegments = new HashMap<>();
+	private Map<Rectangle, Set<CardinalDirection>> allOuterSides;
 
-	Collection<Segment> getOuterSegmentsOf(EnhancedRectangle r, CardinalDirection side) {
+	Collection<Segment> getOuterSegmentsOf(Rectangle r, CardinalDirection side) {
 		if (!recsToSegments.containsKey(r)) {
 			return computeOuterSegmentsOf(r, side);
 		}
@@ -1099,7 +1079,7 @@ class OuterSegments {
 		}
 	}
 
-	void uncomputeSide(EnhancedRectangle r, CardinalDirection side) {
+	void uncomputeSide(Rectangle r, CardinalDirection side) {
 		if (recsToSegments.containsKey(r)) {
 			recsToSegments.get(r).remove(side);
 		}
@@ -1111,9 +1091,9 @@ class OuterSegments {
 	 *
 	 * @return
 	 */
-	public Map<EnhancedRectangle, Set<CardinalDirection>> outerSidesOfRectangles() {
-		ImmutableMap.Builder<EnhancedRectangle, Set<CardinalDirection>> builder = ImmutableMap.builder();
-		for (Map.Entry<EnhancedRectangle, Map<CardinalDirection, ImmutableSet<Segment>>> entry : recsToSegments.entrySet()) {
+	public Map<Rectangle, Set<CardinalDirection>> outerSidesOfRectangles() {
+		ImmutableMap.Builder<Rectangle, Set<CardinalDirection>> builder = ImmutableMap.builder();
+		for (Map.Entry<Rectangle, Map<CardinalDirection, ImmutableSet<Segment>>> entry : recsToSegments.entrySet()) {
 			assert !entry.getValue().isEmpty();
 			Builder<CardinalDirection> valueBuilder = ImmutableSet.builder();
 			for (CardinalDirection dir : CardinalDirection.values()) {
@@ -1135,7 +1115,7 @@ class OuterSegments {
 	 * 	A side of that rectangle from which you need to find free segments.
 	 * @return Saved segments.
 	 */
-	private Collection<Segment> computeOuterSegmentsOf(EnhancedRectangle r, CardinalDirection side) {
+	private Collection<Segment> computeOuterSegmentsOf(Rectangle r, CardinalDirection side) {
 		ImmutableSet<Segment> segments = getSegmentsFreeFromNeighbors(r, side);
 		Map<CardinalDirection, ImmutableSet<Segment>> map;
 		if (recsToSegments.containsKey(r)) {
@@ -1149,7 +1129,7 @@ class OuterSegments {
 		return segments;
 	}
 
-	private Collection<CardinalDirection> getOuterSidesOf(EnhancedRectangle r) {
+	private Collection<CardinalDirection> getOuterSidesOf(Rectangle r) {
 		Builder<CardinalDirection> builder = ImmutableSet.builder();
 		for (CardinalDirection dir : CardinalDirection.values()) {
 			Collection<Segment> segments = getOuterSegmentsOf(r, dir);
@@ -1160,13 +1140,13 @@ class OuterSegments {
 		return builder.build();
 	}
 
-	private Set<EnhancedRectangle> getOuterRectangles() {
+	private Set<Rectangle> getOuterRectangles() {
 		computeForAllRectangles();
 		return recsToSegments.keySet();
 	}
 
 	private void computeForAllRectangles() {
-		for (EnhancedRectangle r : content) {
+		for (Rectangle r : content) {
 			if (!recsToSegments.containsKey(r)) {
 				for (CardinalDirection side : CardinalDirection.values()) {
 					computeOuterSegmentsOf(r, side);
@@ -1175,10 +1155,10 @@ class OuterSegments {
 		}
 	}
 
-	public ImmutableMap<EnhancedRectangle, Collection<CardinalDirection>> getAllOuterSides() {
+	public ImmutableMap<Rectangle, Collection<CardinalDirection>> getAllOuterSides() {
 		computeForAllRectangles();
-		ImmutableMap.Builder<EnhancedRectangle, Collection<CardinalDirection>> builder = ImmutableMap.builder();
-		for (Map.Entry<EnhancedRectangle, Map<CardinalDirection, ImmutableSet<Segment>>> entry : recsToSegments.entrySet()) {
+		ImmutableMap.Builder<Rectangle, Collection<CardinalDirection>> builder = ImmutableMap.builder();
+		for (Map.Entry<Rectangle, Map<CardinalDirection, ImmutableSet<Segment>>> entry : recsToSegments.entrySet()) {
 			if (!entry.getValue().isEmpty()) {
 				builder.put(entry.getKey(), entry.getValue().keySet());
 			}
@@ -1186,21 +1166,21 @@ class OuterSegments {
 		return builder.build();
 	}
 
-	public void uncomputeRectangle(EnhancedRectangle r) {
+	public void uncomputeRectangle(Rectangle r) {
 		recsToSegments.remove(r);
 	}
 }
 
-public class NeighboursIterable implements Iterable<EnhancedRectangle> {
+public class NeighboursIterable implements Iterable<Rectangle> {
 	private final RectangleSystem rs;
-	private final EnhancedRectangle centralRectangle;
-	private ArrayList<EnhancedRectangle> orderedRectangles = new ArrayList<>();
+	private final Rectangle centralRectangle;
+	private ArrayList<Rectangle> orderedRectangles = new ArrayList<>();
 	private boolean orderSet = false;
-	private EnhancedRectangle startingNeighbour;
+	private Rectangle startingNeighbour;
 	private double centerX;
 	private double centerY;
 
-	NeighboursIterable(RectangleSystem rs, EnhancedRectangle centralRectangle) {
+	NeighboursIterable(RectangleSystem rs, Rectangle centralRectangle) {
 		this.rs = rs;
 		this.centralRectangle = centralRectangle;
 		this.centerX = centralRectangle.getCenterX();
@@ -1208,7 +1188,7 @@ public class NeighboursIterable implements Iterable<EnhancedRectangle> {
 	}
 
 	@Override
-	public Iterator<EnhancedRectangle> iterator() {
+	public Iterator<Rectangle> iterator() {
 		if (!orderSet) {
 			throw new Error(
 				"You must first set this Iterable's type of order with a set* method");
@@ -1218,7 +1198,7 @@ public class NeighboursIterable implements Iterable<EnhancedRectangle> {
 
 	/**
 	 * Prepares the iterable to iterate over all rectangles in clockwise order. Before calling this method, you must set a
-	 * starting rectangle either implicitly with {@link NeighboursIterable#setStartingNeigbour(EnhancedRectangle)} or
+	 * starting rectangle either implicitly with {@link NeighboursIterable#setStartingNeigbour(Rectangle)} or
 	 * explicitly with {@link NeighboursIterable#setRandomStartingNeighbour()}.
 	 *
 	 * @return This same object, so you can use a chain of invocations to its methods right inside for (:) loop heading.
@@ -1229,7 +1209,7 @@ public class NeighboursIterable implements Iterable<EnhancedRectangle> {
 	}
 
 	public NeighboursIterable setCounterClockwiseOrder() {
-		ArrayList<EnhancedRectangle> rectangles = getRectanglesSortedClockwise();
+		ArrayList<Rectangle> rectangles = getRectanglesSortedClockwise();
 		orderedRectangles.add(startingNeighbour);
 		for (int i = rectangles.size() - 1; i > 0; i++) {
 			// We go from last element backwards to element at index 1,
@@ -1254,10 +1234,10 @@ public class NeighboursIterable implements Iterable<EnhancedRectangle> {
 	 * rectangle. Instead the first rectangle is the one with a center point closest to 0 angle in a polar coordinate
 	 * system whose 0 ray is collinear to world's Cartesian system's x-axis.
 	 */
-	private ArrayList<EnhancedRectangle> getRectanglesSortedClockwise() {
+	private ArrayList<Rectangle> getRectanglesSortedClockwise() {
 		ArrayList<AngleRectanglePair> rectangles = new ArrayList<>();
 		int startingNeighbourIndex = -1;
-		for (EnhancedRectangle r : rs.getNeighbors(centralRectangle)) {
+		for (Rectangle r : rs.getNeighbors(centralRectangle)) {
 			// For each rectangle save its center's angle in a polar
 			// coordinate system.
 			// We'll need the angle solely for sorting.
@@ -1282,7 +1262,7 @@ public class NeighboursIterable implements Iterable<EnhancedRectangle> {
 			}
 		});
 		// Fill the actual list of rectangles in a right (clockwise) order.
-		ArrayList<EnhancedRectangle> answer = new ArrayList<>();
+		ArrayList<Rectangle> answer = new ArrayList<>();
 		for (int i = startingNeighbourIndex, l = rectangles.size(); i < l; i++) {
 			answer.add(rectangles.get(i).rectangle);
 		}
@@ -1292,7 +1272,7 @@ public class NeighboursIterable implements Iterable<EnhancedRectangle> {
 		return answer;
 	}
 
-	public NeighboursIterable setStartingNeigbour(EnhancedRectangle neighbour) {
+	public NeighboursIterable setStartingNeigbour(Rectangle neighbour) {
 		startingNeighbour = neighbour;
 		return this;
 	}
@@ -1304,9 +1284,9 @@ public class NeighboursIterable implements Iterable<EnhancedRectangle> {
 
 	class AngleRectanglePair {
 		private final double angle;
-		private final EnhancedRectangle rectangle;
+		private final Rectangle rectangle;
 
-		AngleRectanglePair(double angle, EnhancedRectangle rectangle) {
+		AngleRectanglePair(double angle, Rectangle rectangle) {
 			this.angle = angle;
 			this.rectangle = rectangle;
 		}

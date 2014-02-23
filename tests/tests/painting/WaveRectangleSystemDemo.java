@@ -9,17 +9,14 @@ import org.junit.runner.RunWith;
 import org.tendiwa.core.meta.Range;
 import org.tendiwa.drawing.DrawingModule;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.geometry.EnhancedRectangle;
+import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.RectangleSystem;
-import org.tendiwa.geometry.WaveRectangleSystem;
-
-import java.io.IOException;
+import org.tendiwa.geometry.extensions.WaveRectangleSystem;
 
 @RunWith(JukitoRunner.class)
 @UseModules(DrawingModule.class)
 public class WaveRectangleSystemDemo {
 @Inject
-@Named("default")
 TestCanvas canvas;
 @Test
 public void draw() throws InterruptedException {
@@ -39,9 +36,9 @@ public void draw() throws InterruptedException {
 //		irs.addRectangleArea(44, 10, 2, 3);
 //		irs.addRectangleArea(45, 13, 4, 5);
 //		irs.addRectangleArea(47, 18, 4, 12);
-	irs.addRectangle(new EnhancedRectangle(10, 10, 1, 1));
-	irs.addRectangle(new EnhancedRectangle(13, 12, 1, 1));
-	irs.addRectangle(new EnhancedRectangle(13, 14, 70, 1));
+	irs.addRectangle(new Rectangle(10, 10, 1, 1));
+	irs.addRectangle(new Rectangle(13, 12, 1, 1));
+	irs.addRectangle(new Rectangle(13, 14, 70, 1));
 	int tries = 1;
 	for (int i = 0; i < (WaveRectangleSystem.DEBUG ? 1 : tries); i++) {
 		WaveRectangleSystem rs = new WaveRectangleSystem(

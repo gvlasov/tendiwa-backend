@@ -1,6 +1,6 @@
 package org.tendiwa.core;
 
-import org.tendiwa.geometry.EnhancedRectangle;
+import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.RectangleSystem;
 
 /**
@@ -17,9 +17,9 @@ public class GrowingRectangleSystem extends RectangleSystem {
 		super(borderWidth);
 	}
 
-	public GrowingRectangleSystem(int borderWidth, EnhancedRectangle r) {
+	public GrowingRectangleSystem(int borderWidth, Rectangle r) {
 		this(borderWidth);
-		addRectangle(new EnhancedRectangle(r));
+		addRectangle(new Rectangle(r));
 	}
 
 	/**
@@ -39,7 +39,7 @@ public class GrowingRectangleSystem extends RectangleSystem {
 	 *            offset moves. the rectangle to the south, and negative — to
 	 *            the north.
 	 */
-	public void grow(EnhancedRectangle r, CardinalDirection side, int width, int height, int offset) {
+	public void grow(Rectangle r, CardinalDirection side, int width, int height, int offset) {
 		addRectangle(create(r, side, width, height, offset));
 	}
 	/**
@@ -58,7 +58,7 @@ public class GrowingRectangleSystem extends RectangleSystem {
 	 * @param offset
 	 * @return New rectangle.
 	 */
-	protected EnhancedRectangle create(EnhancedRectangle r, CardinalDirection side, int width, int height, int offset) {
+	protected Rectangle create(Rectangle r, CardinalDirection side, int width, int height, int offset) {
 		int startX = 0;
 		int startY = 0;
 		switch (side) {
@@ -80,6 +80,6 @@ public class GrowingRectangleSystem extends RectangleSystem {
 				startY = r.getY() + offset;
 				break;
 		}
-		return new EnhancedRectangle(startX, startY, width, height);
+		return new Rectangle(startX, startY, width, height);
 	}
 }

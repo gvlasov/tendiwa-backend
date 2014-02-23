@@ -5,11 +5,11 @@ import com.google.common.collect.ImmutableList;
 import java.util.*;
 
 public class RectangleSystemBuilder {
-protected final LinkedList<EnhancedRectangle> rectangles = new LinkedList<>();
+protected final LinkedList<Rectangle> rectangles = new LinkedList<>();
 protected final RectangleSystem rs;
-protected EnhancedRectangle rememberedRectangle;
+protected Rectangle rememberedRectangle;
 protected LinkedList<Placeable> placeables = new LinkedList<>();
-private EnhancedRectangle rememberedBoundingRec;
+private Rectangle rememberedBoundingRec;
 private Map<String, Placeable> names = new HashMap<>();
 protected RectangleSequence foundRectangles;
 
@@ -23,7 +23,7 @@ public RectangleSystemBuilder place(Placeable what, Placement where) {
 
 public RectangleSystemBuilder place(String name, Placeable what, Placement where) {
 	what.prebuild(this);
-	EnhancedRectangle r = where.placeIn(what, this);
+	Rectangle r = where.placeIn(what, this);
 	placeables.add(r);
 	if (name != null) {
 		names.put(name, r);
@@ -55,8 +55,8 @@ public RectangleSystemBuilder rememberRectangle() {
 	return this;
 }
 
-public EnhancedRectangle placeRectangle(int x, int y, int width, int height) {
-	EnhancedRectangle r = rs.addRectangle(new EnhancedRectangle(x, y, width, height));
+public Rectangle placeRectangle(int x, int y, int width, int height) {
+	Rectangle r = rs.addRectangle(new Rectangle(x, y, width, height));
 	rectangles.add(r);
 	return r;
 }
@@ -65,7 +65,7 @@ public RectangleSystem done() {
 	return rs;
 }
 
-public void placeRectangle(EnhancedRectangle what, Placement where) {
+public void placeRectangle(Rectangle what, Placement where) {
 	what.prebuild(this);
 	where.placeIn(what, this);
 }
@@ -94,10 +94,10 @@ public Placeable getByIndex(int index) {
 	return placeables.get(index);
 }
 
-public ImmutableList<EnhancedRectangle> getRectangles() {
-	return ImmutableList.<EnhancedRectangle>builder().addAll(rectangles).build();
+public ImmutableList<Rectangle> getRectangles() {
+	return ImmutableList.<Rectangle>builder().addAll(rectangles).build();
 }
-public EnhancedRectangle getLastBoundingRec() {
+public Rectangle getLastBoundingRec() {
 	return placeables.getLast().getBounds();
 }
 protected Collection<Placeable> getPlaceables() {

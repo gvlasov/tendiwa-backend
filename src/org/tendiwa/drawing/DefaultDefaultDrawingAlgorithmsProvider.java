@@ -3,10 +3,7 @@ package org.tendiwa.drawing;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import org.tendiwa.core.Chunk;
-import org.tendiwa.geometry.EnhancedRectangle;
-import org.tendiwa.geometry.RectangleSidePiece;
-import org.tendiwa.geometry.RectangleSystem;
-import org.tendiwa.geometry.Segment;
+import org.tendiwa.geometry.*;
 
 import java.awt.*;
 
@@ -23,7 +20,7 @@ DefaultDefaultDrawingAlgorithmsProvider(
 
 @Override
 public DefaultDrawingAlgorithms get() {
-	defaultDrawingAlgorithms.register(EnhancedRectangle.class, DrawingRectangle.withColorLoop(Color.GRAY, Color.BLACK, Color.BLUE));
+	defaultDrawingAlgorithms.register(org.tendiwa.geometry.Rectangle.class, DrawingRectangle.withColorLoop(Color.GRAY, Color.BLACK, Color.BLUE));
 	defaultDrawingAlgorithms.register(RectangleSystem.class, DrawingRectangleSystem
 		.withColors(Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW));
 	defaultDrawingAlgorithms.register(

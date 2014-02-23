@@ -2,7 +2,7 @@ package org.tendiwa.core;
 
 import org.tendiwa.core.meta.Chance;
 import org.tendiwa.core.meta.Range;
-import org.tendiwa.geometry.EnhancedRectangle;
+import org.tendiwa.geometry.Rectangle;
 
 import java.awt.*;
 import java.util.*;
@@ -23,7 +23,7 @@ public class FuckingTrailRectangleSystem extends GrowingRectangleSystem {
 private static final int MIN_SECONDARY_AXIS_COVERING_SIZE = 4;
 protected Point lastPoint;
 protected Range sizeRange;
-final HashMap<Point, EnhancedRectangle> pointsToRectangles = new HashMap<Point, EnhancedRectangle>();
+final HashMap<Point, Rectangle> pointsToRectangles = new HashMap<Point, Rectangle>();
 public static boolean STOP = false;
 
 public FuckingTrailRectangleSystem(int borderWidth, Range sizeRange, Point start) {
@@ -293,7 +293,7 @@ public FuckingTrailRectangleSystem buildToPoint(Point newPoint) {
 
 	// Finally, placeIn all rectangles.
 	for (int i=0, l=widths.size(); i<l; i++) {
-		EnhancedRectangle r = addRectangle(new EnhancedRectangle(
+		Rectangle r = addRectangle(new Rectangle(
 				xCoordinates.get(i),
 				yCoordinates.get(i),
 				widths.get(i),

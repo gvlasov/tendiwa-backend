@@ -4,7 +4,7 @@ import org.jgrapht.Graph;
 import org.tendiwa.core.meta.Utils;
 import org.tendiwa.core.meta.Coordinate;
 import org.tendiwa.geometry.Cell;
-import org.tendiwa.geometry.EnhancedRectangle;
+import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.RectangleSystem;
 import org.tendiwa.geometry.Segment;
 
@@ -34,7 +34,7 @@ public RectangleSystem getRectangleSystem() {
  */
 public void excludeRectanglesHaving(PlaceableInCell placeable) {
 	keyLoop:
-	for (EnhancedRectangle r : rs.getRectangles()) {
+	for (Rectangle r : rs.getRectangles()) {
 		for (int x = r.getX(); x < r.getX() + r.getWidth(); x++) {
 			for (int y = r.getY(); y < r.getY() + r.getHeight(); y++) {
 				if (placeable.containedIn(location.getActivePlane(), location.x + x, location.y + y)) {
@@ -65,13 +65,13 @@ public void drawInnerBorders(TypePlaceableInCell placeable) {
 	if (rs.getBorderWidth() < 1) {
 		throw new RuntimeException("Can't draw borders of RectangleSystem with borderWidth=" + rs.getBorderWidth());
 	}
-	for (EnhancedRectangle r1 : rs.getRectangles()) {
+	for (Rectangle r1 : rs.getRectangles()) {
 		/*
 		 * Look at each side of each rectangle if there is an inner border to
 		 * drawWorld.
 		 */
 		for (CardinalDirection side : CardinalDirection.ALL) {
-			ArrayList<EnhancedRectangle> rectanglesFromThatSide = new ArrayList<>(rs.getRectanglesCloseToSideOrBorder(r1, side));
+			ArrayList<Rectangle> rectanglesFromThatSide = new ArrayList<>(rs.getRectanglesCloseToSideOrBorder(r1, side));
 			if (rectanglesFromThatSide.size() == 0) {
 				continue;
 			}
@@ -141,7 +141,7 @@ public void drawInnerBorders(TypePlaceableInCell placeable) {
 			ArrayList<Segment> segments = new ArrayList<>();
 			// Knowing of close rectangles, create a list of segments. Each
 			// neighbor rectangle corresponds to a segment.
-			for (EnhancedRectangle r2 : rectanglesFromThatSide) {
+			for (Rectangle r2 : rectanglesFromThatSide) {
 				CardinalDirection side2 = side.opposite();
 				// A segment on the border of close rectangle from side
 				// opposite to the original r1's side.
@@ -180,7 +180,7 @@ public void drawInnerBorders(TypePlaceableInCell placeable) {
 				 * rectangles and combine their segments, if they should be
 				 * combined.
 				 */
-				EnhancedRectangle nextRectangle = rectanglesFromThatSide.get(i + 1);
+				Rectangle nextRectangle = rectanglesFromThatSide.get(i + 1);
 				if (rs.areRectanglesNear(rectanglesFromThatSide.get(i), nextRectangle)) {
 					segments.get(i).changeLength(segments.get(i + 1).getLength() + rs.getBorderWidth());
 					segments.remove(i + 1);
@@ -205,60 +205,60 @@ public void drawInnerBorders(TypePlaceableInCell placeable) {
 			// neighbor from S/E
 			// side
 			if (side == Directions.N) {
-				Set<EnhancedRectangle> neighborsW = rs.getNeighborsFromSide(r1, Directions.W);
-				Set<EnhancedRectangle> neighborsE = rs.getNeighborsFromSide(r1, Directions.E);
-				for (EnhancedRectangle r : neighborsW) {
+				Set<Rectangle> neighborsW = rs.getNeighborsFromSide(r1, Directions.W);
+				Set<Rectangle> neighborsE = rs.getNeighborsFromSide(r1, Directions.E);
+				for (Rectangle r : neighborsW) {
 					if (r.getY() == r1.getY()) {
 						hasPrevSameLineNeighbor = true;
 						break;
 					}
 				}
-				for (EnhancedRectangle r : neighborsE) {
+				for (Rectangle r : neighborsE) {
 					if (r.getY() == r1.getY()) {
 						hasNextSameLineNeighbor = true;
 						break;
 					}
 				}
 			} else if (side == Directions.E) {
-				Set<EnhancedRectangle> neighborsN = rs.getNeighborsFromSide(r1, Directions.N);
-				Set<EnhancedRectangle> neighborsS = rs.getNeighborsFromSide(r1, Directions.S);
-				for (EnhancedRectangle r : neighborsN) {
+				Set<Rectangle> neighborsN = rs.getNeighborsFromSide(r1, Directions.N);
+				Set<Rectangle> neighborsS = rs.getNeighborsFromSide(r1, Directions.S);
+				for (Rectangle r : neighborsN) {
 					if (r.getX() + r.getWidth() == r1.getX() + r1.getWidth()) {
 						hasPrevSameLineNeighbor = true;
 						break;
 					}
 				}
-				for (EnhancedRectangle r : neighborsS) {
+				for (Rectangle r : neighborsS) {
 					if (r.getX() + r.getWidth() == r1.getX() + r1.getWidth()) {
 						hasNextSameLineNeighbor = true;
 						break;
 					}
 				}
 			} else if (side == Directions.S) {
-				Set<EnhancedRectangle> neighborsW = rs.getNeighborsFromSide(r1, Directions.W);
-				Set<EnhancedRectangle> neighborsE = rs.getNeighborsFromSide(r1, Directions.E);
-				for (EnhancedRectangle r : neighborsW) {
+				Set<Rectangle> neighborsW = rs.getNeighborsFromSide(r1, Directions.W);
+				Set<Rectangle> neighborsE = rs.getNeighborsFromSide(r1, Directions.E);
+				for (Rectangle r : neighborsW) {
 					if (r.getY() + r.getHeight() == r1.getY() + r1.getHeight()) {
 						hasPrevSameLineNeighbor = true;
 						break;
 					}
 				}
-				for (EnhancedRectangle r : neighborsE) {
+				for (Rectangle r : neighborsE) {
 					if (r.getY() + r.getHeight() == r1.getY() + r1.getHeight()) {
 						hasNextSameLineNeighbor = true;
 						break;
 					}
 				}
 			} else if (side == Directions.W) {
-				Set<EnhancedRectangle> neighborsN = rs.getNeighborsFromSide(r1, Directions.N);
-				Set<EnhancedRectangle> neighborsS = rs.getNeighborsFromSide(r1, Directions.S);
-				for (EnhancedRectangle r : neighborsN) {
+				Set<Rectangle> neighborsN = rs.getNeighborsFromSide(r1, Directions.N);
+				Set<Rectangle> neighborsS = rs.getNeighborsFromSide(r1, Directions.S);
+				for (Rectangle r : neighborsN) {
 					if (r.getX() == r1.getX()) {
 						hasPrevSameLineNeighbor = true;
 						break;
 					}
 				}
-				for (EnhancedRectangle r : neighborsS) {
+				for (Rectangle r : neighborsS) {
 					if (r.getX() == r1.getX()) {
 						hasNextSameLineNeighbor = true;
 						break;
@@ -335,7 +335,7 @@ public void drawOuterBorders(TypePlaceableInCell placeable) {
 	if (rs.getBorderWidth() < 1) {
 		throw new RuntimeException("Can't draw borders of RectangleSystem with borderWidth=" + rs.getBorderWidth());
 	}
-	for (EnhancedRectangle r : rs.getOuterSides().keySet()) {
+	for (Rectangle r : rs.getOuterSides().keySet()) {
 		Collection<CardinalDirection> sides = rs.getOuterSides().get(r);
 		for (CardinalDirection side : sides) {
 			Set<Segment> segments = rs.getSegmentsFreeFromNeighbors(r, side);
@@ -362,7 +362,7 @@ public void drawOuterBorders(TypePlaceableInCell placeable) {
 }
 
 public void connectCornersWithLines(TypePlaceableInCell placeable, int padding, boolean considerBorderWidth) {
-	EnhancedRectangle boundingRec = rs.getBounds();
+	Rectangle boundingRec = rs.getBounds();
 	ccwlLastCellHolder.center = new Coordinate(Math.round(boundingRec.getX() + boundingRec.getWidth() / 2), Math.round(boundingRec.getY() + boundingRec.getHeight() / 2));
 	ArrayList<Coordinate> corners = new ArrayList<>();
 	Comparator<Coordinate> comparator = new Comparator<Coordinate>() {
@@ -371,7 +371,7 @@ public void connectCornersWithLines(TypePlaceableInCell placeable, int padding, 
 			return new Double(Utils.getLineAngle(ccwlLastCellHolder.center, c1)).compareTo(Utils.getLineAngle(ccwlLastCellHolder.center, c2));
 		}
 	};
-	for (EnhancedRectangle r : rs.getRectangles()) {
+	for (Rectangle r : rs.getRectangles()) {
 		Collection<CardinalDirection> sides = rs.getOuterSides().get(r);
 		boolean n = sides.contains(Directions.N);
 		boolean e = sides.contains(Directions.E);
@@ -406,13 +406,13 @@ public void connectCornersWithLines(TypePlaceableInCell placeable, int padding, 
 }
 
 public void fillContents(TypePlaceableInCell placeable) {
-	for (EnhancedRectangle r : rs.getRectangles()) {
+	for (Rectangle r : rs.getRectangles()) {
 		location.square(r, placeable, true);
 	}
 }
 
 public void drawLines(TypePlaceableInCell placeable) {
-	Graph<EnhancedRectangle, RectangleSystem.Neighborship> graph = rs.getGraph();
+	Graph<Rectangle, RectangleSystem.Neighborship> graph = rs.getGraph();
 	for (RectangleSystem.Neighborship e : graph.edgeSet()) {
 		Cell c1 = graph.getEdgeSource(e).getCenterPoint();
 		Cell c2 = graph.getEdgeTarget(e).getCenterPoint();

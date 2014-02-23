@@ -6,6 +6,10 @@ import org.tendiwa.core.Orientation;
  * Static utility class for operations on cells' coordinates.
  */
 public class Cells {
+private Cells() {
+	throw new UnsupportedOperationException("Private constructor of a utility class");
+}
+
 public static boolean isNear(int startX, int startY, int endX, int endY) {
 	int ableX = Math.abs(startX - endX);
 	int ableY = Math.abs(startY - endY);

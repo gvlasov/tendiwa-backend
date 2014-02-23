@@ -13,12 +13,12 @@ public abstract class RectangleBuilderTemplate implements Placeable {
     }
 
     @Override
-    public EnhancedRectangle getBounds() {
+    public Rectangle getBounds() {
         return getRectangleSystem().getBounds();
     }
 
     @Override
-    public EnhancedRectangle place(RectangleSystemBuilder builder, int x, int y) {
+    public Rectangle place(RectangleSystemBuilder builder, int x, int y) {
         return getRectangleSystem().place(builder, x ,y);
     }
 
@@ -37,7 +37,7 @@ public abstract class RectangleBuilderTemplate implements Placeable {
     }
 
 @Override
-public Iterable<EnhancedRectangle> getRectangles() {
+public Iterable<Rectangle> getRectangles() {
 	return getRectangleSystem().getRectangles();
 }
 }

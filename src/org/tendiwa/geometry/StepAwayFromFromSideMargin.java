@@ -32,9 +32,9 @@ public class StepAwayFromFromSideMargin {
     public Placement inMiddle() {
         return new Placement() {
             @Override
-            public EnhancedRectangle placeIn(Placeable placeable, RectangleSystemBuilder builder) {
-                EnhancedRectangle placeableBounds = placeable.getBounds();
-                EnhancedRectangle existingRec = builder.getRectangleByPointer(pointer).getBounds();
+            public Rectangle placeIn(Placeable placeable, RectangleSystemBuilder builder) {
+                Rectangle placeableBounds = placeable.getBounds();
+                Rectangle existingRec = builder.getRectangleByPointer(pointer).getBounds();
                 int staticCoord = existingRec.getStaticCoordOfSide(side) + (builder.rs.getBorderWidth() + 1 + margin) * side.getGrowing();
                 if (side == Directions.N) {
                     staticCoord -= placeableBounds.getHeight();

@@ -1,6 +1,5 @@
 package org.tendiwa.drawing;
 
-import org.tendiwa.geometry.EnhancedRectangle;
 import org.tendiwa.core.Orientation;
 
 import java.awt.*;
@@ -25,7 +24,7 @@ public static DrawingAlgorithm<Integer> byOrientation(final Orientation orientat
 			int width = orientation.isHorizontal() ? getCanvasWidth() : 1;
 			int height = orientation.isVertical() ? getCanvasHeight() : 1;
 			drawRectangle(
-				new EnhancedRectangle(startX, startY, width, height),
+				new org.tendiwa.geometry.Rectangle(startX, startY, width, height),
 				color
 			);
 		}

@@ -3,7 +3,7 @@ package org.tendiwa.core;
 import org.tendiwa.geometry.RectangleSidePiece;
 
 /**
- * <p>Contains a pair of {@link org.tendiwa.geometry.EnhancedRectangle} and {@link CardinalDirection}. Represents a neighbor of some other
+ * <p>Contains a pair of {@link org.tendiwa.geometry.Rectangle} and {@link CardinalDirection}. Represents a neighbor of some other
  * place.</P> <p>This class is usually used in {@code for (E  : Iterable<E>)} loops when that "some place is
  * known".</p>
  */

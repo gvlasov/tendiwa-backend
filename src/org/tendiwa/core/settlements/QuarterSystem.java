@@ -1,7 +1,7 @@
 package org.tendiwa.core.settlements;
 
 import org.tendiwa.geometry.Cell;
-import org.tendiwa.geometry.EnhancedRectangle;
+import org.tendiwa.geometry.Rectangle;
 
 import java.util.ArrayList;
 
@@ -124,7 +124,7 @@ private void findQuarter(Cell point, int dx, int dy) {
 		}
 	}
 	if (quarterWidth > 3 && quarterHeight > 3) {
-		quarters.add(new Quarter(this, new EnhancedRectangle(dx == 1 ? cornerPoint.getX()
+		quarters.add(new Quarter(this, new Rectangle(dx == 1 ? cornerPoint.getX()
 			: cornerPoint.getX() - quarterWidth + 1, dy == 1 ? cornerPoint.getY()
 			: cornerPoint.getY() - quarterHeight + 1, quarterWidth, quarterHeight)));
 	}

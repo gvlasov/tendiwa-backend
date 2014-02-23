@@ -1,20 +1,18 @@
 package org.tendiwa.core.settlements;
 
-import org.tendiwa.core.CardinalDirection;
 import org.tendiwa.core.TerrainModifier;
-import org.tendiwa.geometry.EnhancedRectangle;
-import org.tendiwa.geometry.RectangleSystem;
-import org.tendiwa.geometry.RecursivelySplitRectangleSystemFactory;
+import org.tendiwa.geometry.*;
+import org.tendiwa.geometry.Rectangle;
+import org.tendiwa.geometry.extensions.RecursivelySplitRectangleSystemFactory;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public class Quarter extends EnhancedRectangle {
+public class Quarter extends Rectangle {
 public final QuarterSystem system;
 public final ArrayList<Road> closeRoads = new ArrayList<>();
 
-public Quarter(QuarterSystem system, EnhancedRectangle rectangle) {
+public Quarter(QuarterSystem system, org.tendiwa.geometry.Rectangle rectangle) {
 	super(rectangle);
 	this.system = system;
 	for (Road road : system.settlement.roadSystem.roads) {
@@ -38,7 +36,7 @@ public HashSet<BuildingPlace> getBuildingPlaces(int minWidth) {
 	HashSet<BuildingPlace> answer = new HashSet<>();
 	TerrainModifier modifier = system.settlement.getTerrainModifier(RecursivelySplitRectangleSystemFactory.create(getX(), getY(), getWidth(), getHeight(), minWidth, 1));
 	RectangleSystem rs = modifier.getRectangleSystem();
-	for (EnhancedRectangle r : rs.getRectangles()) {
+	for (Rectangle r : rs.getRectangles()) {
 		if (rs.isRectangleOuter(r)) {
 			answer.add(new BuildingPlace(r, this));
 		}
@@ -46,7 +44,7 @@ public HashSet<BuildingPlace> getBuildingPlaces(int minWidth) {
 	return answer;
 }
 
-private void narrowRectangleByRoad(EnhancedRectangle rec, Road road) {
+private void narrowRectangleByRoad(Rectangle rec, Road road) {
 	/**
 	 * Change rectangle start and dimensions as if road would
 	 * "bite off" a part of rectangle by road's width.

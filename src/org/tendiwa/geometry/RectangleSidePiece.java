@@ -75,7 +75,7 @@ public int intersectionByDynamicCoord(RectangleSidePiece piece2) {
  * @param piece
  * @return
  */
-int distanceTo(RectangleSidePiece piece) {
+public int distanceTo(RectangleSidePiece piece) {
 	return piece.line.distanceTo(line);
 }
 
@@ -125,7 +125,7 @@ public String toString() {
  * @param splitter
  * @return An array of 0-2 elements (no null values);
  */
-RectangleSidePiece[] splitWithPiece(RectangleSidePiece splitter) {
+public RectangleSidePiece[] splitWithPiece(RectangleSidePiece splitter) {
 	assert splitter != null;
 	Segment[] newSegments = segment.splitWithSegment(
 		splitter.segment.getStartCoord(),
@@ -165,7 +165,7 @@ RectangleSidePiece[] splitWithPiece(RectangleSidePiece splitter) {
  * @throws IllegalArgumentException
  * 	if {@code anotherDimensionLength} is less than or equal to zero.
  */
-public EnhancedRectangle createRectangle(int anotherDimensionLength) {
+public Rectangle createRectangle(int anotherDimensionLength) {
 	if (anotherDimensionLength <= 0) {
 		throw new IllegalArgumentException(
 			"anotherDimensionLength must be greater than 0, but it is " + anotherDimensionLength);
@@ -198,7 +198,7 @@ public EnhancedRectangle createRectangle(int anotherDimensionLength) {
 		width = segment.length;
 		height = anotherDimensionLength;
 	}
-	return EnhancedRectangle.growFromPoint(
+	return Recs.growFromPoint(
 		startPoint.getX(),
 		startPoint.getY(),
 		growDirection,
@@ -225,7 +225,7 @@ public boolean contains(RectangleSidePiece piece) {
  * @param point
  * @return
  */
-int perpendicularDistanceTo(CellPosition point) {
+public int perpendicularDistanceTo(CellPosition point) {
 	assert line.hasPointFromSide(point, direction);
 	if (isVertical()) {
 		return Math.abs(line.getStaticCoordFromSide(direction) - point.getX());
@@ -313,7 +313,7 @@ public boolean equals(Object obj) {
  * @return
  * @see Segment#getStaticCoord() for getting static coord behind piece.
  */
-int getStaticCoordInFront() {
+public int getStaticCoordInFront() {
 	return line.getStaticCoordFromSide(direction);
 }
 }

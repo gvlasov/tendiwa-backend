@@ -1,6 +1,6 @@
 package org.tendiwa.core;
 
-import org.tendiwa.geometry.EnhancedRectangle;
+import org.tendiwa.geometry.Rectangle;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -12,7 +12,7 @@ private static final int defaultPlaneIndex = Integer.MAX_VALUE / 2;
 protected final int width;
 protected final int height;
 final HorizontalPlane defaultPlane;
-private final EnhancedRectangle rectangle;
+private final Rectangle rectangle;
 private Character playerCharacter;
 private HashMap<Integer, HorizontalPlane> planes = new HashMap<>();
 
@@ -20,7 +20,7 @@ public World(
 	int width,
 	int height
 ) {
-	this.rectangle = new EnhancedRectangle(0, 0, width, height);
+	this.rectangle = new Rectangle(0, 0, width, height);
 	this.width = width;
 	this.height = height;
 	defaultPlane = initPlane(0);
@@ -129,7 +129,7 @@ public HorizontalPlane getPlane(int level) {
 	}
 }
 
-public EnhancedRectangle asRectangle() {
+public Rectangle asRectangle() {
 	return rectangle;
 
 }

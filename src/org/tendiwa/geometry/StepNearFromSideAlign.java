@@ -14,16 +14,16 @@ public class StepNearFromSideAlign implements Placement {
     }
 
     @Override
-    public EnhancedRectangle placeIn(Placeable placeable, RectangleSystemBuilder builder) {
+    public Rectangle placeIn(Placeable placeable, RectangleSystemBuilder builder) {
         return shift(0).placeIn(placeable, builder);
     }
 
     public Placement shift(final int shift) {
         return new Placement() {
             @Override
-            public EnhancedRectangle placeIn(Placeable placeable, RectangleSystemBuilder builder) {
-                EnhancedRectangle placeableBounds = placeable.getBounds();
-                EnhancedRectangle existingRec = builder.getRectangleByPointer(pointer).getBounds();
+            public Rectangle placeIn(Placeable placeable, RectangleSystemBuilder builder) {
+                Rectangle placeableBounds = placeable.getBounds();
+                Rectangle existingRec = builder.getRectangleByPointer(pointer).getBounds();
                 int staticCoord = existingRec.getStaticCoordOfSide(fromSide) + (builder.rs.getBorderWidth() + 1) * fromSide.getGrowing();
                 if (fromSide == Directions.N) {
                     staticCoord -= placeableBounds.getHeight();

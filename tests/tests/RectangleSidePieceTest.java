@@ -3,7 +3,7 @@ package tests;
 import com.google.common.collect.Sets;
 import org.junit.Test;
 import org.tendiwa.core.Directions;
-import org.tendiwa.geometry.EnhancedRectangle;
+import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.RectangleSidePiece;
 
 import java.util.Set;
@@ -15,7 +15,7 @@ import static org.tendiwa.core.Directions.W;
 public class RectangleSidePieceTest {
 	@Test
 	public void testStaticCoordinateInsideAndOutside() {
-		EnhancedRectangle r = new EnhancedRectangle(5, 8, 5, 5);
+		Rectangle r = new Rectangle(5, 8, 5, 5);
 		int staticCoordinateInside = r
 			.getSideAsSidePiece(E)
 			.getLine()
@@ -30,8 +30,8 @@ public class RectangleSidePieceTest {
 	@Test
 	public void touches() {
 		// TODO: This is a test for another class.
-		EnhancedRectangle r1 = new EnhancedRectangle(4, 5, 5, 5);
-		EnhancedRectangle r2 = r1
+		Rectangle r1 = new Rectangle(4, 5, 5, 5);
+		Rectangle r2 = r1
 			.getSideAsSidePiece(Directions.E)
 			.createRectangle(5);
 		assertTrue(r1.touches(r2.getSideAsSidePiece(Directions.W)));

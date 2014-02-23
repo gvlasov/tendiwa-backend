@@ -5,12 +5,15 @@ import org.tendiwa.core.Orientation;
 import org.tendiwa.core.meta.CellPosition;
 
 /**
- * <p>Cell introduces several useful methods over Point class, as well as introduces a new concept of <b>dynamic
- * coordinate</b> and <b>static coordinate</b>. They are the same as x-coordinate and y-coordinate. </p> <p/>
- * <p>X-coordinate is a horizontal dynamic coordinate, and it is a vertical static coordinate.</p> <p>On the contrary,
- * y-coordinate is a vertical dynamic coordinate and a horizontal static coordinate.</p> <p>Think of it the following
- * way: if you take a horizontal line consisting of points, each point will have the same y-coordinate (hence y is
- * horizontal static) and different x coordinate (so x is horizontal dynamic)</p>
+ * Cell introduces several useful methods over Point class, as well as introduces a new concept of <b>dynamic
+ * coordinate</b> and <b>static coordinate</b>. They are the same as x-coordinate and y-coordinate.
+ * <p/>
+ * X-coordinate is a horizontal dynamic coordinate, and it is a vertical static coordinate.
+ * <p/>
+ * On the contrary,  y-coordinate is a vertical dynamic coordinate and a horizontal static coordinate.
+ * <p/>
+ * Think of it the following way: if you take a horizontal line consisting of points, each point will have the same
+ * y-coordinate (hence y is horizontal static) and different x coordinate (so x is horizontal dynamic)
  */
 public class Cell implements CellPosition {
 private final int x;
@@ -35,7 +38,6 @@ public double distanceDouble(int x, int y) {
 }
 
 public boolean isNear(int x, int y) {
-
 	int ableX = Math.abs(this.x - x);
 	int ableY = Math.abs(this.y - y);
 	return (ableX == 1 && ableY == 0) || (ableY == 1 && ableX == 0) || (ableY == 1 && ableX == 1);

@@ -1,10 +1,7 @@
 package org.tendiwa.core;
 
 import org.tendiwa.core.meta.Chance;
-import org.tendiwa.geometry.Cell;
-import org.tendiwa.geometry.Cells;
-import org.tendiwa.geometry.EnhancedRectangle;
-import org.tendiwa.geometry.Segment;
+import org.tendiwa.geometry.*;
 
 import java.util.HashSet;
 
@@ -33,7 +30,7 @@ private static final TerrainDiffusionStopCondition DEFAULT_STOP_CONDITION = new 
  * @param from
  * 	Entities to come from border.
  */
-public TerrainTransition(Location location, EnhancedRectangle rectangle, TypePlaceableInCell from, int depth, HashSet<Direction> fromDirections, TerrainDiffusionStopCondition stopCondition) {
+public TerrainTransition(Location location, Rectangle rectangle, TypePlaceableInCell from, int depth, HashSet<Direction> fromDirections, TerrainDiffusionStopCondition stopCondition) {
 	for (Direction dir : fromDirections) {
 		if (!dir.isCardinal()) {
 			continue;
@@ -121,7 +118,7 @@ public TerrainTransition(Location location, EnhancedRectangle rectangle, TypePla
 	}
 }
 
-private void drawNoSideCorner(Location location, TypePlaceableInCell from, EnhancedRectangle rectangle, int depth, OrdinalDirection corner) {
+private void drawNoSideCorner(Location location, TypePlaceableInCell from, Rectangle rectangle, int depth, OrdinalDirection corner) {
 	Cell diagonalLineStartPoint = rectangle.getCorner(corner);
 	CardinalDirection[] components = corner.opposite().getComponents();
 	for (int i = 0; i < depth; i++) {
@@ -138,9 +135,9 @@ private void drawNoSideCorner(Location location, TypePlaceableInCell from, Enhan
 	}
 }
 
-private void drawTwoSideCorner(Location location, TypePlaceableInCell from, EnhancedRectangle rectangle, int depth, OrdinalDirection corner) {
+private void drawTwoSideCorner(Location location, TypePlaceableInCell from, Rectangle rectangle, int depth, OrdinalDirection corner) {
 	Cell cornerPoint = rectangle.getCorner(corner);
-	EnhancedRectangle cornerRec = EnhancedRectangle.growFromPoint(cornerPoint.getX(), cornerPoint.getY(), corner.opposite(), depth, depth);
+	Rectangle cornerRec = Recs.growFromPoint(cornerPoint.getX(), cornerPoint.getY(), corner.opposite(), depth, depth);
 	location.square(cornerRec, from, true);
 }
 
@@ -151,7 +148,7 @@ private void drawTwoSideCorner(Location location, TypePlaceableInCell from, Enha
  * 	Corner of {@code side}
  * @param side
  */
-private void drawSingleSideCorner(Location location, TypePlaceableInCell from, EnhancedRectangle rectangle, int depth, OrdinalDirection corner, CardinalDirection side) {
+private void drawSingleSideCorner(Location location, TypePlaceableInCell from, Rectangle rectangle, int depth, OrdinalDirection corner, CardinalDirection side) {
 	Cell cornerPoint = rectangle.getCorner(corner);
 	CardinalDirection anotherComponent = corner.anotherComponent(side);
 	Orientation rectangleSideOrientation = anotherComponent.getOrientation();
@@ -170,7 +167,7 @@ private void drawSingleSideCorner(Location location, TypePlaceableInCell from, E
 			EntityPlacer.place(location.getActivePlane(), from, location.x + cornerFormingCell.getX(), location.y + cornerFormingCell.getY());
 		}
 	}
-	EnhancedRectangle cornerRectangle = EnhancedRectangle.growFromPoint(cornerPoint.getX(), cornerPoint.getY(), corner.opposite(), depth, depth);
+	Rectangle cornerRectangle = Recs.growFromPoint(cornerPoint.getX(), cornerPoint.getY(), corner.opposite(), depth, depth);
 	cornerRectangle.getSideAsSegment(side);
 }
 
@@ -182,7 +179,7 @@ public static class TerrainTransitionBuilder {
 	private TypePlaceableInCell from;
 	private HashSet<Direction> directions = new HashSet<>();
 	private int depth = -1;
-	private EnhancedRectangle rectangle;
+	private Rectangle rectangle;
 	private TerrainDiffusionStopCondition condition = DEFAULT_STOP_CONDITION;
 	private Location location;
 
@@ -195,7 +192,7 @@ public static class TerrainTransitionBuilder {
 		return this;
 	}
 
-	public TerrainTransitionBuilder setRectangle(EnhancedRectangle rectangle) {
+	public TerrainTransitionBuilder setRectangle(Rectangle rectangle) {
 		this.rectangle = rectangle;
 		return this;
 	}

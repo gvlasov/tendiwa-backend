@@ -7,9 +7,8 @@ import org.tendiwa.core.meta.DoubleRangeCollection;
 import org.tendiwa.core.meta.Utils;
 import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.Cells;
-import org.tendiwa.geometry.EnhancedRectangle;
-
-import java.awt.*;
+import org.tendiwa.geometry.Recs;
+import org.tendiwa.geometry.Rectangle;
 
 public class Seer {
 public static final int VISION_RANGE = 11;
@@ -220,8 +219,9 @@ private boolean obstacleMayBlockVision(Obstacle transformed, int toX, int toY) {
 
 private boolean cellIsInVisibilityRectangle(int x, int y) {
 	// TODO: Cache this rectangle
-	return EnhancedRectangle.rectangleByCenterPoint(
-		new Point(character.getX(), character.getY()), ModifiableCellVisionCache.VISION_CACHE_WIDTH, ModifiableCellVisionCache.VISION_CACHE_WIDTH
+	return Recs.rectangleByCenterPoint(
+		new Cell(character.getX(), character.getY()),
+		ModifiableCellVisionCache.VISION_CACHE_WIDTH, ModifiableCellVisionCache.VISION_CACHE_WIDTH
 	).contains(x, y);
 }
 
@@ -571,7 +571,7 @@ public BorderVisionCache getPreviousBorderVisionCache() {
  *
  * @return Minimum rectangle where this Seer's vision range is contained.
  */
-public EnhancedRectangle getVisionRectangle() {
+public Rectangle getVisionRectangle() {
 	Cell startPoint = getActualVisionRecStartPoint();
 	int actualWorldEndX = Math.min(
 		world.getWidth() - 1,
@@ -581,7 +581,7 @@ public EnhancedRectangle getVisionRectangle() {
 		world.getHeight() - 1,
 		character.getY() - Seer.VISION_RANGE + ModifiableCellVisionCache.VISION_CACHE_WIDTH
 	);
-	return new EnhancedRectangle(
+	return new Rectangle(
 		startPoint.getX(),
 		startPoint.getY(),
 		actualWorldEndX - startPoint.getX(),

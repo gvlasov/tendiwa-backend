@@ -1,14 +1,19 @@
-package org.tendiwa.geometry;
+package org.tendiwa.geometry.extensions;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import org.tendiwa.core.*;
+import org.tendiwa.core.CardinalDirection;
+import org.tendiwa.core.Directions;
+import org.tendiwa.core.GrowingRectangleSystem;
+import org.tendiwa.core.OrdinalDirection;
 import org.tendiwa.core.meta.Chance;
 import org.tendiwa.core.meta.Range;
 import org.tendiwa.core.meta.Utils;
 import org.tendiwa.drawing.*;
+import org.tendiwa.geometry.*;
+import org.tendiwa.geometry.Rectangle;
 
 import java.awt.*;
 import java.io.IOException;
@@ -26,34 +31,34 @@ public final static boolean DEBUG = false;
 private static final Comparator<RectangleSidePiece> PIECES_COMPARATOR = new Comparator<RectangleSidePiece>() {
 	@Override
 	public int compare(RectangleSidePiece piece1, RectangleSidePiece piece2) {
-		assert piece1.direction == piece2.direction;
+		assert piece1.getDirection() == piece2.getDirection();
 		assert piece1 == piece2 || !piece1.overlaps(piece2);
-		if (piece1.direction == Directions.N) {
-			int dy = piece2.segment.y - piece1.segment.y;
+		if (piece1.getDirection() == Directions.N) {
+			int dy = piece2.getSegment().y - piece1.getSegment().y;
 			if (dy == 0) {
-				return piece1.segment.x - piece2.segment.x;
+				return piece1.getSegment().x - piece2.getSegment().x;
 			} else {
 				return dy;
 			}
-		} else if (piece1.direction == Directions.E) {
-			int dx = piece1.segment.x - piece2.segment.x;
+		} else if (piece1.getDirection() == Directions.E) {
+			int dx = piece1.getSegment().x - piece2.getSegment().x;
 			if (dx == 0) {
-				return piece1.segment.y - piece2.segment.y;
+				return piece1.getSegment().y - piece2.getSegment().y;
 			} else {
 				return dx;
 			}
-		} else if (piece1.direction == Directions.S) {
-			int dy = piece1.segment.y - piece2.segment.y;
+		} else if (piece1.getDirection() == Directions.S) {
+			int dy = piece1.getSegment().y - piece2.getSegment().y;
 			if (dy == 0) {
-				return piece1.segment.x - piece2.segment.x;
+				return piece1.getSegment().x - piece2.getSegment().x;
 			} else {
 				return dy;
 			}
 		} else {
-			assert piece1.direction == Directions.W;
-			int dx = piece2.segment.x - piece1.segment.x;
+			assert piece1.getDirection() == Directions.W;
+			int dx = piece2.getSegment().x - piece1.getSegment().x;
 			if (dx == 0) {
-				return piece1.segment.y - piece2.segment.y;
+				return piece1.getSegment().y - piece2.getSegment().y;
 			} else {
 				return dx;
 			}
@@ -68,7 +73,7 @@ public TestCanvas canvas;
  * A wave #x is a set of rectangles that were created as neighbors of rectangles of a previous wave #x-1, with a wave #1
  * being the initial rectangle system.
  */
-private ArrayList<HashSet<EnhancedRectangle>> wave = new ArrayList<>();
+private ArrayList<HashSet<org.tendiwa.geometry.Rectangle>> wave = new ArrayList<>();
 private HashSet<RectangleSidePiece> freeSidePiecesOnPreviousWave = new HashSet<>();
 private int lastFullyOccupiedWave = -1;
 private VirtualWave virtualCurrentWave;
@@ -109,8 +114,8 @@ public WaveRectangleSystem(int borderWidth, Range possibleRectangleWidth, Rectan
 	possibleRectangleWidthPlus2BorderWidth = new Range(
 		possibleRectangleWidth.min + borderWidth,
 		possibleRectangleWidth.max + borderWidth);
-	HashSet<EnhancedRectangle> initialWave = new HashSet<EnhancedRectangle>();
-	for (EnhancedRectangle r : initialRecSys) {
+	HashSet<org.tendiwa.geometry.Rectangle> initialWave = new HashSet<>();
+	for (org.tendiwa.geometry.Rectangle r : initialRecSys) {
 		initialWave.add(r);
 		canvas.draw(r, DrawingRectangle.withColor(Color.BLUE));
 	}
@@ -121,13 +126,13 @@ public WaveRectangleSystem(int borderWidth, Range possibleRectangleWidth, Rectan
 }
 
 public WaveRectangleSystem(RectangleSystem rs, Range possibleRectangleWidth) {
-	super(rs.borderWidth);
+	super(rs.getBorderWidth());
 	this.possibleRectangleWidth = possibleRectangleWidth;
 	possibleRectangleWidthPlus2BorderWidth = new Range(
 		possibleRectangleWidth.min + borderWidth,
 		possibleRectangleWidth.max + borderWidth);
-	HashSet<EnhancedRectangle> initialWave = new HashSet<EnhancedRectangle>();
-	for (EnhancedRectangle r : rs) {
+	HashSet<org.tendiwa.geometry.Rectangle> initialWave = new HashSet<>();
+	for (org.tendiwa.geometry.Rectangle r : rs) {
 		addRectangle(r);
 		initialWave.add(r);
 	}
@@ -142,17 +147,17 @@ public WaveRectangleSystem(RectangleSystem rs, Range possibleRectangleWidth) {
 private RectangleSidePiece inversePiece(RectangleSidePiece piece) {
 	int x, y;
 	if (piece.isVertical()) {
-		x = piece.line.getStaticCoordFromSide(piece.direction);
-		y = piece.segment.y;
+		x = piece.getLine().getStaticCoordFromSide(piece.getDirection());
+		y = piece.getSegment().y;
 	} else {
-		x = piece.segment.x;
-		y = piece.line.getStaticCoordFromSide(piece.direction);
+		x = piece.getSegment().x;
+		y = piece.getLine().getStaticCoordFromSide(piece.getDirection());
 	}
 	return new RectangleSidePiece(
-		piece.direction.opposite(),
+		piece.getDirection().opposite(),
 		x,
 		y,
-		piece.segment.length);
+		piece.getSegment().length);
 }
 
 private void log(Object... messages) {
@@ -172,11 +177,11 @@ public void addRectangleFromVirtualWave(RectangleSystem irs) {
 		.size() == 0) {
 		buildVirtualCurrentWave(irs);
 		lastFullyOccupiedWave++;
-		wave.add(new HashSet<EnhancedRectangle>());
+		wave.add(new HashSet<org.tendiwa.geometry.Rectangle>());
 	}
-	Iterator<EnhancedRectangle> iterator = virtualCurrentWave.virtualRectangles
+	Iterator<org.tendiwa.geometry.Rectangle> iterator = virtualCurrentWave.virtualRectangles
 		.iterator();
-	EnhancedRectangle r = iterator.next();
+	org.tendiwa.geometry.Rectangle r = iterator.next();
 	addRectangle(r);
 	wave.get(lastFullyOccupiedWave + 1).add(r);
 	iterator.remove();
@@ -186,7 +191,7 @@ public void buildWave() {
 	if (virtualCurrentWave.virtualRectangles.size() != 0) {
 		throw new IllegalStateException();
 	}
-	for (EnhancedRectangle r : virtualCurrentWave.virtualRectangles) {
+	for (org.tendiwa.geometry.Rectangle r : virtualCurrentWave.virtualRectangles) {
 		addRectangle(r);
 		wave.get(lastFullyOccupiedWave + 1).add(r);
 		virtualCurrentWave.virtualRectangles.clear();
@@ -203,7 +208,7 @@ private void buildVirtualCurrentWave(RectangleSystem irs) {
 }
 
 private void findFreeSidePieces(RectangleSystem irs) {
-	for (EnhancedRectangle r : wave.get(wave.size() - 1)) {
+	for (org.tendiwa.geometry.Rectangle r : wave.get(wave.size() - 1)) {
 		for (CardinalDirection side : CardinalDirection.values()) {
 			freeSidePiecesOnPreviousWave.addAll(irs
 				.getSidePiecesFreeFromNeighbours(r, side));
@@ -220,13 +225,13 @@ private void findFreeSidePieces(RectangleSystem irs) {
  * @return
  */
 private RectangleSidePiece findNotParallelPiece(RectangleSidePiece piece1, RectangleSidePiece piece2, RectangleSidePiece piece3) {
-	if (piece1.line.isParallel(piece2.line)) {
+	if (piece1.getLine().isParallel(piece2.getLine())) {
 		return piece3;
 	}
-	if (piece1.line.isParallel(piece3.line)) {
+	if (piece1.getLine().isParallel(piece3.getLine())) {
 		return piece2;
 	}
-	if (piece2.line.isParallel(piece3.line)) {
+	if (piece2.getLine().isParallel(piece3.getLine())) {
 		return piece1;
 	}
 	throw new IllegalArgumentException("All pieces are parallel");
@@ -234,12 +239,12 @@ private RectangleSidePiece findNotParallelPiece(RectangleSidePiece piece1, Recta
 
 class VirtualWave {
 	private static final int GENERATED_OFFSET = Integer.MIN_VALUE;
-	private final ArrayList<EnhancedRectangle> virtualRectangles = new ArrayList<EnhancedRectangle>();
+	private final ArrayList<org.tendiwa.geometry.Rectangle> virtualRectangles = new ArrayList<org.tendiwa.geometry.Rectangle>();
 	private final RectangleablePiecesCollection pieces;
 	public Comparator<RectangleSidePiece> PIECES_START_COORD_COMPARATOR = new Comparator<RectangleSidePiece>() {
 		@Override
 		public int compare(RectangleSidePiece piece1, RectangleSidePiece piece2) {
-			return piece1.segment.getStartCoord() - piece2.segment
+			return piece1.getSegment().getStartCoord() - piece2.getSegment()
 				.getStartCoord();
 		}
 	};
@@ -273,13 +278,13 @@ class VirtualWave {
 	private boolean arePerpendicularRectangleable(RectangleSidePiece piece1, RectangleSidePiece piece2) {
 		assert piece1 != null;
 		assert piece2 != null;
-		assert piece1.direction.isPerpendicular(piece2.direction);
+		assert piece1.getDirection().isPerpendicular(piece2.getDirection());
 		OrdinalDirection quadrantWhereRectnagleLies = (OrdinalDirection) Directions
-			.getDirectionBetween(piece1.direction, piece2.direction);
+			.getDirectionBetween(piece1.getDirection(), piece2.getDirection());
 		int squareSize = possibleRectangleWidth.max;
-		EnhancedRectangle r = EnhancedRectangle.growFromIntersection(
-			piece1.line,
-			piece2.line,
+		org.tendiwa.geometry.Rectangle r = Recs.growFromIntersection(
+			piece1.getLine(),
+			piece2.getLine(),
 			quadrantWhereRectnagleLies,
 			squareSize,
 			squareSize);
@@ -296,28 +301,28 @@ class VirtualWave {
 		}
 	}
 
-	private EnhancedRectangle getRectangleBetween4Sides(RectangleSidePiece n, RectangleSidePiece e, RectangleSidePiece s, RectangleSidePiece w) {
-		assert n != null && n.direction == Directions.N;
-		assert e != null && e.direction == Directions.E;
-		assert s != null && s.direction == Directions.S;
-		assert w != null && w.direction == Directions.W;
-		int x = e.line.getStaticCoordFromSide(Directions.E) + borderWidth;
-		int y = s.line.getStaticCoordFromSide(Directions.S) + borderWidth;
-		int width = w.line.distanceTo(e.line) - borderWidth * 2;
+	private org.tendiwa.geometry.Rectangle getRectangleBetween4Sides(RectangleSidePiece n, RectangleSidePiece e, RectangleSidePiece s, RectangleSidePiece w) {
+		assert n != null && n.getDirection() == Directions.N;
+		assert e != null && e.getDirection() == Directions.E;
+		assert s != null && s.getDirection() == Directions.S;
+		assert w != null && w.getDirection() == Directions.W;
+		int x = e.getLine().getStaticCoordFromSide(Directions.E) + borderWidth;
+		int y = s.getLine().getStaticCoordFromSide(Directions.S) + borderWidth;
+		int width = w.getLine().distanceTo(e.getLine()) - borderWidth * 2;
 		// TODO: What is not implemented?
 		if (width <= 0) {
 			throw new UnsupportedOperationException();
 		}
-		int height = s.line.distanceTo(n.line) - borderWidth * 2;
+		int height = s.getLine().distanceTo(n.getLine()) - borderWidth * 2;
 		if (height <= 0) {
 			throw new UnsupportedOperationException();
 		}
-		EnhancedRectangle rectangle = new EnhancedRectangle(x, y, width, height);
+		org.tendiwa.geometry.Rectangle rectangle = new org.tendiwa.geometry.Rectangle(x, y, width, height);
 		pieces.modifySidesByPlacingRectangle(rectangle, n, e, s, w);
 		return rectangle;
 	}
 
-	private EnhancedRectangle getRectangleBetween3Sides(RectangleSidePiece a, RectangleSidePiece b, RectangleSidePiece c) {
+	private org.tendiwa.geometry.Rectangle getRectangleBetween3Sides(RectangleSidePiece a, RectangleSidePiece b, RectangleSidePiece c) {
 		assert a != b;
 		assert b != c;
 		assert a != c;
@@ -327,16 +332,16 @@ class VirtualWave {
 		RectangleSidePiece parallelPiece1;
 		RectangleSidePiece parallelPiece2;
 		RectangleSidePiece perpendicularPiece;
-		if (a.line.isParallel(b.line)) {
+		if (a.getLine().isParallel(b.getLine())) {
 			parallelPiece1 = a;
 			parallelPiece2 = b;
 			perpendicularPiece = c;
-		} else if (a.line.isParallel(c.line)) {
+		} else if (a.getLine().isParallel(c.getLine())) {
 			parallelPiece1 = a;
 			parallelPiece2 = c;
 			perpendicularPiece = b;
 		} else {
-			assert b.line.isParallel(c.line);
+			assert b.getLine().isParallel(c.getLine());
 			parallelPiece1 = b;
 			parallelPiece2 = c;
 			perpendicularPiece = a;
@@ -383,12 +388,12 @@ class VirtualWave {
 
 		OrdinalDirection dirBetweenPieces = (OrdinalDirection) Directions
 			.getDirectionBetween(
-				parallelPiece1.direction,
-				perpendicularPiece.direction);
-		EnhancedRectangle rectangle = new EnhancedRectangle(
-			EnhancedRectangle.growFromIntersection(
-				parallelPiece1.line,
-				perpendicularPiece.line,
+				parallelPiece1.getDirection(),
+				perpendicularPiece.getDirection());
+		org.tendiwa.geometry.Rectangle rectangle = new org.tendiwa.geometry.Rectangle(
+			Recs.growFromIntersection(
+				parallelPiece1.getLine(),
+				perpendicularPiece.getLine(),
 				dirBetweenPieces,
 				width,
 				height));
@@ -400,25 +405,25 @@ class VirtualWave {
 	}
 
 	private int distanceFromPerpendicularToClosestEndOf(RectangleSidePiece perpendicularPiece, RectangleSidePiece parallelPiece) {
-		Cell point = parallelPiece.segment
-			.getEndPoint(perpendicularPiece.direction.opposite());
-		if (!perpendicularPiece.line.hasPointFromSide(
+		Cell point = parallelPiece.getSegment()
+			.getEndPoint(perpendicularPiece.getDirection().opposite());
+		if (!perpendicularPiece.getLine().hasPointFromSide(
 			point,
-			perpendicularPiece.direction)) {
+			perpendicularPiece.getDirection())) {
 			return 0;
 		}
 		return perpendicularPiece.perpendicularDistanceTo(point);
 	}
 
-	public EnhancedRectangle getRectangleBetweenParallelSides(RectangleSidePiece piece1, RectangleSidePiece piece2) {
-		assert piece1.line.orientation == piece2.line.orientation;
+	public org.tendiwa.geometry.Rectangle getRectangleBetweenParallelSides(RectangleSidePiece piece1, RectangleSidePiece piece2) {
+		assert piece1.getLine().getOrientation() == piece2.getLine().getOrientation();
 		int minCoordEnd = Math.max(
-			piece1.segment.getStartCoord(),
-			piece2.segment.getStartCoord());
+			piece1.getSegment().getStartCoord(),
+			piece2.getSegment().getStartCoord());
 		int minCoord = minCoordEnd - possibleRectangleWidth.max + 1;
 		int maxCoord = Math.min(
-			piece1.segment.getEndCoord(),
-			piece2.segment.getEndCoord()) + possibleRectangleWidth.max - 1;
+			piece1.getSegment().getEndCoord(),
+			piece2.getSegment().getEndCoord()) + possibleRectangleWidth.max - 1;
 		int endCoordsDistance = maxCoord - minCoord;
 		assert minCoord < maxCoord;
 		int maxStartCoord = minCoord + endCoordsDistance - possibleRectangleWidth.max + 1;
@@ -431,22 +436,22 @@ class VirtualWave {
 		int x, y, width, height;
 		int startNonVariableCoord = Math
 			.min(
-				piece1.line.getStaticCoordFromSide(piece1.direction) + piece1.direction
+				piece1.getLine().getStaticCoordFromSide(piece1.getDirection()) + piece1.getDirection()
 					.getGrowing() * borderWidth,
-				piece2.line.getStaticCoordFromSide(piece2.direction) + piece2.direction
+				piece2.getLine().getStaticCoordFromSide(piece2.getDirection()) + piece2.getDirection()
 					.getGrowing() * borderWidth);
 		if (curOffset != GENERATED_OFFSET) {
-			startVariableCoord = minCoord + minCoordEnd - minCoord - (piece1.line.orientation
+			startVariableCoord = minCoord + minCoordEnd - minCoord - (piece1.getLine().getOrientation()
 				.isHorizontal() ? curWidth : curHeight) + 1 + curOffset;
 		}
-		int distanceBetweenLines = piece1.line.distanceTo(piece2.line);
-		if (piece1.line.orientation.isHorizontal()) {
+		int distanceBetweenLines = piece1.getLine().distanceTo(piece2.getLine());
+		if (piece1.getLine().getOrientation().isHorizontal()) {
 			x = startVariableCoord;
 			y = startNonVariableCoord;
 			width = randomizedDimension;
 			height = distanceBetweenLines;
 		} else {
-			assert piece1.line.orientation.isVertical();
+			assert piece1.getLine().getOrientation().isVertical();
 			x = startNonVariableCoord;
 			y = startVariableCoord;
 			width = distanceBetweenLines;
@@ -458,18 +463,18 @@ class VirtualWave {
 		if (curHeight != 0) {
 			height = curHeight;
 		}
-		EnhancedRectangle rectangle = new EnhancedRectangle(x, y, width, height);
+		org.tendiwa.geometry.Rectangle rectangle = new org.tendiwa.geometry.Rectangle(x, y, width, height);
 		pieces.modifySidesByPlacingRectangle(rectangle, piece1, piece2);
 		return rectangle;
 	}
 
-	public EnhancedRectangle getRectangleOn1Side(RectangleSidePiece originalPiece) {
+	public org.tendiwa.geometry.Rectangle getRectangleOn1Side(RectangleSidePiece originalPiece) {
 		assert originalPiece != null;
 		int width = Chance.rand(possibleRectangleWidth);
 		int height = Chance.rand(possibleRectangleWidth);
 		int offset = Chance.rand(new Range(
-			-(originalPiece.direction.isVertical() ? width : height) + 1,
-			originalPiece.segment.length - 1));
+			-(originalPiece.getDirection().isVertical() ? width : height) + 1,
+			originalPiece.getSegment().length - 1));
 		// int offset = 2;
 		if (curWidth != 0) {
 			width = curWidth;
@@ -480,9 +485,9 @@ class VirtualWave {
 		if (curOffset != GENERATED_OFFSET) {
 			offset = curOffset;
 		}
-		EnhancedRectangle r = create(
+		org.tendiwa.geometry.Rectangle r = create(
 			originalPiece.createRectangle(1),
-			originalPiece.direction,
+			originalPiece.getDirection(),
 			width,
 			height,
 			offset);
@@ -490,10 +495,10 @@ class VirtualWave {
 		return r;
 	}
 
-	public EnhancedRectangle getRectangleBetween2Sides(RectangleSidePiece piece1, RectangleSidePiece piece2) {
+	public org.tendiwa.geometry.Rectangle getRectangleBetween2Sides(RectangleSidePiece piece1, RectangleSidePiece piece2) {
 		OrdinalDirection direction = Directions.getDirectionBetween(
-			piece1.direction,
-			piece2.direction);
+			piece1.getDirection(),
+			piece2.getDirection());
 		RectangleSidePiece horizontal, vertical;
 		if (piece1.isVertical()) {
 			vertical = piece1;
@@ -505,17 +510,17 @@ class VirtualWave {
 		int minHeight, minWidth;
 		if (!dynamicCoordsRangeContainStaticCoord(horizontal, vertical)) {
 			minWidth = Math.abs(horizontal.getSegment().getEndPoint(
-				vertical.direction.opposite()).getX() - vertical
+				vertical.getDirection().opposite()).getX() - vertical
 				.getSegment()
-				.getEndPoint(horizontal.direction.opposite()).getX());
+				.getEndPoint(horizontal.getDirection().opposite()).getX());
 		} else {
 			minWidth = 0;
 		}
 		if (!dynamicCoordsRangeContainStaticCoord(vertical, horizontal)) {
 			minHeight = Math
-				.abs(vertical.segment.getEndPoint(horizontal.direction
-					.opposite()).getY() - horizontal.segment
-					.getEndPoint(vertical.direction.opposite()).getY());
+				.abs(vertical.getSegment().getEndPoint(horizontal.getDirection()
+					.opposite()).getY() - horizontal.getSegment()
+					.getEndPoint(vertical.getDirection().opposite()).getY());
 		} else {
 			minHeight = 0;
 		}
@@ -533,8 +538,8 @@ class VirtualWave {
 		if (curHeight != 0) {
 			height = curHeight;
 		}
-		EnhancedRectangle rectangle = new EnhancedRectangle(
-			EnhancedRectangle.growFromIntersection(
+		org.tendiwa.geometry.Rectangle rectangle = new org.tendiwa.geometry.Rectangle(
+			Recs.growFromIntersection(
 				piece1.getLine(),
 				piece2.getLine(),
 				direction,
@@ -545,37 +550,37 @@ class VirtualWave {
 	}
 
 	private boolean dynamicCoordsRangeContainStaticCoord(RectangleSidePiece dynamicCoordPiece, RectangleSidePiece staticCoordPiece) {
-		return dynamicCoordPiece.segment.asRange().contains(
-			staticCoordPiece.line
-				.getStaticCoordFromSide(staticCoordPiece.direction
+		return dynamicCoordPiece.getSegment().asRange().contains(
+			staticCoordPiece.getLine()
+				.getStaticCoordFromSide(staticCoordPiece.getDirection()
 					.opposite()));
 	}
 
 	/**
-	 * Adds a new {@link EnhancedRectangle} to this {@link VirtualWave}. Adding EnhancedRectangles occurs after placing its
-	 * {@link RectangleSidePiece}s into {@link RectangleablePiecesCollection}.
+	 * Adds a new {@link org.tendiwa.geometry.Rectangle} to this {@link VirtualWave}. Adding EnhancedRectangles occurs
+	 * after placing its {@link RectangleSidePiece}s into {@link RectangleablePiecesCollection}.
 	 *
 	 * @param r
 	 */
-	private void addVirtualRectangle(EnhancedRectangle r) {
+	private void addVirtualRectangle(org.tendiwa.geometry.Rectangle r) {
 		virtualRectangles.add(r);
 	}
 
 	private boolean piecesAreParallelAndCloseEnough(RectangleSidePiece a, RectangleSidePiece b) {
-		if (!a.direction.isOpposite(b.direction)) {
+		if (!a.getDirection().isOpposite(b.getDirection())) {
 			// Find pieces whose directions are opposite...
 			return false;
 		}
-		int distance = a.line.distanceTo(b.line);
+		int distance = a.getLine().distanceTo(b.getLine());
 		if (distance > possibleRectangleWidthPlus2BorderWidth.max || distance <= borderWidth * 2) {
 			// ... and which are %possibleRectangleWidth% cells far from
 			// each
 			// other...
 			return false;
 		}
-		if (!a.line.hasPointFromSide(
-			b.segment.getEndPoint(b.direction.clockwiseQuarter()),
-			a.direction)) {
+		if (!a.getLine().hasPointFromSide(
+			b.getSegment().getEndPoint(b.getDirection().clockwiseQuarter()),
+			a.getDirection())) {
 			return false;
 		}
 		// TODO: Allow rectangles without intersection by dynamic coord
@@ -600,19 +605,19 @@ class VirtualWave {
 
 	private boolean hasRectanglesBetweenNonDynIntersectingParallelPieces(RectangleSidePiece piece1, RectangleSidePiece piece2) {
 		assert piece1.intersectionByDynamicCoord(piece2) == 0;
-		assert piece1.direction.isOpposite(piece2.direction);
+		assert piece1.getDirection().isOpposite(piece2.getDirection());
 		RectangleSidePiece oneMockPiece, anotherMockPiece;
-		RectangleSidePiece minPiece = piece1.segment.getEndCoord() < piece2.segment
+		RectangleSidePiece minPiece = piece1.getSegment().getEndCoord() < piece2.getSegment()
 			.getEndCoord() ? piece1 : piece2;
 		RectangleSidePiece maxPiece = minPiece == piece1 ? piece2 : piece1;
-		int mockMinStaticCoord = minPiece.segment.getEndCoord();
-		int mockMaxStaticCoord = maxPiece.segment.getStartCoord();
+		int mockMinStaticCoord = minPiece.getSegment().getEndCoord();
+		int mockMaxStaticCoord = maxPiece.getSegment().getStartCoord();
 		int minDynamicCoord = minPiece.getStaticCoordInFront();
 		int maxDynamicCoord = maxPiece.getStaticCoordInFront();
-		int minStatic = piece1.line
-			.getStaticCoordFromSide(piece1.direction);
-		int maxStatic = piece2.line
-			.getStaticCoordFromSide(piece2.direction);
+		int minStatic = piece1.getLine()
+			.getStaticCoordFromSide(piece1.getDirection());
+		int maxStatic = piece2.getLine()
+			.getStaticCoordFromSide(piece2.getDirection());
 		if (minStatic > maxStatic) {
 			int buf = minStatic;
 			minStatic = maxStatic;
@@ -646,15 +651,15 @@ class VirtualWave {
 			oneMockPiece, anotherMockPiece
 		}) {
 			TreeSet<RectangleSidePiece> treeSet = pieces.pieces
-				.get(startMockPiece.direction);
+				.get(startMockPiece.getDirection());
 			RectangleSidePiece next = treeSet.lower(startMockPiece);
-			while (next != null && next.direction.furthestCoordOf(
-				next.line.getStaticCoordFromSide(startMockPiece.direction),
+			while (next != null && next.getDirection().furthestCoordOf(
+				next.getLine().getStaticCoordFromSide(startMockPiece.getDirection()),
 				mockMaxStaticCoord) != mockMaxStaticCoord) {
 				if (next == null) {
 					break;
 				}
-				if (next.segment.asRange().overlaps(rangeBetweenParallels)) {
+				if (next.getSegment().asRange().overlaps(rangeBetweenParallels)) {
 					return true;
 				}
 				next = treeSet.lower(next);
@@ -666,10 +671,10 @@ class VirtualWave {
 	private int distanceBetweenPiecesByDynamicCoord(RectangleSidePiece piece1, RectangleSidePiece piece2) {
 		assert piece1.intersectionByDynamicCoord(piece2) == 0;
 		return Math.max(
-			piece1.segment.getStartCoord(),
-			piece2.segment.getStartCoord()) - Math.min(
-			piece1.segment.getEndCoord(),
-			piece2.segment.getEndCoord());
+			piece1.getSegment().getStartCoord(),
+			piece2.getSegment().getStartCoord()) - Math.min(
+			piece1.getSegment().getEndCoord(),
+			piece2.getSegment().getEndCoord());
 
 	}
 
@@ -692,7 +697,7 @@ class VirtualWave {
 					PIECES_COMPARATOR));
 			}
 			for (RectangleSidePiece piece : originalPieces) {
-				pieces.get(piece.direction).add(piece);
+				pieces.get(piece.getDirection()).add(piece);
 			}
 		}
 
@@ -712,17 +717,17 @@ class VirtualWave {
 			Collection<RectangleSidePiece> copyParallel = Lists.newArrayList(parallelPieces);
 			Collection<RectangleSidePiece> copyPerpendicular = Lists.newArrayList(perpendicularPieces);
 			dirsToPieces.put(
-				randomOriginalPiece.direction.opposite(),
+				randomOriginalPiece.getDirection().opposite(),
 				parallelPieces);
 			dirsToPieces.put(
-				randomOriginalPiece.direction.clockwiseQuarter(),
+				randomOriginalPiece.getDirection().clockwiseQuarter(),
 				new ArrayList<RectangleSidePiece>());
 			dirsToPieces.put(
-				randomOriginalPiece.direction.counterClockwiseQuarter(),
+				randomOriginalPiece.getDirection().counterClockwiseQuarter(),
 				new ArrayList<RectangleSidePiece>());
 
 			for (RectangleSidePiece piece : perpendicularPieces) {
-				dirsToPieces.get(piece.direction).add(piece);
+				dirsToPieces.get(piece.getDirection()).add(piece);
 			}
 			for (CardinalDirection dir : new ArrayList<CardinalDirection>(
 				dirsToPieces.keySet())) {
@@ -732,7 +737,7 @@ class VirtualWave {
 			}
 			for (RectangleSidePiece perpendicularPiece : perpendicularPieces) {
 				// TODO: Don't get a collection on each iteration.
-				dirsToPieces.get(perpendicularPiece.direction).add(
+				dirsToPieces.get(perpendicularPiece.getDirection()).add(
 					perpendicularPiece);
 			}
 			// TODO: Let chance of selecting particular piece not depend on
@@ -747,7 +752,7 @@ class VirtualWave {
 			if (!dirsToPieces.isEmpty()) {
 				RectangleSidePiece selectedPiece = selectRandomPiece(dirsToPieces);
 				selectedPieces.add(selectedPiece);
-				dirsToPieces.remove(selectedPiece.direction);
+				dirsToPieces.remove(selectedPiece.getDirection());
 			}
 
 			// Select third and fourth rectangleable pieces
@@ -814,9 +819,9 @@ class VirtualWave {
 					continue;
 				}
 				selectedPieces.add(selectedPiece);
-				dirsToPieces.remove(selectedPiece.direction);
+				dirsToPieces.remove(selectedPiece.getDirection());
 			}
-			EnhancedRectangle r;
+			org.tendiwa.geometry.Rectangle r;
 			switch (selectedPieces.size()) {
 				case 1:
 					r = getRectangleOn1Side(selectedPieces.get(0));
@@ -824,7 +829,7 @@ class VirtualWave {
 				case 2:
 					RectangleSidePiece piece1 = selectedPieces.get(0);
 					RectangleSidePiece piece2 = selectedPieces.get(1);
-					if (piece1.direction.isOpposite(piece2.direction)) {
+					if (piece1.getDirection().isOpposite(piece2.getDirection())) {
 						r = getRectangleBetweenParallelSides(piece1, piece2);
 					} else {
 						r = getRectangleBetween2Sides(piece1, piece2);
@@ -840,7 +845,7 @@ class VirtualWave {
 				default:
 					HashMap<CardinalDirection, RectangleSidePiece> dirToPiece = new HashMap<CardinalDirection, RectangleSidePiece>();
 					for (RectangleSidePiece piece : selectedPieces) {
-						dirToPiece.put(piece.direction, piece);
+						dirToPiece.put(piece.getDirection(), piece);
 					}
 					r = getRectangleBetween4Sides(
 						dirToPiece.get(N),
@@ -855,8 +860,8 @@ class VirtualWave {
 		}
 
 		private boolean arePiecesRectangleable(RectangleSidePiece selectedPiece, RectangleSidePiece secondPiece) {
-			if (selectedPiece.direction
-				.isPerpendicular(secondPiece.direction)) {
+			if (selectedPiece.getDirection()
+				.isPerpendicular(secondPiece.getDirection())) {
 				if (!arePerpendicularRectangleable(
 					selectedPiece,
 					secondPiece)) {
@@ -874,15 +879,15 @@ class VirtualWave {
 
 		private void removePieceFromRectangleable(RectangleSidePiece selectedPiece, Map<CardinalDirection, Collection<RectangleSidePiece>> dirsToPieces) {
 			Collection<RectangleSidePiece> thatSidePieces = dirsToPieces
-				.get(selectedPiece.direction);
+				.get(selectedPiece.getDirection());
 			thatSidePieces.remove(selectedPiece);
 			if (thatSidePieces.isEmpty()) {
-				dirsToPieces.remove(selectedPiece.direction);
+				dirsToPieces.remove(selectedPiece.getDirection());
 			}
 		}
 
 		private boolean areasInFrontOfPiecesIntersect(RectangleSidePiece piece1, RectangleSidePiece piece2) {
-			if (piece1.direction.isPerpendicular(piece2.direction)) {
+			if (piece1.getDirection().isPerpendicular(piece2.getDirection())) {
 				return arePerpendicularRectangleable(piece1, piece2);
 			} else {
 				return true;
@@ -915,7 +920,7 @@ class VirtualWave {
 			Collection<RectangleSidePiece> answer = new ArrayList<RectangleSidePiece>();
 			assert !pieces.isEmpty();
 			for (RectangleSidePiece piece : pieces.get(dir)) {
-				if (piece.segment.length == width) {
+				if (piece.getSegment().length == width) {
 					answer.add(piece);
 				}
 			}
@@ -927,7 +932,7 @@ class VirtualWave {
 			Collection<RectangleSidePiece> answer = new HashSet<RectangleSidePiece>();
 			for (RectangleSidePiece mockMinPiece : minPossibles) {
 				TreeSet<RectangleSidePiece> treeSet = pieces
-					.get(mockMinPiece.direction);
+					.get(mockMinPiece.getDirection());
 
 				for (RectangleSidePiece nextPiece = treeSet
 					.lower(mockMinPiece); nextPiece != null; nextPiece = treeSet
@@ -937,19 +942,19 @@ class VirtualWave {
 					}
 					// TODO: Seems like operations with these two variables
 					// are useless
-					boolean isFullyInFrontOf = piece.line.hasPointFromSide(
-						nextPiece.segment.getEndPoint(piece.direction
+					boolean isFullyInFrontOf = piece.getLine().hasPointFromSide(
+						nextPiece.getSegment().getEndPoint(piece.getDirection()
 							.opposite()),
-						piece.direction);
-					boolean isInSegmentByStaticCoord = piece.segment
+						piece.getDirection());
+					boolean isInSegmentByStaticCoord = piece.getSegment()
 						.asRange()
 						.contains(
-							nextPiece.line
-								.getStaticCoordFromSide(nextPiece.direction));
+							nextPiece.getLine()
+								.getStaticCoordFromSide(nextPiece.getDirection()));
 					if (!isFullyInFrontOf && isInSegmentByStaticCoord) {
 						continue;
 					} else {
-						EnhancedRectangle rectangle = getMinimumRectangle(
+						org.tendiwa.geometry.Rectangle rectangle = getMinimumRectangle(
 							piece,
 							nextPiece);
 						if (doPiecesExistThatIntersectRectangle(
@@ -970,7 +975,7 @@ class VirtualWave {
 			Collection<RectangleSidePiece> answer = new ArrayList<RectangleSidePiece>();
 			RectangleSidePiece inversePiece = inversePiece(piece);
 			TreeSet<RectangleSidePiece> treeSet = pieces
-				.get(inversePiece.direction);
+				.get(inversePiece.getDirection());
 
 			for (RectangleSidePiece parallelPiece = treeSet
 				.lower(inversePiece); parallelPiece != null && parallelPiece
@@ -990,10 +995,10 @@ class VirtualWave {
 		}
 
 		private boolean isParallelPieceCoveredByOtherPieces(RectangleSidePiece piece, RectangleSidePiece parallelPiece) {
-			assert piece.direction.isOpposite(parallelPiece.direction);
+			assert piece.getDirection().isOpposite(parallelPiece.getDirection());
 			// TODO: Change to code that doesn't create new Range objects
-			if (piece.segment.asRange().overlaps(
-				parallelPiece.segment.asRange())) {
+			if (piece.getSegment().asRange().overlaps(
+				parallelPiece.getSegment().asRange())) {
 				return isParallelPieceInFrontCoveredByOtherPieces(
 					piece,
 					parallelPiece);
@@ -1014,11 +1019,11 @@ class VirtualWave {
 		 * @return
 		 */
 		private boolean isParallelPieceNotInFrontBotheredByOtherPieces(RectangleSidePiece piece, RectangleSidePiece parallelPiece) {
-			assert piece.direction.isOpposite(parallelPiece.direction);
-			assert !piece.segment.asRange().overlaps(
-				parallelPiece.segment.asRange());
+			assert piece.getDirection().isOpposite(parallelPiece.getDirection());
+			assert !piece.getSegment().asRange().overlaps(
+				parallelPiece.getSegment().asRange());
 			RectangleSidePiece minStartCoordRange, maxStartCoordRange;
-			if (piece.segment.getStartCoord() < parallelPiece.segment
+			if (piece.getSegment().getStartCoord() < parallelPiece.getSegment()
 				.getStartCoord()) {
 				minStartCoordRange = piece;
 				maxStartCoordRange = parallelPiece;
@@ -1026,9 +1031,9 @@ class VirtualWave {
 				minStartCoordRange = parallelPiece;
 				maxStartCoordRange = piece;
 			}
-			int dMin = minStartCoordRange.segment.getEndCoord();
+			int dMin = minStartCoordRange.getSegment().getEndCoord();
 			int sMin = minStartCoordRange.getStaticCoordInFront();
-			int dMax = maxStartCoordRange.segment.getStartCoord();
+			int dMax = maxStartCoordRange.getSegment().getStartCoord();
 			int sMax = maxStartCoordRange.getStaticCoordInFront();
 			if (sMin > sMax) {
 				int buf = sMin;
@@ -1047,7 +1052,7 @@ class VirtualWave {
 				yMin = sMin;
 				yMax = sMax;
 			}
-			EnhancedRectangle rectangle = EnhancedRectangle
+			org.tendiwa.geometry.Rectangle rectangle = Recs
 				.rectangleByMinAndMaxCoords(xMin, yMin, xMax, yMax);
 			return doPiecesExistThatIntersectRectangle(piece, rectangle) || doPerpendicularPiecesExistThatIntersectRectangle(
 				piece,
@@ -1066,9 +1071,9 @@ class VirtualWave {
 		private boolean isParallelPieceInFrontCoveredByOtherPieces(RectangleSidePiece piece, RectangleSidePiece parallelPiece) {
 			// TODO: Maybe pieces could be remembered to calculate coverage
 			// of next pieces.
-			assert piece.direction.isOpposite(parallelPiece.direction);
-			assert piece.segment.asRange().overlaps(
-				parallelPiece.segment.asRange());
+			assert piece.getDirection().isOpposite(parallelPiece.getDirection());
+			assert piece.getSegment().asRange().overlaps(
+				parallelPiece.getSegment().asRange());
 			Collection<RectangleSidePiece> sortedCoveringPieces = getAllPiecesIntersectingSpaceBetweenParallelPieces(
 				piece,
 				parallelPiece);
@@ -1078,8 +1083,8 @@ class VirtualWave {
 			RectangleSidePiece firstPiece = sortedCoveringPieces
 				.iterator()
 				.next();
-			int maxDynamicCoord = firstPiece.segment.getEndCoord();
-			int minDynamicCoord = firstPiece.segment.getStartCoord();
+			int maxDynamicCoord = firstPiece.getSegment().getEndCoord();
+			int minDynamicCoord = firstPiece.getSegment().getStartCoord();
 			Range dynamicRange = getDynamicRangeOfParallels(
 				piece,
 				parallelPiece);
@@ -1087,12 +1092,12 @@ class VirtualWave {
 				return false;
 			}
 			for (RectangleSidePiece p : sortedCoveringPieces) {
-				if (p.segment.getStartCoord() > maxDynamicCoord + 1) {
+				if (p.getSegment().getStartCoord() > maxDynamicCoord + 1) {
 					return false;
 				} else {
 					maxDynamicCoord = Math.max(
 						maxDynamicCoord,
-						p.segment.getEndCoord());
+						p.getSegment().getEndCoord());
 				}
 			}
 			if (maxDynamicCoord < dynamicRange.max) {
@@ -1102,16 +1107,16 @@ class VirtualWave {
 		}
 
 		private Range getDynamicRangeOfParallels(RectangleSidePiece piece1, RectangleSidePiece piece2) {
-			assert piece1.direction.isOpposite(piece2.direction);
+			assert piece1.getDirection().isOpposite(piece2.getDirection());
 			// TODO: Change to code that doesn't create new Range objects
-			return piece1.segment.asRange().intersection(
-				piece2.segment.asRange());
+			return piece1.getSegment().asRange().intersection(
+				piece2.getSegment().asRange());
 		}
 
 		private Range[] getStaticAndDynamicRangeForRectangleInFront(RectangleSidePiece nextPiece, RectangleSidePiece piece) {
-			int staticMin = nextPiece.segment.getEndCoord();
-			int staticMax = piece.line
-				.getStaticCoordFromSide(piece.direction);
+			int staticMin = nextPiece.getSegment().getEndCoord();
+			int staticMax = piece.getLine()
+				.getStaticCoordFromSide(piece.getDirection());
 			assert staticMin != staticMax;
 			if (staticMin > staticMax) {
 				int buf = staticMin;
@@ -1119,10 +1124,10 @@ class VirtualWave {
 				staticMax = buf;
 			}
 			Range staticRange = new Range(staticMin, staticMax);
-			int dynamicStart = nextPiece.line
-				.getStaticCoordFromSide(nextPiece.direction);
+			int dynamicStart = nextPiece.getLine()
+				.getStaticCoordFromSide(nextPiece.getDirection());
 			int dynamicMin, dynamicMax;
-			if (nextPiece.direction.isGrowing()) {
+			if (nextPiece.getDirection().isGrowing()) {
 				dynamicMin = dynamicStart;
 				dynamicMax = dynamicStart + borderWidth * 2 + MIN_RECTANGLE_DIMENSION;
 			} else {
@@ -1137,13 +1142,13 @@ class VirtualWave {
 
 		private Range[] getStaticAndDynamicRangeForLateralRectangle(RectangleSidePiece nextPiece, RectangleSidePiece piece) {
 			int staticMin, staticMax;
-			if (nextPiece.segment.asRange().contains(
-				piece.segment.getStaticCoord())) {
+			if (nextPiece.getSegment().asRange().contains(
+				piece.getSegment().getStaticCoord())) {
 				staticMin = staticMax = piece.getStaticCoordInFront();
 			} else {
-				staticMin = nextPiece.segment.getEndCoord();
-				staticMax = piece.line
-					.getStaticCoordFromSide(piece.direction);
+				staticMin = nextPiece.getSegment().getEndCoord();
+				staticMax = piece.getLine()
+					.getStaticCoordFromSide(piece.getDirection());
 				assert staticMin != staticMax;
 				if (staticMin > staticMax) {
 					int buf = staticMin;
@@ -1151,13 +1156,13 @@ class VirtualWave {
 					staticMax = buf;
 				}
 			}
-			int dynamicStart = nextPiece.line
-				.getStaticCoordFromSide(nextPiece.direction);
+			int dynamicStart = nextPiece.getLine()
+				.getStaticCoordFromSide(nextPiece.getDirection());
 			int dynamicMin, dynamicMax;
 			int perpendicularDistance = nextPiece
-				.perpendicularDistanceTo(piece.segment
-					.getEndPoint(nextPiece.direction.opposite()));
-			if (nextPiece.direction.isGrowing()) {
+				.perpendicularDistanceTo(piece.getSegment()
+					.getEndPoint(nextPiece.getDirection().opposite()));
+			if (nextPiece.getDirection().isGrowing()) {
 				dynamicMin = dynamicStart;
 				dynamicMax = dynamicStart + perpendicularDistance;
 			} else {
@@ -1177,10 +1182,10 @@ class VirtualWave {
 		 * @param pieces
 		 * @return
 		 */
-		private EnhancedRectangle getMinimumRectangle(RectangleSidePiece... pieces) {
+		private org.tendiwa.geometry.Rectangle getMinimumRectangle(RectangleSidePiece... pieces) {
 			Map<CardinalDirection, RectangleSidePiece> directionToPiece = new HashMap<CardinalDirection, RectangleSidePiece>();
 			for (RectangleSidePiece piece : pieces) {
-				directionToPiece.put(piece.direction.opposite(), piece);
+				directionToPiece.put(piece.getDirection().opposite(), piece);
 			}
 			Map<CardinalDirection, Integer> limitCoordFromSide = new HashMap<CardinalDirection, Integer>();
 			for (CardinalDirection dir : Directions.CARDINAL_DIRECTIONS) {
@@ -1198,7 +1203,7 @@ class VirtualWave {
 			int y = limitCoordFromSide.get(Directions.N);
 			int width = limitCoordFromSide.get(Directions.E) - x + 1;
 			int height = limitCoordFromSide.get(Directions.S) - y + 1;
-			return new EnhancedRectangle(x, y, width, height);
+			return new org.tendiwa.geometry.Rectangle(x, y, width, height);
 		}
 
 		/**
@@ -1215,13 +1220,13 @@ class VirtualWave {
 				Integer.MAX_VALUE,
 				Integer.MIN_VALUE);
 			for (RectangleSidePiece piece : pieces) {
-				if (piece.direction == dir) {
+				if (piece.getDirection() == dir) {
 					minCoord = dir.furthestCoordOf(
 						minCoord,
 						piece.getStaticCoordInFront());
 				} else {
-					assert piece.direction.isPerpendicular(dir);
-					minCoord = dir.furthestCoordOf(minCoord, piece.segment
+					assert piece.getDirection().isPerpendicular(dir);
+					minCoord = dir.furthestCoordOf(minCoord, piece.getSegment()
 						.getEndPoint(dir.opposite())
 						.getDynamicCoord(dir.getOrientation()));
 				}
@@ -1231,21 +1236,21 @@ class VirtualWave {
 		}
 
 		private TreeSet<RectangleSidePiece> getAllPiecesIntersectingSpaceBetweenParallelPieces(RectangleSidePiece piece1, RectangleSidePiece piece2) {
-			Range dynamicRange = piece1.segment.asRange().intersection(
-				piece2.segment.asRange());
+			Range dynamicRange = piece1.getSegment().asRange().intersection(
+				piece2.getSegment().asRange());
 			TreeSet<RectangleSidePiece> answer = new TreeSet<RectangleSidePiece>(
 				PIECES_START_COORD_COMPARATOR);
 			TreeSet<RectangleSidePiece> treeSet = pieces
-				.get(piece1.direction);
+				.get(piece1.getDirection());
 			RectangleSidePiece nextPiece = treeSet.higher(piece1);
-			int staticMax = piece2.segment.getStaticCoord();
-			while (nextPiece != null && nextPiece.direction
+			int staticMax = piece2.getSegment().getStaticCoord();
+			while (nextPiece != null && nextPiece.getDirection()
 				.furthestCoordOf(
 					nextPiece.getStaticCoordInFront(),
 					staticMax) == staticMax) {
 				if (Range.overlap(
-					nextPiece.segment.getStartCoord(),
-					nextPiece.segment.getEndCoord(),
+					nextPiece.getSegment().getStartCoord(),
+					nextPiece.getSegment().getEndCoord(),
 					dynamicRange.min,
 					dynamicRange.max)) {
 					answer.add(nextPiece);
@@ -1264,7 +1269,7 @@ class VirtualWave {
 		 * 	A rectangle in front of {@code minPiece}
 		 * @return true if at least one such piece was found, false if none of them were found.
 		 */
-		private boolean doPiecesExistThatIntersectRectangle(RectangleSidePiece minPiece, EnhancedRectangle rectangle) {
+		private boolean doPiecesExistThatIntersectRectangle(RectangleSidePiece minPiece, org.tendiwa.geometry.Rectangle rectangle) {
 			// TODO: Change rectangle object to ints
 			Range staticRange, dynamicRange;
 			if (minPiece.isVertical()) {
@@ -1290,7 +1295,7 @@ class VirtualWave {
 				minPiece, inversePiece(minPiece)
 			}) {
 				TreeSet<RectangleSidePiece> treeSet = pieces
-					.get(startPiece.direction);
+					.get(startPiece.getDirection());
 				RectangleSidePiece nextPiece;
 				if (startPiece == minPiece) {
 					nextPiece = treeSet.higher(startPiece);
@@ -1299,14 +1304,14 @@ class VirtualWave {
 				}
 				while (nextPiece != null && nextPiece
 					.distanceTo(startPiece) <= staticRange.getLength()) {
-					if (staticRange.contains(nextPiece.segment
+					if (staticRange.contains(nextPiece.getSegment()
 						.getStaticCoord())) {
-						if (nextPiece.segment.asRange().overlaps(
+						if (nextPiece.getSegment().asRange().overlaps(
 							dynamicRange)) {
 							return true;
 						}
 					}
-					if (minPiece.direction == nextPiece.direction) {
+					if (minPiece.getDirection() == nextPiece.getDirection()) {
 						nextPiece = treeSet.higher(nextPiece);
 					} else {
 						nextPiece = treeSet.lower(nextPiece);
@@ -1316,18 +1321,18 @@ class VirtualWave {
 			return false;
 		}
 
-		private boolean doPerpendicularPiecesExistThatIntersectRectangle(RectangleSidePiece minPiece, EnhancedRectangle rectangle) {
+		private boolean doPerpendicularPiecesExistThatIntersectRectangle(RectangleSidePiece minPiece, org.tendiwa.geometry.Rectangle rectangle) {
 			RectangleSidePiece[] minPossiblePerpendicularPieces = getMinPossiblePerpendicularPieces(minPiece);
 			int recStartCoord = minPiece.isVertical() ? rectangle.getY() : rectangle.getX();
 			CardinalDirection dirOfMinPossiblePiece;
-			if (minPiece.segment.asRange().contains(recStartCoord)) {
-				if (minPiece.direction.isVertical()) {
+			if (minPiece.getSegment().asRange().contains(recStartCoord)) {
+				if (minPiece.getDirection().isVertical()) {
 					dirOfMinPossiblePiece = E;
 				} else {
 					dirOfMinPossiblePiece = S;
 				}
 			} else {
-				if (minPiece.direction.isVertical()) {
+				if (minPiece.getDirection().isVertical()) {
 					dirOfMinPossiblePiece = W;
 				} else {
 					dirOfMinPossiblePiece = N;
@@ -1335,7 +1340,7 @@ class VirtualWave {
 			}
 			RectangleSidePiece startPiece = null;
 			for (RectangleSidePiece minPossiblePiece : minPossiblePerpendicularPieces) {
-				if (minPossiblePiece.direction == dirOfMinPossiblePiece) {
+				if (minPossiblePiece.getDirection() == dirOfMinPossiblePiece) {
 					startPiece = minPossiblePiece;
 					break;
 				}
@@ -1344,15 +1349,15 @@ class VirtualWave {
 			startPiece = inversePiece(startPiece);
 			startPiece = movePieceOneCellToItsDirection(startPiece);
 			TreeSet<RectangleSidePiece> treeSet = pieces
-				.get(startPiece.direction);
+				.get(startPiece.getDirection());
 			RectangleSidePiece nextPiece = treeSet.lower(startPiece);
 			int maxDynamicCoord = rectangle
-				.getSideAsSidePiece(startPiece.direction.opposite()).segment
+				.getSideAsSidePiece(startPiece.getDirection().opposite()).getSegment()
 				.getStaticCoord();
 
 			// TODO: Change to code that doesn't create new Range objects.
 			Range staticRange;
-			if (minPiece.direction.isVertical()) {
+			if (minPiece.getDirection().isVertical()) {
 				staticRange = new Range(
 					rectangle.getY(),
 					rectangle.getY() + rectangle.getHeight() - 1);
@@ -1361,10 +1366,10 @@ class VirtualWave {
 					rectangle.getX(),
 					rectangle.getX() + rectangle.getWidth() - 1);
 			}
-			while (nextPiece != null && nextPiece.direction.closestCoordOf(
-				nextPiece.segment.getStaticCoord(),
+			while (nextPiece != null && nextPiece.getDirection().closestCoordOf(
+				nextPiece.getSegment().getStaticCoord(),
 				maxDynamicCoord) == maxDynamicCoord) {
-				if (nextPiece.segment.asRange().overlaps(staticRange)) {
+				if (nextPiece.getSegment().asRange().overlaps(staticRange)) {
 					return true;
 				}
 				nextPiece = treeSet.lower(nextPiece);
@@ -1373,42 +1378,42 @@ class VirtualWave {
 		}
 
 		private RectangleSidePiece movePieceOneCellToItsDirection(RectangleSidePiece piece) {
-			int x = piece.segment.x;
-			int y = piece.segment.y;
-			if (piece.direction.isVertical()) {
-				y += piece.direction.getGrowing();
+			int x = piece.getSegment().x;
+			int y = piece.getSegment().y;
+			if (piece.getDirection().isVertical()) {
+				y += piece.getDirection().getGrowing();
 			} else {
-				x += piece.direction.getGrowing();
+				x += piece.getDirection().getGrowing();
 			}
-			return new RectangleSidePiece(piece.direction, x, y, 1);
+			return new RectangleSidePiece(piece.getDirection(), x, y, 1);
 		}
 
 		/**
-		 * <ul> <li>Splits each of {@code pieces} with a corresponding opposite side of EnhancedRectangle {@code r}</li>
-		 * <li>Removes the pieces which were split from this {@link RectangleablePiecesCollection}</li> <li>Adds newly created
-		 * split pieces to this {@link RectangleablePiecesCollection}</li> <li>Disassociates the removed pieces with their
+		 * <ul> <li>Splits each of {@code pieces} with a corresponding opposite side of Rectangle {@code r}</li> <li>Removes
+		 * the pieces which were split from this {@link RectangleablePiecesCollection}</li> <li>Adds newly created split
+		 * pieces to this {@link RectangleablePiecesCollection}</li> <li>Disassociates the removed pieces with their
 		 * junctions</li> </ul>
 		 *
 		 * @param r
 		 * @param pieces
 		 */
-		private void modifySidesByPlacingRectangle(EnhancedRectangle r, RectangleSidePiece... pieces) {
+		private void modifySidesByPlacingRectangle(org.tendiwa.geometry.Rectangle r, RectangleSidePiece... pieces) {
 			Collection<CardinalDirection> directionsUnused = Sets
 				.newHashSet(CardinalDirection.values());
 			// Place pieces for those sides that have neighbor pieces from
 			// previous front.
 			for (RectangleSidePiece piece : pieces) {
 				assert Sets
-					.newHashSet(this.pieces.get(piece.direction))
+					.newHashSet(this.pieces.get(piece.getDirection()))
 					.contains(piece);
 			}
 			for (RectangleSidePiece piece : pieces) {
 				RectangleSidePiece rPiece = r
-					.getSideAsSidePiece(piece.direction.opposite());
+					.getSideAsSidePiece(piece.getDirection().opposite());
 				RectangleSidePiece[] splitPieces = piece
 					.splitWithPiece(rPiece);
 				TreeSet<RectangleSidePiece> treeSet = this.pieces
-					.get(piece.direction);
+					.get(piece.getDirection());
 
 				assert splitPieces.length == 0 || splitPieces[0] != piece;
 				ImmutableSet<RectangleSidePiece> touchingPieces = getPiecesThatTouch(
@@ -1434,10 +1439,10 @@ class VirtualWave {
 					}
 				}
 
-				directionsUnused.remove(rPiece.direction);
+				directionsUnused.remove(rPiece.getDirection());
 				for (RectangleSidePiece rSplitPiece : rPiece
 					.splitWithPieces(touchingPieces)) {
-					this.pieces.get(rSplitPiece.direction).add(rSplitPiece);
+					this.pieces.get(rSplitPiece.getDirection()).add(rSplitPiece);
 				}
 				assertRectangleNotIntersectsWithOthers(r);
 			}
@@ -1445,7 +1450,7 @@ class VirtualWave {
 			// Place pieces from other sides of the new rectangle
 			for (CardinalDirection dir : directionsUnused) {
 				RectangleSidePiece piece = r.getSideAsSidePiece(dir);
-				this.pieces.get(piece.direction).add(piece);
+				this.pieces.get(piece.getDirection()).add(piece);
 			}
 			canvas.draw(r);
 		}
@@ -1464,7 +1469,7 @@ class VirtualWave {
 		 * @return A set of pieces touching {@code rPiece} including {@code modifiedPiece}.
 		 */
 		private ImmutableSet<RectangleSidePiece> getPiecesThatTouch(RectangleSidePiece rPiece, RectangleSidePiece modifiedPiece) {
-			CardinalDirection originalsDirection = rPiece.direction
+			CardinalDirection originalsDirection = rPiece.getDirection()
 				.opposite();
 			Builder<RectangleSidePiece> builder = ImmutableSet
 				.<RectangleSidePiece>builder();
@@ -1486,17 +1491,17 @@ class VirtualWave {
 		/**
 		 * Tests that all pieces present in {@code junctions} are present in {@code pieces}
 		 */
-		private void assertRectangleNotIntersectsWithOthers(EnhancedRectangle newRectangle) {
-			for (EnhancedRectangle existingRectangle : virtualRectangles) {
+		private void assertRectangleNotIntersectsWithOthers(org.tendiwa.geometry.Rectangle newRectangle) {
+			for (org.tendiwa.geometry.Rectangle existingRectangle : virtualRectangles) {
 				assert !newRectangle.intersects(existingRectangle);
 			}
-			for (EnhancedRectangle rec : wave.get(0)) {
+			for (org.tendiwa.geometry.Rectangle rec : wave.get(0)) {
 				assert !newRectangle.intersects(rec);
 			}
 		}
 
 		private void removePiece(RectangleSidePiece piece) {
-			pieces.get(piece.direction).remove(piece);
+			pieces.get(piece.getDirection()).remove(piece);
 		}
 
 		/**
@@ -1521,7 +1526,7 @@ class VirtualWave {
 		 */
 		private RectangleSidePiece getParallelRectangleablePiece(RectangleSidePiece newPiece) {
 			TreeSet<RectangleSidePiece> treeSet = pieces
-				.get(newPiece.direction.opposite());
+				.get(newPiece.getDirection().opposite());
 			RectangleSidePiece opposite = inversePiece(newPiece);
 			do {
 				opposite = treeSet.lower(opposite);
@@ -1541,12 +1546,12 @@ class VirtualWave {
 		private PerpendicularPiecesPair getPerpendicularRectangleablePieces(RectangleSidePiece newPiece, CardinalDirection dir) {
 			assert newPiece != null;
 			PerpendicularPiecesPair answer = new PerpendicularPiecesPair();
-			// TODO: There's no need to hold EnhancedRectangle in minPossible*
+			// TODO: There's no need to hold Rectangle in minPossible*
 			// to compute it; need a more limited class for this purpose.
 			RectangleSidePiece[] minPossibles = getMinPossiblePerpendicularPieces(newPiece);
 			for (RectangleSidePiece minPiece : minPossibles) {
 				TreeSet<RectangleSidePiece> treeSetOfMin = pieces
-					.get(minPiece.direction);
+					.get(minPiece.getDirection());
 				RectangleSidePiece nextPiece = minPiece;
 				do {
 					nextPiece = treeSetOfMin.lower(nextPiece);
@@ -1561,8 +1566,8 @@ class VirtualWave {
 		}
 
 		/**
-		 * Creates two virtual {@link RectangleSidePiece}s (not really belonging to any EnhancedRectangle) which will be used
-		 * as starting points to find perpendicular RectangleSidePieces in a junction with {@code piece}.
+		 * Creates two virtual {@link RectangleSidePiece}s (not really belonging to any Rectangle) which will be used as
+		 * starting points to find perpendicular RectangleSidePieces in a junction with {@code piece}.
 		 *
 		 * @param piece
 		 * @return An array of 2 RectangleSidePieces.
@@ -1570,34 +1575,34 @@ class VirtualWave {
 		private RectangleSidePiece[] getMinPossiblePerpendicularPieces(RectangleSidePiece piece) {
 			RectangleSidePiece[] answer = new RectangleSidePiece[2];
 			if (piece.isVertical()) {
-				Cell startingPointN = piece.segment
+				Cell startingPointN = piece.getSegment()
 					.getEndPoint(Directions.S);
-				Cell startingPointS = piece.segment
+				Cell startingPointS = piece.getSegment()
 					.getEndPoint(Directions.N);
 				answer[0] = new RectangleSidePiece(
 					Directions.S,
-					piece.line.getStaticCoordFromSide(piece.direction),
+					piece.getLine().getStaticCoordFromSide(piece.getDirection()),
 					startingPointN.getY(),
 					1);
 				answer[1] = new RectangleSidePiece(
 					Directions.N,
-					piece.line.getStaticCoordFromSide(piece.direction),
+					piece.getLine().getStaticCoordFromSide(piece.getDirection()),
 					startingPointS.getY(),
 					1);
 			} else {
-				Cell startingPointW = piece.segment
+				Cell startingPointW = piece.getSegment()
 					.getEndPoint(Directions.E);
-				Cell startingPointE = piece.segment
+				Cell startingPointE = piece.getSegment()
 					.getEndPoint(Directions.W);
 				answer[0] = new RectangleSidePiece(
 					Directions.W,
 					startingPointE.getX(),
-					piece.line.getStaticCoordFromSide(piece.direction),
+					piece.getLine().getStaticCoordFromSide(piece.getDirection()),
 					1);
 				answer[1] = new RectangleSidePiece(
 					Directions.E,
 					startingPointW.getX(),
-					piece.line.getStaticCoordFromSide(piece.direction),
+					piece.getLine().getStaticCoordFromSide(piece.getDirection()),
 					1);
 			}
 			return answer;
@@ -1609,7 +1614,7 @@ class VirtualWave {
 			protected RectangleSidePiece greater;
 
 			protected void add(RectangleSidePiece piece) {
-				if (piece.direction.isGrowing()) {
+				if (piece.getDirection().isGrowing()) {
 					assert lesser == null;
 					lesser = piece;
 				} else {
@@ -1693,10 +1698,10 @@ class VirtualWave {
 		class SameLinePiecesPair extends PerpendicularPiecesPair {
 			public SameLinePiecesPair(RectangleSidePiece splitterPiece, RectangleSidePiece[] pieces) {
 				for (RectangleSidePiece splitPiece : pieces) {
-					if (splitPiece.segment.getStartCoord() < splitterPiece.segment
+					if (splitPiece.getSegment().getStartCoord() < splitterPiece.getSegment()
 						.getStartCoord()) {
 						lesser = splitPiece;
-					} else if (splitPiece.segment.getStartCoord() > splitterPiece.segment
+					} else if (splitPiece.getSegment().getStartCoord() > splitterPiece.getSegment()
 						.getStartCoord()) {
 						greater = splitPiece;
 					} else {

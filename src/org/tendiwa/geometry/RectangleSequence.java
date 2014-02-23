@@ -15,14 +15,14 @@ import java.util.LinkedHashSet;
  * This is one of the most basic conceptions of terrain generation used in this framework, so you better consult
  * tutorial to get started with it.
  */
-public class RectangleSequence implements Iterable<EnhancedRectangle>, Placeable {
+public class RectangleSequence implements Iterable<Rectangle>, Placeable {
 private static final AffineTransform TRANSFORM_CLOCKWISE = new AffineTransform(AffineTransform.getQuadrantRotateInstance(1, 0, 0));
 private static final AffineTransform TRANSFORM_COUNTER_CLOCKWISE = new AffineTransform(AffineTransform.getQuadrantRotateInstance(3, 0, 0));
 private static final AffineTransform TRANSFORM_HALF_CIRCLE = new AffineTransform(AffineTransform.getQuadrantRotateInstance(2, 0, 0));
 /**
  * RectangleAreas that are parts of this RectangleSystem.
  */
-protected LinkedHashSet<EnhancedRectangle> content;
+protected LinkedHashSet<Rectangle> content;
 
 /**
  * Creates an empty RectangleSequence.
@@ -32,13 +32,13 @@ public RectangleSequence() {
 }
 
 @Override
-public EnhancedRectangle place(RectangleSystemBuilder builder, int x, int y) {
-	for (EnhancedRectangle r : content) {
-		EnhancedRectangle actualRec = getActualRectangle(r, x, y);
+public Rectangle place(RectangleSystemBuilder builder, int x, int y) {
+	for (Rectangle r : content) {
+		Rectangle actualRec = getActualRectangle(r, x, y);
 		builder.placeRectangle(actualRec, DSL.atPoint(actualRec.getX(), actualRec.getY()));
 	}
-	EnhancedRectangle bounds = getBounds();
-	return new EnhancedRectangle(x, y, bounds.getWidth(), bounds.getHeight());
+	Rectangle bounds = getBounds();
+	return new Rectangle(x, y, bounds.getWidth(), bounds.getHeight());
 }
 
 @Override
@@ -67,8 +67,8 @@ public Placeable rotate(Rotation rotation) {
 			throw new IllegalArgumentException();
 	}
 	RectangleSequence newRs = new RectangleSequence();
-	for (EnhancedRectangle r : content) {
-		newRs.addRectangle(new EnhancedRectangle(transform.createTransformedShape(r.toAwtRectangle()).getBounds()));
+	for (Rectangle r : content) {
+		newRs.addRectangle(new Rectangle(transform.createTransformedShape(r.toAwtRectangle()).getBounds()));
 	}
 	return newRs;
 }
@@ -78,17 +78,17 @@ public Placeable rotate(Rotation rotation) {
  * Returns a set of all rectangles contained in this RectangleSystem.
  * @return An immutable set of all rectangles from this system.
  */
-public Collection<EnhancedRectangle> getRectangles() {
+public Collection<Rectangle> getRectangles() {
 	return ImmutableSet.copyOf(content);
 }
 
 @Override
-public final EnhancedRectangle getBounds() {
+public final Rectangle getBounds() {
 	int minX = Integer.MAX_VALUE;
 	int minY = Integer.MAX_VALUE;
 	int maxX = Integer.MIN_VALUE;
 	int maxY = Integer.MIN_VALUE;
-	for (EnhancedRectangle r : content) {
+	for (Rectangle r : content) {
 		if (r.getX() < minX) {
 			minX = r.getX();
 		}
@@ -102,7 +102,7 @@ public final EnhancedRectangle getBounds() {
 			maxY = r.getY() + r.getHeight() - 1;
 		}
 	}
-	return new EnhancedRectangle(minX, minY, maxX - minX + 1, maxY - minY + 1);
+	return new Rectangle(minX, minY, maxX - minX + 1, maxY - minY + 1);
 }
 
 /**
@@ -116,10 +116,10 @@ public final EnhancedRectangle getBounds() {
  * 	Y coordinate of north-west point of actual bounding rectangle.
  * @return Actual coordinates rectangle.
  */
-EnhancedRectangle getActualRectangle(EnhancedRectangle r, int x, int y) {
+Rectangle getActualRectangle(Rectangle r, int x, int y) {
 	assert content.contains(r);
-	EnhancedRectangle boundingRec = getBounds();
-	return new EnhancedRectangle(x + r.getX() - boundingRec.getX(), y + r.getY() - boundingRec.getY(), r.getWidth(), r.getHeight());
+	Rectangle boundingRec = getBounds();
+	return new Rectangle(x + r.getX() - boundingRec.getX(), y + r.getY() - boundingRec.getY(), r.getWidth(), r.getHeight());
 }
 
 /**
@@ -129,13 +129,13 @@ EnhancedRectangle getActualRectangle(EnhancedRectangle r, int x, int y) {
  * 	New rectangle
  * @return Argument {@code r}
  */
-public EnhancedRectangle addRectangle(EnhancedRectangle r) {
+public Rectangle addRectangle(Rectangle r) {
 	content.add(r);
 	return r;
 }
 
 @Override
-public Iterator<EnhancedRectangle> iterator() {
+public Iterator<Rectangle> iterator() {
 	return content.iterator();
 }
 
@@ -147,7 +147,7 @@ public Iterator<EnhancedRectangle> iterator() {
  * @throws IllegalArgumentException
  * 	If rectangle {@code r} is not present in this RectangleSequence.
  */
-public void excludeRectangle(EnhancedRectangle r) {
+public void excludeRectangle(Rectangle r) {
 	if (!content.contains(r)) {
 		throw new IllegalArgumentException("No rectangle " + r + " present in system");
 	}

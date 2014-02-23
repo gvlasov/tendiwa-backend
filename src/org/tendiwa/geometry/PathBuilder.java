@@ -7,13 +7,13 @@ import org.jgrapht.graph.SimpleGraph;
  */
 public class PathBuilder {
 
-private final SimpleGraph<EnhancedRectangle, RectanglesJunction> path;
+private final SimpleGraph<Rectangle, RectanglesJunction> path;
 private final WidthStep widthStep = new WidthStep();
 private final ShiftStep shiftStep = new ShiftStep();
 private final WithStep withStep = new WithStep();
 private final RectangleSystemBuilder builder;
-private EnhancedRectangle rectangleToLinkSource;
-private EnhancedRectangle rectangleToLinkEnd;
+private Rectangle rectangleToLinkSource;
+private Rectangle rectangleToLinkEnd;
 private int junctionWidth;
 
 PathBuilder(RectangleSystemBuilder builder) {
@@ -36,7 +36,7 @@ public WithStep link(RectanglePointer pointer) {
 	return withStep;
 }
 
-public SimpleGraph<EnhancedRectangle, RectanglesJunction> build() {
+public SimpleGraph<Rectangle, RectanglesJunction> build() {
 	return path;
 }
 

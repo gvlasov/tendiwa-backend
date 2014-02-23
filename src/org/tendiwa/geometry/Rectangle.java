@@ -5,21 +5,20 @@ import org.tendiwa.core.*;
 import org.tendiwa.core.meta.Coordinate;
 import org.tendiwa.core.meta.Range;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Adds more geometry methods to Rectangle. Unlike {@link Rectangle}, this class can't be of zero width or height.
+ * Adds more geometry methods to Rectangle. Unlike {@link java.awt.Rectangle}, this class can't be of zero width or
+ * height.
  */
-public class EnhancedRectangle implements Placeable {
-private static final long serialVersionUID = -3818700857263511272L;
-private int x;
-private int y;
-private int width;
-private int height;
+public class Rectangle implements Placeable {
+private final int x;
+private final int y;
+private final int width;
+private final int height;
 
-public EnhancedRectangle(int x, int y, int width, int height) {
+public Rectangle(int x, int y, int width, int height) {
 	this.x = x;
 	this.y = y;
 	this.width = width;
@@ -29,14 +28,14 @@ public EnhancedRectangle(int x, int y, int width, int height) {
 	}
 }
 
-public EnhancedRectangle(EnhancedRectangle r) {
+public Rectangle(Rectangle r) {
 	this.x = r.x;
 	this.y = r.y;
 	this.width = r.width;
 	this.height = r.height;
 }
 
-public EnhancedRectangle(Rectangle r) {
+public Rectangle(java.awt.Rectangle r) {
 	this.x = r.x;
 	this.y = r.y;
 	this.width = r.width;
@@ -46,193 +45,7 @@ public EnhancedRectangle(Rectangle r) {
 	}
 }
 
-/**
- * A more convenient method for creating rectangles. Takes a point, places another point from ordinal direction from the
- * initial point.
- *
- * @param x
- * 	Initial point
- * @param y
- * 	Initial point
- * @param side
- * 	Location of the second point relatively from the initial point.
- * @param width
- * 	How far is the second point from the initial point on x-axis.
- * @param height
- * 	How far is the second point from the initial point on y-axis.
- * @return New rectangle that grown from a point in certain direciton.
- */
-public static EnhancedRectangle growFromPoint(int x, int y, OrdinalDirection side, int width, int height) {
-	switch (side) {
-		case SE:
-			return new EnhancedRectangle(x, y, width, height);
-		case NE:
-			return new EnhancedRectangle(x, y - height + 1, width, height);
-		case NW:
-			return new EnhancedRectangle(
-				x - width + 1,
-				y - height + 1,
-				width,
-				height);
-		case SW:
-			return new EnhancedRectangle(x - width + 1, y, width, height);
-		default:
-			throw new IllegalArgumentException();
-	}
-}
-
-/**
- * Returns rectangle defined by two corner points
- */
-public static EnhancedRectangle getRectangleFromTwoCorners(Coordinate c1, Coordinate c2) {
-	int startX = Math.min(c1.x, c2.x);
-	int startY = Math.min(c1.y, c2.y);
-	int recWidth = Math.max(c1.x, c2.x) - startX + 1;
-	int recHeight = Math.max(c1.y, c2.y) - startY + 1;
-	return new EnhancedRectangle(startX, startY, recWidth, recHeight);
-}
-
-/**
- * <p> Creates a new EnhancedRectangle defined by its minimum and maximum coordinates. </p>
- *
- * @param xMin
- * 	Least coordinate by x-axis.
- * @param yMin
- * 	Least coordinate by y-axis.
- * @param xMax
- * 	Greatest coordinate by x-axis.
- * @param yMax
- * 	Greatest coordinate by y-axis.
- * @return A new EnhancedRectangle bounded by these two points (containing both of them inside).
- */
-public static EnhancedRectangle rectangleByMinAndMaxCoords(int xMin, int yMin, int xMax, int yMax) {
-	if (xMin > xMax) {
-		throw new IllegalArgumentException("xMin can't be > xMax");
-	}
-	if (yMin > yMax) {
-		throw new IllegalArgumentException("yMin can't be > yMax");
-	}
-	return new EnhancedRectangle(
-		xMin,
-		yMin,
-		xMax - xMin + 1,
-		yMax - yMin + 1);
-}
-
-/**
- * Returns the minimum rectangle containing all the given points inside it.
- *
- * @param points
- * @return
- */
-public static EnhancedRectangle rectangleContainingAllPonts(Collection<Point> points) {
-	int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE, minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
-	for (Point point : points) {
-		if (point.x < minX) {
-			minX = point.x;
-		}
-		if (point.x > maxX) {
-			maxX = point.x;
-		}
-		if (point.y < minY) {
-			minY = point.y;
-		}
-		if (point.y > maxY) {
-			maxY = point.y;
-		}
-	}
-	return new EnhancedRectangle(
-		minX,
-		minY,
-		maxX - minX + 1,
-		maxY - minY + 1);
-}
-
-/**
- * Creates a new rectangle whose center is the given point, with given width and height. If the rectangle created has
- * even width/height, the exact center coordinate will be randomized between two possible coordinates.
- *
- * @param point
- * @param width
- * @param height
- * @return
- */
-public static EnhancedRectangle rectangleByCenterPoint(Point point, int width, int height) {
-	return new EnhancedRectangle(
-		point.x - width / 2,
-		point.y - height / 2,
-		width,
-		height);
-}
-
-/**
- * Grows a new EnhancedRectangle from a point where two {@link IntercellularLine}s intersect. An intersection of two
- * such lines divides the plane in 4 quadrants, and the quadrant where the rectangle will be is defined by
- * DirectionOldSide argument.
- *
- * @param line1
- * 	Must be perpendicular to line2.
- * @param line2
- * 	Must be perpendicular to line1.
- * @param side
- * 	Must be ordinal.
- * @param width
- * 	Width of the resulting rectangle.
- * @param height
- * 	Height of the resulting rectangle.
- * @return
- * @see {@link EnhancedRectangle#growFromPoint(int, int, OrdinalDirection, int, int)}
- */
-public static EnhancedRectangle growFromIntersection(IntercellularLine line1, IntercellularLine line2, OrdinalDirection side, int width, int height) {
-	if (!line1.isPerpendicular(line2)) {
-		throw new IllegalArgumentException(
-			"Two lines must be perpendicular");
-	}
-	IntercellularLinesIntersection intersection = IntercellularLine
-		.intersectionOf(line1, line2);
-	return growFromIntersection(intersection, side, width, height);
-
-}
-
-/**
- * Grows a new EnhancedRectangle from a point where two {@link IntercellularLine}s intersect. An intersection of two
- * such lines divides the plane in 4 quadrants, and the quadrant where the rectangle will be is defined by
- * DirectionOldSide argument.
- *
- * @param intersection
- * @param side
- * 	Must be ordinal.
- * @param width
- * 	Width of the resulting rectangle.
- * @param height
- * 	Height of the resulting rectangle.
- * @return
- */
-public static EnhancedRectangle growFromIntersection(IntercellularLinesIntersection intersection, OrdinalDirection side, int width, int height) {
-	Point point = intersection.getCornerPointOfQuarter(side);
-	return growFromPoint(point.x, point.y, side, width, height);
-}
-
-/**
- * Creates a new {@link EnhancedRectangle} relative to an already existing {@link Rectangle}.
- *
- * @param r
- * 	an already existing rectangle.
- * @param dx
- * 	how far will the new rectangle be shifted by x-axis from the original one.
- * @param dy
- * 	how far will the new rectangle be shifted by x-axis from the original one.
- * @return a new {@link EnhancedRectangle} with width and height equal to {@code r}'s.
- */
-public static EnhancedRectangle rectangleMovedFromOriginal(EnhancedRectangle r, int dx, int dy) {
-	if (r == null) {
-		throw new NullPointerException();
-	}
-	return new EnhancedRectangle(r.x + dx, r.y + dy, r.width, r.height);
-
-}
-
-public boolean intersects(EnhancedRectangle r) {
+public boolean intersects(Rectangle r) {
 	int tw = this.width;
 	int th = this.height;
 	int rw = r.width;
@@ -272,7 +85,7 @@ public Collection<Coordinate> getCells() {
 	return answer;
 }
 
-public boolean isCellOnRectangleBorder(int x, int y, Rectangle r) {
+public boolean isCellOnRectangleBorder(int x, int y, java.awt.Rectangle r) {
 	return x == this.x || y == this.y || x == this.x + this.width - 1 || y == this.y + this.height - 1;
 }
 
@@ -386,20 +199,20 @@ public Cell getCellFromSide(CardinalDirection side, CardinalDirection endOfSide,
  * 	Amount of cells to stretch. If depth > 0, then rectangle will grow, if depth < 0, then rectangle will shrink. Notice
  * 	that if SideTest == N or W, rectangle.x and rectangle.y will move. If depth == 0 then rectangle stays the same.
  */
-public EnhancedRectangle stretch(CardinalDirection side, int amount) {
+public Rectangle stretch(CardinalDirection side, int amount) {
 	switch (side) {
 		case N:
-			return new EnhancedRectangle(
+			return new Rectangle(
 				this.x,
 				this.y - amount,
 				this.width,
 				this.height + amount);
 		case E:
-			return new EnhancedRectangle(this.x, this.y, this.width + amount, this.height);
+			return new Rectangle(this.x, this.y, this.width + amount, this.height);
 		case S:
-			return new EnhancedRectangle(this.x, this.y, this.width, this.height + amount);
+			return new Rectangle(this.x, this.y, this.width, this.height + amount);
 		case W:
-			return new EnhancedRectangle(
+			return new Rectangle(
 				this.x - amount,
 				this.y,
 				this.width + amount,
@@ -473,8 +286,8 @@ public boolean isInCircle(int cx, int cy, int radius) {
 }
 
 /**
- * Returns a Coordinate of Rectangle's middle point. If {@link EnhancedRectangle} has odd width or height, Coordinate
- * will be rounded up.
+ * Returns a Coordinate of Rectangle's middle point. If {@link Rectangle} has odd width or height, Coordinate will be
+ * rounded up.
  *
  * @return
  */
@@ -585,7 +398,7 @@ public String toString() {
 }
 
 @Override
-public EnhancedRectangle place(RectangleSystemBuilder builder, int x, int y) {
+public Rectangle place(RectangleSystemBuilder builder, int x, int y) {
 	return builder.placeRectangle(x, y, this.width, this.height);
 }
 
@@ -608,15 +421,15 @@ public Placeable rotate(Rotation rotation) {
 		default:
 			throw new UnsupportedOperationException("Operation for rotation " + rotation + " is not implemented yet");
 	}
-	return new EnhancedRectangle(x, y, newWidth, newHeight);
+	return new Rectangle(x, y, newWidth, newHeight);
 }
 
 @Override
-public Iterable<EnhancedRectangle> getRectangles() {
+public Iterable<Rectangle> getRectangles() {
 	return getArrayOfItself();
 }
 
-private Iterable<EnhancedRectangle> getArrayOfItself() {
+private Iterable<Rectangle> getArrayOfItself() {
 	return ImmutableList.of(this);
 }
 
@@ -626,7 +439,7 @@ public StepPlaceNextAt repeat(int count) {
 }
 
 @Override
-public EnhancedRectangle getBounds() {
+public Rectangle getBounds() {
 	return this;
 }
 
@@ -699,7 +512,7 @@ public int getMaxDynamicCoord(Orientation orientation) {
 	}
 }
 
-int amountOfCellsBetween(EnhancedRectangle r, Orientation orientation) {
+int amountOfCellsBetween(Rectangle r, Orientation orientation) {
 	int staticCoord1 = r.getMinStaticCoord(orientation);
 	int staticCoord2 = this.getMinStaticCoord(orientation);
 	int staticLength1 = r.getStaticLength(orientation);
@@ -716,7 +529,7 @@ int amountOfCellsBetween(EnhancedRectangle r, Orientation orientation) {
 	}
 }
 
-boolean overlapsByDynamicRange(EnhancedRectangle r, Orientation orientation) {
+boolean overlapsByDynamicRange(Rectangle r, Orientation orientation) {
 	return Range.overlap(
 		this.getMinDynamicCoord(orientation),
 		this.getMaxDynamicCoord(orientation),
@@ -725,7 +538,7 @@ boolean overlapsByDynamicRange(EnhancedRectangle r, Orientation orientation) {
 	);
 }
 
-boolean overlapsByStaticRange(EnhancedRectangle r, Orientation orientation) {
+boolean overlapsByStaticRange(Rectangle r, Orientation orientation) {
 	return Range.overlap(
 		this.getMinStaticCoord(orientation),
 		this.getMaxStaticCoord(orientation),
@@ -734,7 +547,7 @@ boolean overlapsByStaticRange(EnhancedRectangle r, Orientation orientation) {
 	);
 }
 
-public Segment getIntersectionSegment(EnhancedRectangle r) {
+public Segment getIntersectionSegment(Rectangle r) {
 	if (this == r) {
 		throw new IllegalArgumentException("You can't get intersection segment of a rectanlge with itself");
 	}
@@ -797,7 +610,7 @@ public Segment getSegmentInsideFromSide(CardinalDirection side, int shift, int l
  * @param anotherRectangle
  * 	True if this rectangle touches another rectangle from inside, false otherwise.
  */
-public boolean touchesFromInside(EnhancedRectangle anotherRectangle) {
+public boolean touchesFromInside(Rectangle anotherRectangle) {
 	if (intersects(anotherRectangle)) {
 		if (anotherRectangle.x == x) {
 			return true;
@@ -824,7 +637,7 @@ public boolean touchesFromInside(EnhancedRectangle anotherRectangle) {
  * @param neighbor
  * 	Neighbor rectangle.
  */
-public RectangleSidePiece getCommonSidePiece(EnhancedRectangle neighbor) {
+public RectangleSidePiece getCommonSidePiece(Rectangle neighbor) {
 	if (!RectangleSystem.areRectanglesInXCells(this, neighbor, 0)) {
 		throw new IllegalArgumentException("Only neighbor rectangles (with 0 cells between them) can have a common side piece");
 	}
@@ -890,14 +703,14 @@ public Cell getPointOnSide(CardinalDirection side, int shift) {
 }
 
 /**
- * Creates a new {@link EnhancedRectangle} around the same central point but with dimensions reduced by {@code dSize*2}
- * and shifted to {@link CardinalDirection#SE} by {@code dSize}.
+ * Creates a new {@link Rectangle} around the same central point but with dimensions reduced by {@code dSize*2} and
+ * shifted to {@link CardinalDirection#SE} by {@code dSize}.
  *
  * @param dSize
  * @return
  */
-public EnhancedRectangle shrink(int dSize) {
-	return new EnhancedRectangle(x + dSize, y + dSize, width - dSize * 2, height - dSize * 2);
+public Rectangle shrink(int dSize) {
+	return new Rectangle(x + dSize, y + dSize, width - dSize * 2, height - dSize * 2);
 }
 
 public int getMaxX() {
@@ -912,16 +725,8 @@ public int getX() {
 	return x;
 }
 
-public void setX(int newX) {
-	this.x = newX;
-}
-
 public int getY() {
 	return y;
-}
-
-public void setY(int y) {
-	this.y = y;
 }
 
 public boolean contains(int x, int y) {
@@ -932,20 +737,12 @@ public int getWidth() {
 	return width;
 }
 
-public void setWidth(int width) {
-	this.width = width;
-}
-
 public int getHeight() {
 	return height;
 }
 
-public void setHeight(int height) {
-	this.height = height;
-}
-
-public Rectangle toAwtRectangle() {
-	return new Rectangle(x, y, width, height);
+public java.awt.Rectangle toAwtRectangle() {
+	return new java.awt.Rectangle(x, y, width, height);
 }
 
 @Override
@@ -953,7 +750,7 @@ public boolean equals(Object o) {
 	if (this == o) return true;
 	if (o == null || getClass() != o.getClass()) return false;
 
-	EnhancedRectangle that = (EnhancedRectangle) o;
+	Rectangle that = (Rectangle) o;
 
 	if (height != that.height) return false;
 	if (width != that.width) return false;

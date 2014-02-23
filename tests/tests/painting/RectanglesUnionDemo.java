@@ -5,7 +5,7 @@ import org.jgrapht.graph.SimpleGraph;
 import org.jukito.JukitoRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.tendiwa.geometry.EnhancedRectangle;
+import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.RectangleSystemBuilder;
 import org.tendiwa.geometry.RectanglesJunction;
 import org.tendiwa.drawing.DrawingRectangle;
@@ -32,7 +32,7 @@ void draw() {
 		.place(rectangle(10, 15), near(LAST_RECTANGLE).fromSide(E).align(N));
 	canvas.draw(builder.getByIndex(2), DrawingRectangle.withColor(Color.RED));
 	canvas.draw(builder.getByIndex(3), DrawingRectangle.withColor(Color.YELLOW));
-	SimpleGraph<EnhancedRectangle, RectanglesJunction> path = path(builder)
+	SimpleGraph<Rectangle, RectanglesJunction> path = path(builder)
 		.link("start").with(1).width(3).shift(2)
 		.link(1).with(2).width(2).shift(0)
 		.link(3).with(LAST_RECTANGLE).width(3).shift(1)

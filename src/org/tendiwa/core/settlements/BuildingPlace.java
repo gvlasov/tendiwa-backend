@@ -1,7 +1,7 @@
 package org.tendiwa.core.settlements;
 
 import org.tendiwa.core.CardinalDirection;
-import org.tendiwa.geometry.EnhancedRectangle;
+import org.tendiwa.geometry.Rectangle;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -10,10 +10,10 @@ import java.util.Set;
  * Space for placing a building. Each quarter will be divided into several of those after roads' and quarters'
  * generation.
  */
-public class BuildingPlace extends EnhancedRectangle {
+public class BuildingPlace extends Rectangle {
 public final HashSet<Road> closeRoads = new HashSet<>();
 
-public BuildingPlace(EnhancedRectangle rectangle, Quarter quarter) {
+public BuildingPlace(Rectangle rectangle, Quarter quarter) {
 	super(rectangle);
 	for (Road road : quarter.closeRoads) {
 		if (road.isRectangleNearRoad(this)) {

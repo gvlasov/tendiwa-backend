@@ -2,7 +2,7 @@ package org.tendiwa.drawing;
 
 import org.tendiwa.core.Chunk;
 import org.tendiwa.geometry.Cell;
-import org.tendiwa.geometry.EnhancedRectangle;
+import org.tendiwa.geometry.Rectangle;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -29,7 +29,7 @@ protected void drawPoint(int x, int y, Color color) {
 	}
 }
 
-protected void drawRectangle(EnhancedRectangle r, Color color) {
+protected void drawRectangle(Rectangle r, Color color) {
 	canvas.graphics.setColor(color);
 	Graphics2D g2d = (Graphics2D) canvas.graphics;
 	AffineTransform transform = new AffineTransform();

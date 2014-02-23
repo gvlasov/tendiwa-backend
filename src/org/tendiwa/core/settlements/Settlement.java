@@ -5,9 +5,9 @@ import org.tendiwa.core.CardinalDirection;
 import org.tendiwa.core.HorizontalPlane;
 import org.tendiwa.core.Location;
 import org.tendiwa.core.meta.Chance;
-import org.tendiwa.geometry.EnhancedRectangle;
+import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.RectangleSystem;
-import org.tendiwa.geometry.RecursivelySplitRectangleSystemFactory;
+import org.tendiwa.geometry.extensions.RecursivelySplitRectangleSystemFactory;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -67,7 +67,7 @@ public void createRandomRoadSystem() {
 	}
 }
 
-public void markQuarter(EnhancedRectangle r, int minWidth/* =8 */, int borderWidth/* =2 */) {
+public void markQuarter(Rectangle r, int minWidth/* =8 */, int borderWidth/* =2 */) {
 	// Разметить квартал - создать систему прямоугольников и занести её в
 	// Settlement::quarters
 	// in: индекс пярмоугольника, на котором строится квартал, в

@@ -1,7 +1,7 @@
 package org.tendiwa.core;
 
 import com.google.common.collect.ImmutableSet;
-import org.tendiwa.geometry.EnhancedRectangle;
+import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.RectangleSystem;
 
 import java.util.HashSet;
@@ -11,12 +11,12 @@ import java.util.Set;
  * Represents a place where user will drawWorld a location. This class is supposed to hold properties assigned to it at
  * the world generation stage: {@link LocationFeature}, {@link PathSegment}s.
  */
-public class LocationPlace extends EnhancedRectangle {
+public class LocationPlace extends Rectangle {
 private final WorldRectangleBuilder worldBuilder;
 private Set<PathSegment> pathSegments = new HashSet<>();
 private Set<LocationFeature> features = new HashSet<>();
 
-LocationPlace(EnhancedRectangle r, WorldRectangleBuilder worldBuilder) {
+LocationPlace(Rectangle r, WorldRectangleBuilder worldBuilder) {
 	super(r);
 	this.worldBuilder = worldBuilder;
 }
@@ -42,7 +42,7 @@ public ImmutableSet<LocationNeighborship> getNeighborships() {
 	RectangleSystem rs = worldBuilder.done();
 	ImmutableSet.Builder<LocationNeighborship> builder = ImmutableSet.builder();
 	for (CardinalDirection dir : CardinalDirection.values()) {
-		for (EnhancedRectangle neighbor : rs.getNeighborsFromSide(this, dir)) {
+		for (Rectangle neighbor : rs.getNeighborsFromSide(this, dir)) {
 			builder.add(
 				new LocationNeighborship(worldBuilder.rectanglesToPlaces.get(neighbor),
 					dir,
@@ -64,10 +64,10 @@ public ImmutableSet<LocationNeighborship> getNeighborships() {
  * @return A rectangle on border of this Location place that covers all common border segment with a neighbor
  *         LocationPlace.
  */
-public EnhancedRectangle getRectangleInFrontOfNeighbor(LocationNeighborship neighborship, int anotherDimension) {
-	EnhancedRectangle absoluteCoordinatesRec = getCommonSidePiece(neighborship.getPlace())
+public Rectangle getRectangleInFrontOfNeighbor(LocationNeighborship neighborship, int anotherDimension) {
+	Rectangle absoluteCoordinatesRec = getCommonSidePiece(neighborship.getPlace())
 		.createRectangle(anotherDimension);
-	return new EnhancedRectangle(
+	return new Rectangle(
 		absoluteCoordinatesRec.getX() - getX(),
 		absoluteCoordinatesRec.getY() - getY(),
 		absoluteCoordinatesRec.getWidth(),

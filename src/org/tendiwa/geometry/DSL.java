@@ -24,8 +24,8 @@ public static final OrdinalDirection SW = Directions.SW;
 private DSL() {
 }
 
-public static EnhancedRectangle rectangle(int width, int height) {
-	return new EnhancedRectangle(0, 0, width, height);
+public static Rectangle rectangle(int width, int height) {
+	return new Rectangle(0, 0, width, height);
 }
 
 public static RectangleSystemBuilder builder(int borderWidth) {
@@ -47,7 +47,7 @@ public static StepUnitedWith unitedWith(RectanglePointer pointer) {
 public static Placement somewhere() {
 	return new Placement() {
 		@Override
-		public EnhancedRectangle placeIn(Placeable placeable, RectangleSystemBuilder builder) {
+		public Rectangle placeIn(Placeable placeable, RectangleSystemBuilder builder) {
 			return placeable.place(builder, 0, 0);
 		}
 	};
@@ -56,7 +56,7 @@ public static Placement somewhere() {
 public static Placement atPoint(final int x, final int y) {
 	return new Placement() {
 		@Override
-		public EnhancedRectangle placeIn(Placeable placeable, RectangleSystemBuilder builder) {
+		public Rectangle placeIn(Placeable placeable, RectangleSystemBuilder builder) {
 			return placeable.place(builder, x, y);
 		}
 	};

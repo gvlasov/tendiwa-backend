@@ -12,7 +12,7 @@ public interface Placeable {
  *
  * @return Minimum rectangle that contains all rectangles in this template.
  */
-EnhancedRectangle getBounds();
+Rectangle getBounds();
 
 /**
  * Adds rectangles of this shape to RectangleSystemBuilder.
@@ -25,7 +25,7 @@ EnhancedRectangle getBounds();
  * 	Y-coordinate of the whole shape to be placed at.
  * @return Bounding rectangle of the whole shape placed at [x:y]
  */
-EnhancedRectangle place(RectangleSystemBuilder builder, int x, int y);
+Rectangle place(RectangleSystemBuilder builder, int x, int y);
 
 /**
  * Starts a chain of methods that create a new Placeable by repeating this one.
@@ -59,5 +59,5 @@ Placeable rotate(Rotation rotation);
  *
  * @return All rectangles this Placeable consists of.
  */
-Iterable<EnhancedRectangle> getRectangles();
+Iterable<Rectangle> getRectangles();
 }

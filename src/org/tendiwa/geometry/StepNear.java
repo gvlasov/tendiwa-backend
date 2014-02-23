@@ -16,9 +16,9 @@ public class StepNear {
     public Placement fromCorner(final OrdinalDirection corner) {
         return new Placement() {
             @Override
-            public EnhancedRectangle placeIn(Placeable placeable, RectangleSystemBuilder builder) {
-                EnhancedRectangle placeableBounds = placeable.getBounds();
-                EnhancedRectangle existingRec = builder.getRectangleByPointer(pointer).getBounds();
+            public Rectangle placeIn(Placeable placeable, RectangleSystemBuilder builder) {
+                Rectangle placeableBounds = placeable.getBounds();
+                Rectangle existingRec = builder.getRectangleByPointer(pointer).getBounds();
                 int x, y;
                 switch (corner) {
                     case NE:

@@ -5,14 +5,13 @@ import com.google.inject.Inject;
 import org.jukito.JukitoRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.tendiwa.geometry.EnhancedRectangle;
-import org.tendiwa.geometry.Placeable;
-import org.tendiwa.geometry.RectangleSystem;
-import org.tendiwa.geometry.RecursivelySplitRectangleSystemFactory;
+import org.tendiwa.geometry.*;
+import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.drawing.DrawingAlgorithm;
 import org.tendiwa.drawing.DrawingRectangle;
 import org.tendiwa.drawing.DrawingRectangleSystem;
 import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.geometry.extensions.RecursivelySplitRectangleSystemFactory;
 
 import java.awt.*;
 import java.util.Collection;
@@ -25,18 +24,18 @@ TestCanvas canvas;
 @Test
 void draw() {
 
-	EnhancedRectangle r = new EnhancedRectangle(5, 7, 8, 7);
+	Rectangle r = new Rectangle(5, 7, 8, 7);
 	canvas.draw(r, DrawingRectangle.chequerwise(Color.ORANGE, Color.GREEN));
 
-	Collection<EnhancedRectangle> recs = Lists.newArrayList(
-		EnhancedRectangle.rectangleMovedFromOriginal(r, 5, 20),
-		EnhancedRectangle.rectangleMovedFromOriginal(r, 5, 30),
-		EnhancedRectangle.rectangleMovedFromOriginal(r, 5, 40),
-		EnhancedRectangle.rectangleMovedFromOriginal(r, 5, 50));
+	Collection<Rectangle> recs = Lists.newArrayList(
+		Recs.rectangleMovedFromOriginal(r, 5, 20),
+		Recs.rectangleMovedFromOriginal(r, 5, 30),
+		Recs.rectangleMovedFromOriginal(r, 5, 40),
+		Recs.rectangleMovedFromOriginal(r, 5, 50));
 	DrawingAlgorithm<Placeable> algorithm = DrawingRectangle.withColorLoop(
 		Color.RED,
 		Color.GREEN);
-	for (EnhancedRectangle rec : recs) {
+	for (Rectangle rec : recs) {
 		canvas.draw(rec, algorithm);
 	}
 	RectangleSystem rs = RecursivelySplitRectangleSystemFactory.create(40, 5, 30, 50, 5, 2);

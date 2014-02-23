@@ -10,13 +10,13 @@ import java.util.Map;
 
 public class WorldRectangleBuilder extends RectangleSystemBuilder {
 
-public Map<EnhancedRectangle, List<LocationFeature>> locationFeatures = new HashMap<>();
+public Map<Rectangle, List<LocationFeature>> locationFeatures = new HashMap<>();
 
-public ImmutableMap<EnhancedRectangle, LocationPlace> getRectanglesToPlaces() {
+public ImmutableMap<Rectangle, LocationPlace> getRectanglesToPlaces() {
 	return rectanglesToPlaces;
 }
 
-ImmutableMap<EnhancedRectangle, LocationPlace> rectanglesToPlaces;
+ImmutableMap<Rectangle, LocationPlace> rectanglesToPlaces;
 
 public WorldRectangleBuilder() {
 	super(0);
@@ -36,8 +36,8 @@ public WorldRectangleBuilder setLocationFeatures(int index, LocationFeature feat
 
 /**
  * <p>Sets a particular LocationFeature to all EnhancedRectangles a {@code placeable} consists of.</p> <p>If {@code
- * placeable} is an EnhancedRectangle, for example, it will affect a single rectangle — itself. If {@code placeable} is
- * a {@link org.tendiwa.geometry.RectangleSequence}, then LocationFeature will be added to each EnhancedRectangle that
+ * placeable} is an Rectangle, for example, it will affect a single rectangle — itself. If {@code placeable} is
+ * a {@link org.tendiwa.geometry.RectangleSequence}, then LocationFeature will be added to each Rectangle that
  * RectangleSequence consists of.</p>
  *
  * @param placeable
@@ -47,7 +47,7 @@ public WorldRectangleBuilder setLocationFeatures(int index, LocationFeature feat
  * @return This WorldRectangleBuilder for method chaining.
  */
 private WorldRectangleBuilder setLocationFeatures(Placeable placeable, LocationFeature feature) {
-	for (EnhancedRectangle rectangle : placeable.getRectangles()) {
+	for (Rectangle rectangle : placeable.getRectangles()) {
 		if (!rs.getRectangles().contains(rectangle)) {
 			throw new IllegalArgumentException("Rectangle " + rectangle + " from argument " + placeable + " is not present in this WorldRectangleBuilder ("+rs.getRectangles()+")");
 		}
@@ -82,8 +82,8 @@ public WorldRectangleBuilder place(String name, Placeable what, Placement where)
 public RectangleSystem done() {
 	if (rectanglesToPlaces == null) {
 		// Sometimes we need to get the rectanlge system after the WorldRectangleBuilder.done() was called.
-		ImmutableMap.Builder<EnhancedRectangle, LocationPlace> rectanglesToPlacesBuilder = ImmutableMap.builder();
-		for (EnhancedRectangle r : rectangles) {
+		ImmutableMap.Builder<Rectangle, LocationPlace> rectanglesToPlacesBuilder = ImmutableMap.builder();
+		for (Rectangle r : rectangles) {
 			LocationPlace locationPlace = new LocationPlace(r, this);
 			if (locationFeatures.containsKey(r)) {
 				for (LocationFeature feature : locationFeatures.get(r)) {
@@ -100,7 +100,7 @@ public RectangleSystem done() {
 public WorldRectangleBuilder findAllRectangles(FindCriteria criteria) {
 	foundRectangles = new RectangleSequence();
 	for (Placeable placeable : placeables) {
-		for (EnhancedRectangle rectangle : placeable.getRectangles()) {
+		for (Rectangle rectangle : placeable.getRectangles()) {
 			if (criteria.check(rectangle, rs, this)) {
 				foundRectangles.addRectangle(rectangle);
 			}

@@ -6,9 +6,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.tendiwa.core.*;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.geometry.EnhancedRectangle;
+import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.RectangleSystem;
-import org.tendiwa.geometry.RecursivelySplitRectangleSystemFactory;
+import org.tendiwa.geometry.extensions.RecursivelySplitRectangleSystemFactory;
 
 @RunWith(JukitoRunner.class)
 public class GrowingRectangleSystemDrawTest {
@@ -18,7 +18,7 @@ TestCanvas canvas;
 @Test
 void draw() {
 
-	EnhancedRectangle er = new EnhancedRectangle(100, 100, 30, 30);
+	Rectangle er = new Rectangle(100, 100, 30, 30);
 	GrowingRectangleSystem grs = new GrowingRectangleSystem(0, er);
 	grs.grow(er, Directions.N, 100, 16, 0);
 	grs.grow(er, Directions.E, 12, 16, 0);

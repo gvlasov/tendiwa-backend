@@ -1,5 +1,7 @@
 package org.tendiwa.geometry;
 
+import org.tendiwa.geometry.extensions.RecursivelySplitRectangleSystemFactory;
+
 public class StepRectangleMinWidth {
 private final int width;
 private final int height;

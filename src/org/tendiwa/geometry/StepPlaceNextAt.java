@@ -20,7 +20,7 @@ public Placeable placingNextAt(final Placement where) {
 		public RectangleSystemBuilder prebuiltBuilder;
 
 		@Override
-		public EnhancedRectangle getBounds() {
+		public Rectangle getBounds() {
 			if (rs == null) {
 				throw new IllegalStateException();
 			}
@@ -28,7 +28,7 @@ public Placeable placingNextAt(final Placement where) {
 		}
 
 		@Override
-		public EnhancedRectangle place(RectangleSystemBuilder builder, int x, int y) {
+		public Rectangle place(RectangleSystemBuilder builder, int x, int y) {
 			return rs.place(builder, x, y);
 		}
 
@@ -54,7 +54,7 @@ public Placeable placingNextAt(final Placement where) {
 		}
 
 		@Override
-		public Iterable<EnhancedRectangle> getRectangles() {
+		public Iterable<Rectangle> getRectangles() {
 			return rs.getRectangles();
 		}
 	};

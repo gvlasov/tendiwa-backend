@@ -5,7 +5,7 @@ import com.google.common.io.Files;
 import com.google.inject.Inject;
 import org.tendiwa.core.Directions;
 import org.tendiwa.geometry.Cell;
-import org.tendiwa.geometry.EnhancedRectangle;
+import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.RectangleSystem;
 import org.tendiwa.core.meta.GifSequenceWriter;
 
@@ -173,7 +173,7 @@ private void setLayer(Layer layer) {
 public Dimension getSize(RectangleSystem rs) {
 	Set<Integer> farthestPointsX = new HashSet<>();
 	Set<Integer> farthestPointsY = new HashSet<>();
-	for (EnhancedRectangle r : rs) {
+	for (Rectangle r : rs) {
 		Cell p = r.getCorner(Directions.SE);
 		farthestPointsX.add(p.getX());
 		farthestPointsY.add(p.getY());

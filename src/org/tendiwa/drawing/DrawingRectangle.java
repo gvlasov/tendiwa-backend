@@ -1,8 +1,8 @@
 package org.tendiwa.drawing;
 
 import com.google.common.collect.Iterables;
-import org.tendiwa.geometry.EnhancedRectangle;
-import org.tendiwa.geometry.Placeable;
+import org.tendiwa.geometry.*;
+import org.tendiwa.geometry.Rectangle;
 
 import java.awt.*;
 import java.util.Iterator;
@@ -12,7 +12,7 @@ public static DrawingAlgorithm<Placeable> withColor(final Color color) {
 	return new DrawingAlgorithm<Placeable>() {
 		@Override
 		public void draw(Placeable shape) {
-			for (EnhancedRectangle r : shape.getRectangles()) {
+			for (Rectangle r : shape.getRectangles()) {
 				drawRectangle(r, color);
 			}
 		}
@@ -25,7 +25,7 @@ public static DrawingAlgorithm<Placeable> withColorLoop(final Color... colors) {
 
 		@Override
 		public void draw(Placeable shape) {
-			for (EnhancedRectangle r : shape.getRectangles()) {
+			for (Rectangle r : shape.getRectangles()) {
 				drawRectangle(r, iter.next());
 			}
 		}
@@ -36,7 +36,7 @@ public static DrawingAlgorithm<Placeable> chequerwise(final Color color1, final 
 	return new DrawingAlgorithm<Placeable>() {
 		@Override
 		public void draw(Placeable shape) {
-			for (EnhancedRectangle r : shape.getRectangles()) {
+			for (org.tendiwa.geometry.Rectangle r : shape.getRectangles()) {
 				for (int i = r.getX(); i < r.getX() + r.getWidth() - 1; i++) {
 					for (int j = r.getY(); j < r.getY() + r.getWidth() - 1; j++) {
 						drawPoint(i, j, (i + j) % 2 == 1 ? color1 : color2);

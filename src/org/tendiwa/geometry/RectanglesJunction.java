@@ -10,13 +10,13 @@ import org.tendiwa.core.Orientation;
  * @author suseika
  */
 public class RectanglesJunction {
-final EnhancedRectangle r1;
-final EnhancedRectangle r2;
+final Rectangle r1;
+final Rectangle r2;
 private final Orientation orientation;
 private final int coordinate;
 private final int width;
 
-public RectanglesJunction(Orientation orientation, int coordinate, int width, EnhancedRectangle r1, EnhancedRectangle r2) {
+public RectanglesJunction(Orientation orientation, int coordinate, int width, Rectangle r1, Rectangle r2) {
 	this.orientation = orientation;
 	this.coordinate = coordinate;
 	this.width = width;
@@ -24,11 +24,11 @@ public RectanglesJunction(Orientation orientation, int coordinate, int width, En
 	this.r2 = r2;
 }
 
-Segment getSegmentOnRectangle(EnhancedRectangle r) {
+Segment getSegmentOnRectangle(Rectangle r) {
 	throw new UnsupportedOperationException();
 }
 
-EnhancedRectangle getRectangleBetweenRectangles() {
+Rectangle getRectangleBetweenRectangles() {
 	throw new UnsupportedOperationException();
 }
 }

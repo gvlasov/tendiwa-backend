@@ -1,12 +1,9 @@
 package org.tendiwa.core.settlements;
 
 import org.tendiwa.core.CardinalDirection;
-import org.tendiwa.geometry.Cell;
+import org.tendiwa.geometry.*;
 import org.tendiwa.core.Orientation;
 import org.tendiwa.core.meta.Utils;
-import org.tendiwa.geometry.EnhancedRectangle;
-
-import java.awt.*;
 
 public class Road {
 final Cell start;
@@ -27,7 +24,7 @@ public String toString() {
 	return "Road [" + start.getX() + ", " + start.getY() + ", " + end.getX() + ", " + end.getY() + "];";
 }
 
-public CardinalDirection getSideOfRectangle(Rectangle r) {
+public CardinalDirection getSideOfRectangle(java.awt.Rectangle r) {
 	// Get direction of rectangle from which this road is located
 	if (orientation.isVertical()) {
 		if (this.start.getX() < r.x) {
@@ -48,7 +45,7 @@ public CardinalDirection getSideOfRectangle(Rectangle r) {
 	}
 }
 
-public boolean crossesRectangle(EnhancedRectangle r) {
+public boolean crossesRectangle(org.tendiwa.geometry.Rectangle r) {
 	if (orientation.isVertical()) {
 		return start.getX() >= r.getX() && start.getX() < r.getX() + r.getWidth();
 	} else {
@@ -56,8 +53,8 @@ public boolean crossesRectangle(EnhancedRectangle r) {
 	}
 }
 
-public boolean isRectangleOverlapsRoad(EnhancedRectangle rectangle) {
-	EnhancedRectangle ra = new EnhancedRectangle(rectangle);
+public boolean isRectangleOverlapsRoad(org.tendiwa.geometry.Rectangle rectangle) {
+	org.tendiwa.geometry.Rectangle ra = new org.tendiwa.geometry.Rectangle(rectangle);
 	if (orientation.isVertical()) {
 		if (Utils.integersRangeIntersection(rectangle.getY(), rectangle.getY() + rectangle.getHeight() - 1, start.getY(), end.getY()) > 0 && ra.distanceToLine(start, end) < width / 2) {
 			// If road line and rectangle overlap in y-axis,
@@ -73,12 +70,12 @@ public boolean isRectangleOverlapsRoad(EnhancedRectangle rectangle) {
 	return false;
 }
 
-public boolean isRectangleNearRoad(EnhancedRectangle rectangle) {
+public boolean isRectangleNearRoad(org.tendiwa.geometry.Rectangle rectangle) {
 	/**
 	 * Checks if this road goes along one of the borders of a
 	 * rectangle
 	 */
-	EnhancedRectangle ra = new EnhancedRectangle(rectangle);
+	org.tendiwa.geometry.Rectangle ra = new org.tendiwa.geometry.Rectangle(rectangle);
 	if (orientation.isVertical()) {
 		if (Utils.integersRangeIntersection(rectangle.getY(), rectangle.getY() + rectangle.getHeight() - 1, start.getY(), end.getY()) > 0 && ra.distanceToLine(start, end) == width / 2 + 1) {
 			// If road line and rectangle overlap in y-axis,

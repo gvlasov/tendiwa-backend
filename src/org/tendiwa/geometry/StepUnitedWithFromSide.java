@@ -19,9 +19,9 @@ public StepUnitedWithFromSideAlign align(CardinalDirection endSide) {
 public Placement inMiddle() {
 	return new Placement() {
 		@Override
-		public EnhancedRectangle placeIn(Placeable placeable, RectangleSystemBuilder builder) {
-			EnhancedRectangle existingRec = builder.getRectangleByPointer(pointer).getBounds();
-			EnhancedRectangle placeableBounds = placeable.getBounds();
+		public Rectangle placeIn(Placeable placeable, RectangleSystemBuilder builder) {
+			Rectangle existingRec = builder.getRectangleByPointer(pointer).getBounds();
+			Rectangle placeableBounds = placeable.getBounds();
 			int staticCoord = existingRec.getStaticCoordOfSide(fromSide) + fromSide.getGrowing();
 			int dynamicCoord = (fromSide.isVertical() ? existingRec.getX() : existingRec.getY()) + (existingRec.getDimensionBySide(fromSide) - placeableBounds.getDimensionBySide(fromSide)) / 2;
 			int x, y;
