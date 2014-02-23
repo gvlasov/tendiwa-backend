@@ -1,6 +1,7 @@
-package org.tendiwa.geometry;
+package org.tendiwa.geometry.extensions;
 
 import org.tendiwa.core.meta.Range;
+import org.tendiwa.geometry.RectangleSystem;
 
 import java.awt.*;
 import java.util.ArrayList;

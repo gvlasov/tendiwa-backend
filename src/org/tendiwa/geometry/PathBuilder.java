@@ -79,7 +79,7 @@ public class ShiftStep {
 			rectangleToLinkSource,
 			rectangleToLinkEnd,
 			new RectanglesJunction(
-				segment.orientation,
+				segment.getOrientation(),
 				segment.getStartCoord() + shift,
 				junctionWidth,
 				rectangleToLinkSource,

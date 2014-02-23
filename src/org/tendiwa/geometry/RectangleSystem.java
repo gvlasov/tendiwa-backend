@@ -275,9 +275,9 @@ public ImmutableSet<RectangleSidePiece> getSidePiecesFreeFromNeighbours(Rectangl
 		// that uses an existing segment.
 		answer.add(new RectangleSidePiece(
 			side,
-			segment.x,
-			segment.y,
-			segment.length));
+			segment.getX(),
+			segment.getY(),
+			segment.getLength()));
 	}
 	return answer.build();
 }

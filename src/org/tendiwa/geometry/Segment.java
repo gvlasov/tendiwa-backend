@@ -9,15 +9,14 @@ import java.util.Iterator;
 
 /**
  * A Segment is a horizontal or vertical line starting at point {x;y} %length% cells long. If direction of segment is
- * {@link org.tendiwa.core.Orientation#VERTICAL}, then {x;y} is its top cell. If direction is {@link org.tendiwa.core.Orientation#HORIZONTAL}, then {x;y}
- * is its leftmost cell.
+ * {@link org.tendiwa.core.Orientation#VERTICAL}, then {x;y} is its top cell. If direction is {@link
+ * org.tendiwa.core.Orientation#HORIZONTAL}, then {x;y} is its leftmost cell.
  */
 public class Segment implements Iterable<Cell> {
-final Orientation orientation;
-// TODO: Make Segment immutable
-public int x;
-public int y;
-public int length;
+private final Orientation orientation;
+private final int x;
+private final int y;
+private final int length;
 
 public Segment(int x, int y, int length, Orientation orientation) {
 	if (length < 1) {
@@ -34,13 +33,12 @@ public Segment(int x, int y, int length, Orientation orientation) {
 }
 
 /**
- * <p> Splits a segment using another segment. Creates one, two or zero new segments. </p> <p> Generally there are
- * three cases of splitting: </p> <ol> <li>If splitter segment covers part of the initial segment, then the answer will
- * be one or two new segments.</li> <li>If splitter segment covers the whole initial segment, then the answer will be
- * [null, null]</li> <li>If splitter segment and the initial segment don't intersect at all, then the answer will be
- * [initialSegment, null]</li> </ol> <p> For example: </p> <ul> <li>------------ is the initial segment;</li> <li>+++
- * is an argument segment 4 cells long;</li> <li>-- and ------ are resulting segments</li> </ul>
- * <p/>
+ * Splits a segment using another segment. Creates one, two or zero new segments. </p> <p> Generally there are three
+ * cases of splitting: <ol> <li>If splitter segment covers part of the initial segment, then the answer will be one or
+ * two new segments.</li> <li>If splitter segment covers the whole initial segment, then the answer will be [null,
+ * null]</li> <li>If splitter segment and the initial segment don't intersect at all, then the answer will be
+ * [initialSegment, null]</li> </ol> <p> For example: </p> <ul> <li>------------ is the initial segment;</li> <li>+++ is
+ * an argument segment 4 cells long;</li> <li>-- and ------ are resulting segments</li> </ul> <p/>
  * <pre>
  * ------------
  *
@@ -112,42 +110,9 @@ public Segment[] splitWithSegment(int splitterStartCoord, int splitterLength) {
 	};
 }
 
+@Override
 public Segment clone() {
 	return new Segment(x, y, length, orientation);
-}
-
-/**
- * Changes the x coordinate of Segment's start by dx cells.
- *
- * @param dx
- * 	Moved start of Segment to east of positive, or to west if negative, by that amount of cells.
- */
-public void changeX(int dx) {
-	x += dx;
-}
-
-/**
- * Changes the y coordinate of Segment's start by dy cells.
- *
- * @param dy
- * 	Moved start of Segment to south of positive, or to north if negative, by that amount of cells.
- */
-public void changeY(int dy) {
-	y += dy;
-}
-
-/**
- * Changes the length of Segment's by certain amount of cells. Lengthens the Segment of positive, or shortens the
- * Segment of negative.
- *
- * @param dlength
- * 	Amout of cells to change. If positive, it will increase length. If negative, it will decrease length.
- */
-public void changeLength(int dlength) {
-	if (length + dlength <= 0) {
-		throw new IllegalArgumentException("Changing length " + length + " by " + dlength + " will set it to less than zero");
-	}
-	length += dlength;
 }
 
 public int getX() {
@@ -235,7 +200,8 @@ public Iterator<Cell> iterator() {
 }
 
 /**
- * Returns a new {@link org.tendiwa.core.meta.Range} object from this segment's start dynamic coord to its end dynamic coord.
+ * Returns a new {@link org.tendiwa.core.meta.Range} object from this segment's start dynamic coord to its end dynamic
+ * coord.
  *
  * @return Range of this Segment's dynamic coordinates.
  * @see Segment#getStartCoord()

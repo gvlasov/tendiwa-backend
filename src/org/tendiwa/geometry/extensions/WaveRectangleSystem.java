@@ -34,31 +34,31 @@ private static final Comparator<RectangleSidePiece> PIECES_COMPARATOR = new Comp
 		assert piece1.getDirection() == piece2.getDirection();
 		assert piece1 == piece2 || !piece1.overlaps(piece2);
 		if (piece1.getDirection() == Directions.N) {
-			int dy = piece2.getSegment().y - piece1.getSegment().y;
+			int dy = piece2.getSegment().getY() - piece1.getSegment().getY();
 			if (dy == 0) {
-				return piece1.getSegment().x - piece2.getSegment().x;
+				return piece1.getSegment().getX() - piece2.getSegment().getX();
 			} else {
 				return dy;
 			}
 		} else if (piece1.getDirection() == Directions.E) {
-			int dx = piece1.getSegment().x - piece2.getSegment().x;
+			int dx = piece1.getSegment().getX() - piece2.getSegment().getX();
 			if (dx == 0) {
-				return piece1.getSegment().y - piece2.getSegment().y;
+				return piece1.getSegment().getY() - piece2.getSegment().getY();
 			} else {
 				return dx;
 			}
 		} else if (piece1.getDirection() == Directions.S) {
-			int dy = piece1.getSegment().y - piece2.getSegment().y;
+			int dy = piece1.getSegment().getY() - piece2.getSegment().getY();
 			if (dy == 0) {
-				return piece1.getSegment().x - piece2.getSegment().x;
+				return piece1.getSegment().getX() - piece2.getSegment().getX();
 			} else {
 				return dy;
 			}
 		} else {
 			assert piece1.getDirection() == Directions.W;
-			int dx = piece2.getSegment().x - piece1.getSegment().x;
+			int dx = piece2.getSegment().getX() - piece1.getSegment().getX();
 			if (dx == 0) {
-				return piece1.getSegment().y - piece2.getSegment().y;
+				return piece1.getSegment().getY() - piece2.getSegment().getY();
 			} else {
 				return dx;
 			}
@@ -148,16 +148,16 @@ private RectangleSidePiece inversePiece(RectangleSidePiece piece) {
 	int x, y;
 	if (piece.isVertical()) {
 		x = piece.getLine().getStaticCoordFromSide(piece.getDirection());
-		y = piece.getSegment().y;
+		y = piece.getSegment().getY();
 	} else {
-		x = piece.getSegment().x;
+		x = piece.getSegment().getX();
 		y = piece.getLine().getStaticCoordFromSide(piece.getDirection());
 	}
 	return new RectangleSidePiece(
 		piece.getDirection().opposite(),
 		x,
 		y,
-		piece.getSegment().length);
+		piece.getSegment().getLength());
 }
 
 private void log(Object... messages) {
@@ -474,7 +474,7 @@ class VirtualWave {
 		int height = Chance.rand(possibleRectangleWidth);
 		int offset = Chance.rand(new Range(
 			-(originalPiece.getDirection().isVertical() ? width : height) + 1,
-			originalPiece.getSegment().length - 1));
+			originalPiece.getSegment().getLength() - 1));
 		// int offset = 2;
 		if (curWidth != 0) {
 			width = curWidth;
@@ -920,7 +920,7 @@ class VirtualWave {
 			Collection<RectangleSidePiece> answer = new ArrayList<RectangleSidePiece>();
 			assert !pieces.isEmpty();
 			for (RectangleSidePiece piece : pieces.get(dir)) {
-				if (piece.getSegment().length == width) {
+				if (piece.getSegment().getLength() == width) {
 					answer.add(piece);
 				}
 			}
@@ -1378,8 +1378,8 @@ class VirtualWave {
 		}
 
 		private RectangleSidePiece movePieceOneCellToItsDirection(RectangleSidePiece piece) {
-			int x = piece.getSegment().x;
-			int y = piece.getSegment().y;
+			int x = piece.getSegment().getX();
+			int y = piece.getSegment().getY();
 			if (piece.getDirection().isVertical()) {
 				y += piece.getDirection().getGrowing();
 			} else {

@@ -1,11 +1,13 @@
 package org.tendiwa.core;
 
 import org.jgrapht.Graph;
-import org.tendiwa.core.meta.Coordinate;
 import org.tendiwa.core.meta.Chance;
-import org.tendiwa.core.settlements.Road;
+import org.tendiwa.core.meta.Coordinate;
 import org.tendiwa.core.settlements.BuildingPlace;
-import org.tendiwa.geometry.*;
+import org.tendiwa.core.settlements.Road;
+import org.tendiwa.geometry.Cell;
+import org.tendiwa.geometry.Rectangle;
+import org.tendiwa.geometry.RectangleSystem;
 import org.tendiwa.geometry.extensions.RecursivelySplitRectangleSystemFactory;
 
 import java.util.*;
@@ -282,7 +284,7 @@ public HashMap<Integer, Integer> findDoorAppropriateCells(java.awt.Rectangle r, 
 				cells.put(i, x);
 			}
 		}
-		keys = new HashSet<Integer>(cells.keySet());
+		keys = new HashSet<>(cells.keySet());
 		for (int y : keys) {
 			x = cells.get(y);
 			if (settlement.getActivePlane().getPassability(x + 1, y) != Passability.FREE) {
@@ -330,7 +332,7 @@ public TerrainModifier buildBasis(FloorType floor, ObjectType walls, ObjectType 
 	for (org.tendiwa.geometry.Rectangle r : rs.getRectangles()) {
 		fillFloor(r, floor);
 	}
-	Graph<org.tendiwa.geometry.Rectangle, RectangleSystem.Neighborship> graph = rs.getGraph();
+	Graph<Rectangle, RectangleSystem.Neighborship> graph = rs.getGraph();
 
 	for (RectangleSystem.Neighborship e : graph.edgeSet()) {
 		Coordinate c = connectRoomsWithDoor(graph.getEdgeSource(e), graph.getEdgeTarget(e), door);

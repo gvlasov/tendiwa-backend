@@ -79,46 +79,9 @@ public int distanceTo(RectangleSidePiece piece) {
 	return piece.line.distanceTo(line);
 }
 
-/**
- * Creates [0..2] new ranges, changes coord and length of this one.
- *
- * @param cutterRange
- * @return
- */
-ImmutableCollection<RectangleSidePiece> cutWithRange(Range cutterRange) {
-	assert cutterRange != null;
-	Builder<RectangleSidePiece> builder = ImmutableSet
-		.<RectangleSidePiece>builder();
-	int cutteeStart = segment.getStartCoord();
-	int cutteeEnd = segment.getEndCoord();
-	if (cutteeStart < cutterRange.min) {
-		builder.add(new RectangleSidePiece(
-			direction,
-			line.orientation.isHorizontal() ? cutteeStart : segment.x,
-			line.orientation.isVertical() ? cutteeStart : segment.y,
-			cutterRange.min - cutteeStart));
-	}
-	if (cutteeEnd > cutterRange.max) {
-		builder
-			.add(new RectangleSidePiece(
-				direction,
-				line.orientation.isHorizontal() ? cutterRange.max + 1 : segment.x,
-				line.orientation.isVertical() ? cutterRange.max + 1 : segment.y,
-				cutteeEnd - cutterRange.max));
-	}
-	Range cutteeRange = new Range(cutteeStart, cutteeEnd);
-
-	segment.x = line.orientation.isHorizontal() ? cutteeRange
-		.intersection(cutterRange).min : segment.x;
-	segment.y = line.orientation.isVertical() ? cutteeRange
-		.intersection(cutterRange).min : segment.y;
-	segment.length = Range.lengthOfIntersection(cutteeRange, cutterRange);
-	return builder.build();
-}
-
 @Override
 public String toString() {
-	return direction + "-" + segment.length + "@" + hashCode();
+	return direction + "-" + segment.getLength() + "@" + hashCode();
 }
 
 /**
@@ -129,7 +92,7 @@ public RectangleSidePiece[] splitWithPiece(RectangleSidePiece splitter) {
 	assert splitter != null;
 	Segment[] newSegments = segment.splitWithSegment(
 		splitter.segment.getStartCoord(),
-		splitter.segment.length);
+		splitter.segment.getLength());
 	int arraySize = 0;
 	for (Segment segment : newSegments) {
 		if (segment != null) {
@@ -149,9 +112,9 @@ public RectangleSidePiece[] splitWithPiece(RectangleSidePiece splitter) {
 		}
 		answer[index++] = new RectangleSidePiece(
 			direction,
-			segment.x,
-			segment.y,
-			segment.length);
+			segment.getX(),
+			segment.getY(),
+			segment.getLength());
 		assert contains(answer[index - 1]);
 	}
 	return answer;
@@ -174,7 +137,7 @@ public Rectangle createRectangle(int anotherDimensionLength) {
 	Cell startPoint = Cells.fromStaticAndDynamic(
 		line.getStaticCoordFromSide(direction.opposite()),
 		segment.getStartCoord(),
-		segment.orientation);
+		segment.getOrientation());
 	OrdinalDirection growDirection;
 	switch (direction) {
 		case N:
@@ -193,9 +156,9 @@ public Rectangle createRectangle(int anotherDimensionLength) {
 	int width, height;
 	if (isVertical()) {
 		width = anotherDimensionLength;
-		height = segment.length;
+		height = segment.getLength();
 	} else {
-		width = segment.length;
+		width = segment.getLength();
 		height = anotherDimensionLength;
 	}
 	return Recs.growFromPoint(
@@ -213,10 +176,10 @@ public boolean contains(RectangleSidePiece piece) {
 	assert piece.direction == direction;
 	int thisStartCoord = segment.getStartCoord();
 	int pieceStartCoord = piece.segment.getStartCoord();
-	return new Range(thisStartCoord, thisStartCoord + segment.length)
+	return new Range(thisStartCoord, thisStartCoord + segment.getLength())
 		.contains(new Range(
 			pieceStartCoord,
-			pieceStartCoord + piece.segment.length));
+			pieceStartCoord + piece.segment.getLength()));
 }
 
 /**
@@ -261,7 +224,7 @@ public RectangleSidePiece[] splitWithPieces(Collection<RectangleSidePiece> touch
 		Cell point = Cells.fromStaticAndDynamic(
 			segment.getStaticCoord(),
 			range.min,
-			segment.orientation);
+			segment.getOrientation());
 		answer[i++] = new RectangleSidePiece(
 			direction,
 			point.getX(),

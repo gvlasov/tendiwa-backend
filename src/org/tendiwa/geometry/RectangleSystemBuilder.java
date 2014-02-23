@@ -72,7 +72,6 @@ public void placeRectangle(Rectangle what, Placement where) {
 
 public RectangleSystemBuilder rememberBoundingRec() {
 	rememberedBoundingRec = placeables.getLast().getBounds();
-	System.out.println(placeables.getLast().getBounds());
 	return this;
 }
 

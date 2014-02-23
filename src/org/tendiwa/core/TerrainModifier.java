@@ -1,8 +1,8 @@
 package org.tendiwa.core;
 
 import org.jgrapht.Graph;
-import org.tendiwa.core.meta.Utils;
 import org.tendiwa.core.meta.Coordinate;
+import org.tendiwa.core.meta.Utils;
 import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.RectangleSystem;
@@ -182,7 +182,16 @@ public void drawInnerBorders(TypePlaceableInCell placeable) {
 				 */
 				Rectangle nextRectangle = rectanglesFromThatSide.get(i + 1);
 				if (rs.areRectanglesNear(rectanglesFromThatSide.get(i), nextRectangle)) {
-					segments.get(i).changeLength(segments.get(i + 1).getLength() + rs.getBorderWidth());
+					Segment segment = segments.get(i);
+					segments.set(
+						i,
+						new Segment(
+							segment.getX(),
+							segment.getY(),
+							segment.getLength() + segments.get(i + 1).getLength() + rs.getBorderWidth(),
+							segment.getOrientation()
+						)
+					);
 					segments.remove(i + 1);
 					i--;// So the next time the segment after the deleted
 					// segment will be applied to the result segment.
@@ -274,22 +283,55 @@ public void drawInnerBorders(TypePlaceableInCell placeable) {
 			if (side == Directions.N || side == Directions.S) {
 				Segment segment = segments.get(0);
 				if (segment.getX() < r1.getX()) {
-					segment.changeLength(-(r1.getX() - (hasPrevSameLineNeighbor ? 1 : 0) - segment.x));
-					segment.x = r1.getX() - (hasPrevSameLineNeighbor ? 1 : 0);
+					segments.set(
+						0,
+						new Segment(
+							r1.getX() - (hasPrevSameLineNeighbor ? 1 : 0),
+							segment.getY(),
+							segment.getLength() - (r1.getX() - (hasPrevSameLineNeighbor ? 1 : 0) - segment.getX()),
+							segment.getOrientation()
+						)
+					);
 				}
-				segment = segments.get(segments.size() - 1);
-				if (segment.x + segment.length > r1.getX() + r1.getWidth()) {
-					segment.length = segment.length - (segment.x + segment.length - (r1.getX() + r1.getWidth())) + (hasNextSameLineNeighbor ? 1 : 0);
+				int index = segments.size() - 1;
+				segment = segments.get(index);
+				if (segment.getX() + segment.getLength() > r1.getX() + r1.getWidth()) {
+					segments.set(
+						index,
+						new Segment(
+							segment.getX(),
+							segment.getY(),
+							segment.getLength() - (segment.getX() + segment.getLength() - (r1.getX() + r1.getWidth())) + (hasNextSameLineNeighbor ? 1 : 0),
+							segment.getOrientation()
+						)
+					);
 				}
 			} else if (side == Directions.E || side == Directions.W) {
-				Segment segment = segments.get(0);
-				if (segment.y < r1.getY()) {
-					segment.length -= r1.getY() - (hasPrevSameLineNeighbor ? 1 : 0) - segment.y;
-					segment.y = r1.getY() - (hasPrevSameLineNeighbor ? 1 : 0);
+				int index = 0;
+				Segment segment = segments.get(index);
+				if (segment.getY() < r1.getY()) {
+					segments.set(
+						index,
+						new Segment(
+							segment.getX(),
+							r1.getY() - (hasPrevSameLineNeighbor ? 1 : 0),
+							segment.getLength() - r1.getY() - (hasPrevSameLineNeighbor ? 1 : 0) - segment.getY(),
+							segment.getOrientation()
+						)
+					);
 				}
-				segment = segments.get(segments.size() - 1);
-				if (segment.y + segment.length > r1.getY() + r1.getHeight()) {
-					segment.length = segment.length - (segment.y + segment.length - (r1.getY() + r1.getHeight())) + (hasNextSameLineNeighbor ? 1 : 0);
+				index = segments.size() - 1;
+				segment = segments.get(index);
+				if (segment.getY() + segment.getLength() > r1.getY() + r1.getHeight()) {
+					segments.set(
+						index,
+						new Segment(
+							segment.getX(),
+							segment.getY(),
+							segment.getLength() - (segment.getY() + segment.getLength() - (r1.getY() + r1.getHeight())) + (hasNextSameLineNeighbor ? 1 : 0),
+							segment.getOrientation()
+						)
+					);
 				}
 			}
 			/*
@@ -297,27 +339,41 @@ public void drawInnerBorders(TypePlaceableInCell placeable) {
 			 * before drawing segments have to be moved so they are on inner
 			 * borders. The segments are also drawn here.
 			 */
-			if (side == Directions.N) {
-				for (Segment s : segments) {
-					s.changeY(rs.getBorderWidth());
-					location.drawSegment(s, rs.getBorderWidth(), placeable);
+			for (int i = 0; i < segments.size(); i++) {
+				Segment oldSegment = segments.get(i);
+				Segment newSegment;
+				if (side == Directions.N) {
+					newSegment = new Segment(
+						oldSegment.getX(),
+						oldSegment.getY() + rs.getBorderWidth(),
+						oldSegment.getLength(),
+						oldSegment.getOrientation()
+					);
+				} else if (side == Directions.E) {
+					newSegment = new Segment(
+						oldSegment.getX() - rs.getBorderWidth(),
+						oldSegment.getY(),
+						oldSegment.getLength(),
+						oldSegment.getOrientation()
+					);
+				} else if (side == Directions.S) {
+					newSegment = new Segment(
+						oldSegment.getX(),
+						oldSegment.getY() - rs.getBorderWidth(),
+						oldSegment.getLength(),
+						oldSegment.getOrientation()
+					);
+				} else {
+					assert side == Directions.W;
+					newSegment = new Segment(
+						oldSegment.getX() + rs.getBorderWidth(),
+						oldSegment.getY(),
+						oldSegment.getLength(),
+						oldSegment.getOrientation()
+					);
 				}
-			} else if (side == Directions.E) {
-				for (Segment s : segments) {
-					s.changeX(-rs.getBorderWidth());
-					location.drawSegment(s, rs.getBorderWidth(), placeable);
-				}
-			} else if (side == Directions.S) {
-				for (Segment s : segments) {
-					s.changeY(-rs.getBorderWidth());
-					location.drawSegment(s, rs.getBorderWidth(), placeable);
-				}
-			} else {
-				// if (side == SideTest.W)
-				for (Segment s : segments) {
-					s.changeX(rs.getBorderWidth());
-					location.drawSegment(s, rs.getBorderWidth(), placeable);
-				}
+				segments.set(i, newSegment);
+				location.drawSegment(newSegment, rs.getBorderWidth(), placeable);
 			}
 		}
 	}
@@ -340,22 +396,27 @@ public void drawOuterBorders(TypePlaceableInCell placeable) {
 		for (CardinalDirection side : sides) {
 			Set<Segment> segments = rs.getSegmentsFreeFromNeighbors(r, side);
 			for (Segment segment : segments) {
-				Segment borderSegment = segment.clone();
+				int newX, newY;
 				if (side == Directions.N) {
-					borderSegment.changeY(-rs.getBorderWidth());
-					borderSegment.changeX(-rs.getBorderWidth());
+					newX = segment.getX() - rs.getBorderWidth();
+					newY = segment.getY() - rs.getBorderWidth();
 				} else if (side == Directions.E) {
-					borderSegment.changeX(rs.getBorderWidth());
-					borderSegment.changeY(-rs.getBorderWidth());
+					newX = segment.getX() + rs.getBorderWidth();
+					newY = segment.getY() - rs.getBorderWidth();
 				} else if (side == Directions.S) {
-					borderSegment.changeY(rs.getBorderWidth());
-					borderSegment.changeX(-rs.getBorderWidth());
-				} else if (side == Directions.W) {
-					borderSegment.changeX(-rs.getBorderWidth());
-					borderSegment.changeY(-rs.getBorderWidth());
+					newX = segment.getX() - rs.getBorderWidth();
+					newY = segment.getY() + rs.getBorderWidth();
+				} else {
+					assert side == Directions.W;
+					newX = segment.getX() - rs.getBorderWidth();
+					newY = segment.getY() - rs.getBorderWidth();
 				}
-				borderSegment.changeLength(rs.getBorderWidth() * 2);
-				location.drawSegment(borderSegment, rs.getBorderWidth(), placeable);
+				location.drawSegment(new Segment(
+					newX,
+					newY,
+					segment.getLength() + rs.getBorderWidth() * 2,
+					segment.getOrientation()
+				), rs.getBorderWidth(), placeable);
 			}
 		}
 	}

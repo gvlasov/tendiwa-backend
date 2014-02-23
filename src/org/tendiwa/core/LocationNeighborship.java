@@ -27,7 +27,7 @@ public LocationPlace getPlace() {
 	return place;
 }
 public int getLength() {
-	return commonSidePiece.getSegment().length;
+	return commonSidePiece.getSegment().getLength();
 }
 
 /**
