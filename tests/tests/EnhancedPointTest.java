@@ -7,7 +7,7 @@ import java.awt.Point;
 import org.junit.Assert;
 import org.junit.Test;
 
-import org.tendiwa.core.Cell;
+import org.tendiwa.geometry.Cell;
 import org.tendiwa.core.Directions;
 import org.tendiwa.core.Orientation;
 

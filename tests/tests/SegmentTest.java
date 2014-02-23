@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import org.tendiwa.core.Cell;
+import org.tendiwa.geometry.Cell;
 import org.tendiwa.core.Orientation;
 import org.tendiwa.geometry.Segment;
 

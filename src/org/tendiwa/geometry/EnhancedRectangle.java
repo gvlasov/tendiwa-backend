@@ -978,6 +978,6 @@ public int hashCode() {
  * @param r
  * 	Another rectangle
  * @return A side of this rectangle that intersects by dynamic coordinate with a side of another rectangle.
- * @see org.tendiwa.core.Cell#getDynamicCoord(Orientation) For what a dynamic coord is
+ * @see Cell#getDynamicCoord(Orientation) For what a dynamic coord is
  */
 }

@@ -1,7 +1,6 @@
 package org.tendiwa.geometry;
 
 import org.tendiwa.core.CardinalDirection;
-import org.tendiwa.core.Cell;
 import org.tendiwa.core.Directions;
 import org.tendiwa.core.Orientation;
 import org.tendiwa.core.meta.Range;

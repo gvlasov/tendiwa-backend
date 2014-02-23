@@ -3,7 +3,7 @@ package org.tendiwa.drawing;
 import java.awt.Color;
 import java.util.Iterator;
 
-import org.tendiwa.core.Cell;
+import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.RectangleSidePiece;
 
 import com.google.common.collect.Iterables;

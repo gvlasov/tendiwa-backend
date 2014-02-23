@@ -1,7 +1,7 @@
 package org.tendiwa.core.settlements;
 
 import org.tendiwa.core.CardinalDirection;
-import org.tendiwa.core.Cell;
+import org.tendiwa.geometry.Cell;
 import org.tendiwa.core.Orientation;
 import org.tendiwa.core.meta.Utils;
 import org.tendiwa.geometry.EnhancedRectangle;

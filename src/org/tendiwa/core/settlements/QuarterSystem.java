@@ -1,6 +1,6 @@
 package org.tendiwa.core.settlements;
 
-import org.tendiwa.core.Cell;
+import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.EnhancedRectangle;
 
 import java.util.ArrayList;

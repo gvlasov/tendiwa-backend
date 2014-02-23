@@ -1,6 +1,7 @@
 package org.tendiwa.core;
 
 import org.tendiwa.core.meta.Chance;
+import org.tendiwa.geometry.Cell;
 
 import java.awt.*;
 import java.util.ArrayList;

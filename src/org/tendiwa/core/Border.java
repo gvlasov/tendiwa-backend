@@ -1,5 +1,7 @@
 package org.tendiwa.core;
 
+import org.tendiwa.geometry.Cell;
+
 public class Border {
 public final int x;
 public final int y;

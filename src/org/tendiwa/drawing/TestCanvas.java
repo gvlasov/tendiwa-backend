@@ -4,7 +4,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.io.Files;
 import com.google.inject.Inject;
 import org.tendiwa.core.Directions;
-import org.tendiwa.core.Cell;
+import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.EnhancedRectangle;
 import org.tendiwa.geometry.RectangleSystem;
 import org.tendiwa.core.meta.GifSequenceWriter;

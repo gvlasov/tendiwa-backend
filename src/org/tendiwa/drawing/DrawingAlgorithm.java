@@ -1,7 +1,7 @@
 package org.tendiwa.drawing;
 
 import org.tendiwa.core.Chunk;
-import org.tendiwa.core.Cell;
+import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.EnhancedRectangle;
 
 import java.awt.*;

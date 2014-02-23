@@ -1,6 +1,6 @@
 package org.tendiwa.drawing;
 
-import org.tendiwa.core.Cell;
+import org.tendiwa.geometry.Cell;
 
 import java.awt.Color;
 

@@ -2,10 +2,7 @@ package org.tendiwa.core;
 
 import org.tendiwa.core.meta.Chance;
 import org.tendiwa.core.settlements.BuildingPlace;
-import org.tendiwa.geometry.EnhancedRectangle;
-import org.tendiwa.geometry.RectangleSidePiece;
-import org.tendiwa.geometry.RectangleSystem;
-import org.tendiwa.geometry.Segment;
+import org.tendiwa.geometry.*;
 
 import java.awt.*;
 import java.util.*;

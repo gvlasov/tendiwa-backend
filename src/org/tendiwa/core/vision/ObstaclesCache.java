@@ -4,6 +4,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.tendiwa.core.*;
 import org.tendiwa.core.meta.CellPosition;
+import org.tendiwa.geometry.Cell;
 
 import java.util.*;
 

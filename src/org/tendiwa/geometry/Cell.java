@@ -1,12 +1,12 @@
-package org.tendiwa.core;
+package org.tendiwa.geometry;
 
+import org.tendiwa.core.Direction;
+import org.tendiwa.core.Orientation;
 import org.tendiwa.core.meta.CellPosition;
 
-import java.awt.*;
-
 /**
- * <p>Cell introduces several useful methods over Point class, as well as introduces a new concept of
- * <b>dynamic coordinate</b> and <b>static coordinate</b>. They are the same as x-coordinate and y-coordinate. </p> <p/>
+ * <p>Cell introduces several useful methods over Point class, as well as introduces a new concept of <b>dynamic
+ * coordinate</b> and <b>static coordinate</b>. They are the same as x-coordinate and y-coordinate. </p> <p/>
  * <p>X-coordinate is a horizontal dynamic coordinate, and it is a vertical static coordinate.</p> <p>On the contrary,
  * y-coordinate is a vertical dynamic coordinate and a horizontal static coordinate.</p> <p>Think of it the following
  * way: if you take a horizontal line consisting of points, each point will have the same y-coordinate (hence y is
@@ -98,7 +98,7 @@ public String toString() {
 }
 
 /**
- * Mutates this object changing its {@link Point#x} and {@link Point#y}.
+ * Creates a new cell, moved from the original one.
  *
  * @param direction
  * 	Direction to move.
@@ -110,7 +110,7 @@ public Cell moveToSide(Direction direction) {
 }
 
 /**
- * Mutates this object changing its {@link Point#x} and {@link Point#y}.
+ * Creates a new cell, moved from the original one.
  *
  * @param direction
  * 	Direction to move

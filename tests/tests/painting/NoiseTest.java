@@ -6,7 +6,7 @@ import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.tendiwa.core.Cell;
+import org.tendiwa.geometry.Cell;
 import org.tendiwa.drawing.DrawingCell;
 import org.tendiwa.drawing.DrawingModule;
 import org.tendiwa.drawing.TestCanvas;

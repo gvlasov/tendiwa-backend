@@ -5,6 +5,7 @@ import org.tendiwa.core.meta.Coordinate;
 import org.tendiwa.core.meta.Chance;
 import org.tendiwa.core.settlements.Road;
 import org.tendiwa.core.settlements.BuildingPlace;
+import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.EnhancedRectangle;
 import org.tendiwa.geometry.RectangleSystem;
 import org.tendiwa.geometry.RecursivelySplitRectangleSystemFactory;

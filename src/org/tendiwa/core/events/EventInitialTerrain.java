@@ -5,6 +5,7 @@ import org.tendiwa.core.*;
 import org.tendiwa.core.Character;
 import org.tendiwa.core.observation.Event;
 import org.tendiwa.core.vision.*;
+import org.tendiwa.geometry.Cell;
 
 public class EventInitialTerrain implements Event {
 public final ImmutableList<RenderCell> seenCells;

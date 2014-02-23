@@ -2,7 +2,7 @@ package org.tendiwa.drawing;
 
 import java.awt.Color;
 
-import org.tendiwa.core.Cell;
+import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.Segment;
 
 public class DrawingSegment {

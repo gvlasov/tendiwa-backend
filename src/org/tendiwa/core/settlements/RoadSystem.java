@@ -1,6 +1,6 @@
 package org.tendiwa.core.settlements;
 
-import org.tendiwa.core.Cell;
+import org.tendiwa.geometry.Cell;
 import org.tendiwa.core.FloorType;
 import org.tendiwa.core.meta.Utils;
 

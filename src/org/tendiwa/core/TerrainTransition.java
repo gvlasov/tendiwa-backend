@@ -1,6 +1,7 @@
 package org.tendiwa.core;
 
 import org.tendiwa.core.meta.Chance;
+import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.EnhancedRectangle;
 import org.tendiwa.geometry.Segment;
 

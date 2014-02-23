@@ -7,6 +7,7 @@ import org.tendiwa.core.meta.Coordinate;
 import org.tendiwa.core.observation.Observable;
 import org.tendiwa.core.player.SinglePlayerMode;
 import org.tendiwa.core.vision.Seer;
+import org.tendiwa.geometry.Cell;
 
 import java.util.ArrayList;
 import java.util.HashMap;

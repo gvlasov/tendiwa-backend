@@ -1,5 +1,7 @@
 package org.tendiwa.core;
 
+import org.tendiwa.geometry.Cell;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 

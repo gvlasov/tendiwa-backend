@@ -5,6 +5,7 @@ import org.tendiwa.core.meta.CellPosition;
 import org.tendiwa.core.meta.DoubleRange;
 import org.tendiwa.core.meta.DoubleRangeCollection;
 import org.tendiwa.core.meta.Utils;
+import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.EnhancedRectangle;
 
 import java.awt.*;

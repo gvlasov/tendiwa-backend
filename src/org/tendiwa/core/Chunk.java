@@ -2,6 +2,7 @@ package org.tendiwa.core;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import org.tendiwa.geometry.Cell;
 
 import java.io.Serializable;
 import java.util.ArrayList;

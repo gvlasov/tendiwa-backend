@@ -10,6 +10,7 @@ import org.tendiwa.core.observation.Observable;
 import org.tendiwa.core.player.SinglePlayerMode;
 import org.tendiwa.core.vision.Seer;
 import org.tendiwa.core.vision.SightPassabilityCriteria;
+import org.tendiwa.geometry.Cell;
 
 import java.util.Collection;
 import java.util.HashMap;
