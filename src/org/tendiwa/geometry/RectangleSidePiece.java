@@ -171,7 +171,7 @@ public EnhancedRectangle createRectangle(int anotherDimensionLength) {
 			"anotherDimensionLength must be greater than 0, but it is " + anotherDimensionLength);
 	}
 	// Get point on inner side of a RectangleSidePiece to grow a rectangle from it.
-	Cell startPoint = Cell.fromStaticAndDynamic(
+	Cell startPoint = Cells.fromStaticAndDynamic(
 		line.getStaticCoordFromSide(direction.opposite()),
 		segment.getStartCoord(),
 		segment.orientation);
@@ -258,7 +258,7 @@ public RectangleSidePiece[] splitWithPieces(Collection<RectangleSidePiece> touch
 	RectangleSidePiece[] answer = new RectangleSidePiece[segmentsRanges.length];
 	int i = 0;
 	for (Range range : segmentsRanges) {
-		Cell point = Cell.fromStaticAndDynamic(
+		Cell point = Cells.fromStaticAndDynamic(
 			segment.getStaticCoord(),
 			range.min,
 			segment.orientation);

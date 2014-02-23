@@ -335,7 +335,7 @@ public ArrayList<Cell> closeCells(int startX, int startY, int length, Passabilit
 				if (activePlane.getPassability(thisNumX, thisNumY) != pass) {
 					continue;
 				}
-				if (Math.floor(Cell.distanceInt(startX, startY, thisNumX, thisNumY)) >= length) {
+				if (Math.floor(Cells.distanceInt(startX, startY, thisNumX, thisNumY)) >= length) {
 					continue;
 				}
 				newFront.add(new Cell(thisNumX, thisNumY));
@@ -384,7 +384,7 @@ public ArrayList<Cell> getElementsAreaBorder(int startX, int startY, PlaceableIn
 			for (int j = 0; j < numOfSides; j++) {
 				int thisNumX = x + adjactentX[j];
 				int thisNumY = y + adjactentY[j];
-				if (thisNumX < 0 || thisNumX >= getWidth() || thisNumY < 0 || thisNumY >= getHeight() || pathTable[thisNumX][thisNumY] != 0 || Cell.distanceInt(startX, startY, thisNumX, thisNumY) > depth) {
+				if (thisNumX < 0 || thisNumX >= getWidth() || thisNumY < 0 || thisNumY >= getHeight() || pathTable[thisNumX][thisNumY] != 0 || Cells.distanceInt(startX, startY, thisNumX, thisNumY) > depth) {
 					continue;
 				}
 				if (placeable.containedIn(activePlane, thisNumX, thisNumY) && !(thisNumX == startX && thisNumY == startY)) {
@@ -506,7 +506,7 @@ public ArrayList<Cell> getPath(int startX, int startY, int destinationX, int des
 	}
 	int[][] pathTable = getPathTable(startX, startY, destinationX, destinationY, noDiagonal);
 	ArrayList<Cell> path = new ArrayList<Cell>();
-	if (Cell.isNear(startX, startY, destinationX, destinationY)) {
+	if (Cells.isNear(startX, startY, destinationX, destinationY)) {
 		path.add(new Cell(destinationX, destinationY));
 		return path;
 	}
@@ -541,7 +541,7 @@ public ArrayList<Cell> getPath(int startX, int startY, int destinationX, int des
 			if (thisNumY < 0 || thisNumY >= getHeight()) {
 				continue;
 			}
-			if (pathTable[thisNumX][thisNumY] == j - 1 && (currentNumX == -1 || Cell.distanceInt(thisNumX, thisNumY, destinationX, destinationY) < Cell.distanceInt(currentNumX, currentNumY, destinationX, destinationY))) {
+			if (pathTable[thisNumX][thisNumY] == j - 1 && (currentNumX == -1 || Cells.distanceInt(thisNumX, thisNumY, destinationX, destinationY) < Cells.distanceInt(currentNumX, currentNumY, destinationX, destinationY))) {
 				// ���� ������ � ���� ������� �������� ���������� �����,
 				// ������� �� ��
 				currentNumX = thisNumX;

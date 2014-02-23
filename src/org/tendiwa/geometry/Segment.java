@@ -219,7 +219,7 @@ public Iterator<Cell> iterator() {
 
 		@Override
 		public Cell next() {
-			return Cell.fromStaticAndDynamic(
+			return Cells.fromStaticAndDynamic(
 				staticCoord,
 				dynamicCoord++,
 				orientation);

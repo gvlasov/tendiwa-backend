@@ -2,6 +2,7 @@ package org.tendiwa.core;
 
 import org.tendiwa.core.meta.Chance;
 import org.tendiwa.geometry.Cell;
+import org.tendiwa.geometry.Cells;
 import org.tendiwa.geometry.EnhancedRectangle;
 import org.tendiwa.geometry.Segment;
 
@@ -161,7 +162,7 @@ private void drawSingleSideCorner(Location location, TypePlaceableInCell from, E
 			if (j == i && Chance.roll(10)) {
 				continue;
 			}
-			Cell cornerFormingCell = Cell.fromStaticAndDynamic(
+			Cell cornerFormingCell = Cells.fromStaticAndDynamic(
 				cornerPoint.getStaticCoord(rectangleSideOrientation) + j * sideGrowing,
 				cornerPoint.getDynamicCoord(rectangleSideOrientation) + i * segmentGrowing,
 				rectangleSideOrientation

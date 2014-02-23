@@ -10,16 +10,17 @@ import org.junit.Test;
 import org.tendiwa.geometry.Cell;
 import org.tendiwa.core.Directions;
 import org.tendiwa.core.Orientation;
+import org.tendiwa.geometry.Cells;
 
 public class EnhancedPointTest extends Assert {
 
 	@Test
 	public void testFromStaticAndDynamic() {
 		assertEquals(
-			Cell.fromStaticAndDynamic(7, 9, Orientation.VERTICAL),
+			Cells.fromStaticAndDynamic(7, 9, Orientation.VERTICAL),
 			new Point(7, 9));
 		assertEquals(
-			Cell.fromStaticAndDynamic(7, 9, Orientation.HORIZONTAL),
+			Cells.fromStaticAndDynamic(7, 9, Orientation.HORIZONTAL),
 			new Point(9, 7));
 	}
 	@Test

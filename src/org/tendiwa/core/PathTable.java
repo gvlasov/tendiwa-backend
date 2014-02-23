@@ -1,6 +1,7 @@
 package org.tendiwa.core;
 
 import org.tendiwa.geometry.Cell;
+import org.tendiwa.geometry.Cells;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -92,7 +93,7 @@ public LinkedList<Cell> getPath(int x, int y) {
 		throw new RuntimeException("Getting path to itself");
 	}
 	LinkedList<Cell> path = new LinkedList<>();
-	if (Cell.isNear(startX, startY, x, y)) {
+	if (Cells.isNear(startX, startY, x, y)) {
 		path.add(new Cell(x, y));
 		return path;
 	}

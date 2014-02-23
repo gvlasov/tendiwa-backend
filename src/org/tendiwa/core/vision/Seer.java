@@ -6,6 +6,7 @@ import org.tendiwa.core.meta.DoubleRange;
 import org.tendiwa.core.meta.DoubleRangeCollection;
 import org.tendiwa.core.meta.Utils;
 import org.tendiwa.geometry.Cell;
+import org.tendiwa.geometry.Cells;
 import org.tendiwa.geometry.EnhancedRectangle;
 
 import java.awt.*;
@@ -210,7 +211,7 @@ private boolean obstacleMayBlockVision(Obstacle transformed, int toX, int toY) {
 		// If the obstacle is behind target cell
 		return false;
 	}
-	if (transformed.getY() < -Cell.distanceDouble(toX, toY, character.getX(), character.getY())) {
+	if (transformed.getY() < -Cells.distanceDouble(toX, toY, character.getX(), character.getY())) {
 		// If the obstacle is behind Seer
 		return false;
 	}
