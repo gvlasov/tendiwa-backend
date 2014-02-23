@@ -3,6 +3,7 @@ package org.tendiwa.core;
 import org.jgrapht.Graph;
 import org.tendiwa.core.meta.Coordinate;
 import org.tendiwa.core.meta.Chance;
+import org.tendiwa.core.settlements.Road;
 import org.tendiwa.core.settlements.Settlement;
 import org.tendiwa.core.settlements.BuildingPlace;
 import org.tendiwa.geometry.EnhancedRectangle;
@@ -61,7 +62,7 @@ public Building(Location location, BuildingPlace place, CardinalDirection frontS
 	this.width = place.getWidth() - 2;
 	this.height = place.getHeight() - 2;
 	this.settlement = location;
-	for (Settlement.RoadSystem.Road road : place.closeRoads) {
+	for (Road road : place.closeRoads) {
 		CardinalDirection side = road.getSideOfRectangle(new Rectangle(x, y, width, height));
 		if (!doorSides.contains(side)) {
 			doorSides.add(side);

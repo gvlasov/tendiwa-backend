@@ -2,7 +2,8 @@ package org.tendiwa.drawing;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import org.tendiwa.core.*;
+import org.tendiwa.core.Chunk;
+import org.tendiwa.core.EnhancedPoint;
 import org.tendiwa.geometry.EnhancedRectangle;
 import org.tendiwa.geometry.RectangleSidePiece;
 import org.tendiwa.geometry.RectangleSystem;
