@@ -2,8 +2,6 @@ package org.tendiwa.core;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import org.tendiwa.core.meta.Coordinate;
-import org.tendiwa.core.vision.Seer;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -32,19 +30,19 @@ public Chunk(HorizontalPlane plane, int x, int y) {
 	this.plane = plane;
 }
 
-public static EnhancedPoint[] vector(int startX, int startY, int endX, int endY) {
+public static Cell[] vector(int startX, int startY, int endX, int endY) {
 	int l = Math.round(Math.max(Math.abs(endX - startX),
 		Math.abs(endY - startY)));
 	float x[] = new float[l + 2];
 	float y[] = new float[l + 2];
-	EnhancedPoint result[] = new EnhancedPoint[l + 1];
+	Cell result[] = new Cell[l + 1];
 
 	x[0] = startX;
 	y[0] = startY;
 
 	if (startX == endX && startY == endY) {
-		result = new EnhancedPoint[1];
-		result[0] = new EnhancedPoint(startX, startY);
+		result = new Cell[1];
+		result[0] = new Cell(startX, startY);
 		return result;
 	}
 	float dx = (endX - startX) / (float) l;
@@ -57,7 +55,7 @@ public static EnhancedPoint[] vector(int startX, int startY, int endX, int endY)
 	y[l + 1] = endY;
 
 	for (int i = 0; i <= l; i++) {
-		result[i] = new EnhancedPoint(Math.round(x[i]), Math.round(y[i]));
+		result[i] = new Cell(Math.round(x[i]), Math.round(y[i]));
 	}
 	return result;
 }

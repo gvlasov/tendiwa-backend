@@ -290,9 +290,9 @@ public void action() {
 			if (destX == x && destY == y) {
 				idle();
 			} else {
-				LinkedList<EnhancedPoint> dest = Paths.getPath(x, y, destX, destY, this, MAX_PATH_TABLE_DEPTH);
-				if (dest.getFirst().x != x || dest.getFirst().y != y) {
-					step(dest.getFirst().x, dest.getFirst().y);
+				LinkedList<Cell> dest = Paths.getPath(x, y, destX, destY, this, MAX_PATH_TABLE_DEPTH);
+				if (dest.getFirst().getX() != x || dest.getFirst().getY() != y) {
+					step(dest.getFirst().getX(), dest.getFirst().getY());
 				} else {
 					idle();
 				}
@@ -307,12 +307,12 @@ public void action() {
 			if (!imaginaryPathTable.cellComputed(activeEnemy.x, activeEnemy.y)) {
 				// If path is blocked by characters
 				imaginaryPathTable = Paths.getPathTable(x, y, getPathWalkerOverCharacters(), MAX_PATH_TABLE_DEPTH);
-				LinkedList<EnhancedPoint> imaginaryPath = imaginaryPathTable.getPath(activeEnemy.x, activeEnemy.y);
-				EnhancedPoint firstStep = imaginaryPath.get(0);
-				if (plane.getCharacter(firstStep.x, firstStep.y) == null) {
+				LinkedList<Cell> imaginaryPath = imaginaryPathTable.getPath(activeEnemy.x, activeEnemy.y);
+				Cell firstStep = imaginaryPath.get(0);
+				if (plane.getCharacter(firstStep.getX(), firstStep.getY()) == null) {
 					// If there is no character on first cell of imaginary
 					// path, then step there
-					step(firstStep.x, firstStep.y);
+					step(firstStep.getX(), firstStep.getY());
 				} else {
 					idle();
 				}
@@ -326,13 +326,13 @@ public void action() {
 
 		if (!pathTable.cellComputed(lastSeenCoord.x, lastSeenCoord.y)) {
 			// If path is blocked by characters
-			LinkedList<EnhancedPoint> path = Paths.getPath(x, y, lastSeenCoord.x, lastSeenCoord.y, getPathWalkerOverCharacters(), MAX_PATH_TABLE_DEPTH);
+			LinkedList<Cell> path = Paths.getPath(x, y, lastSeenCoord.x, lastSeenCoord.y, getPathWalkerOverCharacters(), MAX_PATH_TABLE_DEPTH);
 			assert path != null : lastSeenCoord;
-			EnhancedPoint firstStep = path.getFirst();
-			if (plane.getCharacter(firstStep.x, firstStep.y) == null) {
+			Cell firstStep = path.getFirst();
+			if (plane.getCharacter(firstStep.getX(), firstStep.getY()) == null) {
 				// If there is no character on first cell of imaginary path,
 				// then step there
-				step(firstStep.x, firstStep.y);
+				step(firstStep.getX(), firstStep.getY());
 			} else {
 				idle();
 			}

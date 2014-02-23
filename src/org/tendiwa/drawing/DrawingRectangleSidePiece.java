@@ -3,7 +3,7 @@ package org.tendiwa.drawing;
 import java.awt.Color;
 import java.util.Iterator;
 
-import org.tendiwa.core.EnhancedPoint;
+import org.tendiwa.core.Cell;
 import org.tendiwa.geometry.RectangleSidePiece;
 
 import com.google.common.collect.Iterables;
@@ -14,12 +14,12 @@ public class DrawingRectangleSidePiece {
 
 			@Override
 			public void draw(RectangleSidePiece piece) {
-				for (EnhancedPoint point : piece.getSegment()) {
+				for (Cell point : piece.getSegment()) {
 					point.moveToSide(piece.getDirection());
-					if ((point.x + point.y) % 2 == 0) {
-						drawPoint(point.x, point.y, color1);
+					if ((point.getX() + point.getY()) % 2 == 0) {
+						drawPoint(point.getX(), point.getY(), color1);
 					} else {
-						drawPoint(point.x, point.y, color2);
+						drawPoint(point.getX(), point.getY(), color2);
 					}
 				}
 			}
@@ -29,9 +29,9 @@ public class DrawingRectangleSidePiece {
 		return new DrawingAlgorithm<RectangleSidePiece>() {
 			@Override
 			public void draw(RectangleSidePiece piece) {
-				for (EnhancedPoint point : piece.getSegment()) {
+				for (Cell point : piece.getSegment()) {
 					point.moveToSide(piece.getDirection());
-					drawPoint(point.x, point.y, color);
+					drawPoint(point.getX(), point.getY(), color);
 				}
 				
 			}
@@ -43,9 +43,9 @@ public class DrawingRectangleSidePiece {
 
 			@Override
 			public void draw(RectangleSidePiece piece) {
-				for (EnhancedPoint point : piece.getSegment()) {
+				for (Cell point : piece.getSegment()) {
 					point.moveToSide(piece.getDirection());
-					drawPoint(point.x, point.y, iter.next());
+					drawPoint(point.getX(), point.getY(), iter.next());
 				}
 			}
 		};

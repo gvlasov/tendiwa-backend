@@ -12,8 +12,8 @@ private final PathWalker walker;
 private final int maxDepth;
 private final int width;
 private int[][] pathTable;
-private ArrayList<EnhancedPoint> newFront;
-private ArrayList<EnhancedPoint> oldFront;
+private ArrayList<Cell> newFront;
+private ArrayList<Cell> oldFront;
 private int step;
 
 public PathTable(int startX, int startY, PathWalker walker, int maxDepth) {
@@ -27,7 +27,7 @@ public PathTable(int startX, int startY, PathWalker walker, int maxDepth) {
 	this.pathTable = new int[maxDepth * 2 + 1][maxDepth * 2 + 1];
 
 	newFront = new ArrayList<>();
-	newFront.add(new EnhancedPoint(startX, startY));
+	newFront.add(new Cell(startX, startY));
 
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < width; j++) {
@@ -45,8 +45,8 @@ private boolean nextWave() {
 	oldFront = newFront;
 	newFront = new ArrayList<>();
 	for (int i = 0; i < oldFront.size(); i++) {
-		int x = oldFront.get(i).x;
-		int y = oldFront.get(i).y;
+		int x = oldFront.get(i).getX();
+		int y = oldFront.get(i).getY();
 		int[] adjactentX = new int[]{x + 1, x, x, x - 1, x + 1, x + 1, x - 1, x - 1};
 		int[] adjactentY = new int[]{y, y - 1, y + 1, y, y + 1, y - 1, y + 1, y - 1};
 		for (int j = 0; j < 8; j++) {
@@ -58,7 +58,7 @@ private boolean nextWave() {
 				// Step to cell if character can see it and it is free
 				// or character cannot se it and it is not PASSABILITY_NO
 				pathTable[tableX][tableY] = step + 1;
-				newFront.add(new EnhancedPoint(thisNumX, thisNumY));
+				newFront.add(new Cell(thisNumX, thisNumY));
 			}
 		}
 	}
@@ -75,7 +75,7 @@ private boolean nextWave() {
  * 	Destination y coordinate.
  * @return null if path can't be found.
  */
-public LinkedList<EnhancedPoint> getPath(int x, int y) {
+public LinkedList<Cell> getPath(int x, int y) {
 	if (Math.abs(x - startX) > maxDepth || Math.abs(y - startY) > maxDepth) {
 		throw new IllegalArgumentException("Trying to get path to " + x + ":" + y + ". That point is too far from start point " + startX + ":" + startY + ", maxDepth is " + maxDepth);
 	}
@@ -89,9 +89,9 @@ public LinkedList<EnhancedPoint> getPath(int x, int y) {
 	if (x == startX && y == startY) {
 		throw new RuntimeException("Getting path to itself");
 	}
-	LinkedList<EnhancedPoint> path = new LinkedList<>();
-	if (EnhancedPoint.isNear(startX, startY, x, y)) {
-		path.add(new EnhancedPoint(x, y));
+	LinkedList<Cell> path = new LinkedList<>();
+	if (Cell.isNear(startX, startY, x, y)) {
+		path.add(new Cell(x, y));
 		return path;
 	}
 	int currentNumX = x;
@@ -103,7 +103,7 @@ public LinkedList<EnhancedPoint> getPath(int x, int y) {
 		j > 0;
 		j = pathTable[currentNumX - startX + maxDepth][currentNumY - startY + maxDepth]
 		) {
-		path.addFirst(new EnhancedPoint(currentNumX, currentNumY));
+		path.addFirst(new Cell(currentNumX, currentNumY));
 		int[] adjactentX = {cX, cX + 1, cX, cX - 1, cX + 1, cX + 1, cX - 1, cX - 1};
 		int[] adjactentY = {cY - 1, cY, cY + 1, cY, cY + 1, cY - 1, cY + 1, cY - 1};
 		for (int i = 0; i < 8; i++) {

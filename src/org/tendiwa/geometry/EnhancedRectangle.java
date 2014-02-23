@@ -279,37 +279,37 @@ public boolean isCellOnRectangleBorder(int x, int y, Rectangle r) {
 /**
  * Finds distance from line to rectangle's nearest border parallel to that line
  */
-public int distanceToLine(EnhancedPoint start, EnhancedPoint end) {
+public int distanceToLine(Cell start, Cell end) {
 	Orientation dir;
-	if (start.x == end.x) {
+	if (start.getX() == end.getX()) {
 		dir = Orientation.VERTICAL;
-	} else if (start.y == end.y) {
+	} else if (start.getY() == end.getY()) {
 		dir = Orientation.HORIZONTAL;
 	} else {
 		throw new Error(start + " and " + end + " are not on the same line");
 	}
-	if (dir.isVertical() && start.x >= x && start.x <= x + width - 1) {
+	if (dir.isVertical() && start.getX() >= x && start.getX() <= x + width - 1) {
 		throw new Error("Vertical line inside rectangle");
-	} else if (dir.isHorizontal() && start.y >= y && start.y <= y + height - 1) {
+	} else if (dir.isHorizontal() && start.getY() >= y && start.getY() <= y + height - 1) {
 		throw new Error("Horizontal line inside rectangle");
 	}
 	if (dir.isVertical()) {
-		return start.x > x ? start.x - x - width + 1 : x - start.x;
+		return start.getX() > x ? start.getX() - x - width + 1 : x - start.getX();
 	} else {
-		return start.y > y ? start.y - y - height + 1 : y - start.y;
+		return start.getY() > y ? start.getY() - y - height + 1 : y - start.getY();
 	}
 }
 
-public EnhancedPoint getMiddleOfSide(CardinalDirection side) {
+public Cell getMiddleOfSide(CardinalDirection side) {
 	switch (side) {
 		case N:
-			return new EnhancedPoint(x + width / 2, y);
+			return new Cell(x + width / 2, y);
 		case E:
-			return new EnhancedPoint(x + width - 1, y + height / 2);
+			return new Cell(x + width - 1, y + height / 2);
 		case S:
-			return new EnhancedPoint(x + width / 2, y + height - 1);
+			return new Cell(x + width / 2, y + height - 1);
 		case W:
-			return new EnhancedPoint(x, y + height / 2);
+			return new Cell(x, y + height / 2);
 		default:
 			throw new IllegalArgumentException();
 	}
@@ -326,14 +326,14 @@ public EnhancedPoint getMiddleOfSide(CardinalDirection side) {
  * 	How far is the cell from the end of the border. 0 is the first cell near end of border. Depth may be even more than
  * 	width or height, so the cell will be outside the rectangle.
  */
-public EnhancedPoint getCellFromSide(CardinalDirection side, CardinalDirection endOfSide, int depth) {
+public Cell getCellFromSide(CardinalDirection side, CardinalDirection endOfSide, int depth) {
 	switch (side) {
 		case N:
 			switch (endOfSide) {
 				case E:
-					return new EnhancedPoint(x + width - 1 - depth, y);
+					return new Cell(x + width - 1 - depth, y);
 				case W:
-					return new EnhancedPoint(x + depth, y);
+					return new Cell(x + depth, y);
 				default:
 					throw new Error(
 						"sideOfSide (" + endOfSide + ") must be clockwise or counter-clockwise from side (" + side + ")");
@@ -341,9 +341,9 @@ public EnhancedPoint getCellFromSide(CardinalDirection side, CardinalDirection e
 		case E:
 			switch (endOfSide) {
 				case N:
-					return new EnhancedPoint(x + width - 1, y + depth);
+					return new Cell(x + width - 1, y + depth);
 				case S:
-					return new EnhancedPoint(
+					return new Cell(
 						x + width - 1,
 						y + height - 1 - depth);
 				default:
@@ -353,11 +353,11 @@ public EnhancedPoint getCellFromSide(CardinalDirection side, CardinalDirection e
 		case S:
 			switch (endOfSide) {
 				case E:
-					return new EnhancedPoint(
+					return new Cell(
 						x + width - 1 - depth,
 						y + height - 1);
 				case W:
-					return new EnhancedPoint(x + depth, y + height - 1);
+					return new Cell(x + depth, y + height - 1);
 				default:
 					throw new Error(
 						"sideOfSide (" + endOfSide + ") must be clockwise or counter-clockwise from side (" + side + ")");
@@ -365,9 +365,9 @@ public EnhancedPoint getCellFromSide(CardinalDirection side, CardinalDirection e
 		case W:
 			switch (endOfSide) {
 				case N:
-					return new EnhancedPoint(x, y + depth);
+					return new Cell(x, y + depth);
 				case S:
-					return new EnhancedPoint(x, y + height - 1 - depth);
+					return new Cell(x, y + height - 1 - depth);
 				default:
 					throw new Error(
 						"sideOfSide (" + endOfSide + ") must be clockwise or counter-clockwise from side (" + side + ")");
@@ -431,16 +431,16 @@ public int getDimensionBySide(CardinalDirection side) {
  * @param corner
  * 	Defines corner by ordinal side.
  */
-public EnhancedPoint getCorner(OrdinalDirection corner) {
+public Cell getCorner(OrdinalDirection corner) {
 	if (corner == Directions.NW) {
-		return new EnhancedPoint(x, y);
+		return new Cell(x, y);
 	} else if (corner == Directions.NE) {
-		return new EnhancedPoint(x + width - 1, y);
+		return new Cell(x + width - 1, y);
 	} else if (corner == Directions.SE) {
-		return new EnhancedPoint(x + width - 1, y + height - 1);
+		return new Cell(x + width - 1, y + height - 1);
 	} else {
 		assert corner == Directions.SW;
-		return new EnhancedPoint(x, y + height - 1);
+		return new Cell(x, y + height - 1);
 	}
 }
 
@@ -478,8 +478,8 @@ public boolean isInCircle(int cx, int cy, int radius) {
  *
  * @return
  */
-public EnhancedPoint getCenterPoint() {
-	return new EnhancedPoint(x + width / 2, y + height / 2);
+public Cell getCenterPoint() {
+	return new Cell(x + width / 2, y + height / 2);
 }
 
 public int getCenterX() {
@@ -861,7 +861,7 @@ public RectangleSidePiece getCommonSidePiece(EnhancedRectangle neighbor) {
  *
  * @return
  */
-public EnhancedPoint getPointOnSide(CardinalDirection side, int shift) {
+public Cell getPointOnSide(CardinalDirection side, int shift) {
 	if (side == null) {
 		throw new NullPointerException("Argument `side` can't be null");
 	}
@@ -877,13 +877,13 @@ public EnhancedPoint getPointOnSide(CardinalDirection side, int shift) {
 	}
 	switch (side) {
 		case N:
-			return new EnhancedPoint(x + shift, y);
+			return new Cell(x + shift, y);
 		case E:
-			return new EnhancedPoint(x + width - 1, y + shift);
+			return new Cell(x + width - 1, y + shift);
 		case S:
-			return new EnhancedPoint(x + shift, y + height - 1);
+			return new Cell(x + shift, y + height - 1);
 		case W:
-			return new EnhancedPoint(x, y + shift - 1);
+			return new Cell(x, y + shift - 1);
 		default:
 			throw new UnsupportedOperationException();
 	}
@@ -978,6 +978,6 @@ public int hashCode() {
  * @param r
  * 	Another rectangle
  * @return A side of this rectangle that intersects by dynamic coordinate with a side of another rectangle.
- * @see EnhancedPoint#getDynamicCoord(Orientation) For what a dynamic coord is
+ * @see org.tendiwa.core.Cell#getDynamicCoord(Orientation) For what a dynamic coord is
  */
 }

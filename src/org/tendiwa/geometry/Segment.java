@@ -1,8 +1,8 @@
 package org.tendiwa.geometry;
 
 import org.tendiwa.core.CardinalDirection;
+import org.tendiwa.core.Cell;
 import org.tendiwa.core.Directions;
-import org.tendiwa.core.EnhancedPoint;
 import org.tendiwa.core.Orientation;
 import org.tendiwa.core.meta.Range;
 
@@ -13,7 +13,7 @@ import java.util.Iterator;
  * {@link org.tendiwa.core.Orientation#VERTICAL}, then {x;y} is its top cell. If direction is {@link org.tendiwa.core.Orientation#HORIZONTAL}, then {x;y}
  * is its leftmost cell.
  */
-public class Segment implements Iterable<EnhancedPoint> {
+public class Segment implements Iterable<Cell> {
 final Orientation orientation;
 // TODO: Make Segment immutable
 public int x;
@@ -188,18 +188,18 @@ public int getEndCoord() {
 	}
 }
 
-public EnhancedPoint getEndPoint(CardinalDirection direction) {
+public Cell getEndPoint(CardinalDirection direction) {
 	if (orientation == Orientation.VERTICAL) {
 		if (direction == Directions.N) {
-			return new EnhancedPoint(x, y);
+			return new Cell(x, y);
 		} else if (direction == Directions.S) {
-			return new EnhancedPoint(x, y + length - 1);
+			return new Cell(x, y + length - 1);
 		}
 	} else {
 		if (direction == Directions.W) {
-			return new EnhancedPoint(x, y);
+			return new Cell(x, y);
 		} else if (direction == Directions.E) {
-			return new EnhancedPoint(x + length - 1, y);
+			return new Cell(x + length - 1, y);
 		}
 	}
 	throw new IllegalArgumentException(
@@ -207,8 +207,8 @@ public EnhancedPoint getEndPoint(CardinalDirection direction) {
 }
 
 @Override
-public Iterator<EnhancedPoint> iterator() {
-	return new Iterator<EnhancedPoint>() {
+public Iterator<Cell> iterator() {
+	return new Iterator<Cell>() {
 		final int staticCoord = orientation.isVertical() ? x : y;
 		int dynamicCoord = orientation.isVertical() ? y : x;
 		final int endDynamicCoord = dynamicCoord + length - 1;
@@ -219,8 +219,8 @@ public Iterator<EnhancedPoint> iterator() {
 		}
 
 		@Override
-		public EnhancedPoint next() {
-			return EnhancedPoint.fromStaticAndDynamic(
+		public Cell next() {
+			return Cell.fromStaticAndDynamic(
 				staticCoord,
 				dynamicCoord++,
 				orientation);

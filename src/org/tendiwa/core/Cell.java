@@ -1,32 +1,37 @@
 package org.tendiwa.core;
 
+import org.tendiwa.core.meta.CellPosition;
+
 import java.awt.*;
 
 /**
- * <p>EnhancedPoint introduces several useful methods over Point class, as well as introduces a new concept of
+ * <p>Cell introduces several useful methods over Point class, as well as introduces a new concept of
  * <b>dynamic coordinate</b> and <b>static coordinate</b>. They are the same as x-coordinate and y-coordinate. </p> <p/>
  * <p>X-coordinate is a horizontal dynamic coordinate, and it is a vertical static coordinate.</p> <p>On the contrary,
  * y-coordinate is a vertical dynamic coordinate and a horizontal static coordinate.</p> <p>Think of it the following
  * way: if you take a horizontal line consisting of points, each point will have the same y-coordinate (hence y is
  * horizontal static) and different x coordinate (so x is horizontal dynamic)</p>
  */
-public class EnhancedPoint extends Point {
+public class Cell implements CellPosition {
 private static final long serialVersionUID = -437683005315402667L;
+private final int x;
+private final int y;
 
-public EnhancedPoint(int x, int y) {
-	super(x, y);
+public Cell(int x, int y) {
+	this.x = x;
+	this.y = y;
 }
 
-public EnhancedPoint(EnhancedPoint point) {
+public Cell(Cell point) {
 	this.x = point.x;
 	this.y = point.y;
 }
 
-public static EnhancedPoint fromStaticAndDynamic(int staticCoord, int dynamicCoord, Orientation orientation) {
+public static Cell fromStaticAndDynamic(int staticCoord, int dynamicCoord, Orientation orientation) {
 	if (orientation.isVertical()) {
-		return new EnhancedPoint(staticCoord, dynamicCoord);
+		return new Cell(staticCoord, dynamicCoord);
 	} else {
-		return new EnhancedPoint(dynamicCoord, staticCoord);
+		return new Cell(dynamicCoord, staticCoord);
 	}
 }
 
@@ -48,7 +53,7 @@ public static boolean isNear(int startX, int startY, int endX, int endY) {
  * @param endY
  * 	Y coordinate of point 2
  * @return Distance between two points, rounded down.
- * @see EnhancedPoint#distanceDouble(int, int, int, int)
+ * @see Cell#distanceDouble(int, int, int, int)
  */
 public static int distanceInt(int startX, int startY, int endX, int endY) {
 	return (int) Math.sqrt(Math.pow(startX - endX, 2) + Math.pow(startY - endY, 2));
@@ -66,10 +71,18 @@ public static int distanceInt(int startX, int startY, int endX, int endY) {
  * @param endY
  * 	Y coordinate of point 2
  * @return Exact distance between two points.
- * @see {@link EnhancedPoint#distanceInt(int, int, int, int)}  for inexact distance, rounded down to.
+ * @see {@link Cell#distanceInt(int, int, int, int)}  for inexact distance, rounded down to.
  */
 public static double distanceDouble(int startX, int startY, int endX, int endY) {
 	return Math.sqrt(Math.pow(startX - endX, 2) + Math.pow(startY - endY, 2));
+}
+
+public int distanceInt(int x, int y) {
+	return (int) Math.sqrt(Math.pow(x - this.x, 2) + Math.pow(y - this.y, 2));
+}
+
+public double distanceDouble(int x, int y) {
+	return Math.sqrt(Math.pow(x - this.x, 2) + Math.pow(y - this.y, 2));
 }
 
 public boolean isNear(int x, int y) {
@@ -91,11 +104,9 @@ public String toString() {
  * 	Direction to move.
  * @return The same mutated point.
  */
-public EnhancedPoint moveToSide(Direction direction) {
+public Cell moveToSide(Direction direction) {
 	int[] d = direction.side2d();
-	x += d[0];
-	y += d[1];
-	return this;
+	return new Cell(x + d[0], y + d[1]);
 }
 
 /**
@@ -107,11 +118,9 @@ public EnhancedPoint moveToSide(Direction direction) {
  * 	How far to move in cells
  * @return The same mutated point.
  */
-public EnhancedPoint moveToSide(Direction direction, int cells) {
+public Cell moveToSide(Direction direction, int cells) {
 	int[] d = direction.side2d();
-	x += d[0] * cells;
-	y += d[1] * cells;
-	return this;
+	return new Cell(x + d[0] * cells, y + d[1] * cells);
 }
 
 /**
@@ -145,26 +154,25 @@ public int getDynamicCoord(Orientation orientation) {
 }
 
 /**
- * Creates a new EnhancedPoint relative to this point.
+ * Creates a new Cell relative to this point.
  *
  * @param dx
  * 	Shift by x-axis.
  * @param dy
  * 	Shift by y-axis.
- * @return New EnhancedPoint.
- * @see EnhancedPoint#moveToSide(Direction) Similar method that mutates an existing cell instead of creating a new one.
+ * @return New Cell.
  */
-public EnhancedPoint newRelativePoint(int dx, int dy) {
-	return new EnhancedPoint(x + dx, y + dy);
+public Cell newRelativePoint(int dx, int dy) {
+	return new Cell(x + dx, y + dy);
 }
 
-public EnhancedPoint newRelativePoint(Direction dir) {
+public Cell newRelativePoint(Direction dir) {
 	int[] coords = dir.side2d();
-	return new EnhancedPoint(x + coords[0], y + coords[1]);
+	return new Cell(x + coords[0], y + coords[1]);
 }
 
 /**
- * Creates a new EnhancedPoint relative to this point.
+ * Creates a new Cell relative to this point.
  *
  * @param dStatic
  * 	Shift by static axis.
@@ -172,14 +180,23 @@ public EnhancedPoint newRelativePoint(Direction dir) {
  * 	Shift by dynamic axis.
  * @param orientation
  * 	Orientation that determines which axis is dynamic or static.
- * @return New EnhancedPoint.
- * @see EnhancedPoint For explanation of what static and dynamic axes are.
+ * @return New Cell.
+ * @see Cell For explanation of what static and dynamic axes are.
  */
-public EnhancedPoint newRelativePointByOrientaton(int dStatic, int dDynamic, Orientation orientation) {
+public Cell newRelativePointByOrientaton(int dStatic, int dDynamic, Orientation orientation) {
 	if (orientation.isHorizontal()) {
-		return new EnhancedPoint(x + dDynamic, y + dStatic);
+		return new Cell(x + dDynamic, y + dStatic);
 	}
-	return new EnhancedPoint(x + dStatic, y + dDynamic);
+	return new Cell(x + dStatic, y + dDynamic);
 }
 
+@Override
+public int getX() {
+	return x;
+}
+
+@Override
+public int getY() {
+	return y;
+}
 }

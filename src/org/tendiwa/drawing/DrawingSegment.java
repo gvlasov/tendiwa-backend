@@ -1,8 +1,8 @@
 package org.tendiwa.drawing;
 
 import java.awt.Color;
-import java.awt.Point;
 
+import org.tendiwa.core.Cell;
 import org.tendiwa.geometry.Segment;
 
 public class DrawingSegment {
@@ -13,8 +13,8 @@ public class DrawingSegment {
 			
 			@Override
 			public void draw(Segment segment) {
-				for (Point point : segment) {
-					drawPoint(point.x, point.y, color);
+				for (Cell point : segment) {
+					drawPoint(point.getX(), point.getY(), color);
 				}
 				
 			}

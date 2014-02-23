@@ -1,7 +1,7 @@
 package org.tendiwa.drawing;
 
 import org.tendiwa.core.Chunk;
-import org.tendiwa.core.EnhancedPoint;
+import org.tendiwa.core.Cell;
 import org.tendiwa.geometry.EnhancedRectangle;
 
 import java.awt.*;
@@ -70,9 +70,9 @@ protected <T> void drawObject(T shape, DrawingAlgorithm<T> algorithm) {
 	canvas.draw(shape, algorithm, canvas.currentLayer);
 }
 
-protected <T> void drawLine(EnhancedPoint p1, EnhancedPoint p2, Color color) {
-	for (EnhancedPoint coordinate : Chunk.vector(p1.x, p1.y, p2.x, p2.y)) {
-		drawPoint(coordinate.x, coordinate.y, color);
+protected <T> void drawLine(Cell p1, Cell p2, Color color) {
+	for (Cell coordinate : Chunk.vector(p1.getX(), p1.getY(), p2.getX(), p2.getY())) {
+		drawPoint(coordinate.getX(), coordinate.getY(), color);
 	}
 }
 }

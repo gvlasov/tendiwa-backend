@@ -413,9 +413,9 @@ public void fillContents(TypePlaceableInCell placeable) {
 public void drawLines(TypePlaceableInCell placeable) {
 	Graph<EnhancedRectangle, RectangleSystem.Neighborship> graph = rs.getGraph();
 	for (RectangleSystem.Neighborship e : graph.edgeSet()) {
-		EnhancedPoint c1 = graph.getEdgeSource(e).getCenterPoint();
-		EnhancedPoint c2 = graph.getEdgeTarget(e).getCenterPoint();
-		location.line(c1.x, c1.y, c2.x, c2.y, placeable);
+		Cell c1 = graph.getEdgeSource(e).getCenterPoint();
+		Cell c2 = graph.getEdgeTarget(e).getCenterPoint();
+		location.line(c1.getX(), c1.getY(), c2.getX(), c2.getY(), placeable);
 	}
 }
 

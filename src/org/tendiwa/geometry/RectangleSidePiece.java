@@ -4,9 +4,9 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 import org.tendiwa.core.*;
+import org.tendiwa.core.meta.CellPosition;
 import org.tendiwa.core.meta.Range;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -171,7 +171,7 @@ public EnhancedRectangle createRectangle(int anotherDimensionLength) {
 			"anotherDimensionLength must be greater than 0, but it is " + anotherDimensionLength);
 	}
 	// Get point on inner side of a RectangleSidePiece to grow a rectangle from it.
-	Point startPoint = EnhancedPoint.fromStaticAndDynamic(
+	Cell startPoint = Cell.fromStaticAndDynamic(
 		line.getStaticCoordFromSide(direction.opposite()),
 		segment.getStartCoord(),
 		segment.orientation);
@@ -199,8 +199,8 @@ public EnhancedRectangle createRectangle(int anotherDimensionLength) {
 		height = anotherDimensionLength;
 	}
 	return EnhancedRectangle.growFromPoint(
-		startPoint.x,
-		startPoint.y,
+		startPoint.getX(),
+		startPoint.getY(),
 		growDirection,
 		width,
 		height);
@@ -225,12 +225,12 @@ public boolean contains(RectangleSidePiece piece) {
  * @param point
  * @return
  */
-int perpendicularDistanceTo(Point point) {
+int perpendicularDistanceTo(CellPosition point) {
 	assert line.hasPointFromSide(point, direction);
 	if (isVertical()) {
-		return Math.abs(line.getStaticCoordFromSide(direction) - point.x);
+		return Math.abs(line.getStaticCoordFromSide(direction) - point.getX());
 	} else {
-		return Math.abs(line.getStaticCoordFromSide(direction) - point.y);
+		return Math.abs(line.getStaticCoordFromSide(direction) - point.getY());
 	}
 }
 
@@ -258,14 +258,14 @@ public RectangleSidePiece[] splitWithPieces(Collection<RectangleSidePiece> touch
 	RectangleSidePiece[] answer = new RectangleSidePiece[segmentsRanges.length];
 	int i = 0;
 	for (Range range : segmentsRanges) {
-		Point point = EnhancedPoint.fromStaticAndDynamic(
+		Cell point = Cell.fromStaticAndDynamic(
 			segment.getStaticCoord(),
 			range.min,
 			segment.orientation);
 		answer[i++] = new RectangleSidePiece(
 			direction,
-			point.x,
-			point.y,
+			point.getX(),
+			point.getY(),
 			range.getLength());
 		assert contains(answer[i - 1]);
 	}

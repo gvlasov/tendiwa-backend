@@ -26,13 +26,13 @@ public EventInitialTerrain(Character player, World world, HorizontalPlane plane,
 	zLevel = plane.getLevel();
 //	Seer seer = backend.getPlayerCharacter().getSeer();
 	Visibility[][] visionCache = seer.getVisionCache().getContent();
-	EnhancedPoint startPoint = seer.getActualVisionRecStartPoint();
-	EnhancedPoint theoreticalStartPoint = seer.getTheoreticalVisionRecStartPoint();
-	for (int i = startPoint.x-theoreticalStartPoint.x; i < ModifiableCellVisionCache.VISION_CACHE_WIDTH; i++) {
-		for (int j = startPoint.y-theoreticalStartPoint.y; j < ModifiableCellVisionCache.VISION_CACHE_WIDTH; j++) {
+	Cell startPoint = seer.getActualVisionRecStartPoint();
+	Cell theoreticalStartPoint = seer.getTheoreticalVisionRecStartPoint();
+	for (int i = startPoint.getX() - theoreticalStartPoint.getX(); i < ModifiableCellVisionCache.VISION_CACHE_WIDTH; i++) {
+		for (int j = startPoint.getY() - theoreticalStartPoint.getY(); j < ModifiableCellVisionCache.VISION_CACHE_WIDTH; j++) {
 			if (visionCache[i][j] == Visibility.VISIBLE) {
-				int x = theoreticalStartPoint.x + i;
-				int y = theoreticalStartPoint.y + j;
+				int x = theoreticalStartPoint.getX() + i;
+				int y = theoreticalStartPoint.getY() + j;
 				seenCellsBuilder.add(new RenderCell(
 					world,
 					x,

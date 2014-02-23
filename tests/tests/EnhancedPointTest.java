@@ -7,8 +7,8 @@ import java.awt.Point;
 import org.junit.Assert;
 import org.junit.Test;
 
+import org.tendiwa.core.Cell;
 import org.tendiwa.core.Directions;
-import org.tendiwa.core.EnhancedPoint;
 import org.tendiwa.core.Orientation;
 
 public class EnhancedPointTest extends Assert {
@@ -16,20 +16,20 @@ public class EnhancedPointTest extends Assert {
 	@Test
 	public void testFromStaticAndDynamic() {
 		assertEquals(
-			EnhancedPoint.fromStaticAndDynamic(7, 9, Orientation.VERTICAL),
+			Cell.fromStaticAndDynamic(7, 9, Orientation.VERTICAL),
 			new Point(7, 9));
 		assertEquals(
-			EnhancedPoint.fromStaticAndDynamic(7, 9, Orientation.HORIZONTAL),
+			Cell.fromStaticAndDynamic(7, 9, Orientation.HORIZONTAL),
 			new Point(9, 7));
 	}
 	@Test
 	public void testMove() throws Exception {
-		EnhancedPoint point = new EnhancedPoint(6, 7)
+		Cell point = new Cell(6, 7)
 			.moveToSide(Directions.E)
 			.moveToSide(Directions.NW)
 			.moveToSide(Directions.SW);
 		assertEquals(point, new Point(5, 7));
-		assertThat(point, is(not(new Point(4,7))));
+		assertThat(point, is(not(new Cell(4,7))));
 	}
 
 }

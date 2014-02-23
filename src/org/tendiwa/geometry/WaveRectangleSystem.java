@@ -400,7 +400,7 @@ class VirtualWave {
 	}
 
 	private int distanceFromPerpendicularToClosestEndOf(RectangleSidePiece perpendicularPiece, RectangleSidePiece parallelPiece) {
-		Point point = parallelPiece.segment
+		Cell point = parallelPiece.segment
 			.getEndPoint(perpendicularPiece.direction.opposite());
 		if (!perpendicularPiece.line.hasPointFromSide(
 			point,
@@ -505,17 +505,17 @@ class VirtualWave {
 		int minHeight, minWidth;
 		if (!dynamicCoordsRangeContainStaticCoord(horizontal, vertical)) {
 			minWidth = Math.abs(horizontal.getSegment().getEndPoint(
-				vertical.direction.opposite()).x - vertical
+				vertical.direction.opposite()).getX() - vertical
 				.getSegment()
-				.getEndPoint(horizontal.direction.opposite()).x);
+				.getEndPoint(horizontal.direction.opposite()).getX());
 		} else {
 			minWidth = 0;
 		}
 		if (!dynamicCoordsRangeContainStaticCoord(vertical, horizontal)) {
 			minHeight = Math
 				.abs(vertical.segment.getEndPoint(horizontal.direction
-					.opposite()).y - horizontal.segment
-					.getEndPoint(vertical.direction.opposite()).y);
+					.opposite()).getY() - horizontal.segment
+					.getEndPoint(vertical.direction.opposite()).getY());
 		} else {
 			minHeight = 0;
 		}
@@ -1570,33 +1570,33 @@ class VirtualWave {
 		private RectangleSidePiece[] getMinPossiblePerpendicularPieces(RectangleSidePiece piece) {
 			RectangleSidePiece[] answer = new RectangleSidePiece[2];
 			if (piece.isVertical()) {
-				Point startingPointN = piece.segment
+				Cell startingPointN = piece.segment
 					.getEndPoint(Directions.S);
-				Point startingPointS = piece.segment
+				Cell startingPointS = piece.segment
 					.getEndPoint(Directions.N);
 				answer[0] = new RectangleSidePiece(
 					Directions.S,
 					piece.line.getStaticCoordFromSide(piece.direction),
-					startingPointN.y,
+					startingPointN.getY(),
 					1);
 				answer[1] = new RectangleSidePiece(
 					Directions.N,
 					piece.line.getStaticCoordFromSide(piece.direction),
-					startingPointS.y,
+					startingPointS.getY(),
 					1);
 			} else {
-				Point startingPointW = piece.segment
+				Cell startingPointW = piece.segment
 					.getEndPoint(Directions.E);
-				Point startingPointE = piece.segment
+				Cell startingPointE = piece.segment
 					.getEndPoint(Directions.W);
 				answer[0] = new RectangleSidePiece(
 					Directions.W,
-					startingPointE.x,
+					startingPointE.getX(),
 					piece.line.getStaticCoordFromSide(piece.direction),
 					1);
 				answer[1] = new RectangleSidePiece(
 					Directions.E,
-					startingPointW.x,
+					startingPointW.getX(),
 					piece.line.getStaticCoordFromSide(piece.direction),
 					1);
 			}

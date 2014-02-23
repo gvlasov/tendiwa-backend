@@ -8,11 +8,11 @@ import java.util.Collection;
 
 public class CellCollection {
 public Location location;
-ArrayList<EnhancedPoint> unoccupied;
+ArrayList<Cell> unoccupied;
 boolean hasCells = true;
-private ArrayList<EnhancedPoint> cells;
+private ArrayList<Cell> cells;
 
-public CellCollection(Collection<EnhancedPoint> cls, Location loc) {
+public CellCollection(Collection<Cell> cls, Location loc) {
 	if (cls.isEmpty()) {
 		throw new Error("Can't create an empty cell collection: argument is an empty collection");
 	}
@@ -25,15 +25,15 @@ public CellCollection(Collection<EnhancedPoint> cls, Location loc) {
 //			throw new Error("No more cells");
 //		}
 //		int cellIndex = Chance.rand(0, cells.size()-1);
-//		EnhancedPoint cell = cells.get(cellIndex);
+//		Cell cell = cells.get(cellIndex);
 //		unsetCell(cellIndex);
 //		return location.createCharacter(ammunitionType, name, cell.x, cell.y);
 //	}
-public static ArrayList<EnhancedPoint> rectangleToCellsList(Rectangle r) {
-	ArrayList<EnhancedPoint> answer = new ArrayList<>();
+public static ArrayList<Cell> rectangleToCellsList(Rectangle r) {
+	ArrayList<Cell> answer = new ArrayList<>();
 	for (int i = r.x; i < r.x + r.width; i++) {
 		for (int j = r.y; j < r.y + r.height; j++) {
-			answer.add(new EnhancedPoint(i, j));
+			answer.add(new Cell(i, j));
 		}
 	}
 	return answer;
@@ -64,7 +64,7 @@ public int size() {
 //							"� cellCollection �� �������� ����� ��� ����� ���������� - ��������� ������");
 //				}
 //				int cellIndex = Chance.rand(0, cells.size()-1);
-//				EnhancedPoint cell = cells.get(cellIndex);
+//				Cell cell = cells.get(cellIndex);
 //				// ��������� ���������
 //				location.createCharacter(ch.ammunitionType, ch.name, cell.x, cell.y);
 //				unsetCell(cellIndex);
@@ -73,15 +73,15 @@ public int size() {
 //	}
 public void removeCellsCloseTo(int x, int y, int distance) {
 	int size = cells.size();
-	for (EnhancedPoint c : cells) {
-		if (c.distance(x, y) <= distance) {
+	for (Cell c : cells) {
+		if (c.distanceDouble(x, y) <= distance) {
 			cells.remove(c);
 			size--;
 		}
 	}
 }
 
-protected void unsetCell(EnhancedPoint cell) {
+protected void unsetCell(Cell cell) {
 	cells.remove(cell);
 	if (cells.isEmpty()) {
 		hasCells = false;
@@ -102,8 +102,8 @@ public void setElements(PlaceableInCell placeable, int amount) {
 			throw new RuntimeException("CellCollection has no cells left");
 		}
 		int cellIndex = Chance.rand(0, cells.size() - 1);
-		EnhancedPoint cell = cells.get(cellIndex);
-		placeable.place(location.getActivePlane(), cell.x, cell.y);
+		Cell cell = cells.get(cellIndex);
+		placeable.place(location.getActivePlane(), cell.getX(), cell.getY());
 		unsetCell(cell);
 	}
 }
@@ -117,56 +117,56 @@ public void setObjects(ObjectType type, int amount) {
 			throw new RuntimeException("CellCollection has no cells left");
 		}
 		int cellIndex = Chance.rand(0, cells.size() - 1);
-		EnhancedPoint cell = cells.get(cellIndex);
-		EntityPlacer.place(location.getActivePlane(), type, cell.x, cell.y);
+		Cell cell = cells.get(cellIndex);
+		EntityPlacer.place(location.getActivePlane(), type, cell.getX(), cell.getY());
 		unsetCell(cell);
 	}
 }
 
-public EnhancedPoint getRandomCell() {
+public Cell getRandomCell() {
 	return cells.get(Chance.rand(0, cells.size() - 1));
 }
 
 public void fillWithElements(PlaceableInCell placeable) {
 	// TODO Auto-generated method stub
-	for (EnhancedPoint c : cells) {
-		placeable.place(location.getActivePlane(), c.x, c.y);
+	for (Cell c : cells) {
+		placeable.place(location.getActivePlane(), c.getX(), c.getY());
 	}
 }
 
-public ArrayList<EnhancedPoint> setElementsAndReport(PlaceableInCell placeable, int amount) {
-	ArrayList<EnhancedPoint> coords = new ArrayList<>();
+public ArrayList<Cell> setElementsAndReport(PlaceableInCell placeable, int amount) {
+	ArrayList<Cell> coords = new ArrayList<>();
 	for (int i = 0; i < amount; i++) {
 		if (!hasCells) {
 			throw new RuntimeException("CellCollection has no cells left");
 		}
 		int cellIndex = Chance.rand(0, cells.size() - 1);
-		EnhancedPoint cell = cells.get(cellIndex);
-		placeable.place(location.getActivePlane(), cell.x, cell.y);
+		Cell cell = cells.get(cellIndex);
+		placeable.place(location.getActivePlane(), cell.getX(), cell.getY());
 		unsetCell(cell);
 		coords.add(cell);
 	}
 	return coords;
 }
 
-public EnhancedPoint setElementAndReport(PlaceableInCell placeable) {
+public Cell setElementAndReport(PlaceableInCell placeable) {
 	if (!hasCells) {
 		throw new Error("No more cells");
 	}
 	int cellIndex = Chance.rand(0, cells.size() - 1);
-	EnhancedPoint cell = cells.get(cellIndex);
-	placeable.place(location.getActivePlane(), cell.x, cell.y);
+	Cell cell = cells.get(cellIndex);
+	placeable.place(location.getActivePlane(), cell.getX(), cell.getY());
 	unsetCell(cell);
 	return cell;
 }
 
-public EnhancedPoint setObjectAndReport(ObjectType objectType) {
+public Cell setObjectAndReport(ObjectType objectType) {
 	if (!hasCells) {
 		throw new Error("No more cells");
 	}
 	int cellIndex = Chance.rand(0, cells.size() - 1);
-	EnhancedPoint cell = cells.get(cellIndex);
-	EntityPlacer.place(location.getActivePlane(), objectType, cell.x, cell.y);
+	Cell cell = cells.get(cellIndex);
+	EntityPlacer.place(location.getActivePlane(), objectType, cell.getX(), cell.getY());
 
 	unsetCell(cell);
 	return cell;

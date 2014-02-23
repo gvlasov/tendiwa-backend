@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.io.Files;
 import com.google.inject.Inject;
 import org.tendiwa.core.Directions;
+import org.tendiwa.core.Cell;
 import org.tendiwa.geometry.EnhancedRectangle;
 import org.tendiwa.geometry.RectangleSystem;
 import org.tendiwa.core.meta.GifSequenceWriter;
@@ -173,9 +174,9 @@ public Dimension getSize(RectangleSystem rs) {
 	Set<Integer> farthestPointsX = new HashSet<>();
 	Set<Integer> farthestPointsY = new HashSet<>();
 	for (EnhancedRectangle r : rs) {
-		Point p = r.getCorner(Directions.SE);
-		farthestPointsX.add(p.x);
-		farthestPointsY.add(p.y);
+		Cell p = r.getCorner(Directions.SE);
+		farthestPointsX.add(p.getX());
+		farthestPointsY.add(p.getY());
 	}
 	int maxX = Collections.max(farthestPointsX);
 	int maxY = Collections.max(farthestPointsY);

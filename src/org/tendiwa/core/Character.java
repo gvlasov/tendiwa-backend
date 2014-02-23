@@ -102,8 +102,8 @@ public void actAndWait(Runnable runnable) {
 
 protected void shootMissile(int toX, int toY, ItemPile missile) {
 	loseItem(missile);
-	EnhancedPoint end = seer.getRayEnd(toX, toY);
-	plane.addItem(missile, end.x, end.y);
+	Cell end = seer.getRayEnd(toX, toY);
+	plane.addItem(missile, end.getX(), end.getY());
 //	Cell aimCell = plane.getCell(toX, toY);
 //	if (aimCell.character() != null) {
 //		aimCell.character().getDamage(10, DamageType.PLAIN);
@@ -113,9 +113,9 @@ protected void shootMissile(int toX, int toY, ItemPile missile) {
 
 protected void shootMissile(int toX, int toY, UniqueItem item) {
 	loseItem(item);
-	EnhancedPoint end = seer.getRayEnd(toX, toY);
-	plane.addItem(item, end.x, end.y);
-	Character character = plane.getCharacter(end.x, end.y);
+	Cell end = seer.getRayEnd(toX, toY);
+	plane.addItem(item, end.getX(), end.getY());
+	Character character = plane.getCharacter(end.getX(), end.getY());
 	if (character != null) {
 		character.getDamage(10, DamageType.PLAIN, this);
 	}
@@ -279,7 +279,7 @@ protected void push(Character character, Direction side) {
 		int bufX = character.x;
 		int bufY = character.y;
 		character.move(nx, ny, MovingStyle.STEP);
-		if (!new EnhancedPoint(x, y).isNear(nx, ny)) {
+		if (!new Cell(x, y).isNear(nx, ny)) {
 			move(bufX, bufY, MovingStyle.STEP);
 		}
 	}
@@ -296,7 +296,7 @@ public boolean canSee(int x, int y) {
 	return seer.canSee(x, y);
 }
 
-public EnhancedPoint[] rays(int startX, int startY, int endX, int endY) {
+public Cell[] rays(int startX, int startY, int endX, int endY) {
 	return seer.rays(startX, startY, endX, endY);
 }
 
@@ -620,8 +620,8 @@ public void shoot(UniqueItem weapon, Item projectile, int toX, int toY) {
 			projectile,
 			x,
 			y,
-			flight.endCoordinate.x,
-			flight.endCoordinate.y,
+			flight.endCoordinate.getX(),
+			flight.endCoordinate.getY(),
 			EventProjectileFly.FlightStyle.PROPELLED
 		));
 	}
@@ -639,14 +639,14 @@ public void shoot(UniqueItem weapon, Item projectile, int toX, int toY) {
 }
 
 private ProjectileFlight computeProjectileFlightEndCoordinate(UniqueItem weapon, Item projectile, int toX, int toY) {
-	EnhancedPoint endCoordinate = new EnhancedPoint(toX, toY);
-	EnhancedPoint[] vector = Chunk.vector(x, y, toX, toY);
+	Cell endCoordinate = new Cell(toX, toY);
+	Cell[] vector = Chunk.vector(x, y, toX, toY);
 	Character characterHit = null;
 	for (int i = 1; i < vector.length; i++) {
-		EnhancedPoint c = vector[i];
-		if (plane.hasCharacter(c.x, c.y) &&
+		Cell c = vector[i];
+		if (plane.hasCharacter(c.getX(), c.getY()) &&
 			testProjectileHit(weapon, projectile, toX, toY)) {
-			characterHit = plane.getCharacter(c.x, c.y);
+			characterHit = plane.getCharacter(c.getX(), c.getY());
 			endCoordinate = c;
 		}
 	}
@@ -733,10 +733,10 @@ public void setWorld(World world) {
 
 private class ProjectileFlight {
 
-	private final EnhancedPoint endCoordinate;
+	private final Cell endCoordinate;
 	private final Character characterHit;
 
-	public ProjectileFlight(EnhancedPoint endCoordinate, Character characterHit) {
+	public ProjectileFlight(Cell endCoordinate, Character characterHit) {
 
 		this.endCoordinate = endCoordinate;
 		this.characterHit = characterHit;

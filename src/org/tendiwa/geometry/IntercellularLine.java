@@ -3,6 +3,7 @@ package org.tendiwa.geometry;
 import org.tendiwa.core.CardinalDirection;
 import org.tendiwa.core.Directions;
 import org.tendiwa.core.Orientation;
+import org.tendiwa.core.meta.CellPosition;
 
 import java.awt.*;
 
@@ -100,19 +101,19 @@ public class IntercellularLine {
 		}
 		return Math.abs(constantCoord - line.constantCoord);
 	}
-	boolean hasPointFromSide(Point point, CardinalDirection direction) {
+	boolean hasPointFromSide(CellPosition point, CardinalDirection direction) {
 		assert point != null;
 		assert direction != null;
 		assert direction.isVertical() != orientation.isVertical();
 		switch (direction) {
 			case N:
-				return point.y <= getStaticCoordFromSide(Directions.N);
+				return point.getY() <= getStaticCoordFromSide(Directions.N);
 			case E:
-				return point.x >= getStaticCoordFromSide(Directions.E);
+				return point.getX() >= getStaticCoordFromSide(Directions.E);
 			case S:
-				return point.y >= getStaticCoordFromSide(Directions.S);
+				return point.getY() >= getStaticCoordFromSide(Directions.S);
 			case W:
-				return point.x <= getStaticCoordFromSide(Directions.W);
+				return point.getX() <= getStaticCoordFromSide(Directions.W);
 			default:
 				return false;
 		}

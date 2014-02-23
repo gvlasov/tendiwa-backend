@@ -133,21 +133,21 @@ private void compute() {
 	seenItems = seenItemsBuilder.build();
 //	int worldPrevVisionSquareStartX = xPrev - Seer.VISION_RANGE;
 //	int worldPrevVisionSquareStartY = yPrev - Seer.VISION_RANGE;
-//	SimpleGraph<EnhancedPoint, DefaultEdge> graphPrevious = getVisibleBordersGraph(
+//	SimpleGraph<Cell, DefaultEdge> graphPrevious = getVisibleBordersGraph(
 //		worldPrevVisionSquareStartX,
 //		worldPrevVisionSquareStartY,
 //		visionPreviousContent
 //	);
-//	SimpleGraph<EnhancedPoint, DefaultEdge> graphCurrent = getVisibleBordersGraph(
+//	SimpleGraph<Cell, DefaultEdge> graphCurrent = getVisibleBordersGraph(
 //		worldPrevVisionSquareStartX + dx,
 //		worldPrevVisionSquareStartY + dy,
 //		visionCurrentContent
 //	);
 //	for (RenderCell seenCell : seenCells) {
-//		EnhancedPoint vertex = new EnhancedPoint(seenCell.x, seenCell.y);
+//		Cell vertex = new Cell(seenCell.x, seenCell.y);
 //		assert graphCurrent.containsVertex(vertex) : "No seen vertex " + vertex + " in " + graphCurrent.vertexSet();
 //		for (DefaultEdge edge : graphCurrent.edgesOf(vertex)) {
-//			EnhancedPoint anotherPoint = graphCurrent.getEdgeSource(edge).equals(vertex) ? graphCurrent.getEdgeTarget(edge) : graphCurrent.getEdgeSource(edge);
+//			Cell anotherPoint = graphCurrent.getEdgeSource(edge).equals(vertex) ? graphCurrent.getEdgeTarget(edge) : graphCurrent.getEdgeSource(edge);
 //			CardinalDirection side = (CardinalDirection) Directions.shiftToDirection(seenCell.x - anotherPoint.x, seenCell.y - anotherPoint.y);
 //			if (side.isHorizontal() && anotherPoint.x == worldPrevVisionSquareStartX + dx + ModifiableCellVisionCache.VISION_CACHE_WIDTH - 1) {
 //				continue;
@@ -168,10 +168,10 @@ private void compute() {
 //	}
 //	for (int hash : unseenCells) {
 //		int[] coords = Chunk.cellHashToCoords(hash, worldHeight);
-//		EnhancedPoint vertex = new EnhancedPoint(coords[0], coords[1]);
+//		Cell vertex = new Cell(coords[0], coords[1]);
 //		assert graphPrevious.containsVertex(vertex) : "No unseen vertex " + vertex + " in " + graphPrevious.vertexSet();
 //		for (DefaultEdge edge : graphPrevious.edgesOf(vertex)) {
-//			EnhancedPoint anotherPoint = graphPrevious.getEdgeSource(edge).equals(vertex) ? graphPrevious.getEdgeTarget(edge) : graphPrevious.getEdgeSource(edge);
+//			Cell anotherPoint = graphPrevious.getEdgeSource(edge).equals(vertex) ? graphPrevious.getEdgeTarget(edge) : graphPrevious.getEdgeSource(edge);
 //			CardinalDirection side = (CardinalDirection) Directions.shiftToDirection(coords[0] - anotherPoint.x, coords[1] - anotherPoint.y);
 //			if (side.isHorizontal() && anotherPoint.x == worldPrevVisionSquareStartX + ModifiableCellVisionCache.VISION_CACHE_WIDTH - 1) {
 //				continue;

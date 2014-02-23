@@ -55,8 +55,8 @@ public int hashCode() {
 	return result;
 }
 
-public EnhancedPoint toPoint() {
-	return new EnhancedPoint(x, y);
+public Cell toPoint() {
+	return new Cell(x, y);
 }
 
 @Override

@@ -1,7 +1,10 @@
 package org.tendiwa.core.vision;
 
 import org.tendiwa.core.*;
-import org.tendiwa.core.meta.*;
+import org.tendiwa.core.meta.CellPosition;
+import org.tendiwa.core.meta.DoubleRange;
+import org.tendiwa.core.meta.DoubleRangeCollection;
+import org.tendiwa.core.meta.Utils;
 import org.tendiwa.geometry.EnhancedRectangle;
 
 import java.awt.*;
@@ -12,7 +15,6 @@ private final static double EPSILON = 0.01;
 private final static double visionSourceDiameter = 0.7;
 public final ModifiableCellVisionCache visionCache;
 final CellVisionCache visionPrevious;
-private World world;
 private final CellPosition character;
 private final SightPassabilityCriteria vision;
 /**
@@ -23,6 +25,7 @@ private final SightPassabilityCriteria vision;
 private final ObstaclesCache obstaclesCache;
 private final ModifiableBorderVisionCache borderVision;
 private final BorderVisionCache borderVisionPrevious;
+private World world;
 
 public Seer(CellPosition character, SightPassabilityCriteria vision, ObstacleFindingStrategy strategy) {
 	this.character = character;
@@ -32,10 +35,6 @@ public Seer(CellPosition character, SightPassabilityCriteria vision, ObstacleFin
 	this.visionPrevious = new CellVisionCache();
 	this.borderVision = new ModifiableBorderVisionCache(character);
 	this.borderVisionPrevious = new BorderVisionCache(character);
-}
-public void setWorld(World world) {
-	this.world = world;
-	obstaclesCache.setWorld(world);
 }
 
 /**
@@ -55,6 +54,15 @@ public void setWorld(World world) {
  */
 public static int getStartIndexOfRelativeTable(int centerCoordinate, int tableRadius) {
 	return Math.max(0, -(centerCoordinate - tableRadius));
+}
+
+public static double getAngle(int fromX, int fromY, int toX, int toY) {
+	return Math.atan2(toY - fromY, toX - fromX);
+}
+
+public void setWorld(World world) {
+	this.world = world;
+	obstaclesCache.setWorld(world);
 }
 
 /**
@@ -88,10 +96,6 @@ public int getEndIndexOfRelativeTableX(int centerCoordinate, int tableRadius) {
  */
 public int getEndIndexOfRelativeTableY(int centerCoordinate, int tableRadius) {
 	return Math.min(tableRadius * 2 + 1, world.getHeight() - centerCoordinate + tableRadius);
-}
-
-public static double getAngle(int fromX, int fromY, int toX, int toY) {
-	return Math.atan2(toY - fromY, toX - fromX);
 }
 
 /**
@@ -205,7 +209,7 @@ private boolean obstacleMayBlockVision(Obstacle transformed, int toX, int toY) {
 		// If the obstacle is behind target cell
 		return false;
 	}
-	if (transformed.getY() < -EnhancedPoint.distanceDouble(toX, toY, character.getX(), character.getY())) {
+	if (transformed.getY() < -Cell.distanceDouble(toX, toY, character.getX(), character.getY())) {
 		// If the obstacle is behind Seer
 		return false;
 	}
@@ -229,7 +233,7 @@ private boolean cellIsInVisibilityRectangle(int x, int y) {
  * @return true if cell is close enough to be seen; false if it is too far away to be seen.
  */
 private boolean cellIsInVisibilityRange(int x, int y) {
-	return Math.floor(new EnhancedPoint(character.getX(), character.getY()).distance(x, y)) <= Seer.VISION_RANGE;
+	return Math.floor(new Cell(character.getX(), character.getY()).distanceInt(x, y)) <= Seer.VISION_RANGE;
 }
 
 /**
@@ -251,28 +255,28 @@ public void invalidateVisionCache() {
 	obstaclesCache.invalidate();
 }
 
-public EnhancedPoint getRayEnd(int endX, int endY) {
-	EnhancedPoint characterCoord = new EnhancedPoint(character.getX(), character.getY());
+public Cell getRayEnd(int endX, int endY) {
+	Cell characterCoord = new Cell(character.getX(), character.getY());
 	if (characterCoord.isNear(endX, endY) || character.getX() == endX && character.getY() == endY) {
-		return new EnhancedPoint(endX, endY);
+		return new Cell(endX, endY);
 	}
 	if (endX == character.getX() || endY == character.getY()) {
 		if (endX == character.getX()) {
 			int dy = Math.abs(endY - character.getY()) / (endY - character.getY());
 			for (int i = character.getY() + dy; i != endY + dy; i += dy) {
 				if (!vision.canSee(endX, i)) {
-					return new EnhancedPoint(endX, i - dy);
+					return new Cell(endX, i - dy);
 				}
 			}
 		} else {
 			int dx = Math.abs(endX - character.getX()) / (endX - character.getX());
 			for (int i = character.getX() + dx; i != endX + dx; i += dx) {
 				if (!vision.canSee(i, endY)) {
-					return new EnhancedPoint(i - dx, endY);
+					return new Cell(i - dx, endY);
 				}
 			}
 		}
-		return new EnhancedPoint(endX, endY);
+		return new Cell(endX, endY);
 	} else if (Math.abs(endX - character.getX()) == 1) {
 		int dy = Math.abs(endY - character.getY()) / (endY - character.getY());
 		int y1 = endY, y2 = endY;
@@ -282,7 +286,7 @@ public EnhancedPoint getRayEnd(int endX, int endY) {
 				break;
 			}
 			if (i == endY) {
-				return new EnhancedPoint(endX, endY);
+				return new Cell(endX, endY);
 			}
 		}
 		for (int i = character.getY() + dy; i != endY + dy; i += dy) {
@@ -291,25 +295,24 @@ public EnhancedPoint getRayEnd(int endX, int endY) {
 				break;
 			}
 		}
-		EnhancedPoint answer;
-		if (characterCoord.distance(endX, y1) > characterCoord.distance(character.getX(), y2)) {
-			answer = new EnhancedPoint(endX, y1);
+		Cell answer;
+		if (characterCoord.distanceDouble(endX, y1) > characterCoord.distanceDouble(character.getX(), y2)) {
+			answer = new Cell(endX, y1);
 		} else {
-			answer = new EnhancedPoint(character.getX(), y2);
+			answer = new Cell(character.getX(), y2);
 		}
-		if (answer.x == character.getX()
-			&& answer.y == y2
+		if (answer.getX() == character.getX()
+			&& answer.getY() == y2
 			&& vision.canSee(endX, endY)) {
 			// If answer is the furthest cell on the same line, but
 			// {endX:endY} is free
-			answer.x = endX;
-			answer.y = endY;
-		} else if (answer.x == character.getX()
-			&& answer.y == y2
+			answer = new Cell(endX, endY);
+		} else if (answer.getX() == character.getX()
+			&& answer.getY() == y2
 			&& !vision.canSee(endX, endY)) {
 			// If answer is the furthest cell on the same line, and
 			// {endX:endY} has no passage
-			answer.y = endY - dy;
+			answer = new Cell(answer.getX(), answer.getY() - dy);
 		}
 		return answer;
 	} else if (Math.abs(endY - character.getY()) == 1) {
@@ -321,7 +324,7 @@ public EnhancedPoint getRayEnd(int endX, int endY) {
 				break;
 			}
 			if (i == endX) {
-				return new EnhancedPoint(endX, endY);
+				return new Cell(endX, endY);
 			}
 		}
 		for (int i = character.getX() + dx; i != endX + dx; i += dx) {
@@ -330,25 +333,24 @@ public EnhancedPoint getRayEnd(int endX, int endY) {
 				break;
 			}
 		}
-		EnhancedPoint answer;
-		if (characterCoord.distance(x1, endY) > characterCoord.distance(x2, character.getY())) {
-			answer = new EnhancedPoint(x1, endY);
+		Cell answer;
+		if (characterCoord.distanceDouble(x1, endY) > characterCoord.distanceDouble(x2, character.getY())) {
+			answer = new Cell(x1, endY);
 		} else {
-			answer = new EnhancedPoint(x2, character.getY());
+			answer = new Cell(x2, character.getY());
 		}
-		if (answer.x == x2
-			&& answer.y == character.getY()
+		if (answer.getX() == x2
+			&& answer.getY() == character.getY()
 			&& vision.canSee(endX, endY)) {
 			// If answer is the furthest cell on the same line, but
 			// {endX:endY} is free
-			answer.x = endX;
-			answer.y = endY;
-		} else if (answer.x == x2
-			&& answer.y == character.getY()
+			answer = new Cell(endX, endY);
+		} else if (answer.getX() == x2
+			&& answer.getY() == character.getY()
 			&& !vision.canSee(endX, endY)) {
 			// If answer is the furthest cell on the same line, and
 			// {endX:endY} has no passage
-			answer.x = endX - dx;
+			answer = new Cell(answer.getX() - dx, answer.getY());
 		}
 
 		return answer;
@@ -362,11 +364,11 @@ public EnhancedPoint getRayEnd(int endX, int endY) {
 			cx += dx;
 			cy += dy;
 			if (!vision.canSee(cx, cy)) {
-				return new EnhancedPoint(cx - dx, cy - dy);
+				return new Cell(cx - dx, cy - dy);
 			}
 
 		}
-		return new EnhancedPoint(endX, endY);
+		return new Cell(endX, endY);
 	} else {
 		double[][] start = new double[2][2];
 		double[] end = new double[4];
@@ -380,7 +382,7 @@ public EnhancedPoint getRayEnd(int endX, int endY) {
 		// start[0][1]=this.y;
 		// start[1][0]=this.x;
 		start[1][1] = (endY > character.getY()) ? character.getY() + 0.5 : character.getY() - 0.5;
-		EnhancedPoint[] rays = rays(character.getX(), character.getY(), endX, endY);
+		Cell[] rays = rays(character.getX(), character.getY(), endX, endY);
 		int breakX = character.getX(), breakY = character.getY();
 		jump:
 		for (int k = 0; k < 3; k++) {
@@ -394,11 +396,11 @@ public EnhancedPoint getRayEnd(int endX, int endY) {
 				double yEnd = end[endNumY];
 				double xStart = start[j][0];
 				double yStart = start[j][1];
-				for (EnhancedPoint c : rays) {
+				for (Cell c : rays) {
 					try {
-						if (!vision.canSee(c.x, c.y)) {
-							if (Math.abs(((yStart - yEnd) * c.x
-								+ (xEnd - xStart) * c.y + (xStart
+						if (!vision.canSee(c.getX(), c.getY())) {
+							if (Math.abs(((yStart - yEnd) * c.getX()
+								+ (xEnd - xStart) * c.getY() + (xStart
 								* yEnd - yStart * xEnd))
 								/ Math.sqrt(Math.abs((xEnd - xStart)
 								* (xEnd - xStart)
@@ -408,21 +410,21 @@ public EnhancedPoint getRayEnd(int endX, int endY) {
 							}
 
 						} else {
-							breakX = c.x;
-							breakY = c.y;
+							breakX = c.getX();
+							breakY = c.getY();
 						}
 					} catch (Exception e) {
 						throw new Error();
 					}
 				}
-				return new EnhancedPoint(endX, endY);
+				return new Cell(endX, endY);
 			}
 		}
-		return new EnhancedPoint(breakX, breakY);
+		return new Cell(breakX, breakY);
 	}
 }
 
-public EnhancedPoint[] rays(int startX, int startY, int endX, int endY) {
+public Cell[] rays(int startX, int startY, int endX, int endY) {
 	return Utils.concatAll(
 		Chunk.vector(startX, startY, endX, endY),
 		Chunk.vector(startX, startY + (endY > startY ? 1 : -1), endX + (endX > startX ? -1 : 1), endY),
@@ -568,7 +570,7 @@ public BorderVisionCache getPreviousBorderVisionCache() {
  * @return Minimum rectangle where this Seer's vision range is contained.
  */
 public EnhancedRectangle getVisionRectangle() {
-	EnhancedPoint startPoint = getActualVisionRecStartPoint();
+	Cell startPoint = getActualVisionRecStartPoint();
 	int actualWorldEndX = Math.min(
 		world.getWidth() - 1,
 		character.getX() - Seer.VISION_RANGE + ModifiableCellVisionCache.VISION_CACHE_WIDTH
@@ -578,10 +580,10 @@ public EnhancedRectangle getVisionRectangle() {
 		character.getY() - Seer.VISION_RANGE + ModifiableCellVisionCache.VISION_CACHE_WIDTH
 	);
 	return new EnhancedRectangle(
-		startPoint.x,
-		startPoint.y,
-		actualWorldEndX - startPoint.x,
-		actualWorldEndY - startPoint.y
+		startPoint.getX(),
+		startPoint.getY(),
+		actualWorldEndX - startPoint.getX(),
+		actualWorldEndY - startPoint.getY()
 	);
 }
 
@@ -590,8 +592,8 @@ public EnhancedRectangle getVisionRectangle() {
  *
  * @return North-western point of a rectangle that contains the vision range of this Seer.
  */
-public EnhancedPoint getActualVisionRecStartPoint() {
-	return new EnhancedPoint(
+public Cell getActualVisionRecStartPoint() {
+	return new Cell(
 		Math.max(0, character.getX() - Seer.VISION_RANGE),
 		Math.max(0, character.getY() - Seer.VISION_RANGE)
 	);
@@ -602,8 +604,8 @@ public EnhancedPoint getActualVisionRecStartPoint() {
  *
  * @return North-western point of a rectangle that contains the vision range of this Seer.
  */
-public EnhancedPoint getTheoreticalVisionRecStartPoint() {
-	return new EnhancedPoint(
+public Cell getTheoreticalVisionRecStartPoint() {
+	return new Cell(
 		character.getX() - Seer.VISION_RANGE,
 		character.getY() - Seer.VISION_RANGE
 	);

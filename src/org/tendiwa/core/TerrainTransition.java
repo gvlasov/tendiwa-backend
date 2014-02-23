@@ -7,10 +7,12 @@ import org.tendiwa.geometry.Segment;
 import java.util.HashSet;
 
 /**
- * <p>This class creates smooth transitions from one ammunitionType of terrain (or other {@link PlaceableInCell} entities) to
- * another.</p> <p>It takes a rectangle and marks several of its {@link Direction}s as a "from" directions, and from
- * those edges of the rectangle will gradually be placed tiles that contain certain placeable entities. They will head
- * to the middle of the rectangle and after several cells will be replaced by {@code to} entities.</p>
+ * This class creates smooth transitions from one ammunitionType of terrain (or other {@link PlaceableInCell} entities)
+ * to another.
+ * <p/>
+ * It takes a rectangle and marks several of its {@link Direction}s as a "from" directions, and from those edges of the
+ * rectangle will gradually be placed tiles that contain certain placeable entities. They will head to the middle of the
+ * rectangle and after several cells will be replaced by {@code to} entities.
  */
 public class TerrainTransition {
 private static final TerrainDiffusionStopCondition DEFAULT_STOP_CONDITION = new TerrainDiffusionStopCondition() {
@@ -118,15 +120,16 @@ public TerrainTransition(Location location, EnhancedRectangle rectangle, TypePla
 }
 
 private void drawNoSideCorner(Location location, TypePlaceableInCell from, EnhancedRectangle rectangle, int depth, OrdinalDirection corner) {
-	EnhancedPoint diagonalLineStartPoint = rectangle.getCorner(corner);
+	Cell diagonalLineStartPoint = rectangle.getCorner(corner);
 	CardinalDirection[] components = corner.opposite().getComponents();
 	for (int i = 0; i < depth; i++) {
-		EnhancedPoint diagonalLineNextPoint = new EnhancedPoint(diagonalLineStartPoint);
-		for (int j = 0; j <= i; j++, diagonalLineNextPoint = diagonalLineNextPoint.moveToSide(Directions.getDirectionBetween(components[0].opposite(), components[1]))) {
+		Cell diagonalLineNextPoint = new Cell(diagonalLineStartPoint);
+		for (
+			int j = 0; j <= i; j++, diagonalLineNextPoint = diagonalLineNextPoint.moveToSide(Directions.getDirectionBetween(components[0].opposite(), components[1]))) {
 			if (i == depth - 1 && Chance.roll(20)) {
 				continue;
 			}
-			EntityPlacer.place(location.getActivePlane(), from, location.x + diagonalLineNextPoint.x, location.y + diagonalLineNextPoint.y);
+			EntityPlacer.place(location.getActivePlane(), from, location.x + diagonalLineNextPoint.getX(), location.y + diagonalLineNextPoint.getY());
 
 		}
 		diagonalLineStartPoint = diagonalLineStartPoint.newRelativePoint(components[0]);
@@ -134,8 +137,8 @@ private void drawNoSideCorner(Location location, TypePlaceableInCell from, Enhan
 }
 
 private void drawTwoSideCorner(Location location, TypePlaceableInCell from, EnhancedRectangle rectangle, int depth, OrdinalDirection corner) {
-	EnhancedPoint cornerPoint = rectangle.getCorner(corner);
-	EnhancedRectangle cornerRec = EnhancedRectangle.growFromPoint(cornerPoint.x, cornerPoint.y, corner.opposite(), depth, depth);
+	Cell cornerPoint = rectangle.getCorner(corner);
+	EnhancedRectangle cornerRec = EnhancedRectangle.growFromPoint(cornerPoint.getX(), cornerPoint.getY(), corner.opposite(), depth, depth);
 	location.square(cornerRec, from, true);
 }
 
@@ -147,7 +150,7 @@ private void drawTwoSideCorner(Location location, TypePlaceableInCell from, Enha
  * @param side
  */
 private void drawSingleSideCorner(Location location, TypePlaceableInCell from, EnhancedRectangle rectangle, int depth, OrdinalDirection corner, CardinalDirection side) {
-	EnhancedPoint cornerPoint = rectangle.getCorner(corner);
+	Cell cornerPoint = rectangle.getCorner(corner);
 	CardinalDirection anotherComponent = corner.anotherComponent(side);
 	Orientation rectangleSideOrientation = anotherComponent.getOrientation();
 	int sideGrowing = -side.getGrowing();
@@ -157,15 +160,15 @@ private void drawSingleSideCorner(Location location, TypePlaceableInCell from, E
 			if (j == i && Chance.roll(10)) {
 				continue;
 			}
-			EnhancedPoint cornerFormingCell = EnhancedPoint.fromStaticAndDynamic(
+			Cell cornerFormingCell = Cell.fromStaticAndDynamic(
 				cornerPoint.getStaticCoord(rectangleSideOrientation) + j * sideGrowing,
 				cornerPoint.getDynamicCoord(rectangleSideOrientation) + i * segmentGrowing,
 				rectangleSideOrientation
 			);
-			EntityPlacer.place(location.getActivePlane(), from, location.x + cornerFormingCell.x, location.y + cornerFormingCell.y);
+			EntityPlacer.place(location.getActivePlane(), from, location.x + cornerFormingCell.getX(), location.y + cornerFormingCell.getY());
 		}
 	}
-	EnhancedRectangle cornerRectangle = EnhancedRectangle.growFromPoint(cornerPoint.x, cornerPoint.y, corner.opposite(), depth, depth);
+	EnhancedRectangle cornerRectangle = EnhancedRectangle.growFromPoint(cornerPoint.getX(), cornerPoint.getY(), corner.opposite(), depth, depth);
 	cornerRectangle.getSideAsSegment(side);
 }
 

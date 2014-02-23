@@ -4,7 +4,6 @@ import org.jgrapht.Graph;
 import org.tendiwa.core.meta.Coordinate;
 import org.tendiwa.core.meta.Chance;
 import org.tendiwa.core.settlements.Road;
-import org.tendiwa.core.settlements.Settlement;
 import org.tendiwa.core.settlements.BuildingPlace;
 import org.tendiwa.geometry.EnhancedRectangle;
 import org.tendiwa.geometry.RectangleSystem;
@@ -28,7 +27,7 @@ protected Collection<EnhancedRectangle> rooms;
 protected TerrainModifier terrainModifier;
 protected EnhancedRectangle lobby;
 protected ArrayList<CardinalDirection> doorSides = new ArrayList<>();
-protected EnhancedPoint frontDoor;
+protected Cell frontDoor;
 /**
  * ArrayList of rectangleIds
  */
@@ -91,25 +90,25 @@ public CardinalDirection getDoorSide() {
 	}
 }
 
-public EnhancedPoint placeDoor(EnhancedRectangle r, CardinalDirection side, ObjectType object) {
+public Cell placeDoor(EnhancedRectangle r, CardinalDirection side, ObjectType object) {
 	/**
 	 * Places door in the middle of particular side of room.
 	 */
-	EnhancedPoint c = r.getMiddleOfSide(side).moveToSide(side, 1);
-	EntityPlacer.place(settlement.getActivePlane(), object, c.x, c.y);
+	Cell c = r.getMiddleOfSide(side).moveToSide(side, 1);
+	EntityPlacer.place(settlement.getActivePlane(), object, c.getX(), c.getY());
 	return c;
 }
 
-public EnhancedPoint placeDoor(EnhancedRectangle r, CardinalDirection side, CardinalDirection endOfSide, int depth, ObjectType door) {
+public Cell placeDoor(EnhancedRectangle r, CardinalDirection side, CardinalDirection endOfSide, int depth, ObjectType door) {
 	/**
 	 * Places door in the particular cell on particular side of room
 	 */
-	EnhancedPoint c = r.getCellFromSide(side, endOfSide, depth).moveToSide(side, 1);
-	EntityPlacer.place(settlement.getActivePlane(), door, c.x, c.y);
+	Cell c = r.getCellFromSide(side, endOfSide, depth).moveToSide(side, 1);
+	EntityPlacer.place(settlement.getActivePlane(), door, c.getX(), c.getY());
 	return c;
 }
 
-public EnhancedPoint placeFrontDoor(CardinalDirection side, ObjectType door) {
+public Cell placeFrontDoor(CardinalDirection side, ObjectType door) {
 	HashMap<Integer, Integer> cells = findDoorAppropriateCells(side);
 	if (cells.size() == 0) {
 		throw new Error("Nowhere to place the door from side " + side);
@@ -146,24 +145,24 @@ public EnhancedPoint placeFrontDoor(CardinalDirection side, ObjectType door) {
 	if (lobby == null) {
 		throw new Error("Can't determine the lobby room because desired cell is not in this rectangle system");
 	}
-	frontDoor = new EnhancedPoint(dx, dy);
+	frontDoor = new Cell(dx, dy);
 	return frontDoor;
 }
 
-public EnhancedPoint placeFrontDoor(EnhancedRectangle r, CardinalDirection side, ObjectType door) {
+public Cell placeFrontDoor(EnhancedRectangle r, CardinalDirection side, ObjectType door) {
 	/**
 	 * Place front door in the middle of rectangle from particular side.
 	 */
-	EnhancedPoint doorCoord = r.getMiddleOfSide(side).moveToSide(side, 1);
+	Cell doorCoord = r.getMiddleOfSide(side).moveToSide(side, 1);
 
-	EntityPlacer.place(settlement.getActivePlane(), door, doorCoord.x, doorCoord.y);
+	EntityPlacer.place(settlement.getActivePlane(), door, doorCoord.getX(), doorCoord.getY());
 	lobby = r;
 	frontDoor = doorCoord;
 	return frontDoor;
 }
 
 public HashMap<Integer, Integer> findDoorAppropriateCells(CardinalDirection side) {
-	HashMap<Integer, Integer> cells = new HashMap<Integer, Integer>();
+	HashMap<Integer, Integer> cells = new HashMap<>();
 	Set<Integer> keys;
 	if (side == CardinalDirection.N) {
 		for (EnhancedRectangle r : rooms) {

@@ -1,15 +1,14 @@
 package tests.painting;
 
-import com.google.common.collect.ObjectArrays;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.tendiwa.core.EnhancedPoint;
+import org.tendiwa.core.Cell;
+import org.tendiwa.drawing.DrawingCell;
 import org.tendiwa.drawing.DrawingModule;
-import org.tendiwa.drawing.DrawingPoint;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.noise.Noise;
 
@@ -34,13 +33,13 @@ public void draw() {
 //			} else {
 			noise = noise(x, y, 7);
 //			}
-			EnhancedPoint point = new EnhancedPoint(x, y);
+			Cell point = new Cell(x, y);
 			if (noise > 145) {
-				canvas.draw(point, DrawingPoint.withColor(new Color((int)(noise*1.2), (int)(noise*1.2), (int)(noise*0.2))));
+				canvas.draw(point, DrawingCell.withColor(new Color((int) (noise * 1.2), (int) (noise * 1.2), (int) (noise * 0.2))));
 			} else if (noise > 125) {
-				canvas.draw(point, DrawingPoint.withColor(Color.GREEN));
+				canvas.draw(point, DrawingCell.withColor(Color.GREEN));
 			} else {
-				canvas.draw(point, DrawingPoint.withColor(new Color((int)(noise*0.3), (int)(noise*0.4), (int)(noise*0.4))));
+				canvas.draw(point, DrawingCell.withColor(new Color((int) (noise * 0.3), (int) (noise * 0.4), (int) (noise * 0.4))));
 			}
 		}
 	}

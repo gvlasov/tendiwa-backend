@@ -1,6 +1,6 @@
 package org.tendiwa.core.settlements;
 
-import org.tendiwa.core.EnhancedPoint;
+import org.tendiwa.core.Cell;
 import org.tendiwa.geometry.EnhancedRectangle;
 
 import java.util.ArrayList;
@@ -9,8 +9,8 @@ public class QuarterSystem {
 private static final char EMPTY = '.';
 private static final char ROAD = '/';
 private static final char QUARTER = '#';
-public ArrayList<Quarter> quarters = new ArrayList<Quarter>();
-public ArrayList<BuildingPlace> buildingPlaces = new ArrayList<BuildingPlace>();
+public ArrayList<Quarter> quarters = new ArrayList<>();
+public ArrayList<BuildingPlace> buildingPlaces = new ArrayList<>();
 Settlement settlement;
 private char[][] grid;
 
@@ -27,7 +27,7 @@ public void showGrid() {
 	}
 }
 
-public void build(ArrayList<EnhancedPoint> points) {
+public void build(ArrayList<Cell> points) {
 	/**
 	 * Builds quarter system from significant points of road system
 	 */
@@ -41,16 +41,16 @@ public void build(ArrayList<EnhancedPoint> points) {
 	}
 	for (Road road : settlement.roadSystem.roads) {
 		if (road.orientation.isVertical()) {
-			for (int y = road.start.y; y <= road.end.y; y++) {
-				grid[road.start.x][y] = ROAD;
+			for (int y = road.start.getY(); y <= road.end.getY(); y++) {
+				grid[road.start.getX()][y] = ROAD;
 			}
 		} else {
-			for (int x = road.start.x; x <= road.end.x; x++) {
-				grid[x][road.start.y] = ROAD;
+			for (int x = road.start.getX(); x <= road.end.getX(); x++) {
+				grid[x][road.start.getY()] = ROAD;
 			}
 		}
 	}
-	for (EnhancedPoint point : points) {
+	for (Cell point : points) {
 		findQuarter(point, 1, 1);
 		findQuarter(point, 1, -1);
 		findQuarter(point, -1, 1);
@@ -67,10 +67,10 @@ public void build(ArrayList<EnhancedPoint> points) {
  * Find empty area from the particular side of point. SideTest is determined by dx and dy, both of which can be either 1
  * or -1. We expand the quarter until it stumbles upon a road, border of location or another quarter.
  */
-private void findQuarter(EnhancedPoint point, int dx, int dy) {
+private void findQuarter(Cell point, int dx, int dy) {
 	assert Math.abs(dx) == 1 && Math.abs(dy) == 1;
-	EnhancedPoint cornerPoint = new EnhancedPoint(point.x + dx, point.y + dy);
-	if (cornerPoint.x < 0 || cornerPoint.y < 0 || cornerPoint.x >= settlement.getWidth() || cornerPoint.y >= settlement.getHeight()) {
+	Cell cornerPoint = new Cell(point.getX() + dx, point.getY() + dy);
+	if (cornerPoint.getX() < 0 || cornerPoint.getY() < 0 || cornerPoint.getX() >= settlement.getWidth() || cornerPoint.getY() >= settlement.getHeight()) {
 		return;
 	}
 	// grid[cornerPoint.x][cornerPoint.y] = QUARTER;
@@ -82,10 +82,10 @@ private void findQuarter(EnhancedPoint point, int dx, int dy) {
 	// becomes 1
 	for (int step = 0; !(xStop && yStop); step++) {
 		if (!xStop) {
-			int x = cornerPoint.x + dx * quarterWidth;
+			int x = cornerPoint.getX() + dx * quarterWidth;
 			if (x >= 0 && x < settlement.getWidth()) {
 				// If x is inside location
-				for (int y = cornerPoint.y; y != cornerPoint.y + dy * quarterHeight; y += dy) {
+				for (int y = cornerPoint.getY(); y != cornerPoint.getY() + dy * quarterHeight; y += dy) {
 					if (grid[x][y] != EMPTY) {
 						xStop = true;
 						break;
@@ -101,10 +101,10 @@ private void findQuarter(EnhancedPoint point, int dx, int dy) {
 			}
 		}
 		if (!yStop) {
-			int y = cornerPoint.y + dy * quarterHeight;
+			int y = cornerPoint.getY() + dy * quarterHeight;
 			if (y >= 0 && y < settlement.getHeight()) {
 				// If y is inside location
-				for (int x = cornerPoint.x; x != cornerPoint.x + dx * quarterWidth; x += dx) {
+				for (int x = cornerPoint.getX(); x != cornerPoint.getX() + dx * quarterWidth; x += dx) {
 					if (x == settlement.getWidth() || x == -1) {
 						yStop = true;
 						break;
@@ -124,9 +124,9 @@ private void findQuarter(EnhancedPoint point, int dx, int dy) {
 		}
 	}
 	if (quarterWidth > 3 && quarterHeight > 3) {
-		quarters.add(new Quarter(this, new EnhancedRectangle(dx == 1 ? cornerPoint.x
-			: cornerPoint.x - quarterWidth + 1, dy == 1 ? cornerPoint.y
-			: cornerPoint.y - quarterHeight + 1, quarterWidth, quarterHeight)));
+		quarters.add(new Quarter(this, new EnhancedRectangle(dx == 1 ? cornerPoint.getX()
+			: cornerPoint.getX() - quarterWidth + 1, dy == 1 ? cornerPoint.getY()
+			: cornerPoint.getY() - quarterHeight + 1, quarterWidth, quarterHeight)));
 	}
 }
 }

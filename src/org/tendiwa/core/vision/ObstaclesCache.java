@@ -22,8 +22,8 @@ private World world;
 private Collection<Border> obstacles = new LinkedList<>();
 private boolean built;
 private Map<Border, CardinalDirection> obstaclesOnSeersCellBorder = new HashMap<>();
-private Map<Border, EnhancedPoint> obstacleToObjectPosition = new HashMap<>();
-private Multimap<EnhancedPoint, Border> objectPositionToObstacle = HashMultimap.create();
+private Map<Border, Cell> obstacleToObjectPosition = new HashMap<>();
+private Multimap<Cell, Border> objectPositionToObstacle = HashMultimap.create();
 private CellPosition position;
 
 ObstaclesCache(
@@ -51,7 +51,7 @@ void buildObstacles() {
 	for (int x = startX; x <= endX; x++) {
 		for (int y = startY; y <= endY; y++) {
 			boolean[] sideOccupied = new boolean[]{false, false, false, false};
-			EnhancedPoint objectPosition = new EnhancedPoint(x, y);
+			Cell objectPosition = new Cell(x, y);
 			if (strategy.isCellBlockingVision(x, y)) {
 				sideOccupied[0] = true;
 				sideOccupied[1] = true;
@@ -76,9 +76,9 @@ void buildObstacles() {
 	built = true;
 }
 
-private void addObjectObstacles(EnhancedPoint objectPosition) {
+private void addObjectObstacles(Cell objectPosition) {
 	for (CardinalDirection side : CardinalDirection.values()) {
-		Border border = new Border(objectPosition.x, objectPosition.y, side);
+		Border border = new Border(objectPosition.getX(), objectPosition.getY(), side);
 		addSingleBorderObstacle(border);
 		obstacleToObjectPosition.put(border, objectPosition);
 	}
@@ -171,8 +171,8 @@ public Iterator<Border> iterator() {
  * @return
  */
 boolean isTargetObjectObstacle(Border obstacleBorder, int targetX, int targetY) {
-	EnhancedPoint objectPosition = obstacleToObjectPosition.get(obstacleBorder);
-	return objectPosition != null && objectPosition.x == targetX && objectPosition.y == targetY;
+	Cell objectPosition = obstacleToObjectPosition.get(obstacleBorder);
+	return objectPosition != null && objectPosition.getX() == targetX && objectPosition.getY() == targetY;
 }
 
 CardinalDirection getSideOfObstacleOnSeersCellBorder(Border obstacle) {
