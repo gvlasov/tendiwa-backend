@@ -110,11 +110,6 @@ public Segment[] splitWithSegment(int splitterStartCoord, int splitterLength) {
 	};
 }
 
-@Override
-public Segment clone() {
-	return new Segment(x, y, length, orientation);
-}
-
 public int getX() {
 	return x;
 }

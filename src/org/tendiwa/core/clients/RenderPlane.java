@@ -1,8 +1,9 @@
-package org.tendiwa.core;
+package org.tendiwa.core.clients;
 
 import com.google.common.collect.*;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import org.tendiwa.core.*;
 import org.tendiwa.core.events.EventFovChange;
 import org.tendiwa.core.events.EventInitialTerrain;
 
@@ -15,7 +16,7 @@ import java.util.Map;
  * This class is supposed to be used by anyone who creates his own Tendiwa client. It uses the philosophical metaphor of
  * a subjective and objective world, where subjective world (as a player character sees it) is represented by an
  * instance of this class, and the objective world (the world as it is if there's no observer) is represented by {@link
- * World} in backend.
+ * org.tendiwa.core.World} in backend.
  */
 public class RenderPlane {
 private final HorizontalPlane backendPlane;

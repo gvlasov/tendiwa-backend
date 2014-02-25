@@ -1,7 +1,6 @@
 package org.tendiwa.geometry;
 
 import com.google.common.collect.ImmutableSet;
-import org.tendiwa.core.Rotation;
 
 import java.awt.geom.AffineTransform;
 import java.util.Collection;

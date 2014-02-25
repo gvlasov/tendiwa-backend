@@ -24,6 +24,30 @@ public Cell(int x, int y) {
 	this.y = y;
 }
 
+@Override
+public boolean equals(Object o) {
+	if (this == o) return true;
+	if (o == null || getClass() != o.getClass()) return false;
+
+	Cell cell = (Cell) o;
+
+	if (x != cell.x) return false;
+	if (y != cell.y) return false;
+
+	return true;
+}
+
+public int chebyshevDistance(Cell cell) {
+	return Math.abs(Math.max(x - cell.x, y - cell.y));
+}
+
+@Override
+public int hashCode() {
+	int result = x;
+	result = 31 * result + y;
+	return result;
+}
+
 public Cell(Cell point) {
 	this.x = point.x;
 	this.y = point.y;
@@ -35,6 +59,10 @@ public int distanceInt(int x, int y) {
 
 public double distanceDouble(int x, int y) {
 	return Math.sqrt(Math.pow(x - this.x, 2) + Math.pow(y - this.y, 2));
+}
+
+public double distanceDouble(Cell cell) {
+	return Math.sqrt(Math.pow(cell.x - x, 2) + Math.pow(cell.y - y, 2));
 }
 
 public boolean isNear(int x, int y) {
@@ -79,7 +107,7 @@ public Cell moveToSide(Direction direction, int cells) {
  *
  * @param orientation
  * @return this.x if orientation is {@link Orientation#VERTICAL}, or this.y if orientation is {@link
- *         Orientation#HORIZONTAL}
+ * Orientation#HORIZONTAL}
  */
 public int getStaticCoord(Orientation orientation) {
 	if (orientation.isVertical()) {
@@ -94,7 +122,7 @@ public int getStaticCoord(Orientation orientation) {
  *
  * @param orientation
  * @return this.x if orientation is {@link Orientation#HORIZONTAL}, or this.y if orientation is {@link
- *         Orientation#VERTICAL}
+ * Orientation#VERTICAL}
  */
 public int getDynamicCoord(Orientation orientation) {
 	if (orientation.isHorizontal()) {

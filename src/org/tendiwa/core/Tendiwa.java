@@ -4,9 +4,6 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
-import com.google.inject.name.Named;
-import com.sun.nio.sctp.AssociationChangeNotification;
-import org.apache.log4j.Logger;
 import org.tendiwa.core.events.*;
 import org.tendiwa.core.observation.Observable;
 import org.tendiwa.core.player.PlayerModule;
@@ -18,18 +15,15 @@ import java.util.List;
 @Singleton
 public class Tendiwa extends Observable {
 private static final String MODULES_CONF_FILE = "/modules.conf";
-public static TendiwaClient CLIENT;
-private static AssociationChangeNotification clientEventManager;
 private static List<Class<? extends Module>> modulesCreatingWorlds;
 private static Injector injector;
-public final org.apache.log4j.Logger logger = Logger.getLogger("org/tendiwa");
 private final TimeStreamManager timeStreamManager;
 private final Server server;
 
 @Inject
 public Tendiwa(
 	TimeStreamManager timeStreamManager,
-    Server server
+	Server server
 
 ) {
 	this.timeStreamManager = timeStreamManager;
@@ -55,7 +49,6 @@ public static void main(String args[]) {
 		if (moduleDir == null) {
 			throw new RuntimeException("Modules directory not provided");
 		}
-	} else {
 	}
 }
 
@@ -81,7 +74,7 @@ public static List<Class<? extends Module>> loadModules() {
 
 public static Module getMainModule() {
 	try {
-		return (Module) modulesCreatingWorlds.iterator().next().newInstance();
+		return modulesCreatingWorlds.iterator().next().newInstance();
 	} catch (InstantiationException | IllegalAccessException e) {
 		throw new RuntimeException(e);
 	}

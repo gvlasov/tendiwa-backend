@@ -1,6 +1,8 @@
 package org.tendiwa.core;
 
 import com.google.common.collect.ImmutableList;
+import org.tendiwa.core.clients.RenderBorder;
+import org.tendiwa.core.clients.RenderCell;
 import org.tendiwa.core.events.EventFovChange;
 import org.tendiwa.core.vision.*;
 

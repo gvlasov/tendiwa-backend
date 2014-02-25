@@ -1,4 +1,6 @@
-package org.tendiwa.core;
+package org.tendiwa.core.clients;
+
+import org.tendiwa.core.ItemType;
 
 public class RememberedItem {
 private ItemType type;

@@ -1,4 +1,8 @@
-package org.tendiwa.core;
+package org.tendiwa.core.clients;
+
+import org.tendiwa.core.Border;
+import org.tendiwa.core.BorderObject;
+import org.tendiwa.core.CardinalDirection;
 
 /**
  * Same as {@link RenderCell}, but for borders between cells.

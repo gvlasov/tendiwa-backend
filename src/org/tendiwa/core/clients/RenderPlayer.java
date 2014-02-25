@@ -1,12 +1,14 @@
-package org.tendiwa.core;
+package org.tendiwa.core.clients;
+
+import org.tendiwa.core.Character;
 
 public class RenderPlayer {
 private int x;
 private int y;
 
 public RenderPlayer(Character player) {
-	x = player.x;
-	y = player.y;
+	x = player.getX();
+	y = player.getY();
 }
 
 public int getY() {

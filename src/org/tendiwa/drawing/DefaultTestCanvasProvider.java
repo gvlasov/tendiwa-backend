@@ -19,7 +19,7 @@ DefaultTestCanvasProvider(
 @Override
 public TestCanvas get() {
 	try {
-		return new TestCanvas(1, 1280, 1024, algorithms, true, 1);
+		return new TestCanvas(1, 800, 600, algorithms, true, 1);
 	} catch (IOException e) {
 		throw new RuntimeException(e);
 	}

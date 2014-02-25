@@ -1,7 +1,5 @@
 package org.tendiwa.geometry;
 
-import org.tendiwa.core.Rotation;
-
 /**
  * Placeable is a shape that consists of rectangles. Only Placeable objects can be placed into a {@link
  * org.tendiwa.geometry.RectangleSystemBuilder}.

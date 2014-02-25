@@ -1,4 +1,4 @@
-package org.tendiwa.core;
+package org.tendiwa.core.clients;
 
 public class RenderMiscellaneousCellContents {
 }

@@ -1,4 +1,9 @@
-package org.tendiwa.core;
+package org.tendiwa.core.clients;
+
+import org.tendiwa.core.FloorType;
+import org.tendiwa.core.GameObject;
+import org.tendiwa.core.WallType;
+import org.tendiwa.core.World;
 
 /**
  * Holds contents and visibility of a particular cell. Instances of this class are sent from backend to a frontend. Once

@@ -3,6 +3,8 @@ package org.tendiwa.core.events;
 import com.google.common.collect.ImmutableList;
 import org.tendiwa.core.*;
 import org.tendiwa.core.Character;
+import org.tendiwa.core.clients.RenderBorder;
+import org.tendiwa.core.clients.RenderCell;
 import org.tendiwa.core.observation.Event;
 import org.tendiwa.core.vision.*;
 import org.tendiwa.geometry.Cell;

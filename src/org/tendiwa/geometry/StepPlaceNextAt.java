@@ -1,7 +1,5 @@
 package org.tendiwa.geometry;
 
-import org.tendiwa.core.*;
-
 import static org.tendiwa.geometry.DSL.builder;
 import static org.tendiwa.geometry.DSL.somewhere;
 

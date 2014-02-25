@@ -1,7 +1,9 @@
-package org.tendiwa.core;
+package org.tendiwa.core.clients;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import org.tendiwa.core.HorizontalPlane;
+import org.tendiwa.core.World;
 import org.tendiwa.core.dependencies.PlayerCharacterProvider;
 import org.tendiwa.core.events.EventFovChange;
 import org.tendiwa.core.events.EventInitialTerrain;

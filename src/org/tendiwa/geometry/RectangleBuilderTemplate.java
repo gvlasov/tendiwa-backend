@@ -1,7 +1,5 @@
 package org.tendiwa.geometry;
 
-import org.tendiwa.core.Rotation;
-
 public abstract class RectangleBuilderTemplate implements Placeable {
     private RectangleSystem rs;
     public abstract RectangleSystem build();
