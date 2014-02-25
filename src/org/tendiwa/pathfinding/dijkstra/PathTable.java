@@ -1,12 +1,13 @@
-package org.tendiwa.core;
+package org.tendiwa.pathfinding.dijkstra;
 
 import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.Cells;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 
-public class PathTable {
+public class PathTable implements Iterable<Cell> {
 
 private static final int NOT_COMPUTED_CELL = -1;
 private final int startX;
@@ -39,6 +40,14 @@ public PathTable(int startX, int startY, PathWalker walker, int maxDepth) {
 	}
 	// Zero-wave consists of a single cell, which is path table's start
 	pathTable[maxDepth][maxDepth] = 0;
+}
+
+public PathTable computeFull() {
+	boolean computed;
+	do {
+		computed = nextWave();
+	} while (computed);
+	return this;
 }
 
 private boolean nextWave() {
@@ -135,7 +144,36 @@ public LinkedList<Cell> getPath(int x, int y) {
 	return path;
 }
 
-public boolean cellComputed(int x, int y) {
+public boolean isCellComputed(int x, int y) {
 	return pathTable[maxDepth + x - startX][maxDepth + y - startY] != NOT_COMPUTED_CELL;
+}
+
+@Override
+public Iterator<Cell> iterator() {
+	return new Iterator<Cell>() {
+		private int n = -1;
+		private final int maxN = width * width - 1;
+
+		@Override
+		public boolean hasNext() {
+			return n < maxN;
+		}
+
+		@Override
+		public Cell next() {
+			int x, y;
+			do {
+				n++;
+				x = n % width;
+				y = n / width;
+			} while (pathTable[x][y] == NOT_COMPUTED_CELL && n < maxN);
+			return new Cell(startX - maxDepth + x, startY - maxDepth + y);
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+	};
 }
 }

@@ -50,7 +50,7 @@ public Seer(CellPosition character, SightPassabilityCriteria vision, ObstacleFin
  * @param tableRadius
  * 	{@code (table_width-1)/2}
  * @return First index in relative table's coordinates that resides inside world rectangle.
- * @see PathTable For more information on relative tables.
+ * @see org.tendiwa.pathfinding.dijkstra.PathTable For more information on relative tables.
  * @see Seer#computeFullVisionCache()  For more information on relative tables.
  */
 public static int getStartIndexOfRelativeTable(int centerCoordinate, int tableRadius) {

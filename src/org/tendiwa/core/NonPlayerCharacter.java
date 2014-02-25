@@ -8,6 +8,8 @@ import org.tendiwa.core.observation.Observable;
 import org.tendiwa.core.player.SinglePlayerMode;
 import org.tendiwa.core.vision.Seer;
 import org.tendiwa.geometry.Cell;
+import org.tendiwa.pathfinding.dijkstra.PathTable;
+import org.tendiwa.pathfinding.dijkstra.Paths;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -305,7 +307,7 @@ public void action() {
 			// If we always use imaginary table.
 			PathTable imaginaryPathTable = Paths.getPathTable(x, y, this, MAX_PATH_TABLE_DEPTH);
 			imaginaryPathTable.getPath(activeEnemy.x, activeEnemy.y);
-			if (!imaginaryPathTable.cellComputed(activeEnemy.x, activeEnemy.y)) {
+			if (!imaginaryPathTable.isCellComputed(activeEnemy.x, activeEnemy.y)) {
 				// If path is blocked by characters
 				imaginaryPathTable = Paths.getPathTable(x, y, getPathWalkerOverCharacters(), MAX_PATH_TABLE_DEPTH);
 				LinkedList<Cell> imaginaryPath = imaginaryPathTable.getPath(activeEnemy.x, activeEnemy.y);
@@ -325,7 +327,7 @@ public void action() {
 		Coordinate lastSeenCoord = lastSeenEnemyCoord.get(enemyToChase);
 		PathTable pathTable = Paths.getPathTable(x, y, this, MAX_PATH_TABLE_DEPTH);
 
-		if (!pathTable.cellComputed(lastSeenCoord.x, lastSeenCoord.y)) {
+		if (!pathTable.isCellComputed(lastSeenCoord.x, lastSeenCoord.y)) {
 			// If path is blocked by characters
 			LinkedList<Cell> path = Paths.getPath(x, y, lastSeenCoord.x, lastSeenCoord.y, getPathWalkerOverCharacters(), MAX_PATH_TABLE_DEPTH);
 			assert path != null : lastSeenCoord;

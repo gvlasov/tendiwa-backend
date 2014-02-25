@@ -1,4 +1,4 @@
-package org.tendiwa.core;
+package org.tendiwa.pathfinding.dijkstra;
 
 import org.tendiwa.geometry.Cell;
 

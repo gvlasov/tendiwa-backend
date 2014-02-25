@@ -11,6 +11,7 @@ import org.tendiwa.core.player.SinglePlayerMode;
 import org.tendiwa.core.vision.Seer;
 import org.tendiwa.core.vision.SightPassabilityCriteria;
 import org.tendiwa.geometry.Cell;
+import org.tendiwa.pathfinding.dijkstra.PathWalker;
 
 import java.util.Collection;
 import java.util.HashMap;
