@@ -64,7 +64,7 @@ private void terrain(int width, int height) {
 			}
 		}
 	}
-	System.out.println("Terrain draw: "+time);
+	System.out.println("Terrain draw: " + time);
 }
 
 private void astar() {
@@ -81,7 +81,7 @@ private void astar() {
 				: Integer.MAX_VALUE;
 		}
 	}).path(start, end);
-	System.out.println("AStar: "+time);
+	System.out.println("AStar: " + time);
 	for (Cell cell : path) {
 		canvas.draw(cell, DrawingCell.withColor(Color.RED));
 	}
@@ -112,7 +112,7 @@ private void blob(int width, int height) {
 			}
 		}
 	);
-	System.out.println("Blob: "+time);
+	System.out.println("Blob: " + time);
 	for (Cell cell : blob) {
 		int value = blob.get(cell).value;
 		canvas.draw(cell, DrawingCell.withColor(new Color(value * 255 / 19, 0, 0)));

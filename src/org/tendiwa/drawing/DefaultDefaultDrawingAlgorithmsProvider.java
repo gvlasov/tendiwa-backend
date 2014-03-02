@@ -2,8 +2,12 @@ package org.tendiwa.drawing;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.vividsolutions.jts.awt.ShapeWriter;
+import com.vividsolutions.jts.geom.Geometry;
 import org.tendiwa.core.Chunk;
-import org.tendiwa.geometry.*;
+import org.tendiwa.geometry.RectangleSidePiece;
+import org.tendiwa.geometry.RectangleSystem;
+import org.tendiwa.geometry.Segment;
 
 import java.awt.*;
 
@@ -28,6 +32,12 @@ public DefaultDrawingAlgorithms get() {
 		DrawingRectangleSidePiece.withColor(Color.MAGENTA));
 	defaultDrawingAlgorithms.register(Segment.class, DrawingSegment.withColor(Color.BLUE));
 	defaultDrawingAlgorithms.register(Chunk.class, DrawingTerrain.defaultAlgorithm());
+	defaultDrawingAlgorithms.register(Geometry.class, new DrawingAlgorithm<Geometry>() {
+		@Override
+		public void draw(Geometry shape) {
+			this.fillShape(new ShapeWriter().toShape(shape), Color.RED);
+		}
+	});
 //	defaultDrawingAlgorithms.register(World.class, DrawingWorld.level(0));
 
 	return defaultDrawingAlgorithms;

@@ -4,16 +4,19 @@ import com.google.common.collect.Iterables;
 import com.google.common.io.Files;
 import com.google.inject.Inject;
 import org.tendiwa.core.Directions;
+import org.tendiwa.core.meta.GifSequenceWriter;
 import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.RectangleSystem;
-import org.tendiwa.core.meta.GifSequenceWriter;
 
 import javax.imageio.IIOException;
 import javax.imageio.stream.FileImageOutputStream;
 import javax.imageio.stream.ImageOutputStream;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -45,6 +48,7 @@ private final JFrame frame;
 private final DefaultDrawingAlgorithms defaultDrawingAlgorithms;
 private final JLayeredPane panel;
 private final int fps;
+private final String defaultTitle;
 Graphics graphics;
 BufferedImage image;
 Layer currentLayer;
@@ -64,7 +68,7 @@ private ImageOutputStream imageOutput;
 
 @Inject
 public TestCanvas(
-	int scale,
+	final int scale,
 	int width,
 	int height,
 	DefaultDrawingAlgorithms defaultDrawingAlgorithms,
@@ -76,7 +80,8 @@ public TestCanvas(
 	this.width = width;
 	this.height = height;
 	this.fps = fps;
-	frame = new JFrame("tendiwa canvas");
+	defaultTitle = "tendiwa canvas";
+	frame = new JFrame(defaultTitle);
 	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	panel = new JLayeredPane();
 	frame.add(panel);
@@ -96,6 +101,43 @@ public TestCanvas(
 	frame.pack();
 	frame.setVisible(visibility);
 	initGifWriter();
+	panel.addMouseMotionListener(new MouseMotionListener() {
+		@Override
+		public void mouseDragged(MouseEvent e) {
+
+		}
+
+		@Override
+		public void mouseMoved(MouseEvent e) {
+			frame.setTitle(defaultTitle + " " + e.getX() / scale + ":" + e.getY() / scale);
+		}
+	});
+	panel.addMouseListener(new MouseListener() {
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			System.out.println(e.getX() / scale + " " + e.getY() / scale);
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+
+		}
+	});
 }
 
 public static String colorName(Color colorParam) {

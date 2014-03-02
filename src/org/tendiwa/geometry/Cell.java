@@ -16,8 +16,8 @@ import org.tendiwa.core.meta.CellPosition;
  * y-coordinate (hence y is horizontal static) and different x coordinate (so x is horizontal dynamic)
  */
 public class Cell implements CellPosition {
-private final int x;
-private final int y;
+public final int x;
+public final int y;
 
 public Cell(int x, int y) {
 	this.x = x;

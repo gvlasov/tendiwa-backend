@@ -49,6 +49,7 @@
     <orderEntry type="library" name="jukito-1.4-SNAPSHOT" level="project" />
     <orderEntry type="library" name="javadoc" level="project" />
     <orderEntry type="library" name="A-star" level="project" />
+    <orderEntry type="library" name="jts" level="application" />
   </component>
 </module>
 

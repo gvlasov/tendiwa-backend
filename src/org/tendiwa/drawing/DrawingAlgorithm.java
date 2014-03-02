@@ -6,10 +6,12 @@ import org.tendiwa.geometry.Rectangle;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Line2D;
 
 public abstract class DrawingAlgorithm<T> {
 protected TestCanvas canvas;
 private static final AffineTransform defaultTransform = new AffineTransform();
+
 static {
 	defaultTransform.setToScale(1, 1);
 }
@@ -38,11 +40,11 @@ protected void drawRectangle(Rectangle r, Color color) {
 	g2d.setTransform(transform);
 	g2d.fill(r.toAwtRectangle());
 	g2d.setTransform(defaultTransform);
-//		canvas.graphics.fillRect(
-//			r.x * canvas.scale,
-//			r.y * canvas.scale,
-//			r.width * canvas.scale,
-//			r.height * canvas.scale);
+//	canvas.graphics.fillRect(
+//		r.getX() * canvas.scale,
+//		r.getY() * canvas.scale,
+//		r.getWidth() * canvas.scale,
+//		r.getHeight() * canvas.scale);
 }
 
 protected int getCanvasWidth() {
@@ -71,8 +73,34 @@ protected <T> void drawObject(T shape, DrawingAlgorithm<T> algorithm) {
 }
 
 protected <T> void drawLine(Cell p1, Cell p2, Color color) {
-	for (Cell coordinate : Chunk.vector(p1.getX(), p1.getY(), p2.getX(), p2.getY())) {
-		drawPoint(coordinate.getX(), coordinate.getY(), color);
+	for (Cell coordinate : Chunk.vector(p1.x, p1.y, p2.x, p2.y)) {
+		drawPoint(coordinate.x, coordinate.y, color);
 	}
 }
+
+protected void drawLine(double startX, double startY, double endX, double endY, Color color) {
+	drawShape(new Line2D.Double(startX, startY, endX, endY), color);
+}
+
+protected void fillShape(Shape shape, Color color) {
+	Graphics2D g2d = (Graphics2D) canvas.graphics;
+	canvas.graphics.setColor(color);
+	AffineTransform transform = new AffineTransform();
+	transform.setToScale(canvas.scale, canvas.scale);
+	g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+	g2d.setTransform(transform);
+	g2d.fill(shape);
+	g2d.setTransform(defaultTransform);
+}
+protected void drawShape(Shape shape, Color color) {
+	Graphics2D g2d = (Graphics2D) canvas.graphics;
+	canvas.graphics.setColor(color);
+	AffineTransform transform = new AffineTransform();
+	transform.setToScale(canvas.scale, canvas.scale);
+	g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+	g2d.setTransform(transform);
+	g2d.draw(shape);
+	g2d.setTransform(defaultTransform);
+}
+
 }

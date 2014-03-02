@@ -36,7 +36,7 @@ public static DrawingAlgorithm<RectangleSystem> withColors(final Color... colors
 }
 
 public static DrawingAlgorithm<RectangleSystem> graphAndRectangles(final Color graphColor, final Color... colors) {
-	return new DrawingAlgorithm<RectangleSystem>() {
+	DrawingAlgorithm<RectangleSystem> drawingAlgorithm = new DrawingAlgorithm<RectangleSystem>() {
 		final Iterator<Color> iter = Iterables.cycle(colors).iterator();
 
 		@Override
@@ -46,7 +46,11 @@ public static DrawingAlgorithm<RectangleSystem> graphAndRectangles(final Color g
 			}
 			Graph<Rectangle, RectangleSystem.Neighborship> graph = rs.getGraph();
 			for (RectangleSystem.Neighborship edge : graph.edgeSet()) {
-				drawLine(graph.getEdgeSource(edge).getCenterPoint(), graph.getEdgeTarget(edge).getCenterPoint(), graphColor);
+				drawLine(
+					graph.getEdgeSource(edge).getCenterPoint(),
+					graph.getEdgeTarget(edge).getCenterPoint(),
+					graphColor
+				);
 			}
 			for (Rectangle r : rs) {
 				for (CardinalDirection dir : CardinalDirection.values()) {
@@ -58,6 +62,7 @@ public static DrawingAlgorithm<RectangleSystem> graphAndRectangles(final Color g
 		}
 
 	};
+	return drawingAlgorithm;
 }
 
 public static DrawingAlgorithm<RectangleSystem> neighborsUnionsAndRectangles(final Color neighborshipColor, final Color unionColor, final Color... colors) {
