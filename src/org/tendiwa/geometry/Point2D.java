@@ -46,11 +46,23 @@ public int hashCode() {
 	return result;
 }
 
+public double angleTo(Point2D end) {
+	double angle = Math.atan2(end.y - y, end.x - x);
+	if (angle < 0) {
+		angle = Math.PI * 2 + angle;
+	}
+	return angle;
+}
+
 @Override
 public String toString() {
 	return "Point2D{" +
 		"x=" + x +
 		", y=" + y +
 		'}';
+}
+
+public double distanceTo(Point2D end) {
+	return Math.sqrt(Math.pow(end.x - this.x, 2) + Math.pow(end.y - this.y, 2));
 }
 }

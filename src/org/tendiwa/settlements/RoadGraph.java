@@ -17,12 +17,23 @@ private final ImmutableMap<Point2D, LinkedList<Point2D>> adjacencyLists;
 
 public RoadGraph(Point2D[] vertices, int[][] edges) {
 	ImmutableMap.Builder<Point2D, LinkedList<Point2D>> adjacencyListsBuilder = ImmutableMap.builder();
-	for (Point2D coord : vertices) {
-		adjacencyListsBuilder.put(coord, new LinkedList<Point2D>());
+	for (Point2D vertex : vertices) {
+		adjacencyListsBuilder.put(vertex, new LinkedList<Point2D>());
 	}
 	adjacencyLists = adjacencyListsBuilder.build();
 	for (int[] edge : edges) {
 		addNewEdge(vertices[edge[0]], vertices[edge[1]]);
+	}
+}
+
+public RoadGraph(Collection<Point2D> vertices, Collection<Line2D> edges) {
+	ImmutableMap.Builder<Point2D, LinkedList<Point2D>> adjacencyListsBuilder = ImmutableMap.builder();
+	for (Point2D vertex : vertices) {
+		adjacencyListsBuilder.put(vertex, new LinkedList<Point2D>());
+	}
+	adjacencyLists = adjacencyListsBuilder.build();
+	for (Line2D edge : edges) {
+		addNewEdge(edge.start, edge.end);
 	}
 }
 

@@ -39,7 +39,7 @@ public class Chance {
 	 * 
 	 * @param min
 	 *            min value <= max
-	 * @param man
+	 * @param max
 	 *            max value
 	 * @return true with probability {@code this.value}
 	 * @throws IllegalArgumentException

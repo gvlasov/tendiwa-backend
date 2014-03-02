@@ -27,8 +27,8 @@ public class Directions {
 		CardinalDirection.W,
 		OrdinalDirection.NW
 	};
-	static double TAN1;
-	static double TAN2;
+	private final static double TAN1;
+	private final static double TAN2;
 
 	static {
 		TAN1 = Math.tan(Math.PI / 8);
