@@ -165,15 +165,13 @@ public Set<Point2D> vertexSet() {
 }
 
 @Override
-@Deprecated
-public Point2D getEdgeSource(Line2D defaultEdge) {
-	throw new UnsupportedOperationException();
+public Point2D getEdgeSource(Line2D edge) {
+	return edge.start;
 }
 
 @Override
-@Deprecated
-public Point2D getEdgeTarget(Line2D defaultEdge) {
-	throw new UnsupportedOperationException();
+public Point2D getEdgeTarget(Line2D edge) {
+	return edge.end;
 }
 
 @Override

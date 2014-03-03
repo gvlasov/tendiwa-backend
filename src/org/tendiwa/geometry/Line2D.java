@@ -19,4 +19,8 @@ public String toString() {
 		", end=" + end +
 		'}';
 }
+
+public double length() {
+	return start.distanceTo(end);
+}
 }

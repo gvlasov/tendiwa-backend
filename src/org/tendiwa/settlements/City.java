@@ -2,7 +2,8 @@ package org.tendiwa.settlements;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableSet;
-import org.jgrapht.Graph;
+import org.jgrapht.UndirectedGraph;
+import org.jgrapht.alg.cycle.PatonCycleBase;
 import org.tendiwa.geometry.Line2D;
 import org.tendiwa.geometry.Point2D;
 
@@ -13,12 +14,12 @@ public class City {
  * [Kelly section 4.2]
  * <p/>
  */
-private final Graph<Point2D, Line2D> highLevelRoadGraph;
+private final UndirectedGraph<Point2D, Line2D> highLevelRoadGraph;
 private final SampleSelectionStrategy strategy;
 /**
- * [Kelly section 4.2]
+ * [Kelly beginning of chapter 4.2]
  */
-private final Graph<Point2D, Line2D> lowLevelRoadGraph;
+private final UndirectedGraph<Point2D, Line2D> lowLevelRoadGraph;
 /**
  * [Kelly section 4.2.2]
  */
@@ -26,7 +27,11 @@ private final double dSample;
 private final int nSample;
 private final double deviationAngleRad;
 private final double approachingPerSample;
-private Set<Line2D> highLevelGraphEdges;
+/**
+ * Saved in a field to be computed only once.
+ */
+private final Set<Line2D> highLevelGraphEdges;
+private final Set<CityCell> cells;
 
 /**
  * @param highLevelRoadGraph
@@ -69,7 +74,12 @@ public City(
 	this.nSample = samplesPerStep;
 	this.deviationAngleRad = deviationAngle;
 	approachingPerSample = Math.cos(deviationAngle);
+	highLevelGraphEdges = highLevelRoadGraph.edgeSet();
 	lowLevelRoadGraph = buildLowLevelGraph();
+	ImmutableSet.Builder<CityCell> cellsBuilder = ImmutableSet.builder();
+	for (List<Point2D> cycle : new PatonCycleBase<Point2D, Line2D>(lowLevelRoadGraph).findCycleBase()) {
+
+	}
 }
 
 /**
@@ -79,9 +89,8 @@ public City(
  *
  * @return A graph of actual straight road segments.
  */
-private Graph<Point2D, Line2D> buildLowLevelGraph() {
+private UndirectedGraph<Point2D, Line2D> buildLowLevelGraph() {
 	Collection<Point2D> vertices = new HashSet<>();
-	highLevelGraphEdges = highLevelRoadGraph.edgeSet();
 	Collection<Line2D> edges = new ArrayList<>(getMaxRoadSegmentsNumber(highLevelGraphEdges));
 	for (Line2D edge : highLevelGraphEdges) {
 		if (!vertices.contains(edge.start)) {
@@ -217,11 +226,11 @@ private ImmutableSet<Point2D> getSampleFan(
 	return fanBuilder.build();
 }
 
-public Graph<Point2D, Line2D> getHighLevelRoadGraph() {
+public UndirectedGraph<Point2D, Line2D> getHighLevelRoadGraph() {
 	return highLevelRoadGraph;
 }
 
-public Graph<Point2D, Line2D> getLowLevelRoadGraph() {
+public UndirectedGraph<Point2D, Line2D> getLowLevelRoadGraph() {
 	return lowLevelRoadGraph;
 }
 }

@@ -2,6 +2,7 @@ package tests.painting;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.inject.Inject;
+import org.jgrapht.alg.cycle.PatonCycleBase;
 import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.Test;
@@ -19,6 +20,8 @@ import org.tendiwa.settlements.RoadGraph;
 import org.tendiwa.settlements.SampleSelectionStrategy;
 
 import java.awt.*;
+import java.util.*;
+import java.util.List;
 
 @RunWith(JukitoRunner.class)
 @UseModules(DrawingModule.class)
@@ -55,20 +58,21 @@ public void draw() {
 			new int[]{9, 5},
 		}
 	);
+	City city = new City(
+		roadGraph,
+		new SampleSelectionStrategy() {
+			@Override
+			public Point2D selectNextPoint(ImmutableCollection<Point2D> sampleFan) {
+				int rand = Chance.rand(0, sampleFan.size() - 1);
+				return sampleFan.toArray(new Point2D[sampleFan.size()])[rand];
+			}
+		},
+		10,
+		8,
+		Math.toRadians(44)
+	);
 	canvas.draw(
-		new City(
-			roadGraph,
-			new SampleSelectionStrategy() {
-				@Override
-				public Point2D selectNextPoint(ImmutableCollection<Point2D> sampleFan) {
-					int rand = Chance.rand(0, sampleFan.size() - 1);
-					return sampleFan.toArray(new Point2D[sampleFan.size()])[rand];
-				}
-			},
-			10,
-			1,
-			Math.toRadians(44)
-		),
+		city,
 		new DrawingAlgorithm<City>() {
 			private final Color highLevelGraphColor = Color.RED;
 			private final Color lowLevelGraphColor = Color.BLUE;
@@ -116,6 +120,18 @@ public void draw() {
 			}
 		}
 	);
+	canvas.draw(new PatonCycleBase<>(city.getLowLevelRoadGraph()).findCycleBase().get(1), new DrawingAlgorithm<java.util.List<Point2D>>() {
+		@Override
+		public void draw(List<Point2D> shape) {
+			for (Point2D point : shape) {
+				canvas.draw(
+					new Cell((int)point.x, (int)point.y),
+					DrawingCell.withColorAndSize(Color.GREEN, 8)
+				);
+			}
+		}
+	});
+
 	try {
 		Thread.sleep(200000);
 	} catch (InterruptedException e) {
