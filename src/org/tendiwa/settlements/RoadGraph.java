@@ -65,9 +65,16 @@ public EdgeFactory<Point2D, Line2D> getEdgeFactory() {
 	};
 }
 
-private void addNewEdge(Point2D c1, Point2D c2) {
-	adjacencyLists.get(c1).add(c2);
-	adjacencyLists.get(c2).add(c1);
+/**
+ * Only methods inside package can mutate RoadGraph, so it appears immutable to package user. That's why {@link
+ * org.jgrapht.UndirectedGraph#addEdge(Object, Object, Object)} is not used to add edges.
+ *
+ * @param sourceVertex
+ * @param targetVertex
+ */
+private void addNewEdge(Point2D sourceVertex, Point2D targetVertex) {
+	adjacencyLists.get(sourceVertex).add(targetVertex);
+	adjacencyLists.get(targetVertex).add(sourceVertex);
 }
 
 @Override

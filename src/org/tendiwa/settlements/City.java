@@ -52,6 +52,8 @@ private final Set<CityCell> cells;
  * 	[Kelly section 4.2.2]
  * 	<p/>
  * 	Angle between two samples, in radians.
+ * @param paramDegree
+ * @param roadSegmentLength
  * @throws java.lang.IllegalArgumentException
  * 	If {@code numberOfSamples <= 0} or if {@code deviationAngle == 0 && numberOfSamples >= 1}.
  */
@@ -60,7 +62,12 @@ public City(
 	SampleSelectionStrategy strategy,
 	double sampleRadius,
 	int samplesPerStep,
-	double deviationAngle
+	double deviationAngle,
+	Random random,
+	int paramDegree,
+	int connectivity,
+	double roadSegmentLength,
+	double snapSize
 ) {
 	if (samplesPerStep <= 0) {
 		throw new IllegalArgumentException("Number of samples must be >= 1");
@@ -76,10 +83,12 @@ public City(
 	approachingPerSample = Math.cos(deviationAngle);
 	highLevelGraphEdges = highLevelRoadGraph.edgeSet();
 	lowLevelRoadGraph = buildLowLevelGraph();
-	ImmutableSet.Builder<CityCell> cellsBuilder = ImmutableSet.builder();
-	for (List<Point2D> cycle : new PatonCycleBase<Point2D, Line2D>(lowLevelRoadGraph).findCycleBase()) {
 
+	ImmutableSet.Builder<CityCell> cellsBuilder = ImmutableSet.builder();
+	for (List<Point2D> cycle : new PatonCycleBase<>(lowLevelRoadGraph).findCycleBase()) {
+		cellsBuilder.add(new CityCell(cycle, paramDegree, roadSegmentLength, snapSize, connectivity, random));
 	}
+	cells = cellsBuilder.build();
 }
 
 /**

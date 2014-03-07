@@ -69,7 +69,12 @@ public void draw() {
 		},
 		10,
 		8,
-		Math.toRadians(44)
+		Math.toRadians(44),
+		new Random(10),
+		7,
+		20,
+		10,
+		3
 	);
 	canvas.draw(
 		city,
