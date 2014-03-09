@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableSet;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.alg.cycle.PatonCycleBase;
+import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Line2D;
 import org.tendiwa.geometry.Point2D;
 
@@ -47,12 +48,17 @@ private final Set<CityCell> cells;
  * @param samplesPerStep
  * 	[Kelly section 4.2.2]
  * 	<p/>
- * 	How many samples per step should {@code strategy} try.
+ * 	How many samples per step should a {@code strategy} try.
  * @param deviationAngle
  * 	[Kelly section 4.2.2]
  * 	<p/>
  * 	Angle between two samples, in radians.
  * @param paramDegree
+ * @param connectivity
+ * 	{@link org.tendiwa.settlements.CityCell#connectivity}
+ * 	<p/>
+ * 	How likely it is to snap to node or road when possible. When connectivity == 1.0, algorithm will always snap when
+ * 	possible. When connectivity == 0.0, algorithm will never snap.
  * @param roadSegmentLength
  * @throws java.lang.IllegalArgumentException
  * 	If {@code numberOfSamples <= 0} or if {@code deviationAngle == 0 && numberOfSamples >= 1}.
@@ -65,10 +71,14 @@ public City(
 	double deviationAngle,
 	Random random,
 	int paramDegree,
-	int connectivity,
+	double connectivity,
 	double roadSegmentLength,
-	double snapSize
+	double snapSize,
+    TestCanvas canvas
 ) {
+	if (connectivity < 0 || connectivity > 1) {
+		throw new IllegalArgumentException("Connectivity must be in range [0.0; 1.0]");
+	}
 	if (samplesPerStep <= 0) {
 		throw new IllegalArgumentException("Number of samples must be >= 1");
 	}
@@ -86,9 +96,13 @@ public City(
 
 	ImmutableSet.Builder<CityCell> cellsBuilder = ImmutableSet.builder();
 	for (List<Point2D> cycle : new PatonCycleBase<>(lowLevelRoadGraph).findCycleBase()) {
-		cellsBuilder.add(new CityCell(cycle, paramDegree, roadSegmentLength, snapSize, connectivity, random));
+		cellsBuilder.add(new CityCell(cycle, paramDegree, roadSegmentLength, snapSize, connectivity, random, canvas));
 	}
 	cells = cellsBuilder.build();
+}
+
+public Set<CityCell> getCells() {
+	return cells;
 }
 
 /**
