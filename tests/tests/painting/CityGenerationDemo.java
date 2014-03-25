@@ -6,7 +6,6 @@ import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.tendiwa.core.meta.Chance;
 import org.tendiwa.drawing.DrawingAlgorithm;
 import org.tendiwa.drawing.DrawingCell;
 import org.tendiwa.drawing.DrawingModule;
@@ -73,7 +72,7 @@ public class CityGenerationDemo {
                 8,
                 Math.toRadians(20),
                 new Random(10),
-                4,
+                3,
                 1.0,
                 10,
                 4,
@@ -126,7 +125,7 @@ public class CityGenerationDemo {
 //					);
                         }
                         for (CityCell cityCell : city.getCells()) {
-                            for (SecondaryRoad road : cityCell.roadCycle.edgeSet()) {
+                            for (SecondaryRoad road : cityCell.secRoadNetwork.edgeSet()) {
                                 Line2D line = road.toLine();
                                 if (!road.start.isDeadEnd || !road.end.isDeadEnd) {
                                     drawLine(

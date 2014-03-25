@@ -21,7 +21,7 @@ import java.util.List;
  * 4.3.1, figure 41].
  */
 public class CityCell {
-    public final SimpleGraph<SecondaryRoadNetworkNode, SecondaryRoad> roadCycle;
+    public final SimpleGraph<SecondaryRoadNetworkNode, SecondaryRoad> secRoadNetwork;
     /**
      * [Kelly figure 42]
      * <p/>
@@ -57,7 +57,7 @@ public class CityCell {
         this.random = random;
         this.canvas = canvas;
 
-        roadCycle = new SimpleGraph<>(new EdgeFactory<SecondaryRoadNetworkNode, SecondaryRoad>() {
+        secRoadNetwork = new SimpleGraph<>(new EdgeFactory<SecondaryRoadNetworkNode, SecondaryRoad>() {
             @Override
             public SecondaryRoad createEdge(SecondaryRoadNetworkNode sourceVertex, SecondaryRoadNetworkNode targetVertex) {
                 return new SecondaryRoad(sourceVertex, targetVertex);
@@ -66,7 +66,7 @@ public class CityCell {
         List<SecondaryRoadNetworkNode> nodes = new LinkedList<>();
         for (Point2D vertex : vertices) {
             SecondaryRoadNetworkNode node = new SecondaryRoadNetworkNode(vertex, true);
-            roadCycle.addVertex(node);
+            secRoadNetwork.addVertex(node);
             nodes.add(node);
         }
 
@@ -88,14 +88,14 @@ public class CityCell {
         );
 
         for (SecondaryRoad edge : edges) {
-            roadCycle.addEdge(edge.start, edge.end, edge);
+            secRoadNetwork.addEdge(edge.start, edge.end, edge);
         }
         ring = buildNodeRing(nodes);
         isCycleClockwise = determineCycleDirection(ring);
 
-        assert new ConnectivityInspector<>(roadCycle).isGraphConnected();
-        for (SecondaryRoadNetworkNode vertex : roadCycle.vertexSet()) {
-            assert roadCycle.degreeOf(vertex) == 2;
+        assert new ConnectivityInspector<>(secRoadNetwork).isGraphConnected();
+        for (SecondaryRoadNetworkNode vertex : secRoadNetwork.vertexSet()) {
+            assert secRoadNetwork.degreeOf(vertex) == 2;
         }
         buildSecondaryRoadNetwork();
     }
@@ -127,7 +127,7 @@ public class CityCell {
         }
         int iter = 0;
         while (!nodeQueue.isEmpty()) {
-            if (iter++ == 200) {
+            if (iter++ == 9) {
                 break;
             }
             SecondaryRoadNetworkStep node = nodeQueue.pop();
@@ -135,12 +135,10 @@ public class CityCell {
                 double newDirection = deviateDirection(node.direction + Math.PI + i * (Math.PI * 2 / paramDegree));
                 SecondaryRoadNetworkNode newNode = tryPlacingRoad(node.node, newDirection);
                 if (newNode != null && !newNode.isDeadEnd) {
-                    System.out.println("dir " + newDirection + " i " + i + " paramDegree " + paramDegree);
                     nodeQueue.push(new SecondaryRoadNetworkStep(newNode, newDirection));
                 }
             }
         }
-        System.out.println(roadCycle.edgeSet().size());
     }
 
     private double deviateDirection(double newDirection) {
@@ -179,31 +177,31 @@ public class CityCell {
         SecondaryRoadNetworkNode sourceNode = vertices.get(0);
         SecondaryRoadNetworkNode currentNode = sourceNode;
         SecondaryRoadNetworkNode previousNode = null;
-        Coordinate[] ring = new Coordinate[roadCycle.vertexSet().size() + 1];
+        Coordinate[] ring = new Coordinate[secRoadNetwork.vertexSet().size() + 1];
         int i = 0;
         // Traverses all vertices starting from sourceNode until it comes back to sourceNode.
         do {
             SecondaryRoadNetworkNode nextNode = null;
             // Having all edges of degree 2 proves that this is a cycle.
-            assert roadCycle.edgesOf(currentNode).size() == 2 : roadCycle.edgesOf(currentNode).size();
-            for (SecondaryRoad edge : roadCycle.edgesOf(currentNode)) {
+            assert secRoadNetwork.edgesOf(currentNode).size() == 2 : secRoadNetwork.edgesOf(currentNode).size();
+            for (SecondaryRoad edge : secRoadNetwork.edgesOf(currentNode)) {
                 if (previousNode == null) {
-                    if (roadCycle.getEdgeSource(edge) == sourceNode) {
-                        nextNode = roadCycle.getEdgeTarget(edge);
+                    if (secRoadNetwork.getEdgeSource(edge) == sourceNode) {
+                        nextNode = secRoadNetwork.getEdgeTarget(edge);
                     } else {
-                        assert roadCycle.getEdgeTarget(edge) == sourceNode :
-                                roadCycle.getEdgeTarget(edge)
-                                        + "\n" + roadCycle.getEdgeSource(edge)
+                        assert secRoadNetwork.getEdgeTarget(edge) == sourceNode :
+                                secRoadNetwork.getEdgeTarget(edge)
+                                        + "\n" + secRoadNetwork.getEdgeSource(edge)
                                         + "\n" + sourceNode;
-                        nextNode = roadCycle.getEdgeSource(edge);
+                        nextNode = secRoadNetwork.getEdgeSource(edge);
                     }
                     break;
                 } else {
-                    SecondaryRoadNetworkNode edgeTarget = roadCycle.getEdgeTarget(edge);
+                    SecondaryRoadNetworkNode edgeTarget = secRoadNetwork.getEdgeTarget(edge);
                     if (edgeTarget == previousNode) {
                         continue;
                     }
-                    SecondaryRoadNetworkNode edgeSource = roadCycle.getEdgeSource(edge);
+                    SecondaryRoadNetworkNode edgeSource = secRoadNetwork.getEdgeSource(edge);
                     if (edgeSource == previousNode) {
                         continue;
                     }
@@ -226,7 +224,7 @@ public class CityCell {
             currentNode = nextNode;
         } while (currentNode != sourceNode);
         ring[i] = ring[0];
-        assert i == roadCycle.vertexSet().size() : i + " " + roadCycle.vertexSet().size();
+        assert i == secRoadNetwork.vertexSet().size() : i + " " + secRoadNetwork.vertexSet().size();
         return ring;
     }
 
@@ -247,21 +245,21 @@ public class CityCell {
                 new Point2D(sourceNode.point.x + dx, sourceNode.point.y + dy),
                 false
         );
-        SnapEvent snapEvent = new SnapTest(snapSize, sourceNode, targetNode, roadCycle).snap();
+        SnapEvent snapEvent = new SnapTest(snapSize, sourceNode, targetNode, secRoadNetwork, canvas).snap();
         assert !sourceNode.equals(snapEvent.targetNode);
         switch (snapEvent.eventType) {
             case NO_SNAP:
-                if (!roadCycle.addVertex(targetNode)) {
+                if (!secRoadNetwork.addVertex(targetNode)) {
                     return null;
                 }
-                roadCycle.addEdge(sourceNode, targetNode);
+                secRoadNetwork.addEdge(sourceNode, targetNode);
                 drawPoint(targetNode.point, Color.CYAN, 5);
                 return snapEvent.targetNode;
             case ROAD_SNAP:
                 if (random.nextDouble() < connectivity) {
                     SecondaryRoadNetworkNode newNode = snapEvent.targetNode;
                     insertNode(snapEvent.road, newNode);
-                    roadCycle.addEdge(sourceNode, newNode);
+                    secRoadNetwork.addEdge(sourceNode, newNode);
 //				drawPoint(snapEvent.targetNode.point, Color.CYAN, 10);
                     return snapEvent.targetNode;
                 } else {
@@ -270,15 +268,13 @@ public class CityCell {
             case NODE_SNAP:
                 if (random.nextDouble() < connectivity) {
                     if (snapEvent.targetNode.isDeadEnd && sourceNode.isDeadEnd) {
-                        System.out.println("DONT SNAP TO DEAD END NODE");
                         return null;
                     }
-//                    roadCycle.addVertex(snapEvent.targetNode);
-                    roadCycle.addEdge(sourceNode, snapEvent.targetNode);
+//                    secRoadNetwork.addVertex(snapEvent.targetNode);
+                    secRoadNetwork.addEdge(sourceNode, snapEvent.targetNode);
 //				drawPoint(snapEvent.targetNode.point, Color.ORANGE, 10);
                     return null;
                 } else {
-                    System.out.println("NODE SNAP BUT NO SNAP");
                     return null;
                 }
             default:
@@ -303,7 +299,7 @@ public class CityCell {
      * Adds new node between two existing nodes, removing an existing road between them and placing 2 new roads. to road
      * network. Since {@link org.tendiwa.settlements.RoadGraph} is immutable, new nodes are saved in a separate collection.
      *
-     * @param road  A road from {@link #roadCycle} on which a node is being inserted.
+     * @param road  A road from {@link #secRoadNetwork} on which a node is being inserted.
      * @param point A node on that road where the node resides.
      */
     private void insertNode(SecondaryRoad road, SecondaryRoadNetworkNode point) {
@@ -311,10 +307,10 @@ public class CityCell {
         assert !road.end.equals(point) : "point is end";
         assert road.start.point.distanceTo(point.point) > 0.1 : road.start.point.distanceTo(point.point) + " " + road.start.point.distanceTo(road.end.point);
         assert road.end.point.distanceTo(point.point) > 0.1 : road.end.point.distanceTo(point.point) + " " + road.start.point.distanceTo(road.end.point);
-        roadCycle.removeEdge(road);
-        roadCycle.addVertex(point);
-        roadCycle.addEdge(road.start, point);
-        roadCycle.addEdge(point, road.end);
+        secRoadNetwork.removeEdge(road);
+        secRoadNetwork.addVertex(point);
+        secRoadNetwork.addEdge(road.start, point);
+        secRoadNetwork.addEdge(point, road.end);
     }
 
     private SecondaryRoadNetworkNode calculateDeviatedMidPoint(SecondaryRoad road) {
@@ -335,7 +331,7 @@ public class CityCell {
      * @return Several of the longest roads.
      */
     private Collection<SecondaryRoad> longestRoads() {
-        List<SecondaryRoad> edges = new ArrayList<>(roadCycle.edgeSet());
+        List<SecondaryRoad> edges = new ArrayList<>(secRoadNetwork.edgeSet());
         Collections.sort(edges, new Comparator<SecondaryRoad>() {
             @Override
             public int compare(SecondaryRoad o1, SecondaryRoad o2) {

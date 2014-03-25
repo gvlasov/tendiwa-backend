@@ -23,7 +23,6 @@ public class LineIntersection {
                 sourceNode.y - segment.start.y
         );
         r = ((ca.y * cd.x) - (ca.x * cd.y)) / denom;
-        System.out.println("r line intersection " + r);
         s = ((ca.y * ab.x) - (ca.x * ab.y)) / denom;
         intersects = !(r == 0 && s == 0);
     }

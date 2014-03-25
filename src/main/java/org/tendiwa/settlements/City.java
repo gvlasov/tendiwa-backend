@@ -95,7 +95,9 @@ public City(
 	lowLevelRoadGraph = buildLowLevelGraph();
 
 	ImmutableSet.Builder<CityCell> cellsBuilder = ImmutableSet.builder();
-	for (List<Point2D> cycle : new PatonCycleBase<>(lowLevelRoadGraph).findCycleBase()) {
+    List<List<Point2D>> cycleBase = new PatonCycleBase<>(lowLevelRoadGraph).findCycleBase();
+    for (List<Point2D> cycle : cycleBase) {
+        System.out.println(cycle.size());
 		cellsBuilder.add(new CityCell(cycle, paramDegree, roadSegmentLength, snapSize, connectivity, random, canvas));
 	}
 	cells = cellsBuilder.build();

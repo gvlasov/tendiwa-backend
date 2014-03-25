@@ -26,9 +26,9 @@ public boolean equals(Object o) {
 
 @Override
 public String toString() {
-	return "SecondaryRoadNetworkNode{" +
-		"isDeadEnd=" + isDeadEnd +
-		", point=" + point +
+	return "node{" +
+		"dead=" + isDeadEnd +
+		", p=" + point +
 		'}';
 }
 

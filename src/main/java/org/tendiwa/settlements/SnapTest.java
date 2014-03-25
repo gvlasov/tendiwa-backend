@@ -6,9 +6,13 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.core.meta.Range;
+import org.tendiwa.drawing.DrawingAlgorithm;
+import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.Line2D;
 import org.tendiwa.geometry.Point2D;
 
+import java.awt.*;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -20,18 +24,20 @@ public class SnapTest {
     private final SecondaryRoadNetworkNode sourceNode;
     private final SecondaryRoadNetworkNode targetNode;
     private final SimpleGraph<SecondaryRoadNetworkNode, SecondaryRoad> roadCycle;
+    private TestCanvas canvas;
     private double minR = Double.MAX_VALUE;
 
     SnapTest(
             double snapSize,
             SecondaryRoadNetworkNode sourceNode,
             SecondaryRoadNetworkNode targetNode,
-            SimpleGraph<SecondaryRoadNetworkNode, SecondaryRoad> roadCycle
-    ) {
+            SimpleGraph<SecondaryRoadNetworkNode, SecondaryRoad> roadCycle,
+            TestCanvas canvas) {
         this.snapSize = snapSize;
         this.sourceNode = sourceNode;
         this.targetNode = targetNode;
         this.roadCycle = roadCycle;
+        this.canvas = canvas;
     }
 
     SnapEvent snap() {
@@ -56,8 +62,6 @@ public class SnapTest {
             }
         }
         if (snapNode != null) {
-            System.out.println(1);
-            System.out.println("snap " + sourceNode + " to " + snapNode);
             return new SnapEvent(snapNode, SnapEventType.NODE_SNAP, null);
         }
         minR = Double.MAX_VALUE;
@@ -83,13 +87,6 @@ public class SnapTest {
                             SnapEventType.ROAD_SNAP,
                             road
                     );
-                    System.out.println(2);
-                    System.out.println(sourceNode);
-                    System.out.println(targetNode);
-                    System.out.println(new NodePosition(sourceNode.point, targetNode.point, snapEvent.road.start.point).distance);
-                    System.out.println(snapEvent.road.start);
-                    System.out.println(snapEvent.road.end);
-                    System.out.println(intersectionPoint);
                 }
             }
         }
@@ -99,6 +96,7 @@ public class SnapTest {
 
         for (SecondaryRoad road : roadsToTest) {
 //		if (road.end.point.distanceTo(targetNode.point) < snapSize) {
+//            System.out.println(Math.abs(targetNode.point.x - 139)+" "+Math.abs(targetNode.point.y-117));
             if (road.start == sourceNode || road.end == sourceNode) {
                 continue;
             }
@@ -110,12 +108,6 @@ public class SnapTest {
             if (nodePosition.distance > snapSize) {
                 continue;
             }
-            System.out.println(3);
-            System.out.println(nodePosition.r);
-            System.out.println(road.start);
-            System.out.println(road.end);
-            System.out.println(sourceNode);
-            System.out.println(targetNode);
             return new SnapEvent(
                     new SecondaryRoadNetworkNode(
                             new Point2D(
@@ -129,7 +121,6 @@ public class SnapTest {
             );
 //		}
         }
-        System.out.println(0);
         return new SnapEvent(targetNode, SnapEventType.NO_SNAP, null);
     }
 
@@ -185,6 +176,7 @@ public class SnapTest {
      */
     private Collection<SecondaryRoad> findSegmentsToTest(SecondaryRoadNetworkNode sourceNode, SecondaryRoadNetworkNode targetPoint, double snapSize) {
         // TODO: Optimize culling
+        boolean nodeFound = Math.abs(targetNode.point.x - 139) < 1 && Math.abs(targetNode.point.y - 117) < 1;
         double minX = Math.min(sourceNode.point.x, targetPoint.point.x) - snapSize;
         double minY = Math.min(sourceNode.point.y, targetPoint.point.y) - snapSize;
         double maxX = Math.max(sourceNode.point.x, targetPoint.point.x) + snapSize;
@@ -194,13 +186,34 @@ public class SnapTest {
                 new Coordinate(maxX, maxY)
         }).getEnvelope();
         Collection<SecondaryRoad> answer = new LinkedList<>();
-        for (SecondaryRoad edge : roadCycle.edgeSet()) {
-            LineString edgeLine = factory.createLineString(new Coordinate[]{
-                    new Coordinate(edge.start.point.x, edge.start.point.y),
-                    new Coordinate(edge.end.point.x, edge.end.point.y)
+        for (SecondaryRoad road : roadCycle.edgeSet()) {
+
+            if (nodeFound) {
+//                canvas.draw(road, new DrawingAlgorithm<SecondaryRoad>() {
+//                    @Override
+//                    public void draw(SecondaryRoad shape) {
+//                        this.drawLine(new Cell((int)shape.start.point.x, (int)shape.start.point.y),
+//                                new Cell((int)shape.end.point.x, (int)shape.end.point.y),
+//                                Color.PINK);
+//                    }
+//                });
+            }
+            double endX = road.end.point.x;
+            double endY = road.end.point.y;
+            double startX = road.start.point.x;
+            double startY = road.start.point.y;
+            if (nodeFound
+                    && (road.end.point.distanceTo(new Point2D(132, 110)) < 10
+                    && road.start.point.distanceTo(new Point2D(150, 131)) < 10
+                    || road.start.point.distanceTo(new Point2D(132, 110)) < 10
+                    && road.end.point.distanceTo(new Point2D(150, 131)) < 10)) {
+            }
+            LineString roadLine = factory.createLineString(new Coordinate[]{
+                    new Coordinate(road.start.point.x, road.start.point.y),
+                    new Coordinate(road.end.point.x, road.end.point.y)
             });
-            if (edgeLine.getEnvelope().intersects(boundingBox)) {
-                answer.add(edge);
+            if (roadLine.getEnvelope().intersects(boundingBox)) {
+                answer.add(road);
             }
         }
         return answer;
