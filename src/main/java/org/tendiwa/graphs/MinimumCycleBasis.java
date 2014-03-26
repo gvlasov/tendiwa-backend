@@ -184,7 +184,8 @@ public class MinimumCycleBasis<V, E> {
             extractFilament(v0, neighborIndex.neighborListOf(v0).get(0));
         } else if (vcurr == v0) {
             // Minimal cycle found
-            primitives.add(new MinimalCycle<>(graph, sequence));
+            System.out.println(sequence);
+            primitives.add(new MinimalCycle<>(originalGraph, sequence));
 
             for (int i = 0, l = sequence.size() - 1; i < l; i++) {
                 markCycleEdge(sequence.get(i), sequence.get(i + 1));
@@ -266,11 +267,11 @@ public class MinimumCycleBasis<V, E> {
                     positionAdapter.getX(vadj) - positionAdapter.getX(vcurr),
                     positionAdapter.getY(vadj) - positionAdapter.getY(vcurr)
             };
-            if (vcurrIsConvex > 0) {
+            if (vcurrIsConvex != 0) {
 //                assert false : "Think about it again";
                 boolean equation = clockwise ?
                         perpDotProduct(dcurr, dadj) < 0 || perpDotProduct(dnext, dadj) < 0
-                        : perpDotProduct(dcurr, dadj) > 0 || perpDotProduct(dnext, dadj) > 0;
+                        : perpDotProduct(dcurr, dadj) > 0 && perpDotProduct(dnext, dadj) > 0;
                 if (equation) {
                     vnext = vadj;
                     dnext = dadj;
@@ -278,7 +279,7 @@ public class MinimumCycleBasis<V, E> {
                 }
             } else {
                 boolean equation = clockwise ?
-                        perpDotProduct(dcurr, dadj) < 0 || perpDotProduct(dnext, dadj) < 0
+                        perpDotProduct(dcurr, dadj) < 0 && perpDotProduct(dnext, dadj) < 0
                         : perpDotProduct(dcurr, dadj) > 0 || perpDotProduct(dnext, dadj) > 0;
                 if (equation) {
                     vnext = vadj;

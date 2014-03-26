@@ -28,8 +28,6 @@ public class Filament<V, E> implements Primitive<V>, Iterable<E> {
             if (edge == null) {
                 edge = graph.getEdge(queue.get(i + 1), queue.get(i));
             }
-            System.out.println(queue);
-            System.out.println(graph.vertexSet());
             assert edge != null;
             edgesOfFilament.add(edge);
         }

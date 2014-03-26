@@ -1,9 +1,10 @@
 package org.tendiwa.graphs;
 
-import com.google.inject.internal.util.$SourceProvider;
 import org.jgrapht.UndirectedGraph;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class MinimalCycle<V, E> implements Primitive<V>, Iterable<E> {
     private final List<V> cycle = new ArrayList<>();
@@ -21,12 +22,13 @@ public class MinimalCycle<V, E> implements Primitive<V>, Iterable<E> {
 
     @Override
     public Iterator<E> iterator() {
-        int numberOfEdges = cycle.size() - 1;
+        int numberOfEdges = cycle.size();
         List<E> edgesOfCycle = new ArrayList<>(numberOfEdges);
         for (int i = 0; i < numberOfEdges; i++) {
-            E edge = graph.getEdge(cycle.get(i), cycle.get(i + 1));
+            boolean isLastEdge = i == numberOfEdges - 1;
+            E edge = graph.getEdge(cycle.get(i), cycle.get(isLastEdge ? 0 : i + 1));
             if (edge == null) {
-                edge = graph.getEdge(cycle.get(i+1), cycle.get(i));
+                edge = graph.getEdge(cycle.get(isLastEdge ? 0 : i + 1), cycle.get(i));
             }
             assert edge != null;
             edgesOfCycle.add(edge);
