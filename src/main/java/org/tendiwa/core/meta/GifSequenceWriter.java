@@ -42,7 +42,6 @@ public class GifSequenceWriter {
 	 */
 	public GifSequenceWriter(ImageOutputStream outputStream, int imageType, int timeBetweenFramesMS, boolean loopContinuously) throws IIOException, IOException {
 		// my method to create a writer
-		System.out.println(timeBetweenFramesMS);
 		gifWriter = getWriter();
 		imageWriteParam = gifWriter.getDefaultWriteParam();
 		ImageTypeSpecifier imageTypeSpecifier = ImageTypeSpecifier

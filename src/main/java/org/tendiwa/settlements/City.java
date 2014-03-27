@@ -7,6 +7,9 @@ import org.jgrapht.alg.cycle.PatonCycleBase;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Line2D;
 import org.tendiwa.geometry.Point2D;
+import org.tendiwa.graphs.MinimalCycle;
+import org.tendiwa.graphs.MinimumCycleBasis;
+import org.tendiwa.graphs.VertexPositionAdapter;
 
 import java.util.*;
 
@@ -95,10 +98,19 @@ public City(
 	lowLevelRoadGraph = buildLowLevelGraph();
 
 	ImmutableSet.Builder<CityCell> cellsBuilder = ImmutableSet.builder();
-    List<List<Point2D>> cycleBase = new PatonCycleBase<>(lowLevelRoadGraph).findCycleBase();
-    for (List<Point2D> cycle : cycleBase) {
-        System.out.println(cycle.size());
-		cellsBuilder.add(new CityCell(cycle, paramDegree, roadSegmentLength, snapSize, connectivity, random, canvas));
+    Set<MinimalCycle<Point2D,Line2D>> minimalCycleBase = new MinimumCycleBasis<Point2D, Line2D>(highLevelRoadGraph, new VertexPositionAdapter<Point2D>() {
+        @Override
+        public double getX(Point2D vertex) {
+            return vertex.x;
+        }
+
+        @Override
+        public double getY(Point2D vertex) {
+            return vertex.y;
+        }
+    }).minimalCyclesSet();
+    for (MinimalCycle<Point2D, Line2D> cycle : minimalCycleBase) {
+		cellsBuilder.add(new CityCell(cycle.cycle, paramDegree, roadSegmentLength, snapSize, connectivity, random, canvas));
 	}
 	cells = cellsBuilder.build();
 }

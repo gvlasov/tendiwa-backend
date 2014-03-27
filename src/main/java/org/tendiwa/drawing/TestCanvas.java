@@ -147,7 +147,6 @@ public static String colorName(Color colorParam) {
 		for (Field f : field) {
 			String colorName = f.getName();
 			Class<?> t = f.getType();
-			// System.out.println(f.getType());`
 			// check only for constants - "public static final Color"
 			if (t == java.awt.Color.class) {
 				Color defined = (Color) f.get(null);

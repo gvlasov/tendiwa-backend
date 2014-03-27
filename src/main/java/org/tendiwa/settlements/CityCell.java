@@ -127,9 +127,9 @@ public class CityCell {
         }
         int iter = 0;
         while (!nodeQueue.isEmpty()) {
-            if (iter++ == 9) {
-                break;
-            }
+//            if (iter++ == 9) {
+//                break;
+//            }
             SecondaryRoadNetworkStep node = nodeQueue.pop();
             for (int i = 1; i < paramDegree; i++) {
                 double newDirection = deviateDirection(node.direction + Math.PI + i * (Math.PI * 2 / paramDegree));

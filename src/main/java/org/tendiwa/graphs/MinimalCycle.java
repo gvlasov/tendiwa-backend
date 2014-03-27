@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class MinimalCycle<V, E> implements Primitive<V>, Iterable<E> {
-    private final List<V> cycle = new ArrayList<>();
+    public final List<V> cycle = new ArrayList<>();
     private UndirectedGraph<V, E> graph;
 
     MinimalCycle(UndirectedGraph<V, E> graph, List<V> cycle) {

@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class Filament<V, E> implements Primitive<V>, Iterable<E> {
-    private final List<V> queue = new ArrayList<>();
+    public final List<V> queue = new ArrayList<>();
     private UndirectedGraph<V, E> graph;
 
     Filament(UndirectedGraph<V, E> graph) {
