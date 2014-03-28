@@ -10,8 +10,31 @@ import org.jgrapht.graph.SimpleGraph;
 import java.util.LinkedList;
 
 /**
- * Reduces boilerplate code while constructing specific graphs from test cases and demonstrations.
+ * Reduces boilerplate code while constructing specific undirected graphs for test cases and demonstrations.
  * <p>
+ * <pre>
+ * {@code
+ * GraphConstructor<Point, Line> gc = new GraphConstructor<>((p1, p2)->new Line(p1, p2))
+ *      .vertex(0, new Point(10, 10))
+ *      .vertex(1, new Point(10, 20))
+ *      .vertex(2, new Point(20, 10))
+ *      .vertex(3, new Point(20, 20)).withEdgesTo(0, 1, 2) // places edges from 3 to 0, to 1 and to 2.
+ *
+ *      .vertex(4, new Point(30, 30))
+ *      .edge(4, 5) // Edges to and from not yet existent aliases can be added.
+ *      .vertex(5, new Point(40, 40))
+ *
+ *      .vertex(6, new Point(50, 30))
+ *      .vertex(7, new Point(60, 30))
+ *      .vertex(8, new Point(60, 40))
+ *      .vertex(9, new Point(50, 40))
+ *      .cycle(6,7,8,9)
+ *
+ *      .path(2, 4, 6);
+ *      System.out.println(gc.aliasOf(new Point(50, 30)); // 6
+ *      UndirectedGraph<Point, Line> graph = gc.graph();
+ * }
+ * </pre>
  */
 public class GraphConstructor<V, E> {
     private final BiMap<Integer, V> vertices = HashBiMap.create();
@@ -20,7 +43,14 @@ public class GraphConstructor<V, E> {
     private final LinkedList<int[]> edges = new LinkedList<>();
     private boolean finished = false;
 
-    public static <V> GraphConstructor<V, DefaultEdge> create() {
+    /**
+     * Creates a GraphConstructor that builds a graph with {@code DefaultEdge} edges.
+     *
+     * @param <V>
+     *         Vertex type.
+     * @return A new GraphConstructor.
+     */
+    public static <V> GraphConstructor<V, DefaultEdge> createDefault() {
         return new GraphConstructor<>(new EdgeFactory<V, DefaultEdge>() {
             @Override
             public DefaultEdge createEdge(V v, V v2) {
@@ -81,7 +111,7 @@ public class GraphConstructor<V, E> {
      *         Vertices to add edges from last vertex.
      * @return The same GraphConstructor to chain methods.
      */
-    public GraphConstructor<V, E> withEdges(int... vertices) {
+    public GraphConstructor<V, E> withEdgesTo(int... vertices) {
         if (lastVertexAlias == Integer.MIN_VALUE) {
             throw new IllegalStateException("You can call method edges only after at least one vertex was added");
         }

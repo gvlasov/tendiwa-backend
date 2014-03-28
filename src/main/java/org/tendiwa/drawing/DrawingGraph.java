@@ -26,12 +26,10 @@ public class DrawingGraph {
                     drawLine(x.apply(source), y.apply(source), x.apply(target), y.apply(target), Color.RED);
                 }
                 for (V v : shape.vertexSet()) {
-                    if (shape.degreeOf(v) == 0) {
-                        canvas.draw(new Cell(
-                                x.apply(v).intValue(),
-                                y.apply(v).intValue()
-                        ), pointDrawing);
-                    }
+                    canvas.draw(new Cell(
+                            x.apply(v).intValue(),
+                            y.apply(v).intValue()
+                    ), pointDrawing);
                 }
                 for (V v : shape.vertexSet()) {
                     drawString(Integer.toString(constructor.aliasOf(v)), x.apply(v) + 5, y.apply(v) + 5, Color.BLUE);
