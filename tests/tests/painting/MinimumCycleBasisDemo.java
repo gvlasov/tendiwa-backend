@@ -24,67 +24,37 @@ public class MinimumCycleBasisDemo {
 
     @Test
     public void draw() {
-        final GraphConstructor<Point2D> construcror = new GraphConstructor<Point2D>()
-                .vertex(0, new Point2D(20, 20))
-                .vertex(1, new Point2D(30, 50))
-                .vertex(2, new Point2D(70, 55))
-                .vertex(3, new Point2D(15, 90))
-                .vertex(4, new Point2D(85, 90))
-                .vertex(5, new Point2D(50, 70))
-                .vertex(6, new Point2D(35, 80))
-                .vertex(7, new Point2D(100, 50))
-                .vertex(8, new Point2D(100, 70))
-                .vertex(9, new Point2D(90, 110))
-                .vertex(10, new Point2D(110, 109))
-                .vertex(11, new Point2D(120, 55))
-                .vertex(12, new Point2D(125, 90))
-                .vertex(13, new Point2D(150, 50))
-                .vertex(14, new Point2D(180, 120))
-                .vertex(15, new Point2D(200, 100))
-                .vertex(16, new Point2D(220, 110))
-                .vertex(17, new Point2D(160, 75))
-                .vertex(18, new Point2D(190, 70))
-                .vertex(19, new Point2D(220, 50))
-                .vertex(20, new Point2D(230, 85))
-                .vertex(21, new Point2D(240, 40))
-                .vertex(22, new Point2D(230, 130))
-                .vertex(23, new Point2D(300, 130))
-                .vertex(24, new Point2D(300, 85))
-                .vertex(25, new Point2D(265, 90))
-                .vertex(26, new Point2D(250, 110))
-                .vertex(27, new Point2D(280, 110))
-                .edge(1, 2)
-                .edge(2, 4)
-                .edge(4, 3)
-                .edge(3, 1)
-                .edge(4, 5)
-                .edge(5, 6)
-                .edge(5, 6)
-                .edge(2, 7)
-                .edge(7, 11)
-                .edge(11, 12)
-                .edge(12, 13)
-                .edge(13, 18)
-                .edge(18, 19)
-                .edge(19, 21)
-                .edge(20, 21)
-                .edge(19, 20)
-                .edge(12, 20)
-                .edge(14, 15)
-                .edge(15, 16)
-                .edge(20, 24)
-                .edge(24, 23)
-                .edge(23, 22)
-                .edge(22, 20)
-                .edge(25, 26)
-                .edge(26, 27)
-                .edge(27, 25)
-                .edge(11, 13)
-                .edge(8, 9)
-                .edge(9, 10)
-                .edge(8, 10)
-                ;
-        final SimpleGraph<Point2D, DefaultEdge> graph = construcror
+        final GraphConstructor<Point2D, DefaultEdge> constructor =
+                GraphConstructor.<Point2D>create()
+                        .vertex(0, new Point2D(20, 20))
+                        .vertex(1, new Point2D(30, 50)).withEdges(2)
+                        .vertex(2, new Point2D(70, 55)).withEdges(4, 7)
+                        .vertex(3, new Point2D(15, 90)).withEdges(1)
+                        .vertex(4, new Point2D(85, 90)).withEdges(3, 5)
+                        .vertex(5, new Point2D(50, 70)).withEdges(6)
+                        .vertex(6, new Point2D(35, 80))
+                        .vertex(7, new Point2D(100, 50)).withEdges(11)
+                        .vertex(8, new Point2D(100, 70)).withEdges(9)
+                        .vertex(9, new Point2D(90, 110)).withEdges(10)
+                        .vertex(10, new Point2D(110, 109)).withEdges(8)
+                        .vertex(11, new Point2D(120, 55)).withEdges(12, 13)
+                        .vertex(12, new Point2D(125, 90)).withEdges(13, 20)
+                        .vertex(13, new Point2D(150, 50)).withEdges(18)
+                        .vertex(14, new Point2D(180, 120)).withEdges(15)
+                        .vertex(15, new Point2D(200, 100)).withEdges(16)
+                        .vertex(16, new Point2D(220, 110))
+                        .vertex(17, new Point2D(160, 75))
+                        .vertex(18, new Point2D(190, 70)).withEdges(19)
+                        .vertex(19, new Point2D(220, 50)).withEdges(20, 21)
+                        .vertex(20, new Point2D(230, 85)).withEdges(21, 22, 24)
+                        .vertex(21, new Point2D(240, 40))
+                        .vertex(22, new Point2D(230, 130)).withEdges(23)
+                        .vertex(23, new Point2D(300, 130)).withEdges(24)
+                        .vertex(24, new Point2D(300, 85))
+                        .vertex(25, new Point2D(265, 90)).withEdges(26, 27)
+                        .vertex(26, new Point2D(250, 110)).withEdges(27)
+                        .vertex(27, new Point2D(280, 110));
+        final SimpleGraph<Point2D, DefaultEdge> graph = constructor
                 .graph();
         canvas.draw(graph, new DrawingAlgorithm<SimpleGraph<Point2D, DefaultEdge>>() {
             @Override
@@ -111,7 +81,7 @@ public class MinimumCycleBasisDemo {
                     System.out.println("filament " +
                             filament.queue
                                     .stream()
-                                    .map(construcror::aliasOf)
+                                    .map(constructor::aliasOf)
                                     .collect(Collectors.toSet())
                     );
                     for (DefaultEdge edge : filament) {
@@ -125,7 +95,7 @@ public class MinimumCycleBasisDemo {
                     System.out.println("min cycle " +
                             cycle.cycle
                                     .stream()
-                                    .map(construcror::aliasOf)
+                                    .map(constructor::aliasOf)
                                     .collect(Collectors.toSet())
                     );
                     for (DefaultEdge edge : cycle) {
@@ -137,7 +107,7 @@ public class MinimumCycleBasisDemo {
                 }
                 for (Point2D p : graph.vertexSet()) {
                     this.drawString(
-                            Integer.toString(construcror.aliasOf(p)),
+                            Integer.toString(constructor.aliasOf(p)),
                             p.x + 5,
                             p.y + 5,
                             Color.BLUE

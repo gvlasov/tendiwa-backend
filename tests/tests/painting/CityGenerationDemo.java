@@ -2,6 +2,8 @@ package tests.painting;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.inject.Inject;
+import org.jgrapht.Graph;
+import org.jgrapht.UndirectedGraph;
 import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.Test;
@@ -12,6 +14,7 @@ import org.tendiwa.drawing.DrawingModule;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.Rectangle;
+import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.settlements.*;
 
 import java.awt.*;
@@ -25,34 +28,31 @@ public class CityGenerationDemo {
 
     @Test
     public void draw() {
-        RoadGraph roadGraph = new RoadGraph(
-                new Point2D[]{
-                        new Point2D(100 + 10, 100 + 10),
-                        new Point2D(100 + 10 + 20, 100 + 10),
-                        new Point2D(100 + 10 + 20 + 20, 100 + 10 + 20),
-                        new Point2D(100 + 10 + 20 + 20, 100 + 10 + 20 + 40),
-                        new Point2D(100 + 10, 100 + 10 + 20 + 40),
-                        new Point2D(100 + 10 + 20, 100 + 10 + 20 + 40 + 20),
-                        new Point2D(100 + 71, 100 + 13),
-                        new Point2D(100 + 100, 100 + 24),
-                        new Point2D(100 + 109, 100 + 55),
-                        new Point2D(100 + 84, 100 + 87),
-                },
-                new int[][]{
-                        new int[]{0, 1},
-                        new int[]{1, 2},
-                        new int[]{2, 3},
-                        new int[]{3, 4},
-                        new int[]{4, 0},
-                        new int[]{3, 5},
-                        new int[]{1, 6},
-                        new int[]{6, 7},
-                        new int[]{7, 8},
-                        new int[]{8, 9},
-                        new int[]{9, 5},
-                }
-        );
-        canvas.draw(new Integer(0), new DrawingAlgorithm<Integer>() {
+        UndirectedGraph<Point2D, Line2D> graph = new GraphConstructor<>(Line2D::new)
+                .vertex(0, new Point2D(100 + 10, 100 + 10))
+                .vertex(1, new Point2D(100 + 10 + 20, 100 + 10))
+                .vertex(2, new Point2D(100 + 10 + 20 + 20, 100 + 10 + 20))
+                .vertex(3, new Point2D(100 + 10 + 20 + 20, 100 + 10 + 20 + 40))
+                .vertex(4, new Point2D(100 + 10, 100 + 10 + 20 + 40))
+                .vertex(5, new Point2D(100 + 10 + 20, 100 + 10 + 20 + 40 + 20))
+                .vertex(6, new Point2D(100 + 71, 100 + 13))
+                .vertex(7, new Point2D(100 + 100, 100 + 24))
+                .vertex(8, new Point2D(100 + 109, 100 + 55))
+                .vertex(9, new Point2D(100 + 84, 100 + 87))
+                .edge(0, 1)
+                .edge(1, 2)
+                .edge(2, 3)
+                .edge(3, 4)
+                .edge(4, 0)
+                .edge(3, 5)
+                .edge(1, 6)
+                .edge(6, 7)
+                .edge(7, 8)
+                .edge(8, 9)
+                .edge(9, 5)
+                .graph();
+        RoadGraph roadGraph = new RoadGraph(graph.vertexSet(), graph.edgeSet());
+        canvas.draw(0, new DrawingAlgorithm<Integer>() {
             @Override
             public void draw(Integer shape) {
                 drawRectangle(new Rectangle(0, 0, canvas.width, canvas.height), Color.BLACK);

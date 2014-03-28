@@ -71,7 +71,6 @@ public class MinimumCycleBasis<V, E> {
      */
     private void extractPrimitives() {
         while (!heap.isEmpty()) {
-            System.out.println("Find next primitive");
             V v0 = heap.peek();// OR .remove()?
             switch (graph.degreeOf(v0)) {
                 case 0:
@@ -105,7 +104,6 @@ public class MinimumCycleBasis<V, E> {
      */
     private void extractFilament(V v0, V v1) {
         if (isCycleEdge(v0, v1)) {
-            System.out.println("(removing cycle filament)");
             if (graph.degreeOf(v0) >= 3) {
                 boolean edgeRemoved = graph.removeEdge(graph.getEdge(v0, v1));
                 assert edgeRemoved;
@@ -178,13 +176,11 @@ public class MinimumCycleBasis<V, E> {
             sequence.add(vcurr);
             visited.add(vcurr);
             V vnext = getMost(vprev, vcurr, false);
-//            System.out.println("most from " + g.aliasOf(vprev) + "-" + g.aliasOf(vcurr) + " is " + g.aliasOf(vnext));
             vprev = vcurr;
             vcurr = vnext;
         }
         if (vcurr == null) {
             // Filament found, not necessarily rooted at v0
-            System.out.println("!filament 1");
             extractFilament(vprev, neighborIndex.neighborsOf(vprev).iterator().next());
         } else if (vcurr == v0) {
             // Minimal cycle found
@@ -201,7 +197,6 @@ public class MinimumCycleBasis<V, E> {
             }
             if (graph.containsVertex(v1) && graph.degreeOf(v1) == 1) {
                 // Remove the filament rooted at v1
-                System.out.println("!filament 2");
                 extractFilament(v1, neighborIndex.neighborListOf(v1).get(0));
             }
         } else {
@@ -218,7 +213,6 @@ public class MinimumCycleBasis<V, E> {
                     v0 = neighborIndex.neighborListOf(v0).get(1);
                 }
             }
-            System.out.println("!filament 3");
             extractFilament(v0, v1);
         }
 
@@ -238,7 +232,6 @@ public class MinimumCycleBasis<V, E> {
      * @return A vertex that is clockwise- or counterclockwise-most relative to a vector {@code vcurr-vprev}.
      */
     private V getMost(V vprev, V vcurr, boolean clockwise) {
-        System.out.println(neighborIndex.neighborsOf(vcurr).size());
         if (neighborIndex.neighborsOf(vcurr).size() == 1 && neighborIndex.neighborsOf(vcurr).iterator().next() == vprev) {
             return null;
         }

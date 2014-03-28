@@ -5,9 +5,6 @@ import org.tendiwa.geometry.Line2D;
 
 import java.awt.*;
 
-/**
- * Created by suseika on 3/25/14.
- */
 public class DrawingLine {
     public static DrawingAlgorithm<Line2D> withColor(final Color color) {
         return new DrawingAlgorithm<Line2D>() {
