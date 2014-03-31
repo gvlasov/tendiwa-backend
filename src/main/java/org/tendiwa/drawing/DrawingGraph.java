@@ -7,9 +7,6 @@ import org.tendiwa.graphs.GraphConstructor;
 import java.awt.*;
 import java.util.function.Function;
 
-/**
- * Created by suseika on 3/28/14.
- */
 public class DrawingGraph {
     public static <V, E> DrawingAlgorithm<UndirectedGraph<V, E>> withAliases(
             GraphConstructor<V, E> constructor,

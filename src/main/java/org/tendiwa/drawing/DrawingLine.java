@@ -1,6 +1,5 @@
 package org.tendiwa.drawing;
 
-import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.Line2D;
 
 import java.awt.*;
@@ -10,14 +9,12 @@ public class DrawingLine {
         return new DrawingAlgorithm<Line2D>() {
             @Override
             public void draw(Line2D shape) {
-                this.drawLine(
-                        new Cell(
-                                (int) shape.start.x,
-                                (int) shape.start.y
-                        ),
-                        new Cell(
-                                (int) shape.end.x,
-                                (int) shape.end.y
+                drawShape(
+                        new java.awt.geom.Line2D.Double(
+                                shape.start.x,
+                                shape.start.y,
+                                shape.end.x,
+                                shape.end.y
                         ),
                         color
                 );

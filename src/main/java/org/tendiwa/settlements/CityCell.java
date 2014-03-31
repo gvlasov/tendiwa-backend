@@ -6,6 +6,7 @@ import org.jgrapht.EdgeFactory;
 import org.jgrapht.alg.ConnectivityInspector;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.drawing.DrawingCell;
+import org.tendiwa.drawing.DrawingPoint;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.Point2D;
@@ -16,7 +17,7 @@ import java.util.List;
 
 /**
  * [Kelly section 4.3.1]
- * <p/>
+ * <p>
  * A part of a city bounded by a fundamental basis cycle (one of those in <i>minimal cycle basis</i> from [Kelly section
  * 4.3.1, figure 41].
  */
@@ -24,7 +25,7 @@ public class CityCell {
     public final SimpleGraph<SecondaryRoadNetworkNode, SecondaryRoad> secRoadNetwork;
     /**
      * [Kelly figure 42]
-     * <p/>
+     * <p>
      */
     private final int paramDegree;
     private final double roadSegmentLength;
@@ -42,12 +43,15 @@ public class CityCell {
     private final TestCanvas canvas;
 
     /**
-     * @param vertices     Vertices forming a single cycle.
+     * @param vertices
+     *         Vertices forming a single cycle.
      * @param paramDegree
      * @param snapSize
-     * @param connectivity How likely it is to snap to node or road when possible. When connectivity == 1.0, algorithm will always snap when
-     *                     possible. When connectivity == 0.0, algorithm will never snap.
-     * @param random       A seeded {@link java.util.Random} used to generate the parent {@link City}.
+     * @param connectivity
+     *         How likely it is to snap to node or road when possible. When connectivity == 1.0, algorithm will always snap when
+     *         possible. When connectivity == 0.0, algorithm will never snap.
+     * @param random
+     *         A seeded {@link java.util.Random} used to generate the parent {@link City}.
      */
     CityCell(List<Point2D> vertices, int paramDegree, double roadSegmentLength, double snapSize, double connectivity, Random random, TestCanvas canvas) {
         this.paramDegree = paramDegree;
@@ -110,7 +114,7 @@ public class CityCell {
 
     /**
      * [Kelly figure 42]
-     * <p/>
+     * <p>
      * Calculates initial road segments and processes road growth.
      */
     private void buildSecondaryRoadNetwork() {
@@ -127,7 +131,7 @@ public class CityCell {
         }
         int iter = 0;
         while (!nodeQueue.isEmpty()) {
-            if (iter++ == 9) {
+            if (iter++ == 8) {
                 break;
             }
             SecondaryRoadNetworkStep node = nodeQueue.pop();
@@ -230,11 +234,13 @@ public class CityCell {
 
     /**
      * [Kelly figure 42, function placeSegment]
-     * <p/>
+     * <p>
      * Tries adding a new road to the secondary road network graph.
      *
-     * @param sourceNode Start node of a new road.
-     * @param direction  Angle of a road to x-axis.
+     * @param sourceNode
+     *         Start node of a new road.
+     * @param direction
+     *         Angle of a road to x-axis.
      * @return The new node, or null if placing did not succeed.
      */
     private SecondaryRoadNetworkNode tryPlacingRoad(SecondaryRoadNetworkNode sourceNode, double direction) {
@@ -253,14 +259,14 @@ public class CityCell {
                     return null;
                 }
                 secRoadNetwork.addEdge(sourceNode, targetNode);
-                drawPoint(targetNode.point, Color.CYAN, 5);
+                drawPoint(snapEvent.targetNode.point, Color.CYAN, 5);
                 return snapEvent.targetNode;
             case ROAD_SNAP:
                 if (random.nextDouble() < connectivity) {
                     SecondaryRoadNetworkNode newNode = snapEvent.targetNode;
                     insertNode(snapEvent.road, newNode);
                     secRoadNetwork.addEdge(sourceNode, newNode);
-//				drawPoint(snapEvent.targetNode.point, Color.CYAN, 10);
+                    drawPoint(snapEvent.targetNode.point, Color.YELLOW, 5);
                     return snapEvent.targetNode;
                 } else {
                     return null;
@@ -270,9 +276,8 @@ public class CityCell {
                     if (snapEvent.targetNode.isDeadEnd && sourceNode.isDeadEnd) {
                         return null;
                     }
-//                    secRoadNetwork.addVertex(snapEvent.targetNode);
                     secRoadNetwork.addEdge(sourceNode, snapEvent.targetNode);
-//				drawPoint(snapEvent.targetNode.point, Color.ORANGE, 10);
+                    drawPoint(snapEvent.targetNode.point, Color.WHITE, 5);
                     return null;
                 } else {
                     return null;
@@ -283,10 +288,7 @@ public class CityCell {
     }
 
     private void drawPoint(Point2D point, Color color, double size) {
-        canvas.draw(new Cell(
-                (int) Math.round(point.x),
-                (int) Math.round(point.y)
-        ), DrawingCell.withColorAndSize(color, size));
+        canvas.draw(point, DrawingPoint.withColorAndSize(color, size));
     }
 
     private double deviatedLength(double roadSegmentLength) {
@@ -295,12 +297,14 @@ public class CityCell {
 
     /**
      * [Kelly figure 42]
-     * <p/>
+     * <p>
      * Adds new node between two existing nodes, removing an existing road between them and placing 2 new roads. to road
      * network. Since {@link org.tendiwa.settlements.RoadGraph} is immutable, new nodes are saved in a separate collection.
      *
-     * @param road  A road from {@link #secRoadNetwork} on which a node is being inserted.
-     * @param point A node on that road where the node resides.
+     * @param road
+     *         A road from {@link #secRoadNetwork} on which a node is being inserted.
+     * @param point
+     *         A node on that road where the node resides.
      */
     private void insertNode(SecondaryRoad road, SecondaryRoadNetworkNode point) {
         assert !road.start.equals(point) : "point is start";
@@ -325,7 +329,7 @@ public class CityCell {
 
     /**
      * [Kelly figure 42]
-     * <p/>
+     * <p>
      * Returns several of the longest roads.
      *
      * @return Several of the longest roads.

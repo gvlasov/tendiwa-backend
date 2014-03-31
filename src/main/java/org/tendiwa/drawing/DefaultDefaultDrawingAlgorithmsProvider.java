@@ -5,9 +5,7 @@ import com.google.inject.Provider;
 import com.vividsolutions.jts.awt.ShapeWriter;
 import com.vividsolutions.jts.geom.Geometry;
 import org.tendiwa.core.Chunk;
-import org.tendiwa.geometry.RectangleSidePiece;
-import org.tendiwa.geometry.RectangleSystem;
-import org.tendiwa.geometry.Segment;
+import org.tendiwa.geometry.*;
 
 import java.awt.*;
 
@@ -39,6 +37,8 @@ public DefaultDrawingAlgorithms get() {
 		}
 	});
 //	defaultDrawingAlgorithms.register(World.class, DrawingWorld.level(0));
+    defaultDrawingAlgorithms.register(Point2D.class, DrawingPoint.withColorAndSize(Color.RED, 3));
+    defaultDrawingAlgorithms.register(Line2D.class, DrawingLine.withColor(Color.RED));
 
 	return defaultDrawingAlgorithms;
 }

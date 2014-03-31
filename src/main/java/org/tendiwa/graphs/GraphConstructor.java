@@ -31,7 +31,9 @@ import java.util.LinkedList;
  *      .cycle(6,7,8,9)
  *
  *      .path(2, 4, 6);
+ *
  *      System.out.println(gc.aliasOf(new Point(50, 30)); // 6
+ *
  *      UndirectedGraph<Point, Line> graph = gc.graph();
  * }
  * </pre>
@@ -160,7 +162,15 @@ public class GraphConstructor<V, E> {
             throw new IllegalStateException("A graph has already been produced by this GraphConstructor");
         }
         for (int[] edge : edges) {
-            graph.addEdge(vertices.get(edge[0]), vertices.get(edge[1]));
+            V sourceVertex = vertices.get(edge[0]);
+            V targetVertex = vertices.get(edge[1]);
+            if (sourceVertex == null) {
+                throw new IllegalStateException("No vertex was assigned to alias "+edge[0]);
+            }
+            if (targetVertex == null) {
+                throw new IllegalStateException("No vertex was assigned to alias "+edge[1]);
+            }
+            graph.addEdge(sourceVertex, targetVertex);
         }
         finished = true;
         return graph;

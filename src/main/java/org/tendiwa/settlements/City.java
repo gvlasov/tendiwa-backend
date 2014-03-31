@@ -7,11 +7,13 @@ import org.jgrapht.alg.cycle.PatonCycleBase;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Line2D;
 import org.tendiwa.geometry.Point2D;
+import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.graphs.MinimumCycleBasis;
 import org.tendiwa.graphs.VertexPositionAdapter;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class City {
     /**
@@ -58,7 +60,7 @@ public class City {
      *         Angle between two samples, in radians.
      * @param paramDegree
      * @param connectivity
-     *         {@link org.tendiwa.settlements.CityCell#connectivity}
+     *         {@link CityCell#connectivity}
      *         <p>
      *         How likely it is to snap to node or road when possible. When connectivity == 1.0, algorithm will always snap when
      *         possible. When connectivity == 0.0, algorithm will never snap.
@@ -78,7 +80,7 @@ public class City {
             double roadSegmentLength,
             double snapSize,
             TestCanvas canvas
-    ) {
+            ) {
         if (connectivity < 0 || connectivity > 1) {
             throw new IllegalArgumentException("Connectivity must be in range [0.0; 1.0]");
         }
@@ -98,7 +100,7 @@ public class City {
         lowLevelRoadGraph = buildLowLevelGraph();
 
         ImmutableSet.Builder<CityCell> cellsBuilder = ImmutableSet.builder();
-        Set<MinimalCycle<Point2D, Line2D>> minimalCycleBasis = new MinimumCycleBasis<>(highLevelRoadGraph, new VertexPositionAdapter<Point2D>() {
+        Set<MinimalCycle<Point2D, Line2D>> minimalCycleBasis = new MinimumCycleBasis<>(lowLevelRoadGraph, new VertexPositionAdapter<Point2D>() {
             @Override
             public double getX(Point2D vertex) {
                 return vertex.x;
@@ -110,7 +112,6 @@ public class City {
             }
         }).minimalCyclesSet();
         for (MinimalCycle<Point2D, Line2D> cycle : minimalCycleBasis) {
-            System.out.println(cycle.cycle);
             cellsBuilder.add(new CityCell(cycle.cycle, paramDegree, roadSegmentLength, snapSize, connectivity, random, canvas));
         }
         cells = cellsBuilder.build();
