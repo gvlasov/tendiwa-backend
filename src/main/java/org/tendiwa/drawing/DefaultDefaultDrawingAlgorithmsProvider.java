@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.vividsolutions.jts.awt.ShapeWriter;
 import com.vividsolutions.jts.geom.Geometry;
+import org.jgrapht.UndirectedGraph;
 import org.tendiwa.core.Chunk;
 import org.tendiwa.geometry.*;
 

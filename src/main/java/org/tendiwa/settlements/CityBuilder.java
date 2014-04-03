@@ -14,6 +14,7 @@ public class CityBuilder {
     public static final double DEFAULT_ROAD_SEGMENT_LENGTH = 10.;
     public static final double DEFAULT_SNAP_SIZE = 4.;
     public static final double DEFAULT_DEVIATION_ANGLE = Math.toRadians(20);
+    public static final int DEFAULT_NUM_OF_START_POINTS = 2;
     private UndirectedGraph<Point2D, Line2D> graph;
     private Double sampleRadius;
     private Integer samplesPerStep;
@@ -24,10 +25,18 @@ public class CityBuilder {
     private Double snapSize;
     private TestCanvas canvas;
     private static final double DEFAULT_SAMPLE_RADIUS = 30.;
+    private Integer numOfStartPoints;
 
     public CityBuilder(UndirectedGraph<Point2D, Line2D> graph, TestCanvas canvas) {
         this.graph = graph;
         this.canvas = canvas;
+    }
+    public CityBuilder withStartPointsPerCycle(int numOfStartPoints) {
+        if (numOfStartPoints < 1) {
+            throw new IllegalArgumentException("NumOfStartPoints must be at least 1");
+        }
+        this.numOfStartPoints = numOfStartPoints;
+        return this;
     }
 
     public CityBuilder withSampleRadius(double sampleRadius) {
@@ -93,6 +102,7 @@ public class CityBuilder {
         roadSegmentLength = DEFAULT_ROAD_SEGMENT_LENGTH;
         snapSize = DEFAULT_SNAP_SIZE;
         deviationAngle = DEFAULT_DEVIATION_ANGLE;
+        numOfStartPoints = DEFAULT_NUM_OF_START_POINTS;
         return this;
     }
 
@@ -124,7 +134,10 @@ public class CityBuilder {
         if (snapSize == null) {
             throw new IllegalStateException("snapSize not set");
         }
-        final Random random = new Random(2);
+        if (numOfStartPoints == null) {
+            throw new IllegalStateException("numOfStartPoints not set");
+        }
+        final Random random = new Random(3);
         return new City(
                 new RoadGraph(graph.vertexSet(), graph.edgeSet()),
                 sampleFan -> {
@@ -139,6 +152,7 @@ public class CityBuilder {
                 connectivity,
                 roadSegmentLength,
                 snapSize,
+                numOfStartPoints,
                 canvas
         );
     }

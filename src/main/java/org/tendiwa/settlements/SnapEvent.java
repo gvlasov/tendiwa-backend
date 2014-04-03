@@ -1,11 +1,14 @@
 package org.tendiwa.settlements;
 
-class SnapEvent {
-public final SecondaryRoadNetworkNode targetNode;
-public final SnapEventType eventType;
-public final SecondaryRoad road;
+import org.tendiwa.geometry.Line2D;
+import org.tendiwa.geometry.Point2D;
 
-SnapEvent(SecondaryRoadNetworkNode targetNode, SnapEventType eventType, SecondaryRoad road) {
+class SnapEvent {
+public final Point2D targetNode;
+public final SnapEventType eventType;
+public final Line2D road;
+
+SnapEvent(Point2D targetNode, SnapEventType eventType, Line2D road) {
 	this.targetNode = targetNode;
 	this.eventType = eventType;
 	this.road = road;

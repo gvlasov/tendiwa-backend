@@ -89,7 +89,7 @@ public class MinimumCycleBasisDemo {
                 }
                 for (Filament<Point2D, DefaultEdge> filament : mcb.filamentsSet()) {
                     System.out.println("filament " +
-                            filament.queue
+                            filament.vertexList()
                                     .stream()
                                     .map(constructor::aliasOf)
                                     .collect(Collectors.toSet())
@@ -103,7 +103,7 @@ public class MinimumCycleBasisDemo {
                 }
                 for (MinimalCycle<Point2D, DefaultEdge> cycle : mcb.minimalCyclesSet()) {
                     System.out.println("min cycle " +
-                            cycle.cycle
+                            cycle.vertexList()
                                     .stream()
                                     .map(constructor::aliasOf)
                                     .collect(Collectors.toSet())

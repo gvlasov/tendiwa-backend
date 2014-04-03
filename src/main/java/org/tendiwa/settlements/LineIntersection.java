@@ -4,11 +4,11 @@ import org.tendiwa.geometry.Line2D;
 import org.tendiwa.geometry.Point2D;
 
 public class LineIntersection {
-    final boolean intersects;
-    final double r;
+    public final boolean intersects;
+    public final double r;
     final double s;
 
-    LineIntersection(Point2D sourceNode, Point2D targetPoint, Line2D segment) {
+    public LineIntersection(Point2D sourceNode, Point2D targetPoint, Line2D segment) {
         Point2D ab = new Point2D(
                 targetPoint.x - sourceNode.x,
                 targetPoint.y - sourceNode.y
@@ -27,7 +27,7 @@ public class LineIntersection {
         intersects = !(r == 0 && s == 0);
     }
 
-    Point2D getIntersectionPoint(Point2D sourceNode, Point2D targetPoint) {
+    public Point2D getIntersectionPoint(Point2D sourceNode, Point2D targetPoint) {
         return new Point2D(
                 sourceNode.x + (targetPoint.x - sourceNode.x) * r,
                 sourceNode.y + (targetPoint.y - sourceNode.y) * r

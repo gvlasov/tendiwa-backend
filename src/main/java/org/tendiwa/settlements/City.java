@@ -2,18 +2,15 @@ package org.tendiwa.settlements;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableSet;
+import org.jgrapht.EdgeFactory;
 import org.jgrapht.UndirectedGraph;
-import org.jgrapht.alg.cycle.PatonCycleBase;
+import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Line2D;
 import org.tendiwa.geometry.Point2D;
-import org.tendiwa.graphs.GraphConstructor;
-import org.tendiwa.graphs.MinimalCycle;
-import org.tendiwa.graphs.MinimumCycleBasis;
-import org.tendiwa.graphs.VertexPositionAdapter;
+import org.tendiwa.graphs.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class City {
     /**
@@ -38,6 +35,13 @@ public class City {
      */
     private final Set<Line2D> highLevelGraphEdges;
     private final Set<CityCell> cells;
+    private Random random;
+    private final int paramDegree;
+    private final double connectivity;
+    private final double roadSegmentLength;
+    private final double snapSize;
+    private final TestCanvas canvas;
+    private final int numOfStartPoints;
 
     /**
      * @param highLevelRoadGraph
@@ -79,8 +83,9 @@ public class City {
             double connectivity,
             double roadSegmentLength,
             double snapSize,
+            int numOfStartPoints,
             TestCanvas canvas
-            ) {
+    ) {
         if (connectivity < 0 || connectivity > 1) {
             throw new IllegalArgumentException("Connectivity must be in range [0.0; 1.0]");
         }
@@ -90,6 +95,17 @@ public class City {
         if (deviationAngle == 0 && samplesPerStep > 1) {
             throw new IllegalArgumentException("When deviationAngle is 0, then number of samples may be only 1");
         }
+        if (numOfStartPoints < 1) {
+            throw new IllegalArgumentException("NumOfStartPoints must be at least 1");
+        }
+        this.random = random;
+        this.paramDegree = paramDegree;
+        this.connectivity = connectivity;
+        this.roadSegmentLength = roadSegmentLength;
+        this.snapSize = snapSize;
+        this.numOfStartPoints = numOfStartPoints;
+        this.canvas = canvas;
+
         this.highLevelRoadGraph = highLevelRoadGraph;
         this.strategy = strategy;
         this.dSample = sampleRadius;
@@ -98,9 +114,15 @@ public class City {
         approachingPerSample = Math.cos(deviationAngle);
         highLevelGraphEdges = highLevelRoadGraph.edgeSet();
         lowLevelRoadGraph = buildLowLevelGraph();
+        assert PlanarGraphEdgesNonOverlapping.test(lowLevelRoadGraph);
 
         ImmutableSet.Builder<CityCell> cellsBuilder = ImmutableSet.builder();
-        Set<MinimalCycle<Point2D, Line2D>> minimalCycleBasis = new MinimumCycleBasis<>(lowLevelRoadGraph, new VertexPositionAdapter<Point2D>() {
+        fillBuilderWithCells(cellsBuilder);
+        cells = cellsBuilder.build();
+    }
+
+    private void fillBuilderWithCells(ImmutableSet.Builder<CityCell> cellsBuilder) {
+        MinimumCycleBasis<Point2D, Line2D> primitives = new MinimumCycleBasis<>(lowLevelRoadGraph, new VertexPositionAdapter<Point2D>() {
             @Override
             public double getX(Point2D vertex) {
                 return vertex.x;
@@ -110,11 +132,57 @@ public class City {
             public double getY(Point2D vertex) {
                 return vertex.y;
             }
-        }).minimalCyclesSet();
-        for (MinimalCycle<Point2D, Line2D> cycle : minimalCycleBasis) {
-            cellsBuilder.add(new CityCell(cycle.cycle, paramDegree, roadSegmentLength, snapSize, connectivity, random, canvas));
+        });
+        Map<MinimalCycle<Point2D, Line2D>, SimpleGraph<Point2D, Line2D>> cellGraphs
+                = constructCityCellGraphs(primitives);
+        Collection<Line2D> filamentEdges = new HashSet<>();
+        for (Filament<Point2D, Line2D> filament : primitives.filamentsSet()) {
+            for (Line2D line : filament) {
+                filamentEdges.add(line);
+            }
         }
-        cells = cellsBuilder.build();
+        for (MinimalCycle<Point2D, Line2D> cycle : cellGraphs.keySet()) {
+            cellsBuilder.add(new CityCell(
+                    cellGraphs.get(cycle),
+                    cycle,
+                    filamentEdges,
+                    paramDegree,
+                    roadSegmentLength,
+                    snapSize,
+                    connectivity,
+                    numOfStartPoints,
+                    random,
+                    canvas
+            ));
+        }
+    }
+
+    private static Map<MinimalCycle<Point2D, Line2D>, SimpleGraph<Point2D, Line2D>> constructCityCellGraphs(
+            MinimumCycleBasis<Point2D, Line2D> primitives
+    ) {
+        Set<Filament<Point2D, Line2D>> filaments = primitives.filamentsSet();
+
+
+        Map<MinimalCycle<Point2D, Line2D>, SimpleGraph<Point2D, Line2D>> answer = new HashMap<>();
+        for (MinimalCycle<Point2D, Line2D> cycle : primitives.minimalCyclesSet()) {
+            SimpleGraph<Point2D, Line2D> graph = new SimpleGraph<>(Line2D::new);
+            for (Filament<Point2D, Line2D> filament : filaments) {
+                for (Point2D vertex : filament.vertexList()) {
+                    graph.addVertex(vertex);
+                }
+                for (Line2D line : filament) {
+                    graph.addEdge(line.start, line.end, line);
+                }
+            }
+            for (Point2D vertex : cycle.vertexList()) {
+                graph.addVertex(vertex);
+            }
+            for (Line2D edge : cycle) {
+                graph.addEdge(edge.start, edge.end, edge);
+            }
+            answer.put(cycle, graph);
+        }
+        return answer;
     }
 
     public Set<CityCell> getCells() {

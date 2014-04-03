@@ -1,5 +1,6 @@
 package org.tendiwa.graphs;
 
+import com.google.common.collect.ImmutableList;
 import org.jgrapht.UndirectedGraph;
 
 import java.util.ArrayList;
@@ -7,7 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class Filament<V, E> implements Primitive<V>, Iterable<E> {
-    public final List<V> queue = new ArrayList<>();
+    private final List<V> queue = new ArrayList<>();
     private UndirectedGraph<V, E> graph;
 
     Filament(UndirectedGraph<V, E> graph) {
@@ -32,5 +33,9 @@ public class Filament<V, E> implements Primitive<V>, Iterable<E> {
             edgesOfFilament.add(edge);
         }
         return edgesOfFilament.iterator();
+    }
+
+    public List<V> vertexList() {
+        return ImmutableList.<V>builder().addAll(queue).build();
     }
 }

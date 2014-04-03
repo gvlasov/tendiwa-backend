@@ -306,7 +306,7 @@ public final class TestCanvas {
         }
         if (classOfWhat == null) {
             throw new IllegalArgumentException(
-                    "This TestCanvas doesn't know of any default DrawingAlgorithm to drawWorld a " + what
+                    "This TestCanvas doesn't know of any default DrawingAlgorithm to draw a " + what
                             .getClass()
                             .getCanonicalName());
         }
