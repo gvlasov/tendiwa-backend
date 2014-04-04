@@ -44,6 +44,7 @@ public class CityCell {
     private final boolean isCycleClockwise;
     private final double snapSize;
     private final double connectivity;
+    private double secondaryRoadNetworkDeviationAngle;
     private final Random random;
     private final TestCanvas canvas;
     private Collection<Point2D> deadEnds = new HashSet<>();
@@ -69,6 +70,7 @@ public class CityCell {
             double roadSegmentLength,
             double snapSize,
             double connectivity,
+            double secondaryRoadNetworkDeviationAngle,
             int numOfStartPoints,
             Random random,
             TestCanvas canvas
@@ -78,6 +80,7 @@ public class CityCell {
         this.roadSegmentLength = roadSegmentLength;
         this.snapSize = snapSize;
         this.connectivity = connectivity;
+        this.secondaryRoadNetworkDeviationAngle = secondaryRoadNetworkDeviationAngle;
         this.random = random;
         this.canvas = canvas;
         this.numOfStartPoints = numOfStartPoints;
@@ -87,9 +90,6 @@ public class CityCell {
 
         for (Point2D vertex : relevantNetwork.vertexSet()) {
             deadEnds.add(vertex);
-        }
-        for (Line2D edge : cycle) {
-            canvas.draw(edge, DrawingLine.withColor(Color.BLUE));
         }
 
 
@@ -169,7 +169,7 @@ public class CityCell {
     }
 
     private double deviateDirection(double newDirection) {
-        return newDirection + random.nextDouble() * 0.03;
+        return newDirection - secondaryRoadNetworkDeviationAngle + random.nextDouble() * secondaryRoadNetworkDeviationAngle * 2;
     }
 
     private double deviatedLength(double roadSegmentLength) {
@@ -184,8 +184,6 @@ public class CityCell {
      */
     private double deviatedBoundaryPerpendicular(Point2D deviatedMidpoint, Line2D edge) {
         double angle = edge.start.angleTo(edge.end);
-        canvas.draw(edge, DrawingLine.withColor(Color.YELLOW));
-        canvas.draw(deviatedMidpoint, DrawingPoint.withColorAndSize(Color.RED, 8));
         return angle + Math.PI / 2
                 * (isCycleClockwise ? -1 : 1)
                 * (isStartBeforeEndInRing(new Coordinate(edge.start.x, edge.start.y), new Coordinate(edge.end.x, edge.end.y)) ? 1 : -1);
@@ -284,7 +282,6 @@ public class CityCell {
         Point2D targetNode = new Point2D(sourceNode.x + dx, sourceNode.y + dy);
         SnapEvent snapEvent = new SnapTest(snapSize, sourceNode, targetNode, relevantNetwork, canvas).snap();
         if (sourceNode.equals(snapEvent.targetNode)) {
-//            canvas.draw(sourceNode, DrawingPoint.withColorAndSize(Color.WHITE, 12));
             assert false;
         }
         switch (snapEvent.eventType) {
@@ -300,7 +297,7 @@ public class CityCell {
                 if (random.nextDouble() < connectivity) {
                     Point2D newNode = snapEvent.targetNode;
                     insertNode(snapEvent.road, newNode);
-                    System.out.println(sourceNode + " " + newNode + " " + sourceNode.equals(newNode) + " " + (sourceNode == newNode));
+//                    System.out.println(sourceNode + " " + newNode + " " + sourceNode.equals(newNode) + " " + (sourceNode == newNode));
                     addRoad(sourceNode, newNode);
                     drawPoint(snapEvent.targetNode, Color.YELLOW, 5);
                     if (!filamentEdges.contains(snapEvent.road)) {
@@ -329,6 +326,18 @@ public class CityCell {
     }
 
     private void addRoad(Point2D sourceNode, Point2D targetNode) {
+        if (
+                Math.abs(sourceNode.x - 131.17) < 1
+                        && Math.abs(sourceNode.y - 214.18) < 1
+                        && Math.abs(targetNode.x - 138.43) < 1
+                        && Math.abs(targetNode.y - 202.02) < 1
+                        || Math.abs(targetNode.x - 131.17) < 1
+                        && Math.abs(targetNode.y - 214.18) < 1
+                        && Math.abs(sourceNode.x - 138.43) < 1
+                        && Math.abs(sourceNode.y - 202.02) < 1
+                ) {
+            System.out.println(2);
+        }
         relevantNetwork.addEdge(sourceNode, targetNode);
         secRoadNetwork.addVertex(sourceNode);
         secRoadNetwork.addVertex(targetNode);
@@ -340,7 +349,7 @@ public class CityCell {
     }
 
     private void drawPoint(Point2D point, Color color, double size) {
-        canvas.draw(point, DrawingPoint.withColorAndSize(color, size));
+//        canvas.draw(point, DrawingPoint.withColorAndSize(color, size));
     }
 
 
@@ -362,8 +371,8 @@ public class CityCell {
         assert road.end.distanceTo(point) > 0.1 : road.end.distanceTo(point) + " " + road.start.distanceTo(road.end);
         relevantNetwork.removeEdge(road);
         relevantNetwork.addVertex(point);
-        relevantNetwork.addEdge(road.start, point);
-        relevantNetwork.addEdge(point, road.end);
+        addRoad(road.start, point);
+        addRoad(point, road.end);
     }
 
     private Point2D calculateDeviatedMidPoint(Line2D road) {

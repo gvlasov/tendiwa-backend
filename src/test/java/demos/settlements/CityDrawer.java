@@ -21,15 +21,15 @@ public class CityDrawer extends DrawingAlgorithm<City> {
                                         Color.GREEN
                                 )
                         ));
-        for (Line2D roadSegment : city.getLowLevelRoadGraph().edgeSet()) {
-            drawLine(
-                    roadSegment.start.x,
-                    roadSegment.start.y,
-                    roadSegment.end.x,
-                    roadSegment.end.y,
-                    Color.RED
-            );
-        }
+//        for (Line2D roadSegment : city.getLowLevelRoadGraph().edgeSet()) {
+//            drawLine(
+//                    roadSegment.start.x,
+//                    roadSegment.start.y,
+//                    roadSegment.end.x,
+//                    roadSegment.end.y,
+//                    Color.RED
+//            );
+//        }
     }
 
     public CityDrawer() {

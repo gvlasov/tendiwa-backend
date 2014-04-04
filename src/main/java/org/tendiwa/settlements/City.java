@@ -42,6 +42,7 @@ public class City {
     private final double snapSize;
     private final TestCanvas canvas;
     private final int numOfStartPoints;
+    private double secondaryRoadNetworkDeviationAngle;
 
     /**
      * @param highLevelRoadGraph
@@ -84,8 +85,12 @@ public class City {
             double roadSegmentLength,
             double snapSize,
             int numOfStartPoints,
+            double secondaryRoadNetworkDeviationAngle,
             TestCanvas canvas
     ) {
+        if (Math.abs(secondaryRoadNetworkDeviationAngle) >= Math.PI*2) {
+            throw new IllegalArgumentException("secondaryRoadNetworkDeviationAngle must be in [0; Math.PI*2)");
+        }
         if (connectivity < 0 || connectivity > 1) {
             throw new IllegalArgumentException("Connectivity must be in range [0.0; 1.0]");
         }
@@ -103,6 +108,7 @@ public class City {
         this.connectivity = connectivity;
         this.roadSegmentLength = roadSegmentLength;
         this.snapSize = snapSize;
+        this.secondaryRoadNetworkDeviationAngle = secondaryRoadNetworkDeviationAngle;
         this.numOfStartPoints = numOfStartPoints;
         this.canvas = canvas;
 
@@ -150,6 +156,7 @@ public class City {
                     roadSegmentLength,
                     snapSize,
                     connectivity,
+                    secondaryRoadNetworkDeviationAngle,
                     numOfStartPoints,
                     random,
                     canvas

@@ -15,6 +15,8 @@ public class CityBuilder {
     public static final double DEFAULT_SNAP_SIZE = 4.;
     public static final double DEFAULT_DEVIATION_ANGLE = Math.toRadians(20);
     public static final int DEFAULT_NUM_OF_START_POINTS = 2;
+    public static final double DEFAULT_SECONDARY_ROAD_NETWORK_DEVIATION_ANGLE = 0.1;
+    private static final double DEFAULT_SAMPLE_RADIUS = 30.;
     private UndirectedGraph<Point2D, Line2D> graph;
     private Double sampleRadius;
     private Integer samplesPerStep;
@@ -24,13 +26,14 @@ public class CityBuilder {
     private Double roadSegmentLength;
     private Double snapSize;
     private TestCanvas canvas;
-    private static final double DEFAULT_SAMPLE_RADIUS = 30.;
     private Integer numOfStartPoints;
+    private Double secondaryRoadNetworkDeviationAngle;
 
     public CityBuilder(UndirectedGraph<Point2D, Line2D> graph, TestCanvas canvas) {
         this.graph = graph;
         this.canvas = canvas;
     }
+
     public CityBuilder withStartPointsPerCycle(int numOfStartPoints) {
         if (numOfStartPoints < 1) {
             throw new IllegalArgumentException("NumOfStartPoints must be at least 1");
@@ -75,6 +78,14 @@ public class CityBuilder {
         return this;
     }
 
+    public CityBuilder withSecondaryRoadNetworkDeviationAngle(double deviationAngle) {
+        if (Math.abs(secondaryRoadNetworkDeviationAngle) >= Math.PI * 2) {
+            throw new IllegalArgumentException("secondaryRoadNetworkDeviationAngle must be in [0; Math.PI*2)");
+        }
+        this.secondaryRoadNetworkDeviationAngle = deviationAngle;
+        return this;
+    }
+
     public CityBuilder withConnectivity(double connectivity) {
         if (connectivity < 0 || connectivity > 1) {
             throw new IllegalArgumentException(
@@ -103,6 +114,7 @@ public class CityBuilder {
         snapSize = DEFAULT_SNAP_SIZE;
         deviationAngle = DEFAULT_DEVIATION_ANGLE;
         numOfStartPoints = DEFAULT_NUM_OF_START_POINTS;
+        secondaryRoadNetworkDeviationAngle = DEFAULT_SECONDARY_ROAD_NETWORK_DEVIATION_ANGLE;
         return this;
     }
 
@@ -134,10 +146,13 @@ public class CityBuilder {
         if (snapSize == null) {
             throw new IllegalStateException("snapSize not set");
         }
+        if (secondaryRoadNetworkDeviationAngle == null) {
+            throw new IllegalStateException("secondaryRoadNetworkDeviationAngle not set");
+        }
         if (numOfStartPoints == null) {
             throw new IllegalStateException("numOfStartPoints not set");
         }
-        final Random random = new Random(3);
+        final Random random = new Random(4);
         return new City(
                 new RoadGraph(graph.vertexSet(), graph.edgeSet()),
                 sampleFan -> {
@@ -153,6 +168,7 @@ public class CityBuilder {
                 roadSegmentLength,
                 snapSize,
                 numOfStartPoints,
+                secondaryRoadNetworkDeviationAngle,
                 canvas
         );
     }

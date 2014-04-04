@@ -8,6 +8,7 @@ import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.core.meta.Range;
 import org.tendiwa.drawing.DrawingAlgorithm;
 import org.tendiwa.drawing.DrawingLine;
+import org.tendiwa.drawing.DrawingPoint;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Line2D;
 import org.tendiwa.geometry.Point2D;
@@ -88,13 +89,10 @@ public class SnapTest {
                 }
                 if (intersection.intersects) {
                     Point2D intersectionPoint = intersection.getIntersectionPoint(sourceNode, targetNode);
-                    System.out.println(
-                            sourceNode + " "
-                                    + targetNode + " "
-                                    + road.start + " "
-                                    + road.end
-                    );
                     assert !intersectionPoint.equals(sourceNode);
+                    if (Math.abs(road.start.distanceTo(road.end) - road.start.distanceTo(intersectionPoint) - road.end.distanceTo(intersectionPoint)) > 1) {
+                        assert false;
+                    }
                     snapEvent = new SnapEvent(
                             intersectionPoint,
                             SnapEventType.ROAD_SNAP,
@@ -117,6 +115,9 @@ public class SnapTest {
                     road.end,
                     targetNode
             );
+            if (nodePosition.r < 0 || nodePosition.r > 1) {
+                continue;
+            }
             if (nodePosition.distance > snapSize) {
                 continue;
             }

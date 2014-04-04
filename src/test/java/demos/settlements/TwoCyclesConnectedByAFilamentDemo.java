@@ -38,6 +38,7 @@ public class TwoCyclesConnectedByAFilamentDemo {
                 .withDefaults()
                 .withStartPointsPerCycle(1)
                 .withParamDegree(4)
+                .withSecondaryRoadNetworkDeviationAngle(0.0)
                 .build();
         canvas.draw(city, new CityDrawer());
 //        canvas.draw(gc.graph(), DrawingGraph.withColor(Color.RED));
