@@ -35,12 +35,12 @@ public class BigCity {
         canvas.fillBackground(Color.BLACK);
         City city = new CityBuilder(gc.graph())
                 .withDefaults()
-                .withStartPointsPerCycle(1)
+                .withMaxStartPointsPerCycle(4)
                 .withRoadsFromPoint(3)
                 .withSecondaryRoadNetworkDeviationAngle(0.7)
                 .withConnectivity(0)
-                .withRoadSegmentLength(5, 6)
-                .withSnapSize(1)
+                .withRoadSegmentLength(30, 40)
+                .withSnapSize(8)
                 .withCanvas(canvas)
                 .build();
         canvas.draw(city, new CityDrawer());

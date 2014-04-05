@@ -36,9 +36,9 @@ public class CityBuilder {
      */
     public static final double DEFAULT_DEVIATION_ANGLE = Math.toRadians(20);
     /**
-     * @see #withStartPointsPerCycle(int)
+     * @see #withMaxStartPointsPerCycle(int)
      */
-    public static final int DEFAULT_START_POINTS_PER_CYCLE = 2;
+    public static final int DEFAULT_MAX_START_POINTS_PER_CYCLE = 2;
     /**
      * @see #withSecondaryRoadNetworkDeviationAngle(double)
      */
@@ -59,7 +59,7 @@ public class CityBuilder {
     private Double connectivity;
     private Double roadSegmentLength;
     private Double snapSize;
-    private Integer numOfStartPoints;
+    private Integer maxNumOfStartPoints;
     private Double secondaryRoadNetworkDeviationAngle;
     private Double secondaryRoadNetworkRoadLengthDeviation;
     private TestCanvas canvas;
@@ -83,11 +83,11 @@ public class CityBuilder {
 
 
     @SuppressWarnings("unused")
-    public CityBuilder withStartPointsPerCycle(int numOfStartPoints) {
-        if (numOfStartPoints < 1) {
+    public CityBuilder withMaxStartPointsPerCycle(int amount) {
+        if (amount < 1) {
             throw new IllegalArgumentException("NumOfStartPoints must be at least 1");
         }
-        this.numOfStartPoints = numOfStartPoints;
+        this.maxNumOfStartPoints = amount;
         return this;
     }
 
@@ -209,7 +209,7 @@ public class CityBuilder {
         roadSegmentLength = DEFAULT_ROAD_SEGMENT_LENGTH;
         snapSize = DEFAULT_SNAP_SIZE;
         deviationAngle = DEFAULT_DEVIATION_ANGLE;
-        numOfStartPoints = DEFAULT_START_POINTS_PER_CYCLE;
+        maxNumOfStartPoints = DEFAULT_MAX_START_POINTS_PER_CYCLE;
         secondaryRoadNetworkDeviationAngle = DEFAULT_SECONDARY_ROAD_NETWORK_DEVIATION_ANGLE;
         secondaryRoadNetworkRoadLengthDeviation = DEFAULT_SECONDARY_ROAD_NETWORK_ROAD_LENGTH_DEVIATION;
         return this;
@@ -244,8 +244,8 @@ public class CityBuilder {
         if (secondaryRoadNetworkDeviationAngle == null) {
             throw new IllegalStateException("secondaryRoadNetworkDeviationAngle not set");
         }
-        if (numOfStartPoints == null) {
-            throw new IllegalStateException("numOfStartPoints not set");
+        if (maxNumOfStartPoints == null) {
+            throw new IllegalStateException("maxNumOfStartPoints not set");
         }
         if (secondaryRoadNetworkRoadLengthDeviation == null) {
             throw new IllegalStateException("secondaryRoadNetworkRoadLengthDeviation not set");
@@ -265,7 +265,7 @@ public class CityBuilder {
                 connectivity,
                 roadSegmentLength,
                 snapSize,
-                numOfStartPoints,
+                maxNumOfStartPoints,
                 secondaryRoadNetworkDeviationAngle,
                 secondaryRoadNetworkRoadLengthDeviation,
                 canvas

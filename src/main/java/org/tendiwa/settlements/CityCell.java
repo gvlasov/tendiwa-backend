@@ -6,13 +6,11 @@ import com.vividsolutions.jts.geom.Coordinate;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.graph.UnmodifiableUndirectedGraph;
-import org.tendiwa.drawing.DrawingPoint;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Line2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.graphs.MinimalCycle;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,7 +31,7 @@ public class CityCell {
      * [Kelly figure 42]
      * <p>
      */
-    private final int paramDegree;
+    private final int roadsFromPoint;
     private final double roadSegmentLength;
     /**
      * Coordinates of cycle's vertices sorted in a clockwise or counter-clockwise order.
@@ -48,7 +46,7 @@ public class CityCell {
     private double secondaryRoadNetworkDeviationAngle;
     private final Random random;
     private Collection<Point2D> deadEnds = new HashSet<>();
-    private final int numOfStartPoints;
+    private final int maxNumOfStartPoints;
     private double secondaryRoadNetworkRoadLengthDeviation;
 
     /**
@@ -63,7 +61,9 @@ public class CityCell {
      * @param roadsFromPoint
      *         [Kelly figure 42, variable ParamDegree]
      *         <p>
-     *         How many lines would normally go from one point of secondary road network.
+     *         How many lines would normally go from one point of secondary road network. A CityCell is not
+     *         guaranteed to have exactly {@code maxRoadsFromPoint} starting roads,
+     *         because such amount might not fit into a cell.
      * @param roadSegmentLength
      *         [Kelly figure 42, variable ParamSegmentLength]
      *         <p>
@@ -87,10 +87,14 @@ public class CityCell {
      *         <p>
      *         Kelly doesn't have this as a parameter, it is implied in [Kelly figure 42] under "calculate deviated
      *         ParamSegmentLength".
-     * @param numOfStartPoints
+     * @param maxNumOfStartPoints
      *         Number of starting points for road generation
      *         <p>
      *         In [Kelly figure 43] there are 2 starting points.
+     *         <p>
+     *         A CityCell is not
+     *         guaranteed to have exactly {@code maxRoadsFromPoint} starting roads,
+     *         because such amount might not fit into a cell.
      * @param random
      *         A seeded {@link java.util.Random} used to generate the parent {@link City}.
      */
@@ -104,20 +108,20 @@ public class CityCell {
             double connectivity,
             double secondaryRoadNetworkDeviationAngle,
             double secondaryRoadNetworkRoadLengthDeviation,
-            int numOfStartPoints,
+            int maxNumOfStartPoints,
             Random random,
             TestCanvas canvas
     ) {
         this.minimalCycle = minimalCycle;
         this.filamentEdges = filamentEdges;
-        this.paramDegree = roadsFromPoint;
+        this.roadsFromPoint = roadsFromPoint;
         this.roadSegmentLength = roadSegmentLength;
         this.snapSize = snapSize;
         this.connectivity = connectivity;
         this.secondaryRoadNetworkDeviationAngle = secondaryRoadNetworkDeviationAngle;
         this.secondaryRoadNetworkRoadLengthDeviation = secondaryRoadNetworkRoadLengthDeviation;
         this.random = random;
-        this.numOfStartPoints = numOfStartPoints;
+        this.maxNumOfStartPoints = maxNumOfStartPoints;
 
         relevantNetwork = graph;
         this.canvas = canvas;
@@ -164,10 +168,11 @@ public class CityCell {
     private void buildLine2DNetwork(MinimalCycle<Point2D, Line2D> cycle) {
         Deque<Line2DNetworkStep> nodeQueue = new ArrayDeque<>();
         for (Line2D road : startingRoads(cycle)) {
-            // Source node is the same as midpoint from [Kelly figure 42], since in this implementation points are inherently nodes.
             Point2D sourceNode = calculateDeviatedMidPoint(road);
+            // Made dead end so two new roads are not inserted to secondaryRoadNetwork.
             deadEnds.add(sourceNode);
             insertNode(road, sourceNode);
+            // Made not-dead end so a road can be placed from it.
             deadEnds.remove(sourceNode);
             double direction = deviatedBoundaryPerpendicular(road);
             Point2D newNode = tryPlacingRoad(sourceNode, direction);
@@ -182,9 +187,9 @@ public class CityCell {
 //            if (iter == 9) {
 //                break;
 //            }
-            Line2DNetworkStep node = nodeQueue.pop();
-            for (int i = 1; i < paramDegree; i++) {
-                double newDirection = deviateDirection(node.direction + Math.PI + i * (Math.PI * 2 / paramDegree));
+            Line2DNetworkStep node = nodeQueue.removeFirst();
+            for (int i = 1; i < roadsFromPoint; i++) {
+                double newDirection = deviateDirection(node.direction + Math.PI + i * (Math.PI * 2 / roadsFromPoint));
                 Point2D newNode = tryPlacingRoad(node.node, newDirection);
                 if (newNode != null && !isDeadEnd(newNode)) {
                     nodeQueue.push(new Line2DNetworkStep(newNode, newDirection));
@@ -388,7 +393,7 @@ public class CityCell {
                 // TODO: The fuck is signum doing here?
                 (o1, o2) -> (int) Math.signum(o2.start.distanceTo(o2.end) - o1.start.distanceTo(o1.end))
         );
-        return edges.subList(0, numOfStartPoints);
+        return edges.subList(0, maxNumOfStartPoints);
     }
 
     class Line2DNetworkStep {
