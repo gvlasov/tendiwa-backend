@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableSet;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
+import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Line2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.graphs.*;
@@ -38,6 +39,7 @@ public class City {
     private final int startPointsPerCell;
     private double secondaryRoadNetworkDeviationAngle;
     private double secondaryRoadNetworkRoadLengthDeviation;
+    private TestCanvas canvas;
 
     /**
      * @param highLevelRoadGraph
@@ -102,8 +104,10 @@ public class City {
             double snapSize,
             int startPointsPerCell,
             double secondaryRoadNetworkDeviationAngle,
-            double secondaryRoadNetworkRoadLengthDeviation
+            double secondaryRoadNetworkRoadLengthDeviation,
+            TestCanvas canvas
     ) {
+        this.canvas = canvas;
         if (Math.abs(secondaryRoadNetworkDeviationAngle) >= Math.PI * 2) {
             throw new IllegalArgumentException("secondaryRoadNetworkDeviationAngle must be in [0; Math.PI*2)");
         }
@@ -180,7 +184,8 @@ public class City {
                     secondaryRoadNetworkDeviationAngle,
                     secondaryRoadNetworkRoadLengthDeviation,
                     startPointsPerCell,
-                    random
+                    random,
+                    canvas
             ));
         }
     }

@@ -1,6 +1,7 @@
 package org.tendiwa.settlements;
 
 import org.jgrapht.UndirectedGraph;
+import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Line2D;
 import org.tendiwa.geometry.Point2D;
 
@@ -61,6 +62,7 @@ public class CityBuilder {
     private Integer numOfStartPoints;
     private Double secondaryRoadNetworkDeviationAngle;
     private Double secondaryRoadNetworkRoadLengthDeviation;
+    private TestCanvas canvas;
 
     /**
      * Starts constructing a City defined by high level graph {@code graph}.
@@ -73,6 +75,12 @@ public class CityBuilder {
     public CityBuilder(UndirectedGraph<Point2D, Line2D> graph) {
         this.graph = graph;
     }
+
+    public CityBuilder withCanvas(TestCanvas canvas) {
+        this.canvas = canvas;
+        return this;
+    }
+
 
     @SuppressWarnings("unused")
     public CityBuilder withStartPointsPerCycle(int numOfStartPoints) {
@@ -93,13 +101,23 @@ public class CityBuilder {
     }
 
     @SuppressWarnings("unused")
-    public CityBuilder withRoadSegmentLength(double roadSegmentLength) {
-        if (roadSegmentLength <= 0) {
+    public CityBuilder withRoadSegmentLength(double length) {
+        if (length <= 0) {
             throw new IllegalArgumentException(
-                    "roadSegmentLength must be > 0 (" + roadSegmentLength + " provided)"
+                    "roadSegmentLength must be > 0 (" + length + " provided)"
             );
         }
-        this.roadSegmentLength = roadSegmentLength;
+        this.roadSegmentLength = length;
+        return this;
+    }
+
+    @SuppressWarnings("unused")
+    public CityBuilder withRoadSegmentLength(double min, double max) {
+        if (min > max) {
+            throw new IllegalArgumentException("min must be <= max");
+        }
+        this.roadSegmentLength = min / 2 + max / 2;
+        this.secondaryRoadNetworkRoadLengthDeviation = (max - min) / 2;
         return this;
     }
 
@@ -249,7 +267,8 @@ public class CityBuilder {
                 snapSize,
                 numOfStartPoints,
                 secondaryRoadNetworkDeviationAngle,
-                secondaryRoadNetworkRoadLengthDeviation
+                secondaryRoadNetworkRoadLengthDeviation,
+                canvas
         );
     }
 

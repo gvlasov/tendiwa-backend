@@ -6,11 +6,15 @@ import com.vividsolutions.jts.geom.Coordinate;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.graph.UnmodifiableUndirectedGraph;
+import org.tendiwa.drawing.DrawingPoint;
+import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Line2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.graphs.MinimalCycle;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -21,7 +25,9 @@ import java.util.stream.Collectors;
  */
 public class CityCell {
     private final SimpleGraph<Point2D, Line2D> relevantNetwork;
+    private TestCanvas canvas;
     private final SimpleGraph<Point2D, Line2D> secRoadNetwork;
+    private MinimalCycle<Point2D, Line2D> minimalCycle;
     private Collection<Line2D> filamentEdges;
     /**
      * [Kelly figure 42]
@@ -47,8 +53,9 @@ public class CityCell {
 
     /**
      * @param graph
-     *         A preconstructed graph of low level roads.
-     * @param cycle
+     *         A preconstructed graph of low level roads, constructed by
+     *         {@link City#constructCityCellGraph(org.tendiwa.graphs.MinimalCycle, java.util.Set)}.
+     * @param minimalCycle
      *         A MinimalCycle that contains this CityCell's secondary road network inside it.
      * @param filamentEdges
      *         A collection of all the edges of a {@link org.tendiwa.settlements.City#lowLevelRoadGraph} that are not
@@ -89,7 +96,7 @@ public class CityCell {
      */
     CityCell(
             SimpleGraph<Point2D, Line2D> graph,
-            MinimalCycle<Point2D, Line2D> cycle,
+            MinimalCycle<Point2D, Line2D> minimalCycle,
             Collection<Line2D> filamentEdges,
             int roadsFromPoint,
             double roadSegmentLength,
@@ -98,8 +105,10 @@ public class CityCell {
             double secondaryRoadNetworkDeviationAngle,
             double secondaryRoadNetworkRoadLengthDeviation,
             int numOfStartPoints,
-            Random random
+            Random random,
+            TestCanvas canvas
     ) {
+        this.minimalCycle = minimalCycle;
         this.filamentEdges = filamentEdges;
         this.paramDegree = roadsFromPoint;
         this.roadSegmentLength = roadSegmentLength;
@@ -111,6 +120,7 @@ public class CityCell {
         this.numOfStartPoints = numOfStartPoints;
 
         relevantNetwork = graph;
+        this.canvas = canvas;
         secRoadNetwork = new SimpleGraph<>(graph.getEdgeFactory());
 
         for (Point2D vertex : relevantNetwork.vertexSet()) {
@@ -118,12 +128,13 @@ public class CityCell {
         }
 
 
-        ring = pointListToCoordinateArray(cycle.vertexList());
+        ring = pointListToCoordinateArray(minimalCycle.vertexList());
         // TODO: Are all cycles counter-clockwise? (because of the MCB algorithm)
         assert CGAlgorithms.isCCW(ring);
         isCycleClockwise = false;
 
-        buildLine2DNetwork(cycle);
+        buildLine2DNetwork(minimalCycle);
+
     }
 
     /**
@@ -155,14 +166,22 @@ public class CityCell {
         for (Line2D road : startingRoads(cycle)) {
             // Source node is the same as midpoint from [Kelly figure 42], since in this implementation points are inherently nodes.
             Point2D sourceNode = calculateDeviatedMidPoint(road);
+            deadEnds.add(sourceNode);
             insertNode(road, sourceNode);
+            deadEnds.remove(sourceNode);
             double direction = deviatedBoundaryPerpendicular(road);
             Point2D newNode = tryPlacingRoad(sourceNode, direction);
             if (newNode != null) {
                 nodeQueue.push(new Line2DNetworkStep(newNode, direction));
+                deadEnds.add(sourceNode);
             }
         }
+//        int iter = 0;
         while (!nodeQueue.isEmpty()) {
+//            iter++;
+//            if (iter == 9) {
+//                break;
+//            }
             Line2DNetworkStep node = nodeQueue.pop();
             for (int i = 1; i < paramDegree; i++) {
                 double newDirection = deviateDirection(node.direction + Math.PI + i * (Math.PI * 2 / paramDegree));
@@ -247,6 +266,7 @@ public class CityCell {
      * @return The new node, or null if placing did not succeed.
      */
     private Point2D tryPlacingRoad(Point2D source, double direction) {
+        assert !isDeadEnd(source);
         double roadLength = deviatedLength(roadSegmentLength);
         double dx = roadLength * Math.cos(direction);
         double dy = roadLength * Math.sin(direction);
@@ -265,12 +285,14 @@ public class CityCell {
                 return snapEvent.targetNode;
             case ROAD_SNAP:
                 if (random.nextDouble() < connectivity) {
-                    Point2D newNode = snapEvent.targetNode;
-                    insertNode(snapEvent.road, newNode);
-                    addRoad(source, newNode);
                     if (!filamentEdges.contains(snapEvent.road)) {
                         deadEnds.add(snapEvent.targetNode);
                     }
+                    if (isDeadEnd(snapEvent.road.start) && isDeadEnd(snapEvent.road.end)) {
+                        deadEnds.add(snapEvent.targetNode);
+                    }
+                    insertNode(snapEvent.road, snapEvent.targetNode);
+                    addRoad(source, snapEvent.targetNode);
                     return snapEvent.targetNode;
                 } else {
                     return null;
@@ -281,6 +303,7 @@ public class CityCell {
                         return null;
                     }
                     addRoad(source, snapEvent.targetNode);
+
                     return null;
                 } else {
                     return null;
@@ -302,9 +325,11 @@ public class CityCell {
      */
     private void addRoad(Point2D source, Point2D target) {
         relevantNetwork.addEdge(source, target);
-        secRoadNetwork.addVertex(source);
-        secRoadNetwork.addVertex(target);
-        secRoadNetwork.addEdge(source, target);
+        if (!(isDeadEnd(source) && isDeadEnd(target))) {
+            secRoadNetwork.addVertex(source);
+            secRoadNetwork.addVertex(target);
+            secRoadNetwork.addEdge(source, target);
+        }
     }
 
     /**

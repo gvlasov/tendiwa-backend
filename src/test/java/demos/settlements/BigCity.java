@@ -8,6 +8,8 @@ import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.settlements.City;
 import org.tendiwa.settlements.CityBuilder;
 
+import java.awt.*;
+
 public class BigCity {
     public static void main(String[] args) {
         TestCanvas canvas = Demos.createCanvas();
@@ -30,11 +32,16 @@ public class BigCity {
                 .edge(10, 5)
                 .edge(9, 2)
                 .cycle(4, 5, 7, 6);
+        canvas.fillBackground(Color.BLACK);
         City city = new CityBuilder(gc.graph())
                 .withDefaults()
                 .withStartPointsPerCycle(1)
-                .withRoadsFromPoint(4)
-                .withSecondaryRoadNetworkDeviationAngle(0.0)
+                .withRoadsFromPoint(3)
+                .withSecondaryRoadNetworkDeviationAngle(0.7)
+                .withConnectivity(0)
+                .withRoadSegmentLength(5, 6)
+                .withSnapSize(1)
+                .withCanvas(canvas)
                 .build();
         canvas.draw(city, new CityDrawer());
     }
