@@ -6,16 +6,11 @@ import com.vividsolutions.jts.geom.Coordinate;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.graph.UnmodifiableUndirectedGraph;
-import org.tendiwa.drawing.DrawingLine;
-import org.tendiwa.drawing.DrawingPoint;
-import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Line2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.graphs.MinimalCycle;
 
-import java.awt.*;
 import java.util.*;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -46,43 +41,66 @@ public class CityCell {
     private final double connectivity;
     private double secondaryRoadNetworkDeviationAngle;
     private final Random random;
-    private final TestCanvas canvas;
     private Collection<Point2D> deadEnds = new HashSet<>();
     private final int numOfStartPoints;
 
     /**
      * @param graph
      *         A preconstructed graph of low level roads.
+     * @param cycle
+     *         A MinimalCycle that contains this CityCell's secondary road network inside it.
      * @param filamentEdges
-     * @param paramDegree
+     *         A collection of all the edges of a {@link org.tendiwa.settlements.City#lowLevelRoadGraph} that are not
+     *         part of any minimal cycles. The same collection is passed to all the CityCells.
+     * @param roadsFromPoint
+     *         [Kelly figure 42, variable ParamDegree]
+     *         <p>
+     *         How many lines would normally go from one point of secondary road network.
+     * @param roadSegmentLength
+     *         [Kelly figure 42, variable ParamSegmentLength]
+     *         <p>
+     *         Mean length of secondary network roads.
      * @param snapSize
+     *         [Kelly figure 42, variable ParamSnapSize]
+     *         <p>
+     *         A radius around secondary roads' end points inside which new end points would snap to existing ones.
      * @param connectivity
-     *         How likely it is to snap to node or road when possible. When connectivity == 1.0, algorithm will always snap when
-     *         possible. When connectivity == 0.0, algorithm will never snap.
+     *         [Kelly figure 42, variable ParamConnectivity]
+     *         <p>
+     *         How likely it is to snap to node or road when possible. When connectivity == 1.0, algorithm will always
+     *         snap when possible. When connectivity == 0.0, algorithm will never snap.
+     * @param secondaryRoadNetworkDeviationAngle
+     *         An angle in radians. How much should the secondary network roads should be deviated from the "ideal" net
+     *         ("ideal" is when this parameter is 0.0).
+     *         <p>
+     *         Kelly doesn't have this as a parameter, it is implied in [Kelly figure 42] under "deviate newDirection"
+     *         and "calculate deviated boundaryRoad perpendicular".
+     * @param numOfStartPoints
+     *         Number of starting points for road generation
+     *         <p>
+     *         In [Kelly figure 43] there are 2 starting points.
      * @param random
-     *         A seeded {@link java.util.Random} used to generate the parent {@link org.tendiwa.settlements.City}.
+     *         A seeded {@link java.util.Random} used to generate the parent {@link City}.
      */
     CityCell(
             SimpleGraph<Point2D, Line2D> graph,
             MinimalCycle<Point2D, Line2D> cycle,
             Collection<Line2D> filamentEdges,
-            int paramDegree,
+            int roadsFromPoint,
             double roadSegmentLength,
             double snapSize,
             double connectivity,
             double secondaryRoadNetworkDeviationAngle,
             int numOfStartPoints,
-            Random random,
-            TestCanvas canvas
+            Random random
     ) {
         this.filamentEdges = filamentEdges;
-        this.paramDegree = paramDegree;
+        this.paramDegree = roadsFromPoint;
         this.roadSegmentLength = roadSegmentLength;
         this.snapSize = snapSize;
         this.connectivity = connectivity;
         this.secondaryRoadNetworkDeviationAngle = secondaryRoadNetworkDeviationAngle;
         this.random = random;
-        this.canvas = canvas;
         this.numOfStartPoints = numOfStartPoints;
 
         relevantNetwork = graph;
@@ -95,14 +113,15 @@ public class CityCell {
 
         ring = pointListToCoordinateArray(cycle.vertexList());
         // TODO: Are all cycles counter-clockwise? (because of the MCB algorithm)
-        assert !determineCycleDirection(ring);
+        assert CGAlgorithms.isCCW(ring);
         isCycleClockwise = false;
 
         buildLine2DNetwork(cycle);
     }
 
     /**
-     * Transforms a list of {@link org.tendiwa.geometry.Point2D}s to an array of {@link com.vividsolutions.jts.geom.Coordinate}s.
+     * Transforms a list of {@link org.tendiwa.geometry.Point2D}s to an array of {@link
+     * com.vividsolutions.jts.geom.Coordinate}s.
      *
      * @param points
      *         A list of points.
@@ -117,43 +136,26 @@ public class CityCell {
     }
 
     /**
-     * @param ring
-     * @return
-     */
-    private boolean determineCycleDirection(Coordinate[] ring) {
-        return !CGAlgorithms.isCCW(ring);
-    }
-
-    /**
      * [Kelly figure 42]
      * <p>
      * Calculates initial road segments and processes road growth.
      *
      * @param cycle
+     *         A MinimalCycle that contains this CityCell's secondary road network inside it.
      */
     private void buildLine2DNetwork(MinimalCycle<Point2D, Line2D> cycle) {
         Deque<Line2DNetworkStep> nodeQueue = new ArrayDeque<>();
-        for (Line2D road : longestRoads(cycle)) {
+        for (Line2D road : startingRoads(cycle)) {
             // Source node is the same as midpoint from [Kelly figure 42], since in this implementation points are inherently nodes.
             Point2D sourceNode = calculateDeviatedMidPoint(road);
             insertNode(road, sourceNode);
-            double direction;
-//            try {
-            direction = deviatedBoundaryPerpendicular(sourceNode, road);
-//            } catch (RuntimeException e) {
-//                return;
-//            }
+            double direction = deviatedBoundaryPerpendicular(road);
             Point2D newNode = tryPlacingRoad(sourceNode, direction);
             if (newNode != null) {
                 nodeQueue.push(new Line2DNetworkStep(newNode, direction));
             }
         }
-        int iter = 0;
         while (!nodeQueue.isEmpty()) {
-            iter++;
-//            if (iter == 71) {
-//                break;
-//            }
             Line2DNetworkStep node = nodeQueue.pop();
             for (int i = 1; i < paramDegree; i++) {
                 double newDirection = deviateDirection(node.direction + Math.PI + i * (Math.PI * 2 / paramDegree));
@@ -169,6 +171,14 @@ public class CityCell {
         return deadEnds.contains(node);
     }
 
+    /**
+     * Returns a slightly changed direction.
+     *
+     * @param newDirection
+     *         Original angle in radians.
+     * @return Slightly changed angle in radians.
+     */
+
     private double deviateDirection(double newDirection) {
         return newDirection - secondaryRoadNetworkDeviationAngle + random.nextDouble() * secondaryRoadNetworkDeviationAngle * 2;
     }
@@ -180,15 +190,18 @@ public class CityCell {
     /**
      * [Kelly figure 42]
      *
-     * @param deviatedMidpoint
-     * @return
+     * @param edge
+     *         An edge of {@link City#lowLevelRoadGraph}.
+     * @return An angle in radians perpendicular to {@code edge}. The angle is probably slightly deviated.
      */
-    private double deviatedBoundaryPerpendicular(Point2D deviatedMidpoint, Line2D edge) {
+    private double deviatedBoundaryPerpendicular(Line2D edge) {
+        // TODO: Actually deviate the angle
         double angle = edge.start.angleTo(edge.end);
         return angle + Math.PI / 2
                 * (isCycleClockwise ? -1 : 1)
                 * (isStartBeforeEndInRing(new Coordinate(edge.start.x, edge.start.y), new Coordinate(edge.end.x, edge.end.y)) ? 1 : -1);
     }
+
 
     private boolean isStartBeforeEndInRing(Coordinate start, Coordinate end) {
         for (int i = 0; i < ring.length; i++) {
@@ -202,67 +215,6 @@ public class CityCell {
             }
         }
         throw new RuntimeException(start + " is not before or after " + end);
-    }
-
-    /**
-     * @param vertices
-     *         A list of vertices where the first one is equal to the last one.
-     * @return
-     */
-    private Coordinate[] buildNodeRing(List<Point2D> vertices) {
-        assert vertices.get(0).equals(vertices.get(vertices.size() - 1));
-        Point2D sourceNode = vertices.get(0);
-        Point2D currentNode = sourceNode;
-        Point2D previousNode = null;
-        Coordinate[] ring = new Coordinate[vertices.size()];
-        int i = 0;
-        // Traverses all vertices starting from sourceNode until it comes back to sourceNode.
-        do {
-            Point2D nextNode = null;
-            // Having all edges of degree 2 proves that this is a cycle.
-            assert relevantNetwork.edgesOf(currentNode).size() == 2 : relevantNetwork.edgesOf(currentNode).size();
-            for (Line2D edge : relevantNetwork.edgesOf(currentNode)) {
-                if (previousNode == null) {
-                    if (relevantNetwork.getEdgeSource(edge) == sourceNode) {
-                        nextNode = relevantNetwork.getEdgeTarget(edge);
-                    } else {
-                        assert relevantNetwork.getEdgeTarget(edge) == sourceNode :
-                                relevantNetwork.getEdgeTarget(edge)
-                                        + "\n" + relevantNetwork.getEdgeSource(edge)
-                                        + "\n" + sourceNode;
-                        nextNode = relevantNetwork.getEdgeSource(edge);
-                    }
-                    break;
-                } else {
-                    Point2D edgeTarget = relevantNetwork.getEdgeTarget(edge);
-                    if (edgeTarget == previousNode) {
-                        continue;
-                    }
-                    Point2D edgeSource = relevantNetwork.getEdgeSource(edge);
-                    if (edgeSource == previousNode) {
-                        continue;
-                    }
-                    if (currentNode == edgeSource) {
-                        nextNode = edgeTarget;
-                    } else {
-                        assert currentNode == edgeTarget :
-                                currentNode + "\n"
-                                        + edgeSource + "\n"
-                                        + edgeTarget + "\n"
-                                        + (currentNode == edgeSource);
-                        nextNode = edgeSource;
-                    }
-                }
-            }
-            assert nextNode != null;
-            ring[i] = new Coordinate(currentNode.x, currentNode.y);
-            i++;
-            previousNode = currentNode;
-            currentNode = nextNode;
-        } while (currentNode != sourceNode);
-        ring[i] = ring[0];
-        assert i == relevantNetwork.vertexSet().size() : i + " " + relevantNetwork.vertexSet().size();
-        return ring;
     }
 
     /**
@@ -281,7 +233,7 @@ public class CityCell {
         double dx = roadLength * Math.cos(direction);
         double dy = roadLength * Math.sin(direction);
         Point2D targetNode = new Point2D(sourceNode.x + dx, sourceNode.y + dy);
-        SnapEvent snapEvent = new SnapTest(snapSize, sourceNode, targetNode, relevantNetwork, canvas).snap();
+        SnapEvent snapEvent = new SnapTest(snapSize, sourceNode, targetNode, relevantNetwork).snap();
         if (sourceNode.equals(snapEvent.targetNode)) {
             assert false;
         }
@@ -292,7 +244,6 @@ public class CityCell {
                     return null;
                 }
                 addRoad(sourceNode, targetNode);
-                drawPoint(snapEvent.targetNode, Color.CYAN, 5);
                 return snapEvent.targetNode;
             case ROAD_SNAP:
                 if (random.nextDouble() < connectivity) {
@@ -300,7 +251,6 @@ public class CityCell {
                     insertNode(snapEvent.road, newNode);
 //                    System.out.println(sourceNode + " " + newNode + " " + sourceNode.equals(newNode) + " " + (sourceNode == newNode));
                     addRoad(sourceNode, newNode);
-                    drawPoint(snapEvent.targetNode, Color.YELLOW, 5);
                     if (!filamentEdges.contains(snapEvent.road)) {
                         deadEnds.add(snapEvent.targetNode);
                     }
@@ -314,7 +264,6 @@ public class CityCell {
                         return null;
                     }
                     addRoad(sourceNode, snapEvent.targetNode);
-                    drawPoint(snapEvent.targetNode, Color.WHITE, 5);
                     return null;
                 } else {
                     return null;
@@ -349,16 +298,13 @@ public class CityCell {
         return new UnmodifiableUndirectedGraph<>(secRoadNetwork);
     }
 
-    private void drawPoint(Point2D point, Color color, double size) {
-//        canvas.draw(point, DrawingPoint.withColorAndSize(color, size));
-    }
-
 
     /**
      * [Kelly figure 42]
      * <p>
      * Adds new node between two existing nodes, removing an existing road between them and placing 2 new roads. to road
-     * network. Since {@link org.tendiwa.settlements.RoadGraph} is immutable, new nodes are saved in a separate collection.
+     * network. Since {@link org.tendiwa.settlements.RoadGraph} is immutable, new nodes are saved in a separate
+     * collection.
      *
      * @param road
      *         A road from {@link #relevantNetwork} on which a node is being inserted.
@@ -386,12 +332,13 @@ public class CityCell {
     /**
      * [Kelly figure 42]
      * <p>
-     * Returns several of the longest roads.
+     * Finds the roads of to start secondary road network generation from.
      *
      * @param cycle
-     * @return Several of the longest roads.
+     *         A MinimalCycle that contains this CityCell's secondary road network inside it.
+     * @return Several roads.
      */
-    private Collection<Line2D> longestRoads(MinimalCycle<Point2D, Line2D> cycle) {
+    private Collection<Line2D> startingRoads(MinimalCycle<Point2D, Line2D> cycle) {
         List<Line2D> edges = Lists.newArrayList(cycle);
         Collections.sort(
                 edges,

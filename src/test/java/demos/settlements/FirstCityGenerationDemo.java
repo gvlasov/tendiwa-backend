@@ -26,7 +26,6 @@ public class FirstCityGenerationDemo {
                 .vertex(9, new Point2D(184, 187))
                 .cycle(0, 1, 2, 3, 4)
                 .cycle(3, 5, 9, 8, 7, 6, 1, 2);
-        canvas.fillBackground(Color.BLACK);
         City city = new CityBuilder(gc.graph(), canvas)
                 .withDefaults()
                 .build();

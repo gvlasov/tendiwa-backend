@@ -1,7 +1,6 @@
 package demos.settlements;
 
 import demos.Demos;
-import org.tendiwa.drawing.DrawingGraph;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Line2D;
 import org.tendiwa.geometry.Point2D;
@@ -9,9 +8,7 @@ import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.settlements.City;
 import org.tendiwa.settlements.CityBuilder;
 
-import java.awt.*;
-
-public class TwoCyclesConnectedByAFilamentDemo {
+public class BigCity {
     public static void main(String[] args) {
         TestCanvas canvas = Demos.createCanvas();
         GraphConstructor<Point2D, Line2D> gc = new GraphConstructor<>(Line2D::new)
@@ -33,14 +30,12 @@ public class TwoCyclesConnectedByAFilamentDemo {
                 .edge(10, 5)
                 .edge(9, 2)
                 .cycle(4, 5, 7, 6);
-        canvas.fillBackground(Color.BLACK);
         City city = new CityBuilder(gc.graph(), canvas)
                 .withDefaults()
                 .withStartPointsPerCycle(1)
                 .withParamDegree(4)
-                .withSecondaryRoadNetworkDeviationAngle(0.8)
+                .withSecondaryRoadNetworkDeviationAngle(0)
                 .build();
         canvas.draw(city, new CityDrawer());
-//        canvas.draw(gc.graph(), DrawingGraph.withColor(Color.RED));
     }
 }

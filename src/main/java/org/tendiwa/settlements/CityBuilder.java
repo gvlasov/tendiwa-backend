@@ -34,6 +34,7 @@ public class CityBuilder {
         this.canvas = canvas;
     }
 
+    @SuppressWarnings("unused")
     public CityBuilder withStartPointsPerCycle(int numOfStartPoints) {
         if (numOfStartPoints < 1) {
             throw new IllegalArgumentException("NumOfStartPoints must be at least 1");
@@ -42,6 +43,7 @@ public class CityBuilder {
         return this;
     }
 
+    @SuppressWarnings("unused")
     public CityBuilder withSampleRadius(double sampleRadius) {
         if (sampleRadius <= 0) {
             throw new IllegalArgumentException("Sample radius must be > 0");
@@ -50,6 +52,7 @@ public class CityBuilder {
         return this;
     }
 
+    @SuppressWarnings("unused")
     public CityBuilder withRoadSegmentLength(double roadSegmentLength) {
         if (roadSegmentLength <= 0) {
             throw new IllegalArgumentException(
@@ -60,6 +63,7 @@ public class CityBuilder {
         return this;
     }
 
+    @SuppressWarnings("unused")
     public CityBuilder withSamplesPerStep(int samplesPerStep) {
         if (samplesPerStep <= 0) {
             throw new IllegalArgumentException("Samples per step must be > 0");
@@ -68,6 +72,7 @@ public class CityBuilder {
         return this;
     }
 
+    @SuppressWarnings("unused")
     public CityBuilder withDeviationAngle(double deviationAngle) {
         if (deviationAngle < 0 || deviationAngle > Math.PI) {
             throw new IllegalArgumentException(
@@ -78,6 +83,7 @@ public class CityBuilder {
         return this;
     }
 
+    @SuppressWarnings("unused")
     public CityBuilder withSecondaryRoadNetworkDeviationAngle(double deviationAngle) {
         if (Math.abs(secondaryRoadNetworkDeviationAngle) >= Math.PI * 2) {
             throw new IllegalArgumentException("secondaryRoadNetworkDeviationAngle must be in [0; Math.PI*2)");
@@ -86,6 +92,7 @@ public class CityBuilder {
         return this;
     }
 
+    @SuppressWarnings("unused")
     public CityBuilder withConnectivity(double connectivity) {
         if (connectivity < 0 || connectivity > 1) {
             throw new IllegalArgumentException(
@@ -96,6 +103,7 @@ public class CityBuilder {
         return this;
     }
 
+    @SuppressWarnings("unused")
     public CityBuilder withParamDegree(int paramDegree) {
         if (paramDegree < 2) {
             throw new IllegalArgumentException("paramDegree must be >= 2");
@@ -104,6 +112,7 @@ public class CityBuilder {
         return this;
     }
 
+    @SuppressWarnings("unused")
     public CityBuilder withDefaults() {
 
         sampleRadius = DEFAULT_SAMPLE_RADIUS;
@@ -118,6 +127,7 @@ public class CityBuilder {
         return this;
     }
 
+    @SuppressWarnings("unused")
     public City build() {
         if (graph == null) {
             throw new IllegalStateException("Graph not set");
@@ -168,8 +178,7 @@ public class CityBuilder {
                 roadSegmentLength,
                 snapSize,
                 numOfStartPoints,
-                secondaryRoadNetworkDeviationAngle,
-                canvas
+                secondaryRoadNetworkDeviationAngle
         );
     }
 

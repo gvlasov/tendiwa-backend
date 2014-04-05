@@ -1,44 +1,31 @@
 package org.tendiwa.settlements;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.core.meta.Range;
-import org.tendiwa.drawing.DrawingAlgorithm;
-import org.tendiwa.drawing.DrawingLine;
-import org.tendiwa.drawing.DrawingPoint;
-import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Line2D;
 import org.tendiwa.geometry.Point2D;
 
-import java.awt.*;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class SnapTest {
-    private static final GeometryFactory factory = new GeometryFactory();
     private final double snapSize;
     private final Point2D sourceNode;
     private Point2D targetNode;
-    private final SimpleGraph<Point2D, Line2D> roadCycle;
-    private TestCanvas canvas;
+    private final SimpleGraph<Point2D, Line2D> relevantRoadNetwork;
     private double minR;
 
     SnapTest(
             double snapSize,
             Point2D sourceNode,
             Point2D targetNode,
-            SimpleGraph<Point2D, Line2D> roadCycle,
-            TestCanvas canvas) {
+            SimpleGraph<Point2D, Line2D> relevantRoadNetwork) {
         this.snapSize = snapSize;
         this.sourceNode = sourceNode;
         this.targetNode = targetNode;
-        this.roadCycle = roadCycle;
-        this.canvas = canvas;
+        this.relevantRoadNetwork = relevantRoadNetwork;
         setTargetNode(targetNode);
         minR = 1 + snapSize / sourceNode.distanceTo(targetNode);
     }
@@ -172,33 +159,31 @@ public class SnapTest {
 
     /**
      * [Kelly figure 46]
+     * <p>
+     * Finds all segments that probably intersect with a segment <i>ab</i>.
      *
-     * @param sourceNode
-     * @param targetPoint
+     * @param source
+     *         Source point of a segment <i>ab</i>.
+     * @param target
+     *         Target point node of a segment <i>ab</i>.
      * @param snapSize
-     * @return
+     *         With of the grey area on the figure — how far away from the original segment do we search.
+     * @return A collection of all the segments that are close enough to the segment <i>ab</i>.
      */
-    private Collection<Line2D> findSegmentsToTest(Point2D sourceNode, Point2D targetPoint, double snapSize) {
-        // TODO: Optimize culling
-        double minX = Math.min(sourceNode.x, targetPoint.x) - snapSize;
-        double minY = Math.min(sourceNode.y, targetPoint.y) - snapSize;
-        double maxX = Math.max(sourceNode.x, targetPoint.x) + snapSize;
-        double maxY = Math.max(sourceNode.y, targetPoint.y) + snapSize;
-        Geometry boundingBox = factory.createLineString(new Coordinate[]{
-                new Coordinate(minX, minY),
-                new Coordinate(maxX, maxY)
-        }).getEnvelope();
-        Collection<Line2D> answer = new LinkedList<>();
-        for (Line2D road : roadCycle.edgeSet()) {
-
-            LineString roadLine = factory.createLineString(new Coordinate[]{
-                    new Coordinate(road.start.x, road.start.y),
-                    new Coordinate(road.end.x, road.end.y)
-            });
-            if (roadLine.getEnvelope().intersects(boundingBox)) {
-                answer.add(road);
-            }
-        }
-        return answer;
+    private Collection<Line2D> findSegmentsToTest(Point2D source, Point2D target, double snapSize) {
+        double minX = Math.min(source.x, target.x) - snapSize;
+        double minY = Math.min(source.y, target.y) - snapSize;
+        double maxX = Math.max(source.x, target.x) + snapSize;
+        double maxY = Math.max(source.y, target.y) + snapSize;
+        return relevantRoadNetwork.edgeSet().stream()
+                .filter(road -> {
+                    double roadMinX = Math.min(road.start.x, road.end.x);
+                    double roadMaxX = Math.max(road.start.x, road.end.x);
+                    double roadMinY = Math.min(road.start.y, road.end.y);
+                    double roadMaxY = Math.max(road.start.y, road.end.y);
+                    //  http://stackoverflow.com/questions/306316/determine-if-two-rectangles-overlap-each-other                    minX < roadMaxX && maxX > roadMinX &&
+                    return minX < roadMaxX && maxX > roadMinX && minY < roadMaxY && maxY > roadMinY;
+                })
+                .collect(Collectors.toList());
     }
 }

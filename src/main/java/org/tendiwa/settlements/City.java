@@ -2,10 +2,8 @@ package org.tendiwa.settlements;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableSet;
-import org.jgrapht.EdgeFactory;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
-import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Line2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.graphs.*;
@@ -36,11 +34,10 @@ public class City {
     private final Set<Line2D> highLevelGraphEdges;
     private final Set<CityCell> cells;
     private Random random;
-    private final int paramDegree;
+    private final int roadsFromPoint;
     private final double connectivity;
     private final double roadSegmentLength;
     private final double snapSize;
-    private final TestCanvas canvas;
     private final int numOfStartPoints;
     private double secondaryRoadNetworkDeviationAngle;
 
@@ -48,6 +45,7 @@ public class City {
      * @param highLevelRoadGraph
      *         [Kelly chapter 4.2, figure 38]
      *         <p>
+     *         A graph that defines city's road network topology.
      * @param strategy
      *         [Kelly section 4.2.3]
      *         <p>
@@ -63,14 +61,34 @@ public class City {
      *         [Kelly section 4.2.2]
      *         <p>
      *         Angle between two samples, in radians.
-     * @param paramDegree
-     * @param connectivity
-     *         {@link CityCell#connectivity}
+     * @param roadsFromPoint
+     *         [Kelly figure 42, variable ParamDegree]
      *         <p>
-     *         How likely it is to snap to node or road when possible. When connectivity == 1.0, algorithm will always snap when
-     *         possible. When connectivity == 0.0, algorithm will never snap.
+     *         How many lines would normally go from one point of secondary road network.
+     * @param connectivity
+     *         [Kelly figure 42, variable ParamConnectivity]
+     *         <p>
+     *         How likely it is to snap to node or road when possible. When connectivity == 1.0, algorithm will always
+     *         snap when possible. When connectivity == 0.0, algorithm will never snap.
      * @param roadSegmentLength
-     * @throws java.lang.IllegalArgumentException
+     *         [Kelly figure 42, variable ParamSegmentLength]
+     *         <p>
+     *         Mean length of secondary network roads.
+     * @param snapSize
+     *         [Kelly figure 42, variable ParamSnapSize]
+     *         <p>
+     *         A radius around secondary roads' end points inside which new end points would snap to existing ones.
+     * @param numOfStartPoints
+     *         Number of starting points for road generation
+     *         <p>
+     *         In [Kelly figure 43] there are 2 starting points.
+     * @param secondaryRoadNetworkDeviationAngle
+     *         An angle in radians. How much should the secondary network roads should be deviated from the "ideal" net
+     *         ("ideal" is when this parameter is 0.0).
+     *         <p>
+     *         Kelly doesn't have this as a parameter, it is implied in [Kelly figure 42] under "deviate newDirection"
+     *         and "calculate deviated boundaryRoad perpendicular".
+     * @throws IllegalArgumentException
      *         If {@code numberOfSamples <= 0} or if {@code deviationAngle == 0 && numberOfSamples >= 1}.
      */
     public City(
@@ -80,15 +98,14 @@ public class City {
             int samplesPerStep,
             double deviationAngle,
             Random random,
-            int paramDegree,
+            int roadsFromPoint,
             double connectivity,
             double roadSegmentLength,
             double snapSize,
             int numOfStartPoints,
-            double secondaryRoadNetworkDeviationAngle,
-            TestCanvas canvas
+            double secondaryRoadNetworkDeviationAngle
     ) {
-        if (Math.abs(secondaryRoadNetworkDeviationAngle) >= Math.PI*2) {
+        if (Math.abs(secondaryRoadNetworkDeviationAngle) >= Math.PI * 2) {
             throw new IllegalArgumentException("secondaryRoadNetworkDeviationAngle must be in [0; Math.PI*2)");
         }
         if (connectivity < 0 || connectivity > 1) {
@@ -104,13 +121,12 @@ public class City {
             throw new IllegalArgumentException("NumOfStartPoints must be at least 1");
         }
         this.random = random;
-        this.paramDegree = paramDegree;
+        this.roadsFromPoint = roadsFromPoint;
         this.connectivity = connectivity;
         this.roadSegmentLength = roadSegmentLength;
         this.snapSize = snapSize;
         this.secondaryRoadNetworkDeviationAngle = secondaryRoadNetworkDeviationAngle;
         this.numOfStartPoints = numOfStartPoints;
-        this.canvas = canvas;
 
         this.highLevelRoadGraph = highLevelRoadGraph;
         this.strategy = strategy;
@@ -152,46 +168,71 @@ public class City {
                     cellGraphs.get(cycle),
                     cycle,
                     filamentEdges,
-                    paramDegree,
+                    roadsFromPoint,
                     roadSegmentLength,
                     snapSize,
                     connectivity,
                     secondaryRoadNetworkDeviationAngle,
                     numOfStartPoints,
-                    random,
-                    canvas
+                    random
             ));
         }
     }
 
+    /**
+     * Constructs all the graphs for this City's CityCells.
+     *
+     * @param primitives
+     *         A MinimumCycleBasis of this City's {@link #lowLevelRoadGraph}.
+     * @return A map from MinimalCycles to CityCells resiging in those cycles.
+     */
     private static Map<MinimalCycle<Point2D, Line2D>, SimpleGraph<Point2D, Line2D>> constructCityCellGraphs(
             MinimumCycleBasis<Point2D, Line2D> primitives
     ) {
         Set<Filament<Point2D, Line2D>> filaments = primitives.filamentsSet();
-
-
         Map<MinimalCycle<Point2D, Line2D>, SimpleGraph<Point2D, Line2D>> answer = new HashMap<>();
         for (MinimalCycle<Point2D, Line2D> cycle : primitives.minimalCyclesSet()) {
-            SimpleGraph<Point2D, Line2D> graph = new SimpleGraph<>(Line2D::new);
-            for (Filament<Point2D, Line2D> filament : filaments) {
-                for (Point2D vertex : filament.vertexList()) {
-                    graph.addVertex(vertex);
-                }
-                for (Line2D line : filament) {
-                    graph.addEdge(line.start, line.end, line);
-                }
-            }
-            for (Point2D vertex : cycle.vertexList()) {
-                graph.addVertex(vertex);
-            }
-            for (Line2D edge : cycle) {
-                graph.addEdge(edge.start, edge.end, edge);
-            }
-            answer.put(cycle, graph);
+            answer.put(cycle, constructCityCellGraph(cycle, filaments));
         }
         return answer;
     }
 
+    /**
+     * Constructs a graph of low level roads for a {@link CityCell} that resides inside a {@code cycle}.
+     *
+     * @param cycle
+     *         A MinimalCycle inside which a CityCell resides.
+     * @param filaments
+     *         All the filaments if {@link #lowLevelRoadGraph}.
+     * @return A graph containing the {@code cycle} and all the {@code filaments}.
+     */
+    private static SimpleGraph<Point2D, Line2D> constructCityCellGraph(
+            MinimalCycle<Point2D, Line2D> cycle,
+            Set<Filament<Point2D, Line2D>> filaments
+    ) {
+        SimpleGraph<Point2D, Line2D> graph = new SimpleGraph<>(Line2D::new);
+        for (Filament<Point2D, Line2D> filament : filaments) {
+            for (Point2D vertex : filament.vertexList()) {
+                graph.addVertex(vertex);
+            }
+            for (Line2D line : filament) {
+                graph.addEdge(line.start, line.end, line);
+            }
+        }
+        for (Point2D vertex : cycle.vertexList()) {
+            graph.addVertex(vertex);
+        }
+        for (Line2D edge : cycle) {
+            graph.addEdge(edge.start, edge.end, edge);
+        }
+        return graph;
+    }
+
+    /**
+     * Returns all CityCells of this City.
+     *
+     * @return All CityCells of this City.
+     */
     public Set<CityCell> getCells() {
         return cells;
     }
@@ -226,8 +267,8 @@ public class City {
     }
 
     /**
-     * Finds out how many road segments of length {@link #dSample} with deviation {@link #deviationAngleRad} can be placed
-     * between ends of all {@link #highLevelRoadGraph}'s edges.
+     * Finds out how many road segments of length {@link #dSample} with deviation {@link #deviationAngleRad} can be
+     * placed between ends of all {@link #highLevelRoadGraph}'s edges.
      * <p>
      * Used to find the best initial capacity for an ArrayList of road segments.
      *
@@ -252,9 +293,10 @@ public class City {
      * @param edge
      *         Edge between two {@link #highLevelRoadGraph} vertices.
      * @param dSnap
-     *         How close should growing sequences come to insert an edge between their ends and thus terminate segments building.
-     * @return A list of vertices between {@code edge.start} and {@code edge.end} <i>not including</i> {@code edge.start},
-     * <i>but including</i> {@code edge.end}.
+     *         How close should growing sequences come to insert an edge between their ends and thus terminate segments
+     *         building.
+     * @return A list of vertices between {@code edge.start} and {@code edge.end} <i>not including</i> {@code
+     * edge.start}, <i>but including</i> {@code edge.end}.
      */
     private List<Point2D> buildRoadVertices(
             Line2D edge,
@@ -340,10 +382,12 @@ public class City {
         return fanBuilder.build();
     }
 
+    @SuppressWarnings("unused")
     public UndirectedGraph<Point2D, Line2D> getHighLevelRoadGraph() {
         return highLevelRoadGraph;
     }
 
+    @SuppressWarnings("unused")
     public UndirectedGraph<Point2D, Line2D> getLowLevelRoadGraph() {
         return lowLevelRoadGraph;
     }

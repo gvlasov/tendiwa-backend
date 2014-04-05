@@ -28,7 +28,6 @@ public class VariousCityGenerationDemo {
 //                .edge(6, 10)
                 .cycle(0, 1, 2, 3, 4)
                 .cycle(3, 5, 9, 8, 7, 6, 1, 2);
-        canvas.fillBackground(Color.BLACK);
         City city = new CityBuilder(gc.graph(), canvas)
                 .withDefaults()
                 .withParamDegree(5)
