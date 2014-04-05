@@ -168,22 +168,14 @@ public final class TestCanvas {
             tempFile = File
                     .createTempFile("tendiwa_animation", "" + hashCode());
             imageOutput = new FileImageOutputStream(tempFile);
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         int imageType = DEFAULT_LAYER.image.getType();
         try {
             this.gifSequenceWriter = new GifSequenceWriter(imageOutput, imageType, 1000 / fps, true);
-        } catch (IIOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -325,8 +317,7 @@ public final class TestCanvas {
         try {
             gifSequenceWriter.writeToSequence(image);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 

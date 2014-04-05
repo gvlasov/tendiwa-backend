@@ -326,37 +326,6 @@ public boolean touches(RectangleSidePiece piece) {
 }
 
 /**
- * Returns an RectangleSidePiece representing one of 4 sides of this rectangle.
- *
- * @param side
- * @return
- */
-@Deprecated
-public RectangleSidePiece getSegmentFromSide(CardinalDirection side) {
-	// TODO: Duplicate?
-	switch (side) {
-		case N:
-			return new RectangleSidePiece(CardinalDirection.N, x, y, width);
-		case E:
-			return new RectangleSidePiece(
-				CardinalDirection.E,
-				x + width,
-				y,
-				height);
-		case S:
-			return new RectangleSidePiece(
-				CardinalDirection.S,
-				x,
-				y + height,
-				width);
-		case W:
-			return new RectangleSidePiece(CardinalDirection.W, x, y, height);
-		default:
-			throw new IllegalArgumentException();
-	}
-}
-
-/**
  * Returns a {@link RectangleSidePiece} representing the whole side of a rectangle.
  *
  * @param side

@@ -95,7 +95,8 @@ public class CityCell {
 
         ring = pointListToCoordinateArray(cycle.vertexList());
         // TODO: Are all cycles counter-clockwise? (because of the MCB algorithm)
-        isCycleClockwise = determineCycleDirection(ring);
+        assert !determineCycleDirection(ring);
+        isCycleClockwise = false;
 
         buildLine2DNetwork(cycle);
     }

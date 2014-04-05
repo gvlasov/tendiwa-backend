@@ -129,7 +129,6 @@ public Cell getRandomCell() {
 }
 
 public void fillWithElements(PlaceableInCell placeable) {
-	// TODO Auto-generated method stub
 	for (Cell c : cells) {
 		placeable.place(location.getActivePlane(), c.getX(), c.getY());
 	}
