@@ -43,6 +43,7 @@ public class CityCell {
     private final Random random;
     private Collection<Point2D> deadEnds = new HashSet<>();
     private final int numOfStartPoints;
+    private double secondaryRoadNetworkRoadLengthDeviation;
 
     /**
      * @param graph
@@ -70,11 +71,15 @@ public class CityCell {
      *         How likely it is to snap to node or road when possible. When connectivity == 1.0, algorithm will always
      *         snap when possible. When connectivity == 0.0, algorithm will never snap.
      * @param secondaryRoadNetworkDeviationAngle
-     *         An angle in radians. How much should the secondary network roads should be deviated from the "ideal" net
-     *         ("ideal" is when this parameter is 0.0).
+     *         An angle in radians. How much is secondary roads' direction randomized.
      *         <p>
      *         Kelly doesn't have this as a parameter, it is implied in [Kelly figure 42] under "deviate newDirection"
      *         and "calculate deviated boundaryRoad perpendicular".
+     * @param secondaryRoadNetworkRoadLengthDeviation
+     *         A length in cells. How much is secondary roads' length randomized.
+     *         <p>
+     *         Kelly doesn't have this as a parameter, it is implied in [Kelly figure 42] under "calculate deviated
+     *         ParamSegmentLength".
      * @param numOfStartPoints
      *         Number of starting points for road generation
      *         <p>
@@ -91,6 +96,7 @@ public class CityCell {
             double snapSize,
             double connectivity,
             double secondaryRoadNetworkDeviationAngle,
+            double secondaryRoadNetworkRoadLengthDeviation,
             int numOfStartPoints,
             Random random
     ) {
@@ -100,6 +106,7 @@ public class CityCell {
         this.snapSize = snapSize;
         this.connectivity = connectivity;
         this.secondaryRoadNetworkDeviationAngle = secondaryRoadNetworkDeviationAngle;
+        this.secondaryRoadNetworkRoadLengthDeviation = secondaryRoadNetworkRoadLengthDeviation;
         this.random = random;
         this.numOfStartPoints = numOfStartPoints;
 
@@ -184,7 +191,8 @@ public class CityCell {
     }
 
     private double deviatedLength(double roadSegmentLength) {
-        return roadSegmentLength;
+        return roadSegmentLength - secondaryRoadNetworkRoadLengthDeviation / 2 + random.nextDouble() *
+                secondaryRoadNetworkRoadLengthDeviation;
     }
 
     /**
@@ -232,19 +240,19 @@ public class CityCell {
      * <p>
      * Tries adding a new road to the secondary road network graph.
      *
-     * @param sourceNode
+     * @param source
      *         Start node of a new road.
      * @param direction
      *         Angle of a road to x-axis.
      * @return The new node, or null if placing did not succeed.
      */
-    private Point2D tryPlacingRoad(Point2D sourceNode, double direction) {
+    private Point2D tryPlacingRoad(Point2D source, double direction) {
         double roadLength = deviatedLength(roadSegmentLength);
         double dx = roadLength * Math.cos(direction);
         double dy = roadLength * Math.sin(direction);
-        Point2D targetNode = new Point2D(sourceNode.x + dx, sourceNode.y + dy);
-        SnapEvent snapEvent = new SnapTest(snapSize, sourceNode, targetNode, relevantNetwork).snap();
-        if (sourceNode.equals(snapEvent.targetNode)) {
+        Point2D targetNode = new Point2D(source.x + dx, source.y + dy);
+        SnapEvent snapEvent = new SnapTest(snapSize, source, targetNode, relevantNetwork).snap();
+        if (source.equals(snapEvent.targetNode)) {
             assert false;
         }
         switch (snapEvent.eventType) {
@@ -253,14 +261,13 @@ public class CityCell {
                     assert false;
                     return null;
                 }
-                addRoad(sourceNode, targetNode);
+                addRoad(source, targetNode);
                 return snapEvent.targetNode;
             case ROAD_SNAP:
                 if (random.nextDouble() < connectivity) {
                     Point2D newNode = snapEvent.targetNode;
                     insertNode(snapEvent.road, newNode);
-//                    System.out.println(sourceNode + " " + newNode + " " + sourceNode.equals(newNode) + " " + (sourceNode == newNode));
-                    addRoad(sourceNode, newNode);
+                    addRoad(source, newNode);
                     if (!filamentEdges.contains(snapEvent.road)) {
                         deadEnds.add(snapEvent.targetNode);
                     }
@@ -270,10 +277,10 @@ public class CityCell {
                 }
             case NODE_SNAP:
                 if (random.nextDouble() < connectivity) {
-                    if (isDeadEnd(snapEvent.targetNode) && isDeadEnd(sourceNode)) {
+                    if (isDeadEnd(snapEvent.targetNode) && isDeadEnd(source)) {
                         return null;
                     }
-                    addRoad(sourceNode, snapEvent.targetNode);
+                    addRoad(source, snapEvent.targetNode);
                     return null;
                 } else {
                     return null;
@@ -285,25 +292,26 @@ public class CityCell {
         }
     }
 
-    private void addRoad(Point2D sourceNode, Point2D targetNode) {
-        if (
-                Math.abs(sourceNode.x - 131.17) < 1
-                        && Math.abs(sourceNode.y - 214.18) < 1
-                        && Math.abs(targetNode.x - 138.43) < 1
-                        && Math.abs(targetNode.y - 202.02) < 1
-                        || Math.abs(targetNode.x - 131.17) < 1
-                        && Math.abs(targetNode.y - 214.18) < 1
-                        && Math.abs(sourceNode.x - 138.43) < 1
-                        && Math.abs(sourceNode.y - 202.02) < 1
-                ) {
-            System.out.println(2);
-        }
-        relevantNetwork.addEdge(sourceNode, targetNode);
-        secRoadNetwork.addVertex(sourceNode);
-        secRoadNetwork.addVertex(targetNode);
-        secRoadNetwork.addEdge(sourceNode, targetNode);
+    /**
+     * Adds a new edge between two vertices that may or may not exist in CityCell's graph.
+     *
+     * @param source
+     *         One vertex.
+     * @param target
+     *         Another vertex (order is irrelevant since graphs are undirected in CityCell).
+     */
+    private void addRoad(Point2D source, Point2D target) {
+        relevantNetwork.addEdge(source, target);
+        secRoadNetwork.addVertex(source);
+        secRoadNetwork.addVertex(target);
+        secRoadNetwork.addEdge(source, target);
     }
 
+    /**
+     * Creates an unmodifiable view of {@link #secRoadNetwork}.
+     *
+     * @return An unmodifiable graph containing this CityCell's secondary road network.
+     */
     public UndirectedGraph<Point2D, Line2D> secondaryRoadNetwork() {
         return new UnmodifiableUndirectedGraph<>(secRoadNetwork);
     }

@@ -37,6 +37,7 @@ public class City {
     private final double snapSize;
     private final int numOfStartPoints;
     private double secondaryRoadNetworkDeviationAngle;
+    private double secondaryRoadNetworkRoadLengthDeviation;
 
     /**
      * @param highLevelRoadGraph
@@ -100,10 +101,16 @@ public class City {
             double roadSegmentLength,
             double snapSize,
             int numOfStartPoints,
-            double secondaryRoadNetworkDeviationAngle
+            double secondaryRoadNetworkDeviationAngle,
+            double secondaryRoadNetworkRoadLengthDeviation
     ) {
         if (Math.abs(secondaryRoadNetworkDeviationAngle) >= Math.PI * 2) {
             throw new IllegalArgumentException("secondaryRoadNetworkDeviationAngle must be in [0; Math.PI*2)");
+        }
+        if (Math.abs(secondaryRoadNetworkRoadLengthDeviation) >= roadSegmentLength) {
+            throw new IllegalArgumentException("secondaryRoadNetworkRoadLengthDeviation can't be greater than " +
+                    "roadSegmentLength (the former is " + secondaryRoadNetworkDeviationAngle + ", " +
+                    "the latter is " + roadSegmentLength + ")");
         }
         if (connectivity < 0 || connectivity > 1) {
             throw new IllegalArgumentException("Connectivity must be in range [0.0; 1.0]");
@@ -170,6 +177,7 @@ public class City {
                     snapSize,
                     connectivity,
                     secondaryRoadNetworkDeviationAngle,
+                    secondaryRoadNetworkRoadLengthDeviation,
                     numOfStartPoints,
                     random
             ));
