@@ -35,7 +35,7 @@ public class City {
     private final double connectivity;
     private final double roadSegmentLength;
     private final double snapSize;
-    private final int numOfStartPoints;
+    private final int startPointsPerCell;
     private double secondaryRoadNetworkDeviationAngle;
     private double secondaryRoadNetworkRoadLengthDeviation;
 
@@ -76,8 +76,8 @@ public class City {
      *         [Kelly figure 42, variable ParamSnapSize]
      *         <p>
      *         A radius around secondary roads' end points inside which new end points would snap to existing ones.
-     * @param numOfStartPoints
-     *         Number of starting points for road generation
+     * @param startPointsPerCell
+     *         Number of starting points for road generation in each CityCell.
      *         <p>
      *         In [Kelly figure 43] there are 2 starting points.
      * @param secondaryRoadNetworkDeviationAngle
@@ -100,7 +100,7 @@ public class City {
             double connectivity,
             double roadSegmentLength,
             double snapSize,
-            int numOfStartPoints,
+            int startPointsPerCell,
             double secondaryRoadNetworkDeviationAngle,
             double secondaryRoadNetworkRoadLengthDeviation
     ) {
@@ -121,7 +121,7 @@ public class City {
         if (deviationAngle == 0 && samplesPerStep > 1) {
             throw new IllegalArgumentException("When deviationAngle is 0, then number of samples may be only 1");
         }
-        if (numOfStartPoints < 1) {
+        if (startPointsPerCell < 1) {
             throw new IllegalArgumentException("NumOfStartPoints must be at least 1");
         }
         this.random = random;
@@ -130,7 +130,8 @@ public class City {
         this.roadSegmentLength = roadSegmentLength;
         this.snapSize = snapSize;
         this.secondaryRoadNetworkDeviationAngle = secondaryRoadNetworkDeviationAngle;
-        this.numOfStartPoints = numOfStartPoints;
+        this.secondaryRoadNetworkRoadLengthDeviation = secondaryRoadNetworkRoadLengthDeviation;
+        this.startPointsPerCell = startPointsPerCell;
 
         this.highLevelRoadGraph = highLevelRoadGraph;
         this.strategy = strategy;
@@ -178,7 +179,7 @@ public class City {
                     connectivity,
                     secondaryRoadNetworkDeviationAngle,
                     secondaryRoadNetworkRoadLengthDeviation,
-                    numOfStartPoints,
+                    startPointsPerCell,
                     random
             ));
         }

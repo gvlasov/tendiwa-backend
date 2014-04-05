@@ -8,8 +8,6 @@ import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.settlements.City;
 import org.tendiwa.settlements.CityBuilder;
 
-import java.awt.*;
-
 public class FirstCityGenerationDemo {
     public static void main(String[] args) {
         TestCanvas canvas = Demos.createCanvas();
@@ -26,7 +24,7 @@ public class FirstCityGenerationDemo {
                 .vertex(9, new Point2D(184, 187))
                 .cycle(0, 1, 2, 3, 4)
                 .cycle(3, 5, 9, 8, 7, 6, 1, 2);
-        City city = new CityBuilder(gc.graph(), canvas)
+        City city = new CityBuilder(gc.graph())
                 .withDefaults()
                 .build();
         canvas.draw(city, new CityDrawer());

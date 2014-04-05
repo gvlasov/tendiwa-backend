@@ -30,10 +30,10 @@ public class BigCity {
                 .edge(10, 5)
                 .edge(9, 2)
                 .cycle(4, 5, 7, 6);
-        City city = new CityBuilder(gc.graph(), canvas)
+        City city = new CityBuilder(gc.graph())
                 .withDefaults()
                 .withStartPointsPerCycle(1)
-                .withParamDegree(4)
+                .withRoadsFromPoint(4)
                 .withSecondaryRoadNetworkDeviationAngle(0.0)
                 .build();
         canvas.draw(city, new CityDrawer());
