@@ -197,13 +197,23 @@ public class CityCell {
     private double deviatedBoundaryPerpendicular(Line2D edge) {
         // TODO: Actually deviate the angle
         double angle = edge.start.angleTo(edge.end);
-        return angle + Math.PI / 2
+        return deviateDirection(angle + Math.PI / 2
                 * (isCycleClockwise ? -1 : 1)
-                * (isStartBeforeEndInRing(new Coordinate(edge.start.x, edge.start.y), new Coordinate(edge.end.x, edge.end.y)) ? 1 : -1);
+                * (isStartBeforeEndInRing(new Coordinate(edge.start.x, edge.start.y), new Coordinate(edge.end.x, edge.end.y)) ? 1 : -1));
     }
 
 
+    /**
+     * Checks if one coordinate appears earlier in looped {@link #ring}.
+     *
+     * @param start
+     *         One coordinate.
+     * @param end
+     *         Another coordinate.
+     * @return true if {@code start} appears earlier, false otherwise.
+     */
     private boolean isStartBeforeEndInRing(Coordinate start, Coordinate end) {
+        assert start != end;
         for (int i = 0; i < ring.length; i++) {
             if (ring[i].equals(start)) {
                 if (ring[i + 1].equals(end)) {

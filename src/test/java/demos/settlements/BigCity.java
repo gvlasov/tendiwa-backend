@@ -34,7 +34,7 @@ public class BigCity {
                 .withDefaults()
                 .withStartPointsPerCycle(1)
                 .withParamDegree(4)
-                .withSecondaryRoadNetworkDeviationAngle(0)
+                .withSecondaryRoadNetworkDeviationAngle(0.5)
                 .build();
         canvas.draw(city, new CityDrawer());
     }

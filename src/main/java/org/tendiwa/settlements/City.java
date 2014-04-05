@@ -28,9 +28,6 @@ public class City {
     private final int nSample;
     private final double deviationAngleRad;
     private final double approachingPerSample;
-    /**
-     * Saved in a field to be computed only once.
-     */
     private final Set<Line2D> highLevelGraphEdges;
     private final Set<CityCell> cells;
     private Random random;

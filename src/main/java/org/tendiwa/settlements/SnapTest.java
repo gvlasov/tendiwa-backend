@@ -181,7 +181,7 @@ public class SnapTest {
                     double roadMaxX = Math.max(road.start.x, road.end.x);
                     double roadMinY = Math.min(road.start.y, road.end.y);
                     double roadMaxY = Math.max(road.start.y, road.end.y);
-                    //  http://stackoverflow.com/questions/306316/determine-if-two-rectangles-overlap-each-other                    minX < roadMaxX && maxX > roadMinX &&
+                    // http://stackoverflow.com/questions/306316/determine-if-two-rectangles-overlap-each-other                    minX < roadMaxX && maxX > roadMinX &&
                     return minX < roadMaxX && maxX > roadMinX && minY < roadMaxY && maxY > roadMinY;
                 })
                 .collect(Collectors.toList());
