@@ -63,6 +63,7 @@ public class CityBuilder {
     private Double secondaryRoadNetworkDeviationAngle;
     private Double secondaryRoadNetworkRoadLengthDeviation;
     private TestCanvas canvas;
+    private Random seededRandom;
 
     /**
      * Starts constructing a City defined by high level graph {@code graph}.
@@ -212,6 +213,7 @@ public class CityBuilder {
         maxNumOfStartPoints = DEFAULT_MAX_START_POINTS_PER_CYCLE;
         secondaryRoadNetworkDeviationAngle = DEFAULT_SECONDARY_ROAD_NETWORK_DEVIATION_ANGLE;
         secondaryRoadNetworkRoadLengthDeviation = DEFAULT_SECONDARY_ROAD_NETWORK_ROAD_LENGTH_DEVIATION;
+        seededRandom = new Random(0);
         return this;
     }
 
@@ -250,6 +252,9 @@ public class CityBuilder {
         if (secondaryRoadNetworkRoadLengthDeviation == null) {
             throw new IllegalStateException("secondaryRoadNetworkRoadLengthDeviation not set");
         }
+        if (seededRandom == null) {
+            throw new IllegalStateException("seed not set");
+        }
         final Random random = new Random(4);
         return new City(
                 new RoadGraph(graph.vertexSet(), graph.edgeSet()),
@@ -260,7 +265,7 @@ public class CityBuilder {
                 sampleRadius,
                 samplesPerStep,
                 deviationAngle,
-                new Random(10),
+                seededRandom,
                 roadsFromPoint,
                 connectivity,
                 roadSegmentLength,
@@ -272,4 +277,8 @@ public class CityBuilder {
         );
     }
 
+    public CityBuilder withSeed(int i) {
+        seededRandom = new Random(i);
+        return this;
+    }
 }

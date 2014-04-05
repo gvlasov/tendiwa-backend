@@ -1,6 +1,7 @@
 package demos.settlements;
 
 import org.tendiwa.drawing.DrawingAlgorithm;
+import org.tendiwa.drawing.DrawingLine;
 import org.tendiwa.geometry.Line2D;
 import org.tendiwa.settlements.City;
 
@@ -13,22 +14,10 @@ public class CityDrawer extends DrawingAlgorithm<City> {
         city.getCells().stream()
                 .forEach(c -> c.secondaryRoadNetwork().edgeSet().stream()
                         .forEach(line ->
-                                drawLine(
-                                        line.start.x,
-                                        line.start.y,
-                                        line.end.x,
-                                        line.end.y,
-                                        Color.GREEN
-                                )
+                                canvas.draw(line, DrawingLine.withColor(Color.GREEN), canvas.TOP_LAYER)
                         ));
         for (Line2D roadSegment : city.getLowLevelRoadGraph().edgeSet()) {
-            drawLine(
-                    roadSegment.start.x,
-                    roadSegment.start.y,
-                    roadSegment.end.x,
-                    roadSegment.end.y,
-                    Color.RED
-            );
+            canvas.draw(roadSegment, DrawingLine.withColor(Color.RED));
         }
     }
 

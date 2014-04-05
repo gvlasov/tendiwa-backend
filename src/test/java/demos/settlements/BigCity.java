@@ -1,6 +1,7 @@
 package demos.settlements;
 
 import demos.Demos;
+import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Line2D;
 import org.tendiwa.geometry.Point2D;
@@ -32,17 +33,21 @@ public class BigCity {
                 .edge(10, 5)
                 .edge(9, 2)
                 .cycle(4, 5, 7, 6);
+        SimpleGraph<Point2D,Line2D> graph = gc.graph();
         canvas.fillBackground(Color.BLACK);
-        City city = new CityBuilder(gc.graph())
-                .withDefaults()
-                .withMaxStartPointsPerCycle(4)
-                .withRoadsFromPoint(3)
-                .withSecondaryRoadNetworkDeviationAngle(0.7)
-                .withConnectivity(0)
-                .withRoadSegmentLength(30, 40)
-                .withSnapSize(8)
-                .withCanvas(canvas)
-                .build();
-        canvas.draw(city, new CityDrawer());
+        for (int i = 0; i < 1; i++) {
+            City city = new CityBuilder(graph)
+                    .withDefaults()
+                    .withMaxStartPointsPerCycle(4)
+                    .withRoadsFromPoint(3)
+                    .withSecondaryRoadNetworkDeviationAngle(0.7)
+                    .withConnectivity(0.5)
+                    .withRoadSegmentLength(40, 50)
+                    .withSnapSize(20)
+                    .withCanvas(canvas)
+                    .withSeed(i)
+                    .build();
+            canvas.draw(city, new CityDrawer());
+        }
     }
 }

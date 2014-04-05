@@ -6,11 +6,13 @@ import com.vividsolutions.jts.geom.Coordinate;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.graph.UnmodifiableUndirectedGraph;
+import org.tendiwa.drawing.DrawingPoint;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Line2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.graphs.MinimalCycle;
 
+import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -176,18 +178,18 @@ public class CityCell {
             deadEnds.remove(sourceNode);
             double direction = deviatedBoundaryPerpendicular(road);
             Point2D newNode = tryPlacingRoad(sourceNode, direction);
-            if (newNode != null) {
+            if (newNode != null && !isDeadEnd(newNode)) {
                 nodeQueue.push(new Line2DNetworkStep(newNode, direction));
                 deadEnds.add(sourceNode);
             }
         }
 //        int iter = 0;
         while (!nodeQueue.isEmpty()) {
-//            iter++;
-//            if (iter == 9) {
+//            if (iter == 16) {
 //                break;
 //            }
-            Line2DNetworkStep node = nodeQueue.removeFirst();
+//            iter++;
+            Line2DNetworkStep node = nodeQueue.removeLast();
             for (int i = 1; i < roadsFromPoint; i++) {
                 double newDirection = deviateDirection(node.direction + Math.PI + i * (Math.PI * 2 / roadsFromPoint));
                 Point2D newNode = tryPlacingRoad(node.node, newDirection);

@@ -49,8 +49,11 @@ public class SnapTest {
             }
         }
         for (Point2D vertex : verticesToTest) {
+            if (isNeighborOfSourceNode(vertex)) {
+                continue;
+            }
             NodePosition nodePosition = new NodePosition(sourceNode, targetNode, vertex);
-            if (nodePosition.r < minR && nodePosition.r >= 0 && nodePosition.distance <= snapSize) {
+            if (isCloserSnapVertex(nodePosition)) {
                 minR = nodePosition.r;
                 snapNode = vertex;
             }
@@ -61,9 +64,8 @@ public class SnapTest {
             setTargetNode(snapNode);
         }
         for (Line2D road : roadsToTest) {
-            if (road.start == sourceNode || road.end == sourceNode || road.start == targetNode || road.end == targetNode) {
+            if (isRoadSticksToSegment(road)) {
                 continue;
-//                return new SnapEvent(null, SnapEventType.NO_NODE, null);
             }
             if (isSegmentIntersectionProbable(sourceNode, targetNode, road.start, road.end)) {
                 LineIntersection intersection = new LineIntersection(
@@ -120,6 +122,44 @@ public class SnapTest {
             );
         }
         return new SnapEvent(targetNode, SnapEventType.NO_SNAP, null);
+    }
+
+    /**
+     * Checks if one of road's vertices is {@link #sourceNode} or {@link #targetNode}.
+     *
+     * @param road
+     *         A road.
+     * @return true if a road has {@link #sourceNode} or {@link #targetNode} as one of its ends, false otherwise.
+     */
+    private boolean isRoadSticksToSegment(Line2D road) {
+        return road.start == sourceNode
+                || road.end == sourceNode
+                || road.start == targetNode
+                || road.end == targetNode;
+    }
+
+    /**
+     * Checks if a vertex in {@code nodePosition} is closer that the one that is currently found to be the closest.
+     * <p>
+     * If there was no previous found closest vertex, returns true.
+     *
+     * @param nodePosition
+     *         A position of a vertex relative to a segment [sourceNode;targetNode].
+     * @return true if vertex defined by nodePosition is closer that the previous one, false otherwise.
+     */
+    private boolean isCloserSnapVertex(NodePosition nodePosition) {
+        return nodePosition.r < minR && nodePosition.r >= 0 && nodePosition.distance <= snapSize;
+    }
+
+    /**
+     * Checks if there is an edge between {@code vertex} and {@link #sourceNode}.
+     *
+     * @param vertex
+     *         A vertex.
+     * @return true if there is an edge between a vertex and the source node, false otherwise.
+     */
+    private boolean isNeighborOfSourceNode(Point2D vertex) {
+        return relevantRoadNetwork.containsEdge(vertex, sourceNode);
     }
 
     /**
