@@ -1,12 +1,11 @@
-package tests;
-
-import junit.framework.TestCase;
+package tests.geometry;
 
 import org.junit.Test;
-
 import org.tendiwa.core.Directions;
 
-public class SideTest extends TestCase {
+import static junit.framework.Assert.assertEquals;
+
+public class SideTest {
 
 	@Test
 	public void testshiftToDirection() {

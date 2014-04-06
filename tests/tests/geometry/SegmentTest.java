@@ -1,4 +1,4 @@
-package tests;
+package tests.geometry;
 
 import static org.junit.Assert.assertEquals;
 

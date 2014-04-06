@@ -128,7 +128,7 @@ public Orientation getOrientation() {
 
 @Override
 public String toString() {
-	return "" + (orientation.isHorizontal() ? x : y) + "," + length;
+	return x+":"+y+", "+length;
 }
 
 public int getStartCoord() {

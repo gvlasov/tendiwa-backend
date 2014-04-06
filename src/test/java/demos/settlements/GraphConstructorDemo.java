@@ -1,25 +1,18 @@
-package tests.graph;
+package demos.settlements;
 
-import com.google.inject.Inject;
-import org.jukito.JukitoRunner;
-import org.jukito.UseModules;
+import demos.Demos;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.tendiwa.drawing.DrawingGraph;
-import org.tendiwa.drawing.DrawingModule;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Line2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.graphs.GraphConstructor;
 
-@RunWith(JukitoRunner.class)
-@UseModules(DrawingModule.class)
-public class GraphConstructorTest {
-    @Inject
-    TestCanvas canvas;
+public class GraphConstructorDemo {
 
     @Test
     public void constructGraph() {
+        TestCanvas canvas = Demos.createCanvas();
         GraphConstructor<Point2D, Line2D> gc = new GraphConstructor<>(Line2D::new)
                 .vertex(0, new Point2D(100, 100))
                 .vertex(1, new Point2D(100, 200))
@@ -38,11 +31,5 @@ public class GraphConstructorTest {
 
                 .path(2, 4, 6);
         canvas.draw(gc.graph(), DrawingGraph.withAliases(gc, a -> a.x, a -> a.y));
-        try {
-            Thread.sleep(10000000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
     }
 }

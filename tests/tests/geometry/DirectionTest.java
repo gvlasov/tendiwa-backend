@@ -1,4 +1,4 @@
-package tests;
+package tests.geometry;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -39,6 +39,11 @@ public class DirectionTest {
 		assertFalse(NE.isPerpendicular(S));
 		for (Direction dir : ALL_DIRECTIONS) {
 			assertFalse(dir.isPerpendicular(dir));
+            assertFalse(dir.isPerpendicular(dir.opposite()));
+            assertFalse(dir.isPerpendicular(dir.clockwise()));
+            assertFalse(dir.isPerpendicular(dir.counterClockwise()));
+            assertFalse(dir.isPerpendicular(dir.opposite().clockwise()));
+            assertFalse(dir.isPerpendicular(dir.opposite().counterClockwise()));
 		}
 	}
 

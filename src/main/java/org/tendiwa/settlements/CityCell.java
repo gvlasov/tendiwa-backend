@@ -288,8 +288,9 @@ public class CityCell {
         }
         switch (snapEvent.eventType) {
             case NO_SNAP:
+                assert targetNode == snapEvent.targetNode;
                 if (!relevantNetwork.addVertex(targetNode)) {
-                    assert false;
+                    assert false : targetNode;
                     return null;
                 }
                 addRoad(source, targetNode);
