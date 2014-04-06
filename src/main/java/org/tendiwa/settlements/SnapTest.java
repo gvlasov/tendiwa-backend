@@ -4,6 +4,7 @@ import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.core.meta.Range;
 import org.tendiwa.geometry.Line2D;
 import org.tendiwa.geometry.Point2D;
+import org.tendiwa.graphs.MinimalCycle;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -15,17 +16,21 @@ public class SnapTest {
     private final Point2D sourceNode;
     private Point2D targetNode;
     private final SimpleGraph<Point2D, Line2D> relevantRoadNetwork;
+    private MinimalCycle<Point2D, Line2D> minimalCycle;
     private double minR;
 
     SnapTest(
             double snapSize,
             Point2D sourceNode,
             Point2D targetNode,
-            SimpleGraph<Point2D, Line2D> relevantRoadNetwork) {
+            SimpleGraph<Point2D, Line2D> relevantRoadNetwork,
+            MinimalCycle<Point2D, Line2D> minimalCycle
+    ) {
         this.snapSize = snapSize;
         this.sourceNode = sourceNode;
         this.targetNode = targetNode;
         this.relevantRoadNetwork = relevantRoadNetwork;
+        this.minimalCycle = minimalCycle;
         setTargetNode(targetNode);
         minR = 1 + snapSize / sourceNode.distanceTo(targetNode);
     }
@@ -49,9 +54,10 @@ public class SnapTest {
             }
         }
         for (Point2D vertex : verticesToTest) {
-            if (isNeighborOfSourceNode(vertex)) {
-                continue;
-            }
+//            if (isNeighborOfSourceNode(vertex) && minimalCycle
+//                    .vertexList().contains(vertex)) {
+//                continue;
+//            }
             NodePosition nodePosition = new NodePosition(sourceNode, targetNode, vertex);
             if (isCloserSnapVertex(nodePosition)) {
                 minR = nodePosition.r;

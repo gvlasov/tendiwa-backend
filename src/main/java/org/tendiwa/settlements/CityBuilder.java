@@ -256,6 +256,7 @@ public class CityBuilder {
             throw new IllegalStateException("seed not set");
         }
         final Random random = new Random(4);
+//        System.out.println(seededRandom.nextInt()+"!");
         return new City(
                 new RoadGraph(graph.vertexSet(), graph.edgeSet()),
                 sampleFan -> {

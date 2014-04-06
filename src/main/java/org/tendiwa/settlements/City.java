@@ -10,6 +10,7 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.graphs.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class City {
     /**
@@ -176,7 +177,20 @@ public class City {
                 filamentEdges.add(line);
             }
         }
-        for (MinimalCycle<Point2D, Line2D> cycle : cellGraphs.keySet()) {
+        // Sort cycles to get a fixed order of iteration (so a City will be reproducible with the same seed).
+        List<MinimalCycle<Point2D, Line2D>> sortedCycles = cellGraphs.keySet().stream().sorted((o1, o2) -> {
+            Point2D p1 = o1.vertexList().get(0);
+            Point2D p2 = o2.vertexList().get(0);
+            int compare = Double.compare(p1.x, p2.x);
+            if (compare == 0) {
+                int compare1 = Double.compare(p1.y, p2.y);
+                assert compare1 != 0;
+                return compare1;
+            } else {
+                return compare;
+            }
+        }).collect(Collectors.toList());
+        for (MinimalCycle<Point2D, Line2D> cycle : sortedCycles) {
             cellsBuilder.add(new CityCell(
                     cellGraphs.get(cycle),
                     cycle,
@@ -199,13 +213,13 @@ public class City {
      *
      * @param primitives
      *         A MinimumCycleBasis of this City's {@link #lowLevelRoadGraph}.
-     * @return A map from MinimalCycles to CityCells resiging in those cycles.
+     * @return A map from MinimalCycles to CityCells residing in those cycles.
      */
     private static Map<MinimalCycle<Point2D, Line2D>, SimpleGraph<Point2D, Line2D>> constructCityCellGraphs(
             MinimumCycleBasis<Point2D, Line2D> primitives
     ) {
         Set<Filament<Point2D, Line2D>> filaments = primitives.filamentsSet();
-        Map<MinimalCycle<Point2D, Line2D>, SimpleGraph<Point2D, Line2D>> answer = new HashMap<>();
+        Map<MinimalCycle<Point2D, Line2D>, SimpleGraph<Point2D, Line2D>> answer = new LinkedHashMap<>();
         for (MinimalCycle<Point2D, Line2D> cycle : primitives.minimalCyclesSet()) {
             answer.put(cycle, constructCityCellGraph(cycle, filaments));
         }

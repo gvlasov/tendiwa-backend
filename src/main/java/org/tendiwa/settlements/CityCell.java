@@ -6,6 +6,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.graph.UnmodifiableUndirectedGraph;
+import org.tendiwa.drawing.DrawingLine;
 import org.tendiwa.drawing.DrawingPoint;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Line2D;
@@ -50,6 +51,7 @@ public class CityCell {
     private Collection<Point2D> deadEnds = new HashSet<>();
     private final int maxNumOfStartPoints;
     private double secondaryRoadNetworkRoadLengthDeviation;
+    public double v;
 
     /**
      * @param graph
@@ -177,18 +179,19 @@ public class CityCell {
             // Made not-dead end so a road can be placed from it.
             deadEnds.remove(sourceNode);
             double direction = deviatedBoundaryPerpendicular(road);
+//            System.out.println(direction);
             Point2D newNode = tryPlacingRoad(sourceNode, direction);
             if (newNode != null && !isDeadEnd(newNode)) {
                 nodeQueue.push(new Line2DNetworkStep(newNode, direction));
                 deadEnds.add(sourceNode);
             }
         }
-//        int iter = 0;
+        int iter = 0;
         while (!nodeQueue.isEmpty()) {
-//            if (iter == 16) {
+//            if (iter == 10) {
 //                break;
 //            }
-//            iter++;
+            iter++;
             Line2DNetworkStep node = nodeQueue.removeLast();
             for (int i = 1; i < roadsFromPoint; i++) {
                 double newDirection = deviateDirection(node.direction + Math.PI + i * (Math.PI * 2 / roadsFromPoint));
@@ -213,7 +216,8 @@ public class CityCell {
      */
 
     private double deviateDirection(double newDirection) {
-        return newDirection - secondaryRoadNetworkDeviationAngle + random.nextDouble() * secondaryRoadNetworkDeviationAngle * 2;
+        v = random.nextDouble();
+        return newDirection - secondaryRoadNetworkDeviationAngle + v * secondaryRoadNetworkDeviationAngle * 2;
     }
 
     private double deviatedLength(double roadSegmentLength) {
@@ -278,7 +282,7 @@ public class CityCell {
         double dx = roadLength * Math.cos(direction);
         double dy = roadLength * Math.sin(direction);
         Point2D targetNode = new Point2D(source.x + dx, source.y + dy);
-        SnapEvent snapEvent = new SnapTest(snapSize, source, targetNode, relevantNetwork).snap();
+        SnapEvent snapEvent = new SnapTest(snapSize, source, targetNode, relevantNetwork, minimalCycle).snap();
         if (source.equals(snapEvent.targetNode)) {
             assert false;
         }
@@ -362,6 +366,13 @@ public class CityCell {
      *         A node on that road where the node resides.
      */
     private void insertNode(Line2D road, Point2D point) {
+        if (road.end.equals(point)) {
+            System.out.println(road);
+            canvas.draw(road.start, DrawingPoint.withColorAndSize(Color.YELLOW, 10), canvas.TOP_LAYER);
+            canvas.draw(road.end, DrawingPoint.withColorAndSize(Color.YELLOW, 10), canvas.TOP_LAYER);
+            canvas.draw(point, DrawingPoint.withColorAndSize(Color.BLUE, 6), canvas.TOP_LAYER);
+            return;
+        }
         assert !road.start.equals(point) : "point is start";
         assert !road.end.equals(point) : "point is end";
         assert road.start.distanceTo(point) > 0.1 : road.start.distanceTo(point) + " " + road.start.distanceTo(road.end);

@@ -14,6 +14,13 @@ import java.awt.*;
 public class BigCity {
     public static void main(String[] args) {
         TestCanvas canvas = Demos.createCanvas();
+        canvas.fillBackground(Color.BLACK);
+        for (int i = 0; i < 100; i++) {
+            draw(canvas, i);
+        }
+    }
+
+    private static void draw(TestCanvas canvas, int seed) {
         GraphConstructor<Point2D, Line2D> gc = new GraphConstructor<>(Line2D::new)
                 .vertex(0, new Point2D(50, 50))
                 .vertex(1, new Point2D(150, 50))
@@ -33,21 +40,18 @@ public class BigCity {
                 .edge(10, 5)
                 .edge(9, 2)
                 .cycle(4, 5, 7, 6);
-        SimpleGraph<Point2D,Line2D> graph = gc.graph();
-        canvas.fillBackground(Color.BLACK);
-        for (int i = 0; i < 1; i++) {
-            City city = new CityBuilder(graph)
-                    .withDefaults()
-                    .withMaxStartPointsPerCycle(4)
-                    .withRoadsFromPoint(3)
-                    .withSecondaryRoadNetworkDeviationAngle(0.7)
-                    .withConnectivity(0.5)
-                    .withRoadSegmentLength(40, 50)
-                    .withSnapSize(20)
-                    .withCanvas(canvas)
-                    .withSeed(i)
-                    .build();
-            canvas.draw(city, new CityDrawer());
-        }
+        SimpleGraph<Point2D, Line2D> graph = gc.graph();
+        City city = new CityBuilder(graph)
+                .withDefaults()
+                .withMaxStartPointsPerCycle(3)
+                .withRoadsFromPoint(4)
+                .withSecondaryRoadNetworkDeviationAngle(0.2)
+                .withConnectivity(1)
+                .withRoadSegmentLength(20, 30)
+                .withSnapSize(12)
+                .withCanvas(canvas)
+                .withSeed(seed)
+                .build();
+        canvas.draw(city, new CityDrawer());
     }
 }
