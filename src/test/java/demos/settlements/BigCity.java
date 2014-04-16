@@ -1,7 +1,10 @@
 package demos.settlements;
 
+import com.google.inject.internal.util.$ToStringBuilder;
 import demos.Demos;
 import org.jgrapht.graph.SimpleGraph;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Line2D;
 import org.tendiwa.geometry.Point2D;
@@ -12,42 +15,49 @@ import org.tendiwa.settlements.CityBuilder;
 import java.awt.*;
 
 public class BigCity {
+
+    @Test
+    public void buildCity() {
+        main(null);
+    }
+
     public static void main(String[] args) {
-        TestCanvas canvas = Demos.createCanvas();
-        canvas.fillBackground(Color.BLACK);
-        GraphConstructor<Point2D, Line2D> gc = new GraphConstructor<>(Line2D::new)
-                .vertex(0, new Point2D(50, 50))
-                .vertex(1, new Point2D(150, 50))
-                .vertex(2, new Point2D(50, 150))
-                .vertex(3, new Point2D(150, 150))
-                .vertex(4, new Point2D(200, 150))
-                .vertex(5, new Point2D(200, 300))
-                .vertex(6, new Point2D(350, 150))
-                .vertex(7, new Point2D(350, 300))
-                .vertex(8, new Point2D(32, 245))
-                .vertex(9, new Point2D(108, 214))
-                .vertex(10, new Point2D(152, 298))
-                .vertex(11, new Point2D(67, 347))
-                .edge(1, 4)
-                .cycle(0, 1, 3, 2)
-                .cycle(8, 9, 10, 11)
-                .edge(10, 5)
-                .edge(9, 2)
-                .cycle(4, 5, 7, 6);
+//        new BigCity().buildCity();
+        GraphConstructor<Point2D, Line2D> gc = SampleGraph.create();
         SimpleGraph<Point2D, Line2D> graph = gc.graph();
         for (int i = 0; i < 1; i++) {
-            City city = new CityBuilder(graph)
+            new CityBuilder(graph)
                     .withDefaults()
                     .withMaxStartPointsPerCycle(3)
                     .withRoadsFromPoint(4)
-                    .withSecondaryRoadNetworkDeviationAngle(0.0)
+                    .withSecondaryRoadNetworkDeviationAngle(0.2)
                     .withConnectivity(0)
-                    .withRoadSegmentLength(2, 2)
-                    .withSnapSize(0.001)
-                    .withCanvas(canvas)
-                    .withSeed(7)
+                    .withRoadSegmentLength(10, 10)
+                    .withSnapSize(1)
+                    .withSeed(i)
+                    .withCanvas(Demos.createCanvas())
                     .build();
-            canvas.draw(city, new CityDrawer());
         }
+        System.out.println("done");
+//        TestCanvas canvas = Demos.createCanvas();
+//        canvas.fillBackground(Color.BLACK);
+//        GraphConstructor<Point2D, Line2D> gc = SampleGraph.create();
+//        SimpleGraph<Point2D, Line2D> graph = gc.graph();
+//        for (int i = 0; i < 100; i++) {
+//            City city = new CityBuilder(graph)
+//                    .withDefaults()
+//                    .withMaxStartPointsPerCycle(5)
+//                    .withRoadsFromPoint(4)
+//                    .withSecondaryRoadNetworkDeviationAngle(0.0)
+//                    .withConnectivity(0)
+//                    .withRoadSegmentLength(6, 11)
+//                    .withSnapSize(0)
+//                    .withCanvas(canvas)
+//                    .withSeed(i)
+//                    .build();
+//            canvas.draw(city, new CityDrawer());
+//        }
     }
+
+
 }

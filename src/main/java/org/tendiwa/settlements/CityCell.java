@@ -179,7 +179,6 @@ public class CityCell {
             // Made not-dead end so a road can be placed from it.
             deadEnds.remove(sourceNode);
             double direction = deviatedBoundaryPerpendicular(road);
-//            System.out.println(direction);
             Point2D newNode = tryPlacingRoad(sourceNode, direction);
             if (newNode != null && !isDeadEnd(newNode)) {
                 nodeQueue.push(new Line2DNetworkStep(newNode, direction));
@@ -282,7 +281,7 @@ public class CityCell {
         double dx = roadLength * Math.cos(direction);
         double dy = roadLength * Math.sin(direction);
         Point2D targetNode = new Point2D(source.x + dx, source.y + dy);
-        SnapEvent snapEvent = new SnapTest(snapSize, source, targetNode, relevantNetwork, minimalCycle).snap();
+        SnapEvent snapEvent = new SnapTest(snapSize, source, targetNode, relevantNetwork, minimalCycle, canvas).snap();
         if (source.equals(snapEvent.targetNode)) {
             assert false;
         }
@@ -290,6 +289,8 @@ public class CityCell {
             case NO_SNAP:
                 assert targetNode == snapEvent.targetNode;
                 if (!relevantNetwork.addVertex(targetNode)) {
+                    canvas.draw(new Line2D(source, targetNode), DrawingLine.withColor(Color.GREEN));
+                    System.out.println(source + " " + targetNode);
                     assert false : targetNode;
                     return null;
                 }
@@ -315,7 +316,6 @@ public class CityCell {
                         return null;
                     }
                     addRoad(source, snapEvent.targetNode);
-
                     return null;
                 } else {
                     return null;
@@ -336,6 +336,7 @@ public class CityCell {
      *         Another vertex (order is irrelevant since graphs are undirected in CityCell).
      */
     private void addRoad(Point2D source, Point2D target) {
+        canvas.draw(new Line2D(source, target));
         relevantNetwork.addEdge(source, target);
         if (!(isDeadEnd(source) && isDeadEnd(target))) {
             secRoadNetwork.addVertex(source);

@@ -29,7 +29,7 @@ import java.util.*;
  * Window where you can draw world, locations or anything for what there is a {@link DrawingAlgorithm} registered in
  * some {@link org.tendiwa.core.Module}. To draw something on a canvas, use its draw() methods.
  */
-public final class TestCanvas {
+public final class TestCanvas implements DrawableInto {
     protected static Class<? extends TestCanvas> subclass;
     public final Layer DEFAULT_LAYER;
     public final Layer MIDDLE_LAYER;
@@ -226,6 +226,7 @@ public final class TestCanvas {
      * @param where
      *         a layer on which the object will be drawn.
      */
+    @Override
     public <T> void draw(T what, DrawingAlgorithm<? super T> how, Layer where) {
         how.canvas = this;
         setLayer(where);
@@ -242,6 +243,7 @@ public final class TestCanvas {
      * @param how
      *         an algorithm to drawWorld the object.
      */
+    @Override
     public <T> void draw(T what, DrawingAlgorithm<? super T> how) {
         how.canvas = this;
         setLayer(DEFAULT_LAYER);
@@ -249,6 +251,7 @@ public final class TestCanvas {
         panel.repaint();
     }
 
+    @Override
     public <T> void draw(T what, Layer where) {
         assert what != null;
         assert where != null;
@@ -272,6 +275,7 @@ public final class TestCanvas {
      *         if {@code what} can't be drawn because TestCanvas doesn't know of any default algorithm to drawWorld objects of
      *         {@code what} 's class.
      */
+    @Override
     public <T> void draw(T what) {
         if (what == null) {
             throw new NullPointerException();

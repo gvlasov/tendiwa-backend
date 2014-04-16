@@ -2,6 +2,7 @@ package org.tendiwa.settlements;
 
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.core.meta.Range;
+import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Line2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.graphs.MinimalCycle;
@@ -17,6 +18,7 @@ public class SnapTest {
     private Point2D targetNode;
     private final SimpleGraph<Point2D, Line2D> relevantRoadNetwork;
     private MinimalCycle<Point2D, Line2D> minimalCycle;
+    private TestCanvas canvas;
     private double minR;
 
     SnapTest(
@@ -24,13 +26,15 @@ public class SnapTest {
             Point2D sourceNode,
             Point2D targetNode,
             SimpleGraph<Point2D, Line2D> relevantRoadNetwork,
-            MinimalCycle<Point2D, Line2D> minimalCycle
+            MinimalCycle<Point2D, Line2D> minimalCycle,
+            TestCanvas canvas
     ) {
         this.snapSize = snapSize;
         this.sourceNode = sourceNode;
         this.targetNode = targetNode;
         this.relevantRoadNetwork = relevantRoadNetwork;
         this.minimalCycle = minimalCycle;
+        this.canvas = canvas;
         setTargetNode(targetNode);
         minR = 1 + snapSize / sourceNode.distanceTo(targetNode);
     }
@@ -41,6 +45,9 @@ public class SnapTest {
     }
 
     SnapEvent snap() {
+        if (relevantRoadNetwork.containsVertex(targetNode)) {
+            return new SnapEvent(targetNode, SnapEventType.NODE_SNAP, null);
+        }
         Collection<Line2D> roadsToTest = findSegmentsToTest(sourceNode, targetNode, snapSize);
         Point2D snapNode = null;
         Set<Point2D> verticesToTest = new HashSet<>();
@@ -84,10 +91,12 @@ public class SnapTest {
                 }
                 if (intersection.intersects) {
                     Point2D intersectionPoint = intersection.getIntersectionPoint(sourceNode, targetNode);
-                    assert !intersectionPoint.equals(sourceNode);
-                    if (Math.abs(road.start.distanceTo(road.end) - road.start.distanceTo(intersectionPoint) - road.end.distanceTo(intersectionPoint)) > 1) {
-                        assert false;
+                    boolean isIntersectionOnSourcePoint = intersectionPoint.equals(sourceNode);
+//                    assert !(isIntersectionOnSourcePoint && snapSize > 0) : snapSize;
+                    if (isIntersectionOnSourcePoint) {
+                        return new SnapEvent(null, SnapEventType.NO_NODE, null);
                     }
+                    assert !iDontRememberWhatItAsserts(road, intersectionPoint);
                     snapEvent = new SnapEvent(
                             intersectionPoint,
                             SnapEventType.ROAD_SNAP,
@@ -128,6 +137,12 @@ public class SnapTest {
             );
         }
         return new SnapEvent(targetNode, SnapEventType.NO_SNAP, null);
+    }
+
+    private boolean iDontRememberWhatItAsserts(Line2D road, Point2D intersectionPoint) {
+        // TODO: What it asserts?
+        return Math.abs(road.start.distanceTo(road.end) - road.start.distanceTo(intersectionPoint) - road
+                .end.distanceTo(intersectionPoint)) > 1;
     }
 
     /**
@@ -227,7 +242,7 @@ public class SnapTest {
                     double roadMaxX = Math.max(road.start.x, road.end.x);
                     double roadMinY = Math.min(road.start.y, road.end.y);
                     double roadMaxY = Math.max(road.start.y, road.end.y);
-                    // http://stackoverflow.com/questions/306316/determine-if-two-rectangles-overlap-each-other                    minX < roadMaxX && maxX > roadMinX &&
+                    // http://stackoverflow.com/questions/306316/determine-if-two-rectangles-overlap-each-other
                     return minX < roadMaxX && maxX > roadMinX && minY < roadMaxY && maxY > roadMinY;
                 })
                 .collect(Collectors.toList());
