@@ -24,7 +24,7 @@ public RectangleSystemBuilder place(Placeable what, Placement where) {
 public RectangleSystemBuilder place(String name, Placeable what, Placement where) {
 	what.prebuild(this);
 	Rectangle r = where.placeIn(what, this);
-	placeables.add(r);
+	placeables.add(what);
 	if (name != null) {
 		names.put(name, r);
 	}

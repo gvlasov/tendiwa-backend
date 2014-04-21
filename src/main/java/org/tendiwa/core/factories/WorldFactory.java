@@ -1,9 +1,7 @@
 package org.tendiwa.core.factories;
 
 import com.google.inject.Inject;
-import org.tendiwa.core.World;
-import org.tendiwa.core.WorldDrawer;
-import org.tendiwa.core.WorldRectangleBuilder;
+import org.tendiwa.core.*;
 
 public class WorldFactory {
 
@@ -16,22 +14,21 @@ public World create(WorldDrawer worldDrawer, int width, int height) {
 	worldDrawer.drawWorld(builder, width, height);
 	World world = new World(width, height);
 	builder.done();
-	throw new UnsupportedOperationException();
-//	for (LocationPlace place : builder.getRectanglesToPlaces().values()) {
-//		LocationDrawer locationDrawer = ResourcesRegistry.getLocationDrawerFor(place);
-//		locationDrawer.draw(
-//			new Location(
-//				world.getDefaultPlane(),
-//				place.getX(),
-//				place.getY(),
-//				place.getWidth(),
-//				place.getHeight()
-//			),
-//			place
-//		);
-//	}
-	//	world.checkIfLocationPlacesFillAllWorld(builder);
-//	return world;
+	for (LocationPlace place : builder.getRectanglesToPlaces().values()) {
+		LocationDrawer locationDrawer = ResourcesRegistry.getLocationDrawerFor(place);
+		locationDrawer.draw(
+			new Location(
+				world.getDefaultPlane(),
+				place.getX(),
+				place.getY(),
+				place.getWidth(),
+				place.getHeight()
+			),
+			place
+		);
+	}
+//		world.checkIfLocationPlacesFillAllWorld(builder);
+	return world;
 }
 
 }

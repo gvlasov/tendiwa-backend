@@ -94,7 +94,8 @@ public class City {
      *         Kelly doesn't have this as a parameter, it is implied in [Kelly figure 42] under "deviate newDirection"
      *         and "calculate deviated boundaryRoad perpendicular".
      * @throws IllegalArgumentException
-     *         If {@code numberOfSamples <= 0} or if {@code deviationAngle == 0 && numberOfSamples >= 1}.
+     *         If {@code numberOfSamples <= 0} or if {@code deviationAngle == 0 && numberOfSamples >= 1},
+     *         or if #lowLevelRoadGraph produced from #highLevelRoadGraph intersects itself.
      */
     public City(
             RoadGraph highLevelRoadGraph,
@@ -150,7 +151,10 @@ public class City {
         approachingPerSample = Math.cos(deviationAngle);
         highLevelGraphEdges = highLevelRoadGraph.edgeSet();
         lowLevelRoadGraph = buildLowLevelGraph();
-        assert PlanarGraphEdgesNonOverlapping.test(lowLevelRoadGraph);
+        if (!PlanarGraphEdgesNonOverlapping.test(lowLevelRoadGraph)) {
+            throw new IllegalArgumentException("Graph intersects itself");
+        }
+
 
         ImmutableSet.Builder<CityCell> cellsBuilder = ImmutableSet.builder();
         fillBuilderWithCells(cellsBuilder);

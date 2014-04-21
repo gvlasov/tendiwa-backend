@@ -289,7 +289,6 @@ public class CityCell {
             case NO_SNAP:
                 assert targetNode == snapEvent.targetNode;
                 if (!relevantNetwork.addVertex(targetNode)) {
-                    canvas.draw(new Line2D(source, targetNode), DrawingLine.withColor(Color.GREEN));
                     System.out.println(source + " " + targetNode);
                     assert false : targetNode;
                     return null;
@@ -336,7 +335,6 @@ public class CityCell {
      *         Another vertex (order is irrelevant since graphs are undirected in CityCell).
      */
     private void addRoad(Point2D source, Point2D target) {
-        canvas.draw(new Line2D(source, target));
         relevantNetwork.addEdge(source, target);
         if (!(isDeadEnd(source) && isDeadEnd(target))) {
             secRoadNetwork.addVertex(source);
@@ -370,9 +368,6 @@ public class CityCell {
     private void insertNode(Line2D road, Point2D point) {
         if (road.end.equals(point)) {
             System.out.println(road);
-            canvas.draw(road.start, DrawingPoint.withColorAndSize(Color.YELLOW, 10), canvas.TOP_LAYER);
-            canvas.draw(road.end, DrawingPoint.withColorAndSize(Color.YELLOW, 10), canvas.TOP_LAYER);
-            canvas.draw(point, DrawingPoint.withColorAndSize(Color.BLUE, 6), canvas.TOP_LAYER);
             return;
         }
         assert !road.start.equals(point) : "point is start";
