@@ -1,4 +1,4 @@
-package demos.settlements;
+package org.tendiwa.demos.settlements;
 
 import org.tendiwa.geometry.Line2D;
 import org.tendiwa.geometry.Point2D;

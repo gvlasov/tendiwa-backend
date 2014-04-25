@@ -1,4 +1,4 @@
-package demos.settlements;
+package org.tendiwa.demos.settlements;
 
 import org.tendiwa.drawing.DrawingAlgorithm;
 import org.tendiwa.drawing.DrawingLine;

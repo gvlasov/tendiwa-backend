@@ -1,6 +1,6 @@
-package demos.settlements;
+package org.tendiwa.demos.settlements;
 
-import demos.Demos;
+import org.tendiwa.demos.Demos;
 import org.jgrapht.graph.SimpleGraph;
 import org.junit.Test;
 import org.tendiwa.drawing.TestCanvas;

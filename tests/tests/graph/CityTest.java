@@ -1,7 +1,7 @@
 package tests.graph;
 
-import demos.Demos;
-import demos.settlements.SampleGraph;
+import org.tendiwa.demos.Demos;
+import org.tendiwa.demos.settlements.SampleGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.junit.Test;
 import org.junit.runner.RunWith;

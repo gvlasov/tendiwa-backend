@@ -1,5 +1,6 @@
 package org.tendiwa.pathfinding.dijkstra;
 
+@FunctionalInterface
 public interface PathWalker {
 /**
  * @param x

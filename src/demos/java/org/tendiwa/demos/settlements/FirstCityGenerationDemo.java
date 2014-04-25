@@ -1,6 +1,6 @@
-package demos.settlements;
+package org.tendiwa.demos.settlements;
 
-import demos.Demos;
+import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Line2D;
 import org.tendiwa.geometry.Point2D;

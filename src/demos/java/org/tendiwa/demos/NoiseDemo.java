@@ -1,7 +1,6 @@
-package demos.noise;
+package org.tendiwa.demos;
 
 import com.google.common.base.Stopwatch;
-import demos.Demos;
 import org.tendiwa.drawing.*;
 import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.Recs;

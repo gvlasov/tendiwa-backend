@@ -1,7 +1,7 @@
 package tests.graph;
 
-import demos.Demos;
-import demos.settlements.CityDrawer;
+import org.tendiwa.demos.Demos;
+import org.tendiwa.demos.settlements.CityDrawer;
 import org.junit.Test;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Line2D;

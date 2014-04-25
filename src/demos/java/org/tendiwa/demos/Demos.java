@@ -1,4 +1,4 @@
-package demos;
+package org.tendiwa.demos;
 
 import com.google.inject.Guice;
 import org.tendiwa.drawing.DrawingModule;
