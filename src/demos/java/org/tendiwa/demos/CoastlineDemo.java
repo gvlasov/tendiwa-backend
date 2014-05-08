@@ -1,52 +1,226 @@
 package org.tendiwa.demos;
 
-import org.tendiwa.drawing.Colors;
-import org.tendiwa.drawing.DrawingAlgorithm;
-import org.tendiwa.drawing.DrawingCell;
-import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.geometry.Cell;
-import org.tendiwa.geometry.CellBufferBorder;
-import org.tendiwa.geometry.Recs;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+import org.jgrapht.UndirectedGraph;
+import org.jgrapht.graph.SimpleGraph;
+import org.tendiwa.core.CardinalDirection;
+import org.tendiwa.core.Direction;
+import org.tendiwa.core.Directions;
+import org.tendiwa.demos.settlements.CityDrawer;
+import org.tendiwa.drawing.*;
+import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.extensions.CachedCellBufferBorder;
 import org.tendiwa.geometry.extensions.ChebyshevDistanceCellBufferBorder;
 import org.tendiwa.noise.Noise;
 import org.tendiwa.pathfinding.dijkstra.PathTable;
+import org.tendiwa.settlements.City;
+import org.tendiwa.settlements.CityBuilder;
 
 import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class CoastlineDemo {
-    private static final int width = 600;
-    private static final int height = 400;
-    private static TestCanvas canvas;
-    private static final int radius = 38;
+import static java.awt.Color.*;
+
+public class CoastlineDemo implements Runnable {
+    @Inject
+    @Named("scale2")
+    TestCanvas canvas;
+    private final int width = 300;
+    private final int height = 200;
+    private final int radius = 58;
 
     public static void main(String[] args) {
-        canvas = Demos.createCanvas();
+        Demos.run(
+                CoastlineDemo.class,
+                new DrawingModule(),
+                new LargerScaleCanvasModule()
+        );
+    }
+
+    @Override
+    public void run() {
+
+//        for (int i = 5; i < 12; i++) {
         drawTerrain();
         Rectangle worldRec = new Rectangle(0, 0, width, height);
         CachedCellBufferBorder cachedCellBufferBorder = computeBufferBorder(worldRec);
         List<Cell> roadCells = computeCoastRoad(worldRec, cachedCellBufferBorder);
-        Cell startCell = roadCells.get(300);
-        PathTable table = computeCityShape(
+        Cell startCell = roadCells.get(0);
+        PathTable table;
+        table = computeCityShape(
                 worldRec,
                 startCell,
-                getCoast(startCell, radius),
+                getCoast(startCell, radius, 5),
                 radius
         );
-        drawPathTable(table);
+//            try {
+        computeCityBoundingRoads(table);
+//            } catch (IllegalArgumentException e) {
+//                continue;
+//            }
+//            canvas.clear();
+//        }
     }
 
-    private static CachedCellBufferBorder getCoast(Cell startCell, int radius) {
+    private void computeCityBoundingRoads(PathTable table) {
+        CachedCellBufferBorder bufferBorder = new CachedCellBufferBorder(
+                new ChebyshevDistanceCellBufferBorder(
+                        1,
+                        (x, y) -> !table.isCellComputed(x, y)
+                ),
+                table.getBounds()
+        ).computeAll();
+        BoundedCellBufferBorder oppositeBufferBorder = new CachedCellBufferBorder(
+                new ChebyshevDistanceCellBufferBorder(
+                        1,
+                        table::isCellComputed
+                ),
+                table.getBounds().stretch(1)
+        );
+//        canvas.draw(table, DrawingPathTable.withColor(Color.RED));
+        canvas.draw(bufferBorder, DrawingBoundedCellBufferBorder.withColor(BLUE));
+        UndirectedGraph<Point2D, Line2D> cityGraph = bufferBorderToGraph(bufferBorder);
+        canvas.draw(cityGraph, DrawingGraph.withColorAndVertexSize(ORANGE, 1));
+
+        City city = new CityBuilder(cityGraph)
+                .withDefaults()
+                .withMaxStartPointsPerCycle(200)
+                .build();
+        canvas.draw(city, new CityDrawer());
+    }
+
+    private UndirectedGraph<Point2D, Line2D> bufferBorderToGraph(CachedCellBufferBorder bufferBorder) {
+        UndirectedGraph<Point2D, Line2D> graph = new SimpleGraph<>(Line2D::new);
+        BiMap<Cell, Point2D> cell2PointMap = HashBiMap.create();
+        for (Cell cell : bufferBorder.cellList()) {
+            cell2PointMap.put(cell, new Point2D(cell.x, cell.y));
+        }
+        for (Cell cell : bufferBorder.cellList()) {
+            graph.addVertex(cell2PointMap.get(cell));
+        }
+        for (Cell cell : bufferBorder.cellList()) {
+            for (Direction dir : Directions.CARDINAL_DIRECTIONS) {
+                Point2D neighbour = cell2PointMap.get(cell.moveToSide(dir));
+                if (graph.containsVertex(neighbour)) {
+                    graph.addEdge(cell2PointMap.get(cell), neighbour);
+                }
+            }
+        }
+        new EdgeReducer(graph, cell2PointMap).reduceEdges();
+        return graph;
+    }
+
+
+    private class EdgeReducer {
+
+        private final CardinalDirection[] growingDirs = {CardinalDirection.N, CardinalDirection.E};
+        private UndirectedGraph<Point2D, Line2D> graph;
+        private BiMap<Cell, Point2D> map;
+
+        public EdgeReducer(UndirectedGraph<Point2D, Line2D> graph, BiMap<Cell, Point2D> map) {
+
+            this.graph = graph;
+            this.map = map;
+        }
+
+        private Collection<Cell> findIntersectionCells() {
+            Collection<Cell> answer = new HashSet<>();
+            for (Cell cell : map.keySet()) {
+                int neighbourCells = 0;
+                for (Direction dir : CardinalDirection.values()) {
+                    if (map.containsKey(cell.moveToSide(dir))) {
+                        neighbourCells++;
+                    }
+                }
+                if (neighbourCells > 2) {
+                    answer.add(cell);
+                }
+            }
+            return answer;
+        }
+
+        private void reduceEdges() {
+            boolean changesMade;
+            Collection<Point2D> finalVertices = new HashSet<>();
+            Set<Point2D> vertices = ImmutableSet.copyOf(graph.vertexSet());
+            do {
+                changesMade = false;
+                Collection<Cell> intersectionCells = findIntersectionCells();
+                for (Point2D point : vertices) {
+                    if (!graph.containsVertex(point) || finalVertices.contains(point)) {
+                        continue;
+                    }
+                    Cell graphCell = map.inverse().get(point);
+                    for (CardinalDirection dir : growingDirs) {
+                        int combinedEdgeLength = 1;
+                        Cell movedCell = graphCell;
+                        while (true) {
+                            movedCell = movedCell.moveToSide(dir);
+                            if (map.containsKey(movedCell) && graph.containsVertex(map.get(movedCell))) {
+                                combinedEdgeLength++;
+                                if (intersectionCells.contains(movedCell)) {
+                                    break;
+                                }
+                            } else {
+                                movedCell = movedCell.moveToSide(dir.opposite());
+                                break;
+                            }
+                        }
+                        Cell oppositeMovedCell = graphCell;
+                        while (true) {
+                            oppositeMovedCell = oppositeMovedCell.moveToSide(dir.opposite());
+                            if (map.containsKey(oppositeMovedCell) && graph.containsVertex(map.get(oppositeMovedCell))) {
+                                combinedEdgeLength++;
+                                if (intersectionCells.contains(oppositeMovedCell)) {
+                                    break;
+                                }
+                            } else {
+                                oppositeMovedCell = oppositeMovedCell.moveToSide(dir);
+                                break;
+                            }
+                        }
+                        if (combinedEdgeLength > 2) {
+                            for (
+                                    Cell cell = movedCell.moveToSide(dir.opposite());
+                                    !cell.equals(oppositeMovedCell);
+                                    cell = cell.moveToSide(dir.opposite())
+                                    ) {
+                                graph.removeVertex(map.get(cell));
+                            }
+                            changesMade = true;
+                            canvas.drawCell(oppositeMovedCell, YELLOW);
+                            canvas.drawCell(movedCell, RED);
+                            graph.addEdge(map.get(movedCell), map.get(oppositeMovedCell));
+                            finalVertices.add(map.get(movedCell));
+                            finalVertices.add(map.get(oppositeMovedCell));
+                        } else if (combinedEdgeLength == 2) {
+//                            if (!graph.containsEdge(map.get(movedCell), map.get(oppositeMovedCell))) {
+//                                canvas.draw(movedCell, DrawingCell.withColorAndSize(Color.BLACK, 1));
+//                                canvas.draw(oppositeMovedCell, DrawingCell.withColorAndSize(Color.BLACK, 1));
+//                                throw new AssertionError(movedCell + " " + oppositeMovedCell);
+//                            }
+                        }
+                    }
+                }
+
+            } while (changesMade);
+        }
+    }
+
+    private CachedCellBufferBorder getCoast(Cell startCell, int radius, int depth) {
         return new CachedCellBufferBorder(
-                new ChebyshevDistanceCellBufferBorder(5, CoastlineDemo::isWater),
+                new ChebyshevDistanceCellBufferBorder(depth, this::isWater),
                 Recs.rectangleByCenterPoint(startCell, radius * 2 + 1, radius * 2 + 1)
         );
     }
 
-    private static PathTable computeCityShape(
+    private PathTable computeCityShape(
             Rectangle worldRec,
             Cell startCell,
             CellBufferBorder coast,
@@ -61,7 +235,7 @@ public class CoastlineDemo {
     }
 
 
-    private static CachedCellBufferBorder computeBufferBorder(Rectangle worldRec) {
+    private CachedCellBufferBorder computeBufferBorder(Rectangle worldRec) {
         CachedCellBufferBorder bufferBorder = new CachedCellBufferBorder(
                 new ChebyshevDistanceCellBufferBorder(
                         20,
@@ -73,7 +247,7 @@ public class CoastlineDemo {
         return bufferBorder;
     }
 
-    private static List<Cell> computeCoastRoad(Rectangle worldRec, CachedCellBufferBorder bufferBorder) {
+    private List<Cell> computeCoastRoad(Rectangle worldRec, CachedCellBufferBorder bufferBorder) {
         Collection<Cell> borderCells = new HashSet<>(bufferBorder.cellList());
         List<Cell> coastRoadCells = new ArrayList<>();
         while (!borderCells.isEmpty()) {
@@ -96,26 +270,26 @@ public class CoastlineDemo {
         return coastRoadCells;
     }
 
-    private static boolean isWater(Integer x, Integer y) {
+    private boolean isWater(Integer x, Integer y) {
         return noise(x, y) < 128;
     }
 
-    private static void coastline() {
+    private void coastline() {
         CellBufferBorder bufferBorder = new ChebyshevDistanceCellBufferBorder(
                 14,
-                CoastlineDemo::isWater
+                this::isWater
         );
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                if (bufferBorder.isBufferBorder(i, j)) {
-                    canvas.draw(new Cell(i, j), DrawingCell.withColor(Color.RED));
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                if (bufferBorder.isBufferBorder(x, y)) {
+                    canvas.drawCell(x, y, RED);
                 }
             }
         }
     }
 
 
-    private static int noise(int x, int y) {
+    private int noise(int x, int y) {
         return Noise.noise(
                 ((double) x) / 32,
                 ((double) y) / 32,
@@ -123,16 +297,10 @@ public class CoastlineDemo {
         );
     }
 
-    private static void drawPathTable(PathTable table) {
-        DrawingAlgorithm<Cell> how = DrawingCell.withColor(Color.RED);
-        for (Cell cell : table) {
-            canvas.draw(cell, how);
-        }
-    }
 
-    private static void drawTerrain() {
+    private void drawTerrain() {
         DrawingAlgorithm<Cell> grass = DrawingCell.withColor(Color.GREEN);
-        DrawingAlgorithm<Cell> water = DrawingCell.withColor(Color.BLUE);
+        DrawingAlgorithm<Cell> water = DrawingCell.withColor(BLUE);
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 canvas.draw(new Cell(i, j), noise(i, j) >= 128 ? grass : water);
@@ -140,7 +308,7 @@ public class CoastlineDemo {
         }
     }
 
-    private static void drawCoastRoad(List<Cell> roadCells) {
+    private void drawCoastRoad(List<Cell> roadCells) {
         Iterator<Color> infiniteColors = Colors.infiniteSequence(
                 i -> new Color(i * 180 % 256, i * 317 % 256, i * 233 % 256)
         );

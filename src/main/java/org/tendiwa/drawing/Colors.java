@@ -1,6 +1,7 @@
 package org.tendiwa.drawing;
 
 import java.awt.*;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -41,6 +42,34 @@ public class Colors {
                 return colorProducer.apply(i++);
             }
         };
+    }
+
+    /**
+     * Retruns name of a {@link Color} as a String.
+     *
+     * @param colorParam
+     *         A color.
+     * @return Color's name.
+     */
+    public static String colorName(Color colorParam) {
+        try {
+            // first read all fields in array
+            Field[] field = Class.forName("java.awt.Color").getDeclaredFields();
+            for (Field f : field) {
+                String colorName = f.getName();
+                Class<?> t = f.getType();
+                // check only for constants - "public static final Color"
+                if (t == java.awt.Color.class) {
+                    Color defined = (Color) f.get(null);
+                    if (defined.equals(colorParam)) {
+                        return colorName.toUpperCase();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "NO_MATCH";
     }
 
 }

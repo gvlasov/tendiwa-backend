@@ -2,6 +2,7 @@ package org.tendiwa.settlements;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableSet;
+import com.google.inject.internal.util.$SourceProvider;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.drawing.TestCanvas;
@@ -159,6 +160,9 @@ public class City {
         ImmutableSet.Builder<CityCell> cellsBuilder = ImmutableSet.builder();
         fillBuilderWithCells(cellsBuilder);
         cells = cellsBuilder.build();
+        if (cells.isEmpty()) {
+            throw new RuntimeException("A City with 0 city cells was made");
+        }
     }
 
     private void fillBuilderWithCells(ImmutableSet.Builder<CityCell> cellsBuilder) {

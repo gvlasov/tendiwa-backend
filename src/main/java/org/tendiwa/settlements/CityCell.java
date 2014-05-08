@@ -6,14 +6,11 @@ import com.vividsolutions.jts.geom.Coordinate;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.graph.UnmodifiableUndirectedGraph;
-import org.tendiwa.drawing.DrawingLine;
-import org.tendiwa.drawing.DrawingPoint;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Line2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.graphs.MinimalCycle;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,7 +18,8 @@ import java.util.stream.Collectors;
 /**
  * [Kelly section 4.3.1]
  * <p>
- * A part of a city bounded by a fundamental basis cycle (one of those in <i>minimal cycle basis</i> from [Kelly section
+ * A part of a city bounded by a fundamental basis cycle (one of those in <i>minimal cycle basis</i> from [Kelly
+ * section
  * 4.3.1, figure 41].
  */
 public class CityCell {
@@ -136,9 +134,15 @@ public class CityCell {
         }
 
 
-        ring = pointListToCoordinateArray(minimalCycle.vertexList());
+        Coordinate[] coordinates = pointListToCoordinateArray(minimalCycle.vertexList());
         // TODO: Are all cycles counter-clockwise? (because of the MCB algorithm)
-        assert CGAlgorithms.isCCW(ring);
+        if (!CGAlgorithms.isCCW(coordinates)) {
+            List<Coordinate> list = Arrays.asList(coordinates);
+            Collections.reverse(list);
+            ring = list.toArray(new Coordinate[list.size()]);
+        } else {
+            ring = coordinates;
+        }
         isCycleClockwise = false;
 
         buildLine2DNetwork(minimalCycle);
@@ -256,7 +260,7 @@ public class CityCell {
                 if (ring[i + 1].equals(end)) {
                     return true;
                 } else {
-                    assert ring[i - 1].equals(end);
+                    assert ring[i == 0 ? ring.length-2 : i - 1].equals(end);
                     return false;
                 }
             }
@@ -289,7 +293,6 @@ public class CityCell {
             case NO_SNAP:
                 assert targetNode == snapEvent.targetNode;
                 if (!relevantNetwork.addVertex(targetNode)) {
-                    System.out.println(source + " " + targetNode);
                     assert false : targetNode;
                     return null;
                 }
@@ -356,7 +359,8 @@ public class CityCell {
     /**
      * [Kelly figure 42]
      * <p>
-     * Adds new node between two existing nodes, removing an existing road between them and placing 2 new roads. to road
+     * Adds new node between two existing nodes, removing an existing road between them and placing 2 new roads. to
+     * road
      * network. Since {@link org.tendiwa.settlements.RoadGraph} is immutable, new nodes are saved in a separate
      * collection.
      *
@@ -367,7 +371,6 @@ public class CityCell {
      */
     private void insertNode(Line2D road, Point2D point) {
         if (road.end.equals(point)) {
-            System.out.println(road);
             return;
         }
         assert !road.start.equals(point) : "point is start";
@@ -403,7 +406,8 @@ public class CityCell {
                 // TODO: The fuck is signum doing here?
                 (o1, o2) -> (int) Math.signum(o2.start.distanceTo(o2.end) - o1.start.distanceTo(o1.end))
         );
-        return edges.subList(0, maxNumOfStartPoints);
+        int numberOfStartPoints = Math.min(maxNumOfStartPoints, minimalCycle.vertexList().size());
+        return edges.subList(0, numberOfStartPoints);
     }
 
     class Line2DNetworkStep {

@@ -4,12 +4,10 @@ import org.tendiwa.geometry.Line2D;
 
 import java.awt.*;
 
-public class DrawingLine {
+public class DrawingLine2D {
     public static DrawingAlgorithm<Line2D> withColor(final Color color) {
-        return new DrawingAlgorithm<Line2D>() {
-            @Override
-            public void draw(Line2D shape) {
-                drawShape(
+        return (shape, canvas) ->
+                canvas.drawShape(
                         new java.awt.geom.Line2D.Double(
                                 shape.start.x,
                                 shape.start.y,
@@ -18,7 +16,5 @@ public class DrawingLine {
                         ),
                         color
                 );
-            }
-        };
     }
 }

@@ -65,4 +65,8 @@ public class Point2D implements Position2D {
     public double distanceTo(Point2D end) {
         return Math.sqrt(Math.pow(end.x - this.x, 2) + Math.pow(end.y - this.y, 2));
     }
+
+    public Cell toCell() {
+        return new Cell((int) x, (int) this.y);
+    }
 }

@@ -75,11 +75,11 @@ public class Rectangle implements Placeable {
         return getSegmentInsideFromSide(side, 0, height);
     }
 
-    public Collection<Coordinate> getCells() {
-        ArrayList<Coordinate> answer = new ArrayList<Coordinate>();
+    public Collection<Cell> getCells() {
+        ArrayList<Cell> answer = new ArrayList<>();
         for (int i = x; i < x + width; i++) {
             for (int j = y; j < y + height; j++) {
-                answer.add(new Coordinate(i, j));
+                answer.add(new Cell(i, j));
             }
         }
         return answer;
@@ -682,15 +682,30 @@ public class Rectangle implements Placeable {
 
     /**
      * Creates a new {@link Rectangle} around the same central point but with dimensions reduced by {@code dSize*2} and
-     * shifted to {@link OrdinalDirection#NW} by {@code dSize}.
+     * shifted to {@link OrdinalDirection#SE} by {@code dSize}.
      *
      * @param dSize
      *         A radius to shrink by. This number will be cut from four sides. Note that this still can be
      *         negative (then at actually extend this rectangle instead of shrinking it).
-     * @return A new, decreased rectangle.
+     * @return A new, srinked rectangle.
+     * @see #stretch(int)
      */
     public Rectangle shrink(int dSize) {
         return new Rectangle(x + dSize, y + dSize, width - dSize * 2, height - dSize * 2);
+    }
+
+    /**
+     * Creates a new {@link Rectangle} around the same central point but with dimensions increased by {@code dSize*2}
+     * and shifted to {@link OrdinalDirection#NW} by {@code dSize}.
+     *
+     * @param dSize
+     *         A radius to stretch by. This number will be cut from four sides. Note that this still can be
+     *         negative (then at actually extend this rectangle instead of shrinking it).
+     * @return A new, stretched rectangle.
+     * @see #shrink(int) (int)
+     */
+    public Rectangle stretch(int dSize) {
+        return new Rectangle(x - dSize, y - dSize, width + dSize * 2, height + dSize * 2);
     }
 
     public int getMaxX() {

@@ -6,8 +6,16 @@ import org.jgrapht.graph.ListenableUndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
+/**
+ * Implementation of minimal cycle basis algorithm as described in the <a href="http://www.geometrictools
+ * .com/Documentation/MinimalCycleBasis.pdf">[Eberly 2005]</a> paper.
+ *
+ * @param <V>
+ *         Type of vertices.
+ * @param <E>
+ *         Type of edges.
+ */
 public class MinimumCycleBasis<V, E> {
     private final ListenableUndirectedGraph<V, E> graph;
     private final Comparator<V> comparator = new Comparator<V>() {

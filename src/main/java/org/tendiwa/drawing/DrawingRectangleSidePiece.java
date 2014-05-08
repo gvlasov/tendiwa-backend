@@ -8,46 +8,38 @@ import org.tendiwa.geometry.RectangleSidePiece;
 
 import com.google.common.collect.Iterables;
 
+@SuppressWarnings("unused")
 public class DrawingRectangleSidePiece {
-	public static DrawingAlgorithm<RectangleSidePiece> withColors(final Color color1, final Color color2) {
-		return new DrawingAlgorithm<RectangleSidePiece>() {
+    public static DrawingAlgorithm<RectangleSidePiece> withColors(final Color color1, final Color color2) {
+        return (piece, canvas) -> {
+            for (Cell point : piece.getSegment()) {
+                point.moveToSide(piece.getDirection());
+                if ((point.getX() + point.getY()) % 2 == 0) {
+                    canvas.drawCell(point.getX(), point.getY(), color1);
+                } else {
+                    canvas.drawCell(point.getX(), point.getY(), color2);
+                }
+            }
+        };
+    }
 
-			@Override
-			public void draw(RectangleSidePiece piece) {
-				for (Cell point : piece.getSegment()) {
-					point.moveToSide(piece.getDirection());
-					if ((point.getX() + point.getY()) % 2 == 0) {
-						drawPoint(point.getX(), point.getY(), color1);
-					} else {
-						drawPoint(point.getX(), point.getY(), color2);
-					}
-				}
-			}
-		};
-	}
-	public static DrawingAlgorithm<RectangleSidePiece> withColor(final Color color) {
-		return new DrawingAlgorithm<RectangleSidePiece>() {
-			@Override
-			public void draw(RectangleSidePiece piece) {
-				for (Cell point : piece.getSegment()) {
-					point.moveToSide(piece.getDirection());
-					drawPoint(point.getX(), point.getY(), color);
-				}
-				
-			}
-		};
-	}
-	public static DrawingAlgorithm<RectangleSidePiece> withColorLoop(final Color... colors) {
-		return new DrawingAlgorithm<RectangleSidePiece>() {
-			final Iterator<Color> iter = Iterables.cycle(colors).iterator();
+    public static DrawingAlgorithm<RectangleSidePiece> withColor(final Color color) {
+        return (piece, canvas) -> {
+            for (Cell point : piece.getSegment()) {
+                point.moveToSide(piece.getDirection());
+                canvas.drawCell(point.getX(), point.getY(), color);
+            }
 
-			@Override
-			public void draw(RectangleSidePiece piece) {
-				for (Cell point : piece.getSegment()) {
-					point.moveToSide(piece.getDirection());
-					drawPoint(point.getX(), point.getY(), iter.next());
-				}
-			}
-		};
-	}
+        };
+    }
+
+    public static DrawingAlgorithm<RectangleSidePiece> withColorLoop(final Color... colors) {
+        final Iterator<Color> iter = Iterables.cycle(colors).iterator();
+        return (piece, canvas) -> {
+            for (Cell point : piece.getSegment()) {
+                point.moveToSide(piece.getDirection());
+                canvas.drawCell(point.getX(), point.getY(), iter.next());
+            }
+        };
+    }
 }

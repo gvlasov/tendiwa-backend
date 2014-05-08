@@ -1,34 +1,44 @@
 package tests.painting;
 
 import com.google.inject.Inject;
-import org.jukito.JukitoRunner;
-import org.junit.runner.RunWith;
+import org.tendiwa.demos.Demos;
+import org.tendiwa.drawing.GifBuilder;
+import org.tendiwa.drawing.GifBuilderFactory;
 import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.geometry.Rectangle;
 
-import java.awt.*;
+import static java.awt.Color.BLUE;
+import static java.awt.Color.RED;
 
-@RunWith(JukitoRunner.class)
-public class AnimationSaveToFileDemo {
-@Inject
-TestCanvas canvas;
+public class AnimationSaveToFileDemo implements Runnable {
+    TestCanvas canvas = new TestCanvas(1, 100, 100);
+    @Inject
+    GifBuilderFactory gifBuilderFactory;
 
-@org.junit.Test
-void draw() {
+    public static void main(String[] args) {
+        Demos.run(AnimationSaveToFileDemo.class);
+    }
 
-	int x = 0, y = 0;
-	for (int i = 0; i < 3; i++) {
-		canvas.draw(new Rectangle(x, y, 10, 24));
-		x++;
-		y++;
-		canvas.saveFrame();
-	}
-	canvas.saveAnimation("/home/suseika/test.gif");
-	for (int i = 0; i < 8; i++) {
-		canvas.draw(new Rectangle(x, y, 10, 24));
-		x++;
-		y++;
-		canvas.saveFrame();
-	}
-	canvas.saveAnimation("/home/suseika/test2.gif");
-}
+    @Override
+    public void run() {
+        GifBuilder gifBuilder = gifBuilderFactory.create(canvas, 5);
+        String home = System.getProperty("user.home");
+
+        int x = 0, y = 0;
+        for (int i = 0; i < 3; i++) {
+            canvas.drawRectangle(new Rectangle(x, y, 10, 24), RED);
+            x++;
+            y++;
+            gifBuilder.saveFrame();
+        }
+        gifBuilder.saveAnimation(home + "/test.gif");
+        canvas.clear();
+        for (int i = 0; i < 8; i++) {
+            canvas.drawRectangle(new Rectangle(x, y, 10, 24), BLUE);
+            x++;
+            y++;
+            gifBuilder.saveFrame();
+        }
+        gifBuilder.saveAnimation(home + "/test2.gif");
+    }
 }

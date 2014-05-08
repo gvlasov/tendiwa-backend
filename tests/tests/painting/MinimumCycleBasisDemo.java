@@ -22,6 +22,13 @@ public class MinimumCycleBasisDemo {
     @Inject
     TestCanvas canvas;
 
+    /**
+     * Draws example from
+     * <a href="https://docs.google.com/viewer?url=www.geometrictools.com%2FDocumentation%2FMinimalCycleBasis.pdf&embedded=true#:0.page.4">page
+     * 4 of [Eberly 2005], Figure 2.1</a>
+     *
+     * @see org.tendiwa.graphs.MinimumCycleBasis
+     */
     @Test
     public void draw() {
         final GraphConstructor<Point2D, DefaultEdge> constructor =
@@ -66,63 +73,60 @@ public class MinimumCycleBasisDemo {
                         .path(14, 15, 16);
         final SimpleGraph<Point2D, DefaultEdge> graph = constructor
                 .graph();
-        canvas.draw(graph, new DrawingAlgorithm<SimpleGraph<Point2D, DefaultEdge>>() {
-            @Override
-            public void draw(SimpleGraph<Point2D, DefaultEdge> shape) {
-                MinimumCycleBasis<Point2D, DefaultEdge> mcb =
-                        new MinimumCycleBasis<>(graph, new VertexPositionAdapter<Point2D>() {
-                            @Override
-                            public double getX(Point2D vertex) {
-                                return vertex.x;
-                            }
+        canvas.draw(graph, (shape, canvas1) -> {
+            MinimumCycleBasis<Point2D, DefaultEdge> mcb =
+                    new MinimumCycleBasis<>(graph, new VertexPositionAdapter<Point2D>() {
+                        @Override
+                        public double getX(Point2D vertex) {
+                            return vertex.x;
+                        }
 
-                            @Override
-                            public double getY(Point2D vertex) {
-                                return vertex.y;
-                            }
-                        });
-                for (Point2D p : mcb.isolatedVertexSet()) {
-                    canvas.draw(new Cell(
-                            (int) p.x,
-                            (int) p.y
-                    ), DrawingCell.withColorAndSize(Color.BLUE, 3));
+                        @Override
+                        public double getY(Point2D vertex) {
+                            return vertex.y;
+                        }
+                    });
+            for (Point2D p : mcb.isolatedVertexSet()) {
+                canvas.draw(new Cell(
+                        (int) p.x,
+                        (int) p.y
+                ), DrawingCell.withColorAndSize(Color.BLUE, 3));
+            }
+            for (Filament<Point2D, DefaultEdge> filament : mcb.filamentsSet()) {
+                System.out.println("filament " +
+                        filament.vertexList()
+                                .stream()
+                                .map(constructor::aliasOf)
+                                .collect(Collectors.toSet())
+                );
+                for (DefaultEdge edge : filament) {
+                    canvas.draw(new Line2D(
+                            shape.getEdgeSource(edge),
+                            shape.getEdgeTarget(edge)
+                    ), DrawingLine2D.withColor(Color.GREEN));
                 }
-                for (Filament<Point2D, DefaultEdge> filament : mcb.filamentsSet()) {
-                    System.out.println("filament " +
-                            filament.vertexList()
-                                    .stream()
-                                    .map(constructor::aliasOf)
-                                    .collect(Collectors.toSet())
-                    );
-                    for (DefaultEdge edge : filament) {
-                        canvas.draw(new Line2D(
-                                shape.getEdgeSource(edge),
-                                shape.getEdgeTarget(edge)
-                        ), DrawingLine.withColor(Color.GREEN));
-                    }
+            }
+            for (MinimalCycle<Point2D, DefaultEdge> cycle : mcb.minimalCyclesSet()) {
+                System.out.println("min cycle " +
+                        cycle.vertexList()
+                                .stream()
+                                .map(constructor::aliasOf)
+                                .collect(Collectors.toSet())
+                );
+                for (DefaultEdge edge : cycle) {
+                    canvas.draw(new Line2D(
+                            shape.getEdgeSource(edge),
+                            shape.getEdgeTarget(edge)
+                    ), DrawingLine2D.withColor(Color.RED));
                 }
-                for (MinimalCycle<Point2D, DefaultEdge> cycle : mcb.minimalCyclesSet()) {
-                    System.out.println("min cycle " +
-                            cycle.vertexList()
-                                    .stream()
-                                    .map(constructor::aliasOf)
-                                    .collect(Collectors.toSet())
-                    );
-                    for (DefaultEdge edge : cycle) {
-                        canvas.draw(new Line2D(
-                                shape.getEdgeSource(edge),
-                                shape.getEdgeTarget(edge)
-                        ), DrawingLine.withColor(Color.RED));
-                    }
-                }
-                for (Point2D p : graph.vertexSet()) {
-                    this.drawString(
-                            Integer.toString(constructor.aliasOf(p)),
-                            p.x + 5,
-                            p.y + 5,
-                            Color.BLUE
-                    );
-                }
+            }
+            for (Point2D p : graph.vertexSet()) {
+                canvas.drawString(
+                        Integer.toString(constructor.aliasOf(p)),
+                        p.x + 5,
+                        p.y + 5,
+                        Color.BLUE
+                );
             }
         });
         try {

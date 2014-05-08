@@ -5,10 +5,7 @@ import org.tendiwa.core.meta.CellPosition;
 import org.tendiwa.core.meta.DoubleRange;
 import org.tendiwa.core.meta.DoubleRangeCollection;
 import org.tendiwa.core.meta.Utils;
-import org.tendiwa.geometry.Cell;
-import org.tendiwa.geometry.Cells;
-import org.tendiwa.geometry.Recs;
-import org.tendiwa.geometry.Rectangle;
+import org.tendiwa.geometry.*;
 
 public class Seer {
 public static final int VISION_RANGE = 11;
@@ -428,10 +425,10 @@ public Cell getRayEnd(int endX, int endY) {
 
 public Cell[] rays(int startX, int startY, int endX, int endY) {
 	return Utils.concatAll(
-		Chunk.vector(startX, startY, endX, endY),
-		Chunk.vector(startX, startY + (endY > startY ? 1 : -1), endX + (endX > startX ? -1 : 1), endY),
-		Chunk.vector(startX + (endX > startX ? 1 : -1), startY, endX, endY + (endY > startY ? -1 : 1))
-	);
+            CellLine.vector(startX, startY, endX, endY),
+            CellLine.vector(startX, startY + (endY > startY ? 1 : -1), endX + (endX > startX ? -1 : 1), endY),
+            CellLine.vector(startX + (endX > startX ? 1 : -1), startY, endX, endY + (endY > startY ? -1 : 1))
+    );
 }
 
 public void storeVisionCacheToPreviousVisionCache() {

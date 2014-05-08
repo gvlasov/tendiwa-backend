@@ -52,7 +52,7 @@ public void line(int startX, int startY, int endX, int endY, TypePlaceableInCell
 		EntityPlacer.place(activePlane, placeable, x + startX, y + startY);
 		return;
 	}
-	Cell[] cells = Chunk.vector(startX, startY, endX, endY);
+	Cell[] cells = CellLine.vector(startX, startY, endX, endY);
 	int size = cells.length;
 	for (int i = 0; i < size - 1; i++) {
 		int x = cells[i].getX();
@@ -216,7 +216,7 @@ public ArrayList<Cell> polygon(ArrayList<Cell> coords, boolean mode) {
 	for (int i = 0; i < size; i++) {
 		Cell coord = coords.get(i);
 		Cell nextCoord = coords.get((i == size - 1) ? 0 : i + 1);
-		v = Chunk.vector(coord.getX(), coord.getY(), nextCoord.getX(), nextCoord.getY());
+		v = CellLine.vector(coord.getX(), coord.getY(), nextCoord.getX(), nextCoord.getY());
 		vSize = v.length;
 		for (int j = 0; j < vSize - 1; j++) {
 			answer.add(v[j]);
@@ -680,8 +680,8 @@ public void drawPath(int startX, int startY, int endX, int endY, PlaceableInCell
 
 protected CellCollection getCoast(int startX, int startY) {
 	int[][] pathTable = new int[getWidth()][getHeight()];
-	ArrayList<Cell> cells = new ArrayList<Cell>();
-	ArrayList<Cell> oldFront = new ArrayList<Cell>();
+	ArrayList<Cell> cells = new ArrayList<>();
+	ArrayList<Cell> oldFront = new ArrayList<>();
 	ArrayList<Cell> newFront = new ArrayList<>();
 	newFront.add(new Cell(startX, startY));
 	for (int i = 0; i < getWidth(); i++) {
@@ -719,7 +719,7 @@ protected CellCollection getCoast(int startX, int startY) {
 }
 
 public ArrayList<Cell> getCellsAroundCell(int x, int y) {
-	ArrayList<Cell> answer = new ArrayList<Cell>();
+	ArrayList<Cell> answer = new ArrayList<>();
 	int x1[] = {x, x + 1, x + 1, x + 1, x, x - 1, x - 1, x - 1};
 	int y1[] = {y - 1, y - 1, y, y + 1, y + 1, y + 1, y, y - 1};
 	for (int i = 0; i < 8; i++) {

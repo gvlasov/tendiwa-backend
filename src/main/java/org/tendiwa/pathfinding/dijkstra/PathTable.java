@@ -2,6 +2,7 @@ package org.tendiwa.pathfinding.dijkstra;
 
 import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.Cells;
+import org.tendiwa.geometry.Rectangle;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -17,8 +18,8 @@ public class PathTable implements Iterable<Cell> {
     private final int width;
     private int[][] pathTable;
     private ArrayList<Cell> newFront;
-    private ArrayList<Cell> oldFront;
     private int step;
+    private final Rectangle bounds;
 
     public PathTable(int startX, int startY, PathWalker walker, int maxDepth) {
         this.startX = startX;
@@ -26,6 +27,9 @@ public class PathTable implements Iterable<Cell> {
         this.walker = walker;
         this.maxDepth = maxDepth;
         this.width = maxDepth * 2 + 1;
+        //noinspection SuspiciousNameCombination
+        this.bounds = new Rectangle(startX - maxDepth, startY - maxDepth, width, width);
+
         step = 0;
 
         this.pathTable = new int[maxDepth * 2 + 1][maxDepth * 2 + 1];
@@ -42,6 +46,33 @@ public class PathTable implements Iterable<Cell> {
         pathTable[maxDepth][maxDepth] = 0;
     }
 
+    /**
+     * Returns a rectangle in which all cells of this PathTable reside. Note that this rectangle is defined by
+     * #startX, #startY and #maxDepth, and not by actually computed cells. More formally, returns a rectangle
+     * <pre>
+     * {@code
+     * new Rectangle(startX - maxDepth, startY - maxDepth, width, width);
+     * }
+     * </pre>
+     *
+     * @return A bounding rectangle for this PathTable defined by its #startX, #startY and #maxDepth.
+     */
+    public Rectangle getBounds() {
+        //noinspection SuspiciousNameCombination
+        return bounds;
+    }
+
+    /**
+     * A getter of #maxDepth. This method is called radius because in Chebyshev metric #maxDepth is radius of a circle
+     * that appears to be square in Euclidean metric.
+     *
+     * @return #maxDepth
+     */
+    @SuppressWarnings("unused")
+    public int radius() {
+        return maxDepth;
+    }
+
     public PathTable computeFull() {
         boolean computed;
         do {
@@ -54,11 +85,11 @@ public class PathTable implements Iterable<Cell> {
         if (step == maxDepth) {
             return false;
         }
-        oldFront = newFront;
+        ArrayList<Cell> oldFront = newFront;
         newFront = new ArrayList<>();
-        for (int i = 0; i < oldFront.size(); i++) {
-            int x = oldFront.get(i).getX();
-            int y = oldFront.get(i).getY();
+        for (Cell anOldFront : oldFront) {
+            int x = anOldFront.getX();
+            int y = anOldFront.getY();
             int[] adjactentX = new int[]{x + 1, x, x, x - 1, x + 1, x + 1, x - 1, x - 1};
             int[] adjactentY = new int[]{y, y - 1, y + 1, y, y + 1, y - 1, y + 1, y - 1};
             for (int j = 0; j < 8; j++) {
@@ -138,14 +169,11 @@ public class PathTable implements Iterable<Cell> {
                 }
             }
         }
-        if (path == null) {
-            throw new RuntimeException("Path is null, you wanted to check that");
-        }
         return path;
     }
 
     public boolean isCellComputed(int x, int y) {
-        return pathTable[maxDepth + x - startX][maxDepth + y - startY] != NOT_COMPUTED_CELL;
+        return bounds.contains(x, y) && pathTable[maxDepth + x - startX][maxDepth + y - startY] != NOT_COMPUTED_CELL;
     }
 
     @Override
