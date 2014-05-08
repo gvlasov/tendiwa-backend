@@ -18,6 +18,7 @@ import org.tendiwa.geometry.extensions.CachedCellBufferBorder;
 import org.tendiwa.geometry.extensions.ChebyshevDistanceCellBufferBorder;
 import org.tendiwa.noise.Noise;
 import org.tendiwa.pathfinding.dijkstra.PathTable;
+import org.tendiwa.pathfinding.dijkstra.PostConditionPathTable;
 import org.tendiwa.settlements.City;
 import org.tendiwa.settlements.CityBuilder;
 
@@ -28,6 +29,7 @@ import java.util.List;
 import static java.awt.Color.*;
 
 public class CoastlineDemo implements Runnable {
+    public static final int MAX_CITY_DEPTH = 360;
     @Inject
     @Named("scale2")
     TestCanvas canvas;
@@ -45,8 +47,7 @@ public class CoastlineDemo implements Runnable {
 
     @Override
     public void run() {
-
-//        for (int i = 5; i < 12; i++) {
+//        for (int i = 1; i < 12; i++) {
         drawTerrain();
         Rectangle worldRec = new Rectangle(0, 0, width, height);
         CachedCellBufferBorder cachedCellBufferBorder = computeBufferBorder(worldRec);
@@ -56,19 +57,39 @@ public class CoastlineDemo implements Runnable {
         table = computeCityShape(
                 worldRec,
                 startCell,
-                getCoast(startCell, radius, 5),
+                getCoast(startCell, radius, 6),
                 radius
         );
-//            try {
-        computeCityBoundingRoads(table);
-//            } catch (IllegalArgumentException e) {
-//                continue;
-//            }
-//            canvas.clear();
+        System.out.println(table.getBounds());
+
+        computeCityBoundingRoads(table, worldRec);
+        canvas.clear();
 //        }
     }
 
-    private void computeCityBoundingRoads(PathTable table) {
+    /**
+     * Culls the cells that will produce intersecting bounding roads.
+     *
+     * @param bufferBorder
+     *         Coastal road's cells.
+     * @param start
+     *         The point from which the City originated.
+     * @return A path table whose bounds end on bufferBorder's cells, but not past them.
+     */
+    private PathTable cullIntersectingBoundingRoadsCells(
+            CellBufferBorder bufferBorder,
+            Cell start,
+            Rectangle worldRec
+    ) {
+        return new PostConditionPathTable(
+                start.x,
+                start.y,
+                (x, y) -> worldRec.contains(x, y) && !bufferBorder.isBufferBorder(x, y),
+                radius
+        ).computeFull();
+    }
+
+    private void computeCityBoundingRoads(PathTable table, Rectangle worldRec) {
         CachedCellBufferBorder bufferBorder = new CachedCellBufferBorder(
                 new ChebyshevDistanceCellBufferBorder(
                         1,
@@ -83,10 +104,20 @@ public class CoastlineDemo implements Runnable {
                 ),
                 table.getBounds().stretch(1)
         );
-//        canvas.draw(table, DrawingPathTable.withColor(Color.RED));
-        canvas.draw(bufferBorder, DrawingBoundedCellBufferBorder.withColor(BLUE));
-        UndirectedGraph<Point2D, Line2D> cityGraph = bufferBorderToGraph(bufferBorder);
-        canvas.draw(cityGraph, DrawingGraph.withColorAndVertexSize(ORANGE, 1));
+        PathTable culledTable = cullIntersectingBoundingRoadsCells(
+                bufferBorder,
+                table.getStart(),
+                worldRec
+        );
+        CachedCellBufferBorder culledBufferBorder = new CachedCellBufferBorder(
+                (x, y) -> !culledTable.isCellComputed(x, y),
+                culledTable.getBounds()
+        );
+        canvas.draw(culledTable, DrawingPathTable.withColor(Color.RED));
+//        canvas.draw(bufferBorder, DrawingBoundedCellBufferBorder.withColor(BLUE));
+        UndirectedGraph<Point2D, Line2D> cityGraph = bufferBorderToGraph(culledBufferBorder);
+        System.out.println(cityGraph.vertexSet().size());
+//        canvas.draw(cityGraph, DrawingGraph.withColorAndVertexSize(ORANGE, 1));
 
         City city = new CityBuilder(cityGraph)
                 .withDefaults()
@@ -257,7 +288,7 @@ public class CoastlineDemo implements Runnable {
                     nextBorderCell.x,
                     nextBorderCell.y,
                     (x, y) -> worldRec.contains(x, y) && bufferBorder.isBufferBorder(x, y),
-                    360
+                    MAX_CITY_DEPTH
             );
             table.computeFull();
             for (Cell cell : table) {

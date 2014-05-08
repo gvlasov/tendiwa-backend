@@ -10,15 +10,15 @@ import java.util.LinkedList;
 
 public class PathTable implements Iterable<Cell> {
 
-    private static final int NOT_COMPUTED_CELL = -1;
+    static final int NOT_COMPUTED_CELL = -1;
     private final int startX;
     private final int startY;
-    private final PathWalker walker;
+    final PathWalker walker;
     private final int maxDepth;
     private final int width;
-    private int[][] pathTable;
-    private ArrayList<Cell> newFront;
-    private int step;
+    int[][] pathTable;
+    ArrayList<Cell> newFront;
+    int step;
     private final Rectangle bounds;
 
     public PathTable(int startX, int startY, PathWalker walker, int maxDepth) {
@@ -47,6 +47,15 @@ public class PathTable implements Iterable<Cell> {
     }
 
     /**
+     * Returns a new Cell {{@link #startX}:{@link #startY}};
+     *
+     * @return A new Cell.
+     */
+    public final Cell getStart() {
+        return new Cell(startX, startY);
+    }
+
+    /**
      * Returns a rectangle in which all cells of this PathTable reside. Note that this rectangle is defined by
      * #startX, #startY and #maxDepth, and not by actually computed cells. More formally, returns a rectangle
      * <pre>
@@ -57,7 +66,7 @@ public class PathTable implements Iterable<Cell> {
      *
      * @return A bounding rectangle for this PathTable defined by its #startX, #startY and #maxDepth.
      */
-    public Rectangle getBounds() {
+    public final Rectangle getBounds() {
         //noinspection SuspiciousNameCombination
         return bounds;
     }
@@ -69,11 +78,11 @@ public class PathTable implements Iterable<Cell> {
      * @return #maxDepth
      */
     @SuppressWarnings("unused")
-    public int radius() {
+    public final int radius() {
         return maxDepth;
     }
 
-    public PathTable computeFull() {
+    public final PathTable computeFull() {
         boolean computed;
         do {
             computed = nextWave();
@@ -97,16 +106,33 @@ public class PathTable implements Iterable<Cell> {
                 int thisNumY = adjactentY[j];
                 int tableX = thisNumX - startX + maxDepth;
                 int tableY = thisNumY - startY + maxDepth;
-                if (pathTable[tableX][tableY] == NOT_COMPUTED_CELL && walker.canStepOn(thisNumX, thisNumY)) {
-                    // Step to cell if character can see it and it is free
-                    // or character cannot se it and it is not PASSABILITY_NO
-                    pathTable[tableX][tableY] = step + 1;
-                    newFront.add(new Cell(thisNumX, thisNumY));
-                }
+                computeCell(thisNumX, thisNumY, tableX, tableY);
             }
         }
         step++;
         return true;
+    }
+
+    /**
+     * Checks if a cell should be stepped on and adds it into newFront if it should. This code is extracted into a
+     * method only to be overridden by {@link PostConditionPathTable}.
+     *
+     * @param thisNumX
+     *         X coordinate of a cell in world coordinates.
+     * @param thisNumY
+     *         Y coordinate of a cell in world coordinates.
+     * @param tableX
+     *         X coordinate of a cell in table coordinates.
+     * @param tableY
+     *         Y coordinate of a cell in table coordinates.
+     */
+    protected void computeCell(int thisNumX, int thisNumY, int tableX, int tableY) {
+        if (pathTable[tableX][tableY] == NOT_COMPUTED_CELL && walker.canStepOn(thisNumX, thisNumY)) {
+            // Step to cell if character can see it and it is free
+            // or character cannot se it and it is not PASSABILITY_NO
+            pathTable[tableX][tableY] = step + 1;
+            newFront.add(new Cell(thisNumX, thisNumY));
+        }
     }
 
     /**
@@ -118,7 +144,7 @@ public class PathTable implements Iterable<Cell> {
      *         Destination y coordinate.
      * @return null if path can't be found.
      */
-    public LinkedList<Cell> getPath(int x, int y) {
+    public final LinkedList<Cell> getPath(int x, int y) {
         if (Math.abs(x - startX) > maxDepth || Math.abs(y - startY) > maxDepth) {
             throw new IllegalArgumentException("Trying to get path to " + x + ":" + y + ". That point is too far from start point " + startX + ":" + startY + ", maxDepth is " + maxDepth);
         }
@@ -172,7 +198,7 @@ public class PathTable implements Iterable<Cell> {
         return path;
     }
 
-    public boolean isCellComputed(int x, int y) {
+    public final boolean isCellComputed(int x, int y) {
         return bounds.contains(x, y) && pathTable[maxDepth + x - startX][maxDepth + y - startY] != NOT_COMPUTED_CELL;
     }
 
@@ -180,7 +206,7 @@ public class PathTable implements Iterable<Cell> {
 /**
  * Iterates over all computed cells.
  */
-    public Iterator<Cell> iterator() {
+    public final Iterator<Cell> iterator() {
         return new Iterator<Cell>() {
             private int n = -1;
             private final int maxN = width * width - 1;
