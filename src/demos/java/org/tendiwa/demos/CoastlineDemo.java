@@ -16,10 +16,8 @@ import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.extensions.CachedCellBufferBorder;
 import org.tendiwa.geometry.extensions.ChebyshevDistanceCellBufferBorder;
-import org.tendiwa.graphs.PlanarGraphEdgesSelfIntersection;
 import org.tendiwa.noise.Noise;
 import org.tendiwa.pathfinding.dijkstra.PathTable;
-import org.tendiwa.pathfinding.dijkstra.PostConditionPathTable;
 import org.tendiwa.settlements.City;
 import org.tendiwa.settlements.CityBuilder;
 
@@ -118,7 +116,7 @@ public class CoastlineDemo implements Runnable {
         ).computeAll();
         canvas.draw(culledTable, DrawingPathTable.withColor(Color.RED));
         canvas.draw(culledBufferBorder, DrawingBoundedCellBufferBorder.withColor(BLUE));
-        UndirectedGraph<Point2D, Line2D> cityGraph = bufferBorderToGraph(culledBufferBorder);
+        UndirectedGraph<Point2D, Segment2D> cityGraph = bufferBorderToGraph(culledBufferBorder);
 //        canvas.draw(cityGraph, DrawingGraph.withColorAndVertexSize(ORANGE, 1));
 
         City city = new CityBuilder(cityGraph)
@@ -128,8 +126,8 @@ public class CoastlineDemo implements Runnable {
         canvas.draw(city, new CityDrawer());
     }
 
-    private UndirectedGraph<Point2D, Line2D> bufferBorderToGraph(CachedCellBufferBorder bufferBorder) {
-        UndirectedGraph<Point2D, Line2D> graph = new SimpleGraph<>(Line2D::new);
+    private UndirectedGraph<Point2D, Segment2D> bufferBorderToGraph(CachedCellBufferBorder bufferBorder) {
+        UndirectedGraph<Point2D, Segment2D> graph = new SimpleGraph<>(Segment2D::new);
         BiMap<Cell, Point2D> cell2PointMap = HashBiMap.create();
         for (Cell cell : bufferBorder.cellList()) {
             cell2PointMap.put(cell, new Point2D(cell.x, cell.y));
@@ -153,10 +151,10 @@ public class CoastlineDemo implements Runnable {
     private class EdgeReducer {
 
         private final CardinalDirection[] growingDirs = {CardinalDirection.N, CardinalDirection.E};
-        private UndirectedGraph<Point2D, Line2D> graph;
+        private UndirectedGraph<Point2D, Segment2D> graph;
         private BiMap<Cell, Point2D> map;
 
-        public EdgeReducer(UndirectedGraph<Point2D, Line2D> graph, BiMap<Cell, Point2D> map) {
+        public EdgeReducer(UndirectedGraph<Point2D, Segment2D> graph, BiMap<Cell, Point2D> map) {
 
             this.graph = graph;
             this.map = map;

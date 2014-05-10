@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.geometry.Line2D;
+import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.settlements.CityBuilder;
@@ -65,8 +65,8 @@ public class CityTest {
     @Test
     public void buildCity() {
         TestCanvas canvas = Demos.createCanvas();
-        GraphConstructor<Point2D, Line2D> gc = SampleGraph.create();
-        SimpleGraph<Point2D, Line2D> graph = gc.graph();
+        GraphConstructor<Point2D, Segment2D> gc = SampleGraph.create();
+        SimpleGraph<Point2D, Segment2D> graph = gc.graph();
         for (int i = 0; i < 1; i++) {
             new CityBuilder(graph)
                     .withDefaults()

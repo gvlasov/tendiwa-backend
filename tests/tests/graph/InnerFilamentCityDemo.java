@@ -4,16 +4,20 @@ import org.tendiwa.demos.Demos;
 import org.tendiwa.demos.settlements.CityDrawer;
 import org.junit.Test;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.geometry.Line2D;
+import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.settlements.City;
 import org.tendiwa.settlements.CityBuilder;
 
-public class InnerFilamentCityTest {
-    @Test
-    public void innerFilament() {
-        GraphConstructor<Point2D, Line2D> gc = new GraphConstructor<>(Line2D::new)
+public class InnerFilamentCityDemo implements Runnable {
+    public static void main(String[] args) {
+        Demos.run(InnerFilamentCityDemo.class);
+    }
+
+    @Override
+    public void run() {
+        GraphConstructor<Point2D, Segment2D> gc = new GraphConstructor<>(Segment2D::new)
                 .vertex(0, new Point2D(200, 100))
                 .vertex(1, new Point2D(400, 100))
                 .vertex(2, new Point2D(500, 200))
@@ -33,12 +37,5 @@ public class InnerFilamentCityTest {
                 .withRoadSegmentLength(50)
                 .build();
         canvas.draw(city, new CityDrawer());
-        try {
-            Thread.sleep(100000000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-
     }
 }

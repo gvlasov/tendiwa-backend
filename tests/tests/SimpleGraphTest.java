@@ -3,7 +3,7 @@ package tests;
 import org.jgrapht.EdgeFactory;
 import org.jgrapht.graph.SimpleGraph;
 import org.junit.Test;
-import org.tendiwa.geometry.Line2D;
+import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Point2D;
 
 /**
@@ -12,10 +12,10 @@ import org.tendiwa.geometry.Point2D;
 public class SimpleGraphTest {
     @Test
     public void test() {
-        SimpleGraph<Point2D, Line2D> graph = new SimpleGraph<>(new EdgeFactory<Point2D, Line2D>() {
+        SimpleGraph<Point2D, Segment2D> graph = new SimpleGraph<>(new EdgeFactory<Point2D, Segment2D>() {
             @Override
-            public Line2D createEdge(Point2D point2D, Point2D point2D2) {
-                return new Line2D(point2D, point2D2);
+            public Segment2D createEdge(Point2D point2D, Point2D point2D2) {
+                return new Segment2D(point2D, point2D2);
             }
         });
         Point2D a = new Point2D(1, 1);

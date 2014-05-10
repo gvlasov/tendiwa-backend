@@ -19,8 +19,8 @@ public class DrawingInteger {
         return (value, canvas) -> {
             int startX = orientation.isHorizontal() ? 0 : value;
             int startY = orientation.isVertical() ? 0 : value;
-            int width = orientation.isHorizontal() ? canvas.width : 1;
-            int height = orientation.isVertical() ? canvas.height : 1;
+            int width = orientation.isHorizontal() ? canvas.getWidth() : 1;
+            int height = orientation.isVertical() ? canvas.getHeight() : 1;
             canvas.drawRectangle(
                     new org.tendiwa.geometry.Rectangle(startX, startY, width, height),
                     color

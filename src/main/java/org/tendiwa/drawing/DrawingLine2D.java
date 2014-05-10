@@ -1,11 +1,11 @@
 package org.tendiwa.drawing;
 
-import org.tendiwa.geometry.Line2D;
+import org.tendiwa.geometry.Segment2D;
 
 import java.awt.*;
 
 public class DrawingLine2D {
-    public static DrawingAlgorithm<Line2D> withColor(final Color color) {
+    public static DrawingAlgorithm<Segment2D> withColor(final Color color) {
         return (shape, canvas) ->
                 canvas.drawShape(
                         new java.awt.geom.Line2D.Double(

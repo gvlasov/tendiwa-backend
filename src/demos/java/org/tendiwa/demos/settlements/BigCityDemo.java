@@ -1,30 +1,31 @@
 package org.tendiwa.demos.settlements;
 
-import org.tendiwa.demos.Demos;
 import org.jgrapht.graph.SimpleGraph;
-import org.junit.Test;
+import org.tendiwa.demos.Demos;
+import org.tendiwa.drawing.DrawingGraph;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.geometry.Line2D;
 import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.settlements.City;
 import org.tendiwa.settlements.CityBuilder;
 
 import java.awt.*;
 
-public class BigCity {
-
-    @Test
-    public void buildCity() {
-        main(null);
-    }
+public class BigCityDemo implements Runnable {
 
     public static void main(String[] args) {
+        Demos.run(BigCityDemo.class);
+    }
+
+    @Override
+    public void run() {
         TestCanvas canvas = Demos.createCanvas();
-        canvas.fillBackground(Color.BLACK);
-        GraphConstructor<Point2D, Line2D> gc = SampleGraph.create();
-        SimpleGraph<Point2D, Line2D> graph = gc.graph();
+        GraphConstructor<Point2D, Segment2D> gc = SampleGraph.create();
+        SimpleGraph<Point2D, Segment2D> graph = gc.graph();
+        canvas.draw(graph, DrawingGraph.multicoloredEdges());
         for (int i = 0; i < 100; i++) {
+            System.out.println(i);
             City city = new CityBuilder(graph)
                     .withDefaults()
                     .withMaxStartPointsPerCycle(5)

@@ -4,8 +4,9 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableSet;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
+import org.tendiwa.drawing.DrawingCell;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.geometry.Line2D;
+import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.graphs.*;
 
@@ -19,12 +20,12 @@ public class City {
      * [Kelly section 4.2]
      * <p>
      */
-    private final UndirectedGraph<Point2D, Line2D> highLevelRoadGraph;
+    private final UndirectedGraph<Point2D, Segment2D> highLevelRoadGraph;
     private final SampleSelectionStrategy strategy;
     /**
      * [Kelly beginning of chapter 4.2]
      */
-    private final UndirectedGraph<Point2D, Line2D> lowLevelRoadGraph;
+    private final UndirectedGraph<Point2D, Segment2D> lowLevelRoadGraph;
     /**
      * [Kelly section 4.2.2]
      */
@@ -32,7 +33,7 @@ public class City {
     private final int nSample;
     private final double deviationAngleRad;
     private final double approachingPerSample;
-    private final Set<Line2D> highLevelGraphEdges;
+    private final Set<Segment2D> highLevelGraphEdges;
     private final Set<CityCell> cells;
     private Random random;
     private final int roadsFromPoint;
@@ -154,11 +155,13 @@ public class City {
         highLevelGraphEdges = highLevelRoadGraph.edgeSet();
         lowLevelRoadGraph = buildLowLevelGraph();
         if (!PlanarGraphEdgesSelfIntersection.test(lowLevelRoadGraph)) {
-            canvas = new TestCanvas(1, 800, 600);
-            ImmutableCollection<Point2D> allIntersections = PlanarGraphEdgesSelfIntersection.findAllIntersections(lowLevelRoadGraph);
-            for (Point2D point : allIntersections) {
-                canvas.drawCell(point.toCell(), Color.RED);
-            }
+//            canvas = new TestCanvas(1, 800, 600);
+            ImmutableCollection<Point2D> allIntersections = PlanarGraphEdgesSelfIntersection.findAllIntersections
+                    (lowLevelRoadGraph);
+//            for (Point2D point : allIntersections) {
+//                canvas.draw(point.toCell(), DrawingCell.withColorAndSize(Color.RED, 8));
+//            }
+//            canvas.draw(lowLevelRoadGraph, DrawingGraph.withColor(Color.red));
             throw new IllegalArgumentException("Graph intersects itself");
         }
 
@@ -172,7 +175,7 @@ public class City {
     }
 
     private void fillBuilderWithCells(ImmutableSet.Builder<CityCell> cellsBuilder) {
-        MinimumCycleBasis<Point2D, Line2D> primitives = new MinimumCycleBasis<>(lowLevelRoadGraph, new VertexPositionAdapter<Point2D>() {
+        MinimumCycleBasis<Point2D, Segment2D> primitives = new MinimumCycleBasis<>(lowLevelRoadGraph, new VertexPositionAdapter<Point2D>() {
             @Override
             public double getX(Point2D vertex) {
                 return vertex.x;
@@ -183,16 +186,16 @@ public class City {
                 return vertex.y;
             }
         });
-        Map<MinimalCycle<Point2D, Line2D>, SimpleGraph<Point2D, Line2D>> cellGraphs
+        Map<MinimalCycle<Point2D, Segment2D>, SimpleGraph<Point2D, Segment2D>> cellGraphs
                 = constructCityCellGraphs(primitives);
-        Collection<Line2D> filamentEdges = new HashSet<>();
-        for (Filament<Point2D, Line2D> filament : primitives.filamentsSet()) {
-            for (Line2D line : filament) {
+        Collection<Segment2D> filamentEdges = new HashSet<>();
+        for (Filament<Point2D, Segment2D> filament : primitives.filamentsSet()) {
+            for (Segment2D line : filament) {
                 filamentEdges.add(line);
             }
         }
         // Sort cycles to get a fixed order of iteration (so a City will be reproducible with the same seed).
-        List<MinimalCycle<Point2D, Line2D>> sortedCycles = cellGraphs.keySet().stream().sorted((o1, o2) -> {
+        List<MinimalCycle<Point2D, Segment2D>> sortedCycles = cellGraphs.keySet().stream().sorted((o1, o2) -> {
             Point2D p1 = o1.vertexList().get(0);
             Point2D p2 = o2.vertexList().get(0);
             int compare = Double.compare(p1.x, p2.x);
@@ -204,7 +207,7 @@ public class City {
                 return compare;
             }
         }).collect(Collectors.toList());
-        for (MinimalCycle<Point2D, Line2D> cycle : sortedCycles) {
+        for (MinimalCycle<Point2D, Segment2D> cycle : sortedCycles) {
             cellsBuilder.add(new CityCell(
                     cellGraphs.get(cycle),
                     cycle,
@@ -229,12 +232,12 @@ public class City {
      *         A MinimumCycleBasis of this City's {@link #lowLevelRoadGraph}.
      * @return A map from MinimalCycles to CityCells residing in those cycles.
      */
-    private static Map<MinimalCycle<Point2D, Line2D>, SimpleGraph<Point2D, Line2D>> constructCityCellGraphs(
-            MinimumCycleBasis<Point2D, Line2D> primitives
+    private static Map<MinimalCycle<Point2D, Segment2D>, SimpleGraph<Point2D, Segment2D>> constructCityCellGraphs(
+            MinimumCycleBasis<Point2D, Segment2D> primitives
     ) {
-        Set<Filament<Point2D, Line2D>> filaments = primitives.filamentsSet();
-        Map<MinimalCycle<Point2D, Line2D>, SimpleGraph<Point2D, Line2D>> answer = new LinkedHashMap<>();
-        for (MinimalCycle<Point2D, Line2D> cycle : primitives.minimalCyclesSet()) {
+        Set<Filament<Point2D, Segment2D>> filaments = primitives.filamentsSet();
+        Map<MinimalCycle<Point2D, Segment2D>, SimpleGraph<Point2D, Segment2D>> answer = new LinkedHashMap<>();
+        for (MinimalCycle<Point2D, Segment2D> cycle : primitives.minimalCyclesSet()) {
             answer.put(cycle, constructCityCellGraph(cycle, filaments));
         }
         return answer;
@@ -249,23 +252,23 @@ public class City {
      *         All the filaments if {@link #lowLevelRoadGraph}.
      * @return A graph containing the {@code cycle} and all the {@code filaments}.
      */
-    private static SimpleGraph<Point2D, Line2D> constructCityCellGraph(
-            MinimalCycle<Point2D, Line2D> cycle,
-            Set<Filament<Point2D, Line2D>> filaments
+    private static SimpleGraph<Point2D, Segment2D> constructCityCellGraph(
+            MinimalCycle<Point2D, Segment2D> cycle,
+            Set<Filament<Point2D, Segment2D>> filaments
     ) {
-        SimpleGraph<Point2D, Line2D> graph = new SimpleGraph<>(Line2D::new);
-        for (Filament<Point2D, Line2D> filament : filaments) {
+        SimpleGraph<Point2D, Segment2D> graph = new SimpleGraph<>(Segment2D::new);
+        for (Filament<Point2D, Segment2D> filament : filaments) {
             for (Point2D vertex : filament.vertexList()) {
                 graph.addVertex(vertex);
             }
-            for (Line2D line : filament) {
+            for (Segment2D line : filament) {
                 graph.addEdge(line.start, line.end, line);
             }
         }
         for (Point2D vertex : cycle.vertexList()) {
             graph.addVertex(vertex);
         }
-        for (Line2D edge : cycle) {
+        for (Segment2D edge : cycle) {
             graph.addEdge(edge.start, edge.end, edge);
         }
         return graph;
@@ -287,10 +290,10 @@ public class City {
      *
      * @return A graph of actual straight road segments.
      */
-    private UndirectedGraph<Point2D, Line2D> buildLowLevelGraph() {
+    private UndirectedGraph<Point2D, Segment2D> buildLowLevelGraph() {
         Collection<Point2D> vertices = new HashSet<>();
-        Collection<Line2D> edges = new ArrayList<>(getMaxRoadSegmentsNumber(highLevelGraphEdges));
-        for (Line2D edge : highLevelGraphEdges) {
+        Collection<Segment2D> edges = new ArrayList<>(getMaxRoadSegmentsNumber(highLevelGraphEdges));
+        for (Segment2D edge : highLevelGraphEdges) {
             if (!vertices.contains(edge.start)) {
                 vertices.add(edge.start);
             }
@@ -298,7 +301,7 @@ public class City {
             List<Point2D> verticesAfterStartVertex = buildRoadVertices(edge, dSample * 1.3);
             assert !verticesAfterStartVertex.contains(edge.start);
             for (Point2D vertex : verticesAfterStartVertex) {
-                edges.add(new Line2D(previousVertex, vertex));
+                edges.add(new Segment2D(previousVertex, vertex));
                 vertices.add(vertex);
                 previousVertex = vertex;
             }
@@ -319,9 +322,9 @@ public class City {
      *         Edges of {@link #highLevelRoadGraph}.
      * @return Maximum amount of road segments that can be placed.
      */
-    private int getMaxRoadSegmentsNumber(Set<Line2D> highLevelGraphEdges) {
+    private int getMaxRoadSegmentsNumber(Set<Segment2D> highLevelGraphEdges) {
         double estimatedSummaryRoadSegmentsLength = 0;
-        for (Line2D edge : highLevelGraphEdges) {
+        for (Segment2D edge : highLevelGraphEdges) {
             estimatedSummaryRoadSegmentsLength += edge.start.distanceTo(edge.end);
         }
         return (int) Math.ceil(estimatedSummaryRoadSegmentsLength / approachingPerSample / dSample);
@@ -342,7 +345,7 @@ public class City {
      * edge.start}, <i>but including</i> {@code edge.end}.
      */
     private List<Point2D> buildRoadVertices(
-            Line2D edge,
+            Segment2D edge,
             double dSnap
     ) {
         assert dSnap > dSample * approachingPerSample;
@@ -426,12 +429,12 @@ public class City {
     }
 
     @SuppressWarnings("unused")
-    public UndirectedGraph<Point2D, Line2D> getHighLevelRoadGraph() {
+    public UndirectedGraph<Point2D, Segment2D> getHighLevelRoadGraph() {
         return highLevelRoadGraph;
     }
 
     @SuppressWarnings("unused")
-    public UndirectedGraph<Point2D, Line2D> getLowLevelRoadGraph() {
+    public UndirectedGraph<Point2D, Segment2D> getLowLevelRoadGraph() {
         return lowLevelRoadGraph;
     }
 }

@@ -14,8 +14,15 @@ public final class Demos {
         return Guice.createInjector(new DrawingModule()).getInstance(TestCanvas.class);
     }
 
-    public static void waitForCanvasClosing(TestCanvas canvas) {
-
+    /**
+     * A quick trick to put current thread to sleep until the whole application is killed.
+     */
+    public static void sleepIndefinitely() {
+        try {
+            Thread.sleep(Integer.MAX_VALUE);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void run(Class<? extends Runnable> demoClass) {

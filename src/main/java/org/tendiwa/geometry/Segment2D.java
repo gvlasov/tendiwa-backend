@@ -5,19 +5,32 @@ import org.tendiwa.settlements.LineIntersection;
 /**
  * An immutable line
  */
-public class Line2D {
+public class Segment2D {
     public final Point2D start;
     public final Point2D end;
 
 
-    public Line2D(Point2D start, Point2D end) {
+    public Segment2D(Point2D start, Point2D end) {
         this.start = start;
         this.end = end;
     }
 
+    /**
+     * A convenience factory method to create Segment2D from 4 numbers.
+     *
+     * @param x1
+     * @param y1
+     * @param x2
+     * @param y2
+     * @return A new Segment2D
+     */
+    public static Segment2D create(double x1, double y1, double x2, double y2) {
+        return new Segment2D(new Point2D(x1, y1), new Point2D(x2, y2));
+    }
+
     @Override
     public String toString() {
-        return "Line2D{" +
+        return "Segment2D{" +
                 "start=" + start +
                 ", end=" + end +
                 '}';
@@ -32,25 +45,28 @@ public class Line2D {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Line2D line2D = (Line2D) o;
+        Segment2D segment2D = (Segment2D) o;
 
-        if (end != null ? !end.equals(line2D.end) : line2D.end != null) return false;
-        if (start != null ? !start.equals(line2D.start) : line2D.start != null) return false;
+        if (end != null ? !end.equals(segment2D.end) : segment2D.end != null) return false;
+        if (start != null ? !start.equals(segment2D.start) : segment2D.start != null) return false;
 
         return true;
     }
 
     /**
      * Finds a point of intersection between this line and another line.
+     * <p>
+     * An intersection at ends of lines doesn't
+     * count for an intersection.
      *
      * @param line
      *         Another line.
      * @return A Point2D where these two lines intersect, or null if lines don't intersect.
-     * @see #intersects(Line2D)
+     * @see #intersects(Segment2D)
      */
-    public Point2D intersection(Line2D line) {
+    public Point2D intersection(Segment2D line) {
         LineIntersection lineIntersection = new LineIntersection(start, end, line);
-        if (!lineIntersection.intersects) {
+        if (!lineIntersection.segmentsIntersect()) {
             return null;
         }
         return lineIntersection.getIntersectionPoint(start, end);
@@ -58,15 +74,19 @@ public class Line2D {
 
     /**
      * Checks if this line intersects another line. This is less expensive than finding the intersection point with
-     * {@link #intersection(Line2D)}.
+     * {@link #intersection(Segment2D)}.
+     * <p>
+     * An intersection at ends of lines doesn't
+     * count for an intersection.
      *
      * @param line
      *         Another line.
      * @return true if lines intersect, false otherwise.
-     * @see #intersection(Line2D)
+     * @see #intersection(Segment2D)
      */
-    public boolean intersects(Line2D line) {
-        return new LineIntersection(start, end, line).intersects;
+    public boolean intersects(Segment2D line) {
+        LineIntersection intersection = new LineIntersection(start, end, line);
+        return intersection.segmentsIntersect();
     }
 
     @Override

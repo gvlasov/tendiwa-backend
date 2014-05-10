@@ -2,7 +2,7 @@ package org.tendiwa.drawing;
 
 import org.jgrapht.UndirectedGraph;
 import org.tendiwa.geometry.Cell;
-import org.tendiwa.geometry.Line2D;
+import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.graphs.GraphConstructor;
 
@@ -36,18 +36,18 @@ public class DrawingGraph {
         };
     }
 
-    public static DrawingAlgorithm<? super UndirectedGraph<Point2D, Line2D>> withColor(Color color) {
+    public static DrawingAlgorithm<? super UndirectedGraph<Point2D, Segment2D>> withColor(Color color) {
         return withColorAndVertexSize(color, 6);
     }
 
-    public static DrawingAlgorithm<UndirectedGraph<Point2D, Line2D>> withColorAndVertexSize(
+    public static DrawingAlgorithm<UndirectedGraph<Point2D, Segment2D>> withColorAndVertexSize(
             final Color color,
             int size
     ) {
 
         return (shape, canvas) -> {
             DrawingAlgorithm<Cell> pointDrawing = DrawingCell.withColorAndSize(color, size);
-            for (Line2D e : shape.edgeSet()) {
+            for (Segment2D e : shape.edgeSet()) {
                 Point2D source = shape.getEdgeSource(e);
                 Point2D target = shape.getEdgeTarget(e);
                 canvas.drawLine(source.x + ((double) size) / 2, source.y + ((double) size) / 2, target.x,
@@ -60,8 +60,12 @@ public class DrawingGraph {
         };
     }
 
-    public static DrawingAlgorithm<UndirectedGraph<Point2D, Line2D>> multicoloredEdges() {
-        Iterator<Color> colors = Colors.infiniteSequence(i -> new Color(i * 45 % 255, i * 234 * 255, i * 123 % 255));
+    public static DrawingAlgorithm<UndirectedGraph<Point2D, Segment2D>> multicoloredEdges() {
+        Iterator<Color> colors = Colors.infiniteSequence(i -> new Color(
+                (i * 451+122) % 255,
+                (i * 234+200) % 255,
+                (i * 123+178) % 255
+        ) );
         return (graph, canvas) -> graph
                 .edgeSet()
                 .stream()

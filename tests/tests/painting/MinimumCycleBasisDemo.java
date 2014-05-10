@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.tendiwa.drawing.*;
 import org.tendiwa.geometry.Cell;
-import org.tendiwa.geometry.Line2D;
+import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.graphs.*;
 
@@ -100,7 +100,7 @@ public class MinimumCycleBasisDemo {
                                 .collect(Collectors.toSet())
                 );
                 for (DefaultEdge edge : filament) {
-                    canvas.draw(new Line2D(
+                    canvas.draw(new Segment2D(
                             shape.getEdgeSource(edge),
                             shape.getEdgeTarget(edge)
                     ), DrawingLine2D.withColor(Color.GREEN));
@@ -114,7 +114,7 @@ public class MinimumCycleBasisDemo {
                                 .collect(Collectors.toSet())
                 );
                 for (DefaultEdge edge : cycle) {
-                    canvas.draw(new Line2D(
+                    canvas.draw(new Segment2D(
                             shape.getEdgeSource(edge),
                             shape.getEdgeTarget(edge)
                     ), DrawingLine2D.withColor(Color.RED));

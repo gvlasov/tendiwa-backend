@@ -2,7 +2,7 @@ package org.tendiwa.demos.settlements;
 
 import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.geometry.Line2D;
+import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.settlements.City;
@@ -11,7 +11,7 @@ import org.tendiwa.settlements.CityBuilder;
 public class VariousCityGenerationDemo {
     public static void main(String[] args) {
         TestCanvas canvas = Demos.createCanvas();
-        GraphConstructor<Point2D, Line2D> gc = new GraphConstructor<>(Line2D::new)
+        GraphConstructor<Point2D, Segment2D> gc = new GraphConstructor<Point2D, Segment2D>(Segment2D::new)
                 .vertex(0, new Point2D(110, 110))
                 .vertex(1, new Point2D(130, 110))
                 .vertex(2, new Point2D(150, 130))

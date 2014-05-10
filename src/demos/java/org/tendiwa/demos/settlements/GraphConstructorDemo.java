@@ -4,7 +4,7 @@ import org.tendiwa.demos.Demos;
 import org.junit.Test;
 import org.tendiwa.drawing.DrawingGraph;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.geometry.Line2D;
+import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.graphs.GraphConstructor;
 
@@ -13,7 +13,7 @@ public class GraphConstructorDemo {
     @Test
     public void constructGraph() {
         TestCanvas canvas = Demos.createCanvas();
-        GraphConstructor<Point2D, Line2D> gc = new GraphConstructor<>(Line2D::new)
+        GraphConstructor<Point2D, Segment2D> gc = new GraphConstructor<>(Segment2D::new)
                 .vertex(0, new Point2D(100, 100))
                 .vertex(1, new Point2D(100, 200))
                 .vertex(2, new Point2D(200, 100))

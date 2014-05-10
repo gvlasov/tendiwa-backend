@@ -1,13 +1,13 @@
 package org.tendiwa.demos.settlements;
 
-import org.tendiwa.geometry.Line2D;
+import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.graphs.GraphConstructor;
 
 public class SampleGraph {
 
-    public static GraphConstructor<Point2D, Line2D> create() {
-        return new GraphConstructor<>(Line2D::new)
+    public static GraphConstructor<Point2D, Segment2D> create() {
+        return new GraphConstructor<>(Segment2D::new)
                     .vertex(0, new Point2D(50, 50))
                     .vertex(1, new Point2D(150, 50))
                     .vertex(2, new Point2D(50, 150))

@@ -7,7 +7,7 @@ import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.graph.UnmodifiableUndirectedGraph;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.geometry.Line2D;
+import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.graphs.MinimalCycle;
 
@@ -23,11 +23,11 @@ import java.util.stream.Collectors;
  * 4.3.1, figure 41].
  */
 public class CityCell {
-    private final SimpleGraph<Point2D, Line2D> relevantNetwork;
+    private final SimpleGraph<Point2D, Segment2D> relevantNetwork;
     private TestCanvas canvas;
-    private final SimpleGraph<Point2D, Line2D> secRoadNetwork;
-    private MinimalCycle<Point2D, Line2D> minimalCycle;
-    private Collection<Line2D> filamentEdges;
+    private final SimpleGraph<Point2D, Segment2D> secRoadNetwork;
+    private MinimalCycle<Point2D, Segment2D> minimalCycle;
+    private Collection<Segment2D> filamentEdges;
     /**
      * [Kelly figure 42]
      * <p>
@@ -101,9 +101,9 @@ public class CityCell {
      *         A seeded {@link java.util.Random} used to generate the parent {@link City}.
      */
     CityCell(
-            SimpleGraph<Point2D, Line2D> graph,
-            MinimalCycle<Point2D, Line2D> minimalCycle,
-            Collection<Line2D> filamentEdges,
+            SimpleGraph<Point2D, Segment2D> graph,
+            MinimalCycle<Point2D, Segment2D> minimalCycle,
+            Collection<Segment2D> filamentEdges,
             int roadsFromPoint,
             double roadSegmentLength,
             double snapSize,
@@ -173,9 +173,9 @@ public class CityCell {
      * @param cycle
      *         A MinimalCycle that contains this CityCell's secondary road network inside it.
      */
-    private void buildLine2DNetwork(MinimalCycle<Point2D, Line2D> cycle) {
+    private void buildLine2DNetwork(MinimalCycle<Point2D, Segment2D> cycle) {
         Deque<Line2DNetworkStep> nodeQueue = new ArrayDeque<>();
-        for (Line2D road : startingRoads(cycle)) {
+        for (Segment2D road : startingRoads(cycle)) {
             Point2D sourceNode = calculateDeviatedMidPoint(road);
             // Made dead end so two new roads are not inserted to secondaryRoadNetwork.
             deadEnds.add(sourceNode);
@@ -235,7 +235,7 @@ public class CityCell {
      *         An edge of {@link City#lowLevelRoadGraph}.
      * @return An angle in radians perpendicular to {@code edge}. The angle is probably slightly deviated.
      */
-    private double deviatedBoundaryPerpendicular(Line2D edge) {
+    private double deviatedBoundaryPerpendicular(Segment2D edge) {
         // TODO: Actually deviate the angle
         double angle = edge.start.angleTo(edge.end);
         return deviateDirection(angle + Math.PI / 2
@@ -351,7 +351,7 @@ public class CityCell {
      *
      * @return An unmodifiable graph containing this CityCell's secondary road network.
      */
-    public UndirectedGraph<Point2D, Line2D> secondaryRoadNetwork() {
+    public UndirectedGraph<Point2D, Segment2D> secondaryRoadNetwork() {
         return new UnmodifiableUndirectedGraph<>(secRoadNetwork);
     }
 
@@ -369,7 +369,7 @@ public class CityCell {
      * @param point
      *         A node on that road where the node resides.
      */
-    private void insertNode(Line2D road, Point2D point) {
+    private void insertNode(Segment2D road, Point2D point) {
         if (road.end.equals(point)) {
             return;
         }
@@ -383,7 +383,7 @@ public class CityCell {
         addRoad(point, road.end);
     }
 
-    private Point2D calculateDeviatedMidPoint(Line2D road) {
+    private Point2D calculateDeviatedMidPoint(Segment2D road) {
         return new Point2D(
                 road.start.x + (road.end.x - road.start.x) / 2,
                 road.start.y + (road.end.y - road.start.y) / 2
@@ -399,8 +399,8 @@ public class CityCell {
      *         A MinimalCycle that contains this CityCell's secondary road network inside it.
      * @return Several roads.
      */
-    private Collection<Line2D> startingRoads(MinimalCycle<Point2D, Line2D> cycle) {
-        List<Line2D> edges = Lists.newArrayList(cycle);
+    private Collection<Segment2D> startingRoads(MinimalCycle<Point2D, Segment2D> cycle) {
+        List<Segment2D> edges = Lists.newArrayList(cycle);
         Collections.sort(
                 edges,
                 // TODO: The fuck is signum doing here?

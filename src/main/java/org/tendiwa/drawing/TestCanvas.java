@@ -3,7 +3,7 @@ package org.tendiwa.drawing;
 import com.google.inject.Inject;
 import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.CellLine;
-import org.tendiwa.geometry.Line2D;
+import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Rectangle;
 
 import javax.swing.*;
@@ -33,8 +33,6 @@ public final class TestCanvas implements DrawableInto {
     public final Layer DEFAULT_LAYER;
     public final Layer MIDDLE_LAYER;
     public final Layer TOP_LAYER;
-    public final int height;
-    public final int width;
     final int scale;
     private final JFrame frame;
     private final JLayeredPane panel;
@@ -43,7 +41,6 @@ public final class TestCanvas implements DrawableInto {
     Graphics graphics;
     BufferedImage image;
     Layer currentLayer;
-    private boolean visi;
 
 
     @Inject
@@ -54,8 +51,6 @@ public final class TestCanvas implements DrawableInto {
     ) {
         this.scale = scale;
         this.bounds = new Rectangle(0, 0, width, height);
-        this.width = width;
-        this.height = height;
         defaultTitle = "tendiwa canvas";
         frame = new JFrame(defaultTitle);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -188,13 +183,21 @@ public final class TestCanvas implements DrawableInto {
     }
 
     public void clear() {
-        graphics.clearRect(0, 0, width, height);
+        graphics.clearRect(0, 0, bounds.width, bounds.height);
     }
 
     public void fillBackground(Color backgroundColor) {
         setLayer(DEFAULT_LAYER);
         graphics.setColor(backgroundColor);
-        graphics.fillRect(0, 0, width, height);
+        graphics.fillRect(0, 0, bounds.width, bounds.height);
+    }
+
+    public int getWidth() {
+        return bounds.width;
+    }
+
+    public int getHeight() {
+        return bounds.height;
     }
 
     class Layer {
@@ -204,8 +207,8 @@ public final class TestCanvas implements DrawableInto {
 
         private Layer() {
             image = new BufferedImage(
-                    TestCanvas.this.width,
-                    TestCanvas.this.height,
+                    TestCanvas.this.bounds.width,
+                    TestCanvas.this.bounds.height,
                     BufferedImage.TYPE_INT_ARGB);
             graphics = image.createGraphics();
             graphics.setBackground(new Color(255, 255, 255, 1));
@@ -266,7 +269,7 @@ public final class TestCanvas implements DrawableInto {
         }
     }
 
-    public void drawLine(Line2D line, Color color) {
+    public void drawLine(Segment2D line, Color color) {
         drawLine(line.start.toCell(), line.end.toCell(), color);
     }
 

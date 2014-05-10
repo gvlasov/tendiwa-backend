@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import org.jgrapht.EdgeFactory;
 import org.jgrapht.UndirectedGraph;
-import org.tendiwa.geometry.Line2D;
+import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Point2D;
 
 import java.util.Collection;
@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
-public class RoadGraph implements UndirectedGraph<Point2D, Line2D> {
+public class RoadGraph implements UndirectedGraph<Point2D, Segment2D> {
     private final ImmutableMap<Point2D, LinkedList<Point2D>> adjacencyLists;
 
     public RoadGraph(Point2D[] vertices, int[][] edges) {
@@ -26,19 +26,19 @@ public class RoadGraph implements UndirectedGraph<Point2D, Line2D> {
         }
     }
 
-    public RoadGraph(Collection<Point2D> vertices, Collection<Line2D> edges) {
+    public RoadGraph(Collection<Point2D> vertices, Collection<Segment2D> edges) {
         ImmutableMap.Builder<Point2D, LinkedList<Point2D>> adjacencyListsBuilder = ImmutableMap.builder();
         for (Point2D vertex : vertices) {
             adjacencyListsBuilder.put(vertex, new LinkedList<>());
         }
         adjacencyLists = adjacencyListsBuilder.build();
-        for (Line2D edge : edges) {
+        for (Segment2D edge : edges) {
             addNewEdge(edge.start, edge.end);
         }
     }
 
     @Override
-    public Set<Line2D> getAllEdges(Point2D sourceVertex, Point2D targetVertex) {
+    public Set<Segment2D> getAllEdges(Point2D sourceVertex, Point2D targetVertex) {
         if (containsEdge(sourceVertex, targetVertex)) {
             return ImmutableSet.of(getEdge(sourceVertex, targetVertex));
         }
@@ -46,16 +46,16 @@ public class RoadGraph implements UndirectedGraph<Point2D, Line2D> {
     }
 
     @Override
-    public Line2D getEdge(Point2D sourceVertex, Point2D targetVertex) {
+    public Segment2D getEdge(Point2D sourceVertex, Point2D targetVertex) {
         return getEdgeFactory().createEdge(sourceVertex, targetVertex);
     }
 
     @Override
-    public EdgeFactory<Point2D, Line2D> getEdgeFactory() {
-        return new EdgeFactory<Point2D, Line2D>() {
+    public EdgeFactory<Point2D, Segment2D> getEdgeFactory() {
+        return new EdgeFactory<Point2D, Segment2D>() {
             @Override
-            public Line2D createEdge(final Point2D sourceVertex, final Point2D targetVertex) {
-                return new Line2D(sourceVertex, targetVertex) {
+            public Segment2D createEdge(final Point2D sourceVertex, final Point2D targetVertex) {
+                return new Segment2D(sourceVertex, targetVertex) {
                     @Override
                     public int hashCode() {
                         return sourceVertex.hashCode() / 2 + targetVertex.hashCode() / 2;
@@ -79,13 +79,13 @@ public class RoadGraph implements UndirectedGraph<Point2D, Line2D> {
 
     @Override
     @Deprecated
-    public Line2D addEdge(Point2D c1, Point2D c2) {
+    public Segment2D addEdge(Point2D c1, Point2D c2) {
         throw new UnsupportedOperationException();
     }
 
     @Override
     @Deprecated
-    public boolean addEdge(Point2D sourceVertex, Point2D targetVertex, Line2D defaultEdge) {
+    public boolean addEdge(Point2D sourceVertex, Point2D targetVertex, Segment2D defaultEdge) {
         throw new UnsupportedOperationException();
     }
 
@@ -101,7 +101,7 @@ public class RoadGraph implements UndirectedGraph<Point2D, Line2D> {
     }
 
     @Override
-    public boolean containsEdge(Line2D edge) {
+    public boolean containsEdge(Segment2D edge) {
         return adjacencyLists.containsKey(edge.start) && adjacencyLists.get(edge.start).contains(edge.end);
     }
 
@@ -111,9 +111,9 @@ public class RoadGraph implements UndirectedGraph<Point2D, Line2D> {
     }
 
     @Override
-    public Set<Line2D> edgeSet() {
+    public Set<Segment2D> edgeSet() {
         HashSet<Point2D> sources = new HashSet<>();
-        ImmutableSet.Builder<Line2D> builder = ImmutableSet.builder();
+        ImmutableSet.Builder<Segment2D> builder = ImmutableSet.builder();
         for (Point2D source : adjacencyLists.keySet()) {
             sources.add(source);
             for (Point2D target : adjacencyLists.get(source)) {
@@ -127,8 +127,8 @@ public class RoadGraph implements UndirectedGraph<Point2D, Line2D> {
     }
 
     @Override
-    public Set<Line2D> edgesOf(Point2D vertex) {
-        ImmutableSet.Builder<Line2D> builder = ImmutableSet.builder();
+    public Set<Segment2D> edgesOf(Point2D vertex) {
+        ImmutableSet.Builder<Segment2D> builder = ImmutableSet.builder();
         for (Point2D end : adjacencyLists.get(vertex)) {
             builder.add(getEdgeFactory().createEdge(vertex, end));
         }
@@ -136,12 +136,12 @@ public class RoadGraph implements UndirectedGraph<Point2D, Line2D> {
     }
 
     @Override
-    public boolean removeAllEdges(Collection<? extends Line2D> edges) {
+    public boolean removeAllEdges(Collection<? extends Segment2D> edges) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Set<Line2D> removeAllEdges(Point2D sourceVertex, Point2D targetVertex) {
+    public Set<Segment2D> removeAllEdges(Point2D sourceVertex, Point2D targetVertex) {
         throw new UnsupportedOperationException();
     }
 
@@ -151,12 +151,12 @@ public class RoadGraph implements UndirectedGraph<Point2D, Line2D> {
     }
 
     @Override
-    public Line2D removeEdge(Point2D sourceVertex, Point2D targetVertex) {
+    public Segment2D removeEdge(Point2D sourceVertex, Point2D targetVertex) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean removeEdge(Line2D defaultEdge) {
+    public boolean removeEdge(Segment2D defaultEdge) {
         throw new UnsupportedOperationException();
     }
 
@@ -171,17 +171,17 @@ public class RoadGraph implements UndirectedGraph<Point2D, Line2D> {
     }
 
     @Override
-    public Point2D getEdgeSource(Line2D edge) {
+    public Point2D getEdgeSource(Segment2D edge) {
         return edge.start;
     }
 
     @Override
-    public Point2D getEdgeTarget(Line2D edge) {
+    public Point2D getEdgeTarget(Segment2D edge) {
         return edge.end;
     }
 
     @Override
-    public double getEdgeWeight(Line2D defaultEdge) {
+    public double getEdgeWeight(Segment2D defaultEdge) {
         return 1;
     }
 

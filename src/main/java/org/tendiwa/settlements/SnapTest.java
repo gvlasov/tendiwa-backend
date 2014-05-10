@@ -3,7 +3,7 @@ package org.tendiwa.settlements;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.core.meta.Range;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.geometry.Line2D;
+import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.graphs.MinimalCycle;
 
@@ -16,8 +16,8 @@ public class SnapTest {
     private final double snapSize;
     private final Point2D sourceNode;
     private Point2D targetNode;
-    private final SimpleGraph<Point2D, Line2D> relevantRoadNetwork;
-    private MinimalCycle<Point2D, Line2D> minimalCycle;
+    private final SimpleGraph<Point2D, Segment2D> relevantRoadNetwork;
+    private MinimalCycle<Point2D, Segment2D> minimalCycle;
     private TestCanvas canvas;
     private double minR;
 
@@ -25,8 +25,8 @@ public class SnapTest {
             double snapSize,
             Point2D sourceNode,
             Point2D targetNode,
-            SimpleGraph<Point2D, Line2D> relevantRoadNetwork,
-            MinimalCycle<Point2D, Line2D> minimalCycle,
+            SimpleGraph<Point2D, Segment2D> relevantRoadNetwork,
+            MinimalCycle<Point2D, Segment2D> minimalCycle,
             TestCanvas canvas
     ) {
         this.snapSize = snapSize;
@@ -48,10 +48,10 @@ public class SnapTest {
         if (relevantRoadNetwork.containsVertex(targetNode)) {
             return new SnapEvent(targetNode, SnapEventType.NODE_SNAP, null);
         }
-        Collection<Line2D> roadsToTest = findSegmentsToTest(sourceNode, targetNode, snapSize);
+        Collection<Segment2D> roadsToTest = findSegmentsToTest(sourceNode, targetNode, snapSize);
         Point2D snapNode = null;
         Set<Point2D> verticesToTest = new HashSet<>();
-        for (Line2D segment : roadsToTest) {
+        for (Segment2D segment : roadsToTest) {
             // Individual vertices will be added only once
             if (segment.start != sourceNode && segment.end != sourceNode) {
                 assert !segment.start.equals(sourceNode);
@@ -76,7 +76,7 @@ public class SnapTest {
             snapEvent = new SnapEvent(snapNode, SnapEventType.NODE_SNAP, null);
             setTargetNode(snapNode);
         }
-        for (Line2D road : roadsToTest) {
+        for (Segment2D road : roadsToTest) {
             if (isRoadSticksToSegment(road)) {
                 continue;
             }
@@ -84,7 +84,7 @@ public class SnapTest {
                 LineIntersection intersection = new LineIntersection(
                         sourceNode,
                         targetNode,
-                        new Line2D(road.start, road.end)
+                        new Segment2D(road.start, road.end)
                 );
                 if (intersection.r >= minR || intersection.r < 0) {
                     continue;
@@ -110,7 +110,7 @@ public class SnapTest {
             return snapEvent;
         }
 
-        for (Line2D road : roadsToTest) {
+        for (Segment2D road : roadsToTest) {
             if (road.start == sourceNode || road.end == sourceNode) {
                 continue;
             }
@@ -139,7 +139,7 @@ public class SnapTest {
         return new SnapEvent(targetNode, SnapEventType.NO_SNAP, null);
     }
 
-    private boolean iDontRememberWhatItAsserts(Line2D road, Point2D intersectionPoint) {
+    private boolean iDontRememberWhatItAsserts(Segment2D road, Point2D intersectionPoint) {
         // TODO: What it asserts?
         return Math.abs(road.start.distanceTo(road.end) - road.start.distanceTo(intersectionPoint) - road
                 .end.distanceTo(intersectionPoint)) > 1;
@@ -152,7 +152,7 @@ public class SnapTest {
      *         A road.
      * @return true if a road has {@link #sourceNode} or {@link #targetNode} as one of its ends, false otherwise.
      */
-    private boolean isRoadSticksToSegment(Line2D road) {
+    private boolean isRoadSticksToSegment(Segment2D road) {
         return road.start == sourceNode
                 || road.end == sourceNode
                 || road.start == targetNode
@@ -231,7 +231,7 @@ public class SnapTest {
      *         With of the grey area on the figure — how far away from the original segment do we search.
      * @return A collection of all the segments that are close enough to the segment <i>ab</i>.
      */
-    private Collection<Line2D> findSegmentsToTest(Point2D source, Point2D target, double snapSize) {
+    private Collection<Segment2D> findSegmentsToTest(Point2D source, Point2D target, double snapSize) {
         double minX = Math.min(source.x, target.x) - snapSize;
         double minY = Math.min(source.y, target.y) - snapSize;
         double maxX = Math.max(source.x, target.x) + snapSize;

@@ -2,7 +2,7 @@ package org.tendiwa.settlements;
 
 import org.jgrapht.UndirectedGraph;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.geometry.Line2D;
+import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Point2D;
 
 import java.util.Random;
@@ -51,7 +51,7 @@ public class CityBuilder {
      * @see #withSecondaryRoadNetworkRoadLengthDeviation(double)
      */
     public static final double DEFAULT_SECONDARY_ROAD_NETWORK_ROAD_LENGTH_DEVIATION = 0;
-    private UndirectedGraph<Point2D, Line2D> graph;
+    private UndirectedGraph<Point2D, Segment2D> graph;
     private Double sampleRadius;
     private Integer samplesPerStep;
     private Double deviationAngle;
@@ -73,7 +73,7 @@ public class CityBuilder {
      * @see City#highLevelRoadGraph
      * @see [Kelly 4.2.0]
      */
-    public CityBuilder(UndirectedGraph<Point2D, Line2D> graph) {
+    public CityBuilder(UndirectedGraph<Point2D, Segment2D> graph) {
         this.graph = graph;
     }
 
