@@ -39,6 +39,7 @@ public final class TestCanvas implements DrawableInto {
     private final JFrame frame;
     private final JLayeredPane panel;
     private final String defaultTitle;
+    private final Rectangle bounds;
     Graphics graphics;
     BufferedImage image;
     Layer currentLayer;
@@ -52,6 +53,7 @@ public final class TestCanvas implements DrawableInto {
             int height
     ) {
         this.scale = scale;
+        this.bounds = new Rectangle(0, 0, width, height);
         this.width = width;
         this.height = height;
         defaultTitle = "tendiwa canvas";
@@ -222,6 +224,11 @@ public final class TestCanvas implements DrawableInto {
 
     public void drawCell(int x, int y, Color color) {
         if (scale == 1) {
+            if (!bounds.contains(x, y)) {
+                throw new IllegalArgumentException("Point " + x + ":" + y + " is out of bounds of a " + bounds.width + "x" + bounds
+                        .height + " pixels large canvas");
+
+            }
             image.setRGB(x, y, color.getRGB());
         } else {
             graphics.setColor(color);

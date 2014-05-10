@@ -2,7 +2,6 @@ package org.tendiwa.settlements;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableSet;
-import com.google.inject.internal.util.$SourceProvider;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.drawing.TestCanvas;
@@ -10,7 +9,9 @@ import org.tendiwa.geometry.Line2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.graphs.*;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class City {
@@ -152,7 +153,12 @@ public class City {
         approachingPerSample = Math.cos(deviationAngle);
         highLevelGraphEdges = highLevelRoadGraph.edgeSet();
         lowLevelRoadGraph = buildLowLevelGraph();
-        if (!PlanarGraphEdgesNonOverlapping.test(lowLevelRoadGraph)) {
+        if (!PlanarGraphEdgesSelfIntersection.test(lowLevelRoadGraph)) {
+            canvas = new TestCanvas(1, 800, 600);
+            ImmutableCollection<Point2D> allIntersections = PlanarGraphEdgesSelfIntersection.findAllIntersections(lowLevelRoadGraph);
+            for (Point2D point : allIntersections) {
+                canvas.drawCell(point.toCell(), Color.RED);
+            }
             throw new IllegalArgumentException("Graph intersects itself");
         }
 

@@ -210,22 +210,35 @@ public class PathTable implements Iterable<Cell> {
         return new Iterator<Cell>() {
             private int n = -1;
             private final int maxN = width * width - 1;
+            private Cell next = findNext();
 
             @Override
             public boolean hasNext() {
-                return n < maxN;
+                return next != null;
             }
 
             @Override
             public Cell next() {
+                Cell answer = next;
+                findNext();
+                return answer;
+            }
+
+            private Cell findNext() {
                 int x, y;
                 do {
                     n++;
                     x = n % width;
                     y = n / width;
                 } while (pathTable[x][y] == NOT_COMPUTED_CELL && n < maxN);
-                return new Cell(startX - maxDepth + x, startY - maxDepth + y);
+                if (n < maxN) {
+                    next = new Cell(startX - maxDepth + x, startY - maxDepth + y);
+                } else {
+                    next = null;
+                }
+                return next;
             }
+
 
             @Override
             public void remove() {

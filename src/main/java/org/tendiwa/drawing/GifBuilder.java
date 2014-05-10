@@ -28,7 +28,6 @@ public class GifBuilder {
             @Named("imageInfoLogger") Logger logger
     ) {
         this.canvas = canvas;
-        System.out.println(canvas.width + " " + canvas.height);
         this.fps = fps;
         this.logger = logger;
         initGifWriter();

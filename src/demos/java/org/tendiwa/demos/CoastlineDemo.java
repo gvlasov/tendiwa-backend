@@ -16,6 +16,7 @@ import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.extensions.CachedCellBufferBorder;
 import org.tendiwa.geometry.extensions.ChebyshevDistanceCellBufferBorder;
+import org.tendiwa.graphs.PlanarGraphEdgesSelfIntersection;
 import org.tendiwa.noise.Noise;
 import org.tendiwa.pathfinding.dijkstra.PathTable;
 import org.tendiwa.pathfinding.dijkstra.PostConditionPathTable;
@@ -47,7 +48,7 @@ public class CoastlineDemo implements Runnable {
 
     @Override
     public void run() {
-//        for (int i = 1; i < 12; i++) {
+        for (int i = 1; i < 12; i++) {
         drawTerrain();
         Rectangle worldRec = new Rectangle(0, 0, width, height);
         CachedCellBufferBorder cachedCellBufferBorder = computeBufferBorder(worldRec);
@@ -57,14 +58,13 @@ public class CoastlineDemo implements Runnable {
         table = computeCityShape(
                 worldRec,
                 startCell,
-                getCoast(startCell, radius, 6),
+                getCoast(startCell, radius, i),
                 radius
         );
         System.out.println(table.getBounds());
 
         computeCityBoundingRoads(table, worldRec);
-        canvas.clear();
-//        }
+        }
     }
 
     /**
@@ -81,7 +81,7 @@ public class CoastlineDemo implements Runnable {
             Cell start,
             Rectangle worldRec
     ) {
-        return new PostConditionPathTable(
+        return new PathTable(
                 start.x,
                 start.y,
                 (x, y) -> worldRec.contains(x, y) && !bufferBorder.isBufferBorder(x, y),
@@ -110,13 +110,15 @@ public class CoastlineDemo implements Runnable {
                 worldRec
         );
         CachedCellBufferBorder culledBufferBorder = new CachedCellBufferBorder(
-                (x, y) -> !culledTable.isCellComputed(x, y),
+                new ChebyshevDistanceCellBufferBorder(
+                        1,
+                        culledTable::isCellComputed
+                ),
                 culledTable.getBounds()
-        );
+        ).computeAll();
         canvas.draw(culledTable, DrawingPathTable.withColor(Color.RED));
-//        canvas.draw(bufferBorder, DrawingBoundedCellBufferBorder.withColor(BLUE));
+        canvas.draw(culledBufferBorder, DrawingBoundedCellBufferBorder.withColor(BLUE));
         UndirectedGraph<Point2D, Line2D> cityGraph = bufferBorderToGraph(culledBufferBorder);
-        System.out.println(cityGraph.vertexSet().size());
 //        canvas.draw(cityGraph, DrawingGraph.withColorAndVertexSize(ORANGE, 1));
 
         City city = new CityBuilder(cityGraph)
