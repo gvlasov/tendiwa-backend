@@ -12,7 +12,6 @@ public class CityDrawer implements DrawingAlgorithm<City> {
 
     @Override
     public void draw(City city, TestCanvas canvas) {
-        System.out.println(city.getHighLevelRoadGraph().vertexSet().size());
         for (Segment2D roadSegment : city.getLowLevelRoadGraph().edgeSet()) {
             canvas.drawLine(roadSegment, RED);
         }

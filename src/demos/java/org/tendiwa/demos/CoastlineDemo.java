@@ -17,18 +17,22 @@ import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.extensions.CachedCellBufferBorder;
 import org.tendiwa.geometry.extensions.ChebyshevDistanceCellBufferBorder;
 import org.tendiwa.noise.Noise;
+import org.tendiwa.noise.SimpleNoiseSource;
 import org.tendiwa.pathfinding.dijkstra.PathTable;
 import org.tendiwa.settlements.City;
 import org.tendiwa.settlements.CityBuilder;
+import org.tendiwa.settlements.SettlementGenerationException;
 
 import java.awt.*;
 import java.util.*;
 import java.util.List;
 
 import static java.awt.Color.*;
+import static java.util.stream.IntStream.range;
 
 public class CoastlineDemo implements Runnable {
     public static final int MAX_CITY_DEPTH = 360;
+    private final SimpleNoiseSource noise;
     @Inject
     @Named("scale2")
     TestCanvas canvas;
@@ -44,25 +48,34 @@ public class CoastlineDemo implements Runnable {
         );
     }
 
+    public CoastlineDemo() {
+        this.noise = (x, y) -> Noise.noise(
+                ((double) x) / 32,
+                ((double) y) / 32,
+                6
+        );
+
+    }
+
     @Override
     public void run() {
-        for (int i = 1; i < 12; i++) {
-        drawTerrain();
-        Rectangle worldRec = new Rectangle(0, 0, width, height);
-        CachedCellBufferBorder cachedCellBufferBorder = computeBufferBorder(worldRec);
-        List<Cell> roadCells = computeCoastRoad(worldRec, cachedCellBufferBorder);
-        Cell startCell = roadCells.get(0);
-        PathTable table;
-        table = computeCityShape(
-                worldRec,
-                startCell,
-                getCoast(startCell, radius, i),
-                radius
-        );
-        System.out.println(table.getBounds());
+        range(18, 19).forEach(i -> {
+            System.out.println(i);
+            drawTerrain();
+            Rectangle worldRec = new Rectangle(0, 0, width, height);
+            CachedCellBufferBorder cachedCellBufferBorder = computeDeepBufferBorder(worldRec, i);
+            Cell startCell = computeCoastRoad(worldRec, cachedCellBufferBorder).get(0);
+            PathTable table;
+            table = computeCityShape(
+                    worldRec,
+                    startCell,
+                    getCoast(startCell, radius, i),
+                    radius
+            );
 
-        computeCityBoundingRoads(table, worldRec);
-        }
+            computeCityBoundingRoads(table, worldRec, startCell);
+            canvas.drawCell(startCell, Color.WHITE);
+        });
     }
 
     /**
@@ -87,7 +100,7 @@ public class CoastlineDemo implements Runnable {
         ).computeFull();
     }
 
-    private void computeCityBoundingRoads(PathTable table, Rectangle worldRec) {
+    private void computeCityBoundingRoads(PathTable table, Rectangle worldRec, Cell startCell) {
         CachedCellBufferBorder bufferBorder = new CachedCellBufferBorder(
                 new ChebyshevDistanceCellBufferBorder(
                         1,
@@ -114,6 +127,7 @@ public class CoastlineDemo implements Runnable {
                 ),
                 culledTable.getBounds()
         ).computeAll();
+        assert culledBufferBorder.isBufferBorder(startCell.x, startCell.y);
         canvas.draw(culledTable, DrawingPathTable.withColor(Color.RED));
         canvas.draw(culledBufferBorder, DrawingBoundedCellBufferBorder.withColor(BLUE));
         UndirectedGraph<Point2D, Segment2D> cityGraph = bufferBorderToGraph(culledBufferBorder);
@@ -266,15 +280,26 @@ public class CoastlineDemo implements Runnable {
     }
 
 
-    private CachedCellBufferBorder computeBufferBorder(Rectangle worldRec) {
+    /**
+     * Computes buffer border used to find city's center.
+     *
+     * @param worldRec
+     *         A Rectangle starting at 0:0 with width and height of the world.
+     * @return A buffer border that is
+     */
+    private CachedCellBufferBorder computeDeepBufferBorder(Rectangle worldRec, int thinBufferDepth) {
         CachedCellBufferBorder bufferBorder = new CachedCellBufferBorder(
                 new ChebyshevDistanceCellBufferBorder(
-                        20,
+                        thinBufferDepth + 20,
                         (x, y) -> worldRec.contains(x, y) && isWater(x, y)
                 ),
                 worldRec
         );
         bufferBorder.computeAll();
+        System.out.println(bufferBorder.cellList().size());
+        if (bufferBorder.cellList().isEmpty()) {
+            throw new SettlementGenerationException("Deep buffer border is so deep it is non-existent");
+        } ;
         return bufferBorder;
     }
 
@@ -302,7 +327,7 @@ public class CoastlineDemo implements Runnable {
     }
 
     private boolean isWater(Integer x, Integer y) {
-        return noise(x, y) < 128;
+        return noise.noise(x, y) < 128;
     }
 
     private void coastline() {
@@ -320,21 +345,12 @@ public class CoastlineDemo implements Runnable {
     }
 
 
-    private int noise(int x, int y) {
-        return Noise.noise(
-                ((double) x) / 32,
-                ((double) y) / 32,
-                6
-        );
-    }
-
-
     private void drawTerrain() {
         DrawingAlgorithm<Cell> grass = DrawingCell.withColor(Color.GREEN);
         DrawingAlgorithm<Cell> water = DrawingCell.withColor(BLUE);
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                canvas.draw(new Cell(i, j), noise(i, j) >= 128 ? grass : water);
+                canvas.draw(new Cell(i, j), noise.noise(i, j) >= 128 ? grass : water);
             }
         }
     }
