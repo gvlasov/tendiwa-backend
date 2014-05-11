@@ -6,18 +6,18 @@ import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.settlements.City;
 
 import static java.awt.Color.BLACK;
-import static java.awt.Color.RED;
+import static java.awt.Color.GRAY;
 
 public class CityDrawer implements DrawingAlgorithm<City> {
 
     @Override
     public void draw(City city, TestCanvas canvas) {
-        for (Segment2D roadSegment : city.getLowLevelRoadGraph().edgeSet()) {
-            canvas.drawLine(roadSegment, RED);
-        }
         city.getCells().stream()
                 .forEach(c -> c.secondaryRoadNetwork().edgeSet().stream()
                         .forEach(line -> canvas.drawLine(line.start.toCell(), line.end.toCell(), BLACK))
                 );
+        for (Segment2D roadSegment : city.getLowLevelRoadGraph().edgeSet()) {
+            canvas.drawLine(roadSegment, GRAY);
+        }
     }
 }

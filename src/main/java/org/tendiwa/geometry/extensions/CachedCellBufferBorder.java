@@ -67,13 +67,10 @@ public class CachedCellBufferBorder implements BoundedCellBufferBorder {
     public CachedCellBufferBorder computeAll() {
         for (int i = 0; i < bounds.getWidth(); i++) {
             for (int j = 0; j < bounds.getHeight(); j++) {
-                isBufferBorder(i+bounds.x, j+bounds.y);
+                isBufferBorder(i + bounds.x, j + bounds.y);
             }
         }
         return this;
     }
 
-    public ImmutableList<Cell> cellList() {
-        return ImmutableList.copyOf(cellList);
-    }
 }
