@@ -65,6 +65,9 @@ public static Placement atPoint(final int x, final int y) {
 public static PathBuilder path(RectangleSystemBuilder builder) {
 	return new PathBuilder(builder);
 }
+    public static Cell cell(int x, int y) {
+        return new Cell(x, y);
+    }
 
 public static StepRectangle recursivelySplitRec(int width, int height) {
 	return new StepRectangle(width, height);

@@ -7,6 +7,7 @@ import org.tendiwa.core.meta.Range;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Adds more geometry methods to Rectangle. Unlike {@link java.awt.Rectangle}, this class can't be of zero width or
@@ -713,7 +714,7 @@ public class Rectangle implements Placeable {
     }
 
     public int getMaxY() {
-        return y + width - 1;
+        return y + height - 1;
     }
 
     public int getX() {
@@ -766,6 +767,23 @@ public class Rectangle implements Placeable {
 
     public boolean contains(Cell cell) {
         return contains(cell.x, cell.y);
+    }
+
+    public Optional<Rectangle> intersectionWith(Rectangle another) {
+        int xmin = Math.max(x, another.x);
+        int xmax1 = x + width;
+        int xmax2 = another.x + another.width;
+        int xmax = Math.min(xmax1, xmax2);
+        if (xmax > xmin) {
+            int ymin = Math.max(y, another.y);
+            int ymax1 = y + height;
+            int ymax2 = another.y + another.height;
+            int ymax = Math.min(ymax1, ymax2);
+            if (ymax > ymin) {
+                return Optional.of(new Rectangle(xmin, ymin, xmax - xmin, ymax - ymin));
+            }
+        }
+        return Optional.empty();
     }
 
 /**

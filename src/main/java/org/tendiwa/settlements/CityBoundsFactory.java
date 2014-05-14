@@ -9,23 +9,30 @@ import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.core.CardinalDirection;
 import org.tendiwa.core.Direction;
 import org.tendiwa.core.Directions;
+import org.tendiwa.demos.CoastlineDemo;
+import org.tendiwa.drawing.DrawingBoundedCellBufferBorder;
+import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.*;
-import org.tendiwa.geometry.extensions.CachedCellBufferBorder;
+import org.tendiwa.geometry.Rectangle;
+import org.tendiwa.geometry.extensions.CachedCellSet;
 import org.tendiwa.geometry.extensions.ChebyshevDistanceCellBufferBorder;
 import org.tendiwa.pathfinding.dijkstra.PathTable;
 
+import java.awt.*;
 import java.util.*;
-import java.util.function.BiFunction;
 
+/**
+ * Creates graphs used as a base for a City.
+ */
 public class CityBoundsFactory {
     private final Rectangle worldRec;
-    private BiFunction<Integer, Integer, Boolean> isWater;
+    private final CellSet water;
 
-    public CityBoundsFactory(int worldWidth, int worldHeight, BiFunction<Integer, Integer, Boolean> isWater) {
-        this.isWater = isWater;
-        worldRec = new Rectangle(0, 0, worldWidth, worldHeight);
-
+    public CityBoundsFactory(Rectangle worldRec, CellSet water) {
+        this.water = water;
+        this.worldRec = worldRec;
     }
+
     /**
      * Culls the cells that will produce intersecting bounding roads.
      *
@@ -36,7 +43,7 @@ public class CityBoundsFactory {
      * @return A path table whose bounds end on bufferBorder's cells, but not past them.
      */
     private PathTable cullIntersectingBoundingRoadsCells(
-            CellBufferBorder bufferBorder,
+            CellSet bufferBorder,
             Cell start,
             Rectangle worldRec,
             int radius
@@ -44,38 +51,31 @@ public class CityBoundsFactory {
         return new PathTable(
                 start.x,
                 start.y,
-                (x, y) -> worldRec.contains(x, y) && !bufferBorder.isBufferBorder(x, y),
+                (x, y) -> worldRec.contains(x, y) && !bufferBorder.contains(x, y),
                 radius
         ).computeFull();
     }
 
     private UndirectedGraph<Point2D, Segment2D> computeCityBoundingRoads(
-            PathTable table,
+            BoundedCellSet cityShape,
             Rectangle worldRec,
             Cell startCell,
             int radius
     ) {
-        CachedCellBufferBorder bufferBorder = new CachedCellBufferBorder(
+        CachedCellSet bufferBorder = new CachedCellSet(
                 new ChebyshevDistanceCellBufferBorder(
                         1,
-                        (x, y) -> !table.isCellComputed(x, y)
+                        (x, y) -> !cityShape.getBounds().contains(x, y) || !cityShape.contains(x, y)
                 ),
-                table.getBounds()
+                cityShape.getBounds()
         ).computeAll();
-        BoundedCellBufferBorder oppositeBufferBorder = new CachedCellBufferBorder(
-                new ChebyshevDistanceCellBufferBorder(
-                        1,
-                        table::isCellComputed
-                ),
-                table.getBounds().stretch(1)
-        );
         PathTable culledTable = cullIntersectingBoundingRoadsCells(
                 bufferBorder,
                 startCell,
                 worldRec,
                 radius
         );
-        CachedCellBufferBorder culledBufferBorder = new CachedCellBufferBorder(
+        CachedCellSet culledBufferBorder = new CachedCellSet(
                 new ChebyshevDistanceCellBufferBorder(
                         1,
                         culledTable::isCellComputed
@@ -83,17 +83,18 @@ public class CityBoundsFactory {
                 culledTable.getBounds()
         ).computeAll();
 //        canvas.draw(culledTable, DrawingPathTable.withColor(Color.RED));
-//        canvas.draw(culledBufferBorder, DrawingBoundedCellBufferBorder.withColor(BLUE));
+//        canvas.drawRectangle(cityShape.getBounds(), Color.RED);
+//        canvas.draw(bufferBorder, DrawingBoundedCellBufferBorder.withColor(Color.BLUE));
 //        canvas.draw(startCell, DrawingCell.withColorAndSize(Color.YELLOW, 3));
-//        assert culledBufferBorder.isBufferBorder(startCell.x, startCell.y);
-        //        canvas.draw(cityGraph, DrawingGraph.withColorAndVertexSize(ORANGE, 1));
+//        assert culledBufferBorder.contains(startCell.x, startCell.y);
+//        canvas.draw(cityGraph, DrawingGraph.withColorAndVertexSize(ORANGE, 1));
         return bufferBorderToGraph(culledBufferBorder);
     }
 
-    private UndirectedGraph<Point2D, Segment2D> bufferBorderToGraph(CachedCellBufferBorder bufferBorder) {
+    private UndirectedGraph<Point2D, Segment2D> bufferBorderToGraph(CachedCellSet bufferBorder) {
         UndirectedGraph<Point2D, Segment2D> graph = new SimpleGraph<>(Segment2D::new);
         BiMap<Cell, Point2D> cell2PointMap = HashBiMap.create();
-        ImmutableList<Cell> borderCells = bufferBorder.cellList();
+        ImmutableList<Cell> borderCells = bufferBorder.toList();
         for (Cell cell : borderCells) {
             cell2PointMap.put(cell, new Point2D(cell.x, cell.y));
         }
@@ -210,101 +211,25 @@ public class CityBoundsFactory {
     }
 
     /**
-     * Computes buffer border used to find City's border.
+     * Creates a new graph that can be used as a base for {@link org.tendiwa.settlements.City}.
      *
      * @param startCell
-     * @param radius
-     * @param depth
-     * @return
-     * @see #getDeepCoast(org.tendiwa.geometry.Rectangle, int)
+     *         A cell from which a City originates. Roughly denotes its final position.
+     * @param maxCityRadius
+     *         A maximum radius of a Rectangle containing resulting City.
+     * @return A new graph that can be used as a base for {@link org.tendiwa.settlements.City}.
+     * @see org.tendiwa.settlements.CityBuilder
      */
-    private CachedCellBufferBorder getCoast(Cell startCell, int radius, int depth) {
-        return new CachedCellBufferBorder(
-                new ChebyshevDistanceCellBufferBorder(depth, isWater),
-                Recs.rectangleByCenterPoint(startCell, radius * 2 + 1, radius * 2 + 1)
-        );
-    }
-
-    /**
-     * Computes buffer border used to find city's center.
-     *
-     * @param worldRec
-     *         A Rectangle starting at 0:0 with width and height of the world.
-     * @return A buffer border that is
-     */
-    private CachedCellBufferBorder getDeepCoast(Rectangle worldRec, int depth) {
-        CachedCellBufferBorder bufferBorder = new CachedCellBufferBorder(
-                new ChebyshevDistanceCellBufferBorder(
-                        depth,
-                        (x, y) -> worldRec.contains(x, y) && isWater.apply(x, y)
-                ),
-                worldRec
-        );
-        if (bufferBorder.cellList().isEmpty()) {
-            throw new SettlementGenerationException(
-                    "Buffer border of depth " + depth + " is so deep it is non-existent. Try decreasing depth"
-            );
-        }
-        return bufferBorder;
-    }
-
-    private PathTable computeCityShape(
-            Rectangle worldRec,
+    public UndirectedGraph<Point2D, Segment2D> create(
+            BoundedCellSet cityShape,
             Cell startCell,
-            CellBufferBorder coast,
-            int radius
+            int maxCityRadius
     ) {
-        return new PathTable(
-                startCell.x,
-                startCell.y,
-                (x, y) -> worldRec.contains(x, y) && !coast.isBufferBorder(x, y),
-                radius
-        ).computeFull();
-    }
-
-
-    /**
-     * Translates a CellBufferBorder to a List of {@link Cell}s.
-     *
-     * @param worldRec
-     * @param deepBufferBorder
-     * @return
-     */
-    private List<Cell> computeCoastRoad(Rectangle worldRec, CachedCellBufferBorder deepBufferBorder) {
-        Collection<Cell> borderCells = new HashSet<>(deepBufferBorder.cellList());
-        assert !borderCells.isEmpty() : "Deep buffer border is too deep";
-        List<Cell> coastRoadCells = new ArrayList<>();
-        while (!borderCells.isEmpty()) {
-            Cell nextBorderCell = borderCells.iterator().next();
-            borderCells.remove(nextBorderCell);
-            PathTable table = new PathTable(
-                    nextBorderCell.x,
-                    nextBorderCell.y,
-                    (x, y) -> worldRec.contains(x, y) && deepBufferBorder.isBufferBorder(x, y),
-                    360
+        if (water.contains(startCell.x, startCell.y)) {
+            throw new IllegalArgumentException(
+                    "Start cell " + startCell + " must be a ground cell, not water cell"
             );
-            table.computeFull();
-            for (Cell cell : table) {
-                borderCells.remove(cell);
-                if (worldRec.contains(cell)) {
-                    coastRoadCells.add(cell);
-                }
-            }
         }
-        return coastRoadCells;
-    }
-
-    public UndirectedGraph<Point2D, Segment2D> create(Cell startCell, int maxCityRadius, int minDistanceToWater) {
-
-        CachedCellBufferBorder deepBufferBorder = getDeepCoast(worldRec, minDistanceToWater + 2);
-        //            canvas.draw(deepBufferBorder, DrawingBoundedCellBufferBorder.withColor(Color.YELLOW));
-        PathTable table;
-        table = computeCityShape(
-                worldRec,
-                startCell,
-                getCoast(startCell, maxCityRadius, minDistanceToWater),
-                maxCityRadius
-        );
-        return computeCityBoundingRoads(table, worldRec, startCell, maxCityRadius);
+        return computeCityBoundingRoads(cityShape, worldRec, startCell, maxCityRadius);
     }
 }

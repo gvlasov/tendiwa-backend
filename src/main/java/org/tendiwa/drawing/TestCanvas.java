@@ -254,7 +254,7 @@ public final class TestCanvas implements DrawableInto {
         transform.setToScale(scale, scale);
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setTransform(transform);
-        g2d.fill(r.toAwtRectangle());
+        g2d.fill(new java.awt.Rectangle(r.x, r.y, r.width, r.height));
         g2d.setTransform(defaultTransform);
 //	canvas.graphics.fillRect(
 //		r.getX() * canvas.scale,
@@ -276,8 +276,8 @@ public final class TestCanvas implements DrawableInto {
     public void drawLine(double startX, double startY, double endX, double endY, Color color) {
         // TODO: Too cumbersome, many objects created instead of computing coordinates only
         CellLine cells = new CellLine(
-                new Cell((int) startX, (int) startY),
-                new Cell((int) endX, (int) endY)
+                new Cell((int) Math.round(startX), (int) Math.round(startY)),
+                new Cell((int) Math.round(endX), (int) Math.round(endY))
         );
         for (Cell cell : cells) {
             drawCell(cell.x, cell.y, color);

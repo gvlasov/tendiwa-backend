@@ -133,9 +133,9 @@ public class CityBuilder {
 
     @SuppressWarnings("unused")
     public CityBuilder withDeviationAngle(double dAngle) {
-        if (dAngle < 0 || dAngle > Math.PI) {
+        if (dAngle < 0 || dAngle >= Math.PI/4) {
             throw new IllegalArgumentException(
-                    "Deviation angle must be >= 0 and <= Math.PI (" + dAngle + " provided)"
+                    "Deviation angle must be >= 0 and < Math.PI/4 (" + dAngle + " provided)"
             );
         }
         this.deviationAngle = dAngle;

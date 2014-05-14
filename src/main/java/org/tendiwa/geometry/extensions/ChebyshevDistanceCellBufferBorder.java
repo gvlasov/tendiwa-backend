@@ -1,15 +1,20 @@
 package org.tendiwa.geometry.extensions;
 
-import org.tendiwa.geometry.CellBufferBorder;
-
-import java.util.function.BiFunction;
+import org.tendiwa.geometry.CellSet;
 
 @SuppressWarnings("unused")
-public class ChebyshevDistanceCellBufferBorder implements CellBufferBorder {
+/**
+ * Divides cells into "inner" and "outer" and selects only those "inner" cells that have "outer" cells exactly at
+ * certain distance, but not closer.
+ */
+public class ChebyshevDistanceCellBufferBorder implements CellSet {
     private int distance;
-    private BiFunction<Integer, Integer, Boolean> outerSideFinder;
+    private CellSet outerSideFinder;
 
-    public ChebyshevDistanceCellBufferBorder(int distance, BiFunction<Integer, Integer, Boolean> outerSideFinder) {
+    public ChebyshevDistanceCellBufferBorder(
+            int distance,
+            CellSet outerSideFinder
+    ) {
         this.outerSideFinder = outerSideFinder;
         if (distance <= 0) {
             throw new IllegalArgumentException("Distance must be > 0");
@@ -18,14 +23,14 @@ public class ChebyshevDistanceCellBufferBorder implements CellBufferBorder {
     }
 
     @Override
-    public boolean isBufferBorder(int x, int y) {
+    public boolean contains(int x, int y) {
         // Check if a square of all cells with
         // Chebyshev distance to x:y<distance doesn't contain outer cells
         int maxX = x + distance - 1;
         int maxY = y + distance - 1;
         for (int i = x - distance + 1; i <= maxX; i++) {
             for (int j = y - distance + 1; j <= maxY; j++) {
-                if (outerSideFinder.apply(i, j)) {
+                if (outerSideFinder.contains(i, j)) {
                     return false;
                 }
             }
@@ -34,19 +39,19 @@ public class ChebyshevDistanceCellBufferBorder implements CellBufferBorder {
         // contains any outer cells.
         maxX = x + distance;
         for (int i = x - distance; i <= maxX; i++) {
-            if (outerSideFinder.apply(i, y - distance)) {
+            if (outerSideFinder.contains(i, y - distance)) {
                 return true;
             }
-            if (outerSideFinder.apply(i, y + distance)) {
+            if (outerSideFinder.contains(i, y + distance)) {
                 return true;
             }
         }
         maxY = y + distance;
         for (int j = y - distance; j <= maxY; j++) {
-            if (outerSideFinder.apply(x - distance, j)) {
+            if (outerSideFinder.contains(x - distance, j)) {
                 return true;
             }
-            if (outerSideFinder.apply(x + distance, j)) {
+            if (outerSideFinder.contains(x + distance, j)) {
                 return true;
             }
         }

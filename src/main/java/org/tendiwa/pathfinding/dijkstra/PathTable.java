@@ -1,14 +1,14 @@
 package org.tendiwa.pathfinding.dijkstra;
 
+import org.tendiwa.geometry.BoundedCellSet;
 import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.Cells;
 import org.tendiwa.geometry.Rectangle;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 
-public class PathTable implements Iterable<Cell> {
+public class PathTable implements BoundedCellSet {
 
     static final int NOT_COMPUTED_CELL = -1;
     private final int startX;
@@ -29,7 +29,6 @@ public class PathTable implements Iterable<Cell> {
         this.width = maxDepth * 2 + 1;
         //noinspection SuspiciousNameCombination
         this.bounds = new Rectangle(startX - maxDepth, startY - maxDepth, width, width);
-
         step = 0;
 
         this.pathTable = new int[maxDepth * 2 + 1][maxDepth * 2 + 1];
@@ -45,6 +44,7 @@ public class PathTable implements Iterable<Cell> {
         // Zero-wave consists of a single cell, which is path table's start
         pathTable[maxDepth][maxDepth] = 0;
     }
+
 
     /**
      * Returns a new Cell {{@link #startX}:{@link #startY}};
@@ -66,14 +66,14 @@ public class PathTable implements Iterable<Cell> {
      *
      * @return A bounding rectangle for this PathTable defined by its #startX, #startY and #maxDepth.
      */
+    @Override
     public final Rectangle getBounds() {
-        //noinspection SuspiciousNameCombination
         return bounds;
     }
 
     /**
-     * A getter of #maxDepth. This method is called radius because in Chebyshev metric #maxDepth is radius of a circle
-     * that appears to be square in Euclidean metric.
+     * A getter f {@link #maxDepth}. This method is called radius because in Chebyshev metric {@link #maxDepth} is
+     * radius of a circle that appears to be square in Euclidean metric.
      *
      * @return #maxDepth
      */
@@ -99,11 +99,11 @@ public class PathTable implements Iterable<Cell> {
         for (Cell anOldFront : oldFront) {
             int x = anOldFront.getX();
             int y = anOldFront.getY();
-            int[] adjactentX = new int[]{x + 1, x, x, x - 1, x + 1, x + 1, x - 1, x - 1};
-            int[] adjactentY = new int[]{y, y - 1, y + 1, y, y + 1, y - 1, y + 1, y - 1};
+            int[] adjacentX = new int[]{x + 1, x, x, x - 1, x + 1, x + 1, x - 1, x - 1};
+            int[] adjacentY = new int[]{y, y - 1, y + 1, y, y + 1, y - 1, y + 1, y - 1};
             for (int j = 0; j < 8; j++) {
-                int thisNumX = adjactentX[j];
-                int thisNumY = adjactentY[j];
+                int thisNumX = adjacentX[j];
+                int thisNumY = adjacentY[j];
                 int tableX = thisNumX - startX + maxDepth;
                 int tableY = thisNumY - startY + maxDepth;
                 computeCell(thisNumX, thisNumY, tableX, tableY);
@@ -173,11 +173,11 @@ public class PathTable implements Iterable<Cell> {
                 j = pathTable[currentNumX - startX + maxDepth][currentNumY - startY + maxDepth]
                 ) {
             path.addFirst(new Cell(currentNumX, currentNumY));
-            int[] adjactentX = {cX, cX + 1, cX, cX - 1, cX + 1, cX + 1, cX - 1, cX - 1};
-            int[] adjactentY = {cY - 1, cY, cY + 1, cY, cY + 1, cY - 1, cY + 1, cY - 1};
+            int[] adjacentX = {cX, cX + 1, cX, cX - 1, cX + 1, cX + 1, cX - 1, cX - 1};
+            int[] adjacentY = {cY - 1, cY, cY + 1, cY, cY + 1, cY - 1, cY + 1, cY - 1};
             for (int i = 0; i < 8; i++) {
-                int thisNumX = adjactentX[i];
-                int thisNumY = adjactentY[i];
+                int thisNumX = adjacentX[i];
+                int thisNumY = adjacentY[i];
                 int tableX = thisNumX - startX + maxDepth;
                 int tableY = thisNumY - startY + maxDepth;
                 if (tableX < 0 || tableX >= width) {
@@ -187,8 +187,8 @@ public class PathTable implements Iterable<Cell> {
                     continue;
                 }
                 if (pathTable[tableX][tableY] == j - 1) {
-                    currentNumX = adjactentX[i];
-                    currentNumY = adjactentY[i];
+                    currentNumX = adjacentX[i];
+                    currentNumY = adjacentY[i];
                     cX = currentNumX;
                     cY = currentNumY;
                     break;
@@ -203,47 +203,13 @@ public class PathTable implements Iterable<Cell> {
     }
 
     @Override
-/**
- * Iterates over all computed cells.
- */
-    public final Iterator<Cell> iterator() {
-        return new Iterator<Cell>() {
-            private int n = -1;
-            private final int maxN = width * width - 1;
-            private Cell next = findNext();
-
-            @Override
-            public boolean hasNext() {
-                return next != null;
-            }
-
-            @Override
-            public Cell next() {
-                Cell answer = next;
-                findNext();
-                return answer;
-            }
-
-            private Cell findNext() {
-                int x, y;
-                do {
-                    n++;
-                    x = n % width;
-                    y = n / width;
-                } while (pathTable[x][y] == NOT_COMPUTED_CELL && n < maxN);
-                if (n < maxN) {
-                    next = new Cell(startX - maxDepth + x, startY - maxDepth + y);
-                } else {
-                    next = null;
-                }
-                return next;
-            }
-
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
-        };
+    public boolean contains(int x, int y) {
+        try {
+            return bounds.contains(x, y) && pathTable[maxDepth + x - startX][maxDepth + y - startY] != PathTable
+                    .NOT_COMPUTED_CELL;
+        } catch (Exception e) {
+            System.out.println(bounds);
+            throw new RuntimeException(x + " " + y);
+        }
     }
 }

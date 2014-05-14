@@ -51,6 +51,7 @@ public void prebuild(RectangleSystemBuilder builder) {
 
 @Override
 public Placeable rotate(Rotation rotation) {
+    // TODO: Remove dependency on AWT AffineTransform from this code.
 	AffineTransform transform;
 	switch (rotation) {
 		case CLOCKWISE:

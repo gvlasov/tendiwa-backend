@@ -50,22 +50,26 @@ public class DrawingGraph {
             for (Segment2D e : shape.edgeSet()) {
                 Point2D source = shape.getEdgeSource(e);
                 Point2D target = shape.getEdgeTarget(e);
-                canvas.drawLine(source.x + ((double) size) / 2, source.y + ((double) size) / 2, target.x,
+                canvas.drawLine(
+                        source.x,
+                        source.y,
+                        target.x,
                         target.y,
-                        color);
+                        color
+                );
             }
             for (Point2D v : shape.vertexSet()) {
-                canvas.draw(new Cell((int) v.x, (int) v.y), pointDrawing);
+                canvas.draw(new Cell((int) Math.round(v.x), (int) Math.round(v.y)), pointDrawing);
             }
         };
     }
 
     public static DrawingAlgorithm<UndirectedGraph<Point2D, Segment2D>> multicoloredEdges() {
         Iterator<Color> colors = Colors.infiniteSequence(i -> new Color(
-                (i * 451+122) % 255,
-                (i * 234+200) % 255,
-                (i * 123+178) % 255
-        ) );
+                (i * 451 + 122) % 255,
+                (i * 234 + 200) % 255,
+                (i * 123 + 178) % 255
+        ));
         return (graph, canvas) -> graph
                 .edgeSet()
                 .stream()
