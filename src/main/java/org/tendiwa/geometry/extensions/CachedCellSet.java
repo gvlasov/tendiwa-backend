@@ -4,7 +4,11 @@ import org.tendiwa.geometry.BoundedCellSet;
 import org.tendiwa.geometry.CellSet;
 import org.tendiwa.geometry.Rectangle;
 
+import static java.util.Objects.requireNonNull;
+
 /**
+ * A CellSet that holds a finite number of {@link org.tendiwa.geometry.Cell}s.
+ * <p>
  * Stores buffer border for an area #width #height cells large,
  * delegating to #source if buffer border status for a cell has  not  yet  been  computed.
  */
@@ -24,8 +28,8 @@ public class CachedCellSet implements BoundedCellSet {
     private final short[][] cache;
 
     public CachedCellSet(CellSet source, Rectangle bounds) {
-        this.source = source;
-        this.bounds = bounds;
+        this.source = requireNonNull(source);
+        this.bounds = requireNonNull(bounds);
         this.cache = new short[bounds.getWidth()][bounds.getHeight()];
     }
 

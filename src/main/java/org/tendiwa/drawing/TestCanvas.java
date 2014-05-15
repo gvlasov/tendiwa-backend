@@ -2,7 +2,7 @@ package org.tendiwa.drawing;
 
 import com.google.inject.Inject;
 import org.tendiwa.geometry.Cell;
-import org.tendiwa.geometry.CellLine;
+import org.tendiwa.geometry.CellSegment;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Rectangle;
 
@@ -264,7 +264,7 @@ public final class TestCanvas implements DrawableInto {
     }
 
     public void drawLine(Cell p1, Cell p2, Color color) {
-        for (Cell coordinate : CellLine.vector(p1.x, p1.y, p2.x, p2.y)) {
+        for (Cell coordinate : CellSegment.vector(p1.x, p1.y, p2.x, p2.y)) {
             drawCell(coordinate.x, coordinate.y, color);
         }
     }
@@ -275,7 +275,7 @@ public final class TestCanvas implements DrawableInto {
 
     public void drawLine(double startX, double startY, double endX, double endY, Color color) {
         // TODO: Too cumbersome, many objects created instead of computing coordinates only
-        CellLine cells = new CellLine(
+        Cell[] cells = CellSegment.vector(
                 new Cell((int) Math.round(startX), (int) Math.round(startY)),
                 new Cell((int) Math.round(endX), (int) Math.round(endY))
         );

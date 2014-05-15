@@ -52,7 +52,7 @@ public void line(int startX, int startY, int endX, int endY, TypePlaceableInCell
 		EntityPlacer.place(activePlane, placeable, x + startX, y + startY);
 		return;
 	}
-	Cell[] cells = CellLine.vector(startX, startY, endX, endY);
+	Cell[] cells = CellSegment.vector(startX, startY, endX, endY);
 	int size = cells.length;
 	for (int i = 0; i < size - 1; i++) {
 		int x = cells[i].getX();
@@ -216,7 +216,7 @@ public ArrayList<Cell> polygon(ArrayList<Cell> coords, boolean mode) {
 	for (int i = 0; i < size; i++) {
 		Cell coord = coords.get(i);
 		Cell nextCoord = coords.get((i == size - 1) ? 0 : i + 1);
-		v = CellLine.vector(coord.getX(), coord.getY(), nextCoord.getX(), nextCoord.getY());
+		v = CellSegment.vector(coord.getX(), coord.getY(), nextCoord.getX(), nextCoord.getY());
 		vSize = v.length;
 		for (int j = 0; j < vSize - 1; j++) {
 			answer.add(v[j]);

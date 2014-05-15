@@ -4,11 +4,17 @@ import com.google.common.collect.Iterators;
 
 import java.util.Iterator;
 
-public class CellLine implements Iterable<Cell> {
-    private final Cell[] cells;
+/**
+ * A segment defined by a start and end {@link Cells}. Doesn't store anything other than start and end cells.
+ */
+public class CellSegment implements Iterable<Cell> {
 
-    public CellLine(Cell start, Cell end) {
-        this.cells = vector(start.x, start.y, end.x, end.y);
+    private final Cell start;
+    private final Cell end;
+
+    public CellSegment(Cell start, Cell end) {
+        this.start = start;
+        this.end = end;
     }
 
     public static Cell[] vector(int startX, int startY, int endX, int endY) {
@@ -41,8 +47,18 @@ public class CellLine implements Iterable<Cell> {
         return result;
     }
 
+    public static Cell[] vector(Cell start, Cell end) {
+        return vector(start.x, start.y, end.x, end.y);
+    }
+
+    /**
+     * Iterates over cells in a line from {@link #start} to {@link #end} inclusive. Computes those cells anew each
+     * time  this method is called.
+     *
+     * @return An iterator over an array of cells.
+     */
     @Override
     public Iterator<Cell> iterator() {
-        return Iterators.forArray(cells);
+        return Iterators.forArray(vector(start, end));
     }
 }

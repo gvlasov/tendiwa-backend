@@ -9,7 +9,7 @@ import java.util.Iterator;
  * <p>
  * Note that it is still up to implementor whether to allow cells out of bounds to be present in the set or not.
  */
-public interface BoundedCellSet extends CellSet, Iterable<Cell> {
+public interface BoundedCellSet extends FiniteCellSet {
     /**
      * Returns a rectangle in which all cells of this CellSet reside.
      * Note that the bound in not necessarily the least

@@ -11,7 +11,7 @@ import org.tendiwa.core.player.SinglePlayerMode;
 import org.tendiwa.core.vision.Seer;
 import org.tendiwa.core.vision.SightPassabilityCriteria;
 import org.tendiwa.geometry.Cell;
-import org.tendiwa.geometry.CellLine;
+import org.tendiwa.geometry.CellSegment;
 import org.tendiwa.pathfinding.dijkstra.PathWalker;
 
 import java.util.Collection;
@@ -643,7 +643,7 @@ public void shoot(UniqueItem weapon, Item projectile, int toX, int toY) {
 
 private ProjectileFlight computeProjectileFlightEndCoordinate(UniqueItem weapon, Item projectile, int toX, int toY) {
 	Cell endCoordinate = new Cell(toX, toY);
-	Cell[] vector = CellLine.vector(x, y, toX, toY);
+	Cell[] vector = CellSegment.vector(x, y, toX, toY);
 	Character characterHit = null;
 	for (int i = 1; i < vector.length; i++) {
 		Cell c = vector[i];

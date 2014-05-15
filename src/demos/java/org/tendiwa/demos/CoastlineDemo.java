@@ -91,7 +91,8 @@ public class CoastlineDemo implements Runnable {
             City city = new CityBuilder(cityBounds)
                     .withDefaults()
                     .withRoadsFromPoint(3)
-                    .withDeviationAngle(Math.PI/4)
+                    .withSecondaryRoadNetworkDeviationAngle(0.6)
+                    .withRoadSegmentLength(5, 13)
                     .withConnectivity(0.2)
                     .withMaxStartPointsPerCycle(3)
                     .build();

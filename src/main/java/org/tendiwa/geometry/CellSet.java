@@ -27,4 +27,5 @@ public interface CellSet {
     public default boolean contains(Cell cell) {
         return contains(cell.x, cell.y);
     }
+
 }
