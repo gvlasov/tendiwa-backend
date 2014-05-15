@@ -3,10 +3,10 @@ package org.tendiwa.geometry;
 /**
  * An editable CellSet that holds a finite number of {@link org.tendiwa.geometry.Cell}s.
  * <p>
- * It is preferable to {@link ScatteredMutableCellSet} when cells in this set cover a
- * significant part of their bounding rectangle. Uses {@code O(bounds.w*bound.h)} memory.
+ * It is preferable to {@link ScatteredMutableCellSet} when cells in this set cover a significant part of their bounding
+ * rectangle. Uses {@code O(bounds.w*bound.h)} memory.
  */
-public class Mutable2DCellSet implements BoundedCellSet {
+public class Mutable2DCellSet implements MutableCellSet, BoundedCellSet {
 
     private final Rectangle bounds;
     private final boolean[][] cells;
@@ -35,8 +35,33 @@ public class Mutable2DCellSet implements BoundedCellSet {
      * @param y
      *         Y coordinate of a cell.
      */
+    @Override
     public void add(int x, int y) {
+        boolean present = cells[x - bounds.x][y - bounds.y];
+        if (!present) {
+            throw new IllegalArgumentException(
+                    "Can't add cell " + x + " " + y + " because it is already present in this set"
+            );
+        }
         cells[x - bounds.x][y - bounds.y] = true;
+    }
+
+    @Override
+    public void add(Cell cell) {
+        add(cell.x, cell.y);
+    }
+
+    /**
+     * Makes a cell absent in this set.
+     * <p>
+     * You can remove already absent cells.
+     *
+     * @param cell
+     *         A cell to remove from this
+     */
+    @Override
+    public void remove(Cell cell) {
+        remove(cell.x, cell.y);
     }
 
     /**
@@ -49,7 +74,14 @@ public class Mutable2DCellSet implements BoundedCellSet {
      * @param y
      *         Y coordinate of a cell.
      */
+    @Override
     public void remove(int x, int y) {
+        boolean present = cells[x - bounds.x][y - bounds.y];
+        if (present) {
+            throw new IllegalArgumentException(
+                    "Can't remove cell " + x + " " + y + " because it is not present in this set"
+            );
+        }
         cells[x - bounds.x][y - bounds.y] = false;
     }
 

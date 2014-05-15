@@ -3,6 +3,7 @@ package org.tendiwa.geometry;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -20,7 +21,8 @@ public class ScatteredCellSet implements FiniteCellSet {
     Set<Cell> cells;
 
     public ScatteredCellSet(ImmutableSet<Cell> cells) {
-        this.cells = cells;
+        this.cells = Objects.requireNonNull(cells);
+
     }
 
     ScatteredCellSet() {

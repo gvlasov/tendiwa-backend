@@ -9,6 +9,8 @@ import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.extensions.CachedCellSet;
 import org.tendiwa.geometry.extensions.ChebyshevDistanceCellBufferBorder;
+import org.tendiwa.geometry.extensions.IntershapeNetwork;
+import org.tendiwa.geometry.extensions.IntershapeNetworkBuilder;
 import org.tendiwa.noise.Noise;
 import org.tendiwa.noise.SimpleNoiseSource;
 import org.tendiwa.pathfinding.dijkstra.PathTable;
@@ -17,6 +19,8 @@ import org.tendiwa.settlements.CityBoundsFactory;
 import org.tendiwa.settlements.CityBuilder;
 
 import java.awt.*;
+import java.util.Collection;
+import java.util.HashSet;
 
 import static java.awt.Color.BLUE;
 import static org.tendiwa.geometry.DSL.rectangle;
@@ -64,6 +68,7 @@ public class CoastlineDemo implements Runnable {
     public void run() {
         drawTerrain();
 //        canvas.draw(borderWithCityCenters, DrawingCellSet.withColor(Color.RED));
+        Collection<FiniteCellSet> shapeExits = new HashSet<>();
         for (Cell cell : cityCenters) {
             int maxCityRadius = this.maxCityRadius + cell.x % 30 - 15;
             Rectangle cityBoundRec = Recs
@@ -98,6 +103,14 @@ public class CoastlineDemo implements Runnable {
                     .build();
             canvas.draw(city, new CityDrawer());
         }
+        IntershapeNetwork network = IntershapeNetwork.builder()
+                .withShapeExits(shapeExits)
+                .withWalkableCells((x, y) -> !water.contains(x, y))
+                .build();
+        for (CellSegment segment : network.getGraph().edgeSet()) {
+            canvas.draw(segment, DrawingCellSegment.withColor(Color.RED));
+        }
+
     }
 
     private void drawTerrain() {

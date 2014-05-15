@@ -2,48 +2,81 @@ package org.tendiwa.geometry;
 
 import com.google.common.collect.ImmutableSet;
 
-import java.util.function.Consumer;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import static java.util.Objects.*;
 
 /**
- * In a wave-like fashion, iterates over cells that can be reached from {@link #startCell} walking only over {@link
- * #passableCells}.
+ * In a wave-like fashion, iterates over cells that can be reached from start cell walking only over passable cells. The
+ * closer a cell is in Chebyshev metric to the start cell, the sooner it will be popped out by iterator.
  */
-public class Wave {
-    private final Cell startCell;
-    private final CellSet passableCells;
-    ScatteredMutableCellSet newFront;
-    FiniteCellSet previousFront;
+public class Wave implements Iterable<Cell> {
+    private CellSet passableCells;
+    Set<Cell> newFront = new HashSet<>();
+    Set<Cell> previousFront;
     private int[] dx = new int[]{1, 0, 0, 0 - 1, 1, 1, 0 - 1, 0 - 1};
     private int[] dy = new int[]{0, 0 - 1, 1, 0, 1, 0 - 1, 1, 0 - 1};
 
-    public Wave(Cell startCell, CellSet passableCells) {
-        this.startCell = requireNonNull(startCell);
+    Wave(Cell startCell, CellSet passableCells) {
+        requireNonNull(startCell);
         this.passableCells = requireNonNull(passableCells);
+        previousFront = ImmutableSet.of();
+        newFront.add(startCell);
     }
 
-    /**
-     * Applies a function to all cells of this Wave. Note that calling this method successively on the same Wave does
-     * compute those cells again — they are not stored anywhere.
-     *
-     * @param handler
-     *         A function to call on each {@link Cell} of this Wave.
-     */
-    public void handle(Consumer<Cell> handler) {
-        handler.accept(startCell);
-        newFront = new ScatteredMutableCellSet();
-        previousFront = FiniteCellSet.of(ImmutableSet.of());
-        newFront.add(startCell);
-        //noinspection StatementWithEmptyBody
-        while (nextWave(handler)) {
+    public static StepGoingOver from(Cell startCell) {
+        return new StepGoingOver(startCell);
+    }
+
+    @Override
+    public Iterator<Cell> iterator() {
+        return new Iterator<Cell>() {
+            Iterator<Cell> currentWave = newFront.iterator();
+            Cell next = findNext();
+
+            @Override
+            public boolean hasNext() {
+                return next != null;
+            }
+
+            @Override
+            public Cell next() {
+                Cell current = next;
+                next = findNext();
+                return current;
+            }
+
+            private Cell findNext() {
+                if (!currentWave.hasNext()) {
+                    currentWave = nextWave().iterator();
+                }
+                if (currentWave.hasNext()) {
+                    return currentWave.next();
+                } else {
+                    return null;
+                }
+            }
+        };
+    }
+
+    public static class StepGoingOver {
+        private final Cell startCell;
+
+        private StepGoingOver(Cell startCell) {
+
+            this.startCell = startCell;
+        }
+
+        public Wave goingOver(CellSet passableCells) {
+            return new Wave(startCell, passableCells);
         }
     }
 
-    private boolean nextWave(Consumer<Cell> handler) {
-        FiniteCellSet currentFront = newFront;
-        boolean anyCellsFound = false;
-        newFront = new ScatteredMutableCellSet();
+    private Set<Cell> nextWave() {
+        Set<Cell> currentFront = newFront;
+        newFront = new HashSet<>();
         for (Cell old : currentFront) {
             for (int j = 0; j < 8; j++) {
                 Cell cell = new Cell(old.x + dx[j], old.y + dy[j]);
@@ -53,12 +86,10 @@ public class Wave {
                         && passableCells.contains(cell)
                         ) {
                     newFront.add(cell);
-                    handler.accept(cell);
-                    anyCellsFound = true;
                 }
             }
         }
         previousFront = currentFront;
-        return anyCellsFound;
+        return newFront;
     }
 }

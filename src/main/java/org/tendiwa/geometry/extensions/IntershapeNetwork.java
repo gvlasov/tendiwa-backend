@@ -1,22 +1,17 @@
 package org.tendiwa.geometry.extensions;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import org.jgrapht.EdgeFactory;
+import com.google.common.collect.HashBiMap;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
-import org.tendiwa.geometry.BoundedCellSet;
-import org.tendiwa.geometry.Cell;
-import org.tendiwa.geometry.CellSegment;
-import org.tendiwa.geometry.CellSet;
-import org.tendiwa.pathfinding.dijkstra.PathTable;
+import org.tendiwa.geometry.*;
 
 import java.util.Collection;
-import java.util.stream.Stream;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Builds a graph where vertices are some {@link org.tendiwa.geometry.CellSet}s, and edges are paths from a Cell in
- * one CellSet to a Cell in another one.
+ * Builds a graph where vertices are some {@link org.tendiwa.geometry.CellSet}s, and edges are paths from a Cell in one
+ * CellSet to a Cell in another one.
  * <p>
  * Use {@link org.tendiwa.geometry.extensions.IntershapeNetworkBuilder} to build instances of this class.
  */
@@ -24,21 +19,37 @@ public class IntershapeNetwork {
     private final CellSet walkableCells;
     private UndirectedGraph<CellSet, CellSegment> graph;
 
-    IntershapeNetwork(CellSet walkableCells, Collection<BoundedCellSet> shapeExitSets) {
+    IntershapeNetwork(CellSet walkableCells, Collection<FiniteCellSet> shapeExitSets) {
         this.walkableCells = walkableCells;
         this.graph = buildGraph(shapeExitSets);
     }
 
-    private UndirectedGraph<CellSet, CellSegment> buildGraph(Collection<BoundedCellSet> vertices) {
+    private UndirectedGraph<CellSet, CellSegment> buildGraph(Collection<FiniteCellSet> exitsSets) {
+        Map<Cell, FiniteCellSet> unusedExitCells = new HashMap<>();
+        for (FiniteCellSet exitsSet : exitsSets) {
+            // Map each cell in exit sets to its exit set.
+            for (Cell cell : exitsSet) {
+                unusedExitCells.put(cell, exitsSet);
+            }
+        }
+
         UndirectedGraph<CellSet, CellSegment> graph = new SimpleGraph<>(this::obtainEdge);
-        for (BoundedCellSet cellSet : vertices) {
-            Stream<BoundedCellSet> otherShapeExitSets = vertices.stream().filter(a -> a != cellSet);
-            for (Cell cell : cellSet) {
-                if (otherShapeExitSets.anyMatch(a -> a.contains(cell))) {
-
+        for (FiniteCellSet exitSet : exitsSets) {
+            for (Cell exitCell : exitSet) {
+                if (!unusedExitCells.containsKey(exitCell)) {
+                    continue;
                 }
-                if ( walkableCells.contains(cell)) {
-
+                for (Cell waveCell : Wave.from(exitCell).goingOver(walkableCells)) {
+                    if (unusedExitCells.containsKey(waveCell)) {
+                        if (!exitSet.contains(waveCell)) {
+                            // Connect only different exitSets
+                            FiniteCellSet anotherEndExitSet = unusedExitCells.get(waveCell);
+                            graph.addVertex(exitSet);
+                            graph.addVertex(anotherEndExitSet);
+                            graph.addEdge(exitSet, anotherEndExitSet, new CellSegment(exitCell, waveCell));
+                        }
+                        unusedExitCells.remove(waveCell);
+                    }
                 }
             }
         }
@@ -47,13 +58,14 @@ public class IntershapeNetwork {
     }
 
     private CellSegment obtainEdge(CellSet set1, CellSet set2) {
-        throw new RuntimeException();
+        throw new RuntimeException("This method should not be called");
     }
-
 
     public UndirectedGraph<CellSet, CellSegment> getGraph() {
         return graph;
     }
 
-
+    public static IntershapeNetworkBuilder builder() {
+        return new IntershapeNetworkBuilder();
+    }
 }

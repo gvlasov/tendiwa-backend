@@ -9,4 +9,16 @@ public interface MutableCellSet extends FiniteCellSet {
     }
 
     public void add(Cell cell);
+
+    public default void addAll(FiniteCellSet cells) {
+        for (Cell cell : cells) {
+            add(cell);
+        }
+    }
+
+    public void remove(Cell cell);
+
+    default public void remove(int x, int y) {
+        remove(new Cell(x, y));
+    }
 }
