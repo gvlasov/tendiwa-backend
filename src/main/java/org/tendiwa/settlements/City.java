@@ -4,15 +4,12 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableSet;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
-import org.tendiwa.drawing.DrawingCell;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.*;
 
-import java.awt.*;
 import java.util.*;
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class City {
@@ -34,7 +31,7 @@ public class City {
     private final double deviationAngleRad;
     private final double approachingPerSample;
     private final Set<Segment2D> highLevelGraphEdges;
-    private final Set<CityCell> cells;
+    private final ImmutableSet<CityCell> cells;
     private Random random;
     private final int roadsFromPoint;
     private final double connectivity;
@@ -279,7 +276,7 @@ public class City {
      *
      * @return All CityCells of this City.
      */
-    public Set<CityCell> getCells() {
+    public ImmutableSet<CityCell> getCells() {
         return cells;
     }
 

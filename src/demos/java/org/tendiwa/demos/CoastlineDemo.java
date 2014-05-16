@@ -1,5 +1,6 @@
 package org.tendiwa.demos;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.jgrapht.UndirectedGraph;
@@ -17,10 +18,13 @@ import org.tendiwa.pathfinding.dijkstra.PathTable;
 import org.tendiwa.settlements.City;
 import org.tendiwa.settlements.CityBoundsFactory;
 import org.tendiwa.settlements.CityBuilder;
+import org.tendiwa.settlements.CityCell;
 
 import java.awt.*;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import static java.awt.Color.BLUE;
 import static org.tendiwa.geometry.DSL.rectangle;
@@ -95,20 +99,28 @@ public class CoastlineDemo implements Runnable {
 //            canvas.draw(cityBounds, DrawingGraph.withColorAndVertexSize(RED, 2));
             City city = new CityBuilder(cityBounds)
                     .withDefaults()
-                    .withRoadsFromPoint(3)
+                    .withRoadsFromPoint(4)
                     .withSecondaryRoadNetworkDeviationAngle(0.6)
                     .withRoadSegmentLength(5, 13)
                     .withConnectivity(0.2)
                     .withMaxStartPointsPerCycle(3)
                     .build();
             canvas.draw(city, new CityDrawer());
+            city
+                    .getCells()
+                    .stream()
+                    .map(CityCell::secondaryRoadNetwork)
+                    .flatMap(network -> network.edgeSet().stream())
+                    .flatMap(edge -> ImmutableSet.of(edge.start, edge.end).stream())
+                    .map(Point2D::toCell)
+                    .collect(CellSet.toCellSet());
         }
         IntershapeNetwork network = IntershapeNetwork.builder()
                 .withShapeExits(shapeExits)
                 .withWalkableCells((x, y) -> !water.contains(x, y))
                 .build();
         for (CellSegment segment : network.getGraph().edgeSet()) {
-            canvas.draw(segment, DrawingCellSegment.withColor(Color.RED));
+//            canvas.draw(segment, DrawingCellSegment.withColor(Color.RED));
         }
 
     }
