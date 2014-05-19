@@ -3,34 +3,32 @@ package org.tendiwa.settlements;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
-import org.tendiwa.core.CardinalDirection;
 import org.tendiwa.core.Direction;
 import org.tendiwa.core.Directions;
 import org.tendiwa.demos.CoastlineDemo;
-import org.tendiwa.drawing.DrawingBoundedCellBufferBorder;
-import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.DrawingCellSet;
 import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.extensions.CachedCellSet;
-import org.tendiwa.geometry.extensions.ChebyshevDistanceCellBufferBorder;
+import org.tendiwa.geometry.extensions.ChebyshevDistanceBufferBorder;
 import org.tendiwa.pathfinding.dijkstra.PathTable;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Color;
 
 /**
- * Creates graphs used as a base for a City.
+ * Creates graphs used as a base for a {@link City}.
  */
 public class CityBoundsFactory {
     private final Rectangle worldRec;
+    private final CoastlineDemo demo;
     private final CellSet water;
 
-    public CityBoundsFactory(Rectangle worldRec, CellSet water) {
+    public CityBoundsFactory(Rectangle worldRec, CellSet water, CoastlineDemo demo) {
         this.water = water;
         this.worldRec = worldRec;
+        this.demo = demo;
     }
 
     /**
@@ -63,25 +61,31 @@ public class CityBoundsFactory {
             int radius
     ) {
         CachedCellSet bufferBorder = new CachedCellSet(
-                new ChebyshevDistanceCellBufferBorder(
+                new ChebyshevDistanceBufferBorder(
                         1,
                         (x, y) -> !cityShape.getBounds().contains(x, y) || !cityShape.contains(x, y)
                 ),
                 cityShape.getBounds()
         ).computeAll();
+//        demo.canvas.draw(cityShape.getBounds(), DrawingRectangle.withColor(Color.CYAN));
+//        demo.canvas.draw(cityShape, DrawingCellSet.withColor(Color.PINK));
+//        demo.canvas.draw(startCell, DrawingCell.withColor(Color.RED));
+        demo.canvas.draw(bufferBorder, DrawingCellSet.withColor(Color.BLACK));
         PathTable culledTable = cullIntersectingBoundingRoadsCells(
                 bufferBorder,
                 startCell,
-                worldRec,
+                cityShape.getBounds(),
                 radius
         );
         CachedCellSet culledBufferBorder = new CachedCellSet(
-                new ChebyshevDistanceCellBufferBorder(
+                new ChebyshevDistanceBufferBorder(
                         1,
                         culledTable::isCellComputed
                 ),
                 culledTable.getBounds()
         ).computeAll();
+//        demo.canvas.draw(culledBufferBorder, DrawingCellSet.withColor(Color.MAGENTA));
+
 //        canvas.draw(culledTable, DrawingPathTable.withColor(Color.RED));
 //        canvas.drawRectangle(cityShape.getBounds(), Color.RED);
 //        canvas.draw(bufferBorder, DrawingBoundedCellBufferBorder.withColor(Color.BLUE));
@@ -110,105 +114,10 @@ public class CityBoundsFactory {
             }
         }
         new EdgeReducer(graph, cell2PointMap).reduceEdges();
+//        demo.canvas.draw(graph, DrawingGraph.withColorAndVertexSize(Color.ORANGE, 1));
         return graph;
     }
 
-
-    private class EdgeReducer {
-
-        private final CardinalDirection[] growingDirs = {CardinalDirection.N, CardinalDirection.E};
-        private UndirectedGraph<Point2D, Segment2D> graph;
-        private BiMap<Cell, Point2D> map;
-
-        public EdgeReducer(UndirectedGraph<Point2D, Segment2D> graph, BiMap<Cell, Point2D> map) {
-
-            this.graph = graph;
-            this.map = map;
-        }
-
-        private Collection<Cell> findIntersectionCells() {
-            Collection<Cell> answer = new HashSet<>();
-            for (Cell cell : map.keySet()) {
-                int neighbourCells = 0;
-                for (Direction dir : CardinalDirection.values()) {
-                    if (map.containsKey(cell.moveToSide(dir))) {
-                        neighbourCells++;
-                    }
-                }
-                if (neighbourCells > 2) {
-                    answer.add(cell);
-                }
-            }
-            return answer;
-        }
-
-        private void reduceEdges() {
-            boolean changesMade;
-            Collection<Point2D> finalVertices = new HashSet<>();
-            Set<Point2D> vertices = ImmutableSet.copyOf(graph.vertexSet());
-            do {
-                changesMade = false;
-                Collection<Cell> intersectionCells = findIntersectionCells();
-                for (Point2D point : vertices) {
-                    if (!graph.containsVertex(point) || finalVertices.contains(point)) {
-                        continue;
-                    }
-                    Cell graphCell = map.inverse().get(point);
-                    for (CardinalDirection dir : growingDirs) {
-                        int combinedEdgeLength = 1;
-                        Cell movedCell = graphCell;
-                        while (true) {
-                            movedCell = movedCell.moveToSide(dir);
-                            if (map.containsKey(movedCell) && graph.containsVertex(map.get(movedCell))) {
-                                combinedEdgeLength++;
-                                if (intersectionCells.contains(movedCell)) {
-                                    break;
-                                }
-                            } else {
-                                movedCell = movedCell.moveToSide(dir.opposite());
-                                break;
-                            }
-                        }
-                        Cell oppositeMovedCell = graphCell;
-                        while (true) {
-                            oppositeMovedCell = oppositeMovedCell.moveToSide(dir.opposite());
-                            if (map.containsKey(oppositeMovedCell) && graph.containsVertex(map.get(oppositeMovedCell))) {
-                                combinedEdgeLength++;
-                                if (intersectionCells.contains(oppositeMovedCell)) {
-                                    break;
-                                }
-                            } else {
-                                oppositeMovedCell = oppositeMovedCell.moveToSide(dir);
-                                break;
-                            }
-                        }
-                        if (combinedEdgeLength > 2) {
-                            for (
-                                    Cell cell = movedCell.moveToSide(dir.opposite());
-                                    !cell.equals(oppositeMovedCell);
-                                    cell = cell.moveToSide(dir.opposite())
-                                    ) {
-                                graph.removeVertex(map.get(cell));
-                            }
-                            changesMade = true;
-//                            canvas.drawCell(oppositeMovedCell, YELLOW);
-//                            canvas.drawCell(movedCell, RED);
-                            graph.addEdge(map.get(movedCell), map.get(oppositeMovedCell));
-                            finalVertices.add(map.get(movedCell));
-                            finalVertices.add(map.get(oppositeMovedCell));
-                        } else if (combinedEdgeLength == 2) {
-//                            if (!graph.containsEdge(map.get(movedCell), map.get(oppositeMovedCell))) {
-//                                canvas.draw(movedCell, DrawingCell.withColorAndSize(Color.BLACK, 1));
-//                                canvas.draw(oppositeMovedCell, DrawingCell.withColorAndSize(Color.BLACK, 1));
-//                                throw new AssertionError(movedCell + " " + oppositeMovedCell);
-//                            }
-                        }
-                    }
-                }
-
-            } while (changesMade);
-        }
-    }
 
     /**
      * Creates a new graph that can be used as a base for {@link org.tendiwa.settlements.City}.

@@ -1,5 +1,6 @@
 package org.tendiwa.pathfinding.dijkstra;
 
+import org.omg.DynamicAny._DynAnyStub;
 import org.tendiwa.geometry.BoundedCellSet;
 import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.Cells;
@@ -33,8 +34,6 @@ public class PathTable implements BoundedCellSet {
 
         this.pathTable = new int[maxDepth * 2 + 1][maxDepth * 2 + 1];
 
-        newFront = new ArrayList<>();
-        newFront.add(new Cell(startX, startY));
 
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < width; j++) {
@@ -43,6 +42,23 @@ public class PathTable implements BoundedCellSet {
         }
         // Zero-wave consists of a single cell, which is path table's start
         pathTable[maxDepth][maxDepth] = 0;
+        newFront = getInitialNewFront();
+    }
+
+    /**
+     * Finds whether the starting cell is walkable or not.
+     *
+     * @return A List containing only a starting cell if the starting cell is walkable, or a List containing no cell if
+     * it is not.
+     */
+    private ArrayList<Cell> getInitialNewFront() {
+        ArrayList<Cell> answer = new ArrayList<>();
+        Cell firstCell = new Cell(startX, startY);
+        computeCell(firstCell.x, firstCell.y, maxDepth, maxDepth);
+        if (contains(firstCell.x, firstCell.y)) {
+            answer.add(firstCell);
+        }
+        return answer;
     }
 
 
@@ -56,8 +72,8 @@ public class PathTable implements BoundedCellSet {
     }
 
     /**
-     * Returns a rectangle in which all cells of this PathTable reside. Note that this rectangle is defined by
-     * #startX, #startY and #maxDepth, and not by actually computed cells. More formally, returns a rectangle
+     * Returns a rectangle in which all cells of this PathTable reside. Note that this rectangle is defined by #startX,
+     * #startY and #maxDepth, and not by actually computed cells. More formally, returns a rectangle
      * <pre>
      * {@code
      * new Rectangle(startX - maxDepth, startY - maxDepth, width, width);

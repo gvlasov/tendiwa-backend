@@ -59,8 +59,8 @@ public interface CellSet {
         return (x, y) -> contains(x, y) || set.contains(x, y);
     }
 
-    public static Collector<Cell, ?, CellSet> toCellSet() {
-        return new Collector<Cell, ScatteredMutableCellSet, CellSet>() {
+    public static Collector<Cell, ?, FiniteCellSet> toCellSet() {
+        return new Collector<Cell, ScatteredMutableCellSet, FiniteCellSet>() {
             @Override
             public Supplier<ScatteredMutableCellSet> supplier() {
                 return ScatteredMutableCellSet::new;
@@ -80,7 +80,7 @@ public interface CellSet {
             }
 
             @Override
-            public Function<ScatteredMutableCellSet, CellSet> finisher() {
+            public Function<ScatteredMutableCellSet, FiniteCellSet> finisher() {
                 return (a) -> a;
             }
 
@@ -92,6 +92,15 @@ public interface CellSet {
                 );
             }
         };
+    }
+
+    /**
+     * Returns a cell set that doesn't contain any cells.
+     *
+     * @return A cell set that doesn't contain any cells.
+     */
+    public static CellSet empty() {
+        return (x, y) -> false;
     }
 
 }

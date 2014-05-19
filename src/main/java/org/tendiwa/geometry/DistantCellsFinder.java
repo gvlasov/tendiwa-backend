@@ -37,6 +37,7 @@ public class DistantCellsFinder implements Iterable<Cell> {
 
     @Override
     public Iterator<Cell> iterator() {
+        //TODO: Replace this iterator with FiniteCellSet's
         return new Iterator<Cell>() {
             private Collection<Rectangle> occupiedPlaces = new LinkedList<>();
             private Cell next = findNext();

@@ -38,7 +38,9 @@ public class CellSetTest {
                 new Cell(1, 2),
                 new Cell(2, 3),
                 new Cell(3, 4)
-        ).stream().map(c -> c.moveToSide(CardinalDirection.W))
+        )
+                .stream()
+                .map(c -> c.moveToSide(CardinalDirection.W))
                 .collect(CellSet.toCellSet());
         assertFalse(cellSet.contains(1, 2));
         assertFalse(cellSet.contains(2, 3));

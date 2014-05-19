@@ -37,7 +37,7 @@ public final class TestCanvas implements DrawableInto {
     private final JFrame frame;
     private final JLayeredPane panel;
     private final String defaultTitle;
-    private final Rectangle bounds;
+    private final Rectangle pixelBounds;
     Graphics graphics;
     BufferedImage image;
     Layer currentLayer;
@@ -50,7 +50,7 @@ public final class TestCanvas implements DrawableInto {
             int height
     ) {
         this.scale = scale;
-        this.bounds = new Rectangle(0, 0, width, height);
+        this.pixelBounds = new Rectangle(0, 0, width*scale, height*scale);
         defaultTitle = "tendiwa canvas";
         frame = new JFrame(defaultTitle);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -65,9 +65,9 @@ public final class TestCanvas implements DrawableInto {
         panel.add(DEFAULT_LAYER.component);
         panel.add(MIDDLE_LAYER.component);
         panel.add(TOP_LAYER.component);
-        setSize(width, height);
-        panel.setSize(width, height);
-        panel.setPreferredSize(new Dimension(width, height));
+        setSize(pixelBounds.width, pixelBounds.height);
+        panel.setSize(pixelBounds.width, pixelBounds.height);
+        panel.setPreferredSize(new Dimension(pixelBounds.width, pixelBounds.height));
         frame.setResizable(false);
         frame.pack();
         frame.setVisible(true);
@@ -183,21 +183,21 @@ public final class TestCanvas implements DrawableInto {
     }
 
     public void clear() {
-        graphics.clearRect(0, 0, bounds.width, bounds.height);
+        graphics.clearRect(0, 0, pixelBounds.width, pixelBounds.height);
     }
 
     public void fillBackground(Color backgroundColor) {
         setLayer(DEFAULT_LAYER);
         graphics.setColor(backgroundColor);
-        graphics.fillRect(0, 0, bounds.width, bounds.height);
+        graphics.fillRect(0, 0, pixelBounds.width, pixelBounds.height);
     }
 
     public int getWidth() {
-        return bounds.width;
+        return pixelBounds.width;
     }
 
     public int getHeight() {
-        return bounds.height;
+        return pixelBounds.height;
     }
 
     class Layer {
@@ -207,8 +207,8 @@ public final class TestCanvas implements DrawableInto {
 
         private Layer() {
             image = new BufferedImage(
-                    TestCanvas.this.bounds.width,
-                    TestCanvas.this.bounds.height,
+                    TestCanvas.this.pixelBounds.width,
+                    TestCanvas.this.pixelBounds.height,
                     BufferedImage.TYPE_INT_ARGB);
             graphics = image.createGraphics();
             graphics.setBackground(new Color(255, 255, 255, 1));
@@ -227,10 +227,11 @@ public final class TestCanvas implements DrawableInto {
 
     public void drawCell(int x, int y, Color color) {
         if (scale == 1) {
-            if (!bounds.contains(x, y)) {
-                throw new IllegalArgumentException("Point " + x + ":" + y + " is out of bounds of a " + bounds.width + "x" + bounds
-                        .height + " pixels large canvas");
+            if (!pixelBounds.contains(x, y)) {
+//                throw new IllegalArgumentException("Point " + x + ":" + y + " is out of bounds of a " + bounds.width + "x" + bounds
+//                        .height + " pixels large canvas");
 
+                return;
             }
             image.setRGB(x, y, color.getRGB());
         } else {

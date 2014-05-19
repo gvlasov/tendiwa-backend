@@ -7,11 +7,11 @@ import org.tendiwa.geometry.CellSet;
  * Divides cells into "inner" and "outer" and selects only those "inner" cells that have "outer" cells exactly at
  * certain distance, but not closer.
  */
-public class ChebyshevDistanceCellBufferBorder implements CellSet {
+public class ChebyshevDistanceBufferBorder implements CellSet {
     private int distance;
     private CellSet outerSideFinder;
 
-    public ChebyshevDistanceCellBufferBorder(
+    public ChebyshevDistanceBufferBorder(
             int distance,
             CellSet outerSideFinder
     ) {

@@ -1,37 +1,30 @@
 package org.tendiwa.demos;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
 import org.jgrapht.UndirectedGraph;
 import org.tendiwa.demos.settlements.CityDrawer;
 import org.tendiwa.drawing.*;
 import org.tendiwa.geometry.*;
-import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.extensions.CachedCellSet;
-import org.tendiwa.geometry.extensions.ChebyshevDistanceCellBufferBorder;
+import org.tendiwa.geometry.extensions.ChebyshevDistanceBuffer;
+import org.tendiwa.geometry.extensions.ChebyshevDistanceBufferBorder;
 import org.tendiwa.geometry.extensions.IntershapeNetwork;
-import org.tendiwa.geometry.extensions.IntershapeNetworkBuilder;
 import org.tendiwa.noise.Noise;
 import org.tendiwa.noise.SimpleNoiseSource;
 import org.tendiwa.pathfinding.dijkstra.PathTable;
 import org.tendiwa.settlements.City;
 import org.tendiwa.settlements.CityBoundsFactory;
 import org.tendiwa.settlements.CityBuilder;
-import org.tendiwa.settlements.CityCell;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
-import static java.awt.Color.BLUE;
+import static java.awt.Color.*;
 import static org.tendiwa.geometry.DSL.rectangle;
 
 public class CoastlineDemo implements Runnable {
     int maxCityRadius = 35;
-    int minDistanceFromCityBorderToWater = 3;
+    int minDistanceFromCoastToCityBorder = 3;
     int minDistanceBetweenCityCenters = maxCityRadius * 3;
     int minDistanceFromCoastToCityCenter = 20;
     SimpleNoiseSource noise = (x, y) -> Noise.noise(
@@ -39,11 +32,18 @@ public class CoastlineDemo implements Runnable {
             ((double) y) / 50,
             6
     );
-    Rectangle worldSize = rectangle(400, 300);
-    CellSet water = (x, y) -> noise.noise(x, y) <= 127;
+    Rectangle worldSize = new Rectangle(20, 20, 200, 200);
+    CellSet water = (x, y) -> noise.noise(x, y) <= 128;
     CachedCellSet borderWithCityCenters = new CachedCellSet(
-            new ChebyshevDistanceCellBufferBorder(
+            new ChebyshevDistanceBufferBorder(
                     minDistanceFromCoastToCityCenter,
+                    (x, y) -> worldSize.contains(x, y) && water.contains(x, y)
+            ),
+            worldSize
+    );
+    CachedCellSet cellsCloseToCoast = new CachedCellSet(
+            new ChebyshevDistanceBuffer(
+                    minDistanceFromCoastToCityBorder,
                     (x, y) -> worldSize.contains(x, y) && water.contains(x, y)
             ),
             worldSize
@@ -52,13 +52,13 @@ public class CoastlineDemo implements Runnable {
             borderWithCityCenters,
             minDistanceBetweenCityCenters
     );
-    @Inject
-    @Named("scale2")
-    public TestCanvas canvas;
+    //    @Inject
+//    @Named("scale2")
+    public TestCanvas canvas = new TestCanvas(2, worldSize.x+worldSize.getMaxX(), worldSize.y+worldSize.getMaxY());
     DrawingAlgorithm<Cell> grassColor = DrawingCell.withColor(Color.GREEN);
     DrawingAlgorithm<Cell> waterColor = DrawingCell.withColor(BLUE);
 
-    CityBoundsFactory boundsFactory = new CityBoundsFactory(worldSize, water);
+    CityBoundsFactory boundsFactory = new CityBoundsFactory(worldSize, water, this);
 
     public static void main(String[] args) {
         Demos.run(
@@ -70,9 +70,11 @@ public class CoastlineDemo implements Runnable {
 
     @Override
     public void run() {
+        System.out.println(worldSize+" "+worldSize.getMaxX());
         drawTerrain();
 //        canvas.draw(borderWithCityCenters, DrawingCellSet.withColor(Color.RED));
-        Collection<FiniteCellSet> shapeExits = new HashSet<>();
+        Collection<FiniteCellSet> shapeExitsSets = new HashSet<>();
+        MutableCellSet citiesCells = new ScatteredMutableCellSet();
         for (Cell cell : cityCenters) {
             int maxCityRadius = this.maxCityRadius + cell.x % 30 - 15;
             Rectangle cityBoundRec = Recs
@@ -80,13 +82,13 @@ public class CoastlineDemo implements Runnable {
                     .intersectionWith(worldSize)
                     .get();
             CachedCellSet coast = new CachedCellSet(
-                    new ChebyshevDistanceCellBufferBorder(minDistanceFromCityBorderToWater, water),
+                    new ChebyshevDistanceBufferBorder(minDistanceFromCoastToCityBorder, water),
                     cityBoundRec
             );
             BoundedCellSet cityShape = new PathTable(
                     cell.x,
                     cell.y,
-                    (x, y) -> worldSize.contains(x, y) && !coast.contains(x, y),
+                    (x, y) -> worldSize.stretch(1).contains(x, y) && !coast.contains(x, y),
                     maxCityRadius
             ).computeFull();
 //            canvas.draw(cell, DrawingCell.withColorAndSize(Color.black, 6));
@@ -100,34 +102,60 @@ public class CoastlineDemo implements Runnable {
             City city = new CityBuilder(cityBounds)
                     .withDefaults()
                     .withRoadsFromPoint(4)
-                    .withSecondaryRoadNetworkDeviationAngle(0.6)
-                    .withRoadSegmentLength(5, 13)
-                    .withConnectivity(0.2)
+                    .withSecondaryRoadNetworkDeviationAngle(0.1)
+                    .withRoadSegmentLength(10)
+                    .withConnectivity(1)
                     .withMaxStartPointsPerCycle(3)
                     .build();
+            citiesCells.addAll(cityShape);
             canvas.draw(city, new CityDrawer());
-            city
+            FiniteCellSet exitCells = city
                     .getCells()
                     .stream()
-                    .map(CityCell::secondaryRoadNetwork)
-                    .flatMap(network -> network.edgeSet().stream())
-                    .flatMap(edge -> ImmutableSet.of(edge.start, edge.end).stream())
-                    .map(Point2D::toCell)
+                    .flatMap(c -> c
+                            .exitsOnCycles()
+                            .stream()
+                            .filter(p -> c
+                                    .secondaryRoadNetwork()
+                                    .edgeSet()
+                                    .stream()
+                                    .anyMatch(e -> e.start.equals(p) || e.end.equals(p))
+                            )
+                            .map(Point2D::toCell)
+                    )
                     .collect(CellSet.toCellSet());
+            shapeExitsSets.add(exitCells);
         }
+
+        CellSet spaceBetweenCities = (x, y) ->
+                worldSize.contains(x, y)
+                        && !water.contains(x, y)
+                        && !citiesCells.contains(x, y)
+                        && !cellsCloseToCoast.contains(x, y);
         IntershapeNetwork network = IntershapeNetwork.builder()
-                .withShapeExits(shapeExits)
-                .withWalkableCells((x, y) -> !water.contains(x, y))
+                .withShapeExits(shapeExitsSets)
+                .withWalkableCells(spaceBetweenCities
+                )
                 .build();
-        for (CellSegment segment : network.getGraph().edgeSet()) {
-//            canvas.draw(segment, DrawingCellSegment.withColor(Color.RED));
+        Wave wave = Wave.from(new Cell(177, 119)).goingOver(spaceBetweenCities);
+//        for (Cell cell : wave) {
+//            canvas.draw(cell, DrawingCell.withColor(Color.DARK_GRAY));
+//        }
+//        canvas.draw(citiesCells, DrawingCellSet.withColor(Color.DARK_GRAY));
+        for (FiniteCellSet exits : shapeExitsSets) {
+            canvas.draw(exits, DrawingCellSet.withColor(Color.RED));
         }
+
+        for (CellSegment segment : network.getGraph().edgeSet()) {
+            canvas.draw(segment, DrawingCellSegment.withColor(Color.RED));
+        }
+        canvas.draw(cellsCloseToCoast, DrawingCellSet.withColor(Color.PINK));
 
     }
 
     private void drawTerrain() {
-        for (int i = 0; i < worldSize.width; i++) {
-            for (int j = 0; j < worldSize.height; j++) {
+        for (int i = worldSize.x; i <= worldSize.getMaxX(); i++) {
+            for (int j = worldSize.y; j <= worldSize.getMaxY(); j++) {
                 canvas.draw(new Cell(i, j), water.contains(i, j) ? waterColor : grassColor);
             }
         }

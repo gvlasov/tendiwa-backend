@@ -1,5 +1,6 @@
 package org.tendiwa.settlements;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -7,23 +8,22 @@ import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.graph.UnmodifiableUndirectedGraph;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.MinimalCycle;
 
 import java.util.*;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * [Kelly section 4.3.1]
  * <p>
- * A part of a city bounded by a fundamental basis cycle (one of those in <i>minimal cycle basis</i> from [Kelly
- * section
+ * A part of a city bounded by a fundamental basis cycle (one of those in <i>minimal cycle basis</i> from [Kelly section
  * 4.3.1, figure 41].
  */
-public class CityCell {
+public class NetworkWithinCycle {
     private final SimpleGraph<Point2D, Segment2D> relevantNetwork;
+    private final Set<Point2D> cycleNodes;
     private TestCanvas canvas;
     private final SimpleGraph<Point2D, Segment2D> secRoadNetwork;
     private MinimalCycle<Point2D, Segment2D> minimalCycle;
@@ -46,26 +46,35 @@ public class CityCell {
     private final double connectivity;
     private double secondaryRoadNetworkDeviationAngle;
     private final Random random;
-    private Collection<Point2D> deadEnds = new HashSet<>();
+    private Set<Point2D> deadEnds = new HashSet<>();
+    private ImmutableSet.Builder<Point2D> outerPointsBuilder = ImmutableSet.builder();
+    private ImmutableSet<Point2D> exitsOnCycles;
     private final int maxNumOfStartPoints;
     private double secondaryRoadNetworkRoadLengthDeviation;
     public double v;
 
     /**
+     * Returns a set points where secondary road network is connected with the cycle.
+     * @return
+     */
+    public ImmutableSet<Point2D> exitsOnCycles() {
+        return exitsOnCycles;
+    }
+
+    /**
      * @param graph
-     *         A preconstructed graph of low level roads, constructed by
-     *         {@link City#constructCityCellGraph(org.tendiwa.graphs.MinimalCycle, java.util.Set)}.
+     *         A preconstructed graph of low level roads, constructed by {@link City#constructCityCellGraph(org.tendiwa.graphs.MinimalCycle,
+     *         java.util.Set)}.
      * @param minimalCycle
-     *         A MinimalCycle that contains this CityCell's secondary road network inside it.
+     *         A MinimalCycle that contains this NetworkWithinCycle's secondary road network inside it.
      * @param filamentEdges
      *         A collection of all the edges of a {@link org.tendiwa.settlements.City#lowLevelRoadGraph} that are not
      *         part of any minimal cycles. The same collection is passed to all the CityCells.
      * @param roadsFromPoint
      *         [Kelly figure 42, variable ParamDegree]
      *         <p>
-     *         How many lines would normally go from one point of secondary road network. A CityCell is not
-     *         guaranteed to have exactly {@code maxRoadsFromPoint} starting roads,
-     *         because such amount might not fit into a cell.
+     *         How many lines would normally go from one point of secondary road network. A NetworkWithinCycle is not guaranteed
+     *         to have exactly {@code maxRoadsFromPoint} starting roads, because such amount might not fit into a cell.
      * @param roadSegmentLength
      *         [Kelly figure 42, variable ParamSegmentLength]
      *         <p>
@@ -94,13 +103,12 @@ public class CityCell {
      *         <p>
      *         In [Kelly figure 43] there are 2 starting points.
      *         <p>
-     *         A CityCell is not
-     *         guaranteed to have exactly {@code maxRoadsFromPoint} starting roads,
-     *         because such amount might not fit into a cell.
+     *         A NetworkWithinCycle is not guaranteed to have exactly {@code maxRoadsFromPoint} starting roads, because such
+     *         amount might not fit into a cell.
      * @param random
      *         A seeded {@link java.util.Random} used to generate the parent {@link City}.
      */
-    CityCell(
+    NetworkWithinCycle(
             SimpleGraph<Point2D, Segment2D> graph,
             MinimalCycle<Point2D, Segment2D> minimalCycle,
             Collection<Segment2D> filamentEdges,
@@ -144,8 +152,10 @@ public class CityCell {
             ring = coordinates;
         }
         isCycleClockwise = false;
+        cycleNodes = new HashSet<>(minimalCycle.vertexList());
 
         buildLine2DNetwork(minimalCycle);
+        exitsOnCycles = outerPointsBuilder.build();
 
     }
 
@@ -171,7 +181,7 @@ public class CityCell {
      * Calculates initial road segments and processes road growth.
      *
      * @param cycle
-     *         A MinimalCycle that contains this CityCell's secondary road network inside it.
+     *         A MinimalCycle that contains this NetworkWithinCycle's secondary road network inside it.
      */
     private void buildLine2DNetwork(MinimalCycle<Point2D, Segment2D> cycle) {
         Deque<Line2DNetworkStep> nodeQueue = new ArrayDeque<>();
@@ -187,14 +197,10 @@ public class CityCell {
             if (newNode != null && !isDeadEnd(newNode)) {
                 nodeQueue.push(new Line2DNetworkStep(newNode, direction));
                 deadEnds.add(sourceNode);
+                outerPointsBuilder.add(sourceNode);
             }
         }
-        int iter = 0;
         while (!nodeQueue.isEmpty()) {
-//            if (iter == 10) {
-//                break;
-//            }
-            iter++;
             Line2DNetworkStep node = nodeQueue.removeLast();
             for (int i = 1; i < roadsFromPoint; i++) {
                 double newDirection = deviateDirection(node.direction + Math.PI + i * (Math.PI * 2 / roadsFromPoint));
@@ -260,7 +266,7 @@ public class CityCell {
                 if (ring[i + 1].equals(end)) {
                     return true;
                 } else {
-                    assert ring[i == 0 ? ring.length-2 : i - 1].equals(end);
+                    assert ring[i == 0 ? ring.length - 2 : i - 1].equals(end);
                     return false;
                 }
             }
@@ -330,12 +336,12 @@ public class CityCell {
     }
 
     /**
-     * Adds a new edge between two vertices that may or may not exist in CityCell's graph.
+     * Adds a new edge between two vertices that may or may not exist in NetworkWithinCycle's graph.
      *
      * @param source
      *         One vertex.
      * @param target
-     *         Another vertex (order is irrelevant since graphs are undirected in CityCell).
+     *         Another vertex (order is irrelevant since graphs are undirected in NetworkWithinCycle).
      */
     private void addRoad(Point2D source, Point2D target) {
         relevantNetwork.addEdge(source, target);
@@ -343,13 +349,17 @@ public class CityCell {
             secRoadNetwork.addVertex(source);
             secRoadNetwork.addVertex(target);
             secRoadNetwork.addEdge(source, target);
+            if (cycleNodes.contains(target)) {
+                // Builder may contain the target point, but then it just won't be added.
+                outerPointsBuilder.add(target);
+            }
         }
     }
 
     /**
      * Creates an unmodifiable view of {@link #secRoadNetwork}.
      *
-     * @return An unmodifiable graph containing this CityCell's secondary road network.
+     * @return An unmodifiable graph containing this NetworkWithinCycle's secondary road network.
      */
     public UndirectedGraph<Point2D, Segment2D> secondaryRoadNetwork() {
         return new UnmodifiableUndirectedGraph<>(secRoadNetwork);
@@ -359,8 +369,7 @@ public class CityCell {
     /**
      * [Kelly figure 42]
      * <p>
-     * Adds new node between two existing nodes, removing an existing road between them and placing 2 new roads. to
-     * road
+     * Adds new node between two existing nodes, removing an existing road between them and placing 2 new roads. to road
      * network. Since {@link org.tendiwa.settlements.RoadGraph} is immutable, new nodes are saved in a separate
      * collection.
      *
@@ -381,6 +390,10 @@ public class CityCell {
         relevantNetwork.addVertex(point);
         addRoad(road.start, point);
         addRoad(point, road.end);
+        if (cycleNodes.contains(road.start) && cycleNodes.contains(road.end)) {
+            cycleNodes.add(point);
+            outerPointsBuilder.add(point);
+        }
     }
 
     private Point2D calculateDeviatedMidPoint(Segment2D road) {
@@ -396,7 +409,7 @@ public class CityCell {
      * Finds the roads of to start secondary road network generation from.
      *
      * @param cycle
-     *         A MinimalCycle that contains this CityCell's secondary road network inside it.
+     *         A MinimalCycle that contains this NetworkWithinCycle's secondary road network inside it.
      * @return Several roads.
      */
     private Collection<Segment2D> startingRoads(MinimalCycle<Point2D, Segment2D> cycle) {

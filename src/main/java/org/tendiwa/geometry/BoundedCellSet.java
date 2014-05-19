@@ -11,8 +11,7 @@ import java.util.Iterator;
  */
 public interface BoundedCellSet extends FiniteCellSet {
     /**
-     * Returns a rectangle in which all cells of this CellSet reside.
-     * Note that the bound in not necessarily the least
+     * Returns a rectangle in which all cells of this CellSet reside. Note that the bound in not necessarily the least
      * rectangular hull of all computed cells.
      *
      * @return Rectangular bounds of this CellSet.
@@ -44,9 +43,9 @@ public interface BoundedCellSet extends FiniteCellSet {
                 do {
                     n++;
                     x = (n % getBounds().width) + getBounds().x;
-                    y = (n / getBounds().height) + getBounds().y;
+                    y = (n / getBounds().width) + getBounds().y;
                 }
-                while (!contains(x, y) && n < maxN);
+                while (n < maxN && !contains(x, y));
                 if (n < maxN) {
                     next = new Cell(x, y);
                 } else {
@@ -64,8 +63,7 @@ public interface BoundedCellSet extends FiniteCellSet {
     }
 
     /**
-     * Creates a new ImmutableList containing all of cells within {@link #getBounds()} that are
-     * buffer border cells.
+     * Creates a new ImmutableList containing all of cells within {@link #getBounds()} that are buffer border cells.
      *
      * @return A new ImmutableList
      */

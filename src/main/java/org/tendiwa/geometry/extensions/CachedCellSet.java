@@ -39,13 +39,15 @@ public class CachedCellSet implements BoundedCellSet {
      */
     public boolean contains(int x, int y) {
         if (x < bounds.x || x > bounds.getMaxX()) {
-            throw new IllegalArgumentException(
-                    "x must be in [" + bounds.x + ";" + bounds.getMaxX() + "] (x == " + x + ")"
-            );
+//            throw new IllegalArgumentException(
+//                    "x must be in [" + bounds.x + ";" + bounds.getMaxX() + "] (x == " + x + ")"
+//            );
+            return false;
         }
         if (y < bounds.y || y > bounds.getMaxY()) {
-            throw new IllegalArgumentException(
-                    "y must be in [" + bounds.y + ";" + bounds.getMaxY() + "] (y == " + y + ")");
+//            throw new IllegalArgumentException(
+//                    "y must be in [" + bounds.y + ";" + bounds.getMaxY() + "] (y == " + y + ")");
+            return false;
         }
         if (cache[x - bounds.x][y - bounds.y] == NOT_CACHED) {
             if (source.contains(x, y)) {

@@ -31,7 +31,7 @@ public class City {
     private final double deviationAngleRad;
     private final double approachingPerSample;
     private final Set<Segment2D> highLevelGraphEdges;
-    private final ImmutableSet<CityCell> cells;
+    private final ImmutableSet<NetworkWithinCycle> cells;
     private Random random;
     private final int roadsFromPoint;
     private final double connectivity;
@@ -80,9 +80,9 @@ public class City {
      *         <p>
      *         A radius around secondary roads' end points inside which new end points would snap to existing ones.
      * @param maxStartPointsPerCell
-     *         Number of starting points for road generation in each CityCell.
+     *         Number of starting points for road generation in each NetworkWithinCycle.
      *         <p>
-     *         A CityCell is not
+     *         A NetworkWithinCycle is not
      *         guaranteed to have exactly {@code maxRoadsFromPoint} starting roads,
      *         because such amount might not fit into a cell.
      *         <p>
@@ -163,7 +163,7 @@ public class City {
         }
 
 
-        ImmutableSet.Builder<CityCell> cellsBuilder = ImmutableSet.builder();
+        ImmutableSet.Builder<NetworkWithinCycle> cellsBuilder = ImmutableSet.builder();
         fillBuilderWithCells(cellsBuilder);
         cells = cellsBuilder.build();
         if (cells.isEmpty()) {
@@ -171,7 +171,7 @@ public class City {
         }
     }
 
-    private void fillBuilderWithCells(ImmutableSet.Builder<CityCell> cellsBuilder) {
+    private void fillBuilderWithCells(ImmutableSet.Builder<NetworkWithinCycle> cellsBuilder) {
         MinimumCycleBasis<Point2D, Segment2D> primitives = new MinimumCycleBasis<>(lowLevelRoadGraph, new VertexPositionAdapter<Point2D>() {
             @Override
             public double getX(Point2D vertex) {
@@ -205,7 +205,7 @@ public class City {
             }
         }).collect(Collectors.toList());
         for (MinimalCycle<Point2D, Segment2D> cycle : sortedCycles) {
-            cellsBuilder.add(new CityCell(
+            cellsBuilder.add(new NetworkWithinCycle(
                     cellGraphs.get(cycle),
                     cycle,
                     filamentEdges,
@@ -241,10 +241,10 @@ public class City {
     }
 
     /**
-     * Constructs a graph of low level roads for a {@link CityCell} that resides inside a {@code cycle}.
+     * Constructs a graph of low level roads for a {@link NetworkWithinCycle} that resides inside a {@code cycle}.
      *
      * @param cycle
-     *         A MinimalCycle inside which a CityCell resides.
+     *         A MinimalCycle inside which a NetworkWithinCycle resides.
      * @param filaments
      *         All the filaments if {@link #lowLevelRoadGraph}.
      * @return A graph containing the {@code cycle} and all the {@code filaments}.
@@ -276,7 +276,7 @@ public class City {
      *
      * @return All CityCells of this City.
      */
-    public ImmutableSet<CityCell> getCells() {
+    public ImmutableSet<NetworkWithinCycle> getCells() {
         return cells;
     }
 
