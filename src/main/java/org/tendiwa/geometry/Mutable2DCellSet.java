@@ -34,11 +34,13 @@ public class Mutable2DCellSet implements MutableCellSet, BoundedCellSet {
      *         X coordinate of a cell.
      * @param y
      *         Y coordinate of a cell.
+     * @throws java.lang.ArrayIndexOutOfBoundsException
+     *         If {x:y} is not within bounds.
      */
     @Override
     public void add(int x, int y) {
         boolean present = cells[x - bounds.x][y - bounds.y];
-        if (!present) {
+        if (present) {
             throw new IllegalArgumentException(
                     "Can't add cell " + x + " " + y + " because it is already present in this set"
             );
@@ -58,6 +60,8 @@ public class Mutable2DCellSet implements MutableCellSet, BoundedCellSet {
      *
      * @param cell
      *         A cell to remove from this
+     * @throws java.lang.ArrayIndexOutOfBoundsException
+     *         If {x:y} is not within bounds.
      */
     @Override
     public void remove(Cell cell) {

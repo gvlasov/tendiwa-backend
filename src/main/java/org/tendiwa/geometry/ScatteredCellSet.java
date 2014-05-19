@@ -43,4 +43,9 @@ public class ScatteredCellSet implements FiniteCellSet {
     public boolean contains(int x, int y) {
         return contains(new Cell(x, y));
     }
+
+    @Override
+    public ImmutableSet<Cell> toSet() {
+        return (ImmutableSet<Cell>) cells;
+    }
 }

@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.geometry.extensions.PlanarGraphEdgesSelfIntersection;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.*;

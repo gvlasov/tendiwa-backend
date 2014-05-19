@@ -31,7 +31,7 @@ public class DistantCellsFinder implements Iterable<Cell> {
     )
 
     {
-        this.cells = ImmutableList.copyOf(cells.toList());
+        this.cells = ImmutableList.copyOf(cells.toSet());
         this.minDistance = minDistance;
     }
 

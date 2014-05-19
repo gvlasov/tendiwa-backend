@@ -1,10 +1,7 @@
 package org.tendiwa.geometry.extensions;
 
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
 import org.junit.Assert;
 import org.junit.Test;
-import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.Rectangle;
 
 import static org.tendiwa.geometry.DSL.rectangle;
@@ -20,7 +17,7 @@ public class CachedCellSetTest {
                 ),
                 rectangle(15, 15)
         );
-        Assert.assertEquals(96, cells.toList().size());
+        Assert.assertEquals(96, cells.toSet().size());
     }
 
     @Test
@@ -33,6 +30,6 @@ public class CachedCellSetTest {
                 ),
                 rectangle(15, 15)
         );
-        Assert.assertEquals(200, cells.toList().size());
+        Assert.assertEquals(200, cells.toSet().size());
     }
 }

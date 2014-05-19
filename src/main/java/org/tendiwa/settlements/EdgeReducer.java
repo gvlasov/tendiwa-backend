@@ -13,7 +13,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-//TODO: This class mutates construstor arument. Check that out.
+//TODO: This class mutates constructor argument. Check that out.
 class EdgeReducer {
 
     private final CardinalDirection[] growingDirs = {CardinalDirection.N, CardinalDirection.E};

@@ -30,6 +30,56 @@ public class Wave implements Iterable<Cell> {
         return new StepGoingOver(startCell);
     }
 
+    /**
+     * Computes this Wave until it fills all allowed space, collecting its cells into a {@link CellSet}.
+     * <p>
+     * Because Wave possibly has an infinite amount of cells (limited only by int size), you should provide {@code
+     * limit} of cells found. After reaching that limit, the Wave is considered to be going into infinity, and this
+     * method throws an exception.
+     * <p>
+     * Unlike
+     *
+     * @param limit
+     *         The maximum number of cells that is allowed to be collected.
+     * @return A set of all cells of this Wave.
+     * @throws java.lang.IndexOutOfBoundsException
+     *         If number of cells collected exceeds {@code limit}.
+     * @see #asCellSet(Rectangle)
+     */
+    public ScatteredCellSet asCellSet(int limit) {
+        ImmutableSet.Builder<Cell> answer = ImmutableSet.builder();
+        int i = 0;
+        for (Cell cell : this) {
+            answer.add(cell);
+            if (i++ == limit) {
+                throw new IndexOutOfBoundsException("Number of cells fetched from wave exceeds limit (" + limit + ")");
+            }
+        }
+        return new ScatteredCellSet(answer.build());
+    }
+
+    /**
+     * Computes this Wave until it fills all allowed space, collecting its cells into a {@link CellSet}.
+     * <p>
+     * Unlike {@link #asCellSet(int)} where memory used grows linearly, this method returns a cell set that uses {@code
+     * bounds.width*bounds.height} memory. This method produces a more efficient CellSet if the Wave fills a
+     * considerable part of {@code bounds}.
+     *
+     * @param bounds
+     *         A rectangle that contains all cells of this Wave.
+     * @return A set of all cells of this Wave.
+     * @throws java.lang.ArrayIndexOutOfBoundsException
+     *         If {x:y} is not within bounds.
+     * @see #asCellSet(int)
+     */
+    public BoundedCellSet asCellSet(Rectangle bounds) {
+        Mutable2DCellSet answer = new Mutable2DCellSet(bounds);
+        for (Cell cell : this) {
+            answer.add(cell);
+        }
+        return answer;
+    }
+
     @Override
     public Iterator<Cell> iterator() {
         return new Iterator<Cell>() {

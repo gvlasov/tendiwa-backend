@@ -58,7 +58,8 @@ public class CoastlineDemo implements Runnable {
     DrawingAlgorithm<Cell> grassColor = DrawingCell.withColor(Color.GREEN);
     DrawingAlgorithm<Cell> waterColor = DrawingCell.withColor(BLUE);
 
-    CityBoundsFactory boundsFactory = new CityBoundsFactory(worldSize, water, this);
+    CityBoundsFactory boundsFactory = new CityBoundsFactory(water, this);
+    private Rectangle worldSizeStretchedBy1 = worldSize.stretch(1);
 
     public static void main(String[] args) {
         Demos.run(
@@ -88,7 +89,7 @@ public class CoastlineDemo implements Runnable {
             BoundedCellSet cityShape = new PathTable(
                     cell.x,
                     cell.y,
-                    (x, y) -> worldSize.stretch(1).contains(x, y) && !coast.contains(x, y),
+                    (x, y) -> worldSizeStretchedBy1.contains(x, y) && !coast.contains(x, y),
                     maxCityRadius
             ).computeFull();
 //            canvas.draw(cell, DrawingCell.withColorAndSize(Color.black, 6));
@@ -149,7 +150,7 @@ public class CoastlineDemo implements Runnable {
         for (CellSegment segment : network.getGraph().edgeSet()) {
             canvas.draw(segment, DrawingCellSegment.withColor(Color.RED));
         }
-        canvas.draw(cellsCloseToCoast, DrawingCellSet.withColor(Color.PINK));
+//        canvas.draw(cellsCloseToCoast, DrawingCellSet.withColor(Color.PINK));
 
     }
 

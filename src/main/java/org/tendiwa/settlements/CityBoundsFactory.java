@@ -2,7 +2,7 @@ package org.tendiwa.settlements;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.core.Direction;
@@ -10,7 +10,6 @@ import org.tendiwa.core.Directions;
 import org.tendiwa.demos.CoastlineDemo;
 import org.tendiwa.drawing.DrawingCellSet;
 import org.tendiwa.geometry.*;
-import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.extensions.CachedCellSet;
 import org.tendiwa.geometry.extensions.ChebyshevDistanceBufferBorder;
 import org.tendiwa.pathfinding.dijkstra.PathTable;
@@ -21,13 +20,11 @@ import java.awt.Color;
  * Creates graphs used as a base for a {@link City}.
  */
 public class CityBoundsFactory {
-    private final Rectangle worldRec;
     private final CoastlineDemo demo;
     private final CellSet water;
 
-    public CityBoundsFactory(Rectangle worldRec, CellSet water, CoastlineDemo demo) {
+    public CityBoundsFactory(CellSet water, CoastlineDemo demo) {
         this.water = water;
-        this.worldRec = worldRec;
         this.demo = demo;
     }
 
@@ -43,20 +40,19 @@ public class CityBoundsFactory {
     private PathTable cullIntersectingBoundingRoadsCells(
             CellSet bufferBorder,
             Cell start,
-            Rectangle worldRec,
+            Rectangle boundingRec,
             int radius
     ) {
         return new PathTable(
                 start.x,
                 start.y,
-                (x, y) -> worldRec.contains(x, y) && !bufferBorder.contains(x, y),
+                (x, y) -> boundingRec.contains(x, y) && !bufferBorder.contains(x, y),
                 radius
         ).computeFull();
     }
 
     private UndirectedGraph<Point2D, Segment2D> computeCityBoundingRoads(
             BoundedCellSet cityShape,
-            Rectangle worldRec,
             Cell startCell,
             int radius
     ) {
@@ -70,7 +66,7 @@ public class CityBoundsFactory {
 //        demo.canvas.draw(cityShape.getBounds(), DrawingRectangle.withColor(Color.CYAN));
 //        demo.canvas.draw(cityShape, DrawingCellSet.withColor(Color.PINK));
 //        demo.canvas.draw(startCell, DrawingCell.withColor(Color.RED));
-        demo.canvas.draw(bufferBorder, DrawingCellSet.withColor(Color.BLACK));
+        demo.canvas.draw(bufferBorder, DrawingCellSet.withColor(Color.MAGENTA));
         PathTable culledTable = cullIntersectingBoundingRoadsCells(
                 bufferBorder,
                 startCell,
@@ -98,7 +94,7 @@ public class CityBoundsFactory {
     private UndirectedGraph<Point2D, Segment2D> bufferBorderToGraph(CachedCellSet bufferBorder) {
         UndirectedGraph<Point2D, Segment2D> graph = new SimpleGraph<>(Segment2D::new);
         BiMap<Cell, Point2D> cell2PointMap = HashBiMap.create();
-        ImmutableList<Cell> borderCells = bufferBorder.toList();
+        ImmutableSet<Cell> borderCells = bufferBorder.toSet();
         for (Cell cell : borderCells) {
             cell2PointMap.put(cell, new Point2D(cell.x, cell.y));
         }
@@ -139,6 +135,6 @@ public class CityBoundsFactory {
                     "Start cell " + startCell + " must be a ground cell, not water cell"
             );
         }
-        return computeCityBoundingRoads(cityShape, worldRec, startCell, maxCityRadius);
+        return computeCityBoundingRoads(cityShape, startCell, maxCityRadius);
     }
 }

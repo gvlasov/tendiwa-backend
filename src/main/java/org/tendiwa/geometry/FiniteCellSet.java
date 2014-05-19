@@ -19,4 +19,5 @@ public interface FiniteCellSet extends CellSet, Iterable<Cell> {
     public static ScatteredCellSet of(Cell... cells) {
         return new ScatteredCellSet(ImmutableSet.copyOf(cells));
     }
+    public ImmutableSet<Cell> toSet();
 }

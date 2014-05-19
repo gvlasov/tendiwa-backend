@@ -1,6 +1,7 @@
 package org.tendiwa.geometry;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
 import java.util.Iterator;
 
@@ -63,12 +64,12 @@ public interface BoundedCellSet extends FiniteCellSet {
     }
 
     /**
-     * Creates a new ImmutableList containing all of cells within {@link #getBounds()} that are buffer border cells.
+     * Creates a new ImmutableSet containing all of cells within {@link #getBounds()} that are buffer border cells.
      *
-     * @return A new ImmutableList
+     * @return A new ImmutableSet containing all of cells within {@link #getBounds()} that are buffer border cells.
      */
-    public default ImmutableList<Cell> toList() {
-        ImmutableList.Builder<Cell> builder = ImmutableList.builder();
+    public default ImmutableSet<Cell> toSet() {
+        ImmutableSet.Builder<Cell> builder = ImmutableSet.builder();
         for (int i = 0; i < getBounds().getWidth(); i++) {
             for (int j = 0; j < getBounds().getHeight(); j++) {
                 if (contains(i + getBounds().x, j + getBounds().y)) {

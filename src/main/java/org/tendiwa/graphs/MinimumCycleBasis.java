@@ -16,6 +16,7 @@ import java.util.*;
  * @param <E>
  *         Type of edges.
  */
+// TODO: Maybe it would be good to aggregate MCB and Graph<Point2D, Segment2D> into one class to reuse the MCB.
 public class MinimumCycleBasis<V, E> {
     private final ListenableUndirectedGraph<V, E> graph;
     private final Comparator<V> comparator = new Comparator<V>() {
