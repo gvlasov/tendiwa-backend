@@ -59,7 +59,7 @@ public class DrawingGraph {
                 );
             }
             for (Point2D v : shape.vertexSet()) {
-                canvas.draw(new Cell((int) Math.round(v.x), (int) Math.round(v.y)), pointDrawing);
+//                canvas.draw(new Cell((int) Math.round(v.x), (int) Math.round(v.y)), pointDrawing);
             }
         };
     }

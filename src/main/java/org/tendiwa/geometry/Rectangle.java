@@ -13,7 +13,7 @@ import java.util.Optional;
  * Adds more geometry methods to Rectangle. Unlike {@link java.awt.Rectangle}, this class can't be of zero width or
  * height.
  */
-public class Rectangle implements Placeable {
+public class Rectangle implements Placeable, BoundedCellSet {
     public final int x;
     public final int y;
     public final int width;
@@ -137,10 +137,8 @@ public class Rectangle implements Placeable {
      * @param endOfSide
      *         SideTest Determines one of the ends of border;
      * @param depth
-     *         How far is the cell from the end of the border. 0 is the first cell near end of border. Depth may be
-     *         even
-     *         more than
-     *         width or height, so the cell will be outside the rectangle.
+     *         How far is the cell from the end of the border. 0 is the first cell near end of border. Depth may be even
+     *         more than width or height, so the cell will be outside the rectangle.
      */
     public Cell getCellFromSide(CardinalDirection side, CardinalDirection endOfSide, int depth) {
         switch (side) {
@@ -200,10 +198,8 @@ public class Rectangle implements Placeable {
      *         SideTest where rectangle stretches
      * @param amount
      *         Amount of cells to stretch. If depth > 0, then rectangle will grow, if depth < 0, then rectangle will
-     *         shrink. Notice
-     *         that if SideTest == N or W, rectangle.x and rectangle.y will move. If depth == 0 then rectangle stays
-     *         the
-     *         same.
+     *         shrink. Notice that if SideTest == N or W, rectangle.x and rectangle.y will move. If depth == 0 then
+     *         rectangle stays the same.
      */
     public Rectangle stretch(CardinalDirection side, int amount) {
         switch (side) {
@@ -293,8 +289,7 @@ public class Rectangle implements Placeable {
 
     /**
      * Returns a Coordinate of Rectangle's middle point. If {@link Rectangle} has odd width or height, Coordinate will
-     * be
-     * rounded up.
+     * be rounded up.
      *
      * @return
      */
@@ -425,8 +420,7 @@ public class Rectangle implements Placeable {
      * @param side
      *         What side take coordinate from.
      * @return X-coordinate in {@code side} is {@link Directions#W} or {@link Directions#E}, Y-coordinate if {@code
-     * side} is
-     * {@link Directions#N} or {@link Directions#S};
+     * side} is {@link Directions#N} or {@link Directions#S};
      */
     public int getStaticCoordOfSide(CardinalDirection side) {
         switch (side) {
@@ -582,8 +576,7 @@ public class Rectangle implements Placeable {
     /**
      * <p>Returns true if this rectangle touches another rectangle's side from inside that rectangle, that is:</p><ol>
      * <li>their sides lie on the same line and</li> <li>this rectangle is at least partially inside another
-     * rectangle</li>
-     * </ol>
+     * rectangle</li> </ol>
      *
      * @param anotherRectangle
      *         True if this rectangle touches another rectangle from inside, false otherwise.
@@ -686,8 +679,8 @@ public class Rectangle implements Placeable {
      * shifted to {@link OrdinalDirection#SE} by {@code dSize}.
      *
      * @param dSize
-     *         A radius to shrink by. This number will be cut from four sides. Note that this still can be
-     *         negative (then at actually extend this rectangle instead of shrinking it).
+     *         A radius to shrink by. This number will be cut from four sides. Note that this still can be negative
+     *         (then at actually extend this rectangle instead of shrinking it).
      * @return A new, srinked rectangle.
      * @see #stretch(int)
      */
@@ -700,8 +693,8 @@ public class Rectangle implements Placeable {
      * and shifted to {@link OrdinalDirection#NW} by {@code dSize}.
      *
      * @param dSize
-     *         A radius to stretch by. This number will be cut from four sides. Note that this still can be
-     *         negative (then at actually extend this rectangle instead of shrinking it).
+     *         A radius to stretch by. This number will be cut from four sides. Note that this still can be negative
+     *         (then at actually extend this rectangle instead of shrinking it).
      * @return A new, stretched rectangle.
      * @see #shrink(int) (int)
      */
@@ -770,17 +763,17 @@ public class Rectangle implements Placeable {
     }
 
     public Optional<Rectangle> intersectionWith(Rectangle another) {
-        int xmin = Math.max(x, another.x);
-        int xmax1 = x + width;
-        int xmax2 = another.x + another.width;
-        int xmax = Math.min(xmax1, xmax2);
-        if (xmax > xmin) {
-            int ymin = Math.max(y, another.y);
-            int ymax1 = y + height;
-            int ymax2 = another.y + another.height;
-            int ymax = Math.min(ymax1, ymax2);
-            if (ymax > ymin) {
-                return Optional.of(new Rectangle(xmin, ymin, xmax - xmin, ymax - ymin));
+        int xMin = Math.max(x, another.x);
+        int xMax1 = x + width;
+        int xMax2 = another.x + another.width;
+        int xMax = Math.min(xMax1, xMax2);
+        if (xMax > xMin) {
+            int yMin = Math.max(y, another.y);
+            int yMax1 = y + height;
+            int yMax2 = another.y + another.height;
+            int yMax = Math.min(yMax1, yMax2);
+            if (yMax > yMin) {
+                return Optional.of(new Rectangle(xMin, yMin, xMax - xMin, yMax - yMin));
             }
         }
         return Optional.empty();

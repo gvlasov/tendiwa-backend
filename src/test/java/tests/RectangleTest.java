@@ -20,7 +20,7 @@ public class RectangleTest {
         points.add(new Cell(23, 29));
         points.add(new Cell(23, 13));
         points.add(new Cell(22, 0));
-        Rectangle r = Recs.rectangleContainingAllPonts(points);
+        Rectangle r = Recs.boundsOfCells(points);
         assertEquals(r, new Rectangle(1, 0, 23, 30));
     }
 

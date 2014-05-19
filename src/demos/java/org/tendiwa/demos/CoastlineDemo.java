@@ -138,7 +138,7 @@ public class CoastlineDemo implements Runnable {
                 .withWalkableCells(spaceBetweenCities
                 )
                 .build();
-        Wave wave = Wave.from(new Cell(177, 119)).goingOver(spaceBetweenCities);
+        Wave wave = Wave.from(new Cell(177, 119)).goingOver(spaceBetweenCities).in8Directions();
 //        for (Cell cell : wave) {
 //            canvas.draw(cell, DrawingCell.withColor(Color.DARK_GRAY));
 //        }

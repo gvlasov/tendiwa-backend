@@ -11,7 +11,9 @@ import java.util.List;
  * A cycle of vertices, ordered clockwise.
  *
  * @param <V>
+ *         Type of vertices.
  * @param <E>
+ *         Type of edges.
  */
 public class MinimalCycle<V, E> implements Primitive<V>, Iterable<E> {
     private final List<V> cycle = new ArrayList<>();

@@ -1,6 +1,10 @@
 package org.tendiwa.geometry;
 
+import com.google.common.collect.Lists;
 import org.tendiwa.settlements.LineIntersection;
+
+import java.util.List;
+import java.util.function.Function;
 
 /**
  * An immutable line
@@ -56,8 +60,7 @@ public class Segment2D {
     /**
      * Finds a point of intersection between this line and another line.
      * <p>
-     * An intersection at ends of lines doesn't
-     * count for an intersection.
+     * An intersection at ends of lines doesn't count for an intersection.
      *
      * @param line
      *         Another line.
@@ -76,8 +79,7 @@ public class Segment2D {
      * Checks if this line intersects another line. This is less expensive than finding the intersection point with
      * {@link #intersection(Segment2D)}.
      * <p>
-     * An intersection at ends of lines doesn't
-     * count for an intersection.
+     * An intersection at ends of lines doesn't count for an intersection.
      *
      * @param line
      *         Another line.
@@ -94,5 +96,11 @@ public class Segment2D {
         int result = start != null ? start.hashCode() : 0;
         result = 31 * result + (end != null ? end.hashCode() : 0);
         return result;
+    }
+
+    public static Function<Segment2D, List<Cell>> toCellList() {
+        return e -> Lists.newArrayList(
+                CellSegment.vector(e.start.toCell(), e.end.toCell())
+        );
     }
 }

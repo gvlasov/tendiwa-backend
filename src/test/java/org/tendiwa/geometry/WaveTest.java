@@ -14,7 +14,7 @@ public class WaveTest {
         int height = 8;
         Rectangle rectangle = Recs.rectangleByCenterPoint(startCell, width, height);
         int i = 0;
-        for (Cell ignored : Wave.from(startCell).goingOver(rectangle::contains)) {
+        for (Cell ignored : Wave.from(startCell).goingOver(rectangle::contains).in8Directions()) {
             i++;
         }
         assertEquals(i, width * height);
@@ -27,6 +27,7 @@ public class WaveTest {
         int numberOfCellsInWave = Wave
                 .from(centerPoint)
                 .goingOver(rectangle::contains)
+                .in8Directions()
                 .asCellSet(rectangle.width*rectangle.height)
                 .toSet()
                 .size();
@@ -40,6 +41,7 @@ public class WaveTest {
         int numberOfCellsInWave = Wave
                 .from(centerPoint)
                 .goingOver(rectangle::contains)
+                .in8Directions()
                 .asCellSet(rectangle)
                 .toSet()
                 .size();
@@ -52,6 +54,7 @@ public class WaveTest {
         Rectangle rectangle = Recs.rectangleByCenterPoint(centerPoint, 3, 5);
         Wave.from(centerPoint)
                 .goingOver(rectangle::contains)
+                .in8Directions()
                 .asCellSet(Recs.rectangleByCenterPoint(centerPoint, 2, 3))
                 .toSet()
                 .size();

@@ -103,4 +103,40 @@ public interface CellSet {
         return (x, y) -> false;
     }
 
+    public static Collector<Cell, ?, BoundedCellSet> toBoundedCellSet(Rectangle bounds) {
+
+        return new Collector<Cell, Mutable2DCellSet, BoundedCellSet>() {
+            @Override
+            public Supplier<Mutable2DCellSet> supplier() {
+                return () -> new Mutable2DCellSet(bounds);
+            }
+
+            @Override
+            public BiConsumer<Mutable2DCellSet, Cell> accumulator() {
+                return Mutable2DCellSet::add;
+            }
+
+            @Override
+            public BinaryOperator<Mutable2DCellSet> combiner() {
+                return (left, right) -> {
+                    left.addAll(right);
+                    return left;
+                };
+            }
+
+            @Override
+            public Function<Mutable2DCellSet, BoundedCellSet> finisher() {
+                return (a) -> a;
+            }
+
+            @Override
+            public Set<Characteristics> characteristics() {
+                return ImmutableSet.of(
+                        Characteristics.IDENTITY_FINISH,
+                        Characteristics.UNORDERED
+                );
+            }
+        };
+    }
+
 }

@@ -13,13 +13,16 @@ import static java.util.Objects.*;
  * closer a cell is in Chebyshev metric to the start cell, the sooner it will be popped out by iterator.
  */
 public class Wave implements Iterable<Cell> {
+    private final int directions;
     private CellSet passableCells;
     Set<Cell> newFront = new HashSet<>();
     Set<Cell> previousFront;
     private int[] dx = new int[]{1, 0, 0, 0 - 1, 1, 1, 0 - 1, 0 - 1};
     private int[] dy = new int[]{0, 0 - 1, 1, 0, 1, 0 - 1, 1, 0 - 1};
 
-    Wave(Cell startCell, CellSet passableCells) {
+    Wave(Cell startCell, CellSet passableCells, int directions) {
+        assert directions == 4 || directions == 8;
+        this.directions = directions;
         requireNonNull(startCell);
         this.passableCells = requireNonNull(passableCells);
         previousFront = ImmutableSet.of();
@@ -75,6 +78,7 @@ public class Wave implements Iterable<Cell> {
     public BoundedCellSet asCellSet(Rectangle bounds) {
         Mutable2DCellSet answer = new Mutable2DCellSet(bounds);
         for (Cell cell : this) {
+            System.out.println("add " + cell);
             answer.add(cell);
         }
         return answer;
@@ -119,8 +123,28 @@ public class Wave implements Iterable<Cell> {
             this.startCell = startCell;
         }
 
-        public Wave goingOver(CellSet passableCells) {
-            return new Wave(startCell, passableCells);
+        public StepDirections goingOver(CellSet passableCells) {
+            return new StepDirections(startCell, passableCells);
+        }
+
+    }
+
+    public static class StepDirections {
+        private final Cell startCell;
+        private final CellSet passableCells;
+
+        public StepDirections(Cell startCell, CellSet passableCells) {
+
+            this.startCell = startCell;
+            this.passableCells = passableCells;
+        }
+
+        public Wave in4Directions() {
+            return new Wave(startCell, passableCells, 4);
+        }
+
+        public Wave in8Directions() {
+            return new Wave(startCell, passableCells, 8);
         }
     }
 
@@ -128,7 +152,8 @@ public class Wave implements Iterable<Cell> {
         Set<Cell> currentFront = newFront;
         newFront = new HashSet<>();
         for (Cell old : currentFront) {
-            for (int j = 0; j < 8; j++) {
+            // Four first elements of dx and dy are cardinal direction shifts.
+            for (int j = 0; j < directions; j++) {
                 Cell cell = new Cell(old.x + dx[j], old.y + dy[j]);
                 if (!previousFront.contains(cell)
                         && !newFront.contains(cell)

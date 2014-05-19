@@ -1,6 +1,5 @@
 package org.tendiwa.geometry.extensions;
 
-import com.google.common.collect.HashBiMap;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.geometry.*;
@@ -39,7 +38,7 @@ public class IntershapeNetwork {
                 if (!unusedExitCells.containsKey(exitCell)) {
                     continue;
                 }
-                for (Cell waveCell : Wave.from(exitCell).goingOver(walkableCells)) {
+                for (Cell waveCell : Wave.from(exitCell).goingOver(walkableCells).in8Directions()) {
                     if (unusedExitCells.containsKey(waveCell)) {
                         if (!exitSet.contains(waveCell)) {
                             // Connect only different exitSets
