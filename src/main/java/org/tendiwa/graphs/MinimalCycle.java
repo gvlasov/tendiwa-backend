@@ -42,7 +42,7 @@ public class MinimalCycle<V, E> implements Primitive<V>, Iterable<E> {
         answer.addVertex(previous);
         while (iterator.hasNext()) {
             V next = iterator.next();
-            System.out.println(previous+" "+next);
+            System.out.println(previous + " " + next);
             answer.addVertex(next);
             answer.addEdge(previous, next, graph.getEdge(previous, next));
             previous = next;
@@ -86,6 +86,6 @@ public class MinimalCycle<V, E> implements Primitive<V>, Iterable<E> {
      * @return A {@link List} of all vertices of this cycle.
      */
     public List<V> vertexList() {
-        return ImmutableList.<V>builder().addAll(cycle).build();
+        return ImmutableList.copyOf(cycle);
     }
 }

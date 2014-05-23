@@ -9,8 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Builds a graph where vertices are some {@link org.tendiwa.geometry.CellSet}s, and edges are paths from a Cell in one
- * CellSet to a Cell in another one.
+ * Builds a graph where vertices are some {@link org.tendiwa.geometry.FiniteCellSet}s, and edges are paths from a Cell
+ * in one cell set to a Cell in another one.
  * <p>
  * Use {@link org.tendiwa.geometry.extensions.IntershapeNetworkBuilder} to build instances of this class.
  */

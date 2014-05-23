@@ -8,6 +8,7 @@ import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.extensions.PlanarGraphEdgesSelfIntersection;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.extensions.Point2DRowComparator;
 import org.tendiwa.graphs.*;
 
 import java.util.*;
@@ -83,9 +84,8 @@ public class City {
      * @param maxStartPointsPerCell
      *         Number of starting points for road generation in each NetworkWithinCycle.
      *         <p>
-     *         A NetworkWithinCycle is not
-     *         guaranteed to have exactly {@code maxRoadsFromPoint} starting roads,
-     *         because such amount might not fit into a cell.
+     *         A NetworkWithinCycle is not guaranteed to have exactly {@code maxRoadsFromPoint} starting roads, because
+     *         such amount might not fit into a cell.
      *         <p>
      *         In [Kelly figure 43] there are 2 starting points.
      * @param secondaryRoadNetworkDeviationAngle
@@ -95,8 +95,8 @@ public class City {
      *         Kelly doesn't have this as a parameter, it is implied in [Kelly figure 42] under "deviate newDirection"
      *         and "calculate deviated boundaryRoad perpendicular".
      * @throws IllegalArgumentException
-     *         If {@code numberOfSamples <= 0} or if {@code deviationAngle == 0 && numberOfSamples >= 1},
-     *         or if #lowLevelRoadGraph produced from #highLevelRoadGraph intersects itself.
+     *         If {@code numberOfSamples <= 0} or if {@code deviationAngle == 0 && numberOfSamples >= 1}, or if
+     *         #lowLevelRoadGraph produced from #highLevelRoadGraph intersects itself.
      */
     public City(
             RoadGraph highLevelRoadGraph,
@@ -135,7 +135,7 @@ public class City {
         if (maxStartPointsPerCell < 1) {
             throw new IllegalArgumentException("NumOfStartPoints must be at least 1");
         }
-        this.random = random;
+        this.random = new Random(random.nextInt());
         this.roadsFromPoint = roadsFromPoint;
         this.connectivity = connectivity;
         this.roadSegmentLength = roadSegmentLength;
@@ -193,18 +193,22 @@ public class City {
             }
         }
         // Sort cycles to get a fixed order of iteration (so a City will be reproducible with the same seed).
-        List<MinimalCycle<Point2D, Segment2D>> sortedCycles = cellGraphs.keySet().stream().sorted((o1, o2) -> {
-            Point2D p1 = o1.vertexList().get(0);
-            Point2D p2 = o2.vertexList().get(0);
-            int compare = Double.compare(p1.x, p2.x);
-            if (compare == 0) {
-                int compare1 = Double.compare(p1.y, p2.y);
-                assert compare1 != 0;
-                return compare1;
-            } else {
-                return compare;
-            }
-        }).collect(Collectors.toList());
+        List<MinimalCycle<Point2D, Segment2D>> sortedCycles = cellGraphs
+                .keySet()
+                .stream()
+                .sorted((o1, o2) -> {
+                    Point2D p1 = o1.vertexList().get(0);
+                    Point2D p2 = o2.vertexList().get(0);
+                    int compare = Double.compare(p1.x, p2.x);
+                    if (compare == 0) {
+                        int compare1 = Double.compare(p1.y, p2.y);
+                        assert compare1 != 0;
+                        return compare1;
+                    } else {
+                        return compare;
+                    }
+                })
+                .collect(Collectors.toList());
         for (MinimalCycle<Point2D, Segment2D> cycle : sortedCycles) {
             cellsBuilder.add(new NetworkWithinCycle(
                     cellGraphs.get(cycle),
@@ -223,6 +227,7 @@ public class City {
         }
     }
 
+
     /**
      * Constructs all the graphs for this City's CityCells.
      *
@@ -235,8 +240,31 @@ public class City {
     ) {
         Set<Filament<Point2D, Segment2D>> filaments = primitives.filamentsSet();
         Map<MinimalCycle<Point2D, Segment2D>, SimpleGraph<Point2D, Segment2D>> answer = new LinkedHashMap<>();
-        for (MinimalCycle<Point2D, Segment2D> cycle : primitives.minimalCyclesSet()) {
-            answer.put(cycle, constructCityCellGraph(cycle, filaments));
+        EnclosedCycleFilter enclosedCycleFilter = new EnclosedCycleFilter(
+                primitives
+                        .minimalCyclesSet()
+                        .stream()
+                        // TODO: Do we really need this sorting here?
+                        .sorted((a, b) ->
+                                Point2DRowComparator.getInstance().compare(
+                                        a.iterator().next().start,
+                                        b.iterator().next().start
+                                )
+                        )
+                        .collect(Collectors.toList())
+        );
+        Collection<MinimalCycle<Point2D, Segment2D>> enclosingCycles = primitives
+                .minimalCyclesSet()
+                .stream()
+                .filter(enclosedCycleFilter)
+                .collect(Collectors.toList());
+        Collection<MinimalCycle<Point2D, Segment2D>> enclosedCycles = primitives
+                .minimalCyclesSet()
+                .stream()
+                .filter(a -> !enclosedCycleFilter.test(a))
+                .collect(Collectors.toList());
+        for (MinimalCycle<Point2D, Segment2D> cycle : enclosingCycles) {
+            answer.put(cycle, constructCityCellGraph(cycle, filaments, enclosedCycles));
         }
         return answer;
     }
@@ -248,12 +276,14 @@ public class City {
      *         A MinimalCycle inside which a NetworkWithinCycle resides.
      * @param filaments
      *         All the filaments of {@link #lowLevelRoadGraph}.
+     * @param enclosedCycles
+     *         All the cycles of {@link #lowLevelRoadGraph}'s MinimalCycleBasis that reside inside other cycles.
      * @return A graph containing the {@code cycle} and all the {@code filaments}.
      */
     private static SimpleGraph<Point2D, Segment2D> constructCityCellGraph(
             MinimalCycle<Point2D, Segment2D> cycle,
-            Set<Filament<Point2D, Segment2D>> filaments
-    ) {
+            Set<Filament<Point2D, Segment2D>> filaments,
+            Collection<MinimalCycle<Point2D, Segment2D>> enclosedCycles) {
         SimpleGraph<Point2D, Segment2D> graph = new SimpleGraph<>(Segment2D::new);
         for (Filament<Point2D, Segment2D> filament : filaments) {
             for (Point2D vertex : filament.vertexList()) {
@@ -269,6 +299,15 @@ public class City {
         for (Segment2D edge : cycle) {
             graph.addEdge(edge.start, edge.end, edge);
         }
+        for (MinimalCycle<Point2D, Segment2D> enclosedCycle : enclosedCycles) {
+            for (Point2D point : enclosedCycle.vertexList()) {
+                graph.addVertex(point);
+            }
+            for (Segment2D edge : enclosedCycle) {
+                graph.addEdge(edge.start, edge.end, edge);
+            }
+        }
+
         return graph;
     }
 

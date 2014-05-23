@@ -1,10 +1,14 @@
 package org.tendiwa.geometry;
 
 import com.google.common.collect.ImmutableSet;
+import org.tendiwa.geometry.extensions.ChebyshevDistanceBufferBorder;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
+
+import static java.util.Objects.*;
 
 /**
  * An CellSet that holds a finite number of {@link org.tendiwa.geometry.Cell}s.
@@ -21,11 +25,24 @@ public class ScatteredCellSet implements FiniteCellSet {
     Set<Cell> cells;
 
     public ScatteredCellSet(ImmutableSet<Cell> cells) {
-        this.cells = Objects.requireNonNull(cells);
-
+        this.cells = requireNonNull(cells);
     }
 
     ScatteredCellSet() {
+    }
+
+    public ScatteredCellSet(CellSet infiniteSet, Rectangle bounds) {
+        requireNonNull(infiniteSet);
+        requireNonNull(bounds);
+        ImmutableSet.Builder<Cell> builder = ImmutableSet.builder();
+        for (int i = 0; i < bounds.width; i++) {
+            for (int j = 0; j < bounds.height; j++) {
+                if (infiniteSet.contains(bounds.x + i, bounds.y + j)) {
+                    builder.add(new Cell(bounds.x + i, bounds.y + j));
+                }
+            }
+        }
+        cells = builder.build();
     }
 
 

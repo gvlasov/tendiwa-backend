@@ -69,4 +69,5 @@ public class Point2D implements Position2D {
     public Cell toCell() {
         return new Cell((int) x, (int) y);
     }
+
 }

@@ -5,6 +5,8 @@ import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.settlements.City;
 
+import java.awt.Color;
+
 import static java.awt.Color.BLACK;
 
 public class CityDrawer implements DrawingAlgorithm<City> {
@@ -16,7 +18,7 @@ public class CityDrawer implements DrawingAlgorithm<City> {
                         .forEach(line -> canvas.drawLine(line.start.toCell(), line.end.toCell(), BLACK))
                 );
         for (Segment2D roadSegment : city.getLowLevelRoadGraph().edgeSet()) {
-//            canvas.drawLine(roadSegment, GRAY);
+            canvas.drawLine(roadSegment, Color.RED);
         }
     }
 }

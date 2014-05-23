@@ -2,6 +2,7 @@ package org.tendiwa.geometry;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -23,17 +24,17 @@ import java.util.LinkedList;
  * }</pre>
  */
 public class DistantCellsFinder implements Iterable<Cell> {
-    private final BoundedCellSet cells;
+    private final ImmutableSet<Cell> cells;
     private final int minDistance;
 
     public DistantCellsFinder(
-            BoundedCellSet cells,
+            FiniteCellSet cells,
             int minDistance
     )
 
     {
 
-        this.cells = cells;
+        this.cells = cells.toSet();
         this.minDistance = minDistance;
     }
 
