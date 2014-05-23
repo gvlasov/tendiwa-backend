@@ -1,7 +1,12 @@
 package org.tendiwa.graphs;
 
 import com.google.common.collect.ImmutableList;
+import com.google.inject.internal.asm.$Handle;
 import org.jgrapht.UndirectedGraph;
+import org.jgrapht.graph.SimpleGraph;
+import org.jgrapht.graph.UnmodifiableGraph;
+import org.jgrapht.graph.UnmodifiableUndirectedGraph;
+import org.tendiwa.geometry.Segment2D;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -19,12 +24,35 @@ public class MinimalCycle<V, E> implements Primitive<V>, Iterable<E> {
     private final List<V> cycle = new ArrayList<>();
     private UndirectedGraph<V, E> graph;
 
+    /**
+     * @param graph
+     *         A larger graph in which this minimal cycle exists.
+     * @param cycle
+     *         A list of cells of this minimal cycle.
+     */
     MinimalCycle(UndirectedGraph<V, E> graph, List<V> cycle) {
         this.graph = graph;
         this.cycle.addAll(cycle);
     }
 
+    public UndirectedGraph<V, E> asGraph() {
+        UndirectedGraph<V, E> answer = new SimpleGraph<>(graph.getEdgeFactory());
+        Iterator<V> iterator = cycle.iterator();
+        V previous = iterator.next();
+        answer.addVertex(previous);
+        while (iterator.hasNext()) {
+            V next = iterator.next();
+            System.out.println(previous+" "+next);
+            answer.addVertex(next);
+            answer.addEdge(previous, next, graph.getEdge(previous, next));
+            previous = next;
+        }
+        answer.addEdge(previous, cycle.get(0));
+        return answer;
+    }
+
     @Override
+    @Deprecated
     /**
      * Inserting is disabled for this class.
      * @throws java.lang.UnsupportedOperationException

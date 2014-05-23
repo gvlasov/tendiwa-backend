@@ -247,7 +247,7 @@ public class City {
      * @param cycle
      *         A MinimalCycle inside which a NetworkWithinCycle resides.
      * @param filaments
-     *         All the filaments if {@link #lowLevelRoadGraph}.
+     *         All the filaments of {@link #lowLevelRoadGraph}.
      * @return A graph containing the {@code cycle} and all the {@code filaments}.
      */
     private static SimpleGraph<Point2D, Segment2D> constructCityCellGraph(

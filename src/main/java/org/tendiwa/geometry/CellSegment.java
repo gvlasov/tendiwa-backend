@@ -9,8 +9,8 @@ import java.util.Iterator;
  */
 public class CellSegment implements Iterable<Cell> {
 
-    private final Cell start;
-    private final Cell end;
+    public final Cell start;
+    public final Cell end;
 
     public CellSegment(Cell start, Cell end) {
         this.start = start;
@@ -52,8 +52,8 @@ public class CellSegment implements Iterable<Cell> {
     }
 
     /**
-     * Iterates over cells in a line from {@link #start} to {@link #end} inclusive. Computes those cells anew each
-     * time  this method is called.
+     * Iterates over cells in a line from {@link #start} to {@link #end} inclusive. Computes those cells anew each time
+     * this method is called.
      *
      * @return An iterator over an array of cells.
      */

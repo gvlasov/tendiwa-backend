@@ -23,7 +23,7 @@ public class ScatteredMutableCellSet extends ScatteredCellSet implements Mutable
     public void add(Cell cell) {
         if (!cells.add(cell)) {
             throw new IllegalArgumentException(
-                    "Cell " + cell + " is already present in this set " + cells
+                    "Cell " + cell + " is already present in this set of " + cells.size() + " cells"
             );
         }
     }

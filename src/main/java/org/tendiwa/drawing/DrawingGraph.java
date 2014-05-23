@@ -7,6 +7,7 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.graphs.GraphConstructor;
 
 import java.awt.*;
+import java.awt.geom.Line2D;
 import java.util.Iterator;
 import java.util.function.Function;
 
@@ -60,6 +61,22 @@ public class DrawingGraph {
             }
             for (Point2D v : shape.vertexSet()) {
 //                canvas.draw(new Cell((int) Math.round(v.x), (int) Math.round(v.y)), pointDrawing);
+            }
+        };
+    }
+    public static DrawingAlgorithm<UndirectedGraph<Point2D, Segment2D>> withColorAndAntialiasing(
+            final Color color
+    ) {
+
+        return (shape, canvas) -> {
+            for (Segment2D e : shape.edgeSet()) {
+                Point2D source = shape.getEdgeSource(e);
+                Point2D target = shape.getEdgeTarget(e);
+                Line2D.Double shape1 = new Line2D.Double(source.x, source.y, target.x, target.y);
+                canvas.drawShape(
+                        shape1,
+                        color
+                );
             }
         };
     }

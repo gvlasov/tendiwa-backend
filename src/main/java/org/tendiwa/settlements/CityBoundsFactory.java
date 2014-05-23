@@ -8,13 +8,10 @@ import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.core.Direction;
 import org.tendiwa.core.Directions;
 import org.tendiwa.demos.CoastlineDemo;
-import org.tendiwa.drawing.DrawingCellSet;
 import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.extensions.CachedCellSet;
 import org.tendiwa.geometry.extensions.ChebyshevDistanceBufferBorder;
 import org.tendiwa.pathfinding.dijkstra.PathTable;
-
-import java.awt.Color;
 
 /**
  * Creates graphs used as a base for a {@link City}.
@@ -63,10 +60,6 @@ public class CityBoundsFactory {
                 ),
                 cityShape.getBounds()
         ).computeAll();
-//        demo.canvas.draw(cityShape.getBounds(), DrawingRectangle.withColor(Color.CYAN));
-//        demo.canvas.draw(cityShape, DrawingCellSet.withColor(Color.PINK));
-//        demo.canvas.draw(startCell, DrawingCell.withColor(Color.RED));
-        demo.canvas.draw(bufferBorder, DrawingCellSet.withColor(Color.MAGENTA));
         PathTable culledTable = cullIntersectingBoundingRoadsCells(
                 bufferBorder,
                 startCell,
@@ -80,14 +73,6 @@ public class CityBoundsFactory {
                 ),
                 culledTable.getBounds()
         ).computeAll();
-//        demo.canvas.draw(culledBufferBorder, DrawingCellSet.withColor(Color.MAGENTA));
-
-//        canvas.draw(culledTable, DrawingPathTable.withColor(Color.RED));
-//        canvas.drawRectangle(cityShape.getBounds(), Color.RED);
-//        canvas.draw(bufferBorder, DrawingBoundedCellBufferBorder.withColor(Color.BLUE));
-//        canvas.draw(startCell, DrawingCell.withColorAndSize(Color.YELLOW, 3));
-//        assert culledBufferBorder.contains(startCell.x, startCell.y);
-//        canvas.draw(cityGraph, DrawingGraph.withColorAndVertexSize(ORANGE, 1));
         return bufferBorderToGraph(culledBufferBorder);
     }
 
@@ -110,7 +95,6 @@ public class CityBoundsFactory {
             }
         }
         new EdgeReducer(graph, cell2PointMap).reduceEdges();
-//        demo.canvas.draw(graph, DrawingGraph.withColorAndVertexSize(Color.ORANGE, 1));
         return graph;
     }
 

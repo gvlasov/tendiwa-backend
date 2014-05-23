@@ -187,7 +187,7 @@ public class NetworkWithinCycle {
         Deque<Line2DNetworkStep> nodeQueue = new ArrayDeque<>();
         for (Segment2D road : startingRoads(cycle)) {
             Point2D sourceNode = calculateDeviatedMidPoint(road);
-            // Made dead end so two new roads are not inserted to secondaryRoadNetwork.
+            // Made dead end so two new roads are not inserted to network.
             deadEnds.add(sourceNode);
             insertNode(road, sourceNode);
             // Made not-dead end so a road can be placed from it.
@@ -345,6 +345,10 @@ public class NetworkWithinCycle {
      */
     private void addRoad(Point2D source, Point2D target) {
         relevantNetwork.addEdge(source, target);
+//        if (source.distanceTo(target) < 0.5) {
+//            System.out.println(source+" "+target);
+//            throw new RuntimeException();
+//        }
         if (!(isDeadEnd(source) && isDeadEnd(target))) {
             secRoadNetwork.addVertex(source);
             secRoadNetwork.addVertex(target);
@@ -361,8 +365,11 @@ public class NetworkWithinCycle {
      *
      * @return An unmodifiable graph containing this NetworkWithinCycle's secondary road network.
      */
-    public UndirectedGraph<Point2D, Segment2D> secondaryRoadNetwork() {
+    public UndirectedGraph<Point2D, Segment2D> network() {
         return new UnmodifiableUndirectedGraph<>(secRoadNetwork);
+    }
+    public MinimalCycle<Point2D, Segment2D> cycle() {
+        return minimalCycle;
     }
 
 
