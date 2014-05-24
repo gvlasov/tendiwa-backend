@@ -18,7 +18,7 @@ public class CityDrawer implements DrawingAlgorithm<City> {
                         .forEach(line -> canvas.drawLine(line.start.toCell(), line.end.toCell(), BLACK))
                 );
         for (Segment2D roadSegment : city.getLowLevelRoadGraph().edgeSet()) {
-            canvas.drawLine(roadSegment, Color.RED);
+//            canvas.drawLine(roadSegment, Color.RED);
         }
     }
 }

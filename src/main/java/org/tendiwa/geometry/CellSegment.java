@@ -61,4 +61,13 @@ public class CellSegment implements Iterable<Cell> {
     public Iterator<Cell> iterator() {
         return Iterators.forArray(vector(start, end));
     }
+
+    /**
+     * Computes distance from {@link #start} to {@link #end}.
+     *
+     * @return Distance from {@link #start} to {@link #end}.
+     */
+    public double length() {
+        return Math.sqrt((end.x - start.x) * (end.x - start.x) + (end.y - start.y) * (end.y - start.y));
+    }
 }
