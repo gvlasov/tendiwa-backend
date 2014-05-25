@@ -1,0 +1,7 @@
+.root {
+    -fx-focus-color: transparent;
+    -fx-accent: transparent;
+}
+.table-view {
+    -fx-background-color: transparent;
+}

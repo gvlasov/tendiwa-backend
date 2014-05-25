@@ -19,6 +19,7 @@ import java.awt.Color;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static java.awt.Color.*;
 
@@ -36,6 +37,7 @@ public class CoastlineDemo implements Runnable {
 
 	@Override
 	public void run() {
+		PieChartTest chart = new PieChartTest(400);
 		int maxCityRadius = 35;
 		int minDistanceFromCoastToCityBorder = 3;
 		int minDistanceBetweenCityCenters = maxCityRadius * 3;
@@ -47,7 +49,8 @@ public class CoastlineDemo implements Runnable {
 		);
 		Rectangle worldSize = new Rectangle(20, 20, 400, 400);
 		CellSet water = (x, y) -> noise.noise(x, y) <= 110;
-		System.out.println("constants: " + watch);
+		chart.add("Constants", watch.elapsed(TimeUnit.MILLISECONDS));
+		watch.reset().start();
 		CellSet reducingMask = (x, y) -> (x + y) % 20 == 0;
 		ChebyshevDistanceBufferBorder cityCenterBorder = new ChebyshevDistanceBufferBorder(
 			minDistanceFromCoastToCityCenter,
@@ -58,7 +61,8 @@ public class CoastlineDemo implements Runnable {
 			worldSize
 		);
 		System.out.println(borderWithCityCenters.toSet().size());
-		System.out.println("City centers: " + watch);
+		chart.add("City centers", watch.elapsed(TimeUnit.MILLISECONDS));
+		watch.reset().start();
 		CachedCellSet cellsCloseToCoast = new CachedCellSet(
 			new ChebyshevDistanceBuffer(
 				minDistanceFromCoastToCityBorder,
@@ -66,12 +70,14 @@ public class CoastlineDemo implements Runnable {
 			),
 			worldSize
 		);
-		System.out.println("Cells close to coast: " + watch);
+		chart.add("Cells close to coast", watch.elapsed(TimeUnit.MILLISECONDS));
+		watch.reset().start();
 		DistantCellsFinder cityCenters = new DistantCellsFinder(
 			borderWithCityCenters,
 			minDistanceBetweenCityCenters
 		);
-		System.out.println("Distant cells: " + watch);
+		chart.add("Distant cells", watch.elapsed(TimeUnit.MILLISECONDS));
+		watch.reset().start();
 		//    @Inject
 //    @Named("scale2")
 		DrawingAlgorithm<Cell> grassColor = DrawingCell.withColor(Color.GREEN);
@@ -82,12 +88,14 @@ public class CoastlineDemo implements Runnable {
 		canvas = new TestCanvas(2, worldSize.x + worldSize.getMaxX(), worldSize.y + worldSize.getMaxY());
 		canvas.draw(borderWithCityCenters, DrawingCellSet.withColor(Color.PINK));
 		drawTerrain(worldSize, water, waterColor, grassColor);
-		System.out.println("draw terrain: " + watch);
+		chart.add("Draw terrain", watch.elapsed(TimeUnit.MILLISECONDS));
+		watch.reset().start();
 //        canvas.draw(borderWithCityCenters, DrawingCellSet.withColor(Color.RED));
 		Collection<FiniteCellSet> shapeExitsSets = new HashSet<>();
 		MutableCellSet citiesCells = new ScatteredMutableCellSet();
 		for (Cell cell : cityCenters) {
-			System.out.println("0 " + watch);
+			chart.add("0", watch.elapsed(TimeUnit.MILLISECONDS));
+			watch.reset().start();
 			int maxCityRadiusModified = maxCityRadius + cell.x % 30 - 15;
 			Rectangle cityBoundRec = Recs
 				.rectangleByCenterPoint(cell, maxCityRadiusModified * 2 + 1, maxCityRadiusModified * 2 + 1)
@@ -97,14 +105,16 @@ public class CoastlineDemo implements Runnable {
 				new ChebyshevDistanceBufferBorder(minDistanceFromCoastToCityBorder, water),
 				cityBoundRec
 			);
-			System.out.println("1 " + watch);
+			chart.add("1", watch.elapsed(TimeUnit.MILLISECONDS));
+			watch.reset().start();
 			BoundedCellSet cityShape = new PathTable(
 				cell.x,
 				cell.y,
 				(x, y) -> worldSizeStretchedBy1.contains(x, y) && !coast.contains(x, y),
 				maxCityRadiusModified
 			).computeFull();
-			System.out.println("2 " + watch);
+			chart.add("2", watch.elapsed(TimeUnit.MILLISECONDS));
+			watch.reset().start();
 //            canvas.draw(cell, DrawingCell.withColorAndSize(Color.black, 6));
 //            canvas.draw(cityShape, DrawingCellSet.withColor(Color.BLACK));
 			UndirectedGraph<Point2D, Segment2D> cityBounds = boundsFactory.create(
@@ -112,7 +122,8 @@ public class CoastlineDemo implements Runnable {
 				cell,
 				maxCityRadiusModified
 			);
-			System.out.println("3 " + watch);
+			chart.add("3", watch.elapsed(TimeUnit.MILLISECONDS));
+			watch.reset().start();
 //            canvas.draw(cityBounds, DrawingGraph.withColorAndVertexSize(RED, 2));
 			City city = new CityBuilder(cityBounds)
 				.withDefaults()
@@ -122,9 +133,11 @@ public class CoastlineDemo implements Runnable {
 				.withConnectivity(1)
 				.withMaxStartPointsPerCycle(3)
 				.build();
-			System.out.println("4 " + watch);
+			chart.add("4", watch.elapsed(TimeUnit.MILLISECONDS));
+			watch.reset().start();
 			citiesCells.addAll(ShapeFromOutline.from(city.getLowLevelRoadGraph()));
-			System.out.println("5 " + watch);
+			chart.add("5", watch.elapsed(TimeUnit.MILLISECONDS));
+			watch.reset().start();
 			canvas.draw(city, new CityDrawer());
 			FiniteCellSet exitCells = null;
 			try {
@@ -152,16 +165,19 @@ public class CoastlineDemo implements Runnable {
 				}
 				throw new RuntimeException();
 			}
-			System.out.println("6 " + watch);
+			chart.add("6", watch.elapsed(TimeUnit.MILLISECONDS));
+			watch.reset().start();
 			shapeExitsSets.add(exitCells);
-			System.out.println("7 " + watch);
+			chart.add("7", watch.elapsed(TimeUnit.MILLISECONDS));
+			watch.reset().start();
 		}
-		System.out.println("for loop: " + watch);
+		watch.reset().start();
 		CellSet shapeExitsCombined = shapeExitsSets
 			.stream()
 			.map(a -> (CellSet) a)
 			.reduce(CellSet.empty(), (a, b) -> a.or(b));
-		System.out.println("combined sets: " + watch);
+		chart.add("Combined sets", watch.elapsed(TimeUnit.MILLISECONDS));
+		watch.reset().start();
 
 
 		CellSet spaceBetweenCities = new CachedCellSet(
@@ -172,11 +188,13 @@ public class CoastlineDemo implements Runnable {
 					&& !cellsCloseToCoast.contains(x, y) || shapeExitsCombined.contains(x, y)),
 			worldSize
 		);
-		System.out.println("space between cities: " + watch);
+		chart.add("Space between cities", watch.elapsed(TimeUnit.MILLISECONDS));
+		watch.reset().start();
 		IntershapeNetwork network = IntershapeNetwork
 			.withShapeExits(shapeExitsSets)
 			.withWalkableCells(spaceBetweenCities);
-		System.out.println("network: " + watch);
+		chart.add("Network", watch.elapsed(TimeUnit.MILLISECONDS));
+		watch.reset().start();
 //        for (Cell cell : wave) {
 //            canvas.draw(cell, DrawingCell.withColor(Color.DARK_GRAY));
 //        }
@@ -192,8 +210,10 @@ public class CoastlineDemo implements Runnable {
 			).path(segment.start, segment.end);
 			path.stream().forEach(c -> canvas.draw(c, DrawingCell.withColor(Color.RED)));
 		}
-		System.out.println("final drawing: " + watch);
+		chart.add("Final drawing", watch.elapsed(TimeUnit.MILLISECONDS));
+		watch.reset().start();
 //        canvas.draw(cellsCloseToCoast, DrawingCellSet.withColor(Color.PINK));
+		chart.draw();
 
 	}
 
