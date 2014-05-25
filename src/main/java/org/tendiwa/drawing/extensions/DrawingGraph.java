@@ -1,6 +1,8 @@
-package org.tendiwa.drawing;
+package org.tendiwa.drawing.extensions;
 
 import org.jgrapht.UndirectedGraph;
+import org.tendiwa.drawing.Colors;
+import org.tendiwa.drawing.DrawingAlgorithm;
 import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Point2D;
@@ -83,10 +85,10 @@ public class DrawingGraph {
 
     public static DrawingAlgorithm<UndirectedGraph<Point2D, Segment2D>> multicoloredEdges() {
         Iterator<Color> colors = Colors.infiniteSequence(i -> new Color(
-                (i * 451 + 122) % 255,
-                (i * 234 + 200) % 255,
-                (i * 123 + 178) % 255
-        ));
+			(i * 451 + 122) % 255,
+			(i * 234 + 200) % 255,
+			(i * 123 + 178) % 255
+		));
         return (graph, canvas) -> graph
                 .edgeSet()
                 .stream()

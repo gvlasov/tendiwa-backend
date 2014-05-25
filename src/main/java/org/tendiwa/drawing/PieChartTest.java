@@ -1,8 +1,12 @@
 package org.tendiwa.drawing;
 
+import com.google.common.math.DoubleMath;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
@@ -19,18 +23,27 @@ import javafx.stage.Stage;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class PieChartTest extends Application {
 	private final int width;
 	Map<String, Number> slices = new HashMap<>();
 	private int MAX_TABLE_WIDTH = 300;
+	private boolean drawn = false;
+	private ObservableList<PieChart.Data> pieChartData;
+	private PieChart chart;
+	private Stage stage;
+	private Supplier<String> titleSupplier;
 
 	public PieChartTest(int width) {
 		this.width = width;
 	}
 
 	public void add(String sliceName, int value) {
+		if (drawn) {
+			throw new RuntimeException("Pie chart has already been drawn");
+		}
 		if (slices.containsKey(sliceName)) {
 			Number previousValue = slices.get(sliceName);
 			if (previousValue instanceof Integer) {
@@ -46,6 +59,11 @@ public class PieChartTest extends Application {
 	}
 
 	public void add(String sliceName, double value) {
+		System.out.println("DOUBLE");
+		// TODO: Duplicated method with double/int parameter.
+		if (drawn) {
+			throw new RuntimeException("Pie chart has already been drawn");
+		}
 		if (slices.containsKey(sliceName)) {
 			Number previousValue = slices.get(sliceName);
 			if (previousValue instanceof Integer) {
@@ -60,22 +78,43 @@ public class PieChartTest extends Application {
 		}
 	}
 
+	public List<PieChart.Data> getData() {
+		if (!drawn) {
+			throw new RuntimeException("Pie chart should be drawn before getting its data");
+		}
+		return pieChartData;
+	}
+
+	public void setTitle(String title) {
+		if (!drawn) {
+			throw new RuntimeException("Pie chart should be drawn before setting its title");
+		}
+		chart.setTitle(title);
+		stage.setTitle(title);
+	}
+
 	@Override
 	public void start(Stage stage) {
+		this.stage = stage;
 		Scene scene = new Scene(new Group(), width + MAX_TABLE_WIDTH, width);
 		scene.getStylesheets().add(getClass().getResource("/pieChart.css").toExternalForm());
 		stage.setTitle("Pie chart");
 		stage.setWidth(width);
 		stage.setHeight(width);
 
-		ObservableList<PieChart.Data> pieChartData = getDatas();
-		PieChart chart = new PieChart(pieChartData);
+		pieChartData = getDatas();
+		chart = new PieChart(pieChartData);
 		chart.setLegendVisible(false);
 		Node table = getDataTableView(pieChartData);
 
 
 		Pane pane = new HBox();
 		pane.getChildren().addAll(table, chart);
+
+		if (titleSupplier != null) {
+			setTitle(titleSupplier.get());
+		}
+
 		((Group) scene.getRoot()).getChildren().add(pane);
 		stage.setScene(scene);
 		stage.sizeToScene();
@@ -100,26 +139,43 @@ public class PieChartTest extends Application {
 		);
 		TableColumn<PieChart.Data, Number> value = new TableColumn<>("Value");
 		value.setCellValueFactory(
-			a -> a.getValue().pieValueProperty()
+			a -> {
+				DoubleProperty property = a.getValue().pieValueProperty();
+				if (DoubleMath.isMathematicalInteger(property.doubleValue())) {
+					return new SimpleIntegerProperty(property.intValue());
+				}
+				return property;
+			}
 		);
 		table.getColumns().setAll(name, value);
 		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		table.setMaxWidth(MAX_TABLE_WIDTH);
 		// Hide header
-		table.widthProperty().addListener((a, b, c) -> {
-			Pane header = (Pane) table.lookup("TableHeaderRow");
-			header.setMaxHeight(0);
-			header.setMinHeight(0);
-			header.setPrefHeight(0);
-			header.setVisible(false);
-			header.setManaged(false);
-		});
 		return table;
 	}
 
+	/**
+	 * Spawns javafx thread and draws the chart with a table.
+	 */
 	public void draw() {
 		// This will initialize javafx toolkit
+		drawn = true;
 		new JFXPanel();
 		Platform.runLater(() -> this.start(new Stage()));
+	}
+
+	/**
+	 * Set a function that will supply chart's title once the chart is drawn.
+	 *
+	 * @param supplier
+	 * 	String supplier.
+	 * @throws java.lang.RuntimeException
+	 * 	If pie chart is already drawn.
+	 */
+	public void setTitleSupplier(Supplier<String> supplier) {
+		if (drawn) {
+			throw new RuntimeException("Pie chart is already drawn");
+		}
+		titleSupplier = supplier;
 	}
 }

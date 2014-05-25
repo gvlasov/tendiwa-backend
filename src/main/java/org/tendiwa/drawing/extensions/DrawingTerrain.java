@@ -1,6 +1,7 @@
-package org.tendiwa.drawing;
+package org.tendiwa.drawing.extensions;
 
 import org.tendiwa.core.Chunk;
+import org.tendiwa.drawing.DrawingAlgorithm;
 
 import java.awt.Color;
 

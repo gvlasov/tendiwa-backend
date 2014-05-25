@@ -1,11 +1,6 @@
 package org.tendiwa.geometry;
 
 import org.junit.Test;
-import org.tendiwa.demos.Demos;
-import org.tendiwa.drawing.DrawingLine2D;
-import org.tendiwa.drawing.TestCanvas;
-
-import java.awt.*;
 
 import static org.junit.Assert.*;
 

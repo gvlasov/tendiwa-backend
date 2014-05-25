@@ -1,8 +1,9 @@
-package org.tendiwa.drawing;
+package org.tendiwa.drawing.extensions;
 
 import com.google.common.collect.Iterables;
 import org.jgrapht.Graph;
 import org.tendiwa.core.CardinalDirection;
+import org.tendiwa.drawing.DrawingAlgorithm;
 import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.Rectangle;
 
@@ -10,7 +11,7 @@ import java.awt.*;
 import java.util.Iterator;
 
 /**
- * A static utility class that provides methods for creating {@link DrawingAlgorithm}s for drawing {@link
+ * A static utility class that provides methods for creating {@link org.tendiwa.drawing.DrawingAlgorithm}s for drawing {@link
  * org.tendiwa.geometry.RectangleSystem}s.
  *
  * @author suseika

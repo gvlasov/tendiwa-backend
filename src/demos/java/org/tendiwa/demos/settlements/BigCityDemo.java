@@ -2,7 +2,7 @@ package org.tendiwa.demos.settlements;
 
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.demos.Demos;
-import org.tendiwa.drawing.DrawingCell;
+import org.tendiwa.drawing.extensions.DrawingCell;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;

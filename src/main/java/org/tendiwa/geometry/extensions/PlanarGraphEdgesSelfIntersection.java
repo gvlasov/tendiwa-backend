@@ -6,14 +6,8 @@ import org.jgrapht.UndirectedGraph;
 import org.paukov.combinatorics.Factory;
 import org.paukov.combinatorics.Generator;
 import org.paukov.combinatorics.ICombinatoricsVector;
-import org.tendiwa.drawing.DrawingCell;
-import org.tendiwa.drawing.DrawingLine2D;
-import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Point2D;
-import org.tendiwa.settlements.LineIntersection;
-
-import java.awt.*;
 
 public class PlanarGraphEdgesSelfIntersection {
     /**

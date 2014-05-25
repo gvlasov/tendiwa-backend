@@ -1,8 +1,9 @@
-package org.tendiwa.drawing;
+package org.tendiwa.drawing.extensions;
 
 import java.awt.Color;
 import java.util.Iterator;
 
+import org.tendiwa.drawing.DrawingAlgorithm;
 import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.RectangleSidePiece;
 

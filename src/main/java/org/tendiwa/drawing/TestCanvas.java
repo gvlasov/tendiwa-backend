@@ -285,7 +285,7 @@ public final class TestCanvas implements DrawableInto {
         }
     }
 
-    protected void fillShape(Shape shape, Color color) {
+    public void fillShape(Shape shape, Color color) {
         Graphics2D g2d = (Graphics2D) graphics;
         graphics.setColor(color);
         AffineTransform transform = new AffineTransform();
@@ -296,7 +296,7 @@ public final class TestCanvas implements DrawableInto {
         g2d.setTransform(defaultTransform);
     }
 
-    protected void drawShape(Shape shape, Color color) {
+    public void drawShape(Shape shape, Color color) {
         Graphics2D g2d = (Graphics2D) graphics;
         graphics.setColor(color);
         AffineTransform transform = new AffineTransform();

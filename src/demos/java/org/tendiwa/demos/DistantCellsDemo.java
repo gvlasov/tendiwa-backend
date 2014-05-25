@@ -4,7 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.google.inject.util.Modules;
-import org.tendiwa.drawing.DrawingModule;
+import org.tendiwa.drawing.extensions.DrawingModule;
 import org.tendiwa.drawing.LargerScaleCanvasModule;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Cell;
@@ -15,7 +15,7 @@ import java.awt.*;
 
 import static com.google.inject.name.Names.named;
 import static java.awt.Color.RED;
-import static org.tendiwa.drawing.DrawingRectangle.withColor;
+import static org.tendiwa.drawing.extensions.DrawingRectangle.withColor;
 
 public class DistantCellsDemo implements Runnable {
     public static void main(String[] args) {

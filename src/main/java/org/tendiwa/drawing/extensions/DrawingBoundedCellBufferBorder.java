@@ -1,5 +1,6 @@
-package org.tendiwa.drawing;
+package org.tendiwa.drawing.extensions;
 
+import org.tendiwa.drawing.DrawingAlgorithm;
 import org.tendiwa.geometry.BoundedCellSet;
 import org.tendiwa.geometry.Cell;
 

@@ -12,11 +12,11 @@ import org.tendiwa.core.meta.Chance;
 import org.tendiwa.core.meta.Range;
 import org.tendiwa.core.meta.Utils;
 import org.tendiwa.drawing.*;
+import org.tendiwa.drawing.extensions.DrawingRectangle;
+import org.tendiwa.drawing.extensions.DrawingRectangleSidePiece;
 import org.tendiwa.geometry.*;
-import org.tendiwa.geometry.Rectangle;
 
 import java.awt.*;
-import java.io.IOException;
 import java.util.*;
 
 import static org.tendiwa.core.Directions.*;

@@ -1,6 +1,7 @@
-package org.tendiwa.drawing;
+package org.tendiwa.drawing.extensions;
 
 import com.google.common.collect.Iterables;
+import org.tendiwa.drawing.DrawingAlgorithm;
 import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.Rectangle;
 

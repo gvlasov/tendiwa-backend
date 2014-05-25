@@ -2,7 +2,7 @@ package org.tendiwa.demos;
 
 import com.google.inject.Guice;
 import com.google.inject.Module;
-import org.tendiwa.drawing.DrawingModule;
+import org.tendiwa.drawing.extensions.DrawingModule;
 import org.tendiwa.drawing.TestCanvas;
 
 public final class Demos {

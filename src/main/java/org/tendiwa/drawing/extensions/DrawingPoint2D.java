@@ -1,5 +1,6 @@
-package org.tendiwa.drawing;
+package org.tendiwa.drawing.extensions;
 
+import org.tendiwa.drawing.DrawingAlgorithm;
 import org.tendiwa.geometry.Point2D;
 
 import java.awt.*;
