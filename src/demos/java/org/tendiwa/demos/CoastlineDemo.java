@@ -25,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 import static java.awt.Color.*;
 
 public class CoastlineDemo implements Runnable {
-	static Stopwatch watch = Stopwatch.createStarted();
 	public TestCanvas canvas;
 
 	public static void main(String[] args) {
@@ -48,7 +47,7 @@ public class CoastlineDemo implements Runnable {
 			((double) y + 0) / 40,
 			7
 		);
-		Rectangle worldSize = new Rectangle(20, 20, 200, 200);
+		Rectangle worldSize = new Rectangle(20, 20, 1000, 1000);
 		CellSet water = (x, y) -> noise.noise(x, y) <= 110;
 		chart.saveTime("Constants");
 		CellSet reducingMask = (x, y) -> (x + y) % 20 == 0;
@@ -60,7 +59,6 @@ public class CoastlineDemo implements Runnable {
 			reducingMask.and(cityCenterBorder),
 			worldSize
 		);
-		System.out.println(borderWithCityCenters.toSet().size());
 		chart.saveTime("City centers");
 		CachedCellSet cellsCloseToCoast = new CachedCellSet(
 			new ChebyshevDistanceBuffer(
@@ -149,7 +147,6 @@ public class CoastlineDemo implements Runnable {
 			} catch (Exception exc) {
 				TestCanvas cvs = new TestCanvas(2, worldSize.x + worldSize.getMaxX(),
 					worldSize.y + worldSize.getMaxY());
-				System.out.println("aaaaaaaaaaaaa" + city.getCells().size());
 				for (NetworkWithinCycle net : city.getCells()) {
 					cvs.draw(net.cycle().asGraph(), DrawingGraph.withColorAndAntialiasing(Color.BLACK));
 				}
@@ -190,7 +187,8 @@ public class CoastlineDemo implements Runnable {
 		for (CellSegment segment : network.getGraph().edgeSet()) {
 //            canvas.draw(segment, DrawingCellSegment.withColor(Color.RED));
 			List<Cell> path = new AStar(
-				(cell, neighbor) -> spaceBetweenCities.contains(neighbor) ? 1 : 100000000
+				(cell, neighbor) ->
+					 ((spaceBetweenCities.contains(neighbor) ? 1 : 100000000) * cell.distanceDouble(neighbor))
 			).path(segment.start, segment.end);
 			path.stream().forEach(c -> canvas.draw(c, DrawingCell.withColor(Color.RED)));
 		}

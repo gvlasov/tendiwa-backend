@@ -1,12 +1,9 @@
 package org.tendiwa.pathfinding.astar;
 
-import com.google.common.collect.Iterables;
 import org.tendiwa.core.Directions;
 import org.tendiwa.geometry.Cell;
 
-import java.awt.*;
 import java.util.*;
-import java.util.List;
 
 public class AStar {
 private final MovementCost movementCostFunction;
@@ -18,7 +15,6 @@ private final Set<Cell> closed = new HashSet<>();
  */
 private final Map<Cell, Cell> parents = new HashMap<>();
 private Cell goal;
-private final Iterator<Color> colors = Iterables.cycle(Color.RED, Color.BLUE, Color.PINK).iterator();
 
 public AStar(MovementCost movementCost) {
 	this.movementCostFunction = movementCost;
@@ -30,7 +26,7 @@ public List<Cell> path(Cell start, Cell goal) {
 	for (Cell current = open.poll(); !current.equals(goal); current = open.poll()) {
 		closed.add(current);
 		for (Cell neighbor : neighborsOf(current)) {
-			int movementCost = movementCostFunction.cost(current, neighbor);
+			double movementCost = movementCostFunction.cost(current, neighbor);
 			if (movementCost == Integer.MAX_VALUE) {
 				continue;
 			}
@@ -67,8 +63,9 @@ private double g(Cell current) {
 }
 
 private double h(Cell current) {
-	return Math.max(Math.abs(current.getX() - goal.getX()), Math.abs(current.getY() - goal.getY()));
-//	return current.distanceDouble(goal);
+//	return current.chebyshevDistanceTo(goal);
+//	return current.quickDistance(goal);
+	return current.distanceDouble(goal);
 }
 
 private Cell[] neighborsOf(Cell current) {

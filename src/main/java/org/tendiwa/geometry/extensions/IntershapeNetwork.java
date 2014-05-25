@@ -5,8 +5,11 @@ import com.google.common.collect.Table;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.graph.UnmodifiableUndirectedGraph;
+import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawingCellSegment;
 import org.tendiwa.geometry.*;
 
+import java.awt.Color;
 import java.util.*;
 
 /**
@@ -46,7 +49,6 @@ public class IntershapeNetwork {
 
 	private UnmodifiableUndirectedGraph<FiniteCellSet, CellSegment> buildGraph(Collection<FiniteCellSet> exitsSets) {
 		mapCellsToTheirSets(exitsSets);
-		// Maps each cell to its closest possible neighbor in another exit set.
 		Collection<CellSegment> connections = findShortestConnections(exitsSets);
 		return buildConnectionsGraph(connections, exitsSets);
 	}
@@ -55,28 +57,30 @@ public class IntershapeNetwork {
 		Collection<CellSegment> connections,
 		Collection<FiniteCellSet> exitSets
 	) {
-		Map<Cell, FiniteCellSet> cellToCellSet = mapCellsToTheirSets(exitSets);
-		Table<FiniteCellSet, FiniteCellSet, CellSegment> shortestConnections = HashBasedTable.create();
-		for (CellSegment connection : connections) {
-			FiniteCellSet sourceExitSet = cellToCellSet.get(connection.start);
-			FiniteCellSet targetExitSet = cellToCellSet.get(connection.end);
-			if (
-				!shortestConnections.contains(sourceExitSet, targetExitSet)
-					|| shortestConnections.get(sourceExitSet, targetExitSet).length() > connection.length()
-				) {
-				shortestConnections.put(sourceExitSet, targetExitSet, connection);
-			}
-		}
 		UndirectedGraph<FiniteCellSet, CellSegment> graph = new SimpleGraph<>((a, b) -> {
 			throw new RuntimeException("Edges should not be automatically created in this graph");
 		});
 		for (FiniteCellSet exitSet : exitSets) {
 			graph.addVertex(exitSet);
 		}
+
+		Map<Cell, FiniteCellSet> cellsToSets = mapCellsToTheirSets(exitSets);
+		Table<FiniteCellSet, FiniteCellSet, CellSegment> shortestConnections = HashBasedTable.create();
+		for (CellSegment connection : connections) {
+			FiniteCellSet sourceExitSet = cellsToSets.get(connection.start);
+			FiniteCellSet targetExitSet = cellsToSets.get(connection.end);
+			if (
+				!shortestConnections.contains(sourceExitSet, targetExitSet)
+					|| shortestConnections.get(sourceExitSet, targetExitSet).length() > connection.length()
+				) {
+				// Replaces previously found shortest path
+				shortestConnections.put(sourceExitSet, targetExitSet, connection);
+			}
+		}
 		for (CellSegment connection : shortestConnections.values()) {
 			graph.addEdge(
-				cellToCellSet.get(connection.start),
-				cellToCellSet.get(connection.end),
+				cellsToSets.get(connection.start),
+				cellsToSets.get(connection.end),
 				connection
 			);
 		}

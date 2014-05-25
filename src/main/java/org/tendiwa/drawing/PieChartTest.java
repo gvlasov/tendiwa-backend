@@ -4,7 +4,6 @@ import com.google.common.math.DoubleMath;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
@@ -102,7 +101,7 @@ public class PieChartTest extends Application {
 		stage.setWidth(width);
 		stage.setHeight(width);
 
-		pieChartData = getDatas();
+		pieChartData = prepareData();
 		chart = new PieChart(pieChartData);
 		chart.setLegendVisible(false);
 		Node table = getDataTableView(pieChartData);
@@ -122,7 +121,7 @@ public class PieChartTest extends Application {
 		stage.show();
 	}
 
-	private ObservableList<PieChart.Data> getDatas() {
+	private ObservableList<PieChart.Data> prepareData() {
 		List<PieChart.Data> dataList = slices
 			.keySet()
 			.stream()
