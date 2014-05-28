@@ -39,6 +39,7 @@ Volition(
 	RequestIdle.Factory requestIdleFactory,
 	Server server
 ) {
+	// TODO: Allow non-player Volition
 	this.model = model;
 	this.player = player;
 	this.world = world;

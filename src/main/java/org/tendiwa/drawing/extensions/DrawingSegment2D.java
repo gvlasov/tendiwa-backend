@@ -5,7 +5,7 @@ import org.tendiwa.geometry.Segment2D;
 
 import java.awt.*;
 
-public class DrawingLine2D {
+public class DrawingSegment2D {
     public static DrawingAlgorithm<Segment2D> withColor(final Color color) {
         return (shape, canvas) ->
                 canvas.drawShape(

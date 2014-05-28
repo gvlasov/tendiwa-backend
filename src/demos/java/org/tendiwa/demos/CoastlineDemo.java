@@ -119,7 +119,7 @@ public class CoastlineDemo implements Runnable {
 				.withDefaults()
 				.withRoadsFromPoint(4)
 				.withSecondaryRoadNetworkDeviationAngle(0.1)
-				.withRoadSegmentLength(10)
+				.withRoadSegmentLength(30)
 				.withConnectivity(1)
 				.withMaxStartPointsPerCycle(3)
 				.build();
@@ -188,13 +188,13 @@ public class CoastlineDemo implements Runnable {
 //            canvas.draw(segment, DrawingCellSegment.withColor(Color.RED));
 			List<Cell> path = new AStar(
 				(cell, neighbor) ->
-					 ((spaceBetweenCities.contains(neighbor) ? 1 : 100000000) * cell.distanceDouble(neighbor))
+					((spaceBetweenCities.contains(neighbor) ? 1 : 100000000) * cell.diagonalComponent(neighbor))
 			).path(segment.start, segment.end);
 			path.stream().forEach(c -> canvas.draw(c, DrawingCell.withColor(Color.RED)));
 		}
 		chart.saveTime("Final drawing");
 //        canvas.draw(cellsCloseToCoast, DrawingCellSet.withColor(Color.PINK));
-		chart.draw();
+//		chart.draw();
 
 	}
 

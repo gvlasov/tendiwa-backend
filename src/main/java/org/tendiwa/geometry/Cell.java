@@ -18,6 +18,7 @@ import org.tendiwa.core.meta.CellPosition;
 public class Cell implements CellPosition {
 	public final int x;
 	public final int y;
+	private static final double SQRT_2 = Math.sqrt(2);
 
 	public Cell(int x, int y) {
 		this.x = x;
@@ -199,5 +200,16 @@ public class Cell implements CellPosition {
 			max = dy;
 		}
 		return max + min * 0.41421356;
+	}
+
+	/**
+	 * Returns 1 if cells have equal x or y values, otherwise returns {@code Math.sqrt(2)}.
+	 *
+	 * @param neighbor
+	 * 	Another cell.
+	 * @return 1 or {@code Math.sqrt(2)}.
+	 */
+	public double diagonalComponent(Cell neighbor) {
+		return x - neighbor.x == 0 || y - neighbor.y == 0 ? 1 : SQRT_2;
 	}
 }

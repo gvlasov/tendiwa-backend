@@ -90,7 +90,7 @@ public class SnapTest {
                     continue;
                 }
                 if (intersection.intersects) {
-                    Point2D intersectionPoint = intersection.getIntersectionPoint(sourceNode, targetNode);
+                    Point2D intersectionPoint = intersection.getIntersectionPoint();
                     boolean isIntersectionOnSourcePoint = intersectionPoint.equals(sourceNode);
 //                    assert !(isIntersectionOnSourcePoint && snapSize > 0) : snapSize;
                     if (isIntersectionOnSourcePoint) {

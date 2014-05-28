@@ -4,70 +4,82 @@ package org.tendiwa.geometry;
  * An immutable point with double coordinates.
  */
 public class Point2D implements Position2D {
-    public final double x;
-    public final double y;
+	public final double x;
+	public final double y;
 
-    public Point2D(double x, double y) {
-        this.x = x;
-        this.y = y;
-    }
+	public Point2D(double x, double y) {
+		this.x = x;
+		this.y = y;
+	}
 
-    @Override
-    public double getX() {
-        return x;
-    }
+	@Override
+	public double getX() {
+		return x;
+	}
 
-    @Override
-    public double getY() {
-        return y;
-    }
+	@Override
+	public double getY() {
+		return y;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
 
-        Point2D point2D = (Point2D) o;
+		Point2D point2D = (Point2D) o;
 
-        if (Double.compare(point2D.x, x) != 0) return false;
-        if (Double.compare(point2D.y, y) != 0) return false;
+		if (Double.compare(point2D.x, x) != 0) return false;
+		if (Double.compare(point2D.y, y) != 0) return false;
 
-        return true;
-    }
+		return true;
+	}
 
-    @Override
-    public int hashCode() {
-        int result;
-        long temp;
-        temp = Double.doubleToLongBits(x);
-        result = (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(y);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        return result;
-    }
+	@Override
+	public int hashCode() {
+		int result;
+		long temp;
+		temp = Double.doubleToLongBits(x);
+		result = (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(y);
+		result = 31 * result + (int) (temp ^ (temp >>> 32));
+		return result;
+	}
 
-    public double angleTo(Point2D end) {
-        double angle = Math.atan2(end.y - y, end.x - x);
-        if (angle < 0) {
-            angle = Math.PI * 2 + angle;
-        }
-        return angle;
-    }
+	public double angleTo(Point2D end) {
+		double angle = Math.atan2(end.y - y, end.x - x);
+		if (angle < 0) {
+			angle = Math.PI * 2 + angle;
+		}
+		return angle;
+	}
 
-    @Override
-    public String toString() {
-        return "{" +
-                x +
-                ":" + y +
-                '}';
-    }
+	@Override
+	public String toString() {
+		return "{" +
+			x +
+			":" + y +
+			'}';
+	}
 
-    public double distanceTo(Point2D end) {
-        return Math.sqrt(Math.pow(end.x - this.x, 2) + Math.pow(end.y - this.y, 2));
-    }
+	public double distanceTo(Point2D end) {
+		return Math.sqrt(Math.pow(end.x - this.x, 2) + Math.pow(end.y - this.y, 2));
+	}
 
-    public Cell toCell() {
-        return new Cell((int) x, (int) y);
-    }
+	public Cell toCell() {
+		return new Cell((int) x, (int) y);
+	}
 
+	/**
+	 * Creates a new point moved from this one by {dx:dy}.
+	 *
+	 * @param dx
+	 * 	Change in x coordinate.
+	 * @param dy
+	 * 	Change in y coordinate.
+	 * @return A new Point2D.
+	 */
+	public Point2D moveBy(double dx, double dy) {
+		return new Point2D(x + dx, y + dy);
+	}
 }
