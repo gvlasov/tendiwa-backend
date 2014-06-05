@@ -2,8 +2,8 @@ package org.tendiwa.demos.settlements;
 
 import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.settlements.City;
 import org.tendiwa.settlements.CityBuilder;

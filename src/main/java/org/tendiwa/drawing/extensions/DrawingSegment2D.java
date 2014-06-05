@@ -18,4 +18,10 @@ public class DrawingSegment2D {
                         color
                 );
     }
+	public static DrawingAlgorithm<Segment2D> withColorDirected(final Color color) {
+		return (shape, canvas) -> {
+			canvas.draw(shape, DrawingSegment2D.withColor(color));
+			canvas.draw(shape.end, DrawingPoint2D.withColorAndSize(color, 5));
+		};
+	}
 }

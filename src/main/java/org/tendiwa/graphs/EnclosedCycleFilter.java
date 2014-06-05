@@ -3,8 +3,8 @@ package org.tendiwa.graphs;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.Point2D;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,7 +31,8 @@ public class EnclosedCycleFilter  implements Predicate<MinimalCycle<Point2D, Seg
                 .collect(Collectors.toList())
                 .toArray(new Coordinate[points.size() + 1]);
         coordinates[coordinates.length - 1] = coordinates[0];
-        return factory.createPolygon(coordinates);
+		;
+        return factory.createPolygon(factory.createLinearRing(coordinates), null);
     }
 
     @Override

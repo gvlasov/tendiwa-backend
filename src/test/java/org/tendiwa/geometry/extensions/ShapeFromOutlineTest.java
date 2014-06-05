@@ -1,9 +1,11 @@
 package org.tendiwa.geometry.extensions;
 
-import com.google.common.base.Stopwatch;
 import org.jgrapht.graph.SimpleGraph;
 import org.junit.Test;
-import org.tendiwa.geometry.*;
+import org.tendiwa.geometry.CellSet;
+import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Recs;
+import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
 
 import java.util.stream.Collectors;

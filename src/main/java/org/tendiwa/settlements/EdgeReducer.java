@@ -6,8 +6,8 @@ import org.jgrapht.UndirectedGraph;
 import org.tendiwa.core.CardinalDirection;
 import org.tendiwa.core.Direction;
 import org.tendiwa.geometry.Cell;
-import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.Point2D;
 
 import java.util.Collection;
 import java.util.HashSet;

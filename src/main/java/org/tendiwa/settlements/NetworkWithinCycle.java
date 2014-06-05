@@ -154,7 +154,7 @@ public class NetworkWithinCycle {
         isCycleClockwise = false;
         cycleNodes = new HashSet<>(minimalCycle.vertexList());
 
-        buildLine2DNetwork(minimalCycle);
+        buildSegment2DNetwork(minimalCycle);
         exitsOnCycles = outerPointsBuilder.build();
 
     }
@@ -183,8 +183,8 @@ public class NetworkWithinCycle {
      * @param cycle
      *         A MinimalCycle that contains this NetworkWithinCycle's secondary road network inside it.
      */
-    private void buildLine2DNetwork(MinimalCycle<Point2D, Segment2D> cycle) {
-        Deque<Line2DNetworkStep> nodeQueue = new ArrayDeque<>();
+    private void buildSegment2DNetwork(MinimalCycle<Point2D, Segment2D> cycle) {
+        Deque<Segment2DNetworkStep> nodeQueue = new ArrayDeque<>();
         for (Segment2D road : startingRoads(cycle)) {
             Point2D sourceNode = calculateDeviatedMidPoint(road);
             // Made dead end so two new roads are not inserted to network.
@@ -195,18 +195,18 @@ public class NetworkWithinCycle {
             double direction = deviatedBoundaryPerpendicular(road);
             Point2D newNode = tryPlacingRoad(sourceNode, direction);
             if (newNode != null && !isDeadEnd(newNode)) {
-                nodeQueue.push(new Line2DNetworkStep(newNode, direction));
+                nodeQueue.push(new Segment2DNetworkStep(newNode, direction));
                 deadEnds.add(sourceNode);
                 outerPointsBuilder.add(sourceNode);
             }
         }
         while (!nodeQueue.isEmpty()) {
-            Line2DNetworkStep node = nodeQueue.removeLast();
+            Segment2DNetworkStep node = nodeQueue.removeLast();
             for (int i = 1; i < roadsFromPoint; i++) {
                 double newDirection = deviateDirection(node.direction + Math.PI + i * (Math.PI * 2 / roadsFromPoint));
                 Point2D newNode = tryPlacingRoad(node.node, newDirection);
                 if (newNode != null && !isDeadEnd(newNode)) {
-                    nodeQueue.push(new Line2DNetworkStep(newNode, newDirection));
+                    nodeQueue.push(new Segment2DNetworkStep(newNode, newDirection));
                 }
             }
         }
@@ -430,11 +430,11 @@ public class NetworkWithinCycle {
         return edges.subList(0, numberOfStartPoints);
     }
 
-    class Line2DNetworkStep {
+    class Segment2DNetworkStep {
         private final Point2D node;
         private final double direction;
 
-        Line2DNetworkStep(Point2D node, double direction) {
+        Segment2DNetworkStep(Point2D node, double direction) {
             this.node = node;
             this.direction = direction;
         }

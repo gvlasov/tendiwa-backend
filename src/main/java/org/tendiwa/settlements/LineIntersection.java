@@ -1,12 +1,13 @@
 package org.tendiwa.settlements;
 
+import org.tendiwa.geometry.GeometryException;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Point2D;
 
 /**
- * Finds intersection of two <i>lines</i> on which two <i>segments</i> lie.
+ * Finds intersection of two <i>lines</i> defined by <i>segments</i> that lie on those lines.
  * <p>
- * Note that if lines intersect doesn't mean segments intersect.
+ * Note that if lines intersect doesn't mean that segments intersect.
  */
 public class LineIntersection {
 	public final boolean intersects;
@@ -24,6 +25,12 @@ public class LineIntersection {
 	private final Point2D targetPoint;
 
 	public LineIntersection(Point2D sourceNode, Point2D targetPoint, Segment2D segment) {
+		if (sourceNode.equals(targetPoint)) {
+			throw new IllegalArgumentException("There can't be zero distance between points");
+		}
+		if (segment.start.equals(segment.end)) {
+			throw new IllegalArgumentException("Segment can't be zero length");
+		}
 		this.sourceNode = sourceNode;
 		this.targetPoint = targetPoint;
 
@@ -36,6 +43,11 @@ public class LineIntersection {
 			segment.end.y - segment.start.y
 		);
 		double denom = (ab.x * cd.y) - (ab.y * cd.x);
+		if (denom == 0) {
+			throw new GeometryException(
+				"Lines " + new Segment2D(sourceNode, targetPoint) + " and " + segment + " are  parallel"
+			);
+		}
 		Point2D ca = new Point2D(
 			sourceNode.x - segment.start.x,
 			sourceNode.y - segment.start.y
@@ -50,7 +62,6 @@ public class LineIntersection {
 	}
 
 	public Point2D getIntersectionPoint() {
-		// TODO: Get rid of parameters in this method, move them to fields.
 		return new Point2D(
 			sourceNode.x + (targetPoint.x - sourceNode.x) * r,
 			sourceNode.y + (targetPoint.y - sourceNode.y) * r

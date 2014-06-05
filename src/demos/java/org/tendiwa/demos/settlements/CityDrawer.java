@@ -5,8 +5,6 @@ import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.settlements.City;
 
-import java.awt.Color;
-
 import static java.awt.Color.BLACK;
 
 public class CityDrawer implements DrawingAlgorithm<City> {

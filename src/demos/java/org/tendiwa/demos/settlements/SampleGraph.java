@@ -1,6 +1,7 @@
 package org.tendiwa.demos.settlements;
 
 import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.graphs.GraphConstructor;
 

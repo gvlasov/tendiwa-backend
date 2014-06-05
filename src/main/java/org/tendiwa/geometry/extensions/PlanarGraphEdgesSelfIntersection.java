@@ -7,6 +7,7 @@ import org.paukov.combinatorics.Factory;
 import org.paukov.combinatorics.Generator;
 import org.paukov.combinatorics.ICombinatoricsVector;
 import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Point2D;
 
 public class PlanarGraphEdgesSelfIntersection {

@@ -1,11 +1,11 @@
 package org.tendiwa.demos.settlements;
 
-import org.tendiwa.demos.Demos;
 import org.junit.Test;
-import org.tendiwa.drawing.extensions.DrawingGraph;
+import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.drawing.extensions.DrawingGraph;
 import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
 
 public class GraphConstructorDemo {

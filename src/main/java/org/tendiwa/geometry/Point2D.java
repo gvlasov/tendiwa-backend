@@ -2,12 +2,16 @@ package org.tendiwa.geometry;
 
 /**
  * An immutable point with double coordinates.
+ * <p>
+ * Implements {@link Vector2D} to operate on Point2D as on a 2-dimensional vector.
  */
-public class Point2D implements Position2D {
+public class Point2D implements Vector2D {
 	public final double x;
 	public final double y;
 
 	public Point2D(double x, double y) {
+		assert !Double.isNaN(x);
+		assert !Double.isNaN(y);
 		this.x = x;
 		this.y = y;
 	}
@@ -81,5 +85,60 @@ public class Point2D implements Position2D {
 	 */
 	public Point2D moveBy(double dx, double dy) {
 		return new Point2D(x + dx, y + dy);
+	}
+
+
+	public double distanceToLine(Segment2D line) {
+		double normalLength = Math.sqrt(
+			(line.end.x - line.start.x)
+				* (line.end.x - line.start.x) + (line.end.y - line.start.y) * (line.end.y - line.start.y)
+		);
+		return Math.abs(
+			(x - line.start.x)
+				* (line.end.y - line.start.y) - (y - line.start.y)
+				* (line.end.x - line.start.x)
+		) / normalLength;
+	}
+
+	@Override
+	public Point2D subtract(Vector2D point) {
+		return new Point2D(x - point.getX(), y - point.getY());
+	}
+
+	/**
+	 * Sums two vectors.
+	 *
+	 * @param vector
+	 * 	An
+	 * @return
+	 */
+	@Override
+	public Point2D add(Vector2D vector) {
+		return new Point2D(x + vector.getX(), y + vector.getY());
+	}
+
+	/**
+	 * Distance from {0:0} to {@link #x}:{@link #y}.
+	 *
+	 * @return Distance from the beginning of coordinate space to this point.
+	 */
+	@Override
+	public double magnitude() {
+		return Math.sqrt(x * x + y * y);
+	}
+
+	@Override
+	public Point2D divide(double scalar) {
+		return new Point2D(x / scalar, y / scalar);
+	}
+
+	@Override
+	public Point2D normalize() {
+		return divide(magnitude());
+	}
+
+	@Override
+	public Point2D multiply(double magnitude) {
+		return new Point2D(x * magnitude, y * magnitude);
 	}
 }

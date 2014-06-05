@@ -2,8 +2,8 @@ package org.tendiwa.settlements;
 
 import org.jgrapht.UndirectedGraph;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Segment2D;
 
 import java.util.Random;
 

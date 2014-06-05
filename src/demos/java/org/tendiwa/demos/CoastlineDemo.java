@@ -1,6 +1,5 @@
 package org.tendiwa.demos;
 
-import com.google.common.base.Stopwatch;
 import org.jgrapht.UndirectedGraph;
 import org.tendiwa.demos.settlements.CityDrawer;
 import org.tendiwa.drawing.*;
@@ -20,7 +19,6 @@ import java.awt.Color;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import static java.awt.Color.*;
 

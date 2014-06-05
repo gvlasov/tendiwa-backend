@@ -49,7 +49,7 @@ public class ShapeFromOutline {
                 .toArray(new Coordinate[cycle.vertexList().size() + 1]);
         coordinates[coordinates.length - 1] = coordinates[0];
 
-        Polygon polygon = gf.createPolygon(coordinates);
+        Polygon polygon = gf.createPolygon(gf.createLinearRing(coordinates), null);
         return (x, y) -> polygon.contains(gf.createPoint(new Coordinate(x, y)));
     }
 }

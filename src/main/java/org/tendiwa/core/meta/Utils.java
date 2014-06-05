@@ -14,6 +14,11 @@ public class Utils {
 	public Utils() {
 
 	}
+
+	public static boolean doubleEqualsDelta(double a, double b, double delta) {
+		return Math.abs(a - b) < delta;
+	}
+
 	public static <T> String join(Collection<T> s, String delimiter) {
 		StringBuffer buffer = new StringBuffer();
 		Iterator<T> iter = s.iterator();
@@ -61,6 +66,7 @@ public class Utils {
 		return instersection;
 
 	}
+
 	public static double getLineAngle(Coordinate c1, Coordinate c2) {
 		double dx = (double) c2.x - c1.x;
 		double dy = (double) c2.y - c1.y;
@@ -86,6 +92,7 @@ public class Utils {
 		}
 		return atan;
 	}
+
 	public static int integersRangeIntersection(int a1, int a2, int b1, int b2) {
 		// Returns amount of integers that is inside of intersection of 2
 		// integer ranges
@@ -93,12 +100,14 @@ public class Utils {
 		// numbers: [5,6,7,8,9,10,11]
 		return Math.max(a2, b2) - Math.min(a1, b1) - Math.abs(a1 - b1) - Math.abs(a2 - b2) + 1;
 	}
+
 	public static <T> T getRandomElement(List<T> list) {
 		if (list.isEmpty()) {
 			throw new IllegalArgumentException("Can't get random element from an empty list");
 		}
 		return list.get(new Random().nextInt(list.size()));
 	}
+
 	public static <T> T getRandomElement(Collection<T> collection) {
 		if (collection.isEmpty()) {
 			throw new IllegalArgumentException("Can't get random element from an empty collection");

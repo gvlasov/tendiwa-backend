@@ -3,8 +3,8 @@ package org.tendiwa.settlements;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.core.meta.Range;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.MinimalCycle;
 
 import java.util.Collection;

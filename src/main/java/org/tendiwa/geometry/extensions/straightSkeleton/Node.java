@@ -5,34 +5,43 @@ import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.MinimumCycleBasis;
 
 class Node {
-	final Bisector bisector;
-	boolean active = true; // As said in 1a in [Obdrzalek 1998, paragraph 2.1]
-	final boolean isReflex;
+	Bisector bisector;
+	boolean isProcessed = false; // As said in 1a in [Obdrzalek 1998, paragraph 2.1]
+	boolean isReflex;
 	Segment2D previousEdge;
 	Segment2D currentEdge;
 	Node next;
 	Node previous;
 	final Point2D vertex;
 
-	Node(Segment2D previousEdge, Segment2D currentEdge, Node previous) {
-		assert currentEdge.start.equals(previousEdge.end);
-		this.previous = previous;
+	Node(Segment2D previousEdge, Segment2D currentEdge, Point2D point) {
 		this.previousEdge = previousEdge;
 		this.currentEdge = currentEdge;
-		this.vertex = currentEdge.start;
-		if (previous != null) {
-			connect(previous);
-		}
-		bisector = new Bisector(previousEdge, currentEdge);
-		isReflex = isReflex(previousEdge, currentEdge);
+		this.vertex = point;
+	}
+
+	public void computeReflexAndBisector() {
+		isReflex = isReflex(
+			new Segment2D(
+				previous.vertex,
+				vertex
+			),
+			new Segment2D(
+				vertex,
+				next.vertex
+			)
+		);
+		bisector = new Bisector(previousEdge, currentEdge, vertex, isReflex);
 	}
 
 	/**
 	 * Finds if two edges going counter-clockwise make a convex or a reflex angle.
 	 *
 	 * @param previousEdge
+	 * 	An edge.
 	 * @param currentEdge
-	 * @return True if the angle between two edges
+	 * 	An edge coming from {@code previousEdge}'s end.
+	 * @return True if the angle to the left between two edges > Math.PI
 	 */
 	private boolean isReflex(Segment2D previousEdge, Segment2D currentEdge) {
 		return MinimumCycleBasis.perpDotProduct(
@@ -42,7 +51,7 @@ class Node {
 	}
 
 
-	void connect(Node previous) {
+	void connectWithPrevious(Node previous) {
 		this.previous = previous;
 		previous.next = this;
 	}
