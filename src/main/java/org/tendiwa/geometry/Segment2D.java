@@ -65,10 +65,9 @@ public class Segment2D {
 
 	@Override
 	public String toString() {
-		return "Segment2D{" +
-			"start=" + start +
-			", end=" + end +
-			'}';
+		return
+			start +
+			"," + end;
 	}
 
 	/**

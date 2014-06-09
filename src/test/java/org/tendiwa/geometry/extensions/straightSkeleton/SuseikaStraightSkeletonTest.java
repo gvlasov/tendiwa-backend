@@ -6,7 +6,7 @@ import org.tendiwa.geometry.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StraightSkeletonTest {
+public class SuseikaStraightSkeletonTest {
 	@Test
 	public void nonConvexPolygonWithoutHoles() {
 		List<Point2D> vertices = new ArrayList<Point2D>() {{
@@ -29,6 +29,6 @@ public class StraightSkeletonTest {
 			add(new Point2D(7, 112));
 			add(new Point2D(50, 83));
 		}};
-		new StraightSkeleton(vertices);
+		new SuseikaStraightSkeleton(vertices);
 	}
 }

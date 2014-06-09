@@ -11,6 +11,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.WindowEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
@@ -53,7 +54,7 @@ public final class TestCanvas implements DrawableInto {
         this.pixelBounds = new Rectangle(0, 0, width*scale, height*scale);
         defaultTitle = "tendiwa canvas";
         frame = new JFrame(defaultTitle);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         panel = new JLayeredPane();
         frame.add(panel);
         DEFAULT_LAYER = new Layer();
@@ -110,6 +111,9 @@ public final class TestCanvas implements DrawableInto {
         });
         setLayer(DEFAULT_LAYER);
     }
+	public void close() {
+		frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+	}
 
 
     public void setSize(int width, int height) {

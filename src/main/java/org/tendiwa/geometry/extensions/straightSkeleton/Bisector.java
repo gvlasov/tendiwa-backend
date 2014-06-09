@@ -1,6 +1,5 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
-import org.tendiwa.geometry.GeometryException;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.settlements.LineIntersection;

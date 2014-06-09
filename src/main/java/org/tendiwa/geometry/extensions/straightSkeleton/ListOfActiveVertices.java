@@ -24,7 +24,7 @@ class ListOfActiveVertices {
 				edges.get(i == 0 ? l - 1 : i - 1),
 				edges.get(i),
 				edges.get(i).start
-				);
+			);
 			if (i > 0) {
 				node.connectWithPrevious(previous);
 			}
@@ -35,8 +35,5 @@ class ListOfActiveVertices {
 		for (Node node : nodes) {
 			node.computeReflexAndBisector();
 		}
-
 	}
-
-
 }

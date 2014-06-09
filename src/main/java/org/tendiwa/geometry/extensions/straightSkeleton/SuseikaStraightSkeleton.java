@@ -3,44 +3,44 @@ package org.tendiwa.geometry.extensions.straightSkeleton;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import org.jgrapht.UndirectedGraph;
+import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingPoint2D;
 import org.tendiwa.drawing.extensions.DrawingSegment2D;
-import org.tendiwa.geometry.GeometryException;
-import org.tendiwa.geometry.JTSUtils;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.*;
 import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.settlements.LineIntersection;
 
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.util.*;
 
 import static org.tendiwa.drawing.extensions.DrawingSegment2D.withColor;
 import static org.tendiwa.graphs.MinimumCycleBasis.perpDotProduct;
 
-public class StraightSkeleton {
+public class SuseikaStraightSkeleton implements StraightSkeleton {
 
 	private final ListOfActiveVertices lav;
 	private final List<Segment2D> edges;
 	TestCanvas canvas = new TestCanvas(1, 200, 200);
 	private final PriorityQueue<IntersectionPoint> queue;
 	private final Multimap<Point2D, Point2D> arcs = HashMultimap.create();
+	private final double EPSILON = 1e-10;
+	private final HashMap<Node, Node> splitNodePairs = new HashMap<>();
 
-	public StraightSkeleton(MinimalCycle<Point2D, Segment2D> cycle) {
+	public SuseikaStraightSkeleton(MinimalCycle<Point2D, Segment2D> cycle) {
 		// Transform clockwise list to a counter-clockwise list.
 		this(Lists.reverse(cycle.vertexList()), true);
 
 	}
 
-	public StraightSkeleton(List<Point2D> vertices) {
+	public SuseikaStraightSkeleton(List<Point2D> vertices) {
 		this(vertices, false);
 	}
 
-	private StraightSkeleton(List<Point2D> vertices, boolean trustCounterClockwise) {
-		vertices = Lists.reverse(vertices);
+	private SuseikaStraightSkeleton(List<Point2D> vertices, boolean trustCounterClockwise) {
+//		vertices = Lists.reverse(vertices);
+		Node.canvas = canvas;
 		if (!trustCounterClockwise && !JTSUtils.isYDownCCW(vertices)) {
 			vertices = Lists.reverse(vertices);
 		}
@@ -75,23 +75,31 @@ public class StraightSkeleton {
 		while (!queue.isEmpty()) {
 			// Convex 2a
 			IntersectionPoint point = queue.poll();
+			Point2D[] pointssss = new Point2D[0];
+			Segment2D[] segmentsss = new Segment2D[0];
 			if (point.event == EventType.EDGE) {
 				// Convex 2b
-				if (point.va.isProcessed || point.vb.isProcessed) {
+				if (point.va.isProcessed() || point.vb.isProcessed()) {
 					continue;
 				}
+				assert point.va.next == point.vb;
 				// Convex 2c
-				if (point.va.previous.previous.vertex.equals(point.vb.vertex)) {
+				if (point.va.previous.previous == point.vb) {
 					outputArc(point.va.vertex, point);
-					point.va.isProcessed = true;
-					point.vb.isProcessed = true;
-					point.va.previous.isProcessed = true;
+					point.va.setProcessed();
+					point.vb.setProcessed();
+					point.va.previous.setProcessed();
 					outputArc(point.vb.vertex, point);
-					assert point.va.previous == point.vb.next;
+					assert point.va.previous == point.vb.next : point.va.previous.vertex + " " + point.vb.next.vertex;
 					outputArc(point.va.previous.vertex, point);
-					point.va.isProcessed = true;
-					point.vb.isProcessed = true;
-					point.va.previous.isProcessed = true;
+					continue;
+				}
+				if (point.va.next.next == point.va) {
+					assert point.vb != null;
+					// Eliminating LAVs consisting only of 2 nodes
+					outputArc(point.va.vertex, point.vb.vertex);
+					point.va.setProcessed();
+					point.vb.setProcessed();
 					continue;
 				}
 				// Convex 2d
@@ -99,8 +107,6 @@ public class StraightSkeleton {
 				outputArc(point.vb.vertex, point);
 
 				// Convex 2e
-				point.va.isProcessed = true;
-				point.vb.isProcessed = true;
 				Node node = new Node(
 					point.va.previous.currentEdge,
 					point.vb.currentEdge,
@@ -110,40 +116,44 @@ public class StraightSkeleton {
 				point.vb.next.connectWithPrevious(node);
 				node.computeReflexAndBisector();
 
+				point.va.setProcessed();
+				point.va.notifyObservers(node);
+				point.vb.setProcessed();
+				point.vb.notifyObservers(node);
+//				draw(node, Color.RED);
+
 				// Convex 2f
 				IntersectionPoint e = computeNearerBisectorsIntersection(node);
 				if (e != null) {
 					queue.add(e);
 				}
 			} else {
-				System.out.println("SPLIT");
 				assert point.event == EventType.SPLIT;
-				canvas.draw(point, DrawingPoint2D.withColorAndSize(Color.YELLOW, 5));
-				if (point.va.isProcessed) {
+				if (point.va.isProcessed()) {
 					continue;
 				}
 				// Non-convex 2c
 				if (point.va.previous.previous.previous == point.va) {
 					outputArc(point.va.vertex, point);
-					point.va.isProcessed = true;
-					point.vb.isProcessed = true;
-					point.va.previous.isProcessed = true;
+					point.va.setProcessed();
+					point.vb.setProcessed();
+					point.va.previous.setProcessed();
 					outputArc(point.vb.vertex, point);
 					assert point.va.previous == point.vb.next;
 					outputArc(point.va.previous.vertex, point);
-					point.va.isProcessed = true;
-					point.vb.isProcessed = true;
-					point.va.previous.isProcessed = true;
+					continue;
+				}
+				if (point.va.next.next == point.va) {
+					// Eliminating LAVs consisting only of 2 nodes
+					outputArc(point.va.vertex, point.vb.vertex);
+					point.va.setProcessed();
+					point.vb.setProcessed();
 					continue;
 				}
 				// Non-convex 2D
 				outputArc(point.va.vertex, point);
+				assert !point.oppositeEdgeStart.isProcessed();
 				// Non-convex 2e
-				point.va.isProcessed = true;
-				Point2D oppositeEdgeSplitPoint = new LineIntersection(
-					point.va.bisector.segment,
-					point.oppositeEdgeStart.currentEdge
-				).getIntersectionPoint();
 				Node node1 = new Node(
 					point.va.previous.currentEdge,
 					point.oppositeEdgeStart.currentEdge,
@@ -151,8 +161,26 @@ public class StraightSkeleton {
 				);
 				node1.connectWithPrevious(point.va.previous);
 				point.oppositeEdgeStart.next.connectWithPrevious(node1);
-				node1.computeReflexAndBisector();
+//				draw(node1, Color.green);
 
+//				if (point.distanceTo(new Point2D(116, 97)) < 5) {
+//					canvas.draw(
+//						point.oppositeEdgeStart.currentEdge,
+//						DrawingSegment2D.withColor(Color.blue)
+//					);
+//					canvas.draw(
+//						point.oppositeEdgeStart.vertex,
+//						DrawingPoint2D.withColorAndSize(Color.red, 4)
+//					);
+//					canvas.draw(
+//						point.oppositeEdgeStart.next.vertex,
+//						DrawingPoint2D.withColorAndSize(Color.green, 4)
+//					);
+//					canvas.draw(
+//						point.oppositeEdgeStart.bisector.segment,
+//						DrawingSegment2D.withColor(Color.black)
+//					);
+//				}
 				Node node2 = new Node(
 					point.oppositeEdgeStart.currentEdge,
 					point.va.currentEdge,
@@ -160,26 +188,88 @@ public class StraightSkeleton {
 				);
 				node2.connectWithPrevious(point.oppositeEdgeStart);
 				point.va.next.connectWithPrevious(node2);
-				node2.computeReflexAndBisector();
+//				draw(node2, Color.blue);
 
+				point.va.setProcessed();
+				pairSplitNodes(node1, node2);
 
-//				canvas.draw(node1.bisector.segment, DrawingSegment2D.withColor(Color.green));
-//				canvas.draw(node2.bisector.segment, DrawingSegment2D.withColor(Color.blue));
-//				canvas.draw(new Segment2D(point, point.oppositeEdgeStart.vertex), DrawingSegment2D.withColorDirected(Color
-//					.black));
-//				canvas.draw(new Segment2D(point.va.next.vertex, point), DrawingSegment2D.withColorDirected(Color
-//					.yellow));
 				// Non-convex 2f
-				IntersectionPoint e1 = computeNearerBisectorsIntersection(node1);
-				if (e1 != null) {
-					queue.add(e1);
-				}
-				IntersectionPoint e2 = computeNearerBisectorsIntersection(node2);
-				if (e2 != null) {
-					queue.add(e2);
-				}
+				integrateNewSplitNode(node1, point);
+				integrateNewSplitNode(node2, point);
 			}
 		}
+//		canvas.close();
+	}
+
+	private void pairSplitNodes(Node node1, Node node2) {
+		assert !splitNodePairs.containsKey(node1);
+		assert !splitNodePairs.containsKey(node2);
+		assert node1 != node2;
+		assert node1.vertex.equals(node2.vertex);
+		splitNodePairs.put(node1, node2);
+		splitNodePairs.put(node2, node1);
+	}
+
+	private void integrateNewSplitNode(Node node, IntersectionPoint point) {
+		if (node.next.next == node) {
+			// Eliminating lavs of 2 edges (those lavs can form after a split event).
+			outputArc(node.vertex, node.next.vertex);
+			node.setProcessed();
+			node.next.setProcessed();
+
+//			List<IntersectionPoint> observers = node.copyObservers();
+//			List<IntersectionPoint> nextObservers = node.next.copyObservers();
+//			node.notifyObservers(node.next, observers);
+//			node.next.notifyObservers(node, nextObservers);
+
+
+			node.notifyObservers(pairOf(node.next));
+			node.next.notifyObservers(pairOf(node));
+		} else {
+			node.computeReflexAndBisector();
+			point.va.notifyObservers(node);
+			IntersectionPoint e1 = computeNearerBisectorsIntersection(node);
+			if (e1 != null) {
+				queue.add(e1);
+			}
+		}
+	}
+
+	private Node pairOf(Node node) {
+		return splitNodePairs.get(node);
+	}
+
+
+	private void draw(Point2D point) {
+		canvas.draw(point, DrawingPoint2D.withColorAndSize(Color.black, 4));
+	}
+
+	private void draw(Node node, Color color) {
+		Iterator<Node> iter = node.iterator();
+		Node previous = iter.next();
+		while (iter.hasNext()) {
+			Node next = iter.next();
+			canvas.draw(
+				new Segment2D(
+					previous.vertex,
+					next.vertex
+				),
+				DrawingSegment2D.withColor(color)
+			);
+			previous = next;
+		}
+
+		canvas.draw(
+			new Segment2D(
+				previous.vertex,
+				node.vertex
+			),
+			DrawingSegment2D.withColor(color)
+		);
+	}
+
+	private void draw(Segment2D segment) {
+		canvas.draw(segment, DrawingSegment2D.withColor(Color.green));
 	}
 
 	private void outputArc(Point2D start, Point2D end) {
@@ -189,7 +279,16 @@ public class StraightSkeleton {
 
 	private IntersectionPoint computeNearerBisectorsIntersection(Node node) {
 		// Non-convex 1c
-		LineIntersection next = node.bisector.intersectionWith(node.next.bisector);
+		LineIntersection next;
+		try {
+			next = node.bisector.intersectionWith(node.next.bisector);
+		} catch (GeometryException e) {
+			canvas.draw(node.vertex, DrawingPoint2D.withColorAndSize(Color.red, 4));
+			canvas.draw(node.next.vertex, DrawingPoint2D.withColorAndSize(Color.black, 4));
+			canvas.draw(node.bisector.segment, DrawingSegment2D.withColorDirected(Color.blue));
+			canvas.draw(node.next.bisector.segment, DrawingSegment2D.withColorDirected(Color.green));
+			throw new RuntimeException(e);
+		}
 		LineIntersection previous = null;
 		try {
 			previous = node.bisector.intersectionWith(node.previous.bisector);
@@ -197,7 +296,11 @@ public class StraightSkeleton {
 			canvas.draw(node.vertex, DrawingPoint2D.withColorAndSize(Color.red, 4));
 			canvas.draw(node.previous.vertex, DrawingPoint2D.withColorAndSize(Color.black, 4));
 			canvas.draw(node.bisector.segment, DrawingSegment2D.withColorDirected(Color.blue));
+			canvas.draw(node.previousEdge, DrawingSegment2D.withColorDirected(Color.blue));
+			canvas.draw(node.currentEdge, DrawingSegment2D.withColorDirected(Color.blue));
 			canvas.draw(node.previous.bisector.segment, DrawingSegment2D.withColorDirected(Color.green));
+			canvas.draw(node.previous.previousEdge, DrawingSegment2D.withColorDirected(Color.green));
+			canvas.draw(node.previous.currentEdge, DrawingSegment2D.withColorDirected(Color.green));
 			throw new RuntimeException(e);
 		}
 		Point2D nearer = null;
@@ -238,8 +341,9 @@ public class StraightSkeleton {
 			}
 		}
 		assert nearer == null || va != null && vb != null;
+		assert va == null && vb == null || va.next == vb;
 		return nearer == null ? null : new IntersectionPoint(nearer.x, nearer.y, originalEdgeStart, va, vb,
-			EventType.EDGE);
+			EventType.EDGE, canvas);
 	}
 
 	/**
@@ -253,12 +357,12 @@ public class StraightSkeleton {
 		assert reflexNode.isReflex;
 		Point2D splitPoint = null;
 		Node originalEdgeStart = null;
-		for (Node node : lav.nodes) {
+		for (Node node : reflexNode) {
 			if (
 				new LineIntersection(
-					reflexNode.bisector.segment.start, reflexNode.bisector.segment.end,
+					reflexNode.bisector.segment,
 					node.currentEdge
-				).r <= 0
+				).r <= EPSILON
 				) {
 				continue;
 			}
@@ -276,11 +380,9 @@ public class StraightSkeleton {
 				}
 			}
 		}
-		if (splitPoint != null) {
-			System.out.println("VOILA");
-		}
 		return splitPoint == null ? null :
-			new IntersectionPoint(splitPoint.x, splitPoint.y, originalEdgeStart, reflexNode, null, EventType.SPLIT);
+			new IntersectionPoint(splitPoint.x, splitPoint.y, originalEdgeStart, reflexNode, null, EventType.SPLIT,
+				canvas);
 	}
 
 	/**
@@ -395,8 +497,8 @@ public class StraightSkeleton {
 		Bisector currentBisector = currentNode.bisector;
 		Bisector nextBisector = currentNode.next.bisector;
 		Point2D a = currentBisector.segment.end;
-		Point2D b = currentNode.vertex;
-		Point2D c = currentNode.next.vertex;
+		Point2D b = currentNode.currentEdge.start;
+		Point2D c = currentNode.currentEdge.end;
 		Point2D d = nextBisector.segment.end;
 		return isPointReflex(a, point, b) && isPointReflex(b, point, c) && isPointReflex(c, point, d);
 	}
@@ -419,16 +521,27 @@ public class StraightSkeleton {
 		) > 0;
 	}
 
-	public static void test(Node start) {
-		Node node = start;
-		int i = 0;
-		do {
-			System.out.println((i++) + " " + node.vertex);
-			node = node.next;
-			if (i > 10) {
-				break;
+	@Override
+	public UndirectedGraph<Point2D, Segment2D> graph() {
+		UndirectedGraph<Point2D, Segment2D> graph = new SimpleGraph<>(Segment2D::new);
+		for (Map.Entry<Point2D, Collection<Point2D>> startToEnds : arcs.asMap().entrySet()) {
+			Point2D start = startToEnds.getKey();
+			graph.addVertex(start);
+			for (Point2D end : startToEnds.getValue()) {
+				graph.addVertex(end);
+				graph.addEdge(start, end);
 			}
-		} while (node != start);
+		}
+		return graph;
 	}
 
+	@Override
+	public List<Segment2D> originalEdges() {
+		return edges;
+	}
+
+	@Override
+	public UndirectedGraph<Point2D, Segment2D> cap(double height) {
+		return null;
+	}
 }
