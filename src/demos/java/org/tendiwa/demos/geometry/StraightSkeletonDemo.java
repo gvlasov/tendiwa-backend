@@ -39,7 +39,7 @@ public class StraightSkeletonDemo implements Runnable {
 			add(new Point2D(100, 13));
 		}};
 //		TestCanvas canvas = new TestCanvas(1, 200, 200);
-		for (int i = 3; i < 100; i++) {
+		for (int i = 7; i < 8; i++) {
 //			canvas.clear();
 			System.out.println(i);
 			List<Point2D> derivative = new ArrayList<>(points.size());

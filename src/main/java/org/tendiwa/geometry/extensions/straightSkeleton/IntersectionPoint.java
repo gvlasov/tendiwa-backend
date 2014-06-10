@@ -1,11 +1,10 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.sun.istack.internal.NotNull;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Segment2D;
 
 import java.awt.Color;
 import java.util.Iterator;
@@ -16,7 +15,8 @@ import java.util.Iterator;
 public class IntersectionPoint extends Point2D implements Comparable<IntersectionPoint> {
 	private final double distanceToOriginalEdge;
 	final EventType event;
-	Node oppositeEdgeStart;
+	OppositeEdgeStartMovement movement;
+	Node opposideEdgeStart;
 	private final TestCanvas canvas;
 	final Node va;
 	final Node vb;
@@ -25,29 +25,39 @@ public class IntersectionPoint extends Point2D implements Comparable<Intersectio
 	IntersectionPoint(
 		double x,
 		double y,
-		Node originalEdgeStart,
+		OppositeEdgeStartMovement movement,
 		Node va,
 		Node vb,
 		EventType event,
 		TestCanvas canvas
 	) {
 		super(x, y);
-		oppositeEdgeStart = originalEdgeStart;
+		this.movement = movement;
 		this.canvas = canvas;
-		originalEdgeStart.addObserver(this);
+		this.movement.addObserver(this);
 		this.va = va;
 		this.vb = vb;
 		this.event = event;
-		this.distanceToOriginalEdge = distanceToLine(originalEdgeStart.currentEdge);
+//		assert movement.getStart() == movement.getEnd();
+		this.distanceToOriginalEdge = distanceToLine(movement.getEnd().currentEdge);
+		opposideEdgeStart = this.movement.getEnd();
 	}
 
-	void changeOppositeEdgeStart(Node from, Node to) {
+	void changeOppositeEdgeStart(Node start, Node to) {
 		assert to != null;
-		assert oppositeEdgeStart == from;
 		assert !to.isProcessed();
-		oppositeEdgeStart = to;
-		from.removeObserver(this);
-		to.addObserver(this);
+		assert movement.getStart() == start;
+//		canvas.draw(
+//			new Segment2D(
+//				from.vertex,
+//				to.vertex
+//			), DrawingSegment2D.withColorDirected(colors.next())
+//		);
+		if (ImmutableList.copyOf(to).contains(va)) {
+			opposideEdgeStart = to;
+		}
+//		from.removeObserver(this);
+//		to.addObserver(this);
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import org.jgrapht.UndirectedGraph;
@@ -27,11 +28,11 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 	private final Multimap<Point2D, Point2D> arcs = HashMultimap.create();
 	private final double EPSILON = 1e-10;
 	private final HashMap<Node, Node> splitNodePairs = new HashMap<>();
+	private MovementRegistry registry;
 
 	public SuseikaStraightSkeleton(MinimalCycle<Point2D, Segment2D> cycle) {
 		// Transform clockwise list to a counter-clockwise list.
 		this(Lists.reverse(cycle.vertexList()), true);
-
 	}
 
 	public SuseikaStraightSkeleton(List<Point2D> vertices) {
@@ -61,6 +62,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		this.queue = new PriorityQueue<>(l);
 		// [Obdrzalek 1998, paragraph 2.2, algorithm step 1c]
 		int i = 0;
+		registry = new MovementRegistry(lav.nodes);
 		for (
 			Node node = lav.nodes.getFirst();
 			i < l;
@@ -117,9 +119,17 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 				node.computeReflexAndBisector();
 
 				point.va.setProcessed();
-				point.va.notifyObservers(node);
+//				point.va.notifyObservers(node);
 				point.vb.setProcessed();
-				point.vb.notifyObservers(node);
+//				point.vb.notifyObservers(node);
+				registry.getByOriginalEdge(point.va.currentEdge).moveTo(node);
+				registry.getByOriginalEdge(point.vb.currentEdge).moveTo(node);
+				if (hasPairOf(point.vb)) {
+					registry.getByOriginalEdge(point.va.currentEdge).moveTo(pairOf(point.vb));
+				}
+				if (hasPairOf(point.va)) {
+					registry.getByOriginalEdge(point.vb.currentEdge).moveTo(pairOf(point.va));
+				}
 //				draw(node, Color.RED);
 
 				// Convex 2f
@@ -152,42 +162,44 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 				}
 				// Non-convex 2D
 				outputArc(point.va.vertex, point);
-				assert !point.oppositeEdgeStart.isProcessed();
+				assert !point.movement.getEnd().isProcessed();
 				// Non-convex 2e
 				Node node1 = new Node(
 					point.va.previous.currentEdge,
-					point.oppositeEdgeStart.currentEdge,
+					point.movement.getEnd().currentEdge,
 					point
 				);
 				node1.connectWithPrevious(point.va.previous);
-				point.oppositeEdgeStart.next.connectWithPrevious(node1);
+				point.movement.getEnd().next.connectWithPrevious(node1);
+				ImmutableList.copyOf(node1);
 //				draw(node1, Color.green);
 
 //				if (point.distanceTo(new Point2D(116, 97)) < 5) {
 //					canvas.draw(
-//						point.oppositeEdgeStart.currentEdge,
+//						point.movement.currentEdge,
 //						DrawingSegment2D.withColor(Color.blue)
 //					);
 //					canvas.draw(
-//						point.oppositeEdgeStart.vertex,
+//						point.movement.vertex,
 //						DrawingPoint2D.withColorAndSize(Color.red, 4)
 //					);
 //					canvas.draw(
-//						point.oppositeEdgeStart.next.vertex,
+//						point.movement.next.vertex,
 //						DrawingPoint2D.withColorAndSize(Color.green, 4)
 //					);
 //					canvas.draw(
-//						point.oppositeEdgeStart.bisector.segment,
+//						point.movement.bisector.segment,
 //						DrawingSegment2D.withColor(Color.black)
 //					);
 //				}
 				Node node2 = new Node(
-					point.oppositeEdgeStart.currentEdge,
+					point.movement.getEnd().currentEdge,
 					point.va.currentEdge,
 					point
 				);
-				node2.connectWithPrevious(point.oppositeEdgeStart);
+				node2.connectWithPrevious(point.movement.getEnd());
 				point.va.next.connectWithPrevious(node2);
+				ImmutableList.copyOf(node2);
 //				draw(node2, Color.blue);
 
 				point.va.setProcessed();
@@ -210,6 +222,10 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		splitNodePairs.put(node2, node1);
 	}
 
+	private boolean hasPairOf(Node node) {
+		return splitNodePairs.containsKey(node);
+	}
+
 	private void integrateNewSplitNode(Node node, IntersectionPoint point) {
 		if (node.next.next == node) {
 			// Eliminating lavs of 2 edges (those lavs can form after a split event).
@@ -223,11 +239,18 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 //			node.next.notifyObservers(node, nextObservers);
 
 
-			node.notifyObservers(pairOf(node.next));
-			node.next.notifyObservers(pairOf(node));
+			if (hasPairOf(node.next)) {
+				registry.getByOriginalEdge(node.currentEdge).moveTo(pairOf(node.next));
+			}
+			if (hasPairOf(node)) {
+				registry.getByOriginalEdge(node.next.currentEdge).moveTo(pairOf(node));
+			}
+//			node.notifyObservers(pairOf(node.next));
+//			node.next.notifyObservers(pairOf(node));
 		} else {
 			node.computeReflexAndBisector();
-			point.va.notifyObservers(node);
+			registry.getByOriginalEdge(node.currentEdge).moveTo(node);
+//			point.va.notifyObservers(node);
 			IntersectionPoint e1 = computeNearerBisectorsIntersection(node);
 			if (e1 != null) {
 				queue.add(e1);
@@ -236,6 +259,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 	}
 
 	private Node pairOf(Node node) {
+		assert splitNodePairs.containsKey(node);
 		return splitNodePairs.get(node);
 	}
 
@@ -342,7 +366,8 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		}
 		assert nearer == null || va != null && vb != null;
 		assert va == null && vb == null || va.next == vb;
-		return nearer == null ? null : new IntersectionPoint(nearer.x, nearer.y, originalEdgeStart, va, vb,
+		return nearer == null ? null : new IntersectionPoint(nearer.x, nearer.y,
+			registry.getByOriginalEdge(originalEdgeStart.currentEdge), va, vb,
 			EventType.EDGE, canvas);
 	}
 
@@ -381,8 +406,15 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 			}
 		}
 		return splitPoint == null ? null :
-			new IntersectionPoint(splitPoint.x, splitPoint.y, originalEdgeStart, reflexNode, null, EventType.SPLIT,
-				canvas);
+			new IntersectionPoint(
+				splitPoint.x,
+				splitPoint.y,
+				registry.getByOriginalEdge(originalEdgeStart.currentEdge),
+				reflexNode,
+				null,
+				EventType.SPLIT,
+				canvas
+			);
 	}
 
 	/**

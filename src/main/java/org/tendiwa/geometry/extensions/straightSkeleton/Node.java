@@ -1,21 +1,13 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingPoint2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.MinimumCycleBasis;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 class Node implements Iterable<Node> {
-	List<IntersectionPoint> observers = new ArrayList<>(1);
 	Bisector bisector;
 	private boolean isProcessed = false; // As said in 1a in [Obdrzalek 1998, paragraph 2.1]
 	boolean isReflex;
@@ -105,39 +97,4 @@ class Node implements Iterable<Node> {
 		};
 	}
 
-	public void addObserver(IntersectionPoint intersectionPoint) {
-		observers.add(intersectionPoint);
-	}
-
-	/**
-	 * Notifies previously computed split events of change in their start points.
-	 *
-	 * @param nextNode
-	 */
-	public void notifyObservers(Node nextNode) {
-		notifyObservers(nextNode, ImmutableList.copyOf(observers));
-	}
-
-	public void notifyObservers(Node nextNode, List<IntersectionPoint> observers) {
-		assert nextNode != null;
-		assert this != nextNode;
-		ImmutableList<Node> lav = ImmutableList.copyOf(nextNode); // NextNode works as Iterable<Node> here.
-		for (IntersectionPoint intersection : observers) {
-			// TODO: Do we have to copy observers?
-			// We have to copy observers because otherwise that list
-			// will be concurrently modified inside this loop.
-//			if (lav.contains(intersection.va)) {
-				intersection.changeOppositeEdgeStart(this, nextNode);
-//			}
-		}
-	}
-
-	public List<IntersectionPoint> copyObservers() {
-		return ImmutableList.copyOf(observers);
-	}
-
-	public void removeObserver(IntersectionPoint observer) {
-		assert observers.contains(observer);
-		observers.remove(observer);
-	}
 }
