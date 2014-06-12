@@ -1,8 +1,10 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
-import com.google.common.collect.ImmutableList;
-import com.sun.xml.internal.bind.v2.TODO;
+import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawingSegment2D;
+import org.tendiwa.geometry.Segment2D;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +14,9 @@ import java.util.List;
 public class OppositeEdgeStartMovement {
 	private Node start;
 	private Node end;
-	private List<IntersectionPoint> observers = new ArrayList<>(1);
+	private List<SkeletonEvent> startObservers = new ArrayList<>(1);
+	static TestCanvas canvas;
+	private List<SkeletonEvent> endObservers = new ArrayList<>(1);
 
 	public OppositeEdgeStartMovement(Node start) {
 		assert start != null;
@@ -21,10 +25,23 @@ public class OppositeEdgeStartMovement {
 	}
 
 	public void moveTo(Node newEnd) {
+//		canvas.draw(
+//			new Segment2D(
+//				end.vertex,
+//				newEnd.vertex
+//			),
+//			DrawingSegment2D.withColorDirected(Color.blue)
+//		);
+
 		assert newEnd != null;
 		assert newEnd != start;
-//		assert newEnd != end;
 		this.end = newEnd;
+		for (SkeletonEvent observer : startObservers) {
+			observer.changeOppositeEdgeStart(start, newEnd);
+		}
+		for (SkeletonEvent observer : endObservers) {
+			observer.changeOppositeEdgeEnd(start, newEnd);
+		}
 	}
 
 	public Node getStart() {
@@ -35,10 +52,14 @@ public class OppositeEdgeStartMovement {
 		return end;
 	}
 
-	public void addObserver(IntersectionPoint intersectionPoint) {
-		observers.add(intersectionPoint);
+
+	public void addStartObserver(SkeletonEvent skeletonEvent) {
+		startObservers.add(skeletonEvent);
 	}
 
+	public void addEndObserver(SkeletonEvent skeletonEvent) {
+		endObservers.add(skeletonEvent);
+	}
 //	/**
 //	 * Notifies previously computed split events of change in their start points.
 //	 *
@@ -48,11 +69,11 @@ public class OppositeEdgeStartMovement {
 //		notifyObservers(nextNode, ImmutableList.copyOf(observers));
 //	}
 //
-//	public void notifyObservers(Node nextNode, List<IntersectionPoint> observers) {
+//	public void notifyObservers(Node nextNode, List<SkeletonEvent> observers) {
 //		assert nextNode != null;
 //		assert end != nextNode;
 //		ImmutableList<Node> lav = ImmutableList.copyOf(nextNode); // NextNode works as Iterable<Node> here.
-//		for (IntersectionPoint intersection : observers) {
+//		for (SkeletonEvent intersection : observers) {
 //			TODO: Do we have to copy observers?
 //			We have to copy observers because otherwise that list
 //			will be concurrently modified inside this loop.
@@ -62,12 +83,12 @@ public class OppositeEdgeStartMovement {
 //		}
 //	}
 //
-//	public List<IntersectionPoint> copyObservers() {
+//	public List<SkeletonEvent> copyObservers() {
 //		return ImmutableList.copyOf(observers);
 //	}
 
-	public void removeObserver(IntersectionPoint observer) {
-		assert observers.contains(observer);
-		observers.remove(observer);
+	public void removeObserver(SkeletonEvent observer) {
+		assert startObservers.contains(observer);
+		startObservers.remove(observer);
 	}
 }

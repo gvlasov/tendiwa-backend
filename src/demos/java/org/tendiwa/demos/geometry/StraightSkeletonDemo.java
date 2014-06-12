@@ -1,20 +1,29 @@
 package org.tendiwa.demos.geometry;
 
+import com.google.inject.Inject;
 import org.tendiwa.demos.Demos;
+import org.tendiwa.drawing.GifBuilder;
+import org.tendiwa.drawing.GifBuilderFactory;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingGraph;
+import org.tendiwa.drawing.extensions.DrawingModule;
 import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.straightSkeleton.SuseikaStraightSkeleton;
+import org.tendiwa.geometry.extensions.twakStraightSkeleton.TwakStraightSkeleton;
+import sun.net.www.content.image.gif;
 
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
 public class StraightSkeletonDemo implements Runnable {
+	@Inject
+	GifBuilderFactory factory;
+
 	public static void main(String[] args) {
-		Demos.run(StraightSkeletonDemo.class);
+		Demos.run(StraightSkeletonDemo.class, new DrawingModule());
 	}
 
 	@Override
@@ -39,13 +48,14 @@ public class StraightSkeletonDemo implements Runnable {
 			add(new Point2D(100, 13));
 		}};
 //		TestCanvas canvas = new TestCanvas(1, 200, 200);
-		for (int i = 7; i < 8; i++) {
+//		GifBuilder gifBuilder = factory.create(canvas, 30);
+		for (int i = 10; i < 11; i++) {
 //			canvas.clear();
 			System.out.println(i);
 			List<Point2D> derivative = new ArrayList<>(points.size());
 			int j = 0;
 			for (Point2D point : points) {
-				double angle = Math.PI * 2 / (60 / (j % 6 + 1)) * i;
+				double angle = Math.PI * 2 / (180 / (j % 6 + 1)) * i;
 				derivative.add(
 					new Point2D(
 						point.x + Math.cos(angle) * 6,
@@ -59,7 +69,9 @@ public class StraightSkeletonDemo implements Runnable {
 //				canvas.draw(edge, DrawingSegment2D.withColor(Color.red));
 			}
 //			canvas.draw(skeleton.graph(), DrawingGraph.withColor(Color.cyan));
-			}
+//			gifBuilder.saveFrame();
+		}
+//		gifBuilder.saveAnimation(System.getProperty("user.home")+"/test.gif");
 
 //		SuseikaStraightSkeleton skeleton = TwakStraightSkeleton.create(points);
 //		for (Segment2D segment : skeleton.graph().edgeSet()) {
@@ -68,9 +80,8 @@ public class StraightSkeletonDemo implements Runnable {
 //		for (Segment2D segment : skeleton.cap(10).edgeSet()) {
 //			canvas.draw(segment, DrawingSegment2D.withColor(Color.blue));
 //		}
-//		Skeleton.skeleton(points).;
 
-
-		}
 
 	}
+
+}

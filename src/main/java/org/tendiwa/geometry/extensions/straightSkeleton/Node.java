@@ -1,5 +1,6 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
+import com.google.common.collect.ImmutableList;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
@@ -70,12 +71,14 @@ class Node implements Iterable<Node> {
 
 	void connectWithPrevious(Node previous) {
 		assert previous != this;
+		assert previous != null;
 		this.previous = previous;
 		previous.next = this;
 	}
 
 	@Override
 	public Iterator<Node> iterator() {
+		assert !isProcessed;
 		return new Iterator<Node>() {
 			Node start = Node.this;
 			Node node = Node.this.previous;
@@ -89,12 +92,25 @@ class Node implements Iterable<Node> {
 			@Override
 			public Node next() {
 				node = node.next;
-				if (i++ > 100) {
+				if (++i > 100) {
 					throw new RuntimeException("Too many iterations");
 				}
 				return node;
 			}
 		};
+	}
+
+	/**
+	 * Checks if this node and another node are in the same LAV.
+	 *
+	 * @param node
+	 * 	Another node.
+	 * @return true if this node and another node are in the same LAV, false otherwise.
+	 */
+	public boolean isInTheSameLav(Node node) {
+		// TODO: This is too heavy
+		assert ImmutableList.copyOf(node).contains(this) == ImmutableList.copyOf(this).contains(node);
+		return ImmutableList.copyOf(this).contains(node);
 	}
 
 }

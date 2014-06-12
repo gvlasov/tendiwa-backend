@@ -39,9 +39,31 @@ public interface Vector2D extends Position2D {
 	 * @return A new vector.
 	 */
 	public Vector2D divide(double scalar);
+
 	public default Vector2D normalize() {
 		return divide(magnitude());
 	}
 
-	Point2D multiply(double magnitude);
+	Vector2D multiply(double magnitude);
+
+	public default double dotProduct(Vector2D vector) {
+		return (getX() * vector.getX() + getY() * vector.getY());
+	}
+
+	/**
+	 * Creates a new vector pointing from {@code start} point to {@code end} point.
+	 *
+	 * @param start
+	 * 	Start point.
+	 * @param end
+	 * 	End point.
+	 * @return A vector that is end-start;
+	 */
+	public static Vector2D fromStartToEnd(Vector2D start, Vector2D end) {
+		return end.subtract(start);
+	}
+
+	public static Vector2D vector(double x, double y) {
+		return new Point2D(x, y);
+	}
 }

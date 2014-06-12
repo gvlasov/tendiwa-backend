@@ -67,7 +67,7 @@ public class Segment2D {
 	public String toString() {
 		return
 			start +
-			"," + end;
+				"," + end;
 	}
 
 	/**
@@ -142,5 +142,9 @@ public class Segment2D {
 	public boolean isParallel(Segment2D segment) {
 		return Math.abs((segment.end.y - segment.start.y) / (segment.end.x - segment.start.x))
 			== Math.abs((end.y - start.y) / (end.x - start.x));
+	}
+
+	public Vector2D asVector() {
+		return new Point2D(end.x - start.x, end.y - start.y);
 	}
 }
