@@ -2,6 +2,7 @@ package org.tendiwa.geometry.extensions.straightSkeleton;
 
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.Vector2D;
 import org.tendiwa.settlements.LineIntersection;
 
 class Bisector {
@@ -37,24 +38,19 @@ class Bisector {
 		Point2D start,
 		boolean isReflex
 	) {
-//		return new Point2D(
-//			start.x + (-previousEdge.dx() / previousEdge.length() + currentEdge.dx()
-//				/ currentEdge.length()) * 40 * (isReflex ? -1 : 1),
-//			start.y + (-previousEdge.dy() / previousEdge.length() + currentEdge.dy()
-//				/ currentEdge.length()) * 40 * (isReflex ? -1 : 1)
-//		);
-
-		Point2D vPrevious = previousEdge.start.subtract(previousEdge.end);
-		Point2D vCurrent = currentEdge.end.subtract(currentEdge.start);
-		Point2D sum = vCurrent.normalize().add(vPrevious.normalize());
+		Vector2D vPrevious = Vector2D.fromStartToEnd(previousEdge.end, previousEdge.start);
+		Vector2D vCurrent = Vector2D.fromStartToEnd(currentEdge.start, currentEdge.end);
+		Vector2D sum = vCurrent.normalize().add(vPrevious.normalize());
 		sum = sum.normalize().multiply(40); // Normalized bisector direction
-		boolean isStart = previousEdge.end.equals(start)
-			&& currentEdge.start.equals(start);
-		boolean inFront = isStart || isIntersectionInFrontOfBisectorStart(previousEdge, currentEdge);
-		if (isStart && isReflex) {
-			inFront = false;
+		boolean belongsToBothEdges = previousEdge.end.equals(start) && currentEdge.start.equals(start);
+		boolean additionSign;
+		if (belongsToBothEdges) {
+			additionSign = !isReflex;
+		} else {
+//			additionSign = isIntersectionInFrontOfBisectorStart(previousEdge, currentEdge);
+			additionSign = true;
 		}
-		if (inFront) {
+		if (additionSign) {
 			return start.add(sum);
 		} else {
 			return start.subtract(sum);

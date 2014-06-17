@@ -19,10 +19,12 @@ import java.util.*;
 import static org.tendiwa.drawing.extensions.DrawingSegment2D.withColor;
 import static org.tendiwa.graphs.MinimumCycleBasis.perpDotProduct;
 
+// TODO: Split this class into more classes.
 public class SuseikaStraightSkeleton implements StraightSkeleton {
 
 	private final ListOfActiveVertices lav;
 	private final List<Segment2D> edges;
+	private SkeletonEvent watchEvent;
 	TestCanvas canvas = new TestCanvas(1, 200, 200);
 	private final PriorityQueue<SkeletonEvent> queue;
 	private final Multimap<Point2D, Point2D> arcs = HashMultimap.create();
@@ -59,7 +61,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 			canvas.draw(edges.get(i), withColor(Color.RED));
 		}
 //		for (Point2D point : Lists.reverse(vertices)) {
-//			System.out.println("new Point2d("+point.x+", "+point.y+"),");
+//			System.out.println("new Point2d(" + point.x + ", " + point.y + "),");
 //		}
 
 
@@ -86,6 +88,13 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 			if (point.event == EventType.EDGE) {
 				// Convex 2b
 				if (point.va.isProcessed() || point.vb.isProcessed()) {
+					if (!(point.va.isProcessed() && point.vb.isProcessed())) {
+						Node node = point.va.isProcessed() ? point.vb : point.va;
+						SkeletonEvent e = computeNearerBisectorsIntersection(node);
+						if (e != null) {
+							queue.add(e);
+						}
+					}
 					continue;
 				}
 				assert point.va.next == point.vb;
@@ -123,9 +132,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 				node.computeReflexAndBisector();
 
 				point.va.setProcessed();
-//				point.va.notifyObservers(node);
 				point.vb.setProcessed();
-//				point.vb.notifyObservers(node);
 				if (!hasPairOf(point.va)) {
 					// Move starts only to edge event nodes.
 					registry.getByOriginalEdge(point.va.currentEdge).moveTo(node);
@@ -235,8 +242,9 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 				integrateNewSplitNode(node2, point, true);
 			}
 		}
-		canvas.close();
+//		canvas.close();
 	}
+
 
 	private void pairSplitNodes(Node node1, Node node2) {
 		assert !splitNodePairs.containsKey(node1);
@@ -245,6 +253,10 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		assert node1.vertex.equals(node2.vertex);
 		splitNodePairs.put(node1, node2);
 		splitNodePairs.put(node2, node1);
+	}
+
+	private static boolean isAround(Point2D point, int x, int y) {
+		return point.distanceTo(new Point2D(x, y)) < 4;
 	}
 
 	private boolean hasPairOf(Node node) {
@@ -277,9 +289,12 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 			} else {
 				registry.getByOriginalEdge(point.va.currentEdge).moveTo(node);
 			}
-			SkeletonEvent e1 = computeNearerBisectorsIntersection(node);
-			if (e1 != null) {
-				queue.add(e1);
+			SkeletonEvent e = computeNearerBisectorsIntersection(node);
+			if (e != null) {
+				queue.add(e);
+			}
+			if (node.vertex.distanceTo(new Point2D(68, 90)) < 4 && !isRightNode) {
+				watchEvent = e;
 			}
 		}
 	}
@@ -357,29 +372,34 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		Node originalEdgeStart = null;
 		Node va = null;
 		Node vb = null;
-		if (next.r > 0 && previous.r > 0) {
-			if (next.r < previous.r) {
-				nearer = next.getIntersectionPoint();
-				originalEdgeStart = node;
-				va = node;
-				vb = node.next;
-			} else {
-				nearer = previous.getIntersectionPoint();
-				originalEdgeStart = node.previous;
-				va = node.previous;
-				vb = node;
+		if (next.r > 0 || previous.r > 0) {
+			if (previous.r < 0 || next.r < previous.r) {
+				if (node.next.bisector.intersectionWith(node.bisector).r > 0 && next.r > 0) {
+					nearer = next.getIntersectionPoint();
+					originalEdgeStart = node;
+					va = node;
+					vb = node.next;
+				}
+			} else if (next.r < 0 || previous.r < next.r) {
+				if (node.previous.bisector.intersectionWith(node.bisector).r > 0 && previous.r > 0) {
+					nearer = previous.getIntersectionPoint();
+					originalEdgeStart = node.previous;
+					va = node.previous;
+					vb = node;
+				}
 			}
-		} else if (next.r > 0) {
-			nearer = next.getIntersectionPoint();
-			originalEdgeStart = node;
-			va = node;
-			vb = node.next;
-		} else if (previous.r > 0) {
-			nearer = previous.getIntersectionPoint();
-			originalEdgeStart = node.previous;
-			va = node.previous;
-			vb = node;
 		}
+//		else if (next.r > 0) {
+//			nearer = next.getIntersectionPoint();
+//			originalEdgeStart = node;
+//			va = node;
+//			vb = node.next;
+//		} else if (previous.r > 0) {
+//			nearer = previous.getIntersectionPoint();
+//			originalEdgeStart = node.previous;
+//			va = node.previous;
+//			vb = node;
+//		}
 		if (node.isReflex) {
 			SkeletonEvent splitPoint = findSplitEvent(node);
 			if (
@@ -417,6 +437,9 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		Point2D splitPoint = null;
 		Node originalEdgeStart = null;
 		for (Node node : reflexNode) {
+			if (node == reflexNode || node == reflexNode.previous || node == reflexNode.next) {
+				continue;
+			}
 			if (
 				new LineIntersection(
 					reflexNode.bisector.segment,
@@ -439,9 +462,6 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 					node.currentEdge
 				).r <= 1
 				) {
-				continue;
-			}
-			if (node == reflexNode || node == reflexNode.previous || node == reflexNode.next) {
 				continue;
 			}
 			Point2D point = computeSplitPoint(reflexNode, node.currentEdge);

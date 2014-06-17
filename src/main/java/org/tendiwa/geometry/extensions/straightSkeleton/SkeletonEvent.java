@@ -13,7 +13,7 @@ import java.util.Iterator;
  * Note: this class has natural ordering that is inconsistent with {@link Object#equals(Object)}.
  */
 public class SkeletonEvent extends Point2D implements Comparable<SkeletonEvent> {
-	private final double distanceToOriginalEdge;
+	 final double distanceToOriginalEdge;
 	final EventType event;
 	final OppositeEdgeStartMovement oppositeEdgeStartMovement;
 	final OppositeEdgeStartMovement oppositeEdgeEndMovement;
@@ -68,11 +68,18 @@ public class SkeletonEvent extends Point2D implements Comparable<SkeletonEvent> 
 //				to.vertex
 //			), DrawingSegment2D.withColorDirected(colors.next())
 //		);
-		if (ImmutableList.copyOf(to).contains(va)) {
-			return to;
+		ImmutableList<Node> nodes = ImmutableList.copyOf(to);
+		if (event == EventType.EDGE) {
+			if (nodes.contains(va) /*|| nodes.contains(vb)*/) {
+				return to;
+			}
+		} else if (event == EventType.SPLIT) {
+			if (nodes.contains(va)) {
+				return to;
+			}
+		} else {
+			throw new RuntimeException("Wrong event type");
 		}
-//		from.removeObserver(this);
-//		to.addObserver(this);
 		return currentNode;
 	}
 

@@ -11,8 +11,6 @@ import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.straightSkeleton.SuseikaStraightSkeleton;
-import org.tendiwa.geometry.extensions.twakStraightSkeleton.TwakStraightSkeleton;
-import sun.net.www.content.image.gif;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -28,6 +26,14 @@ public class StraightSkeletonDemo implements Runnable {
 
 	@Override
 	public void run() {
+		Config config = new Config();
+		config.saveGif = false;
+		config.drawToCanvas = false;
+		config.startIteration = 52;
+		config.numberOfIterations = 1;
+		config.gifPath = System.getProperty("user.home") + "/test.gif";
+		config.drawEdges = false;
+
 		List<Point2D> points = new ArrayList<Point2D>() {{
 			add(new Point2D(11, 14));
 			add(new Point2D(26, 61));
@@ -47,32 +53,49 @@ public class StraightSkeletonDemo implements Runnable {
 			add(new Point2D(89, 54));
 			add(new Point2D(100, 13));
 		}};
-//		TestCanvas canvas = new TestCanvas(1, 200, 200);
-//		GifBuilder gifBuilder = factory.create(canvas, 30);
-		for (int i = 10; i < 11; i++) {
-//			canvas.clear();
-			System.out.println(i);
-			List<Point2D> derivative = new ArrayList<>(points.size());
-			int j = 0;
-			for (Point2D point : points) {
-				double angle = Math.PI * 2 / (180 / (j % 6 + 1)) * i;
-				derivative.add(
-					new Point2D(
-						point.x + Math.cos(angle) * 6,
-						point.y + Math.sin(angle) * 6
-					)
-				);
-				j++;
-			}
-			SuseikaStraightSkeleton skeleton = new SuseikaStraightSkeleton(derivative);
-			for (Segment2D edge : skeleton.originalEdges()) {
-//				canvas.draw(edge, DrawingSegment2D.withColor(Color.red));
-			}
-//			canvas.draw(skeleton.graph(), DrawingGraph.withColor(Color.cyan));
-//			gifBuilder.saveFrame();
-		}
-//		gifBuilder.saveAnimation(System.getProperty("user.home")+"/test.gif");
+		buildSkeleton(config, points);
+	}
 
+	private void buildSkeleton(Config config, List<Point2D> points) {
+		TestCanvas canvas = null;
+		GifBuilder gifBuilder = null;
+		if (config.saveGif) {
+			config.drawToCanvas = true;
+		}
+		if (config.drawToCanvas) {
+			canvas = new TestCanvas(1, 200, 200);
+			gifBuilder = factory.create(canvas, 30);
+		}
+		int endIteration = config.startIteration + config.numberOfIterations;
+		for (int i = config.startIteration; i < endIteration; i++) {
+			if (config.drawToCanvas) {
+				assert canvas != null;
+				canvas.clear();
+			}
+			if (config.printDebugInfo) {
+				System.out.println("Iteration " + i);
+			}
+			SuseikaStraightSkeleton skeleton = computeSkeleton(points, i);
+			if (config.drawToCanvas) {
+				if (config.drawEdges) {
+					for (Segment2D edge : skeleton.originalEdges()) {
+						assert canvas != null;
+						canvas.draw(edge, DrawingSegment2D.withColor(Color.red));
+					}
+				}
+				assert canvas != null;
+				canvas.drawString(String.valueOf(i), 100, 100, Color.black);
+				canvas.draw(skeleton.graph(), DrawingGraph.withColor(Color.cyan));
+				if (config.saveGif) {
+					gifBuilder.saveFrame();
+				}
+			}
+		}
+
+		if (config.saveGif) {
+			assert gifBuilder != null;
+			gifBuilder.saveAnimation(config.gifPath);
+		}
 //		SuseikaStraightSkeleton skeleton = TwakStraightSkeleton.create(points);
 //		for (Segment2D segment : skeleton.graph().edgeSet()) {
 //			canvas.draw(segment, DrawingSegment2D.withColor(Color.red));
@@ -80,8 +103,32 @@ public class StraightSkeletonDemo implements Runnable {
 //		for (Segment2D segment : skeleton.cap(10).edgeSet()) {
 //			canvas.draw(segment, DrawingSegment2D.withColor(Color.blue));
 //		}
+	}
 
+	private SuseikaStraightSkeleton computeSkeleton(List<Point2D> points, int i) {
+		List<Point2D> derivative = new ArrayList<>(points.size());
+		int j = 0;
+		for (Point2D point : points) {
+			double angle = Math.PI * 2 / (180 / (j % 6 + 1)) * i;
+			derivative.add(
+				new Point2D(
+					point.x + Math.cos(angle) * 6,
+					point.y + Math.sin(angle) * 6
+				)
+			);
+			j++;
+		}
+		return new SuseikaStraightSkeleton(derivative);
+	}
 
+	private static class Config {
+		public boolean saveGif = false;
+		public String gifPath = System.getProperty("user.home") + "/test.gif";
+		public int startIteration = 0;
+		public int numberOfIterations = 120;
+		public boolean printDebugInfo = true;
+		public boolean drawToCanvas = true;
+		public boolean drawEdges = true;
 	}
 
 }
