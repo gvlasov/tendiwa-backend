@@ -1,7 +1,7 @@
 package org.tendiwa.geometry;
 
 import com.google.common.collect.Lists;
-import org.tendiwa.settlements.LineIntersection;
+import org.tendiwa.settlements.RayIntersection;
 
 import java.util.List;
 import java.util.function.Function;
@@ -103,7 +103,7 @@ public class Segment2D {
 	 * @see #intersects(Segment2D)
 	 */
 	public Point2D intersection(Segment2D line) {
-		LineIntersection lineIntersection = new LineIntersection(start, end, line);
+		RayIntersection lineIntersection = new RayIntersection(start, end, line);
 		if (!lineIntersection.segmentsIntersect()) {
 			return null;
 		}
@@ -122,7 +122,7 @@ public class Segment2D {
 	 * @see #intersection(Segment2D)
 	 */
 	public boolean intersects(Segment2D line) {
-		LineIntersection intersection = new LineIntersection(start, end, line);
+		RayIntersection intersection = new RayIntersection(start, end, line);
 		return intersection.segmentsIntersect();
 	}
 
@@ -146,5 +146,29 @@ public class Segment2D {
 
 	public Vector2D asVector() {
 		return new Point2D(end.x - start.x, end.y - start.y);
+	}
+
+	public Line2D toLine() {
+		return new Line2D(start.x, start.y, end.x, end.y);
+	}
+
+	/**
+	 * Creates a new segment that is parallel to this one.
+	 *
+	 * @param perpendicularDistance
+	 * 	Perpendicular distance from this segment to the new one.
+	 * @param fromLeft
+	 * 	Whether the new segment should lay in the left half-plane from this segment or the right one
+	 * 	(if we look from {@link #start} to {@link #end}).
+	 * @return A new line parallel to this segment.
+	 */
+	public Segment2D createParallelSegment(double perpendicularDistance, boolean fromLeft) {
+		double magnitude = Math.sqrt((end.x - start.x) * (end.x - start.x) + (end.y - start.y) * (end.y - start.y));
+		double transitionX = -(end.y - start.y) / magnitude * (fromLeft ? -perpendicularDistance : perpendicularDistance);
+		double transitionY = (end.x - start.x) / magnitude * (fromLeft ? -perpendicularDistance : perpendicularDistance);
+		return new Segment2D(
+			new Point2D(start.x + transitionX, start.y + transitionY),
+			new Point2D(end.x + transitionX, end.y + transitionY)
+		);
 	}
 }

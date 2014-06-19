@@ -3,7 +3,7 @@ package org.tendiwa.geometry.extensions.straightSkeleton;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Vector2D;
-import org.tendiwa.settlements.LineIntersection;
+import org.tendiwa.settlements.RayIntersection;
 
 class Bisector {
 	final Segment2D segment;
@@ -24,7 +24,7 @@ class Bisector {
 				)
 			);
 		} else {
-//			Point2D edgeIntersection = new LineIntersection(previousEdge, currentEdge).getIntersectionPoint();
+//			Point2D edgeIntersection = new RayIntersection(previousEdge, currentEdge).getIntersectionPoint();
 			this.segment = new Segment2D(
 				vertex,
 				computeEnd(previousEdge, currentEdge, vertex, isReflex)
@@ -59,14 +59,14 @@ class Bisector {
 
 	private boolean isIntersectionInFrontOfBisectorStart(Segment2D previousEdge, Segment2D currentEdge) {
 		Segment2D reversePrevious = previousEdge.reverse();
-		return new LineIntersection(
+		return new RayIntersection(
 			reversePrevious,
 			currentEdge
-		).r < 0 || new LineIntersection(currentEdge, reversePrevious).r < 0;
+		).r < 0 || new RayIntersection(currentEdge, reversePrevious).r < 0;
 	}
 
-	LineIntersection intersectionWith(Bisector bisector) {
-		return new LineIntersection(
+	RayIntersection intersectionWith(Bisector bisector) {
+		return new RayIntersection(
 			segment.start,
 			segment.end,
 			bisector.segment

@@ -66,4 +66,8 @@ public interface Vector2D extends Position2D {
 	public static Vector2D fromStartToEnd(Vector2D start, Vector2D end) {
 		return end.subtract(start);
 	}
+
+	public default Vector2D cross() {
+		return new Point2D(-getY(), getX());
+	}
 }

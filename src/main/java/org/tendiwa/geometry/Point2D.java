@@ -50,6 +50,19 @@ public class Point2D implements Vector2D {
 		return result;
 	}
 
+	/**
+	 * Finds Chebyshev distance between this cell and another cell.
+	 * <p>
+	 * Finding Chebyshev distance is much cheaper than finding Euclidean distance with {@link #distanceTo(Point2D)}.
+	 *
+	 * @param point
+	 * 	Another point.
+	 * @return Chebyshev distance between two cells.
+	 */
+	public double chebyshevDistanceTo(Point2D point) {
+		return Math.max(Math.abs(point.x - x), Math.abs(point.y - y));
+	}
+
 	public double angleTo(Point2D end) {
 		double angle = Math.atan2(end.y - y, end.x - x);
 		if (angle < 0) {
@@ -67,7 +80,7 @@ public class Point2D implements Vector2D {
 	}
 
 	public double distanceTo(Point2D end) {
-		return Math.sqrt(Math.pow(end.x - this.x, 2) + Math.pow(end.y - this.y, 2));
+		return Math.sqrt((end.x - this.x) * (end.x - this.x) + (end.y - this.y) * (end.y - this.y));
 	}
 
 	public Cell toCell() {

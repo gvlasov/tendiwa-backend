@@ -5,18 +5,16 @@ import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Point2D;
 
 /**
- * Finds intersection of two <i>lines</i> defined by <i>segments</i> that lie on those lines.
+ * Finds intersection of two <i>rays</i>, both defined by the start of a ray and some other point on that ray.
  * <p>
- * Note that if lines intersect doesn't mean that segments intersect.
+ * Note that if rays intersect doesn't mean that segments intersect.
  */
-public class LineIntersection {
+public class RayIntersection {
 	public final boolean intersects;
 	/**
-	 * Relative distance from {@code sourceNode} to {@code targetPoint}, 0.0 means intersection is at {@code
-	 * sourceNode}, 1.0 means it's at target point. Note that {@code r} is computed even if lines are parallel,
+	 * Relative distance from start of the first ray to intersection point, 0.0 means intersection is at {@code
+	 * sourceNode}, 1.0 means it's at target point. Note that {@code r} is computed even if rays are parallel,
 	 * in which case {@code r == Infinity}.
-	 * <p>
-	 * If 0 <= r <= 1, then not only lines intersect, but segments too.
 	 */
 	public final double r;
 
@@ -24,7 +22,7 @@ public class LineIntersection {
 	private final Point2D sourceNode;
 	private final Point2D targetPoint;
 
-	public LineIntersection(Point2D sourceNode, Point2D targetPoint, Segment2D segment) {
+	public RayIntersection(Point2D sourceNode, Point2D targetPoint, Segment2D segment) {
 		if (sourceNode.equals(targetPoint)) {
 			throw new IllegalArgumentException("There can't be zero distance between points");
 		}
@@ -43,9 +41,10 @@ public class LineIntersection {
 			segment.end.y - segment.start.y
 		);
 		double denom = (ab.x * cd.y) - (ab.y * cd.x);
+		// TODO: Is computation of parallel rays needed or not?
 		if (denom == 0) {
 			throw new GeometryException(
-				"Lines " + new Segment2D(sourceNode, targetPoint) + " and " + segment + " are  parallel"
+				"Rays " + new Segment2D(sourceNode, targetPoint) + " and " + segment + " are  parallel"
 			);
 		}
 		Point2D ca = new Point2D(
@@ -57,7 +56,7 @@ public class LineIntersection {
 		intersects = (denom != 0) && !(r == 0 && s == 0);
 	}
 
-	public LineIntersection(Segment2D a, Segment2D b) {
+	public RayIntersection(Segment2D a, Segment2D b) {
 		this(a.start, a.end, b);
 	}
 

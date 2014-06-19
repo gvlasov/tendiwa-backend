@@ -11,7 +11,7 @@ import org.tendiwa.drawing.extensions.DrawingPoint2D;
 import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.*;
 import org.tendiwa.graphs.MinimalCycle;
-import org.tendiwa.settlements.LineIntersection;
+import org.tendiwa.settlements.RayIntersection;
 
 import java.awt.Color;
 import java.util.*;
@@ -28,7 +28,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 	TestCanvas canvas = new TestCanvas(1, 200, 200);
 	private final PriorityQueue<SkeletonEvent> queue;
 	private final Multimap<Point2D, Point2D> arcs = HashMultimap.create();
-	private final double EPSILON = 1e-10;
+	static final double EPSILON = 1e-10;
 	private final HashMap<Node, Node> splitNodePairs = new HashMap<>();
 	private final MovementRegistry registry;
 	private final RegistryOfSplitEventsOnEdges splitEventsRegistry;
@@ -242,7 +242,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 				integrateNewSplitNode(node2, point, true);
 			}
 		}
-//		canvas.close();
+		canvas.close();
 	}
 
 
@@ -344,7 +344,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 
 	private SkeletonEvent computeNearerBisectorsIntersection(Node node) {
 		// Non-convex 1c
-		LineIntersection next;
+		RayIntersection next = null;
 		try {
 			next = node.bisector.intersectionWith(node.next.bisector);
 		} catch (GeometryException e) {
@@ -354,7 +354,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 			canvas.draw(node.next.bisector.segment, DrawingSegment2D.withColorDirected(Color.green));
 			throw new RuntimeException(e);
 		}
-		LineIntersection previous = null;
+		RayIntersection previous = null;
 		try {
 			previous = node.bisector.intersectionWith(node.previous.bisector);
 		} catch (GeometryException e) {
@@ -373,14 +373,14 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		Node va = null;
 		Node vb = null;
 		if (next.r > 0 || previous.r > 0) {
-			if (previous.r < 0 || next.r < previous.r) {
+			if (previous.r < 0 && next.r > 0 || next.r > 0 && next.r < previous.r) {
 				if (node.next.bisector.intersectionWith(node.bisector).r > 0 && next.r > 0) {
 					nearer = next.getIntersectionPoint();
 					originalEdgeStart = node;
 					va = node;
 					vb = node.next;
 				}
-			} else if (next.r < 0 || previous.r < next.r) {
+			} else if (next.r < 0 && previous.r > 0 || previous.r > 0 && previous.r < next.r) {
 				if (node.previous.bisector.intersectionWith(node.bisector).r > 0 && previous.r > 0) {
 					nearer = previous.getIntersectionPoint();
 					originalEdgeStart = node.previous;
@@ -441,7 +441,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 				continue;
 			}
 			if (
-				new LineIntersection(
+				new RayIntersection(
 					reflexNode.bisector.segment,
 					node.currentEdge
 				).r <= EPSILON
@@ -449,7 +449,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 				continue;
 			}
 			if (
-				new LineIntersection(
+				new RayIntersection(
 					reflexNode.currentEdge.reverse(),
 					node.currentEdge
 				).r <= 1
@@ -457,7 +457,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 				continue;
 			}
 			if (
-				new LineIntersection(
+				new RayIntersection(
 					reflexNode.previousEdge,
 					node.currentEdge
 				).r <= 1
@@ -502,7 +502,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 	 */
 	private Point2D computeSplitPoint(Node currentNode, Segment2D oppositeEdge) {
 		assert currentNode.isReflex;
-//		Point2D bisectorStart = new LineIntersection(
+//		Point2D bisectorStart = new RayIntersection(
 //			currentNode.previousEdge,
 //			oppositeEdge
 //		).getIntersectionPoint();
@@ -512,7 +512,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 //			bisectorStart,
 //			bisectorStart.add(oneVector).add(oppositeEdgeVector)
 //		);
-//		Point2D intersectionPoint = new LineIntersection(currentNode.bisector.segment, bisector).getIntersectionPoint();
+//		Point2D intersectionPoint = new RayIntersection(currentNode.bisector.segment, bisector).getIntersectionPoint();
 //		canvas.draw(oppositeEdge, DrawingSegment2D.withColor(Color.black));
 //		canvas.draw(bisector, DrawingSegment2D.withColor(Color.green));
 //		canvas.draw(currentNode.vertex, DrawingPoint2D.withColorAndSize(Color.green, 6));
@@ -520,7 +520,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 //			Should be the same point
 //			: computeAnotherIntersectionPoint(currentNode, oppositeEdge) + " " + intersectionPoint;
 //		return intersectionPoint;
-		Point2D bisectorStart = new LineIntersection(currentNode.previousEdge, oppositeEdge).getIntersectionPoint();
+		Point2D bisectorStart = new RayIntersection(currentNode.previousEdge, oppositeEdge).getIntersectionPoint();
 		Bisector bisector = new Bisector(
 			new Segment2D(
 				currentNode.vertex,
@@ -528,7 +528,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 			),
 			new Segment2D(
 				bisectorStart,
-				new LineIntersection(
+				new RayIntersection(
 					currentNode.bisector.segment,
 					oppositeEdge
 				).getIntersectionPoint()
@@ -550,7 +550,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 	}
 
 	private Point2D computeAnotherIntersectionPoint(Node currentNode, Segment2D oppositeEdge) {
-//		Point2D anotherBisectorStart = new LineIntersection(
+//		Point2D anotherBisectorStart = new RayIntersection(
 //			currentNode.currentEdge,
 //			oppositeEdge
 //		).getIntersectionPoint();
@@ -560,12 +560,12 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 //			anotherBisectorStart,
 //			anotherBisectorStart.add(anotherOneVector).add(anotherOppositeEdgeVector)
 //		);
-//		return new LineIntersection(
+//		return new RayIntersection(
 //			currentNode.bisector.segment,
 //			anotherBisector
 //		).getIntersectionPoint();
 		Segment2D previousEdge = new Segment2D(currentNode.next.vertex, currentNode.vertex);
-		Point2D bisectorStart = new LineIntersection(previousEdge, oppositeEdge).getIntersectionPoint();
+		Point2D bisectorStart = new RayIntersection(previousEdge, oppositeEdge).getIntersectionPoint();
 		Bisector bisector = new Bisector(
 			new Segment2D(
 				previousEdge.end,
@@ -573,7 +573,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 			),
 			new Segment2D(
 				bisectorStart,
-				new LineIntersection(
+				new RayIntersection(
 					currentNode.bisector.segment,
 					oppositeEdge
 				).getIntersectionPoint()
@@ -644,7 +644,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 	}
 
 	@Override
-	public UndirectedGraph<Point2D, Segment2D> cap(double height) {
-		return null;
+	public UndirectedGraph<Point2D, Segment2D> cap(double depth) {
+		return new PolygonShrinker2(arcs, edges, depth).asGraph();
 	}
 }

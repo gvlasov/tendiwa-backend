@@ -15,6 +15,12 @@ import org.tendiwa.geometry.extensions.straightSkeleton.SuseikaStraightSkeleton;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.PrimitiveIterator;
+import java.util.function.IntSupplier;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static java.util.stream.Collectors.toList;
 
 public class StraightSkeletonDemo implements Runnable {
 	@Inject
@@ -27,12 +33,13 @@ public class StraightSkeletonDemo implements Runnable {
 	@Override
 	public void run() {
 		Config config = new Config();
-		config.saveGif = false;
-		config.drawToCanvas = false;
-		config.startIteration = 52;
-		config.numberOfIterations = 1;
+		config.saveGif = true;
+		config.drawToCanvas = true;
+		config.startIteration = 1;
+		config.numberOfIterations = 180;
 		config.gifPath = System.getProperty("user.home") + "/test.gif";
-		config.drawEdges = false;
+		config.drawEdges = true;
+		config.fps = 30;
 
 		List<Point2D> points = new ArrayList<Point2D>() {{
 			add(new Point2D(11, 14));
@@ -64,9 +71,27 @@ public class StraightSkeletonDemo implements Runnable {
 		}
 		if (config.drawToCanvas) {
 			canvas = new TestCanvas(1, 200, 200);
-			gifBuilder = factory.create(canvas, 30);
+			gifBuilder = factory.create(canvas, config.fps);
 		}
 		int endIteration = config.startIteration + config.numberOfIterations;
+		PrimitiveIterator.OfInt shrunkDepth = IntStream.generate(new IntSupplier() {
+			boolean forward = true;
+			int i = 6;
+			int maxI = 30;
+
+			@Override
+			public int getAsInt() {
+				if (forward) {
+					i++;
+				} else {
+					i--;
+				}
+				if (i == maxI || i == 0) {
+					forward = !forward;
+				}
+				return i;
+			}
+		}).iterator();
 		for (int i = config.startIteration; i < endIteration; i++) {
 			if (config.drawToCanvas) {
 				assert canvas != null;
@@ -75,7 +100,16 @@ public class StraightSkeletonDemo implements Runnable {
 			if (config.printDebugInfo) {
 				System.out.println("Iteration " + i);
 			}
-			SuseikaStraightSkeleton skeleton = computeSkeleton(points, i);
+			final int iteration = i;
+			SuseikaStraightSkeleton skeleton = new SuseikaStraightSkeleton(
+				points.stream().map(p -> {
+					double angle = Math.PI * 2 / (180 / (points.indexOf(p) % 6 + 1)) * iteration;
+					return new Point2D(
+						p.x + Math.cos(angle) * 6,
+						p.y + Math.sin(angle) * 6
+					);
+				}).collect(toList())
+			);
 			if (config.drawToCanvas) {
 				if (config.drawEdges) {
 					for (Segment2D edge : skeleton.originalEdges()) {
@@ -84,8 +118,9 @@ public class StraightSkeletonDemo implements Runnable {
 					}
 				}
 				assert canvas != null;
-				canvas.drawString(String.valueOf(i), 100, 100, Color.black);
+				canvas.drawString(String.valueOf(i), 40, 15, Color.lightGray);
 				canvas.draw(skeleton.graph(), DrawingGraph.withColor(Color.cyan));
+				canvas.draw(skeleton.cap(shrunkDepth.next()), DrawingGraph.withColor(Color.green));
 				if (config.saveGif) {
 					gifBuilder.saveFrame();
 				}
@@ -105,30 +140,15 @@ public class StraightSkeletonDemo implements Runnable {
 //		}
 	}
 
-	private SuseikaStraightSkeleton computeSkeleton(List<Point2D> points, int i) {
-		List<Point2D> derivative = new ArrayList<>(points.size());
-		int j = 0;
-		for (Point2D point : points) {
-			double angle = Math.PI * 2 / (180 / (j % 6 + 1)) * i;
-			derivative.add(
-				new Point2D(
-					point.x + Math.cos(angle) * 6,
-					point.y + Math.sin(angle) * 6
-				)
-			);
-			j++;
-		}
-		return new SuseikaStraightSkeleton(derivative);
-	}
-
 	private static class Config {
 		public boolean saveGif = false;
 		public String gifPath = System.getProperty("user.home") + "/test.gif";
 		public int startIteration = 0;
-		public int numberOfIterations = 120;
+		public int numberOfIterations = 180;
 		public boolean printDebugInfo = true;
 		public boolean drawToCanvas = true;
 		public boolean drawEdges = true;
+		public int fps = 30;
 	}
 
 }

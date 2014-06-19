@@ -81,7 +81,7 @@ public class SnapTest {
                 continue;
             }
             if (isSegmentIntersectionProbable(sourceNode, targetNode, road.start, road.end)) {
-                LineIntersection intersection = new LineIntersection(
+                RayIntersection intersection = new RayIntersection(
                         sourceNode,
                         targetNode,
                         new Segment2D(road.start, road.end)
