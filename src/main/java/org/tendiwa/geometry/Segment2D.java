@@ -107,7 +107,7 @@ public class Segment2D {
 		if (!lineIntersection.segmentsIntersect()) {
 			return null;
 		}
-		return lineIntersection.getIntersectionPoint();
+		return lineIntersection.getLinesIntersectionPoint();
 	}
 
 	/**

@@ -12,6 +12,7 @@ import org.tendiwa.geometry.extensions.twakStraightSkeleton.utils.*;
 
 import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +25,7 @@ public class TwakStraightSkeleton implements StraightSkeleton {
 
 	private final Collection<Output.SharedEdge> edges;
 	private final Skeleton skeleton;
+	private final List<Segment2D> originalEdges;
 
 	public static StraightSkeleton create(List<Point2D> vertices) {
 		if (JTSUtils.isYDownCCW(vertices)) {
@@ -66,10 +68,11 @@ public class TwakStraightSkeleton implements StraightSkeleton {
 
 		Skeleton skeleton = new Skeleton(out, true);
 		skeleton.skeleton();
-		return new TwakStraightSkeleton(skeleton);
+		return new TwakStraightSkeleton(skeleton, pointsToSegments(vertices));
 	}
 
-	private TwakStraightSkeleton(Skeleton skeleton) {
+	private TwakStraightSkeleton(Skeleton skeleton, List<Segment2D> originalEdges) {
+		this.originalEdges = originalEdges.stream().map(e->new Segment2D(e.end, e.start)).collect(Collectors.toList());
 		edges = skeleton.output.edges.map.values();
 		this.skeleton = skeleton;
 	}
@@ -86,6 +89,7 @@ public class TwakStraightSkeleton implements StraightSkeleton {
 					new Point2D(e.end.x, e.end.y)
 				)
 			)
+			.filter(a -> !originalEdges.contains(a))
 			.forEach(segment -> {
 				graph.addVertex(segment.start);
 				graph.addVertex(segment.end);
@@ -95,28 +99,42 @@ public class TwakStraightSkeleton implements StraightSkeleton {
 	}
 
 	@Override
-	public UndirectedGraph<Point2D, Segment2D> cap(double height) {
-		SimpleGraph<Point2D, Segment2D> graph = new SimpleGraph<>(Segment2D::new);
-		Point2D previous = null;
-		Loop<Corner> corners = skeleton.capCopy(height).get(0);
-		Point2D first = new Point2D(
-			corners.getFirst().x,
-			corners.getFirst().y
-		);
-		for (Corner corner : corners) {
-			Point2D current = new Point2D(corner.x, corner.y);
-			graph.addVertex(current);
-			if (previous != null) {
-				graph.addEdge(previous, current);
-			}
-			previous = current;
-		}
-		graph.addEdge(previous, first);
-		return graph;
+	public UndirectedGraph<Point2D, Segment2D> cap(double depth) {
+//		SimpleGraph<Point2D, Segment2D> graph = new SimpleGraph<>(Segment2D::new);
+//		Point2D previous = null;
+//		Loop<Corner> corners = skeleton.capCopy(depth).get(0);
+//		Point2D first = new Point2D(
+//			corners.getFirst().x,
+//			corners.getFirst().y
+//		);
+//		for (Corner corner : corners) {
+//			Point2D current = new Point2D(corner.x, corner.y);
+//			graph.addVertex(current);
+//			if (previous != null) {
+//				graph.addEdge(previous, current);
+//			}
+//			previous = current;
+//		}
+//		graph.addEdge(previous, first);
+//		return graph;
+		return new TwakPolygonShrinker(graph(), originalEdges, depth).asGraph();
 	}
 
 	@Override
 	public List<Segment2D> originalEdges() {
-		return null;
+		return originalEdges;
+	}
+
+	static List<Segment2D> pointsToSegments(List<Point2D> points) {
+		List<Segment2D> originalEdges = new ArrayList<>(points.size());
+		Point2D previous = points.get(points.size() - 1);
+		for (Point2D current : points) {
+			originalEdges.add(new Segment2D(
+				previous,
+				current
+			));
+			previous = current;
+		}
+		return originalEdges;
 	}
 }

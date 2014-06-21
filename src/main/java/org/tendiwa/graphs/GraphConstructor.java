@@ -8,6 +8,8 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
 import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.IntStream;
 
 /**
  * Reduces boilerplate code while constructing specific undirected graphs for test cases and demonstrations.
@@ -105,6 +107,16 @@ public class GraphConstructor<V, E> {
         edges.add(new int[]{start, end});
         return this;
     }
+	public GraphConstructor<V, E> cycleOfVertices(List<V> vertices) {
+		int firstAlias = lastVertexAlias == Integer.MIN_VALUE ? 0 : lastVertexAlias;
+		int i = 0;
+		for (V v : vertices) {
+			vertex(firstAlias+i, v);
+			i++;
+		}
+		cycle(IntStream.range(firstAlias, firstAlias+i).toArray());
+		return this;
+	}
 
     /**
      * Adds edges between the last vertex added to the graph and the given vertices.

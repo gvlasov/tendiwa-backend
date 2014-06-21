@@ -60,9 +60,9 @@ public class DrawingGraph {
                         color
                 );
             }
-            for (Point2D v : shape.vertexSet()) {
+//            for (Point2D v : shape.vertexSet()) {
 //                canvas.draw(new Cell((int) Math.round(v.x), (int) Math.round(v.y)), pointDrawing);
-            }
+//            }
         };
     }
     public static DrawingAlgorithm<UndirectedGraph<Point2D, org.tendiwa.geometry.Segment2D>> withColorAndAntialiasing(

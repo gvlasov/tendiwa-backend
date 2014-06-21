@@ -36,4 +36,12 @@ public class RayIntersectionTest {
 		RayIntersection intersection = new RayIntersection(a, b);
 		assertTrue(intersection.intersects && intersection.r > 1);
 	}
+
+	@Test
+	public void parallelDontIntersect() {
+		Segment2D a = Segment2D.create(0, 0, 4, 0);
+		Segment2D b = a.createParallelSegment(1, true);
+		RayIntersection intersection = new RayIntersection(a, b);
+		assertFalse(intersection.intersects);
+	}
 }

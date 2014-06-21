@@ -7,7 +7,7 @@ import java.util.List;
 public interface StraightSkeleton {
 	public UndirectedGraph<Point2D, Segment2D> graph();
 
-	public UndirectedGraph<Point2D, Segment2D> cap(double height);
+	public UndirectedGraph<Point2D, Segment2D> cap(double depth);
 
 	public List<Segment2D> originalEdges();
 }

@@ -42,11 +42,11 @@ public class RayIntersection {
 		);
 		double denom = (ab.x * cd.y) - (ab.y * cd.x);
 		// TODO: Is computation of parallel rays needed or not?
-		if (denom == 0) {
-			throw new GeometryException(
-				"Rays " + new Segment2D(sourceNode, targetPoint) + " and " + segment + " are  parallel"
-			);
-		}
+//		if (denom == 0) {
+//			throw new GeometryException(
+//				"Rays " + new Segment2D(sourceNode, targetPoint) + " and " + segment + " are  parallel"
+//			);
+//		}
 		Point2D ca = new Point2D(
 			sourceNode.x - segment.start.x,
 			sourceNode.y - segment.start.y
@@ -60,7 +60,11 @@ public class RayIntersection {
 		this(a.start, a.end, b);
 	}
 
-	public Point2D getIntersectionPoint() {
+	public Point2D getLinesIntersectionPoint() {
+		if (!intersects) {
+			throw new GeometryException("Trying to find intersection point of two parallel lines");
+		}
+		assert Double.isFinite(r);
 		return new Point2D(
 			sourceNode.x + (targetPoint.x - sourceNode.x) * r,
 			sourceNode.y + (targetPoint.y - sourceNode.y) * r

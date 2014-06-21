@@ -24,7 +24,7 @@ class Bisector {
 				)
 			);
 		} else {
-//			Point2D edgeIntersection = new RayIntersection(previousEdge, currentEdge).getIntersectionPoint();
+//			Point2D edgeIntersection = new RayIntersection(previousEdge, currentEdge).getLinesIntersectionPoint();
 			this.segment = new Segment2D(
 				vertex,
 				computeEnd(previousEdge, currentEdge, vertex, isReflex)

@@ -2,6 +2,8 @@ package org.tendiwa.demos.geometry;
 
 import com.google.inject.Inject;
 import org.tendiwa.demos.Demos;
+import org.tendiwa.demos.geometry.polygons.ConvexAndReflexAmoeba;
+import org.tendiwa.demos.geometry.polygons.CutUpRing;
 import org.tendiwa.drawing.GifBuilder;
 import org.tendiwa.drawing.GifBuilderFactory;
 import org.tendiwa.drawing.TestCanvas;
@@ -10,7 +12,10 @@ import org.tendiwa.drawing.extensions.DrawingModule;
 import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.StraightSkeleton;
+import org.tendiwa.geometry.extensions.straightSkeleton.KendziStraightSkeleton;
 import org.tendiwa.geometry.extensions.straightSkeleton.SuseikaStraightSkeleton;
+import org.tendiwa.geometry.extensions.twakStraightSkeleton.TwakStraightSkeleton;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -35,31 +40,13 @@ public class StraightSkeletonDemo implements Runnable {
 		Config config = new Config();
 		config.saveGif = true;
 		config.drawToCanvas = true;
-		config.startIteration = 1;
+		config.startIteration = 0;
 		config.numberOfIterations = 180;
 		config.gifPath = System.getProperty("user.home") + "/test.gif";
 		config.drawEdges = true;
 		config.fps = 30;
 
-		List<Point2D> points = new ArrayList<Point2D>() {{
-			add(new Point2D(11, 14));
-			add(new Point2D(26, 61));
-			add(new Point2D(12, 92));
-			add(new Point2D(78, 102));
-			add(new Point2D(8, 166));
-			add(new Point2D(62, 161));
-			add(new Point2D(93, 185));
-			add(new Point2D(125, 168));
-			add(new Point2D(177, 186));
-			add(new Point2D(160, 138));
-			add(new Point2D(193, 122));
-			add(new Point2D(142, 101));
-			add(new Point2D(179, 91));
-			add(new Point2D(147, 59));
-			add(new Point2D(178, 6));
-			add(new Point2D(89, 54));
-			add(new Point2D(100, 13));
-		}};
+		List<Point2D> points = new ConvexAndReflexAmoeba();
 		buildSkeleton(config, points);
 	}
 
@@ -101,7 +88,7 @@ public class StraightSkeletonDemo implements Runnable {
 				System.out.println("Iteration " + i);
 			}
 			final int iteration = i;
-			SuseikaStraightSkeleton skeleton = new SuseikaStraightSkeleton(
+			StraightSkeleton skeleton = TwakStraightSkeleton.create(
 				points.stream().map(p -> {
 					double angle = Math.PI * 2 / (180 / (points.indexOf(p) % 6 + 1)) * iteration;
 					return new Point2D(
@@ -112,10 +99,10 @@ public class StraightSkeletonDemo implements Runnable {
 			);
 			if (config.drawToCanvas) {
 				if (config.drawEdges) {
-					for (Segment2D edge : skeleton.originalEdges()) {
-						assert canvas != null;
-						canvas.draw(edge, DrawingSegment2D.withColor(Color.red));
-					}
+//					for (Segment2D edge : skeleton.originalEdges()) {
+//						assert canvas != null;
+//						canvas.draw(edge, DrawingSegment2D.withColor(Color.red));
+//					}
 				}
 				assert canvas != null;
 				canvas.drawString(String.valueOf(i), 40, 15, Color.lightGray);
