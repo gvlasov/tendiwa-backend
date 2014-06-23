@@ -17,7 +17,7 @@ public class CycleExtraVerticesRemover {
 	 * 	A list of vertices.
 	 * @return A new list without extra vertices.
 	 */
-	static List<Point2D> removeVerticesOnLineBetweenNeighbors(List<Point2D> vertices) {
+	public static List<Point2D> removeVerticesOnLineBetweenNeighbors(List<Point2D> vertices) {
 		int l = vertices.size();
 		Map<Integer, Point2D> nonRemovedVertices = new LinkedHashMap<Integer, Point2D>();
 		for (int i = 0; i < l; i++) {

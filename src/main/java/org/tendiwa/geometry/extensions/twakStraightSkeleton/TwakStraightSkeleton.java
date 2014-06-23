@@ -7,6 +7,7 @@ import org.tendiwa.geometry.JTSUtils;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.StraightSkeleton;
+import org.tendiwa.geometry.extensions.straightSkeleton.CycleExtraVerticesRemover;
 import org.tendiwa.geometry.extensions.twakStraightSkeleton.ui.Bar;
 import org.tendiwa.geometry.extensions.twakStraightSkeleton.utils.*;
 
@@ -24,19 +25,19 @@ import java.util.stream.Collectors;
 public class TwakStraightSkeleton implements StraightSkeleton {
 
 	private final Collection<Output.SharedEdge> edges;
-	private final Skeleton skeleton;
 	private final List<Segment2D> originalEdges;
 
 	public static StraightSkeleton create(List<Point2D> vertices) {
 		if (JTSUtils.isYDownCCW(vertices)) {
 			vertices = Lists.reverse(vertices);
 		}
+		vertices = CycleExtraVerticesRemover.removeVerticesOnLineBetweenNeighbors(vertices);
 		LoopL<Bar> edges = new LoopL<>();
 		Loop<Bar> aloop = new Loop<>();
 		edges.add(aloop);
 
-		List<Point2d> transfromedPoints = vertices.stream().map(v -> new Point2d(v.x, v.y)).collect(Collectors.toList());
-		for (Pair<Point2d, Point2d> pair : new ConsecutivePairs<>(transfromedPoints, true)) {
+		List<Point2d> transformedPoints = vertices.stream().map(v -> new Point2d(v.x, v.y)).collect(Collectors.toList());
+		for (Pair<Point2d, Point2d> pair : new ConsecutivePairs<>(transformedPoints, true)) {
 			aloop.append(new Bar(pair.first(), pair.second()));
 		}
 
@@ -72,9 +73,8 @@ public class TwakStraightSkeleton implements StraightSkeleton {
 	}
 
 	private TwakStraightSkeleton(Skeleton skeleton, List<Segment2D> originalEdges) {
-		this.originalEdges = originalEdges.stream().map(e->new Segment2D(e.end, e.start)).collect(Collectors.toList());
+		this.originalEdges = originalEdges.stream().map(e -> new Segment2D(e.end, e.start)).collect(Collectors.toList());
 		edges = skeleton.output.edges.map.values();
-		this.skeleton = skeleton;
 	}
 
 

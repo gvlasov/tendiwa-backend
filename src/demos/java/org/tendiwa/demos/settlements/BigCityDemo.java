@@ -9,6 +9,7 @@ import org.tendiwa.drawing.extensions.DrawingGraph;
 import org.tendiwa.drawing.extensions.DrawingMinimalCycle;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.StraightSkeleton;
 import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
 import org.tendiwa.geometry.extensions.straightSkeleton.PolygonShrinker;
 import org.tendiwa.geometry.extensions.straightSkeleton.SuseikaStraightSkeleton;
@@ -38,9 +39,9 @@ public class BigCityDemo implements Runnable {
                 .withMaxStartPointsPerCycle(5)
                 .withRoadsFromPoint(4)
                 .withSecondaryRoadNetworkDeviationAngle(0.0)
-                .withConnectivity(1)
-                .withRoadSegmentLength(20, 30)
-                .withSnapSize(15)
+                .withConnectivity(0.1)
+                .withRoadSegmentLength(10, 12)
+                .withSnapSize(4)
                 .withCanvas(canvas)
                 .withSeed(1)
                 .build();
@@ -54,9 +55,11 @@ public class BigCityDemo implements Runnable {
 
 		for (MinimalCycle<Point2D, Segment2D> block : city.getBlocks()) {
 			PolygonShrinker.canvas = canvas;
-			UndirectedGraph<Point2D,Segment2D> shrunkBlock = new SuseikaStraightSkeleton(block.vertexList()).cap(4);
+			StraightSkeleton skeleton = TwakStraightSkeleton.create(block.vertexList());
+			UndirectedGraph<Point2D,Segment2D> shrunkBlock = skeleton.cap(4);
 			canvas.draw(shrunkBlock, DrawingGraph.withColor(Color.blue));
 		}
+		System.out.println("end");
 
 //        }
     }

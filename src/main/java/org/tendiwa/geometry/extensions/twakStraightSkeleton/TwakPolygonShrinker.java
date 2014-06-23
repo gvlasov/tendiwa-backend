@@ -44,6 +44,8 @@ public class TwakPolygonShrinker extends PolygonShrinker {
 			graph.addEdge(arc.start, arc.end);
 		}
 		for (Segment2D edge : edges) {
+			graph.addVertex(edge.start);
+			graph.addVertex(edge.end);
 			graph.addEdge(edge.start, edge.end, new Segment2D(edge.start, edge.end));
 		}
 		return graph;
