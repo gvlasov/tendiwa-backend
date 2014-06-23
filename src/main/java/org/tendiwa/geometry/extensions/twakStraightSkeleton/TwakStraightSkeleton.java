@@ -89,7 +89,7 @@ public class TwakStraightSkeleton implements StraightSkeleton {
 					new Point2D(e.end.x, e.end.y)
 				)
 			)
-			.filter(a -> !originalEdges.contains(a))
+			.filter(a -> !originalEdges.contains(a) && !originalEdges.contains(a.reverse()))
 			.forEach(segment -> {
 				graph.addVertex(segment.start);
 				graph.addVertex(segment.end);

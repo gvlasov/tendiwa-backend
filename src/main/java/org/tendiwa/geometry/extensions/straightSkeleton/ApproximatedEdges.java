@@ -3,11 +3,9 @@ package org.tendiwa.geometry.extensions.straightSkeleton;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
-class ApproximatedEdges {
+public class ApproximatedEdges {
 	/**
 	 * Chebyshov distance in which points are considered equal.
 	 */
@@ -16,9 +14,9 @@ class ApproximatedEdges {
 	private final TreeSet<Point2D> startByY = new TreeSet<>((a, b) -> (int) Math.signum(a.y - b.y));
 	private final TreeSet<Point2D> endByX = new TreeSet<>((a, b) -> (int) Math.signum(a.x - b.x));
 	private final TreeSet<Point2D> endByY = new TreeSet<>((a, b) -> (int) Math.signum(a.y - b.y));
-	final Set<Segment2D> edges = new HashSet<>();
+	public final List<Segment2D> edges = new LinkedList<>();
 
-	void addFixedEdge(Segment2D edge) {
+	public void addFixedEdge(Segment2D edge) {
 		edge = new Segment2D(
 			snapPointToExistingPoints(edge.start, endByX, endByY),
 			snapPointToExistingPoints(edge.end, startByX, startByY)

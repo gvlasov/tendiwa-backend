@@ -4,6 +4,7 @@ import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.extensions.straightSkeleton.ApproximatedEdges;
 import org.tendiwa.geometry.extensions.straightSkeleton.PolygonShrinker;
 
 import java.util.List;
@@ -15,6 +16,11 @@ public class TwakPolygonShrinker extends PolygonShrinker {
 		List<Segment2D> edges,
 		double depth
 	) {
+//		ApproximatedEdges approximatedEdges = new ApproximatedEdges();
+//		for (Segment2D edge : edges) {
+//			approximatedEdges.addFixedEdge(edge);
+//		}
+
 		UndirectedGraph<Point2D, Segment2D> fullGraph = fillNewGraphWithArcsAndEdges(
 			graph,
 			edges

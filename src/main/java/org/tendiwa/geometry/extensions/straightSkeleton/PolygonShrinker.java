@@ -1,10 +1,14 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Multimap;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
+import org.tendiwa.drawing.Colors;
 import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawingMinimalCycle;
+import org.tendiwa.drawing.extensions.DrawingPoint2D;
 import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
@@ -18,7 +22,9 @@ import java.util.*;
 
 public class PolygonShrinker {
 
-	protected Set<Segment2D> shrunkPolygonsSegments;
+	protected List<Segment2D> shrunkPolygonsSegments;
+	public static TestCanvas canvas;
+	static Iterator<Color> colors = Iterators.cycle(Color.green, Color.blue, Color.orange, Color.yellow);
 
 	protected PolygonShrinker() {
 
@@ -45,7 +51,7 @@ public class PolygonShrinker {
 		return graph;
 	}
 
-	protected Set<Segment2D> findShrunkPolygonsSegments(
+	protected List<Segment2D> findShrunkPolygonsSegments(
 		double depth,
 		Map<Segment2D, Iterable<Segment2D>> edgesToFaces
 	) {
@@ -65,13 +71,14 @@ public class PolygonShrinker {
 					queue.add(new RayIntersection(deepenedEdge, faceEdge));
 				}
 			}
-			assert queue.size() % 2 == 0;
+			assert queue.size() % 2 == 0 : queue.size();
 			while (!queue.isEmpty()) {
-				edges.addFixedEdge(new Segment2D(
+				Segment2D edge = new Segment2D(
 					// Get two consecutive intersections
 					queue.poll().getLinesIntersectionPoint(),
 					queue.poll().getLinesIntersectionPoint()
-				));
+				);
+				edges.addFixedEdge(edge);
 			}
 		}
 		return edges.edges;
@@ -84,27 +91,49 @@ public class PolygonShrinker {
 		Set<Segment2D> unusedEdges = new HashSet<>(edges);
 
 		MinimumCycleBasis<Point2D, Segment2D> basis = new MinimumCycleBasis<>(graph, Point2DVertexPositionAdapter.get());
+		for (MinimalCycle<Point2D, Segment2D> cycle : basis.minimalCyclesSet()) {
+			Color nextColor = colors.next();
+//			canvas.draw(cycle, DrawingMinimalCycle.withColor(nextColor, Point2DVertexPositionAdapter.get()));
+		}
+
+//		assert edges.size() == basis.minimalCyclesSet().size() : edges.size() + " " + basis.minimalCyclesSet().size();
 		Map<Segment2D, Iterable<Segment2D>> edgeToFace = new HashMap<>();
 
 		for (MinimalCycle<Point2D, Segment2D> cycle : basis.minimalCyclesSet()) {
-			Set<Point2D> cycleVertices = ImmutableSet.copyOf(cycle.vertexList());
-			Segment2D originalFaceEdge = null;
-			for (Segment2D edge : unusedEdges) {
-				if (cycleVertices.contains(edge.start) && cycleVertices.contains(edge.end)) {
-					originalFaceEdge = edge;
-					break;
-				}
-			}
-			assert originalFaceEdge != null;
+			Segment2D originalFaceEdge = findUnusedEdgeForFace(
+				unusedEdges,
+				ImmutableSet.copyOf(cycle.vertexList())
+			);
+			assert !edgeToFace.containsKey(originalFaceEdge) : originalFaceEdge;
 			edgeToFace.put(originalFaceEdge, cycle);
 		}
+//		assert edges.size() == edgeToFace.size() : edges.size() + " " + edgeToFace.size();
 		return edgeToFace;
+	}
+
+	private Segment2D findUnusedEdgeForFace(Set<Segment2D> unusedEdges, Set<Point2D> cycleVertices) {
+		Segment2D originalFaceEdge = null;
+		for (Segment2D edge : unusedEdges) {
+			if (cycleVertices.contains(edge.start) && cycleVertices.contains(edge.end)) {
+				originalFaceEdge = edge;
+				unusedEdges.remove(originalFaceEdge);
+				break;
+			}
+		}
+//		canvas.draw(originalFaceEdge, DrawingSegment2D.withColor(Color.red));
+//		Color next = colors.next();
+//		for (Point2D v : cycleVertices) {
+//			canvas.draw(v, DrawingPoint2D.withColorAndSize(next, 4));
+//		}
+		assert originalFaceEdge != null;
+		return originalFaceEdge;
 	}
 
 	public UndirectedGraph<Point2D, Segment2D> fillNewGraphWithArcsAndEdges(
 		Multimap<Point2D, Point2D> arcs,
 		List<Segment2D> edges
 	) {
+		assert !arcs.isEmpty();
 		UndirectedGraph<Point2D, Segment2D> graph = new SimpleGraph<>(Segment2D::new);
 
 		for (Map.Entry<Point2D, Point2D> e : arcs.entries()) {

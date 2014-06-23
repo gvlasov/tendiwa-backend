@@ -21,6 +21,7 @@ class Node implements Iterable<Node> {
 
 	Node(Segment2D previousEdge, Segment2D currentEdge, Point2D point) {
 		assert !previousEdge.equals(currentEdge);
+		assert !(previousEdge.end.equals(currentEdge.start) && previousEdge.isParallel(currentEdge));
 		this.previousEdge = previousEdge;
 		this.currentEdge = currentEdge;
 		this.vertex = point;

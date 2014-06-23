@@ -10,7 +10,9 @@ import org.jgrapht.graph.UnmodifiableUndirectedGraph;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
 import org.tendiwa.graphs.MinimalCycle;
+import org.tendiwa.graphs.MinimumCycleBasis;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -429,6 +431,9 @@ public class NetworkWithinCycle {
         int numberOfStartPoints = Math.min(maxNumOfStartPoints, minimalCycle.vertexList().size());
         return edges.subList(0, numberOfStartPoints);
     }
+	public Set<MinimalCycle<Point2D, Segment2D>> getEnclosedBlocks() {
+		return new MinimumCycleBasis<>(relevantNetwork, Point2DVertexPositionAdapter.get()).minimalCyclesSet();
+	}
 
     class Segment2DNetworkStep {
         private final Point2D node;

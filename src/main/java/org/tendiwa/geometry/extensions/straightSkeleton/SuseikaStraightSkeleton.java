@@ -23,9 +23,8 @@ import static org.tendiwa.graphs.MinimumCycleBasis.perpDotProduct;
 public class SuseikaStraightSkeleton implements StraightSkeleton {
 
 	private final ListOfActiveVertices lav;
-	public final List<Segment2D> edges;
 	private SkeletonEvent watchEvent;
-	TestCanvas canvas = new TestCanvas(1, 200, 200);
+	TestCanvas canvas = new TestCanvas(1, 200, 400);
 	private final PriorityQueue<SkeletonEvent> queue;
 	public final Multimap<Point2D, Point2D> arcs = HashMultimap.create();
 	static final double EPSILON = 1e-10;
@@ -49,31 +48,19 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		if (!trustCounterClockwise && !JTSUtils.isYDownCCW(vertices)) {
 			vertices = Lists.reverse(vertices);
 		}
-		int l = vertices.size();
-		edges = new ArrayList<>(l);
-		for (int i = 0; i < l; i++) {
-			edges.add(
-				new Segment2D(
-					vertices.get(i),
-					vertices.get(i + 1 < l ? i + 1 : 0)
-				)
-			);
-			canvas.draw(edges.get(i), withColor(Color.RED));
-		}
-//		for (Point2D point : Lists.reverse(vertices)) {
-//			System.out.println("new Point2d(" + point.x + ", " + point.y + "),");
-//		}
+//		outputPoints(vertices);
+		this.lav = new ListOfActiveVertices(vertices, canvas);
 
 
-		this.lav = new ListOfActiveVertices(vertices, edges);
-		this.queue = new PriorityQueue<>(l);
+		int size = lav.edges.size();
+		this.queue = new PriorityQueue<>(size);
 		// [Obdrzalek 1998, paragraph 2.2, algorithm step 1c]
 		int i = 0;
 		registry = new MovementRegistry(lav.nodes);
 		splitEventsRegistry = new RegistryOfSplitEventsOnEdges(lav.nodes);
 		for (
 			Node node = lav.nodes.getFirst();
-			i < l;
+			i < size;
 			i++, node = node.next
 			) {
 //			canvas.draw(node.bisector.segment, DrawingSegment2D.withColor(Color.green));
@@ -82,6 +69,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 				queue.add(e);
 			}
 		}
+		assert !queue.isEmpty();
 		while (!queue.isEmpty()) {
 			// Convex 2a
 			SkeletonEvent point = queue.poll();
@@ -97,7 +85,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 					}
 					continue;
 				}
-				assert point.va.next == point.vb : point.va.next.vertex+" "+point.vb.vertex;
+				assert point.va.next == point.vb : point.va.next.vertex + " " + point.vb.vertex;
 				// Convex 2c
 				if (point.va.previous.previous == point.vb) {
 					outputArc(point.va.vertex, point);
@@ -242,7 +230,14 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 				integrateNewSplitNode(node2, point, true);
 			}
 		}
+		assert !arcs.isEmpty();
 		canvas.close();
+	}
+
+	private void outputPoints(List<Point2D> vertices) {
+		for (Point2D point : Lists.reverse(vertices)) {
+			System.out.println("new Point2D(" + point.x + ", " + point.y + "),");
+		}
 	}
 
 
@@ -338,6 +333,8 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 	}
 
 	private void outputArc(Point2D start, Point2D end) {
+		assert start != null;
+		assert end != null;
 		arcs.put(start, end);
 		canvas.draw(new Segment2D(start, end), withColor(Color.CYAN));
 	}
@@ -373,14 +370,14 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		Node va = null;
 		Node vb = null;
 		if (next.r > 0 || previous.r > 0) {
-			if (previous.r < 0 && next.r > 0 || next.r > 0 && next.r < previous.r) {
+			if (previous.r < 0 && next.r > 0 || next.r > 0 && next.r <= previous.r) {
 				if (node.next.bisector.intersectionWith(node.bisector).r > 0 && next.r > 0) {
 					nearer = next.getLinesIntersectionPoint();
 					originalEdgeStart = node;
 					va = node;
 					vb = node.next;
 				}
-			} else if (next.r < 0 && previous.r > 0 || previous.r > 0 && previous.r < next.r) {
+			} else if (next.r < 0 && previous.r > 0 || previous.r > 0 && previous.r <= next.r) {
 				if (node.previous.bisector.intersectionWith(node.bisector).r > 0 && previous.r > 0) {
 					nearer = previous.getLinesIntersectionPoint();
 					originalEdgeStart = node.previous;
@@ -430,7 +427,9 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 	 * <p>
 	 * Computes the point where a split event occurs.
 	 *
-	 * @return The point where split event occurs, or null if there is no split event.
+	 * @param reflexNode
+	 * 	A node from which a reflex event emanates.
+	 * @return The point where split event occurs, or null if there is no split event emanated from {@code reflexNode}.
 	 */
 	private SkeletonEvent findSplitEvent(Node reflexNode) {
 		assert reflexNode.isReflex;
@@ -617,11 +616,11 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 
 	@Override
 	public List<Segment2D> originalEdges() {
-		return edges;
+		return lav.edges;
 	}
 
 	@Override
 	public UndirectedGraph<Point2D, Segment2D> cap(double depth) {
-		return new PolygonShrinker(arcs, edges, depth).asGraph();
+		return new PolygonShrinker(arcs, lav.edges, depth).asGraph();
 	}
 }

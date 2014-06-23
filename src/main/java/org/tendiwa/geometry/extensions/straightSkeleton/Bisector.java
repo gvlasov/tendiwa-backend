@@ -30,6 +30,7 @@ class Bisector {
 				computeEnd(previousEdge, currentEdge, vertex, isReflex)
 			);
 		}
+		assert !segment.start.equals(segment.end);
 	}
 
 	private Point2D computeEnd(

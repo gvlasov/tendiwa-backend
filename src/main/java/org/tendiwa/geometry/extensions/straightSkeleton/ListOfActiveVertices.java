@@ -1,23 +1,35 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
+import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.awt.Color;
+import java.util.*;
+
+import static org.tendiwa.geometry.extensions.straightSkeleton.CycleExtraVerticesRemover.removeVerticesOnLineBetweenNeighbors;
 
 class ListOfActiveVertices {
 	final LinkedList<Node> nodes = new LinkedList<>();
+	final List<Segment2D> edges;
 
 	/**
 	 * @param vertices
 	 * 	List of points going counter-clockwise.
-	 * @param edges
-	 * 	List of edges going counter-clockwise.
 	 */
-	ListOfActiveVertices(List<Point2D> vertices, List<Segment2D> edges) {
+	ListOfActiveVertices(List<Point2D> vertices, TestCanvas canvas) {
+		vertices = removeVerticesOnLineBetweenNeighbors(vertices);
+		edges = createEdgesBetweenVertices(vertices, canvas);
 		assert vertices.size() == edges.size();
-		int l = vertices.size();
+		createAndConnectNodes(edges);
+		for (Node node : nodes) {
+			node.computeReflexAndBisector();
+		}
+	}
+
+	private void createAndConnectNodes(List<Segment2D> edges) {
+		int l = edges.size();
 		Node previous = null;
 		for (int i = 0; i < l; i++) {
 			Node node = new Node(
@@ -32,8 +44,21 @@ class ListOfActiveVertices {
 			nodes.add(node);
 		}
 		nodes.getFirst().connectWithPrevious(nodes.getLast());
-		for (Node node : nodes) {
-			node.computeReflexAndBisector();
-		}
 	}
+
+	private List<Segment2D> createEdgesBetweenVertices(List<Point2D> vertices, TestCanvas canvas) {
+		int l = vertices.size();
+		List<Segment2D> edges = new ArrayList<>(l);
+		for (int i = 0; i < l; i++) {
+			edges.add(
+				new Segment2D(
+					vertices.get(i),
+					vertices.get(i + 1 < l ? i + 1 : 0)
+				)
+			);
+			canvas.draw(edges.get(i), DrawingSegment2D.withColor(Color.RED));
+		}
+		return edges;
+	}
+
 }

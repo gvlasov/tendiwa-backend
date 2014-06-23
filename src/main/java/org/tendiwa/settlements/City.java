@@ -15,6 +15,8 @@ import org.tendiwa.graphs.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.*;
+
 public class City {
     /**
      * [Kelly section 4.2]
@@ -209,7 +211,7 @@ public class City {
                         return compare;
                     }
                 })
-                .collect(Collectors.toList());
+                .collect(toList());
         for (MinimalCycle<Point2D, Segment2D> cycle : sortedCycles) {
             cellsBuilder.add(new NetworkWithinCycle(
                     cellGraphs.get(cycle),
@@ -252,18 +254,18 @@ public class City {
                                         b.iterator().next().start
                                 )
                         )
-                        .collect(Collectors.toList())
+                        .collect(toList())
         );
         Collection<MinimalCycle<Point2D, Segment2D>> enclosingCycles = primitives
                 .minimalCyclesSet()
                 .stream()
                 .filter(enclosedCycleFilter)
-                .collect(Collectors.toList());
+                .collect(toList());
         Collection<MinimalCycle<Point2D, Segment2D>> enclosedCycles = primitives
                 .minimalCyclesSet()
                 .stream()
                 .filter(a -> !enclosedCycleFilter.test(a))
-                .collect(Collectors.toList());
+                .collect(toList());
         for (MinimalCycle<Point2D, Segment2D> cycle : enclosingCycles) {
             answer.put(cycle, constructCityCellGraph(cycle, filaments, enclosedCycles));
         }
@@ -475,4 +477,7 @@ public class City {
     public UndirectedGraph<Point2D, Segment2D> getLowLevelRoadGraph() {
         return lowLevelRoadGraph;
     }
+	public Set<MinimalCycle<Point2D, Segment2D>> getBlocks() {
+		return cells.stream().flatMap(cell -> cell.getEnclosedBlocks().stream()).collect(toSet());
+	}
 }

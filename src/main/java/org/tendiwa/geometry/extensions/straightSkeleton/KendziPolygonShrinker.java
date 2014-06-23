@@ -15,6 +15,7 @@ public class KendziPolygonShrinker extends PolygonShrinker {
 			depth,
 			mapOriginalEdgesToFaces(edges, faces)
 		);
+		assert !shrunkPolygonsSegments.isEmpty();
 	}
 
 	private Map<Segment2D, Iterable<Segment2D>> mapOriginalEdgesToFaces(
