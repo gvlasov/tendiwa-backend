@@ -10,9 +10,7 @@ import org.jgrapht.graph.UnmodifiableUndirectedGraph;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
 import org.tendiwa.graphs.MinimalCycle;
-import org.tendiwa.graphs.MinimumCycleBasis;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,10 +25,13 @@ import java.util.stream.Collectors;
 public class NetworkWithinCycle {
 	private final SimpleGraph<Point2D, Segment2D> relevantNetwork;
 	private final Set<Point2D> cycleNodes;
+	private final DivisionOfSpaceInsideCycleIntoBlocks blockDivision;
 	private TestCanvas canvas;
 	private final SimpleGraph<Point2D, Segment2D> secRoadNetwork;
 	private MinimalCycle<Point2D, Segment2D> minimalCycle;
 	private Collection<Segment2D> filamentEdges;
+
+	private ImmutableSet<Point2D> filamentEndPoints;
 	/**
 	 * [Kelly figure 42]
 	 * <p>
@@ -55,6 +56,7 @@ public class NetworkWithinCycle {
 	private final int maxNumOfStartPoints;
 	private double secondaryRoadNetworkRoadLengthDeviation;
 	public double v;
+	private Set<DirectionFromPoint> filamentEnds;
 
 	/**
 	 * Returns a set points where secondary road network is connected with the cycle.
@@ -68,7 +70,7 @@ public class NetworkWithinCycle {
 	/**
 	 * @param graph
 	 * 	A preconstructed graph of low level roads, constructed by {@link City#constructCityCellGraph(org.tendiwa.graphs.MinimalCycle,
-	 *    java.util.Set)}.
+	 *    java.util.Set, java.util.Collection)}
 	 * @param minimalCycle
 	 * 	A MinimalCycle that contains this NetworkWithinCycle's secondary road network inside it.
 	 * @param filamentEdges
@@ -160,8 +162,15 @@ public class NetworkWithinCycle {
 		cycleNodes = new HashSet<>(minimalCycle.vertexList());
 
 		buildSegment2DNetwork(minimalCycle);
+
 		exitsOnCycles = outerPointsBuilder.build();
 
+		blockDivision = new DivisionOfSpaceInsideCycleIntoBlocks(
+			relevantNetwork,
+			filamentEnds,
+			roadSegmentLength+secondaryRoadNetworkRoadLengthDeviation,
+			canvas
+		) ;
 	}
 
 	/**
@@ -183,13 +192,14 @@ public class NetworkWithinCycle {
 	/**
 	 * [Kelly figure 42]
 	 * <p>
-	 * Calculates initial road segments and processes road growth.
+	 * Calculates initial road segments and processes road growth. Also finds out which nodes are secondary network's
+	 * filament ends, if there are any.
 	 *
 	 * @param cycle
 	 * 	A MinimalCycle that contains this NetworkWithinCycle's secondary road network inside it.
 	 */
 	private void buildSegment2DNetwork(MinimalCycle<Point2D, Segment2D> cycle) {
-		Deque<Segment2DNetworkStep> nodeQueue = new ArrayDeque<>();
+		Deque<DirectionFromPoint> nodeQueue = new ArrayDeque<>();
 		for (Segment2D road : startingRoads(cycle)) {
 			Point2D sourceNode = calculateDeviatedMidPoint(road);
 			// Made dead end so two new roads are not inserted to network.
@@ -200,21 +210,53 @@ public class NetworkWithinCycle {
 			double direction = deviatedBoundaryPerpendicular(road);
 			Point2D newNode = tryPlacingRoad(sourceNode, direction);
 			if (newNode != null && !isDeadEnd(newNode)) {
-				nodeQueue.push(new Segment2DNetworkStep(newNode, direction));
+				nodeQueue.push(new DirectionFromPoint(newNode, direction));
 				deadEnds.add(sourceNode);
 				outerPointsBuilder.add(sourceNode);
 			}
 		}
+		Set<DirectionFromPoint> filamentEnds = new HashSet<>();
 		while (!nodeQueue.isEmpty()) {
-			Segment2DNetworkStep node = nodeQueue.removeLast();
+			DirectionFromPoint node = nodeQueue.removeLast();
+			boolean addedAnySegments = false;
 			for (int i = 1; i < roadsFromPoint; i++) {
 				double newDirection = deviateDirection(node.direction + Math.PI + i * (Math.PI * 2 / roadsFromPoint));
 				Point2D newNode = tryPlacingRoad(node.node, newDirection);
 				if (newNode != null && !isDeadEnd(newNode)) {
-					nodeQueue.push(new Segment2DNetworkStep(newNode, newDirection));
+					nodeQueue.push(new DirectionFromPoint(newNode, newDirection));
+					addedAnySegments = true;
 				}
 			}
+			if (!addedAnySegments) {
+				// This does not guarantee that only degree 1 nodes will be added to filament ends,
+				// but it culls most of wrong edges.
+				filamentEnds.add(node);
+			}
 		}
+		this.filamentEnds = removeMultidegreeFilamentEnds(filamentEnds);
+		filamentEndPoints = nodes2TheirPoints(filamentEnds);
+	}
+
+	private ImmutableSet<Point2D> nodes2TheirPoints(Set<DirectionFromPoint> filamentEnds) {
+		ImmutableSet.Builder<Point2D> builder = ImmutableSet.builder();
+		for (DirectionFromPoint node : filamentEnds) {
+			builder.add(node.node);
+		}
+		return builder.build();
+	}
+
+	private Set<DirectionFromPoint> removeMultidegreeFilamentEnds(Set<DirectionFromPoint> nodes) {
+		Iterator<DirectionFromPoint> iterator = nodes.iterator();
+		for (
+			DirectionFromPoint point = iterator.next();
+			iterator.hasNext();
+			point = iterator.next()
+			) {
+			if (relevantNetwork.degreeOf(point.node) != 1) {
+				iterator.remove();
+			}
+		}
+		return nodes;
 	}
 
 	private boolean isDeadEnd(Point2D node) {
@@ -296,7 +338,7 @@ public class NetworkWithinCycle {
 		double dx = roadLength * Math.cos(direction);
 		double dy = roadLength * Math.sin(direction);
 		Point2D targetNode = new Point2D(source.x + dx, source.y + dy);
-		SnapEvent snapEvent = new SnapTest(snapSize, source, targetNode, relevantNetwork, minimalCycle, canvas).snap();
+		SnapEvent snapEvent = new SnapTest(snapSize, source, targetNode, relevantNetwork, canvas).snap();
 		if (source.equals(snapEvent.targetNode)) {
 			assert false;
 		}
@@ -438,16 +480,21 @@ public class NetworkWithinCycle {
 	}
 
 	public Set<MinimalCycle<Point2D, Segment2D>> getEnclosedBlocks() {
-		return new MinimumCycleBasis<>(relevantNetwork, Point2DVertexPositionAdapter.get()).minimalCyclesSet();
+		return blockDivision.getBlocks();
 	}
 
-	class Segment2DNetworkStep {
-		private final Point2D node;
-		private final double direction;
+	public ImmutableSet<Point2D> filamentEnds() {
+		return filamentEndPoints;
+	}
 
-		Segment2DNetworkStep(Point2D node, double direction) {
+	class DirectionFromPoint {
+		final Point2D node;
+		final double direction;
+
+		DirectionFromPoint(Point2D node, double direction) {
 			this.node = node;
 			this.direction = direction;
 		}
 	}
+
 }

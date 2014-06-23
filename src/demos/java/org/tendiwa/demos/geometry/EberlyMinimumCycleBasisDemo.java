@@ -1,11 +1,13 @@
 package org.tendiwa.demos.geometry;
 
 import com.google.inject.Inject;
+import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.*;
 import org.tendiwa.drawing.extensions.DrawingCell;
+import org.tendiwa.drawing.extensions.DrawingGraph;
 import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.drawing.extensions.DrawingModule;
 import org.tendiwa.geometry.Cell;
@@ -33,8 +35,8 @@ public class EberlyMinimumCycleBasisDemo implements Runnable {
 	 */
 	@Override
 	public void run() {
-		final GraphConstructor<Point2D, DefaultEdge> constructor =
-			GraphConstructor.<Point2D>createDefault()
+		final GraphConstructor<Point2D, Segment2D> constructor =
+				new GraphConstructor<>(Segment2D::new)
 				.vertex(0, new Point2D(20, 20))
 				.vertex(1, new Point2D(30, 50))
 				.vertex(2, new Point2D(70, 55))
@@ -73,63 +75,8 @@ public class EberlyMinimumCycleBasisDemo implements Runnable {
 				.cycle(20, 24, 23, 22)
 				.cycle(25, 26, 27)
 				.path(14, 15, 16);
-		final SimpleGraph<Point2D, DefaultEdge> graph = constructor
+		final SimpleGraph<Point2D, Segment2D> graph = constructor
 			.graph();
-		canvas.draw(graph, (shape, canvas1) -> {
-			MinimumCycleBasis<Point2D, DefaultEdge> mcb =
-				new MinimumCycleBasis<>(graph, new VertexPositionAdapter<Point2D>() {
-					@Override
-					public double getX(Point2D vertex) {
-						return vertex.x;
-					}
-
-					@Override
-					public double getY(Point2D vertex) {
-						return vertex.y;
-					}
-				});
-			for (Point2D p : mcb.isolatedVertexSet()) {
-				canvas.draw(new Cell(
-					(int) p.x,
-					(int) p.y
-				), DrawingCell.withColorAndSize(Color.BLUE, 3));
-			}
-			for (Filament<Point2D, DefaultEdge> filament : mcb.filamentsSet()) {
-				System.out.println("filament " +
-					filament.vertexList()
-						.stream()
-						.map(constructor::aliasOf)
-						.collect(Collectors.toSet())
-				);
-				for (DefaultEdge edge : filament) {
-					canvas.draw(new Segment2D(
-						shape.getEdgeSource(edge),
-						shape.getEdgeTarget(edge)
-					), DrawingSegment2D.withColor(Color.GREEN));
-				}
-			}
-			for (MinimalCycle<Point2D, DefaultEdge> cycle : mcb.minimalCyclesSet()) {
-				System.out.println("min cycle " +
-					cycle.vertexList()
-						.stream()
-						.map(constructor::aliasOf)
-						.collect(Collectors.toSet())
-				);
-				for (DefaultEdge edge : cycle) {
-					canvas.draw(new Segment2D(
-						shape.getEdgeSource(edge),
-						shape.getEdgeTarget(edge)
-					), DrawingSegment2D.withColor(Color.RED));
-				}
-			}
-			for (Point2D p : graph.vertexSet()) {
-				canvas.drawString(
-					Integer.toString(constructor.aliasOf(p)),
-					p.x + 5,
-					p.y + 5,
-					Color.BLUE
-				);
-			}
-		});
+		canvas.draw(graph, DrawingGraph.basis(Color.green, Color.red, Color.blue));
 	}
 }

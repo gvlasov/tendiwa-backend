@@ -111,10 +111,10 @@ public class PolygonShrinker {
 		return edgeToFace;
 	}
 
-	private Segment2D findUnusedEdgeForFace(Set<Segment2D> unusedEdges, Set<Point2D> cycleVertices) {
+	private Segment2D findUnusedEdgeForFace(Set<Segment2D> unusedEdges, Set<Point2D> face) {
 		Segment2D originalFaceEdge = null;
 		for (Segment2D edge : unusedEdges) {
-			if (cycleVertices.contains(edge.start) && cycleVertices.contains(edge.end)) {
+			if (face.contains(edge.start) && face.contains(edge.end)) {
 				originalFaceEdge = edge;
 				unusedEdges.remove(originalFaceEdge);
 				break;
@@ -122,7 +122,7 @@ public class PolygonShrinker {
 		}
 //		canvas.draw(originalFaceEdge, DrawingSegment2D.withColor(Color.red));
 //		Color next = colors.next();
-//		for (Point2D v : cycleVertices) {
+//		for (Point2D v : face) {
 //			canvas.draw(v, DrawingPoint2D.withColorAndSize(next, 4));
 //		}
 		assert originalFaceEdge != null;

@@ -73,7 +73,10 @@ public class TwakStraightSkeleton implements StraightSkeleton {
 	}
 
 	private TwakStraightSkeleton(Skeleton skeleton, List<Segment2D> originalEdges) {
-		this.originalEdges = originalEdges.stream().map(e -> new Segment2D(e.end, e.start)).collect(Collectors.toList());
+		this.originalEdges = originalEdges
+			.stream()
+			.map(e -> new Segment2D(e.end, e.start))
+			.collect(Collectors.toList());
 		edges = skeleton.output.edges.map.values();
 	}
 
