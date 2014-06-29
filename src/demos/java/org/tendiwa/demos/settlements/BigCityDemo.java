@@ -33,7 +33,7 @@ public class BigCityDemo implements Runnable {
 			.withRoadsFromPoint(4)
 			.withSecondaryRoadNetworkDeviationAngle(0.0)
 			.withConnectivity(0.1)
-			.withRoadSegmentLength(10, 20)
+			.withRoadSegmentLength(30, 45)
 			.withSnapSize(4)
 			.withCanvas(canvas)
 			.withSeed(1)
@@ -54,7 +54,7 @@ public class BigCityDemo implements Runnable {
 			.getBlocks()
 			.stream()
 			.flatMap(b -> b.shrinkToRegions(2, new Random(0), canvas).stream())
-			.flatMap(b -> b.subdivideLots(7, 7, 1).stream())
+			.flatMap(b -> b.subdivideLots(8, 8, 0).stream())
 			.collect(Collectors.toSet());
 
 

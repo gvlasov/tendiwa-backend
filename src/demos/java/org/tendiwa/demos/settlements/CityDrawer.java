@@ -17,7 +17,7 @@ public class CityDrawer implements DrawingAlgorithm<City> {
     public void draw(City city, TestCanvas canvas) {
         city.getCells().stream()
                 .forEach(c -> c.network().edgeSet().stream()
-                        .forEach(line -> canvas.drawLine(line.start.toCell(), line.end.toCell(), Color.green))
+                        .forEach(line -> canvas.drawLine(line.start.toCell(), line.end.toCell(), Color.red))
                 );
         for (Segment2D roadSegment : city.getLowLevelRoadGraph().edgeSet()) {
             canvas.drawLine(roadSegment, Color.RED);

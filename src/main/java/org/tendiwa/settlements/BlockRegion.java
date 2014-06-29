@@ -88,7 +88,6 @@ public class BlockRegion extends EnclosedBlock {
 	private void computeRoadLength(Node node, TObjectDoubleMap<Node> roadLengths) {
 		assert node.next != null;
 		double roadLength = node.point.distanceTo(node.next.point);
-		assert roadLength > 3;
 		roadLengths.put(node, roadLength);
 	}
 
@@ -99,16 +98,24 @@ public class BlockRegion extends EnclosedBlock {
 	}
 
 	/**
-	 * [Kelly Figure 54]
+	 * [Kelly 2008 Figure 54]
 	 * <p>
 	 * Consecutively splits a block into lesser blocks until blocks are small enough.
 	 *
 	 * @param lotWidth
 	 * @param lotDepth
 	 * @param lotDeviance
+	 * 	Coefficient for possible lot width and depth deviance.
+	 * 	Actual lot widths and depths (sizes) may be [size*(1-deviance/2); size*(1+deviance/2)]. So deviance of 0
+	 * 	means that lots will have exactly the width and height specified in corresponding arguments,
+	 * 	and any other deviance value means lots can be up to 1.5 times larger or up to 0 size,
+	 * 	but never exactly 2 times larger or 0.
 	 * @return
 	 */
 	public Set<BlockRegion> subdivideLots(double lotWidth, double lotDepth, double lotDeviance) {
+		if (lotDeviance < 0 || lotDeviance > 1) {
+			throw new IllegalArgumentException("lotDeviance must be in [0;1)");
+		}
 		Queue<BlockRegion> queue = new LinkedList<>();
 		Set<BlockRegion> output = new HashSet<>();
 		queue.add(this);
@@ -117,9 +124,9 @@ public class BlockRegion extends EnclosedBlock {
 			BlockRegion region = queue.poll();
 			LongestRoadAndNonRoadPair longest = region.getLongestEdges();
 			Node longestEdgeStart = longest.road;
-			if (longestEdgeStart == null || region.getRoadLength(longestEdgeStart) < lotWidth) {
+			if (longestEdgeStart == null || region.getRoadLength(longestEdgeStart) < lotWidth*2) {
 				longestEdgeStart = longest.nonRoad;
-				if (longestEdgeStart == null || region.getRoadLength(longestEdgeStart) < lotDepth) {
+				if (longestEdgeStart == null || region.getRoadLength(longestEdgeStart) < lotDepth*2) {
 					output.add(region);
 					continue;
 				} else {
@@ -136,13 +143,46 @@ public class BlockRegion extends EnclosedBlock {
 			);
 			Set<BlockRegion> newRegions = splitRegion(region, splitStart, splitEnd);
 //			assert !newRegions.isEmpty();
-			for (BlockRegion newRegion : newRegions) {
-				canvas.draw(newRegion, DrawingEnclosedBlock.withColor(Color.red));
-			}
+//			for (BlockRegion newRegion : newRegions) {
+//				canvas.draw(newRegion, DrawingEnclosedBlock.withColor(Color.red));
+//			}
 
 			queue.addAll(newRegions);
 		}
 		return output;
+	}
+
+	/**
+	 * [Kelly 2008 Figure 56]
+	 * <p>
+	 * Slices a part of an edge with a point, so next slices on what is left of that edge will be of approximately
+	 * the same size.
+	 *
+	 * @param longestEdgeStart
+	 * 	An edge from which the line originates.
+	 * @param splitSize
+	 * 	Target size of a split piece of {@code longestEdgeStart}.
+	 * @param lotDeviance
+	 * 	Coefficient for how much can actual lot sizes differ. 0 means they are exactly as sliced,
+	 * @return A point on edge {@code longestEdgeStart} from which the split line originates going perpendicular to the
+	 * edge.
+	 */
+	private Point2D getSplitStart(Node longestEdgeStart, double splitSize, double lotDeviance) {
+		assert getRoadLength(longestEdgeStart) == longestEdgeStart.point.distanceTo(longestEdgeStart.next.point);
+		// How many slices will be made out of a single slice.
+		double factor = Math.round(getRoadLength(longestEdgeStart) / splitSize);
+		assert factor > 1;
+		double fraction = 1 / factor;
+		double midPosition = Math.round(factor / 2) * fraction;
+		assert midPosition < 1;
+
+		Vector2D longestEdgeVector = Vector2D.fromStartToEnd(
+			longestEdgeStart.point, longestEdgeStart.next.point
+		);
+		double multiplier = midPosition + (lotDeviance * (random.nextDouble() - 0.5) * fraction);
+		assert multiplier > 0 && multiplier < 1;
+		Vector2D newPointShift = longestEdgeVector.multiply(multiplier);
+		return longestEdgeStart.point.add(newPointShift);
 	}
 
 	private LongestRoadAndNonRoadPair getLongestEdges() {
@@ -150,7 +190,7 @@ public class BlockRegion extends EnclosedBlock {
 	}
 
 	/**
-	 * [Kelly Figure 58]
+	 * [Kelly 2008 Figure 58]
 	 * <p>
 	 * Splits a single polygon into multiple polygons with a splitting line.
 	 *
@@ -295,34 +335,6 @@ public class BlockRegion extends EnclosedBlock {
 		return leftOrRightPositions;
 	}
 
-	/**
-	 * [Kelly Figure 56]
-	 * <p>
-	 * Computes a beginning point of a line splitting the polygon.
-	 *
-	 * @param longestEdgeStart
-	 * 	An edge from which the line originates.
-	 * @param splitSize
-	 * 	Target size of a split piece of {@code longestEdgeStart}.
-	 * @param lotDeviance
-	 * 	Deviance of split size.
-	 * @return A point on edge {@code longestEdgeStart} from which the split line originates.
-	 */
-	private Point2D getSplitStart(Node longestEdgeStart, double splitSize, double lotDeviance) {
-		assert getRoadLength(longestEdgeStart) == longestEdgeStart.point.distanceTo(longestEdgeStart.next.point);
-		double factor = Math.round(getRoadLength(longestEdgeStart) / splitSize);
-		assert factor > 0;
-		double fraction = 1 / factor;
-		double midPosition = Math.round(factor / 2) * fraction;
-		assert midPosition < 1;
-
-		Vector2D longestEdgeVector = Vector2D.fromStartToEnd(
-			longestEdgeStart.point, longestEdgeStart.next.point
-		);
-		double multiplier = midPosition + (lotDeviance * (random.nextDouble() - 0.5) * fraction);
-		assert multiplier > 0 && multiplier < 1;
-		return longestEdgeStart.point.add(longestEdgeVector.multiply(multiplier));
-	}
 
 	/**
 	 * Longest road and non-road are computes as a pair because it can be done in a single loop over all nodes,

@@ -45,7 +45,7 @@ public class TwakStraightSkeletonDemo implements Runnable {
 		BlockRegion.canvas = canvas;
 		BlockRegion originalBlock = new BlockRegion(outline, new Random(0));
 		canvas.draw(originalBlock, DrawingEnclosedBlock.withColor(Color.blue));
-		Set<BlockRegion> blocks = originalBlock.subdivideLots(7, 7, 1);
+		Set<BlockRegion> blocks = originalBlock.subdivideLots(7, 7, 0);
 		for (BlockRegion block : blocks) {
 			canvas.draw(block, DrawingEnclosedBlock.withColor(Color.red));
 		}
