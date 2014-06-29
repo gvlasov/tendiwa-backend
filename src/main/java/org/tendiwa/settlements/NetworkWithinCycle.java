@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 public class NetworkWithinCycle {
 	private final SimpleGraph<Point2D, Segment2D> relevantNetwork;
 	private final Set<Point2D> cycleNodes;
-	private final DivisionOfSpaceInsideCycleIntoBlocks blockDivision;
+	private final NetworkToBlocks blockDivision;
 	private TestCanvas canvas;
 	private final SimpleGraph<Point2D, Segment2D> secRoadNetwork;
 	private MinimalCycle<Point2D, Segment2D> minimalCycle;
@@ -165,7 +165,7 @@ public class NetworkWithinCycle {
 
 		exitsOnCycles = outerPointsBuilder.build();
 
-		blockDivision = new DivisionOfSpaceInsideCycleIntoBlocks(
+		blockDivision = new NetworkToBlocks(
 			relevantNetwork,
 			filamentEnds,
 			roadSegmentLength+secondaryRoadNetworkRoadLengthDeviation,
@@ -479,8 +479,8 @@ public class NetworkWithinCycle {
 		return edges.subList(0, numberOfStartPoints);
 	}
 
-	public Set<MinimalCycle<Point2D, Segment2D>> getEnclosedBlocks() {
-		return blockDivision.getBlocks();
+	public Set<SecondaryRoadNetworkBlock> getEnclosedBlocks() {
+		return blockDivision.getEnclosedBlocks();
 	}
 
 	public ImmutableSet<Point2D> filamentEnds() {

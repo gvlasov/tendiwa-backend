@@ -10,22 +10,28 @@ public class ApproximatedEdges {
 	 * Chebyshov distance in which points are considered equal.
 	 */
 	private static final double EPSILON = 1e-10;
-	private final TreeSet<Point2D> startByX = new TreeSet<>((a, b) -> (int) Math.signum(a.x - b.x));
-	private final TreeSet<Point2D> startByY = new TreeSet<>((a, b) -> (int) Math.signum(a.y - b.y));
+	private final TreeSet<Point2D> startByX = new TreeSet<>(
+		(a, b) -> (int) (10 * Math.signum(a.x - b.x) + 5 * Math.signum(a.y - b.y))
+	);
+	private final TreeSet<Point2D> startByY = new TreeSet<>(
+		(a, b) -> (int) (10 * Math.signum(a.y - b.y) + 5 * Math.signum(a.x - b.x))
+	);
 	private final TreeSet<Point2D> endByX = new TreeSet<>((a, b) -> (int) Math.signum(a.x - b.x));
 	private final TreeSet<Point2D> endByY = new TreeSet<>((a, b) -> (int) Math.signum(a.y - b.y));
 	public final List<Segment2D> edges = new LinkedList<>();
 
 	public void addFixedEdge(Segment2D edge) {
 		edge = new Segment2D(
-			snapPointToExistingPoints(edge.start, endByX, endByY),
+			snapPointToExistingPoints(edge.start, startByX, startByY),
 			snapPointToExistingPoints(edge.end, startByX, startByY)
 		);
 		// Already contained elements just won't be added.
 		startByX.add(edge.start);
+		startByY.add(edge.start);
+		startByX.add(edge.end);
 		startByY.add(edge.end);
-		endByX.add(edge.start);
-		endByX.add(edge.end);
+//		endByX.add(edge.end);
+//		endByY.add(edge.end);
 		edges.add(edge);
 	}
 
@@ -37,7 +43,7 @@ public class ApproximatedEdges {
 	 * @param byX
 	 * 	Other existing points sorted by x coordinate.
 	 * @param byY
-	 * 	Other existing points sorted by y corodinate.
+	 * 	Other existing points sorted by y coordinate.
 	 * @return If among all points exists a point that is closer than {@link #EPSILON} in Chebyshov distance to
 	 * {@code point}, then returns that closer point, otherwise returns {@code point}.
 	 */
@@ -46,26 +52,52 @@ public class ApproximatedEdges {
 		Point2D xHigher = byX.higher(point);
 		Point2D yLower = byY.lower(point);
 		Point2D yHigher = byY.higher(point);
-		Point2D yPoint, xPoint;
-		if (yLower != null && yLower.equals(xLower)) {
-			xPoint = xLower;
-			yPoint = yLower;
-		} else if (yLower != null && yLower.equals(xHigher)) {
-			xPoint = xHigher;
-			yPoint = yLower;
-		} else if (yHigher != null && yHigher.equals(xLower)) {
-			xPoint = xLower;
-			yPoint = yHigher;
-		} else if (yHigher != null && yHigher.equals(xHigher)) {
-			xPoint = xHigher;
-			yPoint = yHigher;
-		} else {
+		Point2D snapPoint = null;
+		if (yLower != null && xLower != null && yLower.equals(xLower)) {
+			snapPoint = chooseSnapPoint(snapPoint, yLower, point);
+		}
+		if (yLower != null && xHigher != null && yLower.equals(xHigher)) {
+			snapPoint = chooseSnapPoint(snapPoint, yLower, point);
+		}
+		if (yHigher != null && xLower != null && yHigher.equals(xLower)) {
+			snapPoint = chooseSnapPoint(snapPoint, yHigher, point);
+		}
+		if (yHigher != null && xHigher != null && yHigher.equals(xHigher)) {
+			snapPoint = chooseSnapPoint(snapPoint, yHigher, point);
+		}
+		if (snapPoint == null) {
+			assert isNotTooClose(point, xLower);
+			assert isNotTooClose(point, xHigher);
+			assert isNotTooClose(point, yHigher);
+			assert isNotTooClose(point, yLower);
 			return point;
 		}
-		if (Math.abs(xPoint.x - point.x) < EPSILON && Math.abs(yPoint.y - point.y) < EPSILON) {
-			return yPoint;
+		if (Math.abs(snapPoint.x - point.x) < EPSILON && Math.abs(snapPoint.y - point.y) < EPSILON) {
+			return snapPoint;
 		} else {
+			assert isNotTooClose(point, xLower);
+			assert isNotTooClose(point, xHigher);
+			assert isNotTooClose(point, yHigher);
+			assert isNotTooClose(point, yLower);
 			return point;
 		}
+	}
+
+	private Point2D chooseSnapPoint(Point2D snapPoint, Point2D newSnapPoint, Point2D realEnd) {
+		assert newSnapPoint != null;
+		if (snapPoint == null) {
+			return newSnapPoint;
+		}
+		if (snapPoint.chebyshevDistanceTo(realEnd) > newSnapPoint.chebyshevDistanceTo(realEnd)) {
+			return newSnapPoint;
+		}
+		return snapPoint;
+	}
+
+	private boolean isNotTooClose(Point2D point, Point2D existingPoint) {
+		if (existingPoint == null) {
+			return true;
+		}
+		return Math.abs(existingPoint.x - point.x) >= EPSILON && Math.abs(existingPoint.y - point.y) >= EPSILON;
 	}
 }

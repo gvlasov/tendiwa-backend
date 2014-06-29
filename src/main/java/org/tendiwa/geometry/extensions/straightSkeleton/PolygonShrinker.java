@@ -57,7 +57,7 @@ public class PolygonShrinker {
 	) {
 		ApproximatedEdges edges = new ApproximatedEdges();
 		for (Map.Entry<Segment2D, Iterable<Segment2D>> e : edgesToFaces.entrySet()) {
-			Queue<RayIntersection> queue = new PriorityQueue<>((a, b) -> a.r - b.r > 0 ? 1 : -1);
+			Queue<RayIntersection> queue = new PriorityQueue<>((a, b) -> (int) Math.signum(a.r - b.r));
 			Segment2D deepenedEdge = e.getKey().createParallelSegment(depth, true);
 			for (Segment2D faceEdge : e.getValue()) {
 				if (faceEdge == e.getKey()) {

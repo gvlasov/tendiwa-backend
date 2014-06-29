@@ -216,7 +216,7 @@ public class MinimumCycleBasis<V, E> {
 			// starting point for the filament by traversing from v0 away
 			// from the initial v1.
 			while (graph.degreeOf(v0) == 2) {
-				if (neighborIndex.neighborListOf(v0).get(0) != v1) {
+				if (!neighborIndex.neighborListOf(v0).get(0) .equals( v1)) {
 					v1 = v0;
 					v0 = neighborIndex.neighborListOf(v0).get(0);
 				} else {
@@ -243,7 +243,8 @@ public class MinimumCycleBasis<V, E> {
 	 * @return A vertex that is clockwise- or counterclockwise-most relative to a vector {@code vcurr-vprev}.
 	 */
 	private V getMost(V vprev, V vcurr, boolean clockwise) {
-		if (neighborIndex.neighborsOf(vcurr).size() == 1 && neighborIndex.neighborsOf(vcurr).iterator().next() == vprev) {
+		if (neighborIndex.neighborsOf(vcurr).size() == 1 && neighborIndex.neighborsOf(vcurr).iterator().next()
+			.equals(vprev)) {
 			return null;
 		}
 		double[] dcurr;
@@ -258,7 +259,7 @@ public class MinimumCycleBasis<V, E> {
 
 		V vnext = null;
 		for (V vertex : neighborIndex.neighborsOf(vcurr)) {
-			if (vertex != vprev) {
+			if (!vertex .equals( vprev)) {
 				vnext = vertex;
 				break;
 			}

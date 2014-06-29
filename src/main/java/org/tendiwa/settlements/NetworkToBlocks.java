@@ -7,19 +7,23 @@ import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
-import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.graphs.MinimumCycleBasis;
 
 import java.util.HashSet;
 import java.util.Set;
 
-class DivisionOfSpaceInsideCycleIntoBlocks {
+import static java.util.stream.Collectors.toSet;
+
+/**
+ * Divides space inside a network into enclosed blocks.
+ */
+class NetworkToBlocks {
 	private final double snapSize;
 	private final TestCanvas canvas;
 	private final Set<NetworkWithinCycle.DirectionFromPoint> used = new HashSet<>();
-	private final Set<MinimalCycle<Point2D, Segment2D>> blocks;
+	private final Set<SecondaryRoadNetworkBlock> enclosedBlocks;
 
-	DivisionOfSpaceInsideCycleIntoBlocks(
+	NetworkToBlocks(
 		UndirectedGraph<Point2D, Segment2D> relevantNetwork,
 		Set<NetworkWithinCycle.DirectionFromPoint> filamentEnds,
 		double snapSize,
@@ -28,7 +32,7 @@ class DivisionOfSpaceInsideCycleIntoBlocks {
 		this.snapSize = snapSize;
 		this.canvas = canvas;
 		if (filamentEnds.isEmpty()) {
-			blocks = ImmutableSet.of();
+			enclosedBlocks = ImmutableSet.of();
 		} else {
 			UndirectedGraph<Point2D, Segment2D> blockBoundsNetwork = copyRelevantNetwork(relevantNetwork);
 			for (NetworkWithinCycle.DirectionFromPoint end : filamentEnds) {
@@ -37,15 +41,20 @@ class DivisionOfSpaceInsideCycleIntoBlocks {
 				}
 				edgeToClosestSnap(end, blockBoundsNetwork);
 			}
-			blocks = new MinimumCycleBasis<>(blockBoundsNetwork, Point2DVertexPositionAdapter.get()).minimalCyclesSet();
+			enclosedBlocks = new MinimumCycleBasis<>(blockBoundsNetwork, Point2DVertexPositionAdapter.get())
+				.minimalCyclesSet()
+				.stream()
+				.map(cycle->new SecondaryRoadNetworkBlock(cycle.vertexList()))
+				.collect(toSet());
 		}
 	}
 
 	private boolean isUsed(NetworkWithinCycle.DirectionFromPoint end) {
 		return used.contains(end);
 	}
-	public Set<MinimalCycle<Point2D, Segment2D>> getBlocks() {
-		return blocks;
+
+	public Set<SecondaryRoadNetworkBlock> getEnclosedBlocks() {
+		return enclosedBlocks;
 	}
 
 	private void edgeToClosestSnap(NetworkWithinCycle.DirectionFromPoint end, UndirectedGraph<Point2D, Segment2D> blockBoundsNetwork) {

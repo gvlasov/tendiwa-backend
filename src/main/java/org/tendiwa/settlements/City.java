@@ -477,7 +477,7 @@ public class City {
     public UndirectedGraph<Point2D, Segment2D> getLowLevelRoadGraph() {
         return lowLevelRoadGraph;
     }
-	public Set<MinimalCycle<Point2D, Segment2D>> getBlocks() {
+	public Set<SecondaryRoadNetworkBlock> getBlocks() {
 		return cells.stream().flatMap(cell -> cell.getEnclosedBlocks().stream()).collect(toSet());
 	}
 }

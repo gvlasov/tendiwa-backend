@@ -28,6 +28,7 @@ public class TwakStraightSkeleton implements StraightSkeleton {
 	private final List<Segment2D> originalEdges;
 
 	public static StraightSkeleton create(List<Point2D> vertices) {
+		assert vertices.size() > 2 : "list of "+vertices.size();
 		if (JTSUtils.isYDownCCW(vertices)) {
 			vertices = Lists.reverse(vertices);
 		}
@@ -94,9 +95,11 @@ public class TwakStraightSkeleton implements StraightSkeleton {
 			)
 			.filter(a -> !originalEdges.contains(a) && !originalEdges.contains(a.reverse()))
 			.forEach(segment -> {
-				graph.addVertex(segment.start);
-				graph.addVertex(segment.end);
-				graph.addEdge(segment.start, segment.end, segment);
+				if (!graph.containsEdge(segment.end, segment.start)) {
+					graph.addVertex(segment.start);
+					graph.addVertex(segment.end);
+					graph.addEdge(segment.start, segment.end, segment);
+				}
 			});
 		return graph;
 	}

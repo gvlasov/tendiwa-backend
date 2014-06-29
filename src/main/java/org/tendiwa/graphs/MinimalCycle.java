@@ -31,6 +31,7 @@ public class MinimalCycle<V, E> implements Primitive<V>, Iterable<E> {
      *         A list of cells of this minimal cycle.
      */
     MinimalCycle(UndirectedGraph<V, E> graph, List<V> cycle) {
+		assert cycle.size() > 2;
         this.graph = graph;
         this.cycle.addAll(cycle);
     }
