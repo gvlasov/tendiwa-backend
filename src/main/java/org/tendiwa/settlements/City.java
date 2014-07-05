@@ -46,8 +46,9 @@ public class City {
     private double secondaryRoadNetworkDeviationAngle;
     private double secondaryRoadNetworkRoadLengthDeviation;
     private TestCanvas canvas;
+	private final boolean favourAxisAlignedSegments;
 
-    /**
+	/**
      * @param highLevelRoadGraph
      *         [Kelly chapter 4.2, figure 38]
      *         <p>
@@ -115,10 +116,12 @@ public class City {
             int maxStartPointsPerCell,
             double secondaryRoadNetworkDeviationAngle,
             double secondaryRoadNetworkRoadLengthDeviation,
-            TestCanvas canvas
+            TestCanvas canvas,
+			boolean favourAxisAlignedSegments
     ) {
         this.canvas = canvas;
-        if (Math.abs(secondaryRoadNetworkDeviationAngle) >= Math.PI * 2) {
+		this.favourAxisAlignedSegments = favourAxisAlignedSegments;
+		if (Math.abs(secondaryRoadNetworkDeviationAngle) >= Math.PI * 2) {
             throw new IllegalArgumentException("secondaryRoadNetworkDeviationAngle must be in [0; Math.PI*2)");
         }
         if (Math.abs(secondaryRoadNetworkRoadLengthDeviation) >= roadSegmentLength) {
@@ -225,7 +228,8 @@ public class City {
                     secondaryRoadNetworkRoadLengthDeviation,
                     maxStartPointsPerCell,
                     random,
-                    canvas
+                    canvas,
+					favourAxisAlignedSegments
             ));
         }
     }

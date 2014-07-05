@@ -26,6 +26,7 @@ import java.util.Collections;
 public final class TestCanvas implements DrawableInto {
 
     private static final AffineTransform defaultTransform = new AffineTransform();
+	public static TestCanvas canvas;
 
     static {
         defaultTransform.setToScale(1, 1);

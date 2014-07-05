@@ -1,22 +1,23 @@
 package org.tendiwa.drawing.extensions;
 
+import com.google.common.collect.Iterators;
 import org.jgrapht.UndirectedGraph;
-import org.jgrapht.graph.DefaultEdge;
 import org.tendiwa.drawing.Colors;
 import org.tendiwa.drawing.DrawingAlgorithm;
-import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.*;
 
-import java.awt.*;
+import java.awt.Color;
 import java.awt.geom.Line2D;
 import java.util.Iterator;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class DrawingGraph {
+	static Iterator<Color> cycleColors = Iterators.cycle(Color.red, Color.blue, Color.green, Color.orange,
+		 Color.magenta, Color.cyan);
+
 	public static <V, E> DrawingAlgorithm<UndirectedGraph<V, E>> withAliases(
 		GraphConstructor<V, E> constructor,
 		Function<V, Double> x,
@@ -132,12 +133,14 @@ public class DrawingGraph {
 //						.map(constructor::aliasOf)
 //						.collect(Collectors.toSet())
 //				);
+				Color nextColor = cycleColors.next();
 				for (Segment2D edge : cycle) {
 					canvas.draw(new Segment2D(
 						shape.getEdgeSource(edge),
 						shape.getEdgeTarget(edge)
-					), DrawingSegment2D.withColor(cycleColor));
+					), DrawingSegment2D.withColor(nextColor));
 				}
+				System.out.println(2);
 			}
 //			for (Point2D p : graph.vertexSet()) {
 //				canvas.drawString(

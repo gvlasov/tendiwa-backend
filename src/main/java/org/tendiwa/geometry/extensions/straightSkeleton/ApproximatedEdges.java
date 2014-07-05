@@ -53,16 +53,16 @@ public class ApproximatedEdges {
 		Point2D yLower = byY.lower(point);
 		Point2D yHigher = byY.higher(point);
 		Point2D snapPoint = null;
-		if (yLower != null && xLower != null && yLower.equals(xLower)) {
+		if (xLower != null) {
+			snapPoint = chooseSnapPoint(snapPoint, xLower, point);
+		}
+		if (yLower != null) {
 			snapPoint = chooseSnapPoint(snapPoint, yLower, point);
 		}
-		if (yLower != null && xHigher != null && yLower.equals(xHigher)) {
-			snapPoint = chooseSnapPoint(snapPoint, yLower, point);
+		if (xHigher != null) {
+			snapPoint = chooseSnapPoint(snapPoint, xHigher, point);
 		}
-		if (yHigher != null && xLower != null && yHigher.equals(xLower)) {
-			snapPoint = chooseSnapPoint(snapPoint, yHigher, point);
-		}
-		if (yHigher != null && xHigher != null && yHigher.equals(xHigher)) {
+		if (yHigher != null) {
 			snapPoint = chooseSnapPoint(snapPoint, yHigher, point);
 		}
 		if (snapPoint == null) {
@@ -98,6 +98,6 @@ public class ApproximatedEdges {
 		if (existingPoint == null) {
 			return true;
 		}
-		return Math.abs(existingPoint.x - point.x) >= EPSILON && Math.abs(existingPoint.y - point.y) >= EPSILON;
+		return Math.abs(existingPoint.x - point.x) >= EPSILON || Math.abs(existingPoint.y - point.y) >= EPSILON;
 	}
 }

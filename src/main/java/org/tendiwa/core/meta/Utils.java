@@ -1,5 +1,7 @@
 package org.tendiwa.core.meta;
 
+import org.tendiwa.geometry.Point2D;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -17,6 +19,12 @@ public class Utils {
 
 	public static boolean doubleEqualsDelta(double a, double b, double delta) {
 		return Math.abs(a - b) < delta;
+	}
+
+	public static void printListOfPoints(List<Point2D> points) {
+		for (Point2D point : points) {
+			System.out.println("add(new Point2D(" + point.x + ", " + point.y + ");");
+		}
 	}
 
 	public static <T> String join(Collection<T> s, String delimiter) {

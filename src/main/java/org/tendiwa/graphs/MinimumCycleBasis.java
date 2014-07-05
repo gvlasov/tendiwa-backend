@@ -1,11 +1,23 @@
 package org.tendiwa.graphs;
 
+import com.google.common.collect.Iterators;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.alg.NeighborIndex;
 import org.jgrapht.graph.ListenableUndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
+import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawingMinimalCycle;
+import org.tendiwa.drawing.extensions.DrawingPoint2D;
+import org.tendiwa.drawing.extensions.DrawingSegment2D;
+import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.Vectors2D;
+import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
 
+import java.awt.Color;
 import java.util.*;
+
+import static org.tendiwa.geometry.Vectors2D.*;
 
 /**
  * Implementation of minimal cycle basis algorithm as described in the <a href="http://www.geometrictools
@@ -38,6 +50,8 @@ public class MinimumCycleBasis<V, E> {
 	private final NeighborIndex<V, E> neighborIndex;
 	private UndirectedGraph<V, E> originalGraph;
 	private VertexPositionAdapter<V> positionAdapter;
+	private static final Iterator<Color> colors = Iterators.cycle(Color.red, Color.blue, Color.yellow, Color.green,
+		Color.cyan);
 
 	/**
 	 * @param graph
@@ -48,12 +62,13 @@ public class MinimumCycleBasis<V, E> {
 	 * 	A strategy of two methods describing how to get x and y coordinates from vertices.
 	 */
 	public MinimumCycleBasis(UndirectedGraph<V, E> graph, VertexPositionAdapter<V> positionAdapter) {
+
 		originalGraph = graph;
 		this.positionAdapter = positionAdapter;
 		this.primitives = new PrimitiveContainer<>();
 		// Listenable graph is used here because we need to determine neighbor vertices,
 		// and it is better done with a listenable graph.
-		this.graph = new ListenableUndirectedGraph<>(new SimpleGraph<>(graph.getEdgeFactory()));
+		this.graph = new ListenableUndirectedGraph<V, E>(new SimpleGraph<>(graph.getEdgeFactory()));
 		for (V v : graph.vertexSet()) {
 			this.graph.addVertex(v);
 		}
@@ -182,10 +197,40 @@ public class MinimumCycleBasis<V, E> {
 		V v1 = getMost(null, v0, true);
 		V vprev = v0;
 		V vcurr = v1;
+		Color color = colors.next();
+//		TestCanvas.canvas.draw(new Point2D(positionAdapter.getX(v0), positionAdapter.getY(v0)),
+//			DrawingPoint2D.withColorAndSize(color, 5));
 		while (vcurr != null && !vcurr.equals(v0) && !visited.contains(vcurr)) {
+//			TestCanvas.canvas.draw(new Segment2D(
+//					new Point2D(
+//						positionAdapter.getX(vprev),
+//						positionAdapter.getY(vprev)
+//					),
+//					new Point2D(
+//						positionAdapter.getX(vcurr),
+//						positionAdapter.getY(vcurr)
+//					)
+//				),
+//				DrawingSegment2D.withColor(color)
+//			);
 			sequence.add(vcurr);
 			visited.add(vcurr);
 			V vnext = getMost(vprev, vcurr, false);
+//			TestCanvas.canvas.draw(new Segment2D(
+//					new Point2D(
+//						positionAdapter.getX(vcurr),
+//						positionAdapter.getY(vcurr)
+//					),
+//					new Point2D(
+//						positionAdapter.getX(vnext),
+//						positionAdapter.getY(vnext)
+//					)
+//				),
+//				DrawingSegment2D.withColor(color)
+//			);
+
+//			TestCanvas.canvas.draw(new Point2D(positionAdapter.getX(vnext), positionAdapter.getY(vnext)),
+//				DrawingPoint2D.withColorAndSize(colors.next(), 5));
 			vprev = vcurr;
 			vcurr = vnext;
 		}
@@ -195,6 +240,7 @@ public class MinimumCycleBasis<V, E> {
 		} else if (vcurr.equals(v0)) {
 			// Minimal cycle found
 			MinimalCycle<V, E> cycle = new MinimalCycle<>(originalGraph, sequence);
+//			TestCanvas.canvas.draw(cycle, DrawingMinimalCycle.withColor(colors.next(), positionAdapter));
 			primitives.add(cycle);
 
 			for (int i = 0, l = sequence.size() - 1; i < l; i++) {
@@ -216,7 +262,7 @@ public class MinimumCycleBasis<V, E> {
 			// starting point for the filament by traversing from v0 away
 			// from the initial v1.
 			while (graph.degreeOf(v0) == 2) {
-				if (!neighborIndex.neighborListOf(v0).get(0) .equals( v1)) {
+				if (!neighborIndex.neighborListOf(v0).get(0).equals(v1)) {
 					v1 = v0;
 					v0 = neighborIndex.neighborListOf(v0).get(0);
 				} else {
@@ -248,7 +294,8 @@ public class MinimumCycleBasis<V, E> {
 			return null;
 		}
 		double[] dcurr;
-		if (vprev == null) {
+		boolean supportingLineUsed = vprev == null;
+		if (supportingLineUsed) {
 			dcurr = new double[]{0, -1};
 		} else {
 			dcurr = new double[]{
@@ -259,7 +306,7 @@ public class MinimumCycleBasis<V, E> {
 
 		V vnext = null;
 		for (V vertex : neighborIndex.neighborsOf(vcurr)) {
-			if (!vertex .equals( vprev)) {
+			if (!vertex.equals(vprev)) {
 				vnext = vertex;
 				break;
 			}
@@ -273,13 +320,47 @@ public class MinimumCycleBasis<V, E> {
 		};
 
 		double vcurrIsConvex = perpDotProduct(dnext, dcurr);
+		// There's no notion of almost parallel vectors in the original algorithm description,
+		// however having parallel consecutive segments introduces a new kind of error where an angle is
+		// slightly > PI instead of being slightly < PI, or vice versa. That occurs due to floating point rounding
+		// errors.
+		boolean isNextConsideredParallel = areParallel(dcurr, dnext);
 
 		for (V vadj : neighborIndex.neighborsOf(vcurr)) {
+			if (vadj.equals(vprev) || vadj.equals(vnext)) {
+				continue;
+			}
 			double[] dadj = new double[]{
 				positionAdapter.getX(vadj) - positionAdapter.getX(vcurr),
 				positionAdapter.getY(vadj) - positionAdapter.getY(vcurr)
 			};
-			if (vcurrIsConvex < 0) {
+			if (isNextConsideredParallel) {
+				// When vectors dcurr and dnext are almost parallel, we need a distinct way of finding the next
+				// (counter-)clockwise vertex.
+				double positionToCurr = pointPositionRelativeToLine(
+					positionAdapter.getX(vadj), positionAdapter.getY(vadj),
+					positionAdapter.getX(vcurr), positionAdapter.getY(vcurr),
+					positionAdapter.getX(vnext), positionAdapter.getY(vnext)
+				);
+				double positionToPrev = pointPositionRelativeToLine(
+					positionAdapter.getX(vadj), positionAdapter.getY(vadj),
+					positionAdapter.getX(vcurr) - dcurr[0], positionAdapter.getY(vcurr) - dcurr[1],
+					positionAdapter.getX(vcurr), positionAdapter.getY(vcurr)
+				);
+				double angle = angleBetweenVectors(dcurr, dadj, clockwise);
+				if (
+//					clockwise && positionToCurr < 0 && positionToPrev < 0
+//						|| !clockwise && positionToCurr > 0 && positionToPrev > 0
+					supportingLineUsed ? angle > Math.PI : angle < Math.PI
+					) {
+					assert Math.abs(angle - Math.PI) > Vectors2D.EPSILON;
+					vnext = vadj;
+					dnext = dadj;
+					vcurrIsConvex = perpDotProduct(dnext, dcurr);
+					isNextConsideredParallel = areParallel(dcurr, dnext);
+					assert !isNextConsideredParallel; // Probably...
+				}
+			} else if (vcurrIsConvex < 0) {
 				boolean equation = clockwise ?
 					perpDotProduct(dcurr, dadj) < 0 || perpDotProduct(dnext, dadj) < 0
 					: perpDotProduct(dcurr, dadj) > 0 && perpDotProduct(dnext, dadj) > 0;
@@ -287,6 +368,7 @@ public class MinimumCycleBasis<V, E> {
 					vnext = vadj;
 					dnext = dadj;
 					vcurrIsConvex = perpDotProduct(dnext, dcurr);
+					isNextConsideredParallel = areParallel(dcurr, dnext);
 				}
 			} else {
 				boolean equation = clockwise ?
@@ -296,6 +378,7 @@ public class MinimumCycleBasis<V, E> {
 					vnext = vadj;
 					dnext = dadj;
 					vcurrIsConvex = perpDotProduct(dnext, dcurr);
+					isNextConsideredParallel = areParallel(dcurr, dnext);
 				}
 			}
 		}
@@ -303,18 +386,24 @@ public class MinimumCycleBasis<V, E> {
 	}
 
 	/**
-	 * Computes perp dot product.
-	 *
-	 * @param v0
-	 * 	A vector.
-	 * @param v1
-	 * 	Another vector.
-	 * @return Perp dot product of vectors v0 and v1.
-	 * @see <a href="http://mathworld.wolfram.com/PerpDotProduct.html">Perp Dot Product</a>
+	 * @param pointX
+	 * @param pointY
+	 * @param startX
+	 * @param startY
+	 * @param endX
+	 * @param endY
+	 * @return
+	 * @see <a href="http://stackoverflow.com/questions/1560492/how-to-tell-whether-a-point-is-to-the-right-or-left-side-of-a-line">
+	 * Stackoverflow</a>
 	 */
-	public static double perpDotProduct(double[] v0, double[] v1) {
-		return -v0[1] * v1[0] + v0[0] * v1[1];
+	public static double pointPositionRelativeToLine(
+		double pointX, double pointY,
+		double startX, double startY,
+		double endX, double endY
+	) {
+		return ((endX - startX) * (pointY - startY) - (endY - startY) * (pointX - startX));
 	}
+
 
 	/**
 	 * [Eberly 2005, function Graph::ExtractPrimitive on p. 33, line e.isCycle = true]

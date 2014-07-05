@@ -4,9 +4,10 @@ import com.google.common.collect.ImmutableList;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.graphs.MinimumCycleBasis;
 
 import java.util.Iterator;
+
+import static org.tendiwa.geometry.Vectors2D.perpDotProduct;
 
 class Node implements Iterable<Node> {
 	Bisector bisector;
@@ -63,7 +64,7 @@ class Node implements Iterable<Node> {
 	 * @return True if the angle to the left between two edges > Math.PI
 	 */
 	private boolean isReflex(Segment2D previousEdge, Segment2D currentEdge) {
-		return MinimumCycleBasis.perpDotProduct(
+		return perpDotProduct(
 			new double[]{previousEdge.dx(), previousEdge.dy()},
 			new double[]{currentEdge.dx(), currentEdge.dy()}
 		) > 0;

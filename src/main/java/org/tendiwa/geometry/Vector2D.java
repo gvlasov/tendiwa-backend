@@ -29,7 +29,9 @@ public interface Vector2D extends Position2D {
 	 *
 	 * @return Magnitude of a vector.
 	 */
-	public double magnitude();
+	public default double magnitude() {
+		return Math.sqrt(getX() * getX() + getY() * getY());
+	}
 
 	/**
 	 * Divides this vector by a scalar, producing a new vector.

@@ -27,6 +27,7 @@ public class NetworkWithinCycle {
 	private final Set<Point2D> cycleNodes;
 	private final NetworkToBlocks blockDivision;
 	private TestCanvas canvas;
+	private final boolean favourAxisAlignedSegments;
 	private final SimpleGraph<Point2D, Segment2D> secRoadNetwork;
 	private MinimalCycle<Point2D, Segment2D> minimalCycle;
 	private Collection<Segment2D> filamentEdges;
@@ -61,7 +62,7 @@ public class NetworkWithinCycle {
 	/**
 	 * Returns a set points where secondary road network is connected with the cycle.
 	 *
-	 * @return
+	 * @return A set points where secondary road network is connected with the cycle.
 	 */
 	public ImmutableSet<Point2D> exitsOnCycles() {
 		return exitsOnCycles;
@@ -114,6 +115,8 @@ public class NetworkWithinCycle {
 	 * 	amount might not fit into a cell.
 	 * @param random
 	 * 	A seeded {@link java.util.Random} used to generate the parent {@link City}.
+	 * @param favourAxisAlignedSegments
+	 * 	Whether you want segments to be as close to Math.PI/2*n angles as possible.
 	 */
 	NetworkWithinCycle(
 		SimpleGraph<Point2D, Segment2D> graph,
@@ -127,7 +130,8 @@ public class NetworkWithinCycle {
 		double secondaryRoadNetworkRoadLengthDeviation,
 		int maxNumOfStartPoints,
 		Random random,
-		TestCanvas canvas
+		TestCanvas canvas,
+		boolean favourAxisAlignedSegments
 	) {
 		this.minimalCycle = minimalCycle;
 		this.filamentEdges = filamentEdges;
@@ -142,6 +146,7 @@ public class NetworkWithinCycle {
 
 		relevantNetwork = graph;
 		this.canvas = canvas;
+		this.favourAxisAlignedSegments = favourAxisAlignedSegments;
 		secRoadNetwork = new SimpleGraph<>(graph.getEdgeFactory());
 
 		for (Point2D vertex : relevantNetwork.vertexSet()) {
@@ -168,9 +173,8 @@ public class NetworkWithinCycle {
 		blockDivision = new NetworkToBlocks(
 			relevantNetwork,
 			filamentEnds,
-			roadSegmentLength+secondaryRoadNetworkRoadLengthDeviation,
-			canvas
-		) ;
+			roadSegmentLength + secondaryRoadNetworkRoadLengthDeviation
+		);
 	}
 
 	/**
@@ -237,6 +241,13 @@ public class NetworkWithinCycle {
 		filamentEndPoints = nodes2TheirPoints(filamentEnds);
 	}
 
+	/**
+	 * For a set of point-directions, creates a set of just points without their directions.
+	 *
+	 * @param filamentEnds
+	 * 	A set of nodes.
+	 * @return A set of points of point-directions.
+	 */
 	private ImmutableSet<Point2D> nodes2TheirPoints(Set<DirectionFromPoint> filamentEnds) {
 		ImmutableSet.Builder<Point2D> builder = ImmutableSet.builder();
 		for (DirectionFromPoint node : filamentEnds) {
@@ -245,6 +256,13 @@ public class NetworkWithinCycle {
 		return builder.build();
 	}
 
+	/**
+	 * Removes from a set all nodes that don't have a degree of 1.
+	 *
+	 * @param nodes
+	 * 	An initial set of nodes.
+	 * @return A set of all nodes from the initial set that have a degree of 1.
+	 */
 	private Set<DirectionFromPoint> removeMultidegreeFilamentEnds(Set<DirectionFromPoint> nodes) {
 		Iterator<DirectionFromPoint> iterator = nodes.iterator();
 		for (
@@ -265,6 +283,9 @@ public class NetworkWithinCycle {
 
 	/**
 	 * Returns a slightly changed direction.
+	 * <p>
+	 * If {@link #favourAxisAlignedSegments} is true, then the answer will be tilted towards the closest
+	 * {@code Math.PI/2*n} angle.
 	 *
 	 * @param newDirection
 	 * 	Original angle in radians.
@@ -273,7 +294,16 @@ public class NetworkWithinCycle {
 
 	private double deviateDirection(double newDirection) {
 		v = random.nextDouble();
-		return newDirection - secondaryRoadNetworkDeviationAngle + v * secondaryRoadNetworkDeviationAngle * 2;
+		if (favourAxisAlignedSegments) {
+			double closestAxisParallelDirection = Math.round(newDirection / (Math.PI / 2)) * (Math.PI / 2);
+			if (Math.abs(closestAxisParallelDirection - newDirection) < secondaryRoadNetworkDeviationAngle) {
+				return closestAxisParallelDirection;
+			} else {
+				return newDirection + secondaryRoadNetworkDeviationAngle * Math.signum(closestAxisParallelDirection - newDirection);
+			}
+		} else {
+			return newDirection - secondaryRoadNetworkDeviationAngle + v * secondaryRoadNetworkDeviationAngle * 2;
+		}
 	}
 
 	private double deviatedLength(double roadSegmentLength) {
@@ -485,16 +515,6 @@ public class NetworkWithinCycle {
 
 	public ImmutableSet<Point2D> filamentEnds() {
 		return filamentEndPoints;
-	}
-
-	class DirectionFromPoint {
-		final Point2D node;
-		final double direction;
-
-		DirectionFromPoint(Point2D node, double direction) {
-			this.node = node;
-			this.direction = direction;
-		}
 	}
 
 }

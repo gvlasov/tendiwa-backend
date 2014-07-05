@@ -2,11 +2,14 @@ package org.tendiwa.geometry.extensions.twakStraightSkeleton;
 
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
+import org.tendiwa.drawing.extensions.DrawingGraph;
+import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.straightSkeleton.ApproximatedEdges;
 import org.tendiwa.geometry.extensions.straightSkeleton.PolygonShrinker;
 
+import java.awt.Color;
 import java.util.List;
 import java.util.Map;
 

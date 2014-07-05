@@ -17,7 +17,7 @@ import java.awt.Color;
 import java.util.*;
 
 import static org.tendiwa.drawing.extensions.DrawingSegment2D.withColor;
-import static org.tendiwa.graphs.MinimumCycleBasis.perpDotProduct;
+import static org.tendiwa.geometry.Vectors2D.perpDotProduct;
 
 // TODO: Split this class into more classes.
 public class SuseikaStraightSkeleton implements StraightSkeleton {
@@ -591,7 +591,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 	 * 	End of vector 1 and beginning of vector 2.
 	 * @param next
 	 * 	End of vector 2.
-	 * @return true if {@code point} is reflex, false if it is convex of if all points lie on the same line.
+	 * @return true if {@code point} is non-convex, false if it is convex.
 	 */
 	private static boolean isPointNonConvex(Point2D previous, Point2D point, Point2D next) {
 		return perpDotProduct(
