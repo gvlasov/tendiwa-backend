@@ -63,7 +63,7 @@ private double g(Cell current) {
 }
 
 private double h(Cell current) {
-//	return current.chebyshevDistanceTo(goal);
+//	return current.chebyshovDistanceTo(goal);
 //	return current.quickDistance(goal);
 	return current.distanceDouble(goal);
 }

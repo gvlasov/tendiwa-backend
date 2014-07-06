@@ -19,11 +19,6 @@ public class TwakPolygonShrinker extends PolygonShrinker {
 		List<Segment2D> edges,
 		double depth
 	) {
-//		ApproximatedEdges approximatedEdges = new ApproximatedEdges();
-//		for (Segment2D edge : edges) {
-//			approximatedEdges.addFixedEdge(edge);
-//		}
-
 		UndirectedGraph<Point2D, Segment2D> fullGraph = fillNewGraphWithArcsAndEdges(
 			graph,
 			edges

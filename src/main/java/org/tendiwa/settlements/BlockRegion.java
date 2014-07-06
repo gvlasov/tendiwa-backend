@@ -243,7 +243,9 @@ public class BlockRegion extends EnclosedBlock {
 			node = nextNode;
 		} while (node != region.startNode);
 		createdNodes.sort((o1, o2) -> (int) Math.signum(positions.get(o1) - positions.get(o2)));
-		assert createdNodes.size() % 2 == 0;
+		if  (createdNodes.size() % 2 != 0) {
+			assert false;
+		}
 		for (int i = 0; i < createdNodes.size(); i += 2) {
 			bridge(createdNodes.get(i), createdNodes.get(i + 1));
 		}

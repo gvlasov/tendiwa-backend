@@ -59,7 +59,7 @@ public class Point2D implements Vector2D {
 	 * 	Another point.
 	 * @return Chebyshev distance between two cells.
 	 */
-	public double chebyshevDistanceTo(Point2D point) {
+	public double chebyshovDistanceTo(Point2D point) {
 		return Math.max(Math.abs(point.x - x), Math.abs(point.y - y));
 	}
 

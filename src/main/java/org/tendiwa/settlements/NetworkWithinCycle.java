@@ -502,7 +502,6 @@ public class NetworkWithinCycle {
 		List<Segment2D> edges = Lists.newArrayList(cycle);
 		Collections.sort(
 			edges,
-			// TODO: The fuck is signum doing here?
 			(o1, o2) -> (int) Math.signum(o2.start.distanceTo(o2.end) - o1.start.distanceTo(o1.end))
 		);
 		int numberOfStartPoints = Math.min(maxNumOfStartPoints, minimalCycle.vertexList().size());

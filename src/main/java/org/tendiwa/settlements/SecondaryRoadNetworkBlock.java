@@ -2,6 +2,7 @@ package org.tendiwa.settlements;
 
 import com.google.common.collect.ImmutableList;
 import org.jgrapht.UndirectedGraph;
+import org.tendiwa.drawing.GraphExplorer;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
@@ -23,12 +24,15 @@ public class SecondaryRoadNetworkBlock extends EnclosedBlock {
 		this.outline = ImmutableList.copyOf(outline);
 	}
 
-	public Set<BlockRegion> shrinkToRegions(double depth, Random random, TestCanvas canvas) {
+	public Set<BlockRegion> shrinkToRegions(double depth, Random random) {
 		UndirectedGraph<Point2D,Segment2D> cap = TwakStraightSkeleton.create(outline).cap(depth);
 		MinimumCycleBasis<Point2D,Segment2D> basis = new MinimumCycleBasis<>(
 			cap,
 			Point2DVertexPositionAdapter.get()
 		);
+		if (cap.hashCode() == -318713953) {
+			new GraphExplorer(cap);
+		}
 		Set<BlockRegion> blocks = basis
 			.minimalCyclesSet()
 			.stream()

@@ -7,6 +7,7 @@ import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingGraph;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
 import org.tendiwa.graphs.MinimumCycleBasis;
 
@@ -28,14 +29,13 @@ public class NetworkToBlocks {
 		double snapSize
 	) {
 		if (!filamentEnds.isEmpty()) {
-			relevantNetwork = copyRelevantNetwork(relevantNetwork);
+			relevantNetwork = PlanarGraphs.copyRelevantNetwork(relevantNetwork);
 			GraphLooseEndsCloser
 				.withSnapSize(snapSize)
 				.withFilamentEnds(filamentEnds)
 				.mutateGraph(relevantNetwork);
 		}
 		canvas.draw(relevantNetwork, DrawingGraph.basis(Color.black, Color.black, Color.black));
-//		new GraphExplorer(relevantNetwork);
 		enclosedBlocks = new MinimumCycleBasis<>(relevantNetwork, Point2DVertexPositionAdapter.get())
 			.minimalCyclesSet()
 			.stream()
@@ -47,14 +47,4 @@ public class NetworkToBlocks {
 		return enclosedBlocks;
 	}
 
-	private UndirectedGraph<Point2D, Segment2D> copyRelevantNetwork(UndirectedGraph<Point2D, Segment2D> relevantNetwork) {
-		UndirectedGraph<Point2D, Segment2D> blockBoundsNetwork = new SimpleGraph<>(relevantNetwork.getEdgeFactory());
-		for (Point2D vertex : relevantNetwork.vertexSet()) {
-			blockBoundsNetwork.addVertex(vertex);
-		}
-		for (Segment2D edge : relevantNetwork.edgeSet()) {
-			blockBoundsNetwork.addEdge(edge.start, edge.end, edge);
-		}
-		return blockBoundsNetwork;
-	}
 }

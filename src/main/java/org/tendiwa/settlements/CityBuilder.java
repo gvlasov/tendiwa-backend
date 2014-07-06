@@ -145,7 +145,7 @@ public class CityBuilder {
 
 	/**
 	 * Sets secondary road network deviation angle. Fluent interface method.
-	 *
+	 * <p>
 	 * When {@link #withAxisAlignedSegments(boolean)} is set to true, this parameter defines how quickly a segment
 	 * chain will take an axis aligned direction, that is, how much segments will be likely to be axis-aligned. The
 	 * greater this parameter, the more axis-aligned segments will be.

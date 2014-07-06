@@ -37,7 +37,7 @@ public class BigCityDemo implements Runnable {
 		City city = new CityBuilder(graph)
 			.withDefaults()
 			.withMaxStartPointsPerCycle(5)
-			.withRoadsFromPoint(4)
+			.withRoadsFromPoint(2)
 			.withSecondaryRoadNetworkDeviationAngle(0.3)
 			.withConnectivity(0.1)
 			.withRoadSegmentLength(30, 45)
@@ -70,8 +70,8 @@ public class BigCityDemo implements Runnable {
 		Set<EnclosedBlock> encBlocks = city
 			.getBlocks()
 			.stream()
-			.flatMap(b -> b.shrinkToRegions(3, new Random(0), canvas).stream())
-			.flatMap(b -> b.subdivideLots(8, 8, 0).stream())
+			.flatMap(b -> b.shrinkToRegions(3.3, new Random(0)).stream())
+			.flatMap(b -> b.subdivideLots(12, 7, 0).stream())
 			.collect(Collectors.toSet());
 		for (EnclosedBlock block : encBlocks) {
 			canvas.draw(block, DrawingEnclosedBlock.withColor(Color.lightGray));

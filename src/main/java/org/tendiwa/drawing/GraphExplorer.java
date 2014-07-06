@@ -1,5 +1,6 @@
 package org.tendiwa.drawing;
 
+import com.google.common.collect.ImmutableSet;
 import org.jgraph.JGraph;
 import org.jgraph.graph.AttributeMap;
 import org.jgraph.graph.DefaultEdge;
@@ -10,6 +11,7 @@ import org.jgrapht.ext.JGraphModelAdapter;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.graphs.GraphConstructor;
 
 import javax.swing.JFrame;
@@ -28,12 +30,13 @@ public class GraphExplorer {
 	private final JGraphModelAdapter<Point2D, Segment2D> adapter;
 
 	public GraphExplorer(UndirectedGraph<Point2D, Segment2D> graph) {
+		graph = PlanarGraphs.copyRelevantNetwork(graph);
 		adapter = new JGraphModelAdapter<>(graph);
 		JGraph jgraph = new JGraph(adapter);
 		for (Point2D vertex : graph.vertexSet()) {
 			positionVertex(vertex);
 		}
-		for (Segment2D edge : graph.edgeSet()) {
+		for (Segment2D edge : ImmutableSet.copyOf(graph.edgeSet())) {
 			disableLabel(edge);
 		}
 		jgraph.setEdgeLabelsMovable(false);
