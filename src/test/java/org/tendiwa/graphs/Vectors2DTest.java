@@ -1,12 +1,12 @@
 package org.tendiwa.graphs;
 
 import org.junit.Test;
+
 import static org.junit.Assert.*;
+import static org.tendiwa.geometry.Vectors2D.*;
+
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
-
-import static org.tendiwa.geometry.Vectors2D.angleBetweenVectors;
-import static org.tendiwa.geometry.Vectors2D.perpDotProduct;
 
 public class Vectors2DTest {
 	@Test
@@ -25,24 +25,40 @@ public class Vectors2DTest {
 		);
 		System.out.println(pdp);
 	}
+
 	@Test
 	public void testAngleBetweenVectors() {
-		double[] a = new double[] { 1, 0};
-		double[] b = new double[] { 0, 1};
-		assertEquals(angleBetweenVectors(a, b, false), Math.PI/2, 1e-8);
-		assertEquals(angleBetweenVectors(b, a, false), Math.PI*2-Math.PI/2, 1e-8);
-		assertEquals(angleBetweenVectors(a, b, true), Math.PI*2-Math.PI/2, 1e-8);
-		assertEquals(angleBetweenVectors(b, a, true), Math.PI/2, 1e-8);
-		a = new double[] { 1, 1};
-		b = new double[] { 1, 0};
-		assertEquals(angleBetweenVectors(a, b, true), Math.PI/4, 1e-8);
-		assertEquals(angleBetweenVectors(a, b, false), Math.PI*2- Math.PI/4, 1e-8);
-		a = new double[] {1, 1};
-		b = new double[] {-1, -1};
+		double[] a = new double[]{1, 0};
+		double[] b = new double[]{0, 1};
+		assertEquals(angleBetweenVectors(a, b, false), Math.PI / 2, 1e-8);
+		assertEquals(angleBetweenVectors(b, a, false), Math.PI * 2 - Math.PI / 2, 1e-8);
+		assertEquals(angleBetweenVectors(a, b, true), Math.PI * 2 - Math.PI / 2, 1e-8);
+		assertEquals(angleBetweenVectors(b, a, true), Math.PI / 2, 1e-8);
+		a = new double[]{1, 1};
+		b = new double[]{1, 0};
+		assertEquals(angleBetweenVectors(a, b, true), Math.PI / 4, 1e-8);
+		assertEquals(angleBetweenVectors(a, b, false), Math.PI * 2 - Math.PI / 4, 1e-8);
+		a = new double[]{1, 1};
+		b = new double[]{-1, -1};
 		assertEquals(angleBetweenVectors(a, b, true), Math.PI, 1e-8);
 		assertEquals(angleBetweenVectors(a, b, false), Math.PI, 1e-8);
-		a = new double[] {-1, 1};
-		b = new double[] {-1, -1};
-		assertEquals(angleBetweenVectors(a, b, true), Math.PI/2*3, 1e-8);
+		a = new double[]{-1, 1};
+		b = new double[]{-1, -1};
+		assertEquals(angleBetweenVectors(a, b, true), Math.PI / 2 * 3, 1e-8);
+	}
+
+	@Test
+	public void testParallel() {
+		double[] a = new double[]{0, -1};
+		double[] b = new double[]{1e-5, 4.5678};
+		assertFalse(areParallel(a, b));
+
+		a = new double[]{0, -1};
+		b = new double[]{0, 4.5678};
+		assertTrue(areParallel(a, b));
+
+		a = new double[]{1, 1};
+		b = new double[]{-1, -1};
+		assertTrue(areParallel(a, b));
 	}
 }

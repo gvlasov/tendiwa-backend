@@ -68,7 +68,7 @@ public class EnclosedBlock implements Iterable<Point2D> {
 
 		void setNext(Node next) {
 			assert next != null;
-			assert this != next;
+			assert !this.point.equals(next.point);
 			this.next = next;
 		}
 

@@ -206,6 +206,7 @@ public class BlockRegion extends EnclosedBlock {
 		Set<BlockRegion> output = new HashSet<>();
 		Vector2D ab = Vector2D.fromStartToEnd(a, b);
 		TObjectDoubleMap<Node> positions = computeEdgeStartPositions(region, a, b);
+		TObjectDoubleMap<Node> locationOnAb = new TObjectDoubleHashMap<>();
 		Set<Node> visited = new HashSet<>();
 		Node node = region.startNode;
 		List<Node> createdNodes = new LinkedList<>();
@@ -237,12 +238,15 @@ public class BlockRegion extends EnclosedBlock {
 						roadPoints.put(intersectionEdge.point, nextNode.point);
 					}
 				}
-				positions.put(intersectionEdge, r);
+				locationOnAb.put(intersectionEdge, r);
+//				if (createdNodes.contains(intersectionEdge)) {
+//					assert false;
+//				}
 				createdNodes.add(intersectionEdge);
 			}
 			node = nextNode;
 		} while (node != region.startNode);
-		createdNodes.sort((o1, o2) -> (int) Math.signum(positions.get(o1) - positions.get(o2)));
+		createdNodes.sort((o1, o2) -> (int) Math.signum(locationOnAb.get(o1) - locationOnAb.get(o2)));
 		if  (createdNodes.size() % 2 != 0) {
 			assert false;
 		}

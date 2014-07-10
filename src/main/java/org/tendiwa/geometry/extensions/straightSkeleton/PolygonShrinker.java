@@ -22,6 +22,7 @@ import java.util.*;
 
 public class PolygonShrinker {
 
+	public List<Segment2D> edges;
 	protected List<Segment2D> shrunkPolygonsSegments;
 	public static TestCanvas canvas;
 	static Iterator<Color> colors = Iterators.cycle(Color.green, Color.blue, Color.orange, Color.yellow);
@@ -126,6 +127,7 @@ public class PolygonShrinker {
 //			canvas.draw(v, DrawingPoint2D.withColorAndSize(next, 4));
 //		}
 		assert originalFaceEdge != null;
+
 		return originalFaceEdge;
 	}
 

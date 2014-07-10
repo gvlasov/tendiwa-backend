@@ -16,6 +16,7 @@ import java.awt.Color;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class BigCityDemo implements Runnable {
 
@@ -32,20 +33,19 @@ public class BigCityDemo implements Runnable {
 		SimpleGraph<Point2D, Segment2D> graph = gc.graph();
 //        canvas.draw(graph, DrawingGraph.multicoloredEdges());
 //        for (int i = 0; i < 100; i++) {
-		NetworkToBlocks.canvas = canvas;
 		TestCanvas.canvas = canvas;
-		City city = new CityBuilder(graph)
-			.withDefaults()
-			.withMaxStartPointsPerCycle(5)
-			.withRoadsFromPoint(2)
-			.withSecondaryRoadNetworkDeviationAngle(0.3)
-			.withConnectivity(0.1)
-			.withRoadSegmentLength(30, 45)
-			.withSnapSize(4)
-//			.withCanvas(canvas)
-			.withSeed(1)
-			.withAxisAlignedSegments(true)
-			.build();
+		IntStream.range(71, 72).forEach(seed -> {
+			City city = new CityBuilder(graph)
+				.withDefaults()
+				.withMaxStartPointsPerCycle(5)
+				.withRoadsFromPoint(2)
+				.withSecondaryRoadNetworkDeviationAngle(0.3)
+				.withConnectivity(0.1)
+				.withRoadSegmentLength(30, 45)
+				.withSnapSize(4)
+				.withSeed(seed)
+				.withAxisAlignedSegments(false)
+				.build();
 //		for (NetworkWithinCycle network : city.getCells()) {
 //			for (Point2D filamentEnd : network.filamentEnds()) {
 //				canvas.draw(filamentEnd, DrawingPoint2D.withColorAndSize(Color.green, 5));
@@ -59,23 +59,24 @@ public class BigCityDemo implements Runnable {
 //                .flatMap(network -> network.exitsOnCycles().stream())
 //                .forEach(point -> canvas.draw(point.toCell(), DrawingCell.withColorAndSize(Color.GREEN, 4)));
 //		PolygonShrinker.canvas = canvas;
-		Set<SecondaryRoadNetworkBlock> blocks = city
-			.getBlocks();
+			Set<SecondaryRoadNetworkBlock> blocks = city
+				.getBlocks();
 //			.stream()
 //			.flatMap(b -> b.shrinkToRegions(6, new Random(0), canvas).stream())
 //			.flatMap(b -> b.subdivideLots(8, 8, 0).stream())
 //			.collect(Collectors.toSet());
 
 
-		Set<EnclosedBlock> encBlocks = city
-			.getBlocks()
-			.stream()
-			.flatMap(b -> b.shrinkToRegions(3.3, new Random(0)).stream())
-			.flatMap(b -> b.subdivideLots(12, 7, 0).stream())
-			.collect(Collectors.toSet());
-		for (EnclosedBlock block : encBlocks) {
-			canvas.draw(block, DrawingEnclosedBlock.withColor(Color.lightGray));
-		}
+			Set<EnclosedBlock> encBlocks = city
+				.getBlocks()
+				.stream()
+				.flatMap(b -> b.shrinkToRegions(3.3, new Random(0)).stream())
+				.flatMap(b -> b.subdivideLots(12, 7, 0).stream())
+				.collect(Collectors.toSet());
+			for (EnclosedBlock block : encBlocks) {
+				canvas.draw(block, DrawingEnclosedBlock.withColor(Color.lightGray));
+			}
+		});
 
 	}
 }

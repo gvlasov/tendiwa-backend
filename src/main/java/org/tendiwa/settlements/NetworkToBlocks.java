@@ -20,7 +20,6 @@ import static java.util.stream.Collectors.toSet;
  * Divides space inside a network into enclosed blocks.
  */
 public class NetworkToBlocks {
-	public static TestCanvas canvas;
 	private final Set<SecondaryRoadNetworkBlock> enclosedBlocks;
 
 	NetworkToBlocks(
@@ -35,7 +34,7 @@ public class NetworkToBlocks {
 				.withFilamentEnds(filamentEnds)
 				.mutateGraph(relevantNetwork);
 		}
-		canvas.draw(relevantNetwork, DrawingGraph.basis(Color.black, Color.black, Color.black));
+		TestCanvas.canvas.draw(relevantNetwork, DrawingGraph.basis(Color.black, Color.black, Color.black));
 		enclosedBlocks = new MinimumCycleBasis<>(relevantNetwork, Point2DVertexPositionAdapter.get())
 			.minimalCyclesSet()
 			.stream()

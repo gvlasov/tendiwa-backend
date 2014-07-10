@@ -123,6 +123,7 @@ public class TwakStraightSkeleton implements StraightSkeleton {
 //		}
 //		graph.addEdge(previous, first);
 //		return graph;
+		System.out.println();
 		return new TwakPolygonShrinker(graph(), originalEdges, depth).asGraph();
 	}
 

@@ -30,9 +30,6 @@ public class SecondaryRoadNetworkBlock extends EnclosedBlock {
 			cap,
 			Point2DVertexPositionAdapter.get()
 		);
-		if (cap.hashCode() == -318713953) {
-			new GraphExplorer(cap);
-		}
 		Set<BlockRegion> blocks = basis
 			.minimalCyclesSet()
 			.stream()

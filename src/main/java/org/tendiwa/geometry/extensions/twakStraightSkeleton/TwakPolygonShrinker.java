@@ -14,16 +14,18 @@ import java.util.List;
 import java.util.Map;
 
 public class TwakPolygonShrinker extends PolygonShrinker {
+
 	public TwakPolygonShrinker(
 		UndirectedGraph<Point2D, Segment2D> graph,
 		List<Segment2D> edges,
 		double depth
 	) {
+		this.edges = edges;
 		UndirectedGraph<Point2D, Segment2D> fullGraph = fillNewGraphWithArcsAndEdges(
 			graph,
 			edges
 		);
-		Map<Segment2D,Iterable<Segment2D>> edgesToFaces = mapOriginalEdgesToFaces(fullGraph, edges);
+		Map<Segment2D, Iterable<Segment2D>> edgesToFaces = mapOriginalEdgesToFaces(fullGraph, edges);
 		shrunkPolygonsSegments = findShrunkPolygonsSegments(
 			depth,
 			edgesToFaces
