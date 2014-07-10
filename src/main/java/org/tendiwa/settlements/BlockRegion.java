@@ -2,10 +2,15 @@ package org.tendiwa.settlements;
 
 import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.hash.TObjectDoubleHashMap;
+import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawingGraph;
 import org.tendiwa.geometry.GeometryException;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Vector2D;
+import org.tendiwa.geometry.extensions.straightSkeleton.PolygonShrinker;
+import org.tendiwa.geometry.extensions.twakStraightSkeleton.TwakStraightSkeleton;
 
+import java.awt.Color;
 import java.util.*;
 
 public class BlockRegion extends EnclosedBlock {
@@ -122,6 +127,8 @@ public class BlockRegion extends EnclosedBlock {
 				longestEdgeStart = longest.nonRoad;
 				if (longestEdgeStart == null || region.getRoadLength(longestEdgeStart) < lotDepth * 2) {
 					output.add(region);
+					TestCanvas.canvas.draw(TwakStraightSkeleton.create(region.toVertexList()).cap(3),
+						DrawingGraph.withColor(Color.black));
 					continue;
 				} else {
 					splitSize = lotDepth;
@@ -144,6 +151,31 @@ public class BlockRegion extends EnclosedBlock {
 			queue.addAll(newRegions);
 		}
 		return output;
+	}
+
+	private List<Point2D> toVertexList() {
+		Node current = startNode;
+		List<Point2D> answer = new ArrayList<>(numberOfNodes == Integer.MAX_VALUE ? countNumberOfNodes() : numberOfNodes);
+		do {
+			current = current.next;
+			answer.add(current.point);
+		} while (current != startNode);
+		return answer;
+	}
+
+	/**
+	 * Returns the number of nodes in this polygon.
+	 *
+	 * @return The number of nodes in this polygon.
+	 */
+	private int countNumberOfNodes() {
+		Node current = startNode;
+		int numberOfNodes = 0;
+		do {
+			numberOfNodes++;
+			current = current.next;
+		} while (current != startNode);
+		return numberOfNodes;
 	}
 
 	/**

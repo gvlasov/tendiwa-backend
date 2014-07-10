@@ -23,7 +23,7 @@ public class Utils {
 
 	public static void printListOfPoints(List<Point2D> points) {
 		for (Point2D point : points) {
-			System.out.println("add(new Point2D(" + point.x + ", " + point.y + ");");
+			System.out.println("add(new Point2D(" + point.x + ", " + point.y + "));");
 		}
 	}
 

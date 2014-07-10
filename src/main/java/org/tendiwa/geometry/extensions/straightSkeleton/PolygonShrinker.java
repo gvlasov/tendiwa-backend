@@ -126,7 +126,9 @@ public class PolygonShrinker {
 //		for (Point2D v : face) {
 //			canvas.draw(v, DrawingPoint2D.withColorAndSize(next, 4));
 //		}
-		assert originalFaceEdge != null;
+		if (originalFaceEdge == null) {
+			assert originalFaceEdge != null;
+		}
 
 		return originalFaceEdge;
 	}

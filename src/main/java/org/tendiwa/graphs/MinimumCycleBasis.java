@@ -303,6 +303,7 @@ public class MinimumCycleBasis<V, E> {
 				positionAdapter.getY(vcurr) - positionAdapter.getY(vprev)
 			};
 		}
+		boolean currWasReversed = supportingLineUsed;
 
 		V vnext = null;
 		for (V vertex : neighborIndex.neighborsOf(vcurr)) {
@@ -351,13 +352,14 @@ public class MinimumCycleBasis<V, E> {
 				if (
 //					clockwise && positionToCurr < 0 && positionToPrev < 0
 //						|| !clockwise && positionToCurr > 0 && positionToPrev > 0
-					supportingLineUsed ? angle > Math.PI : angle < Math.PI
+					currWasReversed ? angle > Math.PI : angle < Math.PI
 					) {
 					assert Math.abs(angle - Math.PI) > Vectors2D.EPSILON;
 					vnext = vadj;
 					dnext = dadj;
 					vcurrIsConvex = perpDotProduct(dnext, dcurr);
 					isNextConsideredParallel = areParallel(dcurr, dnext);
+					supportingLineUsed = false;
 					assert !isNextConsideredParallel; // Probably...
 				}
 			} else if (vcurrIsConvex < 0) {
@@ -381,6 +383,7 @@ public class MinimumCycleBasis<V, E> {
 					isNextConsideredParallel = areParallel(dcurr, dnext);
 				}
 			}
+			currWasReversed = false;
 		}
 		return vnext;
 	}
