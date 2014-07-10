@@ -24,7 +24,7 @@ public class SecondaryRoadNetworkBlock extends EnclosedBlock {
 		this.outline = ImmutableList.copyOf(outline);
 	}
 
-	public Set<BlockRegion> shrinkToRegions(double depth, Random random) {
+	public Set<BlockRegion> shrinkToRegions(double depth, int seed) {
 		UndirectedGraph<Point2D,Segment2D> cap = TwakStraightSkeleton.create(outline).cap(depth);
 		MinimumCycleBasis<Point2D,Segment2D> basis = new MinimumCycleBasis<>(
 			cap,
@@ -33,7 +33,7 @@ public class SecondaryRoadNetworkBlock extends EnclosedBlock {
 		Set<BlockRegion> blocks = basis
 			.minimalCyclesSet()
 			.stream()
-			.map(cycle -> new BlockRegion(cycle.vertexList(), random))
+			.map(cycle -> new BlockRegion(cycle.vertexList(), 0))
 			.collect(Collectors.toSet());
 //		assert blocks.size() > 0;
 		return blocks;

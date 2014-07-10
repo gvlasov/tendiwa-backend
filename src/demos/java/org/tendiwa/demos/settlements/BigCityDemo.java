@@ -70,7 +70,7 @@ public class BigCityDemo implements Runnable {
 			Set<EnclosedBlock> encBlocks = city
 				.getBlocks()
 				.stream()
-				.flatMap(b -> b.shrinkToRegions(3.3, new Random(0)).stream())
+				.flatMap(b -> b.shrinkToRegions(3.3, 0).stream())
 				.flatMap(b -> b.subdivideLots(12, 7, 0).stream())
 				.collect(Collectors.toSet());
 			for (EnclosedBlock block : encBlocks) {

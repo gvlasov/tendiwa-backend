@@ -45,7 +45,7 @@ public class BlockRegionTest {
 			.moveBy(-30, 10)
 			.moveBy(-10, -10)
 			.points();
-		BlockRegion point2Ds = new BlockRegion(points, new Random(0));
+		BlockRegion point2Ds = new BlockRegion(points, 0);
 		Set<BlockRegion> blockRegions = point2Ds.subdivideLots(10, 10, 0);
 
 //		TestCanvas canvas = new TestCanvas(1, 800, 600);
@@ -61,7 +61,7 @@ public class BlockRegionTest {
 			.moveBy(0, 40)
 			.moveBy(20, -20)
 			.points();
-		BlockRegion block = new BlockRegion(points, new Random(0));
+		BlockRegion block = new BlockRegion(points, 0);
 		Set<BlockRegion> lots = block.subdivideLots(20, 20, 0);
 //		TestCanvas canvas = new TestCanvas(1, 800, 600);
 //		for (BlockRegion lot : lots) {

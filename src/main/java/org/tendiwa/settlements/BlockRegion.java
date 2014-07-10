@@ -2,24 +2,17 @@ package org.tendiwa.settlements;
 
 import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.hash.TObjectDoubleHashMap;
-import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingEnclosedBlock;
 import org.tendiwa.geometry.GeometryException;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Vector2D;
 
-import java.awt.Color;
 import java.util.*;
 
-/**
- *
- */
 public class BlockRegion extends EnclosedBlock {
 	private static final double EPSILON = 1e-10;
 	private final Map<Point2D, Point2D> roadPoints;
 	private final TObjectDoubleMap<Node> roadLengths;
 	private final Random random;
-	public static TestCanvas canvas;
 
 	/**
 	 * Constructor for an original block to be divided into lesser blocks. {@link #roadPoints} is filled with all
@@ -27,15 +20,13 @@ public class BlockRegion extends EnclosedBlock {
 	 *
 	 * @param outline
 	 * 	Vertices of a circular road graph that will form a circular list.
-	 * @param random
+	 * @param seed
+	 * 	Seed for a random number generator.
 	 */
-	public BlockRegion(List<Point2D> outline, Random random) {
+	public BlockRegion(List<Point2D> outline, int seed) {
 		super(outline);
-		assert !outline
-			.stream()
-			.anyMatch(p -> p.y > 10000 || p.x > 10000);
 		assert outline.size() > 2;
-		this.random = new Random(random.nextInt());
+		this.random = new Random(seed);
 		this.roadPoints = createRoadPoints();
 		this.roadLengths = computeRoadLengths();
 	}
@@ -57,11 +48,12 @@ public class BlockRegion extends EnclosedBlock {
 	 * 	One of nodes of a circular list for this sub-block.
 	 * @param roadPoints
 	 * 	Points of nodes where the original roads start and end.
-	 * @param random
+	 * @param seed
+	 * 	Seed for a random number generator.
 	 */
-	BlockRegion(Node createdNode, Map<Point2D, Point2D> roadPoints, Random random) {
+	BlockRegion(Node createdNode, Map<Point2D, Point2D> roadPoints, int seed) {
 		super(createdNode);
-		this.random = new Random(random.nextInt());
+		this.random = new Random(seed);
 		this.roadPoints = roadPoints;
 		this.roadLengths = computeRoadLengths();
 	}
@@ -103,14 +95,16 @@ public class BlockRegion extends EnclosedBlock {
 	 * Consecutively splits a block into lesser blocks until blocks are small enough.
 	 *
 	 * @param lotWidth
+	 * 	Dimenstion of a lot along the road.
 	 * @param lotDepth
+	 * 	Another dimenstion of a lot, perpendicular to {@code lotWidth}.
 	 * @param lotDeviance
 	 * 	Coefficient for possible lot width and depth deviance.
 	 * 	Actual lot widths and depths (sizes) may be [size*(1-deviance/2); size*(1+deviance/2)]. So deviance of 0
 	 * 	means that lots will have exactly the width and height specified in corresponding arguments,
 	 * 	and any other deviance value means lots can be up to 1.5 times larger or up to 0 size,
 	 * 	but never exactly 2 times larger or 0.
-	 * @return
+	 * @return A set of lots subdivided from this one.
 	 */
 	public Set<BlockRegion> subdivideLots(double lotWidth, double lotDepth, double lotDeviance) {
 		if (lotDeviance < 0 || lotDeviance > 1) {
@@ -124,9 +118,9 @@ public class BlockRegion extends EnclosedBlock {
 			BlockRegion region = queue.poll();
 			LongestRoadAndNonRoadPair longest = region.getLongestEdges();
 			Node longestEdgeStart = longest.road;
-			if (longestEdgeStart == null || region.getRoadLength(longestEdgeStart) < lotWidth*2) {
+			if (longestEdgeStart == null || region.getRoadLength(longestEdgeStart) < lotWidth * 2) {
 				longestEdgeStart = longest.nonRoad;
-				if (longestEdgeStart == null || region.getRoadLength(longestEdgeStart) < lotDepth*2) {
+				if (longestEdgeStart == null || region.getRoadLength(longestEdgeStart) < lotDepth * 2) {
 					output.add(region);
 					continue;
 				} else {
@@ -247,7 +241,7 @@ public class BlockRegion extends EnclosedBlock {
 			node = nextNode;
 		} while (node != region.startNode);
 		createdNodes.sort((o1, o2) -> (int) Math.signum(locationOnAb.get(o1) - locationOnAb.get(o2)));
-		if  (createdNodes.size() % 2 != 0) {
+		if (createdNodes.size() % 2 != 0) {
 			assert false;
 		}
 		for (int i = 0; i < createdNodes.size(); i += 2) {
@@ -256,7 +250,7 @@ public class BlockRegion extends EnclosedBlock {
 		for (Node createdNode : createdNodes) {
 			boolean skipDuplicate = visitRegionEdges(createdNode, visited);
 			if (!skipDuplicate) {
-				output.add(new BlockRegion(createdNode, roadPoints, new Random(random.nextInt())));
+				output.add(new BlockRegion(createdNode, roadPoints, random.nextInt()));
 			}
 		}
 		return output;
@@ -264,13 +258,12 @@ public class BlockRegion extends EnclosedBlock {
 	}
 
 	private static int chainLength(Node node) {
-		Node start = node;
-		Node current = node;
+		Node current;
 		int size = 0;
 		do {
 			size++;
 			current = node.next;
-		} while (current != start);
+		} while (current != node);
 		return size;
 	}
 
