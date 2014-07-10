@@ -21,6 +21,10 @@ public class Vectors2D {
 		return new double[]{a[0] - b[0], a[1] - b[1]};
 	}
 
+	public static double[] add(double[] a, double[] b) {
+		return new double[]{a[0] + b[0], a[1] + b[1]};
+	}
+
 	public static boolean areParallel(double[] a, double[] b) {
 //		return Math.abs(dotProduct(a, b) / (magnitude(a) * magnitude(b))) > 1 - Vectors2D.EPSILON;
 		a = normalize(a);
@@ -29,7 +33,7 @@ public class Vectors2D {
 		if (Math.abs(sub[0]) < Vectors2D.EPSILON && Math.abs(sub[1]) < Vectors2D.EPSILON) {
 			return true;
 		}
-		double[] subNeg = subtract(a, new double[]{-b[0], -b[1]});
+		double[] subNeg = add(a, b);
 		if (Math.abs(subNeg[0]) < Vectors2D.EPSILON && Math.abs(subNeg[1]) < Vectors2D.EPSILON) {
 			return true;
 		}

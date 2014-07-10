@@ -44,7 +44,7 @@ public class BigCityDemo implements Runnable {
 				.withRoadSegmentLength(30, 45)
 				.withSnapSize(4)
 				.withSeed(seed)
-				.withAxisAlignedSegments(false)
+				.withAxisAlignedSegments(true)
 				.build();
 //		for (NetworkWithinCycle network : city.getCells()) {
 //			for (Point2D filamentEnd : network.filamentEnds()) {
