@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.google.inject.util.Modules;
+import org.tendiwa.data.DistantCellsInBufferBorderModule;
 import org.tendiwa.drawing.extensions.DrawingModule;
 import org.tendiwa.drawing.LargerScaleCanvasModule;
 import org.tendiwa.drawing.TestCanvas;

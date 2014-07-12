@@ -111,18 +111,18 @@ public class Segment2D {
 	}
 
 	/**
-	 * Checks if this line intersects another line. This is less expensive than finding the intersection point with
+	 * Checks if this segment intersects another segment. This is less expensive than finding the intersection point with
 	 * {@link #intersection(Segment2D)}.
 	 * <p>
 	 * An intersection at ends of lines doesn't count for an intersection.
 	 *
-	 * @param line
-	 * 	Another line.
+	 * @param segment
+	 * 	Another segment.
 	 * @return true if lines intersect, false otherwise.
 	 * @see #intersection(Segment2D)
 	 */
-	public boolean intersects(Segment2D line) {
-		RayIntersection intersection = new RayIntersection(start, end, line);
+	public boolean intersects(Segment2D segment) {
+		RayIntersection intersection = new RayIntersection(start, end, segment);
 		return intersection.segmentsIntersect();
 	}
 

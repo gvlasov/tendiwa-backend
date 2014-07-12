@@ -20,21 +20,18 @@ public class SnapTest {
 	private final Point2D sourceNode;
 	private Point2D targetNode;
 	private final UndirectedGraph<Point2D, Segment2D> relevantRoadNetwork;
-	private TestCanvas canvas;
 	private double minR;
 
 	SnapTest(
 		double snapSize,
 		Point2D sourceNode,
 		Point2D targetNode,
-		UndirectedGraph<Point2D, Segment2D> relevantRoadNetwork,
-		TestCanvas canvas
+		UndirectedGraph<Point2D, Segment2D> relevantRoadNetwork
 	) {
 		this.snapSize = snapSize;
 		this.sourceNode = sourceNode;
 		this.targetNode = targetNode;
 		this.relevantRoadNetwork = relevantRoadNetwork;
-		this.canvas = canvas;
 		setTargetNode(targetNode);
 		minR = 1 + snapSize / sourceNode.distanceTo(targetNode);
 	}

@@ -62,7 +62,6 @@ public class CityBuilder {
 	private Integer maxNumOfStartPoints;
 	private Double secondaryRoadNetworkDeviationAngle;
 	private Double secondaryRoadNetworkRoadLengthDeviation;
-	private TestCanvas canvas;
 	private Random seededRandom;
 	private boolean favourAxisAlignedSegments;
 
@@ -77,12 +76,6 @@ public class CityBuilder {
 	public CityBuilder(UndirectedGraph<Point2D, Segment2D> graph) {
 		this.graph = graph;
 	}
-
-	public CityBuilder withCanvas(TestCanvas canvas) {
-		this.canvas = canvas;
-		return this;
-	}
-
 
 	@SuppressWarnings("unused")
 	public CityBuilder withMaxStartPointsPerCycle(int amount) {
@@ -291,7 +284,6 @@ public class CityBuilder {
 			maxNumOfStartPoints,
 			secondaryRoadNetworkDeviationAngle,
 			secondaryRoadNetworkRoadLengthDeviation,
-			canvas,
 			favourAxisAlignedSegments
 		);
 	}

@@ -3,6 +3,7 @@ package org.tendiwa.settlements;
 import org.tendiwa.geometry.GeometryException;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Vectors2D;
 
 /**
  * Finds intersection of two <i>rays</i>, both defined by the start of a ray and some other point on that ray.
@@ -71,7 +72,9 @@ public class RayIntersection {
 		);
 	}
 
+	private final static double ALMOST_1 = 1 - Vectors2D.EPSILON;
+
 	public boolean segmentsIntersect() {
-		return r > 0 && r < 1 && s == 0;
+		return r > Vectors2D.EPSILON && r < ALMOST_1 && s > Vectors2D.EPSILON && s < ALMOST_1;
 	}
 }

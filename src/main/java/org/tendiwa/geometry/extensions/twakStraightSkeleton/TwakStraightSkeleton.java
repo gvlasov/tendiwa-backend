@@ -3,13 +3,11 @@ package org.tendiwa.geometry.extensions.twakStraightSkeleton;
 import com.google.common.collect.Lists;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
-import org.tendiwa.geometry.JTSUtils;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.StraightSkeleton;
+import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.extensions.straightSkeleton.CycleExtraVerticesRemover;
 import org.tendiwa.geometry.extensions.twakStraightSkeleton.ui.Bar;
 import org.tendiwa.geometry.extensions.twakStraightSkeleton.utils.*;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
@@ -28,16 +26,20 @@ public class TwakStraightSkeleton implements StraightSkeleton {
 	private final List<Segment2D> originalEdges;
 
 	public static StraightSkeleton create(List<Point2D> vertices) {
-		assert vertices.size() > 2 : "list of "+vertices.size();
+		assert vertices.size() > 2 : "list of " + vertices.size();
 		if (JTSUtils.isYDownCCW(vertices)) {
 			vertices = Lists.reverse(vertices);
 		}
 		vertices = CycleExtraVerticesRemover.removeVerticesOnLineBetweenNeighbors(vertices);
+		if (vertices.size() < 3) {
+			throw new GeometryException("Trying to create a straight skeleton of a polygon with less than 3 vertices");
+		}
 		LoopL<Bar> edges = new LoopL<>();
 		Loop<Bar> aloop = new Loop<>();
 		edges.add(aloop);
 
 		List<Point2d> transformedPoints = vertices.stream().map(v -> new Point2d(v.x, v.y)).collect(Collectors.toList());
+		assert !transformedPoints.isEmpty();
 		for (Pair<Point2d, Point2d> pair : new ConsecutivePairs<>(transformedPoints, true)) {
 			aloop.append(new Bar(pair.first(), pair.second()));
 		}
@@ -104,8 +106,20 @@ public class TwakStraightSkeleton implements StraightSkeleton {
 		return graph;
 	}
 
+	/**
+	 * Builds new polygons by shrinking this one.
+	 *
+	 * @param depth
+	 * 	How much to shrink this polygon.
+	 * @return A planar graph of polygons' edges.
+	 * @throws java.lang.UnsupportedOperationException
+	 * 	if depth is negative. May be implemented in future.
+	 */
 	@Override
 	public UndirectedGraph<Point2D, Segment2D> cap(double depth) {
+		if (depth < 0) {
+			throw new UnsupportedOperationException("Negative depth in not implemented yet");
+		}
 //		SimpleGraph<Point2D, Segment2D> graph = new SimpleGraph<>(Segment2D::new);
 //		Point2D previous = null;
 //		Loop<Corner> corners = skeleton.capCopy(depth).get(0);
@@ -123,7 +137,6 @@ public class TwakStraightSkeleton implements StraightSkeleton {
 //		}
 //		graph.addEdge(previous, first);
 //		return graph;
-		System.out.println();
 		return new TwakPolygonShrinker(graph(), originalEdges, depth).asGraph();
 	}
 

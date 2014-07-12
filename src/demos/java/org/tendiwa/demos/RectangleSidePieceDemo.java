@@ -1,8 +1,7 @@
-package tests.painting;
+package org.tendiwa.demos;
 
 import com.google.inject.Inject;
 import org.tendiwa.core.Directions;
-import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.extensions.DrawingRectangleSidePiece;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Rectangle;

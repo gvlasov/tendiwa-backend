@@ -1,8 +1,7 @@
-package tests.painting;
+package org.tendiwa.demos;
 
 import com.google.inject.Inject;
 import org.tendiwa.core.*;
-import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.DrawingAlgorithm;
 import org.tendiwa.drawing.extensions.DrawingRectangleSystem;
 import org.tendiwa.drawing.TestCanvas;
@@ -12,12 +11,12 @@ import org.tendiwa.geometry.extensions.RecursivelySplitRectangleSystemFactory;
 
 import java.awt.*;
 
-public class GrowingRectangleSystemDrawTest implements Runnable {
+public class GrowingRectangleSystemDemo implements Runnable {
     @Inject
     TestCanvas canvas;
 
     public static void main(String[] args) {
-        Demos.run(GrowingRectangleSystemDrawTest.class);
+        Demos.run(GrowingRectangleSystemDemo.class);
     }
 
     @Override

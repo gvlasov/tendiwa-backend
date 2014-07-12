@@ -1,4 +1,4 @@
-package org.tendiwa.demos.settlements;
+package org.tendiwa.data;
 
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Segment2D;

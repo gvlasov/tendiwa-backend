@@ -10,6 +10,7 @@ import org.jgrapht.graph.UnmodifiableUndirectedGraph;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.Vectors2D;
 import org.tendiwa.graphs.MinimalCycle;
 
 import java.util.*;
@@ -26,7 +27,6 @@ public class NetworkWithinCycle {
 	private final SimpleGraph<Point2D, Segment2D> relevantNetwork;
 	private final Set<Point2D> cycleNodes;
 	private final NetworkToBlocks blockDivision;
-	private TestCanvas canvas;
 	private final boolean favourAxisAlignedSegments;
 	private final SimpleGraph<Point2D, Segment2D> secRoadNetwork;
 	private MinimalCycle<Point2D, Segment2D> minimalCycle;
@@ -130,7 +130,6 @@ public class NetworkWithinCycle {
 		double secondaryRoadNetworkRoadLengthDeviation,
 		int maxNumOfStartPoints,
 		Random random,
-		TestCanvas canvas,
 		boolean favourAxisAlignedSegments
 	) {
 		this.minimalCycle = minimalCycle;
@@ -145,7 +144,6 @@ public class NetworkWithinCycle {
 		this.maxNumOfStartPoints = maxNumOfStartPoints;
 
 		relevantNetwork = graph;
-		this.canvas = canvas;
 		this.favourAxisAlignedSegments = favourAxisAlignedSegments;
 		secRoadNetwork = new SimpleGraph<>(graph.getEdgeFactory());
 
@@ -261,10 +259,13 @@ public class NetworkWithinCycle {
 	 *
 	 * @param nodes
 	 * 	An initial set of nodes.
-	 * @return A set of all nodes from the initial set that have a degree of 1.
+	 * @return The same modified set of all nodes from the initial set that have a degree of 1.
 	 */
 	private Set<DirectionFromPoint> removeMultidegreeFilamentEnds(Set<DirectionFromPoint> nodes) {
 		Iterator<DirectionFromPoint> iterator = nodes.iterator();
+		if (nodes.isEmpty()) {
+			return nodes;
+		}
 		for (
 			DirectionFromPoint point = iterator.next();
 			iterator.hasNext();
@@ -368,7 +369,7 @@ public class NetworkWithinCycle {
 		double dx = roadLength * Math.cos(direction);
 		double dy = roadLength * Math.sin(direction);
 		Point2D targetNode = new Point2D(source.x + dx, source.y + dy);
-		SnapEvent snapEvent = new SnapTest(snapSize, source, targetNode, relevantNetwork, canvas).snap();
+		SnapEvent snapEvent = new SnapTest(snapSize, source, targetNode, relevantNetwork).snap();
 		if (source.equals(snapEvent.targetNode)) {
 			assert false;
 		}
@@ -470,8 +471,11 @@ public class NetworkWithinCycle {
 		}
 		assert !road.start.equals(point) : "point is start";
 		assert !road.end.equals(point) : "point is end";
-		assert road.start.distanceTo(point) > 0.1 : road.start.distanceTo(point) + " " + road.start.distanceTo(road.end);
-		assert road.end.distanceTo(point) > 0.1 : road.end.distanceTo(point) + " " + road.start.distanceTo(road.end);
+		assert road.start.distanceTo(point) > Vectors2D.EPSILON : road.start.distanceTo(point) + " " + road.start.distanceTo
+			(road
+				.end);
+		assert road.end.distanceTo(point) > Vectors2D.EPSILON : road.end.distanceTo(point) + " " + road.start.distanceTo
+			(road.end);
 		relevantNetwork.removeEdge(road);
 		relevantNetwork.addVertex(point);
 		addRoad(road.start, point);

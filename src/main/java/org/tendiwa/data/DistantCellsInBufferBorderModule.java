@@ -1,4 +1,4 @@
-package org.tendiwa.demos;
+package org.tendiwa.data;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -12,10 +12,6 @@ import org.tendiwa.geometry.extensions.ChebyshevDistanceBufferBorder;
 import static com.google.inject.name.Names.named;
 import static org.tendiwa.geometry.DSL.rectangle;
 
-/**
- * Config for {@link org.tendiwa.geometry.DistantCellsInBufferBorderTest}.
- */
-@SuppressWarnings("unused")
 public class DistantCellsInBufferBorderModule extends AbstractModule {
 
     @Override

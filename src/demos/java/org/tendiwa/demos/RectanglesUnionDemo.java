@@ -1,8 +1,7 @@
-package tests.painting;
+package org.tendiwa.demos;
 
 import com.google.inject.Inject;
 import org.jgrapht.graph.SimpleGraph;
-import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.extensions.DrawingRectangle;
 import org.tendiwa.drawing.extensions.DrawingRectangleSystem;
 import org.tendiwa.drawing.TestCanvas;

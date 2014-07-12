@@ -15,7 +15,7 @@ public class Segment2DTest {
 			new Point2D(0, 4),
 			new Point2D(4, 0)
 		);
-		assertEquals(line1.intersection(line2), new Point2D(2, 2));
+		assertEquals(new Point2D(2, 2), line1.intersection(line2));
 	}
 
 	@Test

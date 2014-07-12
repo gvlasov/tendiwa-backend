@@ -1,15 +1,9 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.*;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
-import org.tendiwa.drawing.Colors;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingMinimalCycle;
-import org.tendiwa.drawing.extensions.DrawingPoint2D;
-import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
@@ -106,6 +100,8 @@ public class PolygonShrinker {
 				ImmutableSet.copyOf(cycle.vertexList())
 			);
 			assert !edgeToFace.containsKey(originalFaceEdge) : originalFaceEdge;
+			// None of faces may include more than 1 original edge.
+			assert Lists.newArrayList(cycle).stream().allMatch(p->!unusedEdges.contains(p));
 			edgeToFace.put(originalFaceEdge, cycle);
 		}
 //		assert edges.size() == edgeToFace.size() : edges.size() + " " + edgeToFace.size();

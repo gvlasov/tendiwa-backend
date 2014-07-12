@@ -1,20 +1,19 @@
-package tests.painting;
+package org.tendiwa.demos;
 
 import com.google.inject.Inject;
 import org.tendiwa.core.FuckingTrailRectangleSystem;
 import org.tendiwa.core.meta.Range;
-import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.extensions.DrawingRectangleSystem;
 import org.tendiwa.drawing.TestCanvas;
 
 import java.awt.*;
 
-public class TrailingRectangleSystemDrawTest implements Runnable {
+public class TrailingRectangleSystemDemo implements Runnable {
     @Inject
     TestCanvas canvas;
 
     public static void main(String[] args) {
-        Demos.run(TrailingRectangleSystemDrawTest.class);
+        Demos.run(TrailingRectangleSystemDemo.class);
     }
 
     public void run() {

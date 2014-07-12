@@ -1,7 +1,6 @@
-package tests.painting;
+package org.tendiwa.demos;
 
 import com.google.inject.Inject;
-import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.GifBuilder;
 import org.tendiwa.drawing.GifBuilderFactory;
 import org.tendiwa.drawing.TestCanvas;

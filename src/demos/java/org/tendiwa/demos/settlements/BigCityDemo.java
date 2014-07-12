@@ -2,8 +2,8 @@ package org.tendiwa.demos.settlements;
 
 import com.google.inject.Inject;
 import org.jgrapht.graph.SimpleGraph;
+import org.tendiwa.data.SampleGraph;
 import org.tendiwa.demos.Demos;
-import org.tendiwa.drawing.GraphExplorer;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingEnclosedBlock;
 import org.tendiwa.drawing.extensions.DrawingModule;
@@ -13,7 +13,6 @@ import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.settlements.*;
 
 import java.awt.Color;
-import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -34,17 +33,18 @@ public class BigCityDemo implements Runnable {
 //        canvas.draw(graph, DrawingGraph.multicoloredEdges());
 //        for (int i = 0; i < 100; i++) {
 		TestCanvas.canvas = canvas;
-		IntStream.range(71, 72).forEach(seed -> {
+		IntStream.range(0, 1).forEach(seed -> {
+			System.out.println(seed);
 			City city = new CityBuilder(graph)
 				.withDefaults()
-				.withMaxStartPointsPerCycle(5)
-				.withRoadsFromPoint(2)
+				.withMaxStartPointsPerCycle(1)
+				.withRoadsFromPoint(4)
 				.withSecondaryRoadNetworkDeviationAngle(0.3)
-				.withConnectivity(0.1)
-				.withRoadSegmentLength(30, 45)
-				.withSnapSize(4)
+				.withConnectivity(0)
+				.withRoadSegmentLength(40, 50)
+				.withSnapSize(1)
 				.withSeed(seed)
-				.withAxisAlignedSegments(true)
+				.withAxisAlignedSegments(false)
 				.build();
 //		for (NetworkWithinCycle network : city.getCells()) {
 //			for (Point2D filamentEnd : network.filamentEnds()) {
@@ -70,8 +70,8 @@ public class BigCityDemo implements Runnable {
 			Set<EnclosedBlock> encBlocks = city
 				.getBlocks()
 				.stream()
-				.flatMap(b -> b.shrinkToRegions(3.3, 0).stream())
-				.flatMap(b -> b.subdivideLots(12, 7, 0).stream())
+				.flatMap(b -> b.shrinkToRegions(3.3, seed).stream())
+				.flatMap(b -> b.subdivideLots(20, 20, 1).stream())
 				.collect(Collectors.toSet());
 			for (EnclosedBlock block : encBlocks) {
 				canvas.draw(block, DrawingEnclosedBlock.withColor(Color.lightGray));

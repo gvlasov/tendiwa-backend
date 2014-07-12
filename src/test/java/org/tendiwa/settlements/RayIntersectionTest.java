@@ -30,11 +30,11 @@ public class RayIntersectionTest {
 
 	@Test
 	public void linesIntersectWhenSegmentsDoNot() {
-
 		Segment2D a = Segment2D.create(0, 0, 4, 1);
 		Segment2D b = Segment2D.create(3, 5, 5, 2);
 		RayIntersection intersection = new RayIntersection(a, b);
-		assertTrue(intersection.intersects && intersection.r > 1);
+		assertTrue(intersection.intersects);
+		assertTrue(!intersection.segmentsIntersect());
 	}
 
 	@Test

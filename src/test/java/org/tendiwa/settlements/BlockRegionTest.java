@@ -1,18 +1,11 @@
 package org.tendiwa.settlements;
 
 import org.junit.Test;
-import org.tendiwa.demos.Demos;
-import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingEnclosedBlock;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.extensions.PointTrail;
 
-import java.awt.Color;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
-
-import static org.junit.Assert.*;
 
 public class BlockRegionTest {
 	@Test

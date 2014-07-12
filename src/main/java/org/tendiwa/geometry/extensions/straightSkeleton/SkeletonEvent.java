@@ -2,7 +2,6 @@ package org.tendiwa.geometry.extensions.straightSkeleton;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
-import com.sun.istack.internal.NotNull;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Point2D;
 
@@ -84,7 +83,7 @@ public class SkeletonEvent extends Point2D implements Comparable<SkeletonEvent> 
 	}
 
 	@Override
-	public int compareTo(@NotNull SkeletonEvent o) {
+	public int compareTo(SkeletonEvent o) {
 		if (distanceToOriginalEdge > o.distanceToOriginalEdge) {
 			return 1;
 		} else if (distanceToOriginalEdge < o.distanceToOriginalEdge) {

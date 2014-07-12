@@ -76,7 +76,7 @@ public class CoastlineDemo implements Runnable {
 		DrawingAlgorithm<Cell> grassColor = DrawingCell.withColor(Color.GREEN);
 		DrawingAlgorithm<Cell> waterColor = DrawingCell.withColor(BLUE);
 
-		CityBoundsFactory boundsFactory = new CityBoundsFactory(water, this);
+		CityBoundsFactory boundsFactory = new CityBoundsFactory(water);
 		Rectangle worldSizeStretchedBy1 = worldSize.stretch(1);
 		canvas = new TestCanvas(2, worldSize.x + worldSize.getMaxX(), worldSize.y + worldSize.getMaxY());
 		canvas.draw(borderWithCityCenters, DrawingCellSet.withColor(Color.PINK));

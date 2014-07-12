@@ -7,7 +7,6 @@ import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.core.Direction;
 import org.tendiwa.core.Directions;
-import org.tendiwa.demos.CoastlineDemo;
 import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.extensions.CachedCellSet;
 import org.tendiwa.geometry.extensions.ChebyshevDistanceBufferBorder;
@@ -17,12 +16,10 @@ import org.tendiwa.pathfinding.dijkstra.PathTable;
  * Creates graphs used as a base for a {@link City}.
  */
 public class CityBoundsFactory {
-    private final CoastlineDemo demo;
     private final CellSet water;
 
-    public CityBoundsFactory(CellSet water, CoastlineDemo demo) {
+    public CityBoundsFactory(CellSet water) {
         this.water = water;
-        this.demo = demo;
     }
 
     /**

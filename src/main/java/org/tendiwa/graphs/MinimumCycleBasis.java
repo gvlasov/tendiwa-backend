@@ -303,7 +303,6 @@ public class MinimumCycleBasis<V, E> {
 				positionAdapter.getY(vcurr) - positionAdapter.getY(vprev)
 			};
 		}
-		boolean currWasReversed = supportingLineUsed;
 
 		V vnext = null;
 		for (V vertex : neighborIndex.neighborsOf(vcurr)) {
@@ -319,6 +318,7 @@ public class MinimumCycleBasis<V, E> {
 			positionAdapter.getX(vnext) - positionAdapter.getX(vcurr),
 			positionAdapter.getY(vnext) - positionAdapter.getY(vcurr)
 		};
+		boolean currWasReversed = dotProduct(dcurr, dnext) < 1;
 
 		double vcurrIsConvex = perpDotProduct(dnext, dcurr);
 		// There's no notion of almost parallel vectors in the original algorithm description,
@@ -338,29 +338,20 @@ public class MinimumCycleBasis<V, E> {
 			if (isNextConsideredParallel) {
 				// When vectors dcurr and dnext are almost parallel, we need a distinct way of finding the next
 				// (counter-)clockwise vertex.
-				double positionToCurr = pointPositionRelativeToLine(
-					positionAdapter.getX(vadj), positionAdapter.getY(vadj),
-					positionAdapter.getX(vcurr), positionAdapter.getY(vcurr),
-					positionAdapter.getX(vnext), positionAdapter.getY(vnext)
-				);
-				double positionToPrev = pointPositionRelativeToLine(
-					positionAdapter.getX(vadj), positionAdapter.getY(vadj),
-					positionAdapter.getX(vcurr) - dcurr[0], positionAdapter.getY(vcurr) - dcurr[1],
-					positionAdapter.getX(vcurr), positionAdapter.getY(vcurr)
-				);
 				double angle = angleBetweenVectors(dcurr, dadj, clockwise);
 				if (
 //					clockwise && positionToCurr < 0 && positionToPrev < 0
 //						|| !clockwise && positionToCurr > 0 && positionToPrev > 0
 					currWasReversed ? angle > Math.PI : angle < Math.PI
 					) {
-					assert Math.abs(angle - Math.PI) > Vectors2D.EPSILON;
+//					assert Math.abs(angle - Math.PI) > Vectors2D.EPSILON;
+//					assert !areParallel(dcurr, dadj);
 					vnext = vadj;
 					dnext = dadj;
 					vcurrIsConvex = perpDotProduct(dnext, dcurr);
 					isNextConsideredParallel = areParallel(dcurr, dnext);
-					supportingLineUsed = false;
-					assert !isNextConsideredParallel; // Probably...
+					currWasReversed = false;
+//					assert !isNextConsideredParallel; // Probably...
 				}
 			} else if (vcurrIsConvex < 0) {
 				boolean equation = clockwise ?

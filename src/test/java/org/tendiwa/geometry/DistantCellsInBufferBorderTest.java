@@ -6,7 +6,7 @@ import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.tendiwa.demos.DistantCellsInBufferBorderModule;
+import org.tendiwa.data.DistantCellsInBufferBorderModule;
 
 import java.util.HashSet;
 

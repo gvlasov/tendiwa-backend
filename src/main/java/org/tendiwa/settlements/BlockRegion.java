@@ -4,6 +4,7 @@ import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.hash.TObjectDoubleHashMap;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingGraph;
+import org.tendiwa.drawing.extensions.DrawingPoint2D;
 import org.tendiwa.geometry.GeometryException;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Vector2D;
@@ -118,17 +119,15 @@ public class BlockRegion extends EnclosedBlock {
 		Queue<BlockRegion> queue = new LinkedList<>();
 		Set<BlockRegion> output = new HashSet<>();
 		queue.add(this);
-		double splitSize;
 		while (!queue.isEmpty()) {
 			BlockRegion region = queue.poll();
 			LongestRoadAndNonRoadPair longest = region.getLongestEdges();
 			Node longestEdgeStart = longest.road;
+			double splitSize;
 			if (longestEdgeStart == null || region.getRoadLength(longestEdgeStart) < lotWidth * 2) {
 				longestEdgeStart = longest.nonRoad;
 				if (longestEdgeStart == null || region.getRoadLength(longestEdgeStart) < lotDepth * 2) {
 					output.add(region);
-					TestCanvas.canvas.draw(TwakStraightSkeleton.create(region.toVertexList()).cap(3),
-						DrawingGraph.withColor(Color.black));
 					continue;
 				} else {
 					splitSize = lotDepth;

@@ -140,7 +140,6 @@ public class DrawingGraph {
 						shape.getEdgeTarget(edge)
 					), DrawingSegment2D.withColor(nextColor));
 				}
-				System.out.println(2);
 			}
 //			for (Point2D p : graph.vertexSet()) {
 //				canvas.drawString(

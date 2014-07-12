@@ -87,8 +87,7 @@ public class GraphLooseEndsCloser {
 				Math.cos(end.direction) * snapSize,
 				Math.sin(end.direction) * snapSize
 			),
-			sourceGraph,
-			null
+			sourceGraph
 		).snap();
 		switch (test.eventType) {
 			case NO_SNAP:

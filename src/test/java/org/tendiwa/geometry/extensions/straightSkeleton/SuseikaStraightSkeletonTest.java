@@ -1,12 +1,10 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
 import org.junit.Test;
-import org.tendiwa.demos.geometry.StraightSkeletonDemo;
 import org.tendiwa.geometry.Point2D;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
