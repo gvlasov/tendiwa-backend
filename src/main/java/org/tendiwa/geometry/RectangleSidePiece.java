@@ -1,9 +1,9 @@
 package org.tendiwa.geometry;
 
-import com.google.common.collect.ImmutableCollection;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSet.Builder;
-import org.tendiwa.core.*;
+import org.tendiwa.core.CardinalDirection;
+import org.tendiwa.core.Directions;
+import org.tendiwa.core.OrdinalDirection;
+import org.tendiwa.core.Orientation;
 import org.tendiwa.core.meta.CellPosition;
 import org.tendiwa.core.meta.Range;
 

@@ -37,42 +37,23 @@ public class BigCityDemo implements Runnable {
 			System.out.println(seed);
 			City city = new CityBuilder(graph)
 				.withDefaults()
-				.withMaxStartPointsPerCycle(1)
+				.withMaxStartPointsPerCycle(5)
 				.withRoadsFromPoint(4)
-				.withSecondaryRoadNetworkDeviationAngle(0.3)
-				.withConnectivity(0)
-				.withRoadSegmentLength(40, 50)
-				.withSnapSize(1)
+				.withSecondaryRoadNetworkDeviationAngle(0.1)
+				.withConnectivity(0.3)
+				.withRoadSegmentLength(30, 35)
+				.withSnapSize(4)
 				.withSeed(seed)
-				.withAxisAlignedSegments(false)
+				.withAxisAlignedSegments(true)
 				.build();
-//		for (NetworkWithinCycle network : city.getCells()) {
-//			for (Point2D filamentEnd : network.filamentEnds()) {
-//				canvas.draw(filamentEnd, DrawingPoint2D.withColorAndSize(Color.green, 5));
-//			}
-//		}
-//		canvas.draw(city, new CityDrawer());
-
-//        city
-//                .getCells()
-//                .stream()
-//                .flatMap(network -> network.exitsOnCycles().stream())
-//                .forEach(point -> canvas.draw(point.toCell(), DrawingCell.withColorAndSize(Color.GREEN, 4)));
-//		PolygonShrinker.canvas = canvas;
-			Set<SecondaryRoadNetworkBlock> blocks = city
-				.getBlocks();
-//			.stream()
-//			.flatMap(b -> b.shrinkToRegions(6, new Random(0), canvas).stream())
-//			.flatMap(b -> b.subdivideLots(8, 8, 0).stream())
-//			.collect(Collectors.toSet());
-
 
 			Set<EnclosedBlock> encBlocks = city
 				.getBlocks()
 				.stream()
 				.flatMap(b -> b.shrinkToRegions(3.3, seed).stream())
-				.flatMap(b -> b.subdivideLots(20, 20, 1).stream())
+				.flatMap(b -> b.subdivideLots(10, 10, 1).stream())
 				.collect(Collectors.toSet());
+			canvas.draw(city, new CityDrawer());
 			for (EnclosedBlock block : encBlocks) {
 				canvas.draw(block, DrawingEnclosedBlock.withColor(Color.lightGray));
 			}

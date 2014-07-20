@@ -111,7 +111,8 @@ public class Segment2D {
 	}
 
 	/**
-	 * Checks if this segment intersects another segment. This is less expensive than finding the intersection point with
+	 * Checks if this segment intersects another segment. This is less expensive than finding the intersection point
+	 * with
 	 * {@link #intersection(Segment2D)}.
 	 * <p>
 	 * An intersection at ends of lines doesn't count for an intersection.
@@ -170,5 +171,12 @@ public class Segment2D {
 			new Point2D(start.x + transitionX, start.y + transitionY),
 			new Point2D(end.x + transitionX, end.y + transitionY)
 		);
+	}
+
+	public double projectY(double y) {
+		if (dy() == 0) {
+			throw new ArithmeticException("Can't project y in a horizontal segment");
+		}
+		return start.x + dx() / dy() * (y - start.y);
 	}
 }

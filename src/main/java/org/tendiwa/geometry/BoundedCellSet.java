@@ -1,6 +1,5 @@
 package org.tendiwa.geometry;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.Iterator;
@@ -8,7 +7,7 @@ import java.util.Iterator;
 /**
  * A finite set of cells. All the cells reside within certain rectangle.
  * <p>
- * Note that it is still up to implementor whether to allow cells out of bounds to be present in the set or not.
+ * Note that it is still up to implementer whether to allow cells out of bounds to be present in the set or not.
  */
 public interface BoundedCellSet extends FiniteCellSet {
     /**

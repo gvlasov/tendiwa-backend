@@ -27,6 +27,6 @@ public class IntershapeNetworkTest {
 			.getGraph()
 			.edgeSet()
 			.size();
-		assertTrue(numberOfEdges > 3);
+		assertTrue(String.valueOf(numberOfEdges), numberOfEdges > 3);
 	}
 }

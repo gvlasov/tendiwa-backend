@@ -34,7 +34,6 @@ public class NetworkToBlocks {
 				.withFilamentEnds(filamentEnds)
 				.mutateGraph(relevantNetwork);
 		}
-		TestCanvas.canvas.draw(relevantNetwork, DrawingGraph.basis(Color.black, Color.black, Color.black));
 		enclosedBlocks = new MinimumCycleBasis<>(relevantNetwork, Point2DVertexPositionAdapter.get())
 			.minimalCyclesSet()
 			.stream()

@@ -9,7 +9,7 @@ import static java.util.Objects.requireNonNull;
 /**
  * A CellSet that holds a finite number of {@link org.tendiwa.geometry.Cell}s.
  * <p>
- * Stores buffer border for an area #width #height cells large,
+ * Stores buffer border for an area {@link #getBounds()}
  * delegating to #source if buffer border status for a cell has  not  yet  been  computed.
  */
 @SuppressWarnings("unused")

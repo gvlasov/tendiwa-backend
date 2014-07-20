@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Vector2D;
+import org.tendiwa.geometry.Vectors2D;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -49,7 +50,7 @@ public class CycleExtraVerticesRemover {
 		return previous != null &&
 			current.distanceToLine(
 				new Segment2D(previous, next)
-			) < SuseikaStraightSkeleton.EPSILON
+			) < Vectors2D.EPSILON
 			&& !isMiddlePointPointy(previous, current, next);
 	}
 

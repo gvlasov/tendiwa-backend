@@ -28,15 +28,6 @@ public class RectangleSidePieceTest {
 	}
 
 	@Test
-	public void touches() {
-		// TODO: This is a test for another class.
-		Rectangle r1 = new Rectangle(4, 5, 5, 5);
-		Rectangle r2 = r1
-			.getSideAsSidePiece(Directions.E)
-			.createRectangle(5);
-		assertTrue(r1.touches(r2.getSideAsSidePiece(Directions.W)));
-	}
-	@Test
 	public void contains() {
 		RectangleSidePiece bigPiece = new RectangleSidePiece(
 			Directions.N,

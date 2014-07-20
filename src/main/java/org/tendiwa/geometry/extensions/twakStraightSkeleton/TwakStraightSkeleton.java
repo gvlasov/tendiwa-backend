@@ -26,7 +26,7 @@ public class TwakStraightSkeleton implements StraightSkeleton {
 	private final List<Segment2D> originalEdges;
 
 	public static StraightSkeleton create(List<Point2D> vertices) {
-		assert vertices.size() > 2 : "list of " + vertices.size();
+		assert vertices.size() > 2 : "Too little vertices: " + vertices.size();
 		if (JTSUtils.isYDownCCW(vertices)) {
 			vertices = Lists.reverse(vertices);
 		}
