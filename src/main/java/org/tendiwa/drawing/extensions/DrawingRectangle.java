@@ -16,6 +16,17 @@ public class DrawingRectangle {
             }
         };
     }
+	public static DrawingAlgorithm<Placeable> withColorAndBorder(final Color fillColor, final Color borderColor) {
+		return (shape, canvas) -> {
+			for (Rectangle r : shape.getRectangles()) {
+				canvas.drawRectangle(r, fillColor);
+				canvas.drawLine(r.x, r.y, r.x+r.width-1, r.y, borderColor);
+				canvas.drawLine(r.x, r.y, r.x, r.y+r.height-1, borderColor);
+				canvas.drawLine(r.x+r.width-1, r.y, r.x+r.width-1, r.y+r.height-1, borderColor);
+				canvas.drawLine(r.x, r.y+r.height-1, r.x+r.width-1, r.y+r.height-1, borderColor);
+			}
+		};
+	}
 
     public static DrawingAlgorithm<Placeable> withColorLoop(final Color... colors) {
         final Iterator<Color> iter = Iterables.cycle(colors).iterator();

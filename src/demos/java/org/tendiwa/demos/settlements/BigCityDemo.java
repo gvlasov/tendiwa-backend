@@ -1,5 +1,6 @@
 package org.tendiwa.demos.settlements;
 
+import com.google.common.collect.Iterators;
 import com.google.inject.Inject;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.data.SampleGraph;
@@ -7,12 +8,21 @@ import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingEnclosedBlock;
 import org.tendiwa.drawing.extensions.DrawingModule;
+import org.tendiwa.drawing.extensions.DrawingRectangle;
 import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Recs;
+import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.extensions.PolygonRasterizer;
+import org.tendiwa.geometry.extensions.daveedvMaxRec.MaximalCellRectangleFinder;
+import org.tendiwa.geometry.extensions.daveedvMaxRec.MaximalRectanlges;
+import org.tendiwa.geometry.extensions.twakStraightSkeleton.utils.DRectangle;
 import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.settlements.*;
 
 import java.awt.Color;
+import java.util.Iterator;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -34,17 +44,16 @@ public class BigCityDemo implements Runnable {
 //        for (int i = 0; i < 100; i++) {
 		TestCanvas.canvas = canvas;
 		IntStream.range(0, 1).forEach(seed -> {
-			System.out.println(seed);
 			City city = new CityBuilder(graph)
 				.withDefaults()
 				.withMaxStartPointsPerCycle(5)
 				.withRoadsFromPoint(4)
-				.withSecondaryRoadNetworkDeviationAngle(0.1)
+				.withSecondaryRoadNetworkDeviationAngle(1)
 				.withConnectivity(0.3)
 				.withRoadSegmentLength(30, 35)
 				.withSnapSize(4)
 				.withSeed(seed)
-				.withAxisAlignedSegments(true)
+				.withAxisAlignedSegments(false)
 				.build();
 
 			Set<EnclosedBlock> encBlocks = city
@@ -53,11 +62,31 @@ public class BigCityDemo implements Runnable {
 				.flatMap(b -> b.shrinkToRegions(3.3, seed).stream())
 				.flatMap(b -> b.subdivideLots(10, 10, 1).stream())
 				.collect(Collectors.toSet());
+			Set<RectangleWithNeighbors> recGroups = encBlocks.stream()
+				.map(lot -> PolygonRasterizer.rasterize(lot.toPolygon()))
+				.map(rasterized -> MaximalRectanlges.findUntilSmallEnoughMutatingBitmap(rasterized, 9))
+				.filter(list->!list.isEmpty())
+				.map(list -> new RectangleWithNeighbors(list.get(0), list.subList(1, list.size())))
+				.collect(Collectors.toSet());
+
 			canvas.draw(city, new CityDrawer());
+			Iterator<Color> colors = Iterators.cycle(Color.green, Color.blue, Color.cyan, Color.orange, Color.magenta);
+			for (RectangleWithNeighbors rectangleWithNeighbors : recGroups) {
+				canvas.draw(
+					rectangleWithNeighbors.rectangle,
+					DrawingRectangle.withColorAndBorder(Color.blue, Color.gray)
+				);
+				for (Rectangle neighbor : rectangleWithNeighbors.neighbors) {
+					canvas.draw(
+						neighbor,
+						DrawingRectangle.withColorAndBorder(Color.magenta, Color.magenta.darker())
+					);
+				}
+
+			}
 			for (EnclosedBlock block : encBlocks) {
 				canvas.draw(block, DrawingEnclosedBlock.withColor(Color.lightGray));
 			}
 		});
-
 	}
 }

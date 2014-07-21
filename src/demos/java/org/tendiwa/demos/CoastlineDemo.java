@@ -78,7 +78,8 @@ public class CoastlineDemo implements Runnable {
 
 		CityBoundsFactory boundsFactory = new CityBoundsFactory(water);
 		Rectangle worldSizeStretchedBy1 = worldSize.stretch(1);
-		canvas = new TestCanvas(2, worldSize.x + worldSize.getMaxX(), worldSize.y + worldSize.getMaxY());
+		canvas = new TestCanvas(1, worldSize.x + worldSize.getMaxX(), worldSize.y + worldSize.getMaxY());
+		TestCanvas.canvas = canvas;
 		canvas.draw(borderWithCityCenters, DrawingCellSet.withColor(Color.PINK));
 		drawTerrain(worldSize, water, waterColor, grassColor);
 		chart.saveTime("Draw terrain");

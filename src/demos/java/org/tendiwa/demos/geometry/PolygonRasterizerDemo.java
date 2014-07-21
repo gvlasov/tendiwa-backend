@@ -2,8 +2,6 @@ package org.tendiwa.demos.geometry;
 
 import com.google.inject.Inject;
 import org.tendiwa.demos.Demos;
-import org.tendiwa.demos.geometry.polygons.ConvexAndReflexAmoeba;
-import org.tendiwa.demos.geometry.polygons.CutUpRing;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingCellSet;
 import org.tendiwa.drawing.extensions.DrawingModule;
@@ -26,7 +24,11 @@ public class PolygonRasterizerDemo implements Runnable {
 
 	@Override
 	public void run() {
-		List<Point2D> polygon = new ConvexAndReflexAmoeba();
+		List<Point2D> polygon = new PointTrail(20, 20)
+			.moveBy(40, 0)
+			.moveBy(0, 40)
+			.moveBy(-40, 0)
+			.points();
 		BoundedCellSet rasterizedPolygon = PolygonRasterizer.rasterize(polygon).toCellSet();
 		canvas.draw(rasterizedPolygon, DrawingCellSet.withColor(Color.red));
 

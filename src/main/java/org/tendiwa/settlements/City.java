@@ -162,9 +162,9 @@ public class City {
 			ImmutableCollection<Point2D> allIntersections = PlanarGraphEdgesSelfIntersection
 				.findAllIntersections(lowLevelRoadGraph);
             for (Point2D point : allIntersections) {
-                TestCanvas.canvas.draw(point.toCell(), DrawingCell.withColorAndSize(Color.RED, 8));
+                TestCanvas.canvas.draw(point.toCell(), DrawingCell.withColorAndSize(Color.RED, 4));
             }
-            TestCanvas.canvas.draw(lowLevelRoadGraph, DrawingGraph.withColor(Color.red));
+			TestCanvas.canvas.draw(lowLevelRoadGraph, DrawingGraph.withColor(Color.blue));
 			throw new IllegalArgumentException("Graph intersects itself");
 		}
 

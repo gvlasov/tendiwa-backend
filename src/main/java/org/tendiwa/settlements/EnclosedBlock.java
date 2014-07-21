@@ -2,9 +2,7 @@ package org.tendiwa.settlements;
 
 import org.tendiwa.geometry.Point2D;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class EnclosedBlock implements Iterable<Point2D> {
 	protected final Node startNode;
@@ -13,6 +11,16 @@ public class EnclosedBlock implements Iterable<Point2D> {
 	public EnclosedBlock(List<Point2D> outline) {
 		this.numberOfNodes = outline.size();
 		this.startNode = constructChainOfNodes(outline);
+	}
+
+	public List<Point2D> toPolygon() {
+		Node node = startNode;
+		List<Point2D> answer = new LinkedList<>();
+		do {
+			answer.add(node.point);
+			node = node.next;
+		} while (node != startNode);
+		return answer;
 	}
 
 	EnclosedBlock(Node startNode) {
