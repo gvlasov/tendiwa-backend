@@ -14,7 +14,7 @@ import org.tendiwa.geometry.extensions.ChebyshevDistanceBufferBorder;
 import org.tendiwa.pathfinding.dijkstra.PathTable;
 
 /**
- * Creates graphs used as a base for a {@link City}.
+ * Creates graphs used as a base for a {@link CityGeometry}.
  */
 public class CityBoundsFactory {
 	private final CellSet water;
@@ -97,13 +97,13 @@ public class CityBoundsFactory {
 	}
 
 	/**
-	 * Creates a new graph that can be used as a base for {@link org.tendiwa.settlements.City}.
+	 * Creates a new graph that can be used as a base for {@link CityGeometry}.
 	 *
 	 * @param startCell
 	 * 	A cell from which a City originates. Roughly denotes its final position.
 	 * @param maxCityRadius
 	 * 	A maximum radius of a Rectangle containing resulting City.
-	 * @return A new graph that can be used as a base for {@link org.tendiwa.settlements.City}.
+	 * @return A new graph that can be used as a base for {@link CityGeometry}.
 	 * @see org.tendiwa.settlements.CityBuilder
 	 */
 	public UndirectedGraph<Point2D, Segment2D> create(

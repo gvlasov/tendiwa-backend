@@ -7,7 +7,6 @@ import com.vividsolutions.jts.geom.Coordinate;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.graph.UnmodifiableUndirectedGraph;
-import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Vectors2D;
@@ -70,12 +69,12 @@ public class NetworkWithinCycle {
 
 	/**
 	 * @param graph
-	 * 	A preconstructed graph of low level roads, constructed by {@link City#constructCityCellGraph(org.tendiwa.graphs.MinimalCycle,
+	 * 	A preconstructed graph of low level roads, constructed by {@link CityGeometry#constructCityCellGraph(org.tendiwa.graphs.MinimalCycle,
 	 *    java.util.Set, java.util.Collection)}
 	 * @param minimalCycle
 	 * 	A MinimalCycle that contains this NetworkWithinCycle's secondary road network inside it.
 	 * @param filamentEdges
-	 * 	A collection of all the edges of a {@link org.tendiwa.settlements.City#lowLevelRoadGraph} that are not
+	 * 	A collection of all the edges of a {@link CityGeometry#lowLevelRoadGraph} that are not
 	 * 	part of any minimal cycles. The same collection is passed to all the CityCells.
 	 * @param roadsFromPoint
 	 * 	[Kelly figure 42, variable ParamDegree]
@@ -114,7 +113,7 @@ public class NetworkWithinCycle {
 	 * 	A NetworkWithinCycle is not guaranteed to have exactly {@code maxRoadsFromPoint} starting roads, because such
 	 * 	amount might not fit into a cell.
 	 * @param random
-	 * 	A seeded {@link java.util.Random} used to generate the parent {@link City}.
+	 * 	A seeded {@link java.util.Random} used to generate the parent {@link CityGeometry}.
 	 * @param favourAxisAlignedSegments
 	 * 	Whether you want segments to be as close to Math.PI/2*n angles as possible.
 	 */
@@ -316,7 +315,7 @@ public class NetworkWithinCycle {
 	 * [Kelly figure 42]
 	 *
 	 * @param edge
-	 * 	An edge of {@link City#lowLevelRoadGraph}.
+	 * 	An edge of {@link CityGeometry#lowLevelRoadGraph}.
 	 * @return An angle in radians perpendicular to {@code edge}. The angle is probably slightly deviated.
 	 */
 	private double deviatedBoundaryPerpendicular(Segment2D edge) {

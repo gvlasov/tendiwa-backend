@@ -19,7 +19,7 @@ import java.util.Collection;
 
 @RunWith(Parameterized.class)
 @UseModules(DrawingModule.class)
-public class CityTest {
+public class CityGeometryTest {
 
 	private final int pointsPerCycle;
 	private final int roadsFromPoint;
@@ -28,7 +28,7 @@ public class CityTest {
 	private final double[] segmentLength;
 	private final double snapSize;
 
-	public CityTest(
+	public CityGeometryTest(
 		int pointsPerCycle,
 		int roadsFromPoint,
 		double dAngle,

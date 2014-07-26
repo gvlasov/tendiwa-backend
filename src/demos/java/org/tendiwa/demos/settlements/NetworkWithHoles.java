@@ -6,7 +6,7 @@ import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
-import org.tendiwa.settlements.City;
+import org.tendiwa.settlements.CityGeometry;
 import org.tendiwa.settlements.CityBuilder;
 
 public class NetworkWithHoles implements Runnable {
@@ -29,10 +29,10 @@ public class NetworkWithHoles implements Runnable {
                 .vertex(7, new Point2D(70,30))
                 .cycle(4,5,6,7)
                 .graph();
-        City city = new CityBuilder(graph)
+        CityGeometry cityGeometry = new CityBuilder(graph)
                 .withDefaults()
                 .build();
-        canvas.draw(city, new CityDrawer());
+        canvas.draw(cityGeometry, new CityDrawer());
 
     }
 }

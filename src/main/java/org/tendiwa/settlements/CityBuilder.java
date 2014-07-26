@@ -1,14 +1,13 @@
 package org.tendiwa.settlements;
 
 import org.jgrapht.UndirectedGraph;
-import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 
 import java.util.Random;
 
 /**
- * A fluent builder to create instances of {@link City}.
+ * A fluent builder to create instances of {@link CityGeometry}.
  */
 public class CityBuilder {
 	/**
@@ -70,7 +69,7 @@ public class CityBuilder {
 	 *
 	 * @param graph
 	 * 	The high level road graph of a city.
-	 * @see City#highLevelRoadGraph
+	 * @see CityGeometry#highLevelRoadGraph
 	 * @see [Kelly 4.2.0]
 	 */
 	public CityBuilder(UndirectedGraph<Point2D, Segment2D> graph) {
@@ -229,7 +228,7 @@ public class CityBuilder {
 	}
 
 	@SuppressWarnings("unused")
-	public City build() {
+	public CityGeometry build() {
 		if (graph == null) {
 			throw new IllegalStateException("Graph not set");
 		}
@@ -267,7 +266,7 @@ public class CityBuilder {
 			throw new IllegalStateException("seed not set");
 		}
 		final Random random = new Random(4);
-		return new City(
+		return new CityGeometry(
 			new RoadGraph(graph.vertexSet(), graph.edgeSet()),
 			sampleFan -> {
 				int rand = random.nextInt(sampleFan.size());

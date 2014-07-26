@@ -5,7 +5,7 @@ import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
-import org.tendiwa.settlements.City;
+import org.tendiwa.settlements.CityGeometry;
 import org.tendiwa.settlements.CityBuilder;
 
 public class VariousCityGenerationDemo {
@@ -26,10 +26,10 @@ public class VariousCityGenerationDemo {
 //                .edge(6, 10)
                 .cycle(0, 1, 2, 3, 4)
                 .cycle(3, 5, 9, 8, 7, 6, 1, 2);
-        City city = new CityBuilder(gc.graph())
+        CityGeometry cityGeometry = new CityBuilder(gc.graph())
                 .withDefaults()
                 .withRoadsFromPoint(5)
                 .build();
-        canvas.draw(city, new CityDrawer());
+        canvas.draw(cityGeometry, new CityDrawer());
     }
 }

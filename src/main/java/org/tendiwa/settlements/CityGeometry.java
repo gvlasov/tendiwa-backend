@@ -19,7 +19,7 @@ import java.util.*;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
-public class City {
+public class CityGeometry {
 	/**
 	 * [Kelly section 4.2]
 	 * <p>
@@ -103,7 +103,7 @@ public class City {
 	 * 	If {@code numberOfSamples <= 0} or if {@code deviationAngle == 0 && numberOfSamples >= 1}, or if
 	 * 	#lowLevelRoadGraph produced from #highLevelRoadGraph intersects itself.
 	 */
-	public City(
+	public CityGeometry(
 		RoadGraph highLevelRoadGraph,
 		SampleSelectionStrategy strategy,
 		double sampleRadius,

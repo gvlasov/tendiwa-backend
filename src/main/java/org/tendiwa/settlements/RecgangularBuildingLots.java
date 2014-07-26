@@ -11,8 +11,8 @@ public class RecgangularBuildingLots {
 		throw new UnsupportedOperationException();
 	}
 
-	public static Set<RectangleWithNeighbors> findIn(City city) {
-		Set<EnclosedBlock> encBlocks = city
+	public static Set<RectangleWithNeighbors> findIn(CityGeometry cityGeometry) {
+		Set<EnclosedBlock> encBlocks = cityGeometry
 			.getBlocks()
 			.stream()
 			.flatMap(b -> b.shrinkToRegions(3.3, 0).stream())

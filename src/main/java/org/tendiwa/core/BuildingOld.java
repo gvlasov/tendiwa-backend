@@ -12,8 +12,8 @@ import org.tendiwa.geometry.extensions.RecursivelySplitRectangleSystemFactory;
 
 import java.util.*;
 
-public abstract class Building {
-private static HashMap<String, Class<? extends Building>> buildingClasses;
+public abstract class BuildingOld {
+private static HashMap<String, Class<? extends BuildingOld>> buildingClasses;
 protected final int x;
 protected final int y;
 protected final int width;
@@ -33,7 +33,7 @@ protected Cell frontDoor;
  */
 private ArrayList<Integer> hallways = new ArrayList<>();
 
-protected Building(BuildingPlace bp, CardinalDirection direction) {
+protected BuildingOld(BuildingPlace bp, CardinalDirection direction) {
 	x = bp.getX();
 	y = bp.getY();
 	width = bp.getWidth();
@@ -55,7 +55,7 @@ protected Building(BuildingPlace bp, CardinalDirection direction) {
  * @param frontSide
  * 	From which cardinal side is the front door.
  */
-public Building(Location location, BuildingPlace place, CardinalDirection frontSide) {
+public BuildingOld(Location location, BuildingPlace place, CardinalDirection frontSide) {
 	this.x = place.getX() + 1;
 	this.y = place.getY() + 1;
 	this.width = place.getWidth() - 2;
@@ -74,7 +74,7 @@ public Building(Location location, BuildingPlace place, CardinalDirection frontS
 	backSide = frontSide.opposite();
 }
 
-public static boolean registerClass(Class<? extends Building> cls) {
+public static boolean registerClass(Class<? extends BuildingOld> cls) {
 	buildingClasses.put(cls.getName(), cls);
 	return true;
 }

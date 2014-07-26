@@ -1,6 +1,6 @@
 package org.tendiwa.core.settlements;
 
-import org.tendiwa.core.Building;
+import org.tendiwa.core.BuildingOld;
 import org.tendiwa.core.CardinalDirection;
 import org.tendiwa.core.HorizontalPlane;
 import org.tendiwa.core.Location;
@@ -16,13 +16,13 @@ import java.util.HashSet;
 
 /**
  * A special ammunitionType of {@link org.tendiwa.core.Location} that has advanced instruments for placing {@link
- * org.tendiwa.core.Building}s.
+ * org.tendiwa.core.BuildingOld}s.
  *
  * @author suseika
  */
 public class Settlement extends Location {
 public HashSet<RectangleSystem> quarters = new HashSet<>();
-public ArrayList<Building> buildings = new ArrayList<>();
+public ArrayList<BuildingOld> buildings = new ArrayList<>();
 protected RoadSystem roadSystem = new RoadSystem();
 protected QuarterSystem quarterSystem;
 
@@ -31,11 +31,11 @@ public Settlement(HorizontalPlane plane, int x, int y, int width, int height) {
 	quarterSystem = new QuarterSystem(this);
 }
 
-public void placeBuilding(BuildingPlace place, Class<? extends Building> cls, CardinalDirection side) {
-	Building building;
+public void placeBuilding(BuildingPlace place, Class<? extends BuildingOld> cls, CardinalDirection side) {
+	BuildingOld building;
 	try {
 		@SuppressWarnings("unchecked")
-		Constructor<? extends Building> ctor = (Constructor<? extends Building>) cls.getDeclaredConstructors()[0];
+		Constructor<? extends BuildingOld> ctor = (Constructor<? extends BuildingOld>) cls.getDeclaredConstructors()[0];
 		building = ctor.newInstance(this, place, side);
 		if (building.fitsToPlace(place)) {
 			building.draw();

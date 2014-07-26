@@ -36,7 +36,7 @@ public class BigCityDemo implements Runnable {
 //        for (int i = 0; i < 100; i++) {
 		TestCanvas.canvas = canvas;
 		IntStream.range(0, 1).forEach(seed -> {
-			City city = new CityBuilder(graph)
+			CityGeometry cityGeometry = new CityBuilder(graph)
 				.withDefaults()
 				.withMaxStartPointsPerCycle(5)
 				.withRoadsFromPoint(4)
@@ -48,8 +48,8 @@ public class BigCityDemo implements Runnable {
 				.withAxisAlignedSegments(false)
 				.build();
 
-			Set<RectangleWithNeighbors> recGroups = RecgangularBuildingLots.findIn(city);
-			canvas.draw(city, new CityDrawer());
+			Set<RectangleWithNeighbors> recGroups = RecgangularBuildingLots.findIn(cityGeometry);
+			canvas.draw(cityGeometry, new CityDrawer());
 			Iterator<Color> colors = Iterators.cycle(Color.green, Color.blue, Color.cyan, Color.orange, Color.magenta);
 			for (RectangleWithNeighbors rectangleWithNeighbors : recGroups) {
 				canvas.draw(

@@ -1,30 +1,18 @@
 package org.tendiwa.demos.geometry;
 
 import com.google.inject.Inject;
-import gnu.trove.map.TObjectDoubleMap;
-import gnu.trove.map.hash.TObjectDoubleHashMap;
 import org.jgrapht.UndirectedGraph;
 import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingEnclosedBlock;
 import org.tendiwa.drawing.extensions.DrawingGraph;
 import org.tendiwa.drawing.extensions.DrawingModule;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
-import org.tendiwa.geometry.extensions.PointTrail;
 import org.tendiwa.geometry.extensions.twakStraightSkeleton.TwakStraightSkeleton;
 import org.tendiwa.graphs.GraphConstructor;
-import org.tendiwa.graphs.MinimumCycleBasis;
-import org.tendiwa.settlements.BlockRegion;
-import org.tendiwa.settlements.City;
-import org.tendiwa.settlements.CityBuilder;
-import org.tendiwa.settlements.NetworkToBlocks;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Random;
-import java.util.Set;
 
 public class TwakStraightSkeletonDemo implements Runnable {
 	@Inject

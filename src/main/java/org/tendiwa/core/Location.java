@@ -194,7 +194,7 @@ public class Location {
 		return new CellCollection(cls, this);
 	}
 
-	public <T extends Building> void placeBuilding(T building) {
+	public <T extends BuildingOld> void placeBuilding(T building) {
 		/**
 		 * Places building when current location is not Settlement.
 		 *
