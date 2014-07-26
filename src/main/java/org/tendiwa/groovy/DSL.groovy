@@ -82,6 +82,7 @@ class DSL {
         wallTypes[type.name] = type
         return type;
     }
+
     def static newMaterial(closure) {
         Material type = new Material() {}
         closure.delegate = type
@@ -89,6 +90,7 @@ class DSL {
         materials[type.name] = type
         return type;
     }
+
     def static newItemType(closure) {
         ItemType type = new ItemType() {}
         closure.delegate = type
@@ -96,6 +98,7 @@ class DSL {
         itemTypes[type.name] = type
         return type;
     }
+
     def static newAmmunitionType(closure) {
         AmmunitionType type = new AmmunitionType() {}
         closure.delegate = type
@@ -103,6 +106,7 @@ class DSL {
         ammunitionTypes[type.name] = type
         return type;
     }
+
     def static newBorderObjectType(closure) {
         BorderObjectType type = new BorderObjectType() {}
         closure.delegate = type

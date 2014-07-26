@@ -1,6 +1,7 @@
 package org.tendiwa.core.settlements;
 
 import org.tendiwa.core.CardinalDirection;
+import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.*;
 import org.tendiwa.core.Orientation;
 import org.tendiwa.core.meta.Utils;
@@ -45,7 +46,7 @@ public CardinalDirection getSideOfRectangle(java.awt.Rectangle r) {
 	}
 }
 
-public boolean crossesRectangle(org.tendiwa.geometry.Rectangle r) {
+public boolean crossesRectangle(Rectangle r) {
 	if (orientation.isVertical()) {
 		return start.getX() >= r.getX() && start.getX() < r.getX() + r.getWidth();
 	} else {
@@ -53,8 +54,8 @@ public boolean crossesRectangle(org.tendiwa.geometry.Rectangle r) {
 	}
 }
 
-public boolean isRectangleOverlapsRoad(org.tendiwa.geometry.Rectangle rectangle) {
-	org.tendiwa.geometry.Rectangle ra = new org.tendiwa.geometry.Rectangle(rectangle);
+public boolean isRectangleOverlapsRoad(Rectangle rectangle) {
+	Rectangle ra = new Rectangle(rectangle);
 	if (orientation.isVertical()) {
 		if (Utils.integersRangeIntersection(rectangle.getY(), rectangle.getY() + rectangle.getHeight() - 1, start.getY(), end.getY()) > 0 && ra.distanceToLine(start, end) < width / 2) {
 			// If road line and rectangle overlap in y-axis,
@@ -70,12 +71,12 @@ public boolean isRectangleOverlapsRoad(org.tendiwa.geometry.Rectangle rectangle)
 	return false;
 }
 
-public boolean isRectangleNearRoad(org.tendiwa.geometry.Rectangle rectangle) {
+public boolean isRectangleNearRoad(Rectangle rectangle) {
 	/**
 	 * Checks if this road goes along one of the borders of a
 	 * rectangle
 	 */
-	org.tendiwa.geometry.Rectangle ra = new org.tendiwa.geometry.Rectangle(rectangle);
+	Rectangle ra = new Rectangle(rectangle);
 	if (orientation.isVertical()) {
 		if (Utils.integersRangeIntersection(rectangle.getY(), rectangle.getY() + rectangle.getHeight() - 1, start.getY(), end.getY()) > 0 && ra.distanceToLine(start, end) == width / 2 + 1) {
 			// If road line and rectangle overlap in y-axis,

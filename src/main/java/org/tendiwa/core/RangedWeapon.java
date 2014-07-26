@@ -6,9 +6,9 @@ package org.tendiwa.core;
  * RangedWeapon#getAmmunitionType()}.
  */
 public class RangedWeapon {
-public AmmunitionType ammunitionType;
+	public AmmunitionType ammunitionType;
 
-public AmmunitionType getAmmunitionType() {
-	return ammunitionType;
-}
+	public AmmunitionType getAmmunitionType() {
+		return ammunitionType;
+	}
 }

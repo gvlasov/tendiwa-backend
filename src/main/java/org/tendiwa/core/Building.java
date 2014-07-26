@@ -23,9 +23,9 @@ protected final CardinalDirection leftSide;
 protected final CardinalDirection rightSide;
 protected final CardinalDirection backSide;
 protected Location settlement;
-protected Collection<org.tendiwa.geometry.Rectangle> rooms;
+protected Collection<Rectangle> rooms;
 protected TerrainModifier terrainModifier;
-protected org.tendiwa.geometry.Rectangle lobby;
+protected Rectangle lobby;
 protected ArrayList<CardinalDirection> doorSides = new ArrayList<>();
 protected Cell frontDoor;
 /**
@@ -90,7 +90,7 @@ public CardinalDirection getDoorSide() {
 	}
 }
 
-public Cell placeDoor(org.tendiwa.geometry.Rectangle r, CardinalDirection side, ObjectType object) {
+public Cell placeDoor(Rectangle r, CardinalDirection side, ObjectType object) {
 	/**
 	 * Places door in the middle of particular side of room.
 	 */
@@ -99,7 +99,7 @@ public Cell placeDoor(org.tendiwa.geometry.Rectangle r, CardinalDirection side, 
 	return c;
 }
 
-public Cell placeDoor(org.tendiwa.geometry.Rectangle r, CardinalDirection side, CardinalDirection endOfSide, int depth, ObjectType door) {
+public Cell placeDoor(Rectangle r, CardinalDirection side, CardinalDirection endOfSide, int depth, ObjectType door) {
 	/**
 	 * Places door in the particular cell on particular side of room
 	 */
@@ -149,7 +149,7 @@ public Cell placeFrontDoor(CardinalDirection side, ObjectType door) {
 	return frontDoor;
 }
 
-public Cell placeFrontDoor(org.tendiwa.geometry.Rectangle r, CardinalDirection side, ObjectType door) {
+public Cell placeFrontDoor(Rectangle r, CardinalDirection side, ObjectType door) {
 	/**
 	 * Place front door in the middle of rectangle from particular side.
 	 */
@@ -165,7 +165,7 @@ public HashMap<Integer, Integer> findDoorAppropriateCells(CardinalDirection side
 	HashMap<Integer, Integer> cells = new HashMap<>();
 	Set<Integer> keys;
 	if (side == CardinalDirection.N) {
-		for (org.tendiwa.geometry.Rectangle r : rooms) {
+		for (Rectangle r : rooms) {
 			int y = r.getY() - 1;
 			for (int i = r.getX(); i < r.getX() + r.getWidth(); i++) {
 				if (!cells.containsKey(i) || cells.get(i) > y) {
@@ -181,7 +181,7 @@ public HashMap<Integer, Integer> findDoorAppropriateCells(CardinalDirection side
 			}
 		}
 	} else if (side == CardinalDirection.E) {
-		for (org.tendiwa.geometry.Rectangle r : rooms) {
+		for (Rectangle r : rooms) {
 			int x = r.getX() + r.getWidth();
 			for (int i = r.getY(); i < r.getY() + r.getHeight(); i++) {
 				if (!cells.containsKey(i) || cells.get(i) < x) {
@@ -197,7 +197,7 @@ public HashMap<Integer, Integer> findDoorAppropriateCells(CardinalDirection side
 			}
 		}
 	} else if (side == CardinalDirection.S) {
-		for (org.tendiwa.geometry.Rectangle r : rooms) {
+		for (Rectangle r : rooms) {
 			int y = r.getY() + r.getHeight();
 			for (int i = r.getX(); i < r.getX() + r.getWidth(); i++) {
 				if (!cells.containsKey(i) || cells.get(i) < y) {
@@ -213,7 +213,7 @@ public HashMap<Integer, Integer> findDoorAppropriateCells(CardinalDirection side
 			}
 		}
 	} else if (side == CardinalDirection.W) {
-		for (org.tendiwa.geometry.Rectangle r : rooms) {
+		for (Rectangle r : rooms) {
 			int x = r.getX() - 1;
 			for (int i = r.getY(); i < r.getY() + r.getHeight(); i++) {
 				if (!cells.containsKey(i) || cells.get(i) > x) {
@@ -329,7 +329,7 @@ public TerrainModifier buildBasis(FloorType floor, ObjectType walls, ObjectType 
 	// }
 
 	modifier.drawInnerBorders(walls);
-	for (org.tendiwa.geometry.Rectangle r : rs.getRectangles()) {
+	for (Rectangle r : rs.getRectangles()) {
 		fillFloor(r, floor);
 	}
 	Graph<Rectangle, RectangleSystem.Neighborship> graph = rs.getGraph();
@@ -350,7 +350,7 @@ public TerrainModifier setTerrainModifier(RectangleSystem crs) {
 	return settlement.getTerrainModifier(crs);
 }
 
-protected Coordinate connectRoomsWithDoor(org.tendiwa.geometry.Rectangle r1, org.tendiwa.geometry.Rectangle r2, ObjectType door) {
+protected Coordinate connectRoomsWithDoor(Rectangle r1, Rectangle r2, ObjectType door) {
 	int x, y;
 	if (r1.getX() + r1.getWidth() + 1 == r2.getX() || r2.getX() + r2.getWidth() + 1 == r1.getX()) {
 		// Vertical
@@ -366,7 +366,7 @@ protected Coordinate connectRoomsWithDoor(org.tendiwa.geometry.Rectangle r1, org
 	return new Coordinate(x, y);
 }
 
-protected void fillFloor(org.tendiwa.geometry.Rectangle r, FloorType floor) {
+protected void fillFloor(Rectangle r, FloorType floor) {
 	settlement.square(r.getX(), r.getY(), r.getWidth(), r.getHeight(), floor, true);
 }
 
@@ -455,12 +455,12 @@ public void markAsHallway(int rectangleId) {
  * Remove all the objects inside rooms.
  */
 public void clearBasisInside() {
-	for (org.tendiwa.geometry.Rectangle r : terrainModifier.getRectangleSystem().getRectangles()) {
+	for (Rectangle r : terrainModifier.getRectangleSystem().getRectangles()) {
 		settlement.square(r.getX(), r.getY(), r.getWidth(), r.getHeight(), EntityPlacer.OBJECT_VOID, true);
 	}
 }
 
-public void setLobby(org.tendiwa.geometry.Rectangle r) {
+public void setLobby(Rectangle r) {
 	lobby = r;
 }
 

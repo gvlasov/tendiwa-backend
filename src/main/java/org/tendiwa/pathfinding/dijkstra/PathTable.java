@@ -1,6 +1,5 @@
 package org.tendiwa.pathfinding.dijkstra;
 
-import org.omg.DynamicAny._DynAnyStub;
 import org.tendiwa.geometry.BoundedCellSet;
 import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.Cells;

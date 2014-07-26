@@ -1,11 +1,8 @@
 package org.tendiwa.geometry;
 
 import com.google.common.collect.ImmutableSet;
-import org.tendiwa.geometry.extensions.ChebyshevDistanceBufferBorder;
 
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.Set;
 
 import static java.util.Objects.*;

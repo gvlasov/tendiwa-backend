@@ -12,8 +12,8 @@ import org.tendiwa.core.meta.Chance;
 import org.tendiwa.core.meta.Range;
 import org.tendiwa.core.meta.Utils;
 import org.tendiwa.drawing.*;
-import org.tendiwa.drawing.extensions.DrawingRectangle;
-import org.tendiwa.drawing.extensions.DrawingRectangleSidePiece;
+import org.tendiwa.drawing.extensions.*;
+import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.*;
 
 import java.awt.*;
@@ -77,7 +77,7 @@ public class WaveRectangleSystem extends GrowingRectangleSystem {
      * wave #1
      * being the initial rectangle system.
      */
-    private ArrayList<HashSet<org.tendiwa.geometry.Rectangle>> wave = new ArrayList<>();
+    private ArrayList<HashSet<Rectangle>> wave = new ArrayList<>();
     private HashSet<RectangleSidePiece> freeSidePiecesOnPreviousWave = new HashSet<>();
     private int lastFullyOccupiedWave = -1;
     private VirtualWave virtualCurrentWave;
@@ -100,8 +100,8 @@ public class WaveRectangleSystem extends GrowingRectangleSystem {
         possibleRectangleWidthPlus2BorderWidth = new Range(
                 possibleRectangleWidth.min + borderWidth,
                 possibleRectangleWidth.max + borderWidth);
-        HashSet<org.tendiwa.geometry.Rectangle> initialWave = new HashSet<>();
-        for (org.tendiwa.geometry.Rectangle r : initialRecSys) {
+        HashSet<Rectangle> initialWave = new HashSet<>();
+        for (Rectangle r : initialRecSys) {
             initialWave.add(r);
             canvas.draw(r, DrawingRectangle.withColor(Color.BLUE));
         }
@@ -117,8 +117,8 @@ public class WaveRectangleSystem extends GrowingRectangleSystem {
         possibleRectangleWidthPlus2BorderWidth = new Range(
                 possibleRectangleWidth.min + borderWidth,
                 possibleRectangleWidth.max + borderWidth);
-        HashSet<org.tendiwa.geometry.Rectangle> initialWave = new HashSet<>();
-        for (org.tendiwa.geometry.Rectangle r : rs) {
+        HashSet<Rectangle> initialWave = new HashSet<>();
+        for (Rectangle r : rs) {
             addRectangle(r);
             initialWave.add(r);
         }
@@ -163,11 +163,11 @@ public class WaveRectangleSystem extends GrowingRectangleSystem {
                 .size() == 0) {
             buildVirtualCurrentWave(irs);
             lastFullyOccupiedWave++;
-            wave.add(new HashSet<org.tendiwa.geometry.Rectangle>());
+            wave.add(new HashSet<Rectangle>());
         }
-        Iterator<org.tendiwa.geometry.Rectangle> iterator = virtualCurrentWave.virtualRectangles
+        Iterator<Rectangle> iterator = virtualCurrentWave.virtualRectangles
                 .iterator();
-        org.tendiwa.geometry.Rectangle r = iterator.next();
+        Rectangle r = iterator.next();
         addRectangle(r);
         wave.get(lastFullyOccupiedWave + 1).add(r);
         iterator.remove();
@@ -177,7 +177,7 @@ public class WaveRectangleSystem extends GrowingRectangleSystem {
         if (virtualCurrentWave.virtualRectangles.size() != 0) {
             throw new IllegalStateException();
         }
-        for (org.tendiwa.geometry.Rectangle r : virtualCurrentWave.virtualRectangles) {
+        for (Rectangle r : virtualCurrentWave.virtualRectangles) {
             addRectangle(r);
             wave.get(lastFullyOccupiedWave + 1).add(r);
             virtualCurrentWave.virtualRectangles.clear();
@@ -194,7 +194,7 @@ public class WaveRectangleSystem extends GrowingRectangleSystem {
     }
 
     private void findFreeSidePieces(RectangleSystem irs) {
-        for (org.tendiwa.geometry.Rectangle r : wave.get(wave.size() - 1)) {
+        for (Rectangle r : wave.get(wave.size() - 1)) {
             for (CardinalDirection side : CardinalDirection.values()) {
                 freeSidePiecesOnPreviousWave.addAll(irs
                         .getSidePiecesFreeFromNeighbours(r, side));
@@ -225,7 +225,7 @@ public class WaveRectangleSystem extends GrowingRectangleSystem {
 
     class VirtualWave {
         private static final int GENERATED_OFFSET = Integer.MIN_VALUE;
-        private final ArrayList<org.tendiwa.geometry.Rectangle> virtualRectangles = new ArrayList<org.tendiwa.geometry.Rectangle>();
+        private final ArrayList<Rectangle> virtualRectangles = new ArrayList<Rectangle>();
         private final RectangleablePiecesCollection pieces;
         public Comparator<RectangleSidePiece> PIECES_START_COORD_COMPARATOR = new Comparator<RectangleSidePiece>() {
             @Override
@@ -271,7 +271,7 @@ public class WaveRectangleSystem extends GrowingRectangleSystem {
             OrdinalDirection quadrantWhereRectnagleLies = (OrdinalDirection) Directions
                     .getDirectionBetween(piece1.getDirection(), piece2.getDirection());
             int squareSize = possibleRectangleWidth.max;
-            org.tendiwa.geometry.Rectangle r = Recs.growFromIntersection(
+            Rectangle r = Recs.growFromIntersection(
                     piece1.getLine(),
                     piece2.getLine(),
                     quadrantWhereRectnagleLies,
@@ -285,7 +285,7 @@ public class WaveRectangleSystem extends GrowingRectangleSystem {
         }
 
 
-        private org.tendiwa.geometry.Rectangle getRectangleBetween4Sides(RectangleSidePiece n, RectangleSidePiece e, RectangleSidePiece s, RectangleSidePiece w) {
+        private Rectangle getRectangleBetween4Sides(RectangleSidePiece n, RectangleSidePiece e, RectangleSidePiece s, RectangleSidePiece w) {
             assert n != null && n.getDirection() == Directions.N;
             assert e != null && e.getDirection() == Directions.E;
             assert s != null && s.getDirection() == Directions.S;
@@ -301,12 +301,12 @@ public class WaveRectangleSystem extends GrowingRectangleSystem {
             if (height <= 0) {
                 throw new UnsupportedOperationException();
             }
-            org.tendiwa.geometry.Rectangle rectangle = new org.tendiwa.geometry.Rectangle(x, y, width, height);
+            Rectangle rectangle = new Rectangle(x, y, width, height);
             pieces.modifySidesByPlacingRectangle(rectangle, n, e, s, w);
             return rectangle;
         }
 
-        private org.tendiwa.geometry.Rectangle getRectangleBetween3Sides(RectangleSidePiece a, RectangleSidePiece b, RectangleSidePiece c) {
+        private Rectangle getRectangleBetween3Sides(RectangleSidePiece a, RectangleSidePiece b, RectangleSidePiece c) {
             assert a != b;
             assert b != c;
             assert a != c;
@@ -374,7 +374,7 @@ public class WaveRectangleSystem extends GrowingRectangleSystem {
                     .getDirectionBetween(
                             parallelPiece1.getDirection(),
                             perpendicularPiece.getDirection());
-            org.tendiwa.geometry.Rectangle rectangle = new org.tendiwa.geometry.Rectangle(
+            Rectangle rectangle = new Rectangle(
                     Recs.growFromIntersection(
                             parallelPiece1.getLine(),
                             perpendicularPiece.getLine(),
@@ -399,7 +399,7 @@ public class WaveRectangleSystem extends GrowingRectangleSystem {
             return perpendicularPiece.perpendicularDistanceTo(point);
         }
 
-        public org.tendiwa.geometry.Rectangle getRectangleBetweenParallelSides(RectangleSidePiece piece1, RectangleSidePiece piece2) {
+        public Rectangle getRectangleBetweenParallelSides(RectangleSidePiece piece1, RectangleSidePiece piece2) {
             assert piece1.getLine().getOrientation() == piece2.getLine().getOrientation();
             int minCoordEnd = Math.max(
                     piece1.getSegment().getStartCoord(),
@@ -447,12 +447,12 @@ public class WaveRectangleSystem extends GrowingRectangleSystem {
             if (curHeight != 0) {
                 height = curHeight;
             }
-            org.tendiwa.geometry.Rectangle rectangle = new org.tendiwa.geometry.Rectangle(x, y, width, height);
+            Rectangle rectangle = new Rectangle(x, y, width, height);
             pieces.modifySidesByPlacingRectangle(rectangle, piece1, piece2);
             return rectangle;
         }
 
-        public org.tendiwa.geometry.Rectangle getRectangleOn1Side(RectangleSidePiece originalPiece) {
+        public Rectangle getRectangleOn1Side(RectangleSidePiece originalPiece) {
             assert originalPiece != null;
             int width = Chance.rand(possibleRectangleWidth);
             int height = Chance.rand(possibleRectangleWidth);
@@ -469,7 +469,7 @@ public class WaveRectangleSystem extends GrowingRectangleSystem {
             if (curOffset != GENERATED_OFFSET) {
                 offset = curOffset;
             }
-            org.tendiwa.geometry.Rectangle r = create(
+            Rectangle r = create(
                     originalPiece.createRectangle(1),
                     originalPiece.getDirection(),
                     width,
@@ -479,7 +479,7 @@ public class WaveRectangleSystem extends GrowingRectangleSystem {
             return r;
         }
 
-        public org.tendiwa.geometry.Rectangle getRectangleBetween2Sides(RectangleSidePiece piece1, RectangleSidePiece piece2) {
+        public Rectangle getRectangleBetween2Sides(RectangleSidePiece piece1, RectangleSidePiece piece2) {
             OrdinalDirection direction = Directions.getDirectionBetween(
                     piece1.getDirection(),
                     piece2.getDirection());
@@ -522,7 +522,7 @@ public class WaveRectangleSystem extends GrowingRectangleSystem {
             if (curHeight != 0) {
                 height = curHeight;
             }
-            org.tendiwa.geometry.Rectangle rectangle = new org.tendiwa.geometry.Rectangle(
+            Rectangle rectangle = new Rectangle(
                     Recs.growFromIntersection(
                             piece1.getLine(),
                             piece2.getLine(),
@@ -547,7 +547,7 @@ public class WaveRectangleSystem extends GrowingRectangleSystem {
          *
          * @param r
          */
-        private void addVirtualRectangle(org.tendiwa.geometry.Rectangle r) {
+        private void addVirtualRectangle(Rectangle r) {
             virtualRectangles.add(r);
         }
 
@@ -806,7 +806,7 @@ public class WaveRectangleSystem extends GrowingRectangleSystem {
                     selectedPieces.add(selectedPiece);
                     dirsToPieces.remove(selectedPiece.getDirection());
                 }
-                org.tendiwa.geometry.Rectangle r;
+                Rectangle r;
                 switch (selectedPieces.size()) {
                     case 1:
                         r = getRectangleOn1Side(selectedPieces.get(0));
@@ -939,7 +939,7 @@ public class WaveRectangleSystem extends GrowingRectangleSystem {
                         if (!isFullyInFrontOf && isInSegmentByStaticCoord) {
                             continue;
                         } else {
-                            org.tendiwa.geometry.Rectangle rectangle = getMinimumRectangle(
+                            Rectangle rectangle = getMinimumRectangle(
                                     piece,
                                     nextPiece);
                             if (doPiecesExistThatIntersectRectangle(
@@ -1039,7 +1039,7 @@ public class WaveRectangleSystem extends GrowingRectangleSystem {
                     yMin = sMin;
                     yMax = sMax;
                 }
-                org.tendiwa.geometry.Rectangle rectangle = Recs
+                Rectangle rectangle = Recs
                         .rectangleByMinAndMaxCoords(xMin, yMin, xMax, yMax);
                 return doPiecesExistThatIntersectRectangle(piece, rectangle) || doPerpendicularPiecesExistThatIntersectRectangle(
                         piece,
@@ -1172,7 +1172,7 @@ public class WaveRectangleSystem extends GrowingRectangleSystem {
              * @param pieces
              * @return
              */
-            private org.tendiwa.geometry.Rectangle getMinimumRectangle(RectangleSidePiece... pieces) {
+            private Rectangle getMinimumRectangle(RectangleSidePiece... pieces) {
                 Map<CardinalDirection, RectangleSidePiece> directionToPiece = new HashMap<CardinalDirection, RectangleSidePiece>();
                 for (RectangleSidePiece piece : pieces) {
                     directionToPiece.put(piece.getDirection().opposite(), piece);
@@ -1193,7 +1193,7 @@ public class WaveRectangleSystem extends GrowingRectangleSystem {
                 int y = limitCoordFromSide.get(Directions.N);
                 int width = limitCoordFromSide.get(Directions.E) - x + 1;
                 int height = limitCoordFromSide.get(Directions.S) - y + 1;
-                return new org.tendiwa.geometry.Rectangle(x, y, width, height);
+                return new Rectangle(x, y, width, height);
             }
 
             /**
@@ -1259,7 +1259,7 @@ public class WaveRectangleSystem extends GrowingRectangleSystem {
              *         A rectangle in front of {@code minPiece}
              * @return true if at least one such piece was found, false if none of them were found.
              */
-            private boolean doPiecesExistThatIntersectRectangle(RectangleSidePiece minPiece, org.tendiwa.geometry.Rectangle rectangle) {
+            private boolean doPiecesExistThatIntersectRectangle(RectangleSidePiece minPiece, Rectangle rectangle) {
                 // TODO: Change rectangle object to ints
                 Range staticRange, dynamicRange;
                 if (minPiece.isVertical()) {
@@ -1311,7 +1311,7 @@ public class WaveRectangleSystem extends GrowingRectangleSystem {
                 return false;
             }
 
-            private boolean doPerpendicularPiecesExistThatIntersectRectangle(RectangleSidePiece minPiece, org.tendiwa.geometry.Rectangle rectangle) {
+            private boolean doPerpendicularPiecesExistThatIntersectRectangle(RectangleSidePiece minPiece, Rectangle rectangle) {
                 RectangleSidePiece[] minPossiblePerpendicularPieces = getMinPossiblePerpendicularPieces(minPiece);
                 int recStartCoord = minPiece.isVertical() ? rectangle.getY() : rectangle.getX();
                 CardinalDirection dirOfMinPossiblePiece;
@@ -1390,7 +1390,7 @@ public class WaveRectangleSystem extends GrowingRectangleSystem {
              * @param r
              * @param pieces
              */
-            private void modifySidesByPlacingRectangle(org.tendiwa.geometry.Rectangle r, RectangleSidePiece... pieces) {
+            private void modifySidesByPlacingRectangle(Rectangle r, RectangleSidePiece... pieces) {
                 Collection<CardinalDirection> directionsUnused = Sets
                         .newHashSet(CardinalDirection.values());
                 // Place pieces for those sides that have neighbor pieces from
@@ -1484,11 +1484,11 @@ public class WaveRectangleSystem extends GrowingRectangleSystem {
             /**
              * Tests that all pieces present in {@code junctions} are present in {@code pieces}
              */
-            private void assertRectangleNotIntersectsWithOthers(org.tendiwa.geometry.Rectangle newRectangle) {
-                for (org.tendiwa.geometry.Rectangle existingRectangle : virtualRectangles) {
+            private void assertRectangleNotIntersectsWithOthers(Rectangle newRectangle) {
+                for (Rectangle existingRectangle : virtualRectangles) {
                     assert !newRectangle.intersects(existingRectangle);
                 }
-                for (org.tendiwa.geometry.Rectangle rec : wave.get(0)) {
+                for (Rectangle rec : wave.get(0)) {
                     assert !newRectangle.intersects(rec);
                 }
             }

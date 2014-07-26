@@ -1,6 +1,5 @@
 package org.tendiwa.geometry;
 
-import groovy.sql.InOutParameter;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;

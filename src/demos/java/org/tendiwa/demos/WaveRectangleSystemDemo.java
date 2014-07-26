@@ -1,12 +1,7 @@
 package org.tendiwa.demos;
 
 import com.google.inject.Inject;
-import org.jukito.JukitoRunner;
-import org.jukito.UseModules;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.tendiwa.core.meta.Range;
-import org.tendiwa.drawing.extensions.DrawingModule;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.RectangleSystem;

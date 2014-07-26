@@ -3,6 +3,7 @@ package tests;
 import org.junit.Test;
 import org.tendiwa.core.Directions;
 import org.tendiwa.core.Orientation;
+import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.*;
 
 import java.util.ArrayList;

@@ -3,8 +3,6 @@ package org.tendiwa.geometry;
 import org.tendiwa.core.OrdinalDirection;
 import org.tendiwa.core.meta.Coordinate;
 
-import java.util.Collection;
-
 public class Recs {
     /**
      * A more convenient method for creating rectangles. Takes a point, places another point from ordinal direction from
@@ -175,7 +173,7 @@ public class Recs {
     }
 
     /**
-     * Creates a new {@link org.tendiwa.geometry.Rectangle} relative to an already existing {@link java.awt.Rectangle}.
+     * Creates a new {@link Rectangle} relative to an already existing {@link java.awt.Rectangle}.
      *
      * @param r
      *         an already existing rectangle.
@@ -183,7 +181,7 @@ public class Recs {
      *         how far will the new rectangle be shifted by x-axis from the original one.
      * @param dy
      *         how far will the new rectangle be shifted by x-axis from the original one.
-     * @return a new {@link org.tendiwa.geometry.Rectangle} with width and height equal to {@code r}'s.
+     * @return a new {@link Rectangle} with width and height equal to {@code r}'s.
      */
     public static Rectangle rectangleMovedFromOriginal(Rectangle r, int dx, int dy) {
         if (r == null) {

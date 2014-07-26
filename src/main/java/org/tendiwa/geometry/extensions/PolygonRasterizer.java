@@ -2,11 +2,11 @@ package org.tendiwa.geometry.extensions;
 
 import gnu.trove.list.TDoubleList;
 import gnu.trove.list.linked.TDoubleLinkedList;
+import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.*;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 public class PolygonRasterizer {
 	private PolygonRasterizer() {

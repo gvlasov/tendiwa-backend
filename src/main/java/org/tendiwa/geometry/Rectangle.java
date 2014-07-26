@@ -306,7 +306,7 @@ public class Rectangle implements Placeable, BoundedCellSet {
 	}
 
 	/**
-	 * Checks if this rectangle touches an {@link RectangleSidePiece} with one of its sides.
+	 * Checks if this rectangle touches an {@link org.tendiwa.geometry.RectangleSidePiece} with one of its sides.
 	 *
 	 * @param piece
 	 * @return

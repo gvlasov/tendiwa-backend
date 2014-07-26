@@ -12,7 +12,7 @@ public class Quarter extends Rectangle {
 public final QuarterSystem system;
 public final ArrayList<Road> closeRoads = new ArrayList<>();
 
-public Quarter(QuarterSystem system, org.tendiwa.geometry.Rectangle rectangle) {
+public Quarter(QuarterSystem system, Rectangle rectangle) {
 	super(rectangle);
 	this.system = system;
 	for (Road road : system.settlement.roadSystem.roads) {

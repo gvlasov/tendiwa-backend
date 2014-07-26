@@ -2,8 +2,6 @@ package org.tendiwa.geometry;
 
 import org.tendiwa.core.RelativeCardinalDirection;
 
-import java.awt.*;
-
 class StepRectangleNearFromSide {
     private final Rectangle rectangle;
     private final RectanglePointer pointer;

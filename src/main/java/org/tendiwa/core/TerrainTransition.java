@@ -1,6 +1,7 @@
 package org.tendiwa.core;
 
 import org.tendiwa.core.meta.Chance;
+import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.*;
 
 import java.util.HashSet;

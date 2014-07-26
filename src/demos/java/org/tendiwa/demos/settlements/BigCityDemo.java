@@ -6,25 +6,17 @@ import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.data.SampleGraph;
 import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingEnclosedBlock;
 import org.tendiwa.drawing.extensions.DrawingModule;
 import org.tendiwa.drawing.extensions.DrawingRectangle;
 import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Recs;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.extensions.PolygonRasterizer;
-import org.tendiwa.geometry.extensions.daveedvMaxRec.MaximalCellRectangleFinder;
-import org.tendiwa.geometry.extensions.daveedvMaxRec.MaximalRectanlges;
-import org.tendiwa.geometry.extensions.twakStraightSkeleton.utils.DRectangle;
 import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.settlements.*;
 
 import java.awt.Color;
 import java.util.Iterator;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class BigCityDemo implements Runnable {
@@ -56,19 +48,7 @@ public class BigCityDemo implements Runnable {
 				.withAxisAlignedSegments(false)
 				.build();
 
-			Set<EnclosedBlock> encBlocks = city
-				.getBlocks()
-				.stream()
-				.flatMap(b -> b.shrinkToRegions(3.3, seed).stream())
-				.flatMap(b -> b.subdivideLots(10, 10, 1).stream())
-				.collect(Collectors.toSet());
-			Set<RectangleWithNeighbors> recGroups = encBlocks.stream()
-				.map(lot -> PolygonRasterizer.rasterize(lot.toPolygon()))
-				.map(rasterized -> MaximalRectanlges.findUntilSmallEnoughMutatingBitmap(rasterized, 9))
-				.filter(list->!list.isEmpty())
-				.map(list -> new RectangleWithNeighbors(list.get(0), list.subList(1, list.size())))
-				.collect(Collectors.toSet());
-
+			Set<RectangleWithNeighbors> recGroups = RecgangularBuildingLots.findIn(city);
 			canvas.draw(city, new CityDrawer());
 			Iterator<Color> colors = Iterators.cycle(Color.green, Color.blue, Color.cyan, Color.orange, Color.magenta);
 			for (RectangleWithNeighbors rectangleWithNeighbors : recGroups) {
@@ -84,9 +64,9 @@ public class BigCityDemo implements Runnable {
 				}
 
 			}
-			for (EnclosedBlock block : encBlocks) {
-				canvas.draw(block, DrawingEnclosedBlock.withColor(Color.lightGray));
-			}
+//			for (EnclosedBlock block : encBlocks) {
+//				canvas.draw(block, DrawingEnclosedBlock.withColor(Color.lightGray));
+//			}
 		});
 	}
 }

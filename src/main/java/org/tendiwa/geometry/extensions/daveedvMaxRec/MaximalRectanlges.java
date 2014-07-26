@@ -32,7 +32,7 @@ public class MaximalRectanlges {
 	 * @return List of rectangles within {@code rasterizedPolygon}. Rectangle with greater index will have lesser or
 	 * equal area to the previous rectangle in list. No rectangle in list has area greater than {@code minimumArea}.
 	 */
-	public static ImmutableList<Rectangle> findUntilSmallEnoughMutatingBitmap(
+	public static ImmutableList<Rectangle> searchUntilSmallEnoughMutatingBitmap(
 		PolygonRasterizer.Result rasterizedPolygon,
 		int minimumArea
 	) {

@@ -17,7 +17,7 @@ public class RectangleSidePieceDemo implements Runnable {
     }
 
     public void run() {
-        org.tendiwa.geometry.Rectangle r1 = new Rectangle(5, 5, 15, 5);
+        Rectangle r1 = new Rectangle(5, 5, 15, 5);
         Rectangle r2 = r1.getSideAsSidePiece(Directions.S).createRectangle(4);
         canvas.drawRectangle(r1, Color.RED);
         canvas.drawRectangle(r2, Color.YELLOW);

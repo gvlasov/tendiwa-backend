@@ -7,6 +7,7 @@ import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.core.Direction;
 import org.tendiwa.core.Directions;
+import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.extensions.CachedCellSet;
 import org.tendiwa.geometry.extensions.ChebyshevDistanceBufferBorder;
@@ -94,7 +95,6 @@ public class CityBoundsFactory {
 		new EdgeReducer(graph, cell2PointMap).reduceEdges();
 		return graph;
 	}
-
 
 	/**
 	 * Creates a new graph that can be used as a base for {@link org.tendiwa.settlements.City}.
