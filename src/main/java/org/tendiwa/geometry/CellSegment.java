@@ -2,72 +2,83 @@ package org.tendiwa.geometry;
 
 import com.google.common.collect.Iterators;
 
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * A segment defined by a start and end {@link Cells}. Doesn't store anything other than start and end cells.
  */
 public class CellSegment implements Iterable<Cell> {
 
-    public final Cell start;
-    public final Cell end;
+	public final Cell start;
+	public final Cell end;
 
-    public CellSegment(Cell start, Cell end) {
-        this.start = start;
-        this.end = end;
-    }
+	public CellSegment(Cell start, Cell end) {
+		this.start = start;
+		this.end = end;
+	}
 
-    public static Cell[] vector(int startX, int startY, int endX, int endY) {
-        int l = Math.round(Math.max(Math.abs(endX - startX),
-                Math.abs(endY - startY)));
-        float x[] = new float[l + 2];
-        float y[] = new float[l + 2];
-        Cell result[] = new Cell[l + 1];
+	public CellSegment(Segment2D segment) {
+		this.start = new Cell((int) Math.round(segment.start.x), (int) Math.round(segment.start.y));
+		this.end = new Cell((int) Math.round(segment.end.x), (int) Math.round(segment.end.y));
+	}
 
-        x[0] = startX;
-        y[0] = startY;
+	public static Cell[] cells(int startX, int startY, int endX, int endY) {
+		int l = Math.round(Math.max(Math.abs(endX - startX),
+			Math.abs(endY - startY)));
+		float x[] = new float[l + 2];
+		float y[] = new float[l + 2];
+		Cell result[] = new Cell[l + 1];
 
-        if (startX == endX && startY == endY) {
-            result = new Cell[1];
-            result[0] = new Cell(startX, startY);
-            return result;
-        }
-        float dx = (endX - startX) / (float) l;
-        float dy = (endY - startY) / (float) l;
-        for (int i = 1; i <= l; i++) {
-            x[i] = x[i - 1] + dx;
-            y[i] = y[i - 1] + dy;
-        }
-        x[l + 1] = endX;
-        y[l + 1] = endY;
+		x[0] = startX;
+		y[0] = startY;
 
-        for (int i = 0; i <= l; i++) {
-            result[i] = new Cell(Math.round(x[i]), Math.round(y[i]));
-        }
-        return result;
-    }
+		if (startX == endX && startY == endY) {
+			result = new Cell[1];
+			result[0] = new Cell(startX, startY);
+			return result;
+		}
+		float dx = (endX - startX) / (float) l;
+		float dy = (endY - startY) / (float) l;
+		for (int i = 1; i <= l; i++) {
+			x[i] = x[i - 1] + dx;
+			y[i] = y[i - 1] + dy;
+		}
+		x[l + 1] = endX;
+		y[l + 1] = endY;
 
-    public static Cell[] vector(Cell start, Cell end) {
-        return vector(start.x, start.y, end.x, end.y);
-    }
+		for (int i = 0; i <= l; i++) {
+			result[i] = new Cell(Math.round(x[i]), Math.round(y[i]));
+		}
+		return result;
+	}
 
-    /**
-     * Iterates over cells in a line from {@link #start} to {@link #end} inclusive. Computes those cells anew each time
-     * this method is called.
-     *
-     * @return An iterator over an array of cells.
-     */
-    @Override
-    public Iterator<Cell> iterator() {
-        return Iterators.forArray(vector(start, end));
-    }
+	public static Cell[] vector(Cell start, Cell end) {
+		return cells(start.x, start.y, end.x, end.y);
+	}
 
-    /**
-     * Computes distance from {@link #start} to {@link #end}.
-     *
-     * @return Distance from {@link #start} to {@link #end}.
-     */
-    public double length() {
-        return Math.sqrt((end.x - start.x) * (end.x - start.x) + (end.y - start.y) * (end.y - start.y));
-    }
+	/**
+	 * Iterates over cells in a line from {@link #start} to {@link #end} inclusive. Computes those cells anew each time
+	 * this method is called.
+	 *
+	 * @return An iterator over an array of cells.
+	 */
+	@Override
+	public Iterator<Cell> iterator() {
+		return Iterators.forArray(vector(start, end));
+	}
+
+	/**
+	 * Computes distance from {@link #start} to {@link #end}.
+	 *
+	 * @return Distance from {@link #start} to {@link #end}.
+	 */
+	public double length() {
+		return Math.sqrt((end.x - start.x) * (end.x - start.x) + (end.y - start.y) * (end.y - start.y));
+	}
+
+	public List<Cell> asList() {
+		return Arrays.asList(vector(start, end));
+	}
 }

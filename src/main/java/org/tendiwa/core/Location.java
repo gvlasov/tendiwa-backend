@@ -54,7 +54,7 @@ public class Location {
 			EntityPlacer.place(activePlane, placeable, x + startX, y + startY);
 			return;
 		}
-		Cell[] cells = CellSegment.vector(startX, startY, endX, endY);
+		Cell[] cells = CellSegment.cells(startX, startY, endX, endY);
 		int size = cells.length;
 		for (int i = 0; i < size - 1; i++) {
 			int x = cells[i].getX();
@@ -219,7 +219,7 @@ public class Location {
 		for (int i = 0; i < size; i++) {
 			Cell coord = coords.get(i);
 			Cell nextCoord = coords.get((i == size - 1) ? 0 : i + 1);
-			v = CellSegment.vector(coord.getX(), coord.getY(), nextCoord.getX(), nextCoord.getY());
+			v = CellSegment.cells(coord.getX(), coord.getY(), nextCoord.getX(), nextCoord.getY());
 			vSize = v.length;
 			for (int j = 0; j < vSize - 1; j++) {
 				answer.add(v[j]);
@@ -884,11 +884,22 @@ public class Location {
 			activePlane.place(placeable, cell.x, cell.y);
 		}
 	}
+
 	public void drawCellSet(CellSet cellSet, Rectangle bounds, TypePlaceableInCell placeable) {
 		for (Cell cell : bounds) {
 			if (cellSet.contains(cell)) {
 				activePlane.place(placeable, cell.x, cell.y);
 			}
 		}
+	}
+
+	/**
+	 * Returns a rectangle with left corner at 0:0, with width and height corresponding to this Location's width and
+	 * height.
+	 *
+	 * @return A new Rectangle.
+	 */
+	public Rectangle getRelativeBounds() {
+		return new Rectangle(0, 0, width, height);
 	}
 }

@@ -1,18 +1,16 @@
 package tests.graph;
 
-import com.google.inject.Inject;
 import org.jgrapht.graph.SimpleGraph;
 import org.jukito.UseModules;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.tendiwa.data.SampleGraph;
-import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingModule;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
-import org.tendiwa.settlements.CityBuilder;
+import org.tendiwa.settlements.CityGeometryBuilder;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -70,7 +68,7 @@ public class CityGeometryTest {
 		GraphConstructor<Point2D, Segment2D> gc = SampleGraph.create();
 		SimpleGraph<Point2D, Segment2D> graph = gc.graph();
 		for (int i = 0; i < 1; i++) {
-			new CityBuilder(graph)
+			new CityGeometryBuilder(graph)
 				.withDefaults()
 				.withMaxStartPointsPerCycle(pointsPerCycle)
 				.withRoadsFromPoint(roadsFromPoint)

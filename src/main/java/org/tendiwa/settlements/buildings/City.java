@@ -1,44 +1,25 @@
 package org.tendiwa.settlements.buildings;
 
+import org.tendiwa.geometry.Placeable;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.lexeme.Localizable;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class City {
+public final class City {
 	private final Localizable name;
-	final Map<Rectangle, Building> buildings = new HashMap<>();
-	private final List<Street> streets = new LinkedList<>();
+	final Map<Rectangle, Building> buildings;
+	final Set<Street> streets;
+	final Set<Placeable> districts;
 
-	public City(Localizable name) {
+	City(Localizable name, Map<Rectangle, Building> buildings, Set<Street> streets, Set<Placeable> districts) {
 		this.name = name;
+		this.buildings = buildings;
+		this.streets = streets;
+		this.districts = districts;
 	}
 
-	public void addBuildingPlace(Rectangle place) {
-		if (buildings.containsKey(place)) {
-			throw new IllegalArgumentException(
-				"Building place " + place + " has already been added to city " + name.getLocalizationId()
-			);
-		}
-		buildings.put(place, null);
-	}
-
-	void addBuilding(Building building) {
-		assert buildings.containsKey(building.place);
-		buildings.put(building.place, building);
-	}
-
-	void addStreet(List<Point2D> route, Localizable name) {
-		streets.add(new Street(route, name));
-	}
-
-	public UrbanPlanner getBuildingPlacementManager() {
-		return new UrbanPlanner(buildings, streets);
-	}
 
 	/**
 	 * Checks if a place is already occupied by some building.
@@ -50,5 +31,6 @@ public class City {
 	boolean isOccupied(Rectangle rectangle) {
 		return buildings.get(rectangle) != null;
 	}
+
 }
 

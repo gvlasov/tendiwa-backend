@@ -161,9 +161,9 @@ public class CityGeometry {
 //            canvas = new TestCanvas(1, 800, 600);
 			ImmutableCollection<Point2D> allIntersections = PlanarGraphEdgesSelfIntersection
 				.findAllIntersections(lowLevelRoadGraph);
-            for (Point2D point : allIntersections) {
-                TestCanvas.canvas.draw(point.toCell(), DrawingCell.withColorAndSize(Color.RED, 4));
-            }
+			for (Point2D point : allIntersections) {
+				TestCanvas.canvas.draw(point.toCell(), DrawingCell.withColorAndSize(Color.RED, 4));
+			}
 			TestCanvas.canvas.draw(lowLevelRoadGraph, DrawingGraph.withColor(Color.blue));
 			throw new IllegalArgumentException("Graph intersects itself");
 		}
@@ -482,5 +482,28 @@ public class CityGeometry {
 
 	public Set<SecondaryRoadNetworkBlock> getBlocks() {
 		return cells.stream().flatMap(cell -> cell.getEnclosedBlocks().stream()).collect(toSet());
+	}
+
+	public UndirectedGraph<Point2D, Segment2D> getFullRoadGraph() {
+		UndirectedGraph<Point2D, Segment2D> union = new SimpleGraph<>(Segment2D::new);
+		for (Point2D vertex : lowLevelRoadGraph.vertexSet()) {
+			union.addVertex(vertex);
+		}
+		for (Segment2D edge : lowLevelRoadGraph.edgeSet()) {
+			union.addEdge(edge.start, edge.end, edge);
+		}
+		for (NetworkWithinCycle cell : cells) {
+			for (Point2D vertex : cell.network().vertexSet()) {
+				if (!union.containsVertex(vertex)) {
+					union.addVertex(vertex);
+				}
+			}
+			for (Segment2D edge : cell.network().edgeSet()) {
+				if (!union.containsEdge(edge)) {
+					union.addEdge(edge.start, edge.end, edge);
+				}
+			}
+		}
+		return union;
 	}
 }

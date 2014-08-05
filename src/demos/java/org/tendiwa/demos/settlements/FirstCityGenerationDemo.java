@@ -6,7 +6,7 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.settlements.CityGeometry;
-import org.tendiwa.settlements.CityBuilder;
+import org.tendiwa.settlements.CityGeometryBuilder;
 
 public class FirstCityGenerationDemo {
     public static void main(String[] args) {
@@ -24,7 +24,7 @@ public class FirstCityGenerationDemo {
                 .vertex(9, new Point2D(184, 187))
                 .cycle(0, 1, 2, 3, 4)
                 .cycle(3, 5, 9, 8, 7, 6, 1, 2);
-        CityGeometry cityGeometry = new CityBuilder(gc.graph())
+        CityGeometry cityGeometry = new CityGeometryBuilder(gc.graph())
                 .withDefaults()
                 .build();
         canvas.draw(cityGeometry, new CityDrawer());

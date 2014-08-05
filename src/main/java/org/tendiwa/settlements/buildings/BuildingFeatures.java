@@ -12,8 +12,9 @@ public class BuildingFeatures {
 	private Character owner;
 	private Street street;
 	private Rectangle lot;
+	private String localizationId;
 
-	void setBuildingLot(Rectangle rectangle) {
+	public void setPlace(Rectangle rectangle) {
 		this.lot = rectangle;
 	}
 
@@ -29,8 +30,12 @@ public class BuildingFeatures {
 		this.street = street;
 	}
 
+	public void setLocalizationId(String localizationId) {
+		this.localizationId = localizationId;
+	}
+
 	public Building build() {
-		return new Building(lot, rooms, owner, street);
+		return new Building(lot, rooms, owner, street, localizationId);
 	}
 
 }

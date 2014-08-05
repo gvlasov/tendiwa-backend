@@ -6,8 +6,8 @@ import org.tendiwa.geometry.extensions.daveedvMaxRec.MaximalRectanlges;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class RecgangularBuildingLots {
-	private RecgangularBuildingLots() {
+public class RectangularBuildingLots {
+	private RectangularBuildingLots() {
 		throw new UnsupportedOperationException();
 	}
 

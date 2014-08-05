@@ -9,7 +9,7 @@ import java.util.Random;
 /**
  * A fluent builder to create instances of {@link CityGeometry}.
  */
-public class CityBuilder {
+public class CityGeometryBuilder {
 	/**
 	 * @see #withSamplesPerStep(int)
 	 */
@@ -72,12 +72,12 @@ public class CityBuilder {
 	 * @see CityGeometry#highLevelRoadGraph
 	 * @see [Kelly 4.2.0]
 	 */
-	public CityBuilder(UndirectedGraph<Point2D, Segment2D> graph) {
+	public CityGeometryBuilder(UndirectedGraph<Point2D, Segment2D> graph) {
 		this.graph = graph;
 	}
 
 	@SuppressWarnings("unused")
-	public CityBuilder withMaxStartPointsPerCycle(int amount) {
+	public CityGeometryBuilder withMaxStartPointsPerCycle(int amount) {
 		if (amount < 1) {
 			throw new IllegalArgumentException("NumOfStartPoints must be at least 1");
 		}
@@ -86,7 +86,7 @@ public class CityBuilder {
 	}
 
 	@SuppressWarnings("unused")
-	public CityBuilder withSampleRadius(double sampleRadius) {
+	public CityGeometryBuilder withSampleRadius(double sampleRadius) {
 		if (sampleRadius <= 0) {
 			throw new IllegalArgumentException("Sample radius must be > 0");
 		}
@@ -95,7 +95,7 @@ public class CityBuilder {
 	}
 
 	@SuppressWarnings("unused")
-	public CityBuilder withRoadSegmentLength(double length) {
+	public CityGeometryBuilder withRoadSegmentLength(double length) {
 		if (length <= 0) {
 			throw new IllegalArgumentException(
 				"roadSegmentLength must be > 0 (" + length + " provided)"
@@ -106,7 +106,7 @@ public class CityBuilder {
 	}
 
 	@SuppressWarnings("unused")
-	public CityBuilder withRoadSegmentLength(double min, double max) {
+	public CityGeometryBuilder withRoadSegmentLength(double min, double max) {
 		if (min > max) {
 			throw new IllegalArgumentException("min must be <= max");
 		}
@@ -116,7 +116,7 @@ public class CityBuilder {
 	}
 
 	@SuppressWarnings("unused")
-	public CityBuilder withSamplesPerStep(int samplesPerStep) {
+	public CityGeometryBuilder withSamplesPerStep(int samplesPerStep) {
 		if (samplesPerStep <= 0) {
 			throw new IllegalArgumentException("Samples per step must be > 0");
 		}
@@ -125,7 +125,7 @@ public class CityBuilder {
 	}
 
 	@SuppressWarnings("unused")
-	public CityBuilder withDeviationAngle(double dAngle) {
+	public CityGeometryBuilder withDeviationAngle(double dAngle) {
 		if (dAngle < 0 || dAngle >= Math.PI / 4) {
 			throw new IllegalArgumentException(
 				"Deviation angle must be >= 0 and < Math.PI/4 (" + dAngle + " provided)"
@@ -147,7 +147,7 @@ public class CityBuilder {
 	 * @return The same builder.
 	 */
 	@SuppressWarnings("unused")
-	public CityBuilder withSecondaryRoadNetworkDeviationAngle(double dAngle) {
+	public CityGeometryBuilder withSecondaryRoadNetworkDeviationAngle(double dAngle) {
 		if (Math.abs(secondaryRoadNetworkDeviationAngle) >= Math.PI * 2) {
 			throw new IllegalArgumentException(
 				"secondaryRoadNetworkDeviationAngle must be in [0; Math.PI*2)"
@@ -158,7 +158,7 @@ public class CityBuilder {
 	}
 
 	@SuppressWarnings("unused")
-	public CityBuilder withSecondaryRoadNetworkRoadLengthDeviation(double dLength) {
+	public CityGeometryBuilder withSecondaryRoadNetworkRoadLengthDeviation(double dLength) {
 		if (Math.abs(dLength) >= roadSegmentLength) {
 			throw new IllegalArgumentException(
 				"secondaryRoadNetworkRoadLengthDeviation can't be greater than " +
@@ -171,7 +171,7 @@ public class CityBuilder {
 	}
 
 	@SuppressWarnings("unused")
-	public CityBuilder withConnectivity(double connectivity) {
+	public CityGeometryBuilder withConnectivity(double connectivity) {
 		if (connectivity < 0 || connectivity > 1) {
 			throw new IllegalArgumentException(
 				"Connectivity must be < 0 and > 1 (" + connectivity + " provided)"
@@ -182,7 +182,7 @@ public class CityBuilder {
 	}
 
 	@SuppressWarnings("unused")
-	public CityBuilder withRoadsFromPoint(int amount) {
+	public CityGeometryBuilder withRoadsFromPoint(int amount) {
 		if (amount < 2) {
 			throw new IllegalArgumentException("roadsFromPoint must be >= 2");
 		}
@@ -191,7 +191,7 @@ public class CityBuilder {
 	}
 
 	@SuppressWarnings("unused")
-	public CityBuilder withSnapSize(double snapSize) {
+	public CityGeometryBuilder withSnapSize(double snapSize) {
 		if (snapSize < 0) {
 			throw new IllegalArgumentException("snapSize must be >= 0");
 		}
@@ -200,7 +200,7 @@ public class CityBuilder {
 	}
 
 	@SuppressWarnings("unused")
-	public CityBuilder withAxisAlignedSegments(boolean favourAxisAligned) {
+	public CityGeometryBuilder withAxisAlignedSegments(boolean favourAxisAligned) {
 		this.favourAxisAlignedSegments = favourAxisAligned;
 		return this;
 	}
@@ -212,7 +212,7 @@ public class CityBuilder {
 	 * @return this
 	 */
 	@SuppressWarnings("unused")
-	public CityBuilder withDefaults() {
+	public CityGeometryBuilder withDefaults() {
 		sampleRadius = DEFAULT_SAMPLE_RADIUS;
 		samplesPerStep = DEFAULT_SAMPLES_PER_STEP;
 		roadsFromPoint = DEFAULT_ROADS_FROM_POINT;
@@ -287,7 +287,7 @@ public class CityBuilder {
 		);
 	}
 
-	public CityBuilder withSeed(int i) {
+	public CityGeometryBuilder withSeed(int i) {
 		seededRandom = new Random(i);
 		return this;
 	}

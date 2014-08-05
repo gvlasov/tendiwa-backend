@@ -7,6 +7,7 @@ import org.tendiwa.core.meta.Range;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -785,6 +786,22 @@ public class Rectangle implements Placeable, BoundedCellSet {
 
 	public Rectangle moveBy(int x, int y) {
 		return new Rectangle(this.x + x, this.y + y, width, height);
+	}
+
+	public Rectangle dragSide(CardinalDirection dir, int amount) {
+		Objects.requireNonNull(dir);
+		switch (dir) {
+			case N:
+				return new Rectangle(x, y - amount, width, height + amount);
+			case E:
+				return new Rectangle(x, y, width + amount, height);
+			case S:
+				return new Rectangle(x, y, width, height + amount);
+			case W:
+				return new Rectangle(x - amount, y, width + amount, height);
+			default:
+				throw new UnsupportedOperationException();
+		}
 	}
 
 /**

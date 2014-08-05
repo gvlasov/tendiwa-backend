@@ -104,7 +104,7 @@ public class CityBoundsFactory {
 	 * @param maxCityRadius
 	 * 	A maximum radius of a Rectangle containing resulting City.
 	 * @return A new graph that can be used as a base for {@link CityGeometry}.
-	 * @see org.tendiwa.settlements.CityBuilder
+	 * @see CityGeometryBuilder
 	 */
 	public UndirectedGraph<Point2D, Segment2D> create(
 		BoundedCellSet cityShape,

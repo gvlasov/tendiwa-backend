@@ -6,7 +6,7 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.settlements.CityGeometry;
-import org.tendiwa.settlements.CityBuilder;
+import org.tendiwa.settlements.CityGeometryBuilder;
 
 public class InnerFilamentCityDemo implements Runnable {
     public static void main(String[] args) {
@@ -30,7 +30,7 @@ public class InnerFilamentCityDemo implements Runnable {
                 .edge(0, 8)
                 .edge(6, 9);
         TestCanvas canvas = Demos.createCanvas();
-        CityGeometry cityGeometry = new CityBuilder(gc.graph())
+        CityGeometry cityGeometry = new CityGeometryBuilder(gc.graph())
                 .withDefaults()
                 .withRoadSegmentLength(50)
                 .build();

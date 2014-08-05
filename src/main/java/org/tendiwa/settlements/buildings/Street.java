@@ -6,11 +6,11 @@ import org.tendiwa.lexeme.Localizable;
 import java.util.List;
 
 public class Street {
-	private final List<Point2D> points;
-	private Localizable streetName;
+	final List<Point2D> points;
+	private String localizationId;
 
-	public Street(List<Point2D> points, Localizable streetName) {
+	public Street(List<Point2D> points, String localizationId) {
 		this.points = points;
-		this.streetName = streetName;
+		this.localizationId = localizationId;
 	}
 }

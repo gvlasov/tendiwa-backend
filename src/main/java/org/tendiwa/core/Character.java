@@ -643,7 +643,7 @@ public void shoot(UniqueItem weapon, Item projectile, int toX, int toY) {
 
 private ProjectileFlight computeProjectileFlightEndCoordinate(UniqueItem weapon, Item projectile, int toX, int toY) {
 	Cell endCoordinate = new Cell(toX, toY);
-	Cell[] vector = CellSegment.vector(x, y, toX, toY);
+	Cell[] vector = CellSegment.cells(x, y, toX, toY);
 	Character characterHit = null;
 	for (int i = 1; i < vector.length; i++) {
 		Cell c = vector[i];

@@ -426,9 +426,9 @@ public Cell getRayEnd(int endX, int endY) {
 
 public Cell[] rays(int startX, int startY, int endX, int endY) {
 	return Utils.concatAll(
-            CellSegment.vector(startX, startY, endX, endY),
-            CellSegment.vector(startX, startY + (endY > startY ? 1 : -1), endX + (endX > startX ? -1 : 1), endY),
-            CellSegment.vector(startX + (endX > startX ? 1 : -1), startY, endX, endY + (endY > startY ? -1 : 1))
+            CellSegment.cells(startX, startY, endX, endY),
+            CellSegment.cells(startX, startY + (endY > startY ? 1 : -1), endX + (endX > startX ? -1 : 1), endY),
+            CellSegment.cells(startX + (endX > startX ? 1 : -1), startY, endX, endY + (endY > startY ? -1 : 1))
     );
 }
 

@@ -270,7 +270,7 @@ public final class TestCanvas implements DrawableInto {
     }
 
     public void drawLine(Cell p1, Cell p2, Color color) {
-        for (Cell coordinate : CellSegment.vector(p1.x, p1.y, p2.x, p2.y)) {
+        for (Cell coordinate : CellSegment.cells(p1.x, p1.y, p2.x, p2.y)) {
             drawCell(coordinate.x, coordinate.y, color);
         }
     }

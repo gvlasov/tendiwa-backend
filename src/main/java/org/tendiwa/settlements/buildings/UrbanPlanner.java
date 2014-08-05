@@ -1,66 +1,68 @@
 package org.tendiwa.settlements.buildings;
 
+import org.tendiwa.core.CardinalDirection;
+import org.tendiwa.core.HorizontalPlane;
+import org.tendiwa.core.Location;
 import org.tendiwa.geometry.Rectangle;
 
-import java.util.function.Predicate;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 /**
- * Unlike {@link City}, UrbanPlanner knows building places' relation to each other.
+ * UrbanPlanner decides where to place individual {@link Building}s using {@link org.tendiwa.settlements.buildings
+ * .Architecture} available to it.
  */
-public final class UrbanPlanner {
-	private final City city;
+public final class UrbanPlanner implements BuildingPlacer {
 
-	UrbanPlanner(City city) {
-		this.city = city;
+	private final Map<Architecture, ArchitecturePolicy> architecture = new HashMap<>();
+	private final HorizontalPlane plane;
+	private final double streetsWidth;
+	private StreetAssigner streetAssigner;
+
+
+	UrbanPlanner(HorizontalPlane plane, double streetsWidth) {
+		this.plane = plane;
+		this.streetsWidth = streetsWidth;
 	}
 
-	public void raiseBuilding(Rectangle where, Architecture what) {
-		city.addBuildingPlace(where);
-		BuildingFeatures features = new BuildingFeatures();
-		features.setBuildingLot(where);
-		features.setStreet(getClosestStreet(where));
-		what.draw(features, );
-		city.addBuilding(features.build());
-	}
 
-	private Street getClosestStreet(Rectangle lot) {
-		throw new UnsupportedOperationException();
-	}
-
-	/**
-	 * Checks free building places for one that meets {@code condition}, and places a {@link Building} there it it is
-	 * found.
-	 *
-	 * @param architecture
-	 * 	Building type.
-	 * @param condition
-	 * 	A criteria for a {@link Rectangle} where {@code architecture} may be placed.
-	 * @return true if a new {@link Building} is successfully placed, false otherwise.
-	 */
-	public boolean raiseWhereFits(Architecture architecture, Predicate<Rectangle> condition) {
-		for (Rectangle rectangle : city.buildings.keySet()) {
-			if (city.buildings.get(rectangle) == null && architecture.fits(rectangle) && condition.test(rectangle)) {
-				raiseBuilding(rectangle, architecture);
-				return true;
-			}
+	@Override
+	public void placeBuildings(CityBuilder.Info cityInfo) {
+		streetAssigner = new StreetAssigner(cityInfo.getBuildingPlaces(), cityInfo.getStreets(), streetsWidth);
+		Map<Rectangle, Architecture> placement = new BranchAndBoundUrbanPlanningStrategy(
+			architecture,
+			streetAssigner,
+			cityInfo.getBuildingPlaces(),
+			new Random(0)
+		).compute();
+		for (Rectangle rectangle : placement.keySet()) {
+			addBuilding(rectangle, placement.get(rectangle), cityInfo);
 		}
-		return false;
+
 	}
 
 	public void addAvailableArchitecture(Architecture architecture, ArchitecturePolicy policy) {
-
+		this.architecture.put(architecture, policy);
 	}
-	/**
-	 * Occupies all available places with new buildings, doesn't touch places that are already occupied.
-	 */
-	private void raiseAll() {
-		for (Rectangle rectangle : city.buildings.keySet()) {
-			if (city.isOccupied(rectangle)) {
-				continue;
-			}
 
+	private void addBuilding(Rectangle where, Architecture what, CityBuilder.Info info) {
+		if (!what.fits(where)) {
+			throw new ArchitectureError(
+				"Architecture " + what.getClass().getName() + " doesn't fit in rectangle " + where
+			);
 		}
-
+		BuildingFeatures features = new BuildingFeatures();
+		features.setPlace(where);
+		features.setStreet(
+			streetAssigner.getStreetsForBuildingPlace(where).iterator().next()
+		);
+		what.draw(
+			features,
+			CardinalDirection.S,
+			new Location(plane, where.x, where.y, where.width, where.height)
+		);
+		info.addBuilding(features.build());
 	}
 }
 
