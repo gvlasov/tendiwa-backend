@@ -10,7 +10,8 @@ import java.util.*;
 public final class StreetsDetector {
 	private final UndirectedGraph<Point2D, Segment2D> cityGraph;
 	private final Map<Point2D, Deque<Point2D>> ends;
-	private final Collection<Point2D> inChains;
+	private final Collection<Point2D> usedVertices;
+	private final HashSet<Segment2D> usedEdges;
 
 	public static Set<List<Point2D>> detectStreets(UndirectedGraph<Point2D, Segment2D> cityGraph) {
 		return new StreetsDetector(cityGraph).compute();
@@ -18,15 +19,14 @@ public final class StreetsDetector {
 
 	private StreetsDetector(UndirectedGraph<Point2D, Segment2D> cityGraph) {
 		this.cityGraph = cityGraph;
-		ends = new HashMap<>();
-
-		inChains = new HashSet<>(cityGraph.vertexSet().size());
+		this.ends = new HashMap<>();
+		this.usedVertices = new HashSet<>(cityGraph.vertexSet().size());
+		this.usedEdges = new HashSet<>();
 	}
 
 	private Set<List<Point2D>> compute() {
-
 		for (Point2D vertex : cityGraph.vertexSet()) {
-			if (inChains.contains(vertex)) {
+			if (usedVertices.contains(vertex)) {
 				continue;
 			}
 			if (cityGraph.degreeOf(vertex) <= 2) {
@@ -40,12 +40,30 @@ public final class StreetsDetector {
 				}
 			}
 		}
+//		addUnusedEdges();
+
 		Set<List<Point2D>> answer = new LinkedHashSet<>();
 		for (Deque<Point2D> chain : ends.values()) {
 			// LinkedList implements both Deque and List interfaces
 			answer.add((List<Point2D>) chain);
 		}
 		return answer;
+	}
+
+	private void addUnusedEdges() {
+		int u = 0;
+		for (Segment2D edge : cityGraph.edgeSet()) {
+			if (!usedEdges.contains(edge)) {
+				u++;
+				addChain(new LinkedList<Point2D>() {
+					{
+						add(edge.start);
+						add(edge.end);
+					}
+				});
+			}
+		}
+		System.out.println(u);
 	}
 
 	private Collection<Deque<Point2D>> splitIntersectionIntoChains(Point2D vertex) {
@@ -60,13 +78,13 @@ public final class StreetsDetector {
 				boolean added = sorted.add(pair);
 			}
 		}
-		Collection<Segment2D> usedEdges = new HashSet<>();
+		Collection<Segment2D> chainedEdges = new HashSet<>();
 		Collection<Deque<Point2D>> answer = new HashSet<>();
 		// Add pairs of edges angle between which is closest to Math.PI radians.
 		while (!sorted.isEmpty()) {
 			EdgePair bestPair = sorted.last();
 			sorted.remove(bestPair);
-			if (usedEdges.contains(bestPair.one) || usedEdges.contains(bestPair.two)) {
+			if (chainedEdges.contains(bestPair.one) || chainedEdges.contains(bestPair.two)) {
 				continue;
 			}
 			answer.add(new LinkedList<Point2D>() {
@@ -76,12 +94,12 @@ public final class StreetsDetector {
 					add(bestPair.end);
 				}
 			});
-			usedEdges.add(bestPair.one);
-			usedEdges.add(bestPair.two);
+			chainedEdges.add(bestPair.one);
+			chainedEdges.add(bestPair.two);
 		}
 		// There may be edges left without pair. Add all of them as 2-vertex chains.
 		for (Segment2D edge : edges) {
-			if (!usedEdges.contains(edge)) {
+			if (!chainedEdges.contains(edge)) {
 				answer.add(new LinkedList<Point2D>() {
 					{
 						add(edge.start);
@@ -98,8 +116,9 @@ public final class StreetsDetector {
 		int size = chain.size();
 		assert size >= 2 : size;
 		for (Point2D point : chain) {
-			inChains.add(point);
+			usedVertices.add(point);
 		}
+		markUsedEdges(chain);
 		// Combine existing chains on both ends of the new one with the new one
 		Point2D oneEnd = chain.getFirst();
 		Point2D anotherEnd = chain.getLast();
@@ -111,6 +130,20 @@ public final class StreetsDetector {
 		}
 		ends.put(chain.getFirst(), chain);
 		ends.put(chain.getLast(), chain);
+	}
+
+	private void markUsedEdges(Deque<Point2D> chain) {
+		Point2D previous = null;
+		for (Point2D current : chain) {
+			if (previous == null) {
+				previous = current;
+				continue;
+			}
+			Segment2D edge = cityGraph.getEdge(previous, current);
+			assert edge != null;
+			usedEdges.add(edge);
+			previous = current;
+		}
 	}
 
 	private Deque<Point2D> joinChains(Deque<Point2D> chain, Point2D end) {
@@ -201,11 +234,6 @@ public final class StreetsDetector {
 		private final Point2D middle;
 		private final Segment2D one;
 		private final Segment2D two;
-		/**
-		 * This field is necessary to be used in the {@link #compareTo(org.tendiwa.settlements.StreetsDetector.EdgePair)}
-		 * method to differentiate two distinct pairs with the same angle.
-		 */
-		private final double slope;
 
 		private EdgePair(Segment2D one, Segment2D two) {
 			if (one.start.equals(two.start)) {
@@ -233,7 +261,6 @@ public final class StreetsDetector {
 				new double[]{end.x - middle.x, end.y - middle.y},
 				ANY_BOOLEAN_VALUE
 			);
-			this.slope = start.angleTo(end);
 		}
 
 		@Override
@@ -245,13 +272,14 @@ public final class StreetsDetector {
 			if (diff < 0) {
 				return -1;
 			}
-			if (slope > o.slope) {
+			double slope = start.angleTo(end);
+			double anotherSlope = o.start.angleTo(o.end);
+			if (slope > anotherSlope) {
 				return 1;
 			}
-			if (slope < o.slope) {
+			if (slope < anotherSlope) {
 				return -1;
 			}
-//			throw new RuntimeException();
 			return 0;
 		}
 	}

@@ -2,10 +2,8 @@ package org.tendiwa.demos.settlements;
 
 import com.google.common.collect.Iterators;
 import com.google.inject.Inject;
-import org.jgrapht.Graphs;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
-import org.jgrapht.graph.UndirectedGraphUnion;
 import org.tendiwa.data.SampleGraph;
 import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.TestCanvas;
@@ -54,11 +52,19 @@ public class BigCityDemo implements Runnable {
 				.build();
 
 			Set<RectangleWithNeighbors> recGroups = RectangularBuildingLots.findIn(cityGeometry);
-//			canvas.draw(cityGeometry, new CityDrawer());
+			canvas.draw(cityGeometry, new CityDrawer());
 			Iterator<Color> colors = Iterators.cycle(
-				Color.green, Color.blue, Color.cyan, Color.orange, Color.magenta,
-				Color.green.darker(),Color.lightGray, Color.magenta.darker(), Color.darkGray, Color.cyan.darker()
-				);
+				Color.getHSBColor(0, 1, 1),
+				Color.getHSBColor((float) 0.5, 1, 1),
+				Color.getHSBColor((float) 0.25, 1, 1),
+				Color.getHSBColor((float) 0.37, 1, 1),
+				Color.getHSBColor((float) 0.62, 1, 1),
+				Color.getHSBColor(0, (float) 0.5, 1),
+				Color.getHSBColor((float) 0.5, (float) 0.5, 1),
+				Color.getHSBColor((float) 0.25, (float) 0.5, 1),
+				Color.getHSBColor((float) 0.37, (float) 0.5, 1),
+				Color.getHSBColor((float) 0.62, (float) 0.5, 1)
+			);
 			for (RectangleWithNeighbors rectangleWithNeighbors : recGroups) {
 				canvas.draw(
 					rectangleWithNeighbors.rectangle,
@@ -75,17 +81,11 @@ public class BigCityDemo implements Runnable {
 //			for (EnclosedBlock block : encBlocks) {
 //				canvas.draw(block, DrawingEnclosedBlock.withColor(Color.lightGray));
 //			}
-			System.out.println("computing streets");
-			UndirectedGraph<Point2D, Segment2D> allRoads =  cityGeometry.getFullRoadGraph();
-			System.out.println(allRoads.vertexSet());
+			UndirectedGraph<Point2D, Segment2D> allRoads = cityGeometry.getFullRoadGraph();
 			Set<List<Point2D>> streets = StreetsDetector.detectStreets(allRoads);
 			for (List<Point2D> street : streets) {
-				System.out.println(street);
-				canvas.draw(street, DrawingChain.withColor(colors.next()));
+//				canvas.draw(street, DrawingChain.withColor(colors.next()));
 			}
-
-			System.out.println("streets done");
-
 		});
 	}
 }
