@@ -7,11 +7,15 @@ import com.vividsolutions.jts.geom.Coordinate;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.graph.UnmodifiableUndirectedGraph;
+import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawingSegment;
+import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Vectors2D;
 import org.tendiwa.graphs.MinimalCycle;
 
+import java.awt.Color;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -22,13 +26,15 @@ import java.util.stream.Collectors;
  * section
  * 4.3.1, figure 41].
  */
-public class NetworkWithinCycle {
+public final class NetworkWithinCycle {
 	private final SimpleGraph<Point2D, Segment2D> relevantNetwork;
 	private final Set<Point2D> cycleNodes;
 	private final NetworkToBlocks blockDivision;
 	private final boolean favourAxisAlignedSegments;
+	private final HolderOfSplitCycleEdges holderOfSplitCycleEdges;
 	private final SimpleGraph<Point2D, Segment2D> secRoadNetwork;
 	private MinimalCycle<Point2D, Segment2D> minimalCycle;
+	private final UndirectedGraph<Point2D, Segment2D> lowLevelRoadGraph;
 	private Collection<Segment2D> filamentEdges;
 
 	private ImmutableSet<Point2D> filamentEndPoints;
@@ -73,6 +79,8 @@ public class NetworkWithinCycle {
 	 *    java.util.Set, java.util.Collection)}
 	 * @param minimalCycle
 	 * 	A MinimalCycle that contains this NetworkWithinCycle's secondary road network inside it.
+	 * @param lowLevelRoadGraph
+	 * 	Graph that is bounding all cells.
 	 * @param filamentEdges
 	 * 	A collection of all the edges of a {@link CityGeometry#lowLevelRoadGraph} that are not
 	 * 	part of any minimal cycles. The same collection is passed to all the CityCells.
@@ -115,11 +123,12 @@ public class NetworkWithinCycle {
 	 * @param random
 	 * 	A seeded {@link java.util.Random} used to generate the parent {@link CityGeometry}.
 	 * @param favourAxisAlignedSegments
-	 * 	Whether you want segments to be as close to Math.PI/2*n angles as possible.
+	 * @param holderOfSplitCycleEdges
 	 */
 	NetworkWithinCycle(
 		SimpleGraph<Point2D, Segment2D> graph,
 		MinimalCycle<Point2D, Segment2D> minimalCycle,
+		UndirectedGraph<Point2D, Segment2D> lowLevelRoadGraph,
 		Collection<Segment2D> filamentEdges,
 		int roadsFromPoint,
 		double roadSegmentLength,
@@ -129,9 +138,11 @@ public class NetworkWithinCycle {
 		double secondaryRoadNetworkRoadLengthDeviation,
 		int maxNumOfStartPoints,
 		Random random,
-		boolean favourAxisAlignedSegments
+		boolean favourAxisAlignedSegments,
+		HolderOfSplitCycleEdges holderOfSplitCycleEdges
 	) {
 		this.minimalCycle = minimalCycle;
+		this.lowLevelRoadGraph = lowLevelRoadGraph;
 		this.filamentEdges = filamentEdges;
 		this.roadsFromPoint = roadsFromPoint;
 		this.roadSegmentLength = roadSegmentLength;
@@ -144,6 +155,7 @@ public class NetworkWithinCycle {
 
 		relevantNetwork = graph;
 		this.favourAxisAlignedSegments = favourAxisAlignedSegments;
+		this.holderOfSplitCycleEdges = holderOfSplitCycleEdges;
 		secRoadNetwork = new SimpleGraph<>(graph.getEdgeFactory());
 
 		for (Point2D vertex : relevantNetwork.vertexSet()) {
@@ -291,7 +303,6 @@ public class NetworkWithinCycle {
 	 * 	Original angle in radians.
 	 * @return Slightly changed angle in radians.
 	 */
-
 	private double deviateDirection(double newDirection) {
 		v = random.nextDouble();
 		if (favourAxisAlignedSegments) {
@@ -325,7 +336,6 @@ public class NetworkWithinCycle {
 			* (isCycleClockwise ? -1 : 1)
 			* (isStartBeforeEndInRing(new Coordinate(edge.start.x, edge.start.y), new Coordinate(edge.end.x, edge.end.y)) ? 1 : -1));
 	}
-
 
 	/**
 	 * Checks if one coordinate appears earlier in looped {@link #ring}.
@@ -420,21 +430,19 @@ public class NetworkWithinCycle {
 	 * @param target
 	 * 	Another vertex (order is irrelevant since graphs are undirected in NetworkWithinCycle).
 	 */
-	private void addRoad(Point2D source, Point2D target) {
+	private boolean addRoad(Point2D source, Point2D target) {
 		relevantNetwork.addEdge(source, target);
-//        if (source.distanceTo(target) < 0.5) {
-//            System.out.println(source+" "+target);
-//            throw new RuntimeException();
-//        }
-		if (!(isDeadEnd(source) && isDeadEnd(target))) {
-			secRoadNetwork.addVertex(source);
-			secRoadNetwork.addVertex(target);
-			secRoadNetwork.addEdge(source, target);
-			if (cycleNodes.contains(target)) {
-				// Builder may contain the target point, but then it just won't be added.
-				outerPointsBuilder.add(target);
-			}
+		if (isDeadEnd(source) && isDeadEnd(target)) {
+			return false;
 		}
+		secRoadNetwork.addVertex(source);
+		secRoadNetwork.addVertex(target);
+		secRoadNetwork.addEdge(source, target);
+		if (cycleNodes.contains(target)) {
+			// Builder may contain the target point, but then it just won't be added.
+			outerPointsBuilder.add(target);
+		}
+		return true;
 	}
 
 	/**
@@ -477,8 +485,18 @@ public class NetworkWithinCycle {
 			(road.end);
 		relevantNetwork.removeEdge(road);
 		relevantNetwork.addVertex(point);
-		addRoad(road.start, point);
-		addRoad(point, road.end);
+		secRoadNetwork.removeEdge(road);
+		secRoadNetwork.addVertex(point);
+		if (lowLevelRoadGraph.containsEdge(road) || holderOfSplitCycleEdges.isEdgeSplit(road)) {
+			holderOfSplitCycleEdges.splitEdge(road, point);
+		}
+		boolean a = addRoad(road.start, point);
+		boolean b = addRoad(point, road.end);
+		if (a != b) {
+			TestCanvas.canvas.draw(new Segment2D(road.start, point), DrawingSegment2D.withColor(a ? Color.red : Color.blue));
+			TestCanvas.canvas.draw(new Segment2D(point, road.end), DrawingSegment2D.withColor(b ? Color.red : Color
+				.blue));
+		}
 		if (cycleNodes.contains(road.start) && cycleNodes.contains(road.end)) {
 			cycleNodes.add(point);
 			outerPointsBuilder.add(point);
@@ -495,7 +513,7 @@ public class NetworkWithinCycle {
 	/**
 	 * [Kelly figure 42]
 	 * <p>
-	 * Finds the roads of to start secondary road network generation from.
+	 * Finds the roads to start secondary road network generation from.
 	 *
 	 * @param cycle
 	 * 	A MinimalCycle that contains this NetworkWithinCycle's secondary road network inside it.

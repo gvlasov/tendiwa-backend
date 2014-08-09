@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableSet;
 import org.jgrapht.EdgeFactory;
 import org.jgrapht.UndirectedGraph;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Point2D;
 
 import java.util.Collection;

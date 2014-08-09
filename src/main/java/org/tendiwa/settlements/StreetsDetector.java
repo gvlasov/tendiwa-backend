@@ -1,5 +1,7 @@
 package org.tendiwa.settlements;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import org.jgrapht.UndirectedGraph;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
@@ -9,9 +11,10 @@ import java.util.*;
 
 public final class StreetsDetector {
 	private final UndirectedGraph<Point2D, Segment2D> cityGraph;
-	private final Map<Point2D, Deque<Point2D>> ends;
+	private final Map<Point2D, Deque<Point2D>> ends = new HashMap<>();
+	private final Multimap<Segment2D, List<Point2D>> deferredEnds = HashMultimap.create();
 	private final Collection<Point2D> usedVertices;
-	private final HashSet<Segment2D> usedEdges;
+	private final HashSet<Segment2D> usedEdges = new HashSet<>();
 
 	public static Set<List<Point2D>> detectStreets(UndirectedGraph<Point2D, Segment2D> cityGraph) {
 		return new StreetsDetector(cityGraph).compute();
@@ -19,28 +22,30 @@ public final class StreetsDetector {
 
 	private StreetsDetector(UndirectedGraph<Point2D, Segment2D> cityGraph) {
 		this.cityGraph = cityGraph;
-		this.ends = new HashMap<>();
 		this.usedVertices = new HashSet<>(cityGraph.vertexSet().size());
-		this.usedEdges = new HashSet<>();
 	}
 
 	private Set<List<Point2D>> compute() {
 		for (Point2D vertex : cityGraph.vertexSet()) {
-			if (usedVertices.contains(vertex)) {
-				continue;
-			}
 			if (cityGraph.degreeOf(vertex) <= 2) {
+				if (usedVertices.contains(vertex)) {
+					continue;
+				}
 				Deque<Point2D> chain = find2DegreeChain(vertex);
 				if (chain.size() >= 2) {
 					addChain(chain);
 				}
 			} else if (cityGraph.degreeOf(vertex) >= 3) {
 				for (Deque<Point2D> chain : splitIntersectionIntoChains(vertex)) {
-					addChain(chain);
+					// Unlike 2-degree vertices case, here we don't add produced chains right away, because otherwise
+					// the chains would interfere with each other. Instead, we defer assembling chains on
+					// intersections (i.e., on vertices with degree >= 3) until all 2-vertex chains on intersections
+					// are found.
+					rememberChainFromIntersection((List<Point2D>) chain);
 				}
 			}
 		}
-//		addUnusedEdges();
+		assembleDeferredChains();
 
 		Set<List<Point2D>> answer = new LinkedHashSet<>();
 		for (Deque<Point2D> chain : ends.values()) {
@@ -50,20 +55,14 @@ public final class StreetsDetector {
 		return answer;
 	}
 
-	private void addUnusedEdges() {
-		int u = 0;
-		for (Segment2D edge : cityGraph.edgeSet()) {
-			if (!usedEdges.contains(edge)) {
-				u++;
-				addChain(new LinkedList<Point2D>() {
-					{
-						add(edge.start);
-						add(edge.end);
-					}
-				});
-			}
+	private void assembleDeferredChains() {
+	}
+
+	private void rememberChainFromIntersection(List<Point2D> chain) {
+		int lastButOne = chain.size() - 1;
+		for (int i = 0; i < lastButOne; i++) {
+			deferredEnds.put(cityGraph.getEdge(chain.get(i), chain.get(i + 1)), chain);
 		}
-		System.out.println(u);
 	}
 
 	private Collection<Deque<Point2D>> splitIntersectionIntoChains(Point2D vertex) {
@@ -71,21 +70,25 @@ public final class StreetsDetector {
 		SortedSet<EdgePair> sorted = new TreeSet<>();
 		List<Segment2D> edges = new ArrayList<>(cityGraph.edgesOf(vertex));
 		int size = edges.size();
-		//
 		for (int i = 0; i < size; i++) {
 			for (int j = i + 1; j < size; j++) {
 				EdgePair pair = new EdgePair(edges.get(i), edges.get(j));
-				boolean added = sorted.add(pair);
+				sorted.add(pair);
 			}
 		}
+		// Here are stored edges coming from this vertex that already have the best pair.
 		Collection<Segment2D> chainedEdges = new HashSet<>();
 		Collection<Deque<Point2D>> answer = new HashSet<>();
 		// Add pairs of edges angle between which is closest to Math.PI radians.
 		while (!sorted.isEmpty()) {
-			EdgePair bestPair = sorted.last();
+			EdgePair bestPair = sorted.first();
 			sorted.remove(bestPair);
 			if (chainedEdges.contains(bestPair.one) || chainedEdges.contains(bestPair.two)) {
 				continue;
+			}
+			if (bestPair.angle < Math.PI / 2) {
+//				If angle is to extreme to be considered a continuous chain
+//				continue;
 			}
 			answer.add(new LinkedList<Point2D>() {
 				{
@@ -256,11 +259,16 @@ public final class StreetsDetector {
 			}
 			this.one = one;
 			this.two = two;
-			this.angle = Vectors2D.angleBetweenVectors(
-				new double[]{middle.x - start.x, middle.y - start.y},
+			double angle = Vectors2D.angleBetweenVectors(
+				new double[]{start.x - middle.x, start.y - middle.y},
 				new double[]{end.x - middle.x, end.y - middle.y},
 				ANY_BOOLEAN_VALUE
 			);
+			if (angle > Math.PI) {
+				angle = Math.PI * 2 - angle;
+			}
+			assert angle > 0 && angle < Math.PI + Vectors2D.EPSILON;
+			this.angle = angle;
 		}
 
 		@Override

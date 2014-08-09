@@ -9,6 +9,7 @@ import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
 import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.graphs.MinimumCycleBasis;
+import org.tendiwa.graphs.PlanarGraphs;
 import org.tendiwa.settlements.RayIntersection;
 
 import java.awt.Color;
@@ -37,7 +38,7 @@ public class PolygonShrinker {
 
 
 	public UndirectedGraph<Point2D, Segment2D> asGraph() {
-		UndirectedGraph<Point2D, Segment2D> graph = new SimpleGraph<>(Segment2D::new);
+		UndirectedGraph<Point2D, Segment2D> graph = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
 		for (Segment2D segment : shrunkPolygonsSegments) {
 			graph.addVertex(segment.start);
 			graph.addVertex(segment.end);
@@ -101,7 +102,7 @@ public class PolygonShrinker {
 			);
 			assert !edgeToFace.containsKey(originalFaceEdge) : originalFaceEdge;
 			// None of faces may include more than 1 original edge.
-			assert Lists.newArrayList(cycle).stream().allMatch(p->!unusedEdges.contains(p));
+			assert Lists.newArrayList(cycle).stream().allMatch(p -> !unusedEdges.contains(p));
 			edgeToFace.put(originalFaceEdge, cycle);
 		}
 //		assert edges.size() == edgeToFace.size() : edges.size() + " " + edgeToFace.size();

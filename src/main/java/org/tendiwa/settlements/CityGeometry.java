@@ -19,7 +19,7 @@ import java.util.*;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
-public class CityGeometry {
+public final class CityGeometry {
 	/**
 	 * [Kelly section 4.2]
 	 * <p>
@@ -48,6 +48,7 @@ public class CityGeometry {
 	private double secondaryRoadNetworkDeviationAngle;
 	private double secondaryRoadNetworkRoadLengthDeviation;
 	private final boolean favourAxisAlignedSegments;
+	private final HolderOfSplitCycleEdges holderOfSplitCycleEdges = new HolderOfSplitCycleEdges();
 
 	/**
 	 * @param highLevelRoadGraph
@@ -104,7 +105,7 @@ public class CityGeometry {
 	 * 	#lowLevelRoadGraph produced from #highLevelRoadGraph intersects itself.
 	 */
 	public CityGeometry(
-		RoadGraph highLevelRoadGraph,
+		UndirectedGraph<Point2D, Segment2D> highLevelRoadGraph,
 		SampleSelectionStrategy strategy,
 		double sampleRadius,
 		int samplesPerStep,
@@ -158,7 +159,6 @@ public class CityGeometry {
 		highLevelGraphEdges = highLevelRoadGraph.edgeSet();
 		lowLevelRoadGraph = buildLowLevelGraph();
 		if (!PlanarGraphEdgesSelfIntersection.test(lowLevelRoadGraph)) {
-//            canvas = new TestCanvas(1, 800, 600);
 			ImmutableCollection<Point2D> allIntersections = PlanarGraphEdgesSelfIntersection
 				.findAllIntersections(lowLevelRoadGraph);
 			for (Point2D point : allIntersections) {
@@ -168,12 +168,11 @@ public class CityGeometry {
 			throw new IllegalArgumentException("Graph intersects itself");
 		}
 
-
 		ImmutableSet.Builder<NetworkWithinCycle> cellsBuilder = ImmutableSet.builder();
 		fillBuilderWithCells(cellsBuilder);
 		cells = cellsBuilder.build();
 		if (cells.isEmpty()) {
-			throw new RuntimeException("A City with 0 city cells was made");
+			throw new SettlementGenerationException("A City with 0 city cells was made");
 		}
 	}
 
@@ -198,6 +197,7 @@ public class CityGeometry {
 			}
 		}
 		// Sort cycles to get a fixed order of iteration (so a City will be reproducible with the same seed).
+		// TODO: Maybe a LinkedHashSet will do here?
 		List<MinimalCycle<Point2D, Segment2D>> sortedCycles = cellGraphs
 			.keySet()
 			.stream()
@@ -218,6 +218,7 @@ public class CityGeometry {
 			cellsBuilder.add(new NetworkWithinCycle(
 				cellGraphs.get(cycle),
 				cycle,
+				lowLevelRoadGraph,
 				filamentEdges,
 				roadsFromPoint,
 				roadSegmentLength,
@@ -227,7 +228,8 @@ public class CityGeometry {
 				secondaryRoadNetworkRoadLengthDeviation,
 				maxStartPointsPerCell,
 				random,
-				favourAxisAlignedSegments
+				favourAxisAlignedSegments,
+				holderOfSplitCycleEdges
 			));
 		}
 	}
@@ -289,7 +291,7 @@ public class CityGeometry {
 		MinimalCycle<Point2D, Segment2D> cycle,
 		Set<Filament<Point2D, Segment2D>> filaments,
 		Collection<MinimalCycle<Point2D, Segment2D>> enclosedCycles) {
-		SimpleGraph<Point2D, Segment2D> graph = new SimpleGraph<>(Segment2D::new);
+		SimpleGraph<Point2D, Segment2D> graph = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
 		for (Filament<Point2D, Segment2D> filament : filaments) {
 			for (Point2D vertex : filament.vertexList()) {
 				graph.addVertex(vertex);
@@ -353,6 +355,7 @@ public class CityGeometry {
 		}
 		return new RoadGraph(vertices, edges);
 	}
+
 
 	/**
 	 * Finds out how many road segments of length {@link #dSample} with deviation {@link #deviationAngleRad} can be
@@ -485,12 +488,22 @@ public class CityGeometry {
 	}
 
 	public UndirectedGraph<Point2D, Segment2D> getFullRoadGraph() {
-		UndirectedGraph<Point2D, Segment2D> union = new SimpleGraph<>(Segment2D::new);
+		UndirectedGraph<Point2D, Segment2D> union = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
 		for (Point2D vertex : lowLevelRoadGraph.vertexSet()) {
 			union.addVertex(vertex);
 		}
 		for (Segment2D edge : lowLevelRoadGraph.edgeSet()) {
-			union.addEdge(edge.start, edge.end, edge);
+			if (holderOfSplitCycleEdges.isEdgeSplit(edge)) {
+				UndirectedGraph<Point2D, Segment2D> graph = holderOfSplitCycleEdges.getGraph(edge);
+				for (Point2D subEdgeVertex : graph.vertexSet()) {
+					union.addVertex(subEdgeVertex);
+				}
+				for (Segment2D subEdge : graph.edgeSet()) {
+					union.addEdge(subEdge.start, subEdge.end, subEdge);
+				}
+			} else {
+				union.addEdge(edge.start, edge.end, edge);
+			}
 		}
 		for (NetworkWithinCycle cell : cells) {
 			for (Point2D vertex : cell.network().vertexSet()) {

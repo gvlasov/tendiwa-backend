@@ -14,16 +14,15 @@ public class CityDrawer implements DrawingAlgorithm<CityGeometry> {
 
     @Override
     public void draw(CityGeometry cityGeometry, TestCanvas canvas) {
-		Iterator<Color> colors = Iterators.cycle(Color.red, Color.blue, Color.green);
+		Iterator<Color> colors = Iterators.cycle(Color.red);
         cityGeometry.getCells().stream()
                 .forEach(c -> c.network().edgeSet().stream()
                         .forEach(line -> {
 							canvas.drawLine(line.start.toCell(), line.end.toCell(), colors.next());
-							System.out.println(1);
 						})
                 );
         for (Segment2D roadSegment : cityGeometry.getLowLevelRoadGraph().edgeSet()) {
-//            canvas.drawLine(roadSegment, colors.next());
+            canvas.drawLine(roadSegment, colors.next());
 //			System.out.println(1);
 		}
 //		for (Point2D vertex : city.getLowLevelRoadGraph().vertexSet()) {

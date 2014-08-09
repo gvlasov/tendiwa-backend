@@ -7,6 +7,7 @@ import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.extensions.straightSkeleton.CycleExtraVerticesRemover;
 import org.tendiwa.geometry.extensions.twakStraightSkeleton.ui.Bar;
 import org.tendiwa.geometry.extensions.twakStraightSkeleton.utils.*;
+import org.tendiwa.graphs.PlanarGraphs;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.vecmath.Point2d;
@@ -86,7 +87,7 @@ public class TwakStraightSkeleton implements StraightSkeleton {
 
 	@Override
 	public UndirectedGraph<Point2D, Segment2D> graph() {
-		SimpleGraph<Point2D, Segment2D> graph = new SimpleGraph<>(Segment2D::new);
+		SimpleGraph<Point2D, Segment2D> graph = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
 		edges
 			.stream()
 			.map(

@@ -8,6 +8,7 @@ import org.tendiwa.data.SampleGraph;
 import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingChain;
+import org.tendiwa.drawing.extensions.DrawingEnclosedBlock;
 import org.tendiwa.drawing.extensions.DrawingModule;
 import org.tendiwa.drawing.extensions.DrawingRectangle;
 import org.tendiwa.geometry.Point2D;
@@ -54,16 +55,16 @@ public class BigCityDemo implements Runnable {
 			Set<RectangleWithNeighbors> recGroups = RectangularBuildingLots.findIn(cityGeometry);
 			canvas.draw(cityGeometry, new CityDrawer());
 			Iterator<Color> colors = Iterators.cycle(
+				Color.getHSBColor((float) 0.5, 1, (float) 0.8),
+				Color.getHSBColor((float) 0.25, 1, (float) 0.8),
 				Color.getHSBColor(0, 1, 1),
 				Color.getHSBColor((float) 0.5, 1, 1),
 				Color.getHSBColor((float) 0.25, 1, 1),
-				Color.getHSBColor((float) 0.37, 1, 1),
-				Color.getHSBColor((float) 0.62, 1, 1),
+				Color.getHSBColor((float) 0.80, 1, 1),
 				Color.getHSBColor(0, (float) 0.5, 1),
-				Color.getHSBColor((float) 0.5, (float) 0.5, 1),
-				Color.getHSBColor((float) 0.25, (float) 0.5, 1),
-				Color.getHSBColor((float) 0.37, (float) 0.5, 1),
-				Color.getHSBColor((float) 0.62, (float) 0.5, 1)
+				Color.getHSBColor((float) 0.37, 1, 1),
+				Color.getHSBColor((float) 0.37, 1, (float) 0.0),
+				Color.getHSBColor((float) 0.62, 1, (float) 0.8)
 			);
 			for (RectangleWithNeighbors rectangleWithNeighbors : recGroups) {
 				canvas.draw(
@@ -76,8 +77,8 @@ public class BigCityDemo implements Runnable {
 						DrawingRectangle.withColorAndBorder(Color.magenta, Color.magenta.darker())
 					);
 				}
-
 			}
+
 //			for (EnclosedBlock block : encBlocks) {
 //				canvas.draw(block, DrawingEnclosedBlock.withColor(Color.lightGray));
 //			}

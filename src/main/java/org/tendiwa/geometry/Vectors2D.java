@@ -40,18 +40,6 @@ public class Vectors2D {
 		return false;
 	}
 
-//	public static boolean areShitParallel(double[] a, double[] b) {
-//		boolean zeroByY = a[1] == 0 || b[1] == 0;
-//		if (zeroByY) {
-//			boolean zeroByX = a[0] == 0 || b[0] == 0;
-//			if (zeroByX) {
-//				return false;
-//			}
-//			return Math.abs(a[1] / a[0] - b[1] / b[0]) < Vectors2D.EPSILON;
-//		}
-//		return Math.abs(a[0] / a[1] - b[0] / b[1]) < Vectors2D.EPSILON;
-//	}
-
 	public static double[] normalize(double[] v) {
 		double magnitude = magnitude(v);
 		return new double[]{v[0] / magnitude, v[1] / magnitude};
@@ -65,6 +53,12 @@ public class Vectors2D {
 		return (a[0] * b[0] + a[1] * b[1]);
 	}
 
+	/**
+	 * @param a
+	 * @param b
+	 * @param clockwise
+	 * @return 0<=angle<Math.PI*2
+     */
 	public static double angleBetweenVectors(double[] a, double[] b, boolean clockwise) {
 		double angleA = Math.atan2(b[1], b[0]);
 		double angleB = Math.atan2(a[1], a[0]);

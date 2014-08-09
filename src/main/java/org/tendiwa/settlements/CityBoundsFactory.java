@@ -11,6 +11,7 @@ import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.extensions.CachedCellSet;
 import org.tendiwa.geometry.extensions.ChebyshevDistanceBufferBorder;
+import org.tendiwa.graphs.PlanarGraphs;
 import org.tendiwa.pathfinding.dijkstra.PathTable;
 
 /**
@@ -75,7 +76,7 @@ public class CityBoundsFactory {
 	}
 
 	private UndirectedGraph<Point2D, Segment2D> bufferBorderToGraph(CachedCellSet bufferBorder) {
-		UndirectedGraph<Point2D, Segment2D> graph = new SimpleGraph<>(Segment2D::new);
+		UndirectedGraph<Point2D, Segment2D> graph = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
 		BiMap<Cell, Point2D> cell2PointMap = HashBiMap.create();
 		ImmutableSet<Cell> borderCells = bufferBorder.toSet();
 		for (Cell cell : borderCells) {

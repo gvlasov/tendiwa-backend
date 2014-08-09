@@ -16,7 +16,7 @@ import java.util.function.Function;
 
 public class DrawingGraph {
 	static Iterator<Color> cycleColors = Iterators.cycle(Color.red, Color.blue, Color.green, Color.orange,
-		 Color.magenta, Color.cyan);
+		Color.magenta, Color.cyan);
 
 	public static <V, E> DrawingAlgorithm<UndirectedGraph<V, E>> withAliases(
 		GraphConstructor<V, E> constructor,
@@ -51,7 +51,6 @@ public class DrawingGraph {
 		final Color color,
 		int size
 	) {
-
 		return (shape, canvas) -> {
 			DrawingAlgorithm<Cell> pointDrawing = DrawingCell.withColorAndSize(color, size);
 			for (org.tendiwa.geometry.Segment2D e : shape.edgeSet()) {
@@ -65,16 +64,15 @@ public class DrawingGraph {
 					color
 				);
 			}
-//            for (Point2D v : shape.vertexSet()) {
-//                canvas.draw(new Cell((int) Math.round(v.x), (int) Math.round(v.y)), pointDrawing);
-//            }
+			for (Point2D v : shape.vertexSet()) {
+				canvas.draw(new Cell((int) Math.round(v.x), (int) Math.round(v.y)), pointDrawing);
+			}
 		};
 	}
 
-	public static DrawingAlgorithm<UndirectedGraph<Point2D, org.tendiwa.geometry.Segment2D>> withColorAndAntialiasing(
+	public static DrawingAlgorithm<UndirectedGraph<Point2D, Segment2D>> withColorAndAntialiasing(
 		final Color color
 	) {
-
 		return (shape, canvas) -> {
 			for (org.tendiwa.geometry.Segment2D e : shape.edgeSet()) {
 				Point2D source = shape.getEdgeSource(e);

@@ -273,7 +273,6 @@ public final class TestCanvas implements DrawableInto {
         for (Cell coordinate : CellSegment.cells(p1.x, p1.y, p2.x, p2.y)) {
             drawCell(coordinate.x, coordinate.y, color);
         }
-		canvas.panel.repaint();
     }
 
     public void drawLine(Segment2D line, Color color) {

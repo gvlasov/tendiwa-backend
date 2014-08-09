@@ -6,7 +6,6 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.graphs.GraphConstructor;
 
 public class SampleGraph {
-
     public static GraphConstructor<Point2D, Segment2D> create() {
         return new GraphConstructor<>(Segment2D::new)
                     .vertex(0, new Point2D(50, 50))
@@ -16,7 +15,7 @@ public class SampleGraph {
                     .vertex(4, new Point2D(200, 150))
                     .vertex(5, new Point2D(200, 300))
                     .vertex(6, new Point2D(350, 150))
-                    .vertex(7, new Point2D(350, 300))
+                    .vertex(7, new Point2D(350, 300)) // Вот эта y + 300
                     .vertex(8, new Point2D(32, 245))
                     .vertex(9, new Point2D(108, 214))
                     .vertex(10, new Point2D(152, 298))
