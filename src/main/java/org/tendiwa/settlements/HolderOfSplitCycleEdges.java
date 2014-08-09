@@ -7,7 +7,6 @@ import org.tendiwa.geometry.GeometryException;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Vectors2D;
-import org.tendiwa.graphs.PlanarGraphs;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,8 +33,9 @@ final class HolderOfSplitCycleEdges {
 	void splitEdge(Segment2D edgeToSplit, Point2D point) {
 		UndirectedGraph<Point2D, Segment2D> graph = edgesToSubEdgeGraphs.get(edgeToSplit);
 		if (graph == null) {
-			graph = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
+			graph = new SimpleGraph<>(org.tendiwa.geometry.extensions.PlanarGraphs.getEdgeFactory());
 			edgesToSubEdgeGraphs.put(edgeToSplit, graph);
+			edgesToSubEdgeGraphs.put(edgeToSplit.reverse(), graph);
 			assert graph.edgeSet().isEmpty();
 			graph.addVertex(edgeToSplit.start);
 			graph.addVertex(edgeToSplit.end);
@@ -46,12 +46,15 @@ final class HolderOfSplitCycleEdges {
 			edgesToSubEdgeGraphs.put(addedEdge, graph);
 			return;
 		}
-		Segment2D subedge = findSubEdgeThatContains(graph, point);
-		graph.removeEdge(subedge);
+		if (graph.containsVertex(point)) {
+			return;
+		}
+		Segment2D subEdge = findSubEdgeThatContains(graph, point);
+		graph.removeEdge(subEdge);
 		graph.addVertex(point);
-		Segment2D addedEdge = graph.addEdge(subedge.start, point);
+		Segment2D addedEdge = graph.addEdge(subEdge.start, point);
 		edgesToSubEdgeGraphs.put(addedEdge, graph);
-		addedEdge = graph.addEdge(point, subedge.end);
+		addedEdge = graph.addEdge(point, subEdge.end);
 		edgesToSubEdgeGraphs.put(addedEdge, graph);
 	}
 

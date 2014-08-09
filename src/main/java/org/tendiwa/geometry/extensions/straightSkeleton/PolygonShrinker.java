@@ -9,7 +9,6 @@ import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
 import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.graphs.MinimumCycleBasis;
-import org.tendiwa.graphs.PlanarGraphs;
 import org.tendiwa.settlements.RayIntersection;
 
 import java.awt.Color;
@@ -38,7 +37,7 @@ public class PolygonShrinker {
 
 
 	public UndirectedGraph<Point2D, Segment2D> asGraph() {
-		UndirectedGraph<Point2D, Segment2D> graph = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
+		UndirectedGraph<Point2D, Segment2D> graph = new SimpleGraph<>(org.tendiwa.geometry.extensions.PlanarGraphs.getEdgeFactory());
 		for (Segment2D segment : shrunkPolygonsSegments) {
 			graph.addVertex(segment.start);
 			graph.addVertex(segment.end);

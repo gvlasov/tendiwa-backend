@@ -14,6 +14,7 @@ import org.tendiwa.drawing.extensions.DrawingRectangle;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.extensions.twakStraightSkeleton.TwakStraightSkeleton;
 import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.settlements.*;
 
@@ -21,6 +22,7 @@ import java.awt.Color;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class BigCityDemo implements Runnable {
@@ -36,8 +38,6 @@ public class BigCityDemo implements Runnable {
 	public void run() {
 		GraphConstructor<Point2D, Segment2D> gc = SampleGraph.create();
 		SimpleGraph<Point2D, Segment2D> graph = gc.graph();
-//        canvas.draw(graph, DrawingGraph.multicoloredEdges());
-//        for (int i = 0; i < 100; i++) {
 		TestCanvas.canvas = canvas;
 		IntStream.range(0, 1).forEach(seed -> {
 			CityGeometry cityGeometry = new CityGeometryBuilder(graph)
@@ -53,7 +53,7 @@ public class BigCityDemo implements Runnable {
 				.build();
 
 			Set<RectangleWithNeighbors> recGroups = RectangularBuildingLots.findIn(cityGeometry);
-			canvas.draw(cityGeometry, new CityDrawer());
+//			canvas.draw(cityGeometry, new CityDrawer());
 			Iterator<Color> colors = Iterators.cycle(
 				Color.getHSBColor((float) 0.5, 1, (float) 0.8),
 				Color.getHSBColor((float) 0.25, 1, (float) 0.8),
@@ -78,10 +78,15 @@ public class BigCityDemo implements Runnable {
 					);
 				}
 			}
+			Set<SecondaryRoadNetworkBlock> blocks = cityGeometry.getBlocks()
+//				.stream()
+//				.flatMap(b -> b.shrinkToRegions(3, 0).stream())
+//				.collect(Collectors.toSet());
+			;
 
-//			for (EnclosedBlock block : encBlocks) {
-//				canvas.draw(block, DrawingEnclosedBlock.withColor(Color.lightGray));
-//			}
+			for (EnclosedBlock block : blocks) {
+				canvas.draw(block, DrawingEnclosedBlock.withColor(Color.lightGray));
+			}
 			UndirectedGraph<Point2D, Segment2D> allRoads = cityGeometry.getFullRoadGraph();
 			Set<List<Point2D>> streets = StreetsDetector.detectStreets(allRoads);
 			for (List<Point2D> street : streets) {

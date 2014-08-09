@@ -277,15 +277,13 @@ public final class NetworkWithinCycle {
 		if (nodes.isEmpty()) {
 			return nodes;
 		}
-		for (
-			DirectionFromPoint point = iterator.next();
-			iterator.hasNext();
-			point = iterator.next()
-			) {
+		DirectionFromPoint point;
+		do {
+			point = iterator.next();
 			if (relevantNetwork.degreeOf(point.node) != 1) {
 				iterator.remove();
 			}
-		}
+		} while (iterator.hasNext());
 		return nodes;
 	}
 
@@ -393,14 +391,14 @@ public final class NetworkWithinCycle {
 				return snapEvent.targetNode;
 			case ROAD_SNAP:
 				if (random.nextDouble() < connectivity) {
-					if (!filamentEdges.contains(snapEvent.road)) {
-						deadEnds.add(snapEvent.targetNode);
-					}
 					if (isDeadEnd(snapEvent.road.start) && isDeadEnd(snapEvent.road.end)) {
 						deadEnds.add(snapEvent.targetNode);
 					}
 					insertNode(snapEvent.road, snapEvent.targetNode);
 					addRoad(source, snapEvent.targetNode);
+					if (!filamentEdges.contains(snapEvent.road)) {
+						deadEnds.add(snapEvent.targetNode);
+					}
 					return snapEvent.targetNode;
 				} else {
 					return null;

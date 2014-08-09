@@ -9,8 +9,7 @@ import org.tendiwa.drawing.extensions.DrawingCell;
 import org.tendiwa.drawing.extensions.DrawingGraph;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.extensions.PlanarGraphEdgesSelfIntersection;
-import org.tendiwa.geometry.extensions.Point2DRowComparator;
+import org.tendiwa.geometry.extensions.*;
 import org.tendiwa.graphs.*;
 
 import java.awt.Color;
@@ -291,7 +290,7 @@ public final class CityGeometry {
 		MinimalCycle<Point2D, Segment2D> cycle,
 		Set<Filament<Point2D, Segment2D>> filaments,
 		Collection<MinimalCycle<Point2D, Segment2D>> enclosedCycles) {
-		SimpleGraph<Point2D, Segment2D> graph = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
+		SimpleGraph<Point2D, Segment2D> graph = new SimpleGraph<>(org.tendiwa.geometry.extensions.PlanarGraphs.getEdgeFactory());
 		for (Filament<Point2D, Segment2D> filament : filaments) {
 			for (Point2D vertex : filament.vertexList()) {
 				graph.addVertex(vertex);
@@ -488,7 +487,7 @@ public final class CityGeometry {
 	}
 
 	public UndirectedGraph<Point2D, Segment2D> getFullRoadGraph() {
-		UndirectedGraph<Point2D, Segment2D> union = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
+		UndirectedGraph<Point2D, Segment2D> union = new SimpleGraph<>(org.tendiwa.geometry.extensions.PlanarGraphs.getEdgeFactory());
 		for (Point2D vertex : lowLevelRoadGraph.vertexSet()) {
 			union.addVertex(vertex);
 		}
@@ -499,7 +498,8 @@ public final class CityGeometry {
 					union.addVertex(subEdgeVertex);
 				}
 				for (Segment2D subEdge : graph.edgeSet()) {
-					union.addEdge(subEdge.start, subEdge.end, subEdge);
+					boolean added = union.addEdge(subEdge.start, subEdge.end, subEdge);
+					assert added;
 				}
 			} else {
 				union.addEdge(edge.start, edge.end, edge);

@@ -28,6 +28,8 @@ public class NetworkToBlocks {
 		double snapSize
 	) {
 		if (!filamentEnds.isEmpty()) {
+			UndirectedGraph<Point2D, Segment2D> r = relevantNetwork;
+			assert filamentEnds.stream().allMatch(e -> r.degreeOf(e.node) == 1);
 			relevantNetwork = PlanarGraphs.copyRelevantNetwork(relevantNetwork);
 			GraphLooseEndsCloser
 				.withSnapSize(snapSize)

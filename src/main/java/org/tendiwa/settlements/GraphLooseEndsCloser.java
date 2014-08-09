@@ -54,6 +54,7 @@ public class GraphLooseEndsCloser {
 	void closeLooseEnds(
 	) {
 		for (DirectionFromPoint end : filamentEnds) {
+			assert sourceGraph.degreeOf(end.node) == 1;
 			if (isUsed(end)) {
 				continue;
 			}

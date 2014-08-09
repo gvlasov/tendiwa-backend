@@ -5,7 +5,6 @@ import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.straightSkeleton.PolygonShrinker;
-import org.tendiwa.graphs.PlanarGraphs;
 
 import java.util.List;
 import java.util.Map;
@@ -33,7 +32,7 @@ public class TwakPolygonShrinker extends PolygonShrinker {
 		UndirectedGraph<Point2D, Segment2D> arcsGraph,
 		List<Segment2D> edges
 	) {
-		UndirectedGraph<Point2D, Segment2D> graph = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
+		UndirectedGraph<Point2D, Segment2D> graph = new SimpleGraph<>(org.tendiwa.geometry.extensions.PlanarGraphs.getEdgeFactory());
 
 		for (Segment2D arc : arcsGraph.edgeSet()) {
 			graph.addVertex(arc.start);
