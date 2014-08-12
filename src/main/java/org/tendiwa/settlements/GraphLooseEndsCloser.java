@@ -9,12 +9,12 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * Adds new edges (and possibly vertices) to a planar graph so it doesn't have any vertices of degree 1 (loose ends).
+ * Adds new edges and vertices to a planar graph so it doesn't have any vertices of degree 1 (loose ends).
  * <p>
- * This is not intended to be used with planar graphs that have vertices of degree 0.
+ * This class is not intended to be used with planar graphs that have any vertices of degree 0.
  */
 public class GraphLooseEndsCloser {
-	private final Set<DirectionFromPoint> used = new HashSet<>();
+	private final Set<Point2D> used = new HashSet<>();
 	private final UndirectedGraph<Point2D, Segment2D> sourceGraph;
 	private double snapSize;
 	private final Set<DirectionFromPoint> filamentEnds;
@@ -54,10 +54,10 @@ public class GraphLooseEndsCloser {
 	void closeLooseEnds(
 	) {
 		for (DirectionFromPoint end : filamentEnds) {
-			assert sourceGraph.degreeOf(end.node) == 1;
-			if (isUsed(end)) {
+			if (isUsed(end.node)) {
 				continue;
 			}
+			assert sourceGraph.degreeOf(end.node) == 1;
 			edgeToClosestSnap(end);
 		}
 	}
@@ -69,7 +69,7 @@ public class GraphLooseEndsCloser {
 	 * 	A loose end.
 	 * @return true if it did, false otherwise.
 	 */
-	private boolean isUsed(DirectionFromPoint end) {
+	private boolean isUsed(Point2D end) {
 		return used.contains(end);
 	}
 
@@ -96,7 +96,7 @@ public class GraphLooseEndsCloser {
 				break;
 			case NODE_SNAP:
 				sourceGraph.addEdge(end.node, test.targetNode);
-				used.add(end);
+				used.add(test.targetNode);
 				break;
 			case ROAD_SNAP:
 				sourceGraph.removeEdge(test.road);

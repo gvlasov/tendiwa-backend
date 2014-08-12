@@ -1,17 +1,12 @@
 package org.tendiwa.settlements;
 
 import org.jgrapht.UndirectedGraph;
-import org.jgrapht.graph.SimpleGraph;
-import org.tendiwa.drawing.GraphExplorer;
-import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingGraph;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
 import org.tendiwa.graphs.MinimumCycleBasis;
 
-import java.awt.Color;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
@@ -29,8 +24,8 @@ public class NetworkToBlocks {
 	) {
 		if (!filamentEnds.isEmpty()) {
 			UndirectedGraph<Point2D, Segment2D> r = relevantNetwork;
-			assert filamentEnds.stream().allMatch(e -> r.degreeOf(e.node) == 1);
 			relevantNetwork = PlanarGraphs.copyRelevantNetwork(relevantNetwork);
+			assert areAllEdgesOfDegree1(filamentEnds, relevantNetwork);
 			GraphLooseEndsCloser
 				.withSnapSize(snapSize)
 				.withFilamentEnds(filamentEnds)
@@ -41,6 +36,10 @@ public class NetworkToBlocks {
 			.stream()
 			.map(cycle -> new SecondaryRoadNetworkBlock(cycle.vertexList()))
 			.collect(toSet());
+	}
+
+	private boolean areAllEdgesOfDegree1(Set<DirectionFromPoint> filamentEnds, UndirectedGraph<Point2D, Segment2D> r) {
+		return filamentEnds.stream().allMatch(e -> r.degreeOf(e.node) == 1);
 	}
 
 	public Set<SecondaryRoadNetworkBlock> getEnclosedBlocks() {

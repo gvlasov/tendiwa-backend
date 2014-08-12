@@ -173,10 +173,4 @@ public class Segment2D {
 		);
 	}
 
-	public double projectY(double y) {
-		if (dy() == 0) {
-			throw new ArithmeticException("Can't project y in a horizontal segment");
-		}
-		return start.x + dx() / dy() * (y - start.y);
-	}
 }

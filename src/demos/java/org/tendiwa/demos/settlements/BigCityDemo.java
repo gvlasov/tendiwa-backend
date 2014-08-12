@@ -7,10 +7,7 @@ import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.data.SampleGraph;
 import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingChain;
-import org.tendiwa.drawing.extensions.DrawingEnclosedBlock;
-import org.tendiwa.drawing.extensions.DrawingModule;
-import org.tendiwa.drawing.extensions.DrawingRectangle;
+import org.tendiwa.drawing.extensions.*;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.Segment2D;
@@ -21,6 +18,7 @@ import org.tendiwa.settlements.*;
 import java.awt.Color;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -44,10 +42,10 @@ public class BigCityDemo implements Runnable {
 				.withDefaults()
 				.withMaxStartPointsPerCycle(5)
 				.withRoadsFromPoint(4)
-				.withSecondaryRoadNetworkDeviationAngle(1)
-				.withConnectivity(0.3)
-				.withRoadSegmentLength(60, 80)
-				.withSnapSize(9)
+				.withSecondaryRoadNetworkDeviationAngle(0)
+				.withConnectivity(1)
+				.withRoadSegmentLength(10, 12)
+				.withSnapSize(4)
 				.withSeed(seed)
 				.withAxisAlignedSegments(false)
 				.build();
@@ -55,15 +53,15 @@ public class BigCityDemo implements Runnable {
 			Set<RectangleWithNeighbors> recGroups = RectangularBuildingLots.findIn(cityGeometry);
 //			canvas.draw(cityGeometry, new CityDrawer());
 			Iterator<Color> colors = Iterators.cycle(
+				Color.getHSBColor(0, (float) 0.5, 1),
+				Color.getHSBColor((float) 0.37, 1, (float) 0.0),
 				Color.getHSBColor((float) 0.5, 1, (float) 0.8),
 				Color.getHSBColor((float) 0.25, 1, (float) 0.8),
 				Color.getHSBColor(0, 1, 1),
 				Color.getHSBColor((float) 0.5, 1, 1),
 				Color.getHSBColor((float) 0.25, 1, 1),
 				Color.getHSBColor((float) 0.80, 1, 1),
-				Color.getHSBColor(0, (float) 0.5, 1),
 				Color.getHSBColor((float) 0.37, 1, 1),
-				Color.getHSBColor((float) 0.37, 1, (float) 0.0),
 				Color.getHSBColor((float) 0.62, 1, (float) 0.8)
 			);
 			for (RectangleWithNeighbors rectangleWithNeighbors : recGroups) {
@@ -78,19 +76,22 @@ public class BigCityDemo implements Runnable {
 					);
 				}
 			}
-			Set<SecondaryRoadNetworkBlock> blocks = cityGeometry.getBlocks()
+//			Set<SecondaryRoadNetworkBlock> blocks = cityGeometry.getBlocks()
 //				.stream()
 //				.flatMap(b -> b.shrinkToRegions(3, 0).stream())
 //				.collect(Collectors.toSet());
-			;
+//			;
 
-			for (EnclosedBlock block : blocks) {
-				canvas.draw(block, DrawingEnclosedBlock.withColor(Color.lightGray));
-			}
+//			for (EnclosedBlock block : blocks) {
+//				canvas.draw(block, DrawingEnclosedBlock.withColor(Color.lightGray));
+//			}
 			UndirectedGraph<Point2D, Segment2D> allRoads = cityGeometry.getFullRoadGraph();
 			Set<List<Point2D>> streets = StreetsDetector.detectStreets(allRoads);
+			Map<List<Point2D>,Color> streetsColoring = StreetsColoring.compute(streets, Color.red, Color.blue,
+				Color.green, Color.cyan, Color.magenta, Color.orange);
 			for (List<Point2D> street : streets) {
-//				canvas.draw(street, DrawingChain.withColor(colors.next()));
+				Color streetColor = streetsColoring.get(street);
+				canvas.draw(street, DrawingChain.withColor(streetColor));
 			}
 		});
 	}

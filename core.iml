@@ -26,7 +26,7 @@
     <orderEntry type="library" name="Maven: aopalliance:aopalliance:1.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.inject.extensions:guice-assistedinject:4.0-beta4" level="project" />
     <orderEntry type="library" name="Maven: com.vividsolutions:jts:1.14-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: com.google.guava:guava:15.0" level="project" />
+    <orderEntry type="library" name="Maven: com.google.guava:guava:17.0" level="project" />
     <orderEntry type="library" name="Maven: org.la4j:la4j:0.4.9" level="project" />
     <orderEntry type="library" name="Maven: kendzi.math:kendzi-straight-skeleton:0.0.10-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: kendzi.math:kendzi-math-geometry:0.0.10-SNAPSHOT" level="project" />

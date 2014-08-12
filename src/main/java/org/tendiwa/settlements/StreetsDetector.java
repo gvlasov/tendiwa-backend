@@ -1,7 +1,6 @@
 package org.tendiwa.settlements;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.*;
 import org.jgrapht.UndirectedGraph;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
@@ -10,11 +9,13 @@ import org.tendiwa.geometry.Vectors2D;
 import java.util.*;
 
 public final class StreetsDetector {
+	private static final Object JOINING_PROHIBITED = Boolean.TRUE;
 	private final UndirectedGraph<Point2D, Segment2D> cityGraph;
 	private final Map<Point2D, Deque<Point2D>> ends = new HashMap<>();
-	private final Multimap<Segment2D, List<Point2D>> deferredEnds = HashMultimap.create();
+	private final Multimap<Segment2D, List<Point2D>> deferredChains = HashMultimap.create();
 	private final Collection<Point2D> usedVertices;
 	private final HashSet<Segment2D> usedEdges = new HashSet<>();
+	private final Table<Segment2D, Point2D, Object> joiningProhibited = HashBasedTable.create();
 
 	public static Set<List<Point2D>> detectStreets(UndirectedGraph<Point2D, Segment2D> cityGraph) {
 		return new StreetsDetector(cityGraph).compute();
@@ -41,7 +42,8 @@ public final class StreetsDetector {
 					// the chains would interfere with each other. Instead, we defer assembling chains on
 					// intersections (i.e., on vertices with degree >= 3) until all 2-vertex chains on intersections
 					// are found.
-					rememberChainFromIntersection((List<Point2D>) chain);
+					List<Point2D> asList = (List<Point2D>) chain;
+					rememberChainFromIntersection(asList);
 				}
 			}
 		}
@@ -56,12 +58,146 @@ public final class StreetsDetector {
 	}
 
 	private void assembleDeferredChains() {
+		Set<Segment2D> commonEdges = ImmutableSet.copyOf(deferredChains.keySet());
+		for (Segment2D edge : commonEdges) {
+			Collection<List<Point2D>> chainsSharingEdge = deferredChains.get(edge);
+			assert chainsSharingEdge.size() <= 2;
+			if (chainsSharingEdge.size() == 2) {
+				Iterator<List<Point2D>> iterator = chainsSharingEdge.iterator();
+				// Take both chains
+				List<Point2D> one = iterator.next();
+				List<Point2D> another = iterator.next();
+				deferredChains.removeAll(edge);
+				assert !deferredChains.containsKey(edge);
+				Collection<List<Point2D>> values = deferredChains.values();
+				values.remove(one);
+				values.remove(another);
+				List<Point2D> newChain = uniteChains(one, another);
+				// At this moment, one or another may be mutated
+				assert !newChain.isEmpty();
+				assert !one.isEmpty();
+				assert !another.isEmpty();
+				deferredChains.put(getEdgeFromBeginning(newChain), newChain);
+				deferredChains.put(getEdgeFromEnd(newChain), newChain);
+			} else {
+				assert chainsSharingEdge.size() < 2;
+			}
+		}
+		assert deferredChains.values().stream().allMatch(a -> a.size() > 0);
+		assert deferredChains.values().stream().allMatch(a -> !a.isEmpty());
+		for (List<Point2D> point2Ds : deferredChains.values()) {
+			assert !point2Ds.isEmpty();
+		}
+
+		for (Segment2D edge : deferredChains.keySet()) {
+			for (List<Point2D> chain : deferredChains.get(edge)) {
+				if (chain.isEmpty()) {
+					continue;
+				}
+				addChain((Deque<Point2D>) chain);
+			}
+		}
+	}
+
+	private Segment2D getEdgeFromEnd(List<Point2D> chain) {
+		return cityGraph.getEdge(chain.get(chain.size() - 1), chain.get(chain.size() - 2));
+	}
+
+	private Segment2D getEdgeFromBeginning(List<Point2D> chain) {
+		return cityGraph.getEdge(chain.get(0), chain.get(1));
+	}
+
+	/**
+	 * Unites chains {@code one} and {@code another} by adding vertices of {@code another} to one preserving the
+	 * relative order.
+	 *
+	 * @param one
+	 * 	A chain. May be mutated, don't reuse.
+	 * @param another
+	 * 	Another chain. May be mutated, don't reuse.
+	 * @return A chain constructed by uniting {@code one} and {@code another} into a single chain.
+	 */
+	private List<Point2D> uniteChains(List<Point2D> one, List<Point2D> another) {
+		assert allEdgesOfChainAreInGraph(one);
+		assert allEdgesOfChainAreInGraph(another);
+		System.out.println("Uniting chains of " + one.size() + " and " + another.size());
+		Deque<Point2D> mutated = (Deque<Point2D>) one;
+//		TestCanvas.canvas.draw(one, DrawingChain.withColor(Color.red));
+//		TestCanvas.canvas.draw(another, DrawingChain.withColor(Color.blue));
+//		TestCanvas.canvas.draw(mutated.getFirst(), DrawingPoint2D.withColorAndSize(Color.red, 6));
+//		TestCanvas.canvas.draw(mutated.getLast(), DrawingPoint2D.withColorAndSize(Color.red, 6));
+//		TestCanvas.canvas.draw(another.get(0), DrawingPoint2D.withColorAndSize(Color.blue, 4));
+//		TestCanvas.canvas.draw(another.get(another.size() - 1), DrawingPoint2D.withColorAndSize(Color.blue, 4));
+		assert mutated.size() >= 2;
+		assert another.size() >= 2;
+		int startIndex;
+		int direction;
+		int endIndex;
+		boolean addToEnd;
+		if (mutated.size() == 2) {
+			// If one chain contains just 2 point (that is, one edge), then simply return another chain
+			// (this is not merely an optimization; not doing so results in errors since with 2 vertices we can't
+			// distinguish some of the cases in 'if-else's below).
+			return another;
+		}
+		if (one.get(0).equals(another.get(1)) && one.get(1).equals(another.get(0))) {
+			// First edge of one equals first edge of another
+			startIndex = 2;
+			direction = 1;
+			endIndex = another.size();
+			addToEnd = false;
+		} else if (one.get(0).equals(another.get(another.size() - 2)) && one.get(1).equals(another.get(another.size() - 1))) {
+			// First edge of one equals last edge of another
+			startIndex = another.size() - 3;
+			direction = -1;
+			endIndex = -1;
+			addToEnd = false;
+		} else if (one.get(one.size() - 1).equals(another.get(1)) && one.get(one.size() - 2).equals(another.get(0))) {
+			// Last edge of one equals first edge of another
+			startIndex = 2;
+			direction = 1;
+			endIndex = another.size();
+			addToEnd = true;
+		} else {
+			assert one.get(one.size() - 1).equals(another.get(another.size() - 2)) && one.get(one.size() - 2).equals
+				(another.get(another.size() - 1));
+			// Last edge of one equals last edge of another
+			startIndex = another.size() - 3;
+			direction = -1;
+			endIndex = -1;
+			addToEnd = true;
+		}
+		LinkedList<Point2D> buf = new LinkedList<>(one);
+		for (int i = startIndex; i != endIndex; i += direction) {
+			if (addToEnd) {
+				mutated.addLast(another.get(i));
+			} else {
+				mutated.addFirst(another.get(i));
+			}
+		}
+//		TestCanvas.canvas.draw((List<Point2D>) mutated, DrawingChain.withColor(Color.green));
+		assert allEdgesOfChainAreInGraph((List<Point2D>) mutated);
+		return (List<Point2D>) mutated;
+
+	}
+
+	private boolean allEdgesOfChainAreInGraph(List<Point2D> chain) {
+		int lastButOne = chain.size() - 1;
+		for (int i = 0; i < lastButOne; i++) {
+			if (!cityGraph.containsEdge(chain.get(i), chain.get(i + 1))) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private void rememberChainFromIntersection(List<Point2D> chain) {
+		assert !chain.isEmpty();
 		int lastButOne = chain.size() - 1;
 		for (int i = 0; i < lastButOne; i++) {
-			deferredEnds.put(cityGraph.getEdge(chain.get(i), chain.get(i + 1)), chain);
+			Segment2D edge = cityGraph.getEdge(chain.get(i), chain.get(i + 1));
+			deferredChains.put(edge, chain);
+			assert deferredChains.get(edge).size() <= 2;
 		}
 	}
 
@@ -86,9 +222,11 @@ public final class StreetsDetector {
 			if (chainedEdges.contains(bestPair.one) || chainedEdges.contains(bestPair.two)) {
 				continue;
 			}
-			if (bestPair.angle < Math.PI / 2) {
+			if (Math.abs(bestPair.angle - Math.PI) > Math.PI / 2) {
 //				If angle is to extreme to be considered a continuous chain
-//				continue;
+				prohibitJoining(bestPair.one, vertex);
+				prohibitJoining(bestPair.two, vertex);
+				continue;
 			}
 			answer.add(new LinkedList<Point2D>() {
 				{
@@ -115,6 +253,24 @@ public final class StreetsDetector {
 
 	}
 
+	/**
+	 * Remember that a particular end of a chain should never be joined with another chain (that doesn't prohibit
+	 * joining a chain from the other end of the chain).
+	 *
+	 * @param edge
+	 * 	An edge of a chain.
+	 * @param vertex
+	 * 	A vertex of a chain that has edge {@code edge} coming from it.
+	 */
+	private void prohibitJoining(Segment2D edge, Point2D vertex) {
+		assert edge.end.equals(vertex) || edge.start.equals(vertex);
+		joiningProhibited.put(edge, vertex, JOINING_PROHIBITED);
+	}
+
+	private boolean isJoiningProhibited(Segment2D edge, Point2D vertex) {
+		return joiningProhibited.contains(edge, vertex);
+	}
+
 	private void addChain(Deque<Point2D> chain) {
 		int size = chain.size();
 		assert size >= 2 : size;
@@ -125,14 +281,32 @@ public final class StreetsDetector {
 		// Combine existing chains on both ends of the new one with the new one
 		Point2D oneEnd = chain.getFirst();
 		Point2D anotherEnd = chain.getLast();
-		if (ends.containsKey(oneEnd)) {
+		if (isEndOfAnyChain(oneEnd) && !isEndOfChainProhibited(chain, oneEnd)) {
 			chain = joinChains(chain, oneEnd);
 		}
-		if (ends.containsKey(anotherEnd)) {
+		if (isEndOfAnyChain(anotherEnd) && !isEndOfChainProhibited(chain, anotherEnd)) {
 			chain = joinChains(chain, anotherEnd);
 		}
 		ends.put(chain.getFirst(), chain);
 		ends.put(chain.getLast(), chain);
+	}
+
+	private boolean isEndOfChainProhibited(Deque<Point2D> chain, Point2D end) {
+		List<Point2D> asList = (List<Point2D>) chain;
+		Segment2D edge = cityGraph.getEdge(asList.get(0), asList.get(1));
+		if (asList.get(0).equals(end) && isJoiningProhibited(edge, end)) {
+			return true;
+		}
+		int lastIndex = asList.size() - 1;
+		edge = cityGraph.getEdge(asList.get(lastIndex), asList.get(lastIndex - 1));
+		if (asList.get(lastIndex).equals(end) && isJoiningProhibited(edge, end)) {
+			return true;
+		}
+		return false;
+	}
+
+	private boolean isEndOfAnyChain(Point2D oneEnd) {
+		return ends.containsKey(oneEnd);
 	}
 
 	private void markUsedEdges(Deque<Point2D> chain) {
@@ -149,6 +323,17 @@ public final class StreetsDetector {
 		}
 	}
 
+
+	/**
+	 * Joins 2 chains that have vertex {@code end} in common. For each chain, end may be either its first or last
+	 * vertex.
+	 *
+	 * @param chain
+	 * 	A chain that starts or ends with {@code end}. This collection may be mutated inside this method.
+	 * @param end
+	 * 	A point where both chaits start or end.
+	 * @return
+	 */
 	private Deque<Point2D> joinChains(Deque<Point2D> chain, Point2D end) {
 		Deque<Point2D> anotherChain = ends.get(end);
 		if (anotherChain != chain) {
@@ -157,11 +342,13 @@ public final class StreetsDetector {
 			ends.remove(anotherChain.getLast());
 			if (anotherChain.getFirst().equals(end)) {
 				if (chain.getFirst().equals(end)) {
+					chain.removeFirst();
 					while (!chain.isEmpty()) {
 						anotherChain.addFirst(chain.pollFirst());
 					}
 				} else {
 					assert chain.getLast().equals(end);
+					chain.removeLast();
 					while (!chain.isEmpty()) {
 						anotherChain.addFirst(chain.pollLast());
 					}
@@ -169,11 +356,13 @@ public final class StreetsDetector {
 			} else {
 				assert anotherChain.getLast().equals(end);
 				if (chain.getFirst().equals(end)) {
+					chain.removeFirst();
 					while (!chain.isEmpty()) {
 						anotherChain.addLast(chain.pollFirst());
 					}
 				} else {
 					assert chain.getLast().equals(end);
+					chain.removeLast();
 					while (!chain.isEmpty()) {
 						anotherChain.addLast(chain.pollLast());
 					}

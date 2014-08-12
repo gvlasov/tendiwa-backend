@@ -61,8 +61,8 @@ final class HolderOfSplitCycleEdges {
 
 	private Segment2D findSubEdgeThatContains(UndirectedGraph<Point2D, Segment2D> graph, Point2D point) {
 		for (Segment2D subEdge : graph.edgeSet()) {
-			double dx = subEdge.dx();
-			double dy = subEdge.dy();
+			double dx = Math.abs(subEdge.dx());
+			double dy = Math.abs(subEdge.dy());
 			if (dx > dy) {
 				assert dx > Vectors2D.EPSILON;
 				double min = Math.min(subEdge.start.x, subEdge.end.x);
