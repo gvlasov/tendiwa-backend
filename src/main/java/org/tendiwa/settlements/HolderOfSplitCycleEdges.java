@@ -42,8 +42,10 @@ final class HolderOfSplitCycleEdges {
 			graph.addVertex(point);
 			Segment2D addedEdge = graph.addEdge(edgeToSplit.start, point);
 			edgesToSubEdgeGraphs.put(addedEdge, graph);
+//			edgesToSubEdgeGraphs.put(addedEdge.reverse(), graph);
 			addedEdge = graph.addEdge(point, edgeToSplit.end);
 			edgesToSubEdgeGraphs.put(addedEdge, graph);
+//			edgesToSubEdgeGraphs.put(addedEdge.reverse(), graph);
 			return;
 		}
 		if (graph.containsVertex(point)) {
@@ -54,8 +56,10 @@ final class HolderOfSplitCycleEdges {
 		graph.addVertex(point);
 		Segment2D addedEdge = graph.addEdge(subEdge.start, point);
 		edgesToSubEdgeGraphs.put(addedEdge, graph);
+//		edgesToSubEdgeGraphs.put(addedEdge.reverse(), graph);
 		addedEdge = graph.addEdge(point, subEdge.end);
 		edgesToSubEdgeGraphs.put(addedEdge, graph);
+//		edgesToSubEdgeGraphs.put(addedEdge.reverse(), graph);
 	}
 
 

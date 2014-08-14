@@ -1,12 +1,8 @@
 package org.tendiwa.graphs;
 
 import com.google.common.collect.ImmutableList;
-import com.google.inject.internal.asm.$Handle;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
-import org.jgrapht.graph.UnmodifiableGraph;
-import org.jgrapht.graph.UnmodifiableUndirectedGraph;
-import org.tendiwa.geometry.Segment2D;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -20,7 +16,7 @@ import java.util.List;
  * @param <E>
  *         Type of edges.
  */
-public class MinimalCycle<V, E> implements Primitive<V>, Iterable<E> {
+public final class MinimalCycle<V, E> implements Primitive<V>, Iterable<E> {
     private final List<V> cycle = new ArrayList<>();
     private UndirectedGraph<V, E> graph;
 
@@ -67,7 +63,7 @@ public class MinimalCycle<V, E> implements Primitive<V>, Iterable<E> {
      * Iterates over all edges of this minimal cycle.
      */
     public Iterator<E> iterator() {
-        int numberOfEdges = cycle.size();
+		int numberOfEdges = cycle.size();
         List<E> edgesOfCycle = new ArrayList<>(numberOfEdges);
         for (int i = 0; i < numberOfEdges; i++) {
             boolean isLastEdge = i == numberOfEdges - 1;
@@ -76,6 +72,7 @@ public class MinimalCycle<V, E> implements Primitive<V>, Iterable<E> {
                 edge = graph.getEdge(cycle.get(isLastEdge ? 0 : i + 1), cycle.get(i));
             }
             assert edge != null;
+			assert graph.edgeSet().contains(edge);
             edgesOfCycle.add(edge);
         }
         return edgesOfCycle.iterator();

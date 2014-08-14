@@ -125,6 +125,7 @@ public final class NetworkWithinCycle {
 	 * @param favourAxisAlignedSegments
 	 * @param holderOfSplitCycleEdges
 	 */
+
 	NetworkWithinCycle(
 		SimpleGraph<Point2D, Segment2D> graph,
 		MinimalCycle<Point2D, Segment2D> minimalCycle,
@@ -158,6 +159,7 @@ public final class NetworkWithinCycle {
 		this.holderOfSplitCycleEdges = holderOfSplitCycleEdges;
 		secRoadNetwork = new SimpleGraph<>(graph.getEdgeFactory());
 
+
 		for (Point2D vertex : relevantNetwork.vertexSet()) {
 			deadEnds.add(vertex);
 		}
@@ -182,7 +184,8 @@ public final class NetworkWithinCycle {
 		blockDivision = new NetworkToBlocks(
 			relevantNetwork,
 			filamentEnds,
-			roadSegmentLength + secondaryRoadNetworkRoadLengthDeviation
+			roadSegmentLength + secondaryRoadNetworkRoadLengthDeviation,
+			holderOfSplitCycleEdges
 		);
 	}
 
@@ -376,7 +379,7 @@ public final class NetworkWithinCycle {
 		double dx = roadLength * Math.cos(direction);
 		double dy = roadLength * Math.sin(direction);
 		Point2D targetNode = new Point2D(source.x + dx, source.y + dy);
-		SnapEvent snapEvent = new SnapTest(snapSize, source, targetNode, relevantNetwork).snap();
+		SnapEvent snapEvent = new SnapTest(snapSize, source, targetNode, relevantNetwork, holderOfSplitCycleEdges).snap();
 		if (source.equals(snapEvent.targetNode)) {
 			assert false;
 		}
@@ -394,6 +397,10 @@ public final class NetworkWithinCycle {
 					if (isDeadEnd(snapEvent.road.start) && isDeadEnd(snapEvent.road.end)) {
 						deadEnds.add(snapEvent.targetNode);
 					}
+					if (holderOfSplitCycleEdges.isEdgeSplit(snapEvent.road)) {
+						relevantNetwork.addVertex(snapEvent.road.start);
+						relevantNetwork.addVertex(snapEvent.road.end);
+					}
 					insertNode(snapEvent.road, snapEvent.targetNode);
 					addRoad(source, snapEvent.targetNode);
 					if (!filamentEdges.contains(snapEvent.road)) {
@@ -407,6 +414,9 @@ public final class NetworkWithinCycle {
 				if (random.nextDouble() < connectivity) {
 					if (isDeadEnd(snapEvent.targetNode) && isDeadEnd(source)) {
 						return null;
+					}
+					if (!relevantNetwork.containsVertex(snapEvent.targetNode)) {
+						relevantNetwork.addVertex(snapEvent.targetNode);
 					}
 					addRoad(source, snapEvent.targetNode);
 					return null;
@@ -429,6 +439,8 @@ public final class NetworkWithinCycle {
 	 * 	Another vertex (order is irrelevant since graphs are undirected in NetworkWithinCycle).
 	 */
 	private boolean addRoad(Point2D source, Point2D target) {
+		assert relevantNetwork.containsVertex(source);
+		assert relevantNetwork.containsVertex(target);
 		relevantNetwork.addEdge(source, target);
 		if (isDeadEnd(source) && isDeadEnd(target)) {
 			return false;

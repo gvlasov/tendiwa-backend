@@ -55,20 +55,21 @@ public class MinimumCycleBasis<V, E> {
 
 	/**
 	 * @param graph
-	 * 	A graph from which to extract a minimum cycle basis.
+	 * A graph from which to extract a minimum cycle basis.
 	 * @param positionAdapter
-	 * 	[Eberly 2005, formula on p. 25]
-	 * 	<p>
-	 * 	A strategy of two methods describing how to get x and y coordinates from vertices.
+	 * [Eberly 2005, formula on p. 25]
+	 * <p>
+	 * A strategy of two methods describing how to get x and y coordinates from vertices.
 	 */
-	public MinimumCycleBasis(UndirectedGraph<V, E> graph, VertexPositionAdapter<V> positionAdapter) {
 
+	public MinimumCycleBasis(UndirectedGraph<V, E> graph, VertexPositionAdapter<V> positionAdapter) {
 		originalGraph = graph;
 		this.positionAdapter = positionAdapter;
 		this.primitives = new PrimitiveContainer<>();
 		// Listenable graph is used here because we need to determine neighbor vertices,
 		// and it is better done with a listenable graph.
 		this.graph = new ListenableUndirectedGraph<V, E>(new SimpleGraph<>(graph.getEdgeFactory()));
+		// TODO: Should we add vertices and edges explicitly here?
 		for (V v : graph.vertexSet()) {
 			this.graph.addVertex(v);
 		}

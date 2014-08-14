@@ -4,6 +4,8 @@ import com.google.common.collect.*;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawingPoint2D;
+import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
@@ -18,7 +20,6 @@ public class PolygonShrinker {
 
 	public List<Segment2D> edges;
 	protected List<Segment2D> shrunkPolygonsSegments;
-	public static TestCanvas canvas;
 	static Iterator<Color> colors = Iterators.cycle(Color.green, Color.blue, Color.orange, Color.yellow);
 
 	protected PolygonShrinker() {
@@ -84,14 +85,8 @@ public class PolygonShrinker {
 		List<Segment2D> edges
 	) {
 		Set<Segment2D> unusedEdges = new HashSet<>(edges);
-
 		MinimumCycleBasis<Point2D, Segment2D> basis = new MinimumCycleBasis<>(graph, Point2DVertexPositionAdapter.get());
-		for (MinimalCycle<Point2D, Segment2D> cycle : basis.minimalCyclesSet()) {
-			Color nextColor = colors.next();
-//			canvas.draw(cycle, DrawingMinimalCycle.withColor(nextColor, Point2DVertexPositionAdapter.get()));
-		}
 
-//		assert edges.size() == basis.minimalCyclesSet().size() : edges.size() + " " + basis.minimalCyclesSet().size();
 		Map<Segment2D, Iterable<Segment2D>> edgeToFace = new HashMap<>();
 
 		for (MinimalCycle<Point2D, Segment2D> cycle : basis.minimalCyclesSet()) {
@@ -104,7 +99,6 @@ public class PolygonShrinker {
 			assert Lists.newArrayList(cycle).stream().allMatch(p -> !unusedEdges.contains(p));
 			edgeToFace.put(originalFaceEdge, cycle);
 		}
-//		assert edges.size() == edgeToFace.size() : edges.size() + " " + edgeToFace.size();
 		return edgeToFace;
 	}
 
@@ -117,15 +111,12 @@ public class PolygonShrinker {
 				break;
 			}
 		}
-//		canvas.draw(originalFaceEdge, DrawingSegment2D.withColor(Color.red));
+		assert originalFaceEdge != null;
+//		TestCanvas.canvas.draw(originalFaceEdge, DrawingSegment2D.withColor(Color.red));
 //		Color next = colors.next();
 //		for (Point2D v : face) {
-//			canvas.draw(v, DrawingPoint2D.withColorAndSize(next, 4));
+//			TestCanvas.canvas.draw(v, DrawingPoint2D.withColorAndSize(next, 4));
 //		}
-		if (originalFaceEdge == null) {
-			assert originalFaceEdge != null;
-		}
-
 		return originalFaceEdge;
 	}
 

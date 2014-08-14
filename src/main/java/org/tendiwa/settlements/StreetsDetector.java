@@ -120,7 +120,6 @@ public final class StreetsDetector {
 	private List<Point2D> uniteChains(List<Point2D> one, List<Point2D> another) {
 		assert allEdgesOfChainAreInGraph(one);
 		assert allEdgesOfChainAreInGraph(another);
-		System.out.println("Uniting chains of " + one.size() + " and " + another.size());
 		Deque<Point2D> mutated = (Deque<Point2D>) one;
 //		TestCanvas.canvas.draw(one, DrawingChain.withColor(Color.red));
 //		TestCanvas.canvas.draw(another, DrawingChain.withColor(Color.blue));

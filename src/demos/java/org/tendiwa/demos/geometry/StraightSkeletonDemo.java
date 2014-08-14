@@ -86,7 +86,6 @@ public class StraightSkeletonDemo implements Runnable {
 		if (config.drawToCanvas) {
 			canvas = new TestCanvas(1, 200, 200);
 			gifBuilder = factory.create(canvas, config.fps);
-			PolygonShrinker.canvas = canvas;
 		}
 		int endIteration = config.startIteration + config.numberOfIterations;
 		PrimitiveIterator.OfInt shrunkDepth = IntStream.generate(new IntSupplier() {

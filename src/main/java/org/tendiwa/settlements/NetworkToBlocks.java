@@ -1,5 +1,6 @@
 package org.tendiwa.settlements;
 
+import com.google.common.collect.ImmutableSet;
 import org.jgrapht.UndirectedGraph;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
@@ -20,11 +21,25 @@ public class NetworkToBlocks {
 	NetworkToBlocks(
 		UndirectedGraph<Point2D, Segment2D> relevantNetwork,
 		Set<DirectionFromPoint> filamentEnds,
-		double snapSize
-	) {
+		double snapSize,
+		HolderOfSplitCycleEdges holderOfSplitCycleEdges) {
 		if (!filamentEnds.isEmpty()) {
 			UndirectedGraph<Point2D, Segment2D> r = relevantNetwork;
 			relevantNetwork = PlanarGraphs.copyRelevantNetwork(relevantNetwork);
+			Set<Segment2D> edgesCopy = ImmutableSet.copyOf(relevantNetwork.edgeSet());
+			for (Segment2D edge : edgesCopy) {
+				if (holderOfSplitCycleEdges.isEdgeSplit(edge)) {
+					relevantNetwork.removeEdge(edge);
+					UndirectedGraph<Point2D, Segment2D> graph = holderOfSplitCycleEdges.getGraph(edge);
+					for (Point2D vertex : graph.vertexSet()) {
+						relevantNetwork.addVertex(vertex);
+					}
+					for (Segment2D splitEdge : graph.edgeSet()) {
+						relevantNetwork.addEdge(splitEdge.start, splitEdge.end, splitEdge);
+					}
+				}
+			}
+
 			assert areAllEdgesOfDegree1(filamentEnds, relevantNetwork);
 			GraphLooseEndsCloser
 				.withSnapSize(snapSize)

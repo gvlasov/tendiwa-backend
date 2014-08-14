@@ -42,16 +42,16 @@ public class BigCityDemo implements Runnable {
 				.withDefaults()
 				.withMaxStartPointsPerCycle(5)
 				.withRoadsFromPoint(4)
-				.withSecondaryRoadNetworkDeviationAngle(0)
-				.withConnectivity(1)
-				.withRoadSegmentLength(10, 12)
+				.withSecondaryRoadNetworkDeviationAngle(0.5)
+				.withConnectivity(0.3)
+				.withRoadSegmentLength(30, 40)
 				.withSnapSize(4)
 				.withSeed(seed)
 				.withAxisAlignedSegments(false)
 				.build();
 
-			Set<RectangleWithNeighbors> recGroups = RectangularBuildingLots.findIn(cityGeometry);
 //			canvas.draw(cityGeometry, new CityDrawer());
+			Set<RectangleWithNeighbors> recGroups = RectangularBuildingLots.findIn(cityGeometry);
 			Iterator<Color> colors = Iterators.cycle(
 				Color.getHSBColor(0, (float) 0.5, 1),
 				Color.getHSBColor((float) 0.37, 1, (float) 0.0),
@@ -87,8 +87,10 @@ public class BigCityDemo implements Runnable {
 //			}
 			UndirectedGraph<Point2D, Segment2D> allRoads = cityGeometry.getFullRoadGraph();
 			Set<List<Point2D>> streets = StreetsDetector.detectStreets(allRoads);
-			Map<List<Point2D>,Color> streetsColoring = StreetsColoring.compute(streets, Color.red, Color.blue,
-				Color.green, Color.cyan, Color.magenta, Color.orange);
+			Map<List<Point2D>, Color> streetsColoring = StreetsColoring.compute(
+				streets, Color.red, Color.blue,
+				Color.green, Color.cyan, Color.magenta, Color.orange, Color.black, Color.lightGray, Color.gray
+			);
 			for (List<Point2D> street : streets) {
 				Color streetColor = streetsColoring.get(street);
 				canvas.draw(street, DrawingChain.withColor(streetColor));

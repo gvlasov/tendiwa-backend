@@ -267,7 +267,7 @@ public class CityGeometryBuilder {
 		}
 		final Random random = new Random(4);
 		return new CityGeometry(
-			new RoadGraph(graph.vertexSet(), graph.edgeSet()),
+			CityGeometry.createRoadGraph(graph.vertexSet(), graph.edgeSet()),
 			sampleFan -> {
 				int rand = random.nextInt(sampleFan.size());
 				return sampleFan.toArray(new Point2D[sampleFan.size()])[rand];

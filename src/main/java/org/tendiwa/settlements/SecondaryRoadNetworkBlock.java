@@ -18,7 +18,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class SecondaryRoadNetworkBlock extends EnclosedBlock {
+public final class SecondaryRoadNetworkBlock extends EnclosedBlock {
 	private final List<Point2D> outline;
 
 	SecondaryRoadNetworkBlock(List<Point2D> outline) {

@@ -8,8 +8,10 @@ import org.tendiwa.geometry.Segment2D;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * A test that checks if a 2d segment defined by a start and an end points snaps to any vertex or edge of a planar
@@ -20,18 +22,21 @@ public class SnapTest {
 	private final Point2D sourceNode;
 	private Point2D targetNode;
 	private final UndirectedGraph<Point2D, Segment2D> relevantRoadNetwork;
+	private final HolderOfSplitCycleEdges holderOfSplitCycleEdges;
 	private double minR;
 
 	SnapTest(
 		double snapSize,
 		Point2D sourceNode,
 		Point2D targetNode,
-		UndirectedGraph<Point2D, Segment2D> relevantRoadNetwork
+		UndirectedGraph<Point2D, Segment2D> relevantRoadNetwork,
+		HolderOfSplitCycleEdges holderOfSplitCycleEdges
 	) {
 		this.snapSize = snapSize;
 		this.sourceNode = sourceNode;
 		this.targetNode = targetNode;
 		this.relevantRoadNetwork = relevantRoadNetwork;
+		this.holderOfSplitCycleEdges = holderOfSplitCycleEdges;
 		setTargetNode(targetNode);
 		minR = 1 + snapSize / sourceNode.distanceTo(targetNode);
 	}
@@ -50,7 +55,7 @@ public class SnapTest {
 		Set<Point2D> verticesToTest = new HashSet<>();
 		for (Segment2D segment : roadsToTest) {
 			// Individual vertices will be added only once
-			if (segment.start != sourceNode && segment.end != sourceNode) {
+			if (!segment.start.equals(sourceNode) && !segment.end.equals(sourceNode)) {
 				assert !segment.start.equals(sourceNode);
 				assert !segment.end.equals(sourceNode);
 				verticesToTest.add(segment.start);
@@ -81,6 +86,7 @@ public class SnapTest {
 				RayIntersection intersection = new RayIntersection(
 					sourceNode,
 					targetNode,
+					// TODO: Maybe there should be just road, since it is a segment itself?
 					new Segment2D(road.start, road.end)
 				);
 				if (intersection.r >= minR || intersection.r < 0) {
@@ -204,7 +210,7 @@ public class SnapTest {
 			return false;
 		}
 		/*
-         * A very important note: in [Kelly 4.3.3.4] it is said
+		 * A very important note: in [Kelly 4.3.3.4] it is said
          * that an intersection within the bounds of ab is only probable
          * when points of cd are on <i>opposing extensions</i> of ab;.
          * however, actually instead they must be <i>not on the same extension</i>.
@@ -233,7 +239,9 @@ public class SnapTest {
 		double minY = Math.min(source.y, target.y) - snapSize;
 		double maxX = Math.max(source.x, target.x) + snapSize;
 		double maxY = Math.max(source.y, target.y) + snapSize;
-		return relevantRoadNetwork.edgeSet().stream()
+		Stream<Segment2D> roadStream = constructRoadsStream();
+//		Stream<Segment2D> roadStream = relevantRoadNetwork.edgeSet().stream();
+		return roadStream
 			.filter(road -> {
 				double roadMinX = Math.min(road.start.x, road.end.x);
 				double roadMaxX = Math.max(road.start.x, road.end.x);
@@ -243,5 +251,32 @@ public class SnapTest {
 				return minX < roadMaxX && maxX > roadMinX && minY < roadMaxY && maxY > roadMinY;
 			})
 			.collect(Collectors.toList());
+	}
+
+	private static Collection<Point2D> test(Collection<Segment2D> col, Point2D p) {
+		Collection<Point2D> answer = new HashSet<>();
+		for (Segment2D s : col) {
+			if (s.start.distanceTo(p) < 4) {
+				answer.add(s.start);
+			}
+			if (s.end.distanceTo(p) < 4) {
+				answer.add(s.end);
+			}
+		}
+		return answer;
+	}
+
+	private Stream<Segment2D> constructRoadsStream() {
+		Set<Set<Segment2D>> splitEdges = new LinkedHashSet<>();
+		for (Segment2D edge : relevantRoadNetwork.edgeSet()) {
+			if (holderOfSplitCycleEdges.isEdgeSplit(edge)) {
+				splitEdges.add(holderOfSplitCycleEdges.getGraph(edge).edgeSet());
+			}
+		}
+		Stream<Segment2D> originalRoadsStream = relevantRoadNetwork.edgeSet().stream()
+			.filter(road -> !holderOfSplitCycleEdges.isEdgeSplit(road));
+		Stream<Segment2D> splitRoadsStream = splitEdges.stream()
+			.flatMap(a -> a.stream());
+		return Stream.concat(originalRoadsStream, splitRoadsStream);
 	}
 }

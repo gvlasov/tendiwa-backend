@@ -68,7 +68,6 @@ public class TwakStraightSkeleton implements StraightSkeleton {
 				le.get().end = le.getNext().get().start;
 		}
 
-
 		Skeleton skeleton = new Skeleton(out, true);
 		skeleton.skeleton();
 		return new TwakStraightSkeleton(skeleton, pointsToSegments(vertices));

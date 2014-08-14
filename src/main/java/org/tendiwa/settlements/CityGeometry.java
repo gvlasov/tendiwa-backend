@@ -4,9 +4,12 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableSet;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
+import org.tendiwa.core.SoundType;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingCell;
+import org.tendiwa.drawing.extensions.DrawingEnclosedBlock;
 import org.tendiwa.drawing.extensions.DrawingGraph;
+import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.*;
@@ -176,19 +179,11 @@ public final class CityGeometry {
 	}
 
 	private void fillBuilderWithCells(ImmutableSet.Builder<NetworkWithinCycle> cellsBuilder) {
-		MinimumCycleBasis<Point2D, Segment2D> primitives = new MinimumCycleBasis<>(lowLevelRoadGraph, new VertexPositionAdapter<Point2D>() {
-			@Override
-			public double getX(Point2D vertex) {
-				return vertex.x;
-			}
-
-			@Override
-			public double getY(Point2D vertex) {
-				return vertex.y;
-			}
-		});
-		Map<MinimalCycle<Point2D, Segment2D>, SimpleGraph<Point2D, Segment2D>> cellGraphs
-			= constructCityCellGraphs(primitives);
+		MinimumCycleBasis<Point2D, Segment2D> primitives = new MinimumCycleBasis<>(
+			lowLevelRoadGraph,
+			Point2DVertexPositionAdapter.get()
+		);
+		Map<MinimalCycle<Point2D, Segment2D>, SimpleGraph<Point2D, Segment2D>> cellGraphs = constructCityCellGraphs(primitives);
 		Collection<Segment2D> filamentEdges = new HashSet<>();
 		for (Filament<Point2D, Segment2D> filament : primitives.filamentsSet()) {
 			for (Segment2D line : filament) {
@@ -286,10 +281,12 @@ public final class CityGeometry {
 	 * 	All the cycles of {@link #lowLevelRoadGraph}'s MinimalCycleBasis that reside inside other cycles.
 	 * @return A graph containing the {@code cycle} and all the {@code filaments}.
 	 */
+
 	private static SimpleGraph<Point2D, Segment2D> constructCityCellGraph(
 		MinimalCycle<Point2D, Segment2D> cycle,
 		Set<Filament<Point2D, Segment2D>> filaments,
-		Collection<MinimalCycle<Point2D, Segment2D>> enclosedCycles) {
+		Collection<MinimalCycle<Point2D, Segment2D>> enclosedCycles
+	) {
 		SimpleGraph<Point2D, Segment2D> graph = new SimpleGraph<>(org.tendiwa.geometry.extensions.PlanarGraphs.getEdgeFactory());
 		for (Filament<Point2D, Segment2D> filament : filaments) {
 			for (Point2D vertex : filament.vertexList()) {
@@ -352,7 +349,21 @@ public final class CityGeometry {
 				vertices.add(edge.end);
 			}
 		}
-		return new RoadGraph(vertices, edges);
+		return createRoadGraph(vertices, edges);
+	}
+
+	public static UndirectedGraph<Point2D, Segment2D> createRoadGraph(
+		Collection<Point2D> vertices,
+		Collection<Segment2D> edges
+	) {
+		UndirectedGraph<Point2D, Segment2D> answer = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
+		for (Point2D vertex : vertices) {
+			answer.addVertex(vertex);
+		}
+		for (Segment2D edge : edges) {
+			answer.addEdge(edge.start, edge.end, edge);
+		}
+		return answer;
 	}
 
 
