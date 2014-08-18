@@ -28,4 +28,24 @@ public final class PlanarGraphs {
 	public static EdgeFactory<Point2D, Segment2D> getEdgeFactory() {
 		return EDGE_FACTORY;
 	}
+
+	/**
+	 * Removes an edge from graph, and also removes any vertices that are orphaned (left with degree == 0) as a result
+	 * of removing the edge.
+	 *
+	 * @param graph
+	 * 	A graph to modify.
+	 * @param edge
+	 * 	An edge to remove.
+	 */
+	public static void removeEdgeAndOrphanedVertices(UndirectedGraph<Point2D, Segment2D> graph, Segment2D edge) {
+		assert graph.containsEdge(edge);
+		graph.removeEdge(edge);
+		if (graph.degreeOf(edge.start) == 0) {
+			graph.removeVertex(edge.start);
+		}
+		if (graph.degreeOf(edge.end) == 0) {
+			graph.removeVertex(edge.end);
+		}
+	}
 }

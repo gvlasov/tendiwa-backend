@@ -2,14 +2,14 @@ package org.tendiwa.settlements;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableSet;
+import gnu.trove.map.TObjectIntMap;
+import gnu.trove.map.hash.TObjectIntHashMap;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
-import org.tendiwa.core.SoundType;
+import org.jgrapht.graph.UndirectedSubgraph;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingCell;
-import org.tendiwa.drawing.extensions.DrawingEnclosedBlock;
 import org.tendiwa.drawing.extensions.DrawingGraph;
-import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.*;
@@ -21,7 +21,23 @@ import java.util.*;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
-public final class CityGeometry {
+/**
+ * This class serves two purposes:
+ * <ol>
+ * <li>
+ * creates a planar non-self-intersecting graph within minimal cycles of another planar
+ * non-self-intersecting graph;
+ * </li>
+ * <li>
+ * within the constructed graph, finds empty polygonal areas between its edges.
+ * </li>
+ * </ol>
+ * <p>
+ * The intended use of this class is to create the geometry of {@link org.tendiwa.settlements.buildings.City}'s roads
+ * and then to find housing quarters between those roads. More generally, this class can build randomized networks
+ * inside arbitrary polygonal areas defined by minimal cycles of some planar non-self-intersecting graphs.
+ */
+public final class PathGeometry {
 	/**
 	 * [Kelly section 4.2]
 	 * <p>
@@ -40,7 +56,7 @@ public final class CityGeometry {
 	private final double deviationAngleRad;
 	private final double approachingPerSample;
 	private final Set<Segment2D> highLevelGraphEdges;
-	private final ImmutableSet<NetworkWithinCycle> cells;
+	private final ImmutableSet<NetworkWithinCycle> networks;
 	private Random random;
 	private final int roadsFromPoint;
 	private final double connectivity;
@@ -106,7 +122,7 @@ public final class CityGeometry {
 	 * 	If {@code numberOfSamples <= 0} or if {@code deviationAngle == 0 && numberOfSamples >= 1}, or if
 	 * 	#lowLevelRoadGraph produced from #highLevelRoadGraph intersects itself.
 	 */
-	public CityGeometry(
+	public PathGeometry(
 		UndirectedGraph<Point2D, Segment2D> highLevelRoadGraph,
 		SampleSelectionStrategy strategy,
 		double sampleRadius,
@@ -172,9 +188,9 @@ public final class CityGeometry {
 
 		ImmutableSet.Builder<NetworkWithinCycle> cellsBuilder = ImmutableSet.builder();
 		fillBuilderWithCells(cellsBuilder);
-		cells = cellsBuilder.build();
-		if (cells.isEmpty()) {
-			throw new SettlementGenerationException("A City with 0 city cells was made");
+		networks = cellsBuilder.build();
+		if (networks.isEmpty()) {
+			throw new SettlementGenerationException("A City with 0 city networks was made");
 		}
 	}
 
@@ -319,8 +335,8 @@ public final class CityGeometry {
 	 *
 	 * @return All CityCells of this City.
 	 */
-	public ImmutableSet<NetworkWithinCycle> getCells() {
-		return cells;
+	public ImmutableSet<NetworkWithinCycle> getNetworks() {
+		return networks;
 	}
 
 	/**
@@ -494,7 +510,7 @@ public final class CityGeometry {
 	}
 
 	public Set<SecondaryRoadNetworkBlock> getBlocks() {
-		return cells.stream().flatMap(cell -> cell.getEnclosedBlocks().stream()).collect(toSet());
+		return networks.stream().flatMap(cell -> cell.getEnclosedBlocks().stream()).collect(toSet());
 	}
 
 	public UndirectedGraph<Point2D, Segment2D> getFullRoadGraph() {
@@ -516,7 +532,7 @@ public final class CityGeometry {
 				union.addEdge(edge.start, edge.end, edge);
 			}
 		}
-		for (NetworkWithinCycle cell : cells) {
+		for (NetworkWithinCycle cell : networks) {
 			for (Point2D vertex : cell.network().vertexSet()) {
 				if (!union.containsVertex(vertex)) {
 					union.addVertex(vertex);
@@ -529,5 +545,52 @@ public final class CityGeometry {
 			}
 		}
 		return union;
+	}
+
+	/**
+	 * In each {@link org.tendiwa.settlements.NetworkWithinCycle} that this {@link
+	 * org.tendiwa.settlements.PathGeometry} consists of, finds such edges that are part of only one
+	 * {@link NetworkWithinCycle#cycle()}.
+	 *
+	 * @return Map from {@link org.tendiwa.settlements.NetworkWithinCycle} to subgraphs of {@link
+	 * NetworkWithinCycle#network()} described in this method's description.
+	 */
+	public Map<NetworkWithinCycle, UndirectedGraph<Point2D, Segment2D>> outerCycleEdges() {
+		Map<NetworkWithinCycle, UndirectedGraph<Point2D, Segment2D>> answer = new HashMap<>();
+		TObjectIntMap<Segment2D> usedEdges = new TObjectIntHashMap<>();
+		for (NetworkWithinCycle network : networks) {
+			UndirectedGraph<Point2D, Segment2D> subgraph = new UndirectedSubgraph<>(
+				network.cycle(),
+				network.cycle().vertexSet(),
+				network.cycle().edgeSet()
+			);
+			answer.put(network, subgraph);
+			for (Segment2D edge : network.cycle().edgeSet()) {
+				if (usedEdges.containsKey(edge)) {
+					usedEdges.increment(edge);
+				} else {
+					usedEdges.put(edge, 1);
+				}
+			}
+		}
+		assert networks.stream()
+			.flatMap(network -> network.cycle().edgeSet().stream())
+			.allMatch(usedEdges::containsKey);
+		for (UndirectedGraph<Point2D, Segment2D> subgraph : answer.values()) {
+			Set<Segment2D> edgesOfSubgraph = ImmutableSet.copyOf(subgraph.edgeSet());
+			for (Segment2D edge : edgesOfSubgraph) {
+				int timesEdgeUsed = usedEdges.get(edge);
+				if (timesEdgeUsed > 1) {
+					PlanarGraphs.removeEdgeAndOrphanedVertices(subgraph, edge);
+				} else {
+					assert timesEdgeUsed == 1 : timesEdgeUsed;
+				}
+			}
+		}
+		assert answer.values()
+			.stream()
+			.flatMap(graph -> graph.edgeSet().stream())
+			.allMatch(edge -> usedEdges.get(edge) == 1);
+		return answer;
 	}
 }

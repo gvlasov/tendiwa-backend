@@ -5,6 +5,7 @@ import org.tendiwa.core.*;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.MissingResourceException;
 
 public class Registry<T> implements Iterable<T> {
 	public static final Registry<FloorType> floorTypes = new Registry<>();
@@ -42,6 +43,9 @@ public class Registry<T> implements Iterable<T> {
 	}
 
 	public T get(String name) {
+		if (!map.containsKey(name)) {
+			throw new UnsupportedOperationException("No floor type '" + name + "' defined");
+		}
 		return map.get(name);
 	}
 

@@ -4,23 +4,18 @@ import com.google.common.collect.Iterators;
 import com.google.inject.Inject;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
-import org.tendiwa.data.SampleGraph;
+import org.tendiwa.data.FourCyclePenisGraph;
 import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.*;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.extensions.twakStraightSkeleton.TwakStraightSkeleton;
 import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.settlements.*;
 
 import java.awt.Color;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 import java.util.stream.IntStream;
 
 public class BigCityDemo implements Runnable {
@@ -34,11 +29,11 @@ public class BigCityDemo implements Runnable {
 
 	@Override
 	public void run() {
-		GraphConstructor<Point2D, Segment2D> gc = SampleGraph.create();
+		GraphConstructor<Point2D, Segment2D> gc = FourCyclePenisGraph.create();
 		SimpleGraph<Point2D, Segment2D> graph = gc.graph();
 		TestCanvas.canvas = canvas;
 		IntStream.range(0, 1).forEach(seed -> {
-			CityGeometry cityGeometry = new CityGeometryBuilder(graph)
+			PathGeometry pathGeometry = new CityGeometryBuilder(graph)
 				.withDefaults()
 				.withMaxStartPointsPerCycle(5)
 				.withRoadsFromPoint(4)
@@ -51,7 +46,7 @@ public class BigCityDemo implements Runnable {
 				.build();
 
 //			canvas.draw(cityGeometry, new CityDrawer());
-			Set<RectangleWithNeighbors> recGroups = RectangularBuildingLots.findIn(cityGeometry);
+			Set<RectangleWithNeighbors> recGroups = RectangularBuildingLots.placeInside(pathGeometry);
 			Iterator<Color> colors = Iterators.cycle(
 				Color.getHSBColor(0, (float) 0.5, 1),
 				Color.getHSBColor((float) 0.37, 1, (float) 0.0),
@@ -80,12 +75,17 @@ public class BigCityDemo implements Runnable {
 //				.stream()
 //				.flatMap(b -> b.shrinkToRegions(3, 0).stream())
 //				.collect(Collectors.toSet());
-//			;
 
 //			for (EnclosedBlock block : blocks) {
 //				canvas.draw(block, DrawingEnclosedBlock.withColor(Color.lightGray));
 //			}
-			UndirectedGraph<Point2D, Segment2D> allRoads = cityGeometry.getFullRoadGraph();
+			UndirectedGraph<Point2D, Segment2D> allRoads = RoadRejector.rejectPartOfNetworksBorders(
+				pathGeometry.getFullRoadGraph(),
+				pathGeometry,
+				0.5,
+				new Random(1)
+			);
+//			UndirectedGraph<Point2D, Segment2D> allRoads = pathGeometry.getFullRoadGraph();
 			Set<List<Point2D>> streets = StreetsDetector.detectStreets(allRoads);
 			Map<List<Point2D>, Color> streetsColoring = StreetsColoring.compute(
 				streets, Color.red, Color.blue,

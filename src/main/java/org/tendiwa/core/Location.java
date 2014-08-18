@@ -880,6 +880,7 @@ public class Location {
 	}
 
 	public void drawCellSet(FiniteCellSet cellSet, TypePlaceableInCell placeable) {
+		Objects.requireNonNull(placeable);
 		for (Cell cell : cellSet) {
 			activePlane.place(placeable, cell.x, cell.y);
 		}

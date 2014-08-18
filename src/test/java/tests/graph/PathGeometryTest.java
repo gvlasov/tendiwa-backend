@@ -5,7 +5,7 @@ import org.jukito.UseModules;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.tendiwa.data.SampleGraph;
+import org.tendiwa.data.FourCyclePenisGraph;
 import org.tendiwa.drawing.extensions.DrawingModule;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
@@ -17,7 +17,7 @@ import java.util.Collection;
 
 @RunWith(Parameterized.class)
 @UseModules(DrawingModule.class)
-public class CityGeometryTest {
+public class PathGeometryTest {
 
 	private final int pointsPerCycle;
 	private final int roadsFromPoint;
@@ -26,7 +26,7 @@ public class CityGeometryTest {
 	private final double[] segmentLength;
 	private final double snapSize;
 
-	public CityGeometryTest(
+	public PathGeometryTest(
 		int pointsPerCycle,
 		int roadsFromPoint,
 		double dAngle,
@@ -65,7 +65,7 @@ public class CityGeometryTest {
 
 	@Test
 	public void buildCity() {
-		GraphConstructor<Point2D, Segment2D> gc = SampleGraph.create();
+		GraphConstructor<Point2D, Segment2D> gc = FourCyclePenisGraph.create();
 		SimpleGraph<Point2D, Segment2D> graph = gc.graph();
 		for (int i = 0; i < 1; i++) {
 			new CityGeometryBuilder(graph)

@@ -8,11 +8,11 @@ import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.graph.UnmodifiableUndirectedGraph;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingSegment;
 import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Vectors2D;
+import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.graphs.MinimalCycle;
 
 import java.awt.Color;
@@ -33,7 +33,7 @@ public final class NetworkWithinCycle {
 	private final boolean favourAxisAlignedSegments;
 	private final HolderOfSplitCycleEdges holderOfSplitCycleEdges;
 	private final SimpleGraph<Point2D, Segment2D> secRoadNetwork;
-	private MinimalCycle<Point2D, Segment2D> minimalCycle;
+	private MinimalCycle<Point2D, Segment2D> originalMinimalCycle;
 	private final UndirectedGraph<Point2D, Segment2D> lowLevelRoadGraph;
 	private Collection<Segment2D> filamentEdges;
 
@@ -63,6 +63,10 @@ public final class NetworkWithinCycle {
 	private double secondaryRoadNetworkRoadLengthDeviation;
 	public double v;
 	private Set<DirectionFromPoint> filamentEnds;
+	/**
+	 * Lazily initialized graph of edges that form the cycle this network is enclosed in.
+	 */
+	private UndirectedGraph<Point2D, Segment2D> cycleGraph;
 
 	/**
 	 * Returns a set points where secondary road network is connected with the cycle.
@@ -75,14 +79,14 @@ public final class NetworkWithinCycle {
 
 	/**
 	 * @param graph
-	 * 	A preconstructed graph of low level roads, constructed by {@link CityGeometry#constructCityCellGraph(org.tendiwa.graphs.MinimalCycle,
+	 * 	A preconstructed graph of low level roads, constructed by {@link PathGeometry#constructCityCellGraph(org.tendiwa.graphs.MinimalCycle,
 	 *    java.util.Set, java.util.Collection)}
-	 * @param minimalCycle
+	 * @param originalMinimalCycle
 	 * 	A MinimalCycle that contains this NetworkWithinCycle's secondary road network inside it.
 	 * @param lowLevelRoadGraph
 	 * 	Graph that is bounding all cells.
 	 * @param filamentEdges
-	 * 	A collection of all the edges of a {@link CityGeometry#lowLevelRoadGraph} that are not
+	 * 	A collection of all the edges of a {@link PathGeometry#lowLevelRoadGraph} that are not
 	 * 	part of any minimal cycles. The same collection is passed to all the CityCells.
 	 * @param roadsFromPoint
 	 * 	[Kelly figure 42, variable ParamDegree]
@@ -121,14 +125,14 @@ public final class NetworkWithinCycle {
 	 * 	A NetworkWithinCycle is not guaranteed to have exactly {@code maxRoadsFromPoint} starting roads, because such
 	 * 	amount might not fit into a cell.
 	 * @param random
-	 * 	A seeded {@link java.util.Random} used to generate the parent {@link CityGeometry}.
+	 * 	A seeded {@link java.util.Random} used to generate the parent {@link PathGeometry}.
 	 * @param favourAxisAlignedSegments
 	 * @param holderOfSplitCycleEdges
 	 */
 
 	NetworkWithinCycle(
 		SimpleGraph<Point2D, Segment2D> graph,
-		MinimalCycle<Point2D, Segment2D> minimalCycle,
+		MinimalCycle<Point2D, Segment2D> originalMinimalCycle,
 		UndirectedGraph<Point2D, Segment2D> lowLevelRoadGraph,
 		Collection<Segment2D> filamentEdges,
 		int roadsFromPoint,
@@ -142,7 +146,7 @@ public final class NetworkWithinCycle {
 		boolean favourAxisAlignedSegments,
 		HolderOfSplitCycleEdges holderOfSplitCycleEdges
 	) {
-		this.minimalCycle = minimalCycle;
+		this.originalMinimalCycle = originalMinimalCycle;
 		this.lowLevelRoadGraph = lowLevelRoadGraph;
 		this.filamentEdges = filamentEdges;
 		this.roadsFromPoint = roadsFromPoint;
@@ -165,7 +169,7 @@ public final class NetworkWithinCycle {
 		}
 
 
-		Coordinate[] coordinates = pointListToCoordinateArray(minimalCycle.vertexList());
+		Coordinate[] coordinates = pointListToCoordinateArray(originalMinimalCycle.vertexList());
 		// TODO: Are all cycles counter-clockwise? (because of the MCB algorithm)
 		if (!CGAlgorithms.isCCW(coordinates)) {
 			List<Coordinate> list = Arrays.asList(coordinates);
@@ -175,9 +179,9 @@ public final class NetworkWithinCycle {
 			ring = coordinates;
 		}
 		isCycleClockwise = false;
-		cycleNodes = new HashSet<>(minimalCycle.vertexList());
+		cycleNodes = new HashSet<>(originalMinimalCycle.vertexList());
 
-		buildSegment2DNetwork(minimalCycle);
+		buildSegment2DNetwork(originalMinimalCycle);
 
 		exitsOnCycles = outerPointsBuilder.build();
 
@@ -327,7 +331,7 @@ public final class NetworkWithinCycle {
 	 * [Kelly figure 42]
 	 *
 	 * @param edge
-	 * 	An edge of {@link CityGeometry#lowLevelRoadGraph}.
+	 * 	An edge of {@link PathGeometry#lowLevelRoadGraph}.
 	 * @return An angle in radians perpendicular to {@code edge}. The angle is probably slightly deviated.
 	 */
 	private double deviatedBoundaryPerpendicular(Segment2D edge) {
@@ -464,8 +468,35 @@ public final class NetworkWithinCycle {
 		return new UnmodifiableUndirectedGraph<>(secRoadNetwork);
 	}
 
-	public MinimalCycle<Point2D, Segment2D> cycle() {
-		return minimalCycle;
+	public UndirectedGraph<Point2D, Segment2D> cycle() {
+		if (cycleGraph == null) {
+			initCycleGraph();
+		}
+		return cycleGraph;
+	}
+
+	/**
+	 * Constructs the enclosing cycle of this network from {@link #originalMinimalCycle} and {@link
+	 * #holderOfSplitCycleEdges}.
+	 */
+	private void initCycleGraph() {
+		assert cycleGraph == null;
+		cycleGraph = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
+		for (Segment2D edge : originalMinimalCycle) {
+			cycleGraph.addVertex(edge.start);
+			cycleGraph.addVertex(edge.end);
+			if (holderOfSplitCycleEdges.isEdgeSplit(edge)) {
+				UndirectedGraph<Point2D, Segment2D> splitGraph = holderOfSplitCycleEdges.getGraph(edge);
+				for (Point2D splitVertex : splitGraph.vertexSet()) {
+					cycleGraph.addVertex(splitVertex);
+				}
+				for (Segment2D splitEdge : splitGraph.edgeSet()) {
+					cycleGraph.addEdge(splitEdge.start, splitEdge.end, splitEdge);
+				}
+			} else {
+				cycleGraph.addEdge(edge.start, edge.end, edge);
+			}
+		}
 	}
 
 
@@ -535,7 +566,7 @@ public final class NetworkWithinCycle {
 			edges,
 			(o1, o2) -> (int) Math.signum(o2.start.distanceTo(o2.end) - o1.start.distanceTo(o1.end))
 		);
-		int numberOfStartPoints = Math.min(maxNumOfStartPoints, minimalCycle.vertexList().size());
+		int numberOfStartPoints = Math.min(maxNumOfStartPoints, originalMinimalCycle.vertexList().size());
 		return edges.subList(0, numberOfStartPoints);
 	}
 

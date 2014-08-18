@@ -37,7 +37,7 @@ public class ScriptShell extends GroovyShell {
 				new ConfigurationBuilder()
 					.addUrls(ClasspathHelper.forPackage(moduleName + ".ontology"))
 					.addScanners(new ResourcesScanner())
-					.filterInputsBy(new FilterBuilder().includePackage(moduleName))
+					.filterInputsBy(new FilterBuilder().includePackage(moduleName + ".ontology"))
 			);
 			Set<String> resourcePaths = reflections.getResources(Pattern.compile(".*\\.groovy"));
 			for (String resourcePath : resourcePaths) {
