@@ -17,7 +17,7 @@ import java.util.Collection;
 
 @RunWith(Parameterized.class)
 @UseModules(DrawingModule.class)
-public class PathGeometryTest {
+public class RoadsPlanarGraphModelTest {
 
 	private final int pointsPerCycle;
 	private final int roadsFromPoint;
@@ -26,7 +26,7 @@ public class PathGeometryTest {
 	private final double[] segmentLength;
 	private final double snapSize;
 
-	public PathGeometryTest(
+	public RoadsPlanarGraphModelTest(
 		int pointsPerCycle,
 		int roadsFromPoint,
 		double dAngle,

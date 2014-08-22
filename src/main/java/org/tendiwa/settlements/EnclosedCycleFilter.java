@@ -1,10 +1,11 @@
-package org.tendiwa.graphs;
+package org.tendiwa.settlements;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Point2D;
+import org.tendiwa.graphs.MinimalCycle;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,7 +13,10 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public final class EnclosedCycleFilter implements Predicate<MinimalCycle<Point2D, Segment2D>> {
+/**
+ * This is mainly intended to be used as {@link java.util.stream.Stream#filter(java.util.function.Predicate)} argument.
+ */
+final class EnclosedCycleFilter implements Predicate<MinimalCycle<Point2D, Segment2D>> {
 	private final Collection<Geometry> geometries;
 	private final GeometryFactory factory = new GeometryFactory();
 

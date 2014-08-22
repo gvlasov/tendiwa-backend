@@ -3,15 +3,12 @@ package org.tendiwa.geometry.extensions.straightSkeleton;
 import com.google.common.collect.*;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
-import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingPoint2D;
-import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
 import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.graphs.MinimumCycleBasis;
-import org.tendiwa.settlements.RayIntersection;
+import org.tendiwa.geometry.RayIntersection;
 
 import java.awt.Color;
 import java.util.*;

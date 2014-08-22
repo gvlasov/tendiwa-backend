@@ -7,7 +7,7 @@ import org.tendiwa.geometry.Segment2D;
 import java.util.Random;
 
 /**
- * A fluent builder to create instances of {@link PathGeometry}.
+ * A fluent builder to create instances of {@link RoadsPlanarGraphModel}.
  */
 public class CityGeometryBuilder {
 	/**
@@ -69,7 +69,7 @@ public class CityGeometryBuilder {
 	 *
 	 * @param graph
 	 * 	The high level road graph of a city.
-	 * @see PathGeometry#highLevelRoadGraph
+	 * @see RoadsPlanarGraphModel#highLevelRoadGraph
 	 * @see [Kelly 4.2.0]
 	 */
 	public CityGeometryBuilder(UndirectedGraph<Point2D, Segment2D> graph) {
@@ -228,7 +228,7 @@ public class CityGeometryBuilder {
 	}
 
 	@SuppressWarnings("unused")
-	public PathGeometry build() {
+	public RoadsPlanarGraphModel build() {
 		if (graph == null) {
 			throw new IllegalStateException("Graph not set");
 		}
@@ -266,8 +266,8 @@ public class CityGeometryBuilder {
 			throw new IllegalStateException("seed not set");
 		}
 		final Random random = new Random(4);
-		return new PathGeometry(
-			PathGeometry.createRoadGraph(graph.vertexSet(), graph.edgeSet()),
+		return new RoadsPlanarGraphModel(
+			RoadsPlanarGraphModel.createRoadGraph(graph.vertexSet(), graph.edgeSet()),
 			sampleFan -> {
 				int rand = random.nextInt(sampleFan.size());
 				return sampleFan.toArray(new Point2D[sampleFan.size()])[rand];

@@ -1,6 +1,8 @@
 package org.tendiwa.settlements.buildings;
 
+import com.google.common.collect.ImmutableList;
 import org.tendiwa.geometry.Placeable;
+import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Rectangle;
 
 import java.util.*;

@@ -2,8 +2,8 @@ package org.tendiwa.settlements;
 
 import org.jgrapht.UndirectedGraph;
 import org.tendiwa.core.meta.Range;
-import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.RayIntersection;
 import org.tendiwa.geometry.Segment2D;
 
 import java.util.Collection;
@@ -251,19 +251,6 @@ public class SnapTest {
 				return minX < roadMaxX && maxX > roadMinX && minY < roadMaxY && maxY > roadMinY;
 			})
 			.collect(Collectors.toList());
-	}
-
-	private static Collection<Point2D> test(Collection<Segment2D> col, Point2D p) {
-		Collection<Point2D> answer = new HashSet<>();
-		for (Segment2D s : col) {
-			if (s.start.distanceTo(p) < 4) {
-				answer.add(s.start);
-			}
-			if (s.end.distanceTo(p) < 4) {
-				answer.add(s.end);
-			}
-		}
-		return answer;
 	}
 
 	private Stream<Segment2D> constructRoadsStream() {

@@ -1,7 +1,10 @@
-package org.tendiwa.settlements;
+package org.tendiwa.settlements.utils;
 
 import org.tendiwa.geometry.extensions.PolygonRasterizer;
 import org.tendiwa.geometry.extensions.daveedvMaxRec.MaximalRectanlges;
+import org.tendiwa.settlements.EnclosedBlock;
+import org.tendiwa.settlements.RectangleWithNeighbors;
+import org.tendiwa.settlements.RoadsPlanarGraphModel;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -11,8 +14,8 @@ public final class RectangularBuildingLots {
 		throw new UnsupportedOperationException();
 	}
 
-	public static Set<RectangleWithNeighbors> placeInside(PathGeometry pathGeometry) {
-		Set<EnclosedBlock> encBlocks = pathGeometry
+	public static Set<RectangleWithNeighbors> placeInside(RoadsPlanarGraphModel roadsPlanarGraphModel) {
+		Set<EnclosedBlock> encBlocks = roadsPlanarGraphModel
 			.getBlocks()
 			.stream()
 			.flatMap(b -> b.shrinkToRegions(3.3, 0).stream())

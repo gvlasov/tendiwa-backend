@@ -1,4 +1,4 @@
-package org.tendiwa.settlements;
+package org.tendiwa.geometry;
 
 import org.tendiwa.geometry.GeometryException;
 import org.tendiwa.geometry.Segment2D;

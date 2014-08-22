@@ -1,5 +1,6 @@
 package org.tendiwa.demos.settlements;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.google.inject.Inject;
 import org.jgrapht.UndirectedGraph;
@@ -13,9 +14,15 @@ import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.settlements.*;
+import org.tendiwa.settlements.buildings.StreetAssigner;
+import org.tendiwa.settlements.utils.BuildingPlacesFilters;
+import org.tendiwa.settlements.utils.RectangularBuildingLots;
+import org.tendiwa.settlements.utils.RoadRejector;
+import org.tendiwa.settlements.utils.StreetsDetector;
 
 import java.awt.Color;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class BigCityDemo implements Runnable {
@@ -31,9 +38,16 @@ public class BigCityDemo implements Runnable {
 	public void run() {
 		GraphConstructor<Point2D, Segment2D> gc = FourCyclePenisGraph.create();
 		SimpleGraph<Point2D, Segment2D> graph = gc.graph();
+//		SimpleGraph<Point2D, Segment2D> graph = new GraphConstructor<>(Segment2D::new)
+//			.vertex(0, new Point2D(50, 50))
+//			.vertex(1, new Point2D(350, 50))
+//			.vertex(2, new Point2D(350, 350))
+//			.vertex(3, new Point2D(50, 350))
+//			.cycle(0, 1, 2, 3)
+//			.graph();
 		TestCanvas.canvas = canvas;
 		IntStream.range(0, 1).forEach(seed -> {
-			PathGeometry pathGeometry = new CityGeometryBuilder(graph)
+			RoadsPlanarGraphModel roadsPlanarGraphModel = new CityGeometryBuilder(graph)
 				.withDefaults()
 				.withMaxStartPointsPerCycle(5)
 				.withRoadsFromPoint(4)
@@ -46,7 +60,6 @@ public class BigCityDemo implements Runnable {
 				.build();
 
 //			canvas.draw(cityGeometry, new CityDrawer());
-			Set<RectangleWithNeighbors> recGroups = RectangularBuildingLots.placeInside(pathGeometry);
 			Iterator<Color> colors = Iterators.cycle(
 				Color.getHSBColor(0, (float) 0.5, 1),
 				Color.getHSBColor((float) 0.37, 1, (float) 0.0),
@@ -59,6 +72,28 @@ public class BigCityDemo implements Runnable {
 				Color.getHSBColor((float) 0.37, 1, 1),
 				Color.getHSBColor((float) 0.62, 1, (float) 0.8)
 			);
+			UndirectedGraph<Point2D, Segment2D> allRoads = RoadRejector.rejectPartOfNetworksBorders(
+				roadsPlanarGraphModel.getFullRoadGraph(),
+				roadsPlanarGraphModel,
+				0.0,
+				new Random(1)
+			);
+//			UndirectedGraph<Point2D, Segment2D> allRoads = pathGeometry.getFullRoadGraph();
+			Set<ImmutableList<Point2D>> streets = StreetsDetector.detectStreets(allRoads);
+			Map<ImmutableList<Point2D>, Color> streetsColoring = StreetsColoring.compute(
+				streets, Color.red, Color.blue,
+				Color.green, Color.cyan, Color.magenta, Color.orange, Color.black, Color.lightGray, Color.gray
+			);
+			for (List<Point2D> street : streets) {
+				Color streetColor = streetsColoring.get(street);
+				canvas.draw(street, DrawingChain.withColor(streetColor));
+			}
+			Set<RectangleWithNeighbors> recGroups = RectangularBuildingLots
+				.placeInside(roadsPlanarGraphModel)
+				.stream()
+				.filter(BuildingPlacesFilters.closeToRoads(streets, 8))
+				.collect(Collectors.toSet());
+
 			for (RectangleWithNeighbors rectangleWithNeighbors : recGroups) {
 				canvas.draw(
 					rectangleWithNeighbors.rectangle,
@@ -79,22 +114,6 @@ public class BigCityDemo implements Runnable {
 //			for (EnclosedBlock block : blocks) {
 //				canvas.draw(block, DrawingEnclosedBlock.withColor(Color.lightGray));
 //			}
-			UndirectedGraph<Point2D, Segment2D> allRoads = RoadRejector.rejectPartOfNetworksBorders(
-				pathGeometry.getFullRoadGraph(),
-				pathGeometry,
-				0.5,
-				new Random(1)
-			);
-//			UndirectedGraph<Point2D, Segment2D> allRoads = pathGeometry.getFullRoadGraph();
-			Set<List<Point2D>> streets = StreetsDetector.detectStreets(allRoads);
-			Map<List<Point2D>, Color> streetsColoring = StreetsColoring.compute(
-				streets, Color.red, Color.blue,
-				Color.green, Color.cyan, Color.magenta, Color.orange, Color.black, Color.lightGray, Color.gray
-			);
-			for (List<Point2D> street : streets) {
-				Color streetColor = streetsColoring.get(street);
-				canvas.draw(street, DrawingChain.withColor(streetColor));
-			}
 		});
 	}
 }

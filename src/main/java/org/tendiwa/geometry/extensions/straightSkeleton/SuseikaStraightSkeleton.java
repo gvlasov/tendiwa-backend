@@ -11,7 +11,7 @@ import org.tendiwa.drawing.extensions.DrawingPoint2D;
 import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.*;
 import org.tendiwa.graphs.MinimalCycle;
-import org.tendiwa.settlements.RayIntersection;
+import org.tendiwa.geometry.RayIntersection;
 
 import java.awt.Color;
 import java.util.*;

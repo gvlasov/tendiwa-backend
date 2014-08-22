@@ -1,7 +1,9 @@
 package org.tendiwa.drawing.extensions;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
+import org.codehaus.groovy.transform.ImmutableASTTransformation;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.alg.ChromaticNumber;
 import org.jgrapht.graph.DefaultEdge;
@@ -19,20 +21,20 @@ public final class StreetsColoring {
 
 	}
 
-	public static Map<List<Point2D>, Color> compute(Set<List<Point2D>> streets, Color... colors) {
-		UndirectedGraph<List<Point2D>, DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class);
-		for (List<Point2D> street : streets) {
+	public static Map<ImmutableList<Point2D>, Color> compute(Set<ImmutableList<Point2D>> streets, Color... colors) {
+		UndirectedGraph<ImmutableList<Point2D>, DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class);
+		for (ImmutableList<Point2D> street : streets) {
 			graph.addVertex(street);
 		}
-		Multimap<Point2D, List<Point2D>> verticesToStreets = HashMultimap.create();
-		for (List<Point2D> street : streets) {
+		Multimap<Point2D, ImmutableList<Point2D>> verticesToStreets = HashMultimap.create();
+		for (ImmutableList<Point2D> street : streets) {
 			for (Point2D vertex : street) {
 				verticesToStreets.put(vertex, street);
 			}
 		}
-		for (List<Point2D> street : streets) {
+		for (ImmutableList<Point2D> street : streets) {
 			for (Point2D vertex : street) {
-				for (List<Point2D> anotherStreet : verticesToStreets.get(vertex)) {
+				for (ImmutableList<Point2D> anotherStreet : verticesToStreets.get(vertex)) {
 					if (anotherStreet == street) {
 						continue;
 					}
@@ -42,15 +44,15 @@ public final class StreetsColoring {
 			}
 
 		}
-		Map<Integer, Set<List<Point2D>>> colorsToStreets = ChromaticNumber.findGreedyColoredGroups(graph);
-		Map<List<Point2D>, Color> answer = new HashMap<>();
-		for (Map.Entry<Integer, Set<List<Point2D>>> entry : colorsToStreets.entrySet()) {
+		Map<Integer, Set<ImmutableList<Point2D>>> colorsToStreets
+			= ChromaticNumber.findGreedyColoredGroups(graph);
+		Map<ImmutableList<Point2D>, Color> answer = new HashMap<>();
+		for (Map.Entry<Integer, Set<ImmutableList<Point2D>>> entry : colorsToStreets.entrySet()) {
 			int color = entry.getKey();
-			for (List<Point2D> street : entry.getValue()) {
+			for (ImmutableList<Point2D> street : entry.getValue()) {
 				answer.put(street, colors[color]);
 			}
 		}
 		return answer;
-
 	}
 }

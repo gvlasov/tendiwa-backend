@@ -13,7 +13,7 @@ import java.util.Set;
  * <p>
  * This class is not intended to be used with planar graphs that have any vertices of degree 0.
  */
-public class GraphLooseEndsCloser {
+final class GraphLooseEndsCloser {
 	private final Set<Point2D> used = new HashSet<>();
 	private final UndirectedGraph<Point2D, Segment2D> sourceGraph;
 	private double snapSize;

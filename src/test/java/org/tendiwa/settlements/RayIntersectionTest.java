@@ -1,6 +1,7 @@
 package org.tendiwa.settlements;
 
 import org.junit.Test;
+import org.tendiwa.geometry.RayIntersection;
 import org.tendiwa.geometry.Segment2D;
 
 import static org.junit.Assert.assertFalse;

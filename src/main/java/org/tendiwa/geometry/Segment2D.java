@@ -1,7 +1,6 @@
 package org.tendiwa.geometry;
 
 import com.google.common.collect.Lists;
-import org.tendiwa.settlements.RayIntersection;
 
 import java.util.List;
 import java.util.function.Function;

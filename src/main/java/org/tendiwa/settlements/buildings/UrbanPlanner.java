@@ -8,6 +8,7 @@ import org.tendiwa.geometry.Rectangle;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * UrbanPlanner decides where to place individual {@link Building}s using {@link org.tendiwa.settlements.buildings
@@ -29,7 +30,10 @@ public final class UrbanPlanner implements BuildingPlacer {
 
 	@Override
 	public void placeBuildings(CityBuilder.Info cityInfo) {
-		streetAssigner = new StreetAssigner(cityInfo.getBuildingPlaces(), cityInfo.getStreets(), streetsWidth);
+		streetAssigner = new StreetAssigner(
+			cityInfo.getStreets().stream().map(Street::getPoints).collect(Collectors.toSet()),
+			streetsWidth
+		);
 		Map<Rectangle, Architecture> placement = new BranchAndBoundUrbanPlanningStrategy(
 			architecture,
 			streetAssigner,
@@ -39,7 +43,6 @@ public final class UrbanPlanner implements BuildingPlacer {
 		for (Rectangle rectangle : placement.keySet()) {
 			addBuilding(rectangle, placement.get(rectangle), cityInfo);
 		}
-
 	}
 
 	public void addAvailableArchitecture(Architecture architecture, ArchitecturePolicy policy) {
@@ -54,9 +57,9 @@ public final class UrbanPlanner implements BuildingPlacer {
 		}
 		BuildingFeatures features = new BuildingFeatures();
 		features.setPlace(where);
-		features.setStreet(
-			streetAssigner.getStreetsForBuildingPlace(where).iterator().next()
-		);
+//		features.setStreet(
+//			streetAssigner.getStreetsForBuildingPlace(where).iterator().next()
+//		);
 		what.draw(
 			features,
 			CardinalDirection.S,

@@ -12,12 +12,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Holds chains of edges that are result of splitting edges of {@link PathGeometry#lowLevelRoadGraph}.
+ * Holds chains of edges that are result of splitting edges of {@link RoadsPlanarGraphModel#lowLevelRoadGraph}.
  * We can't mutate {@link org.tendiwa.settlements.NetworkWithinCycle#lowLevelRoadGraph}
  * itself because that breaks {@link org.tendiwa.graphs.MinimalCycle#iterator()}.
  * <p>
- * This class exists so {@link PathGeometry#getFullRoadGraph()} can return a graph with edges on cycle edges that are
- * not part of the initial {@link PathGeometry#lowLevelRoadGraph}.
+ * This class exists so {@link RoadsPlanarGraphModel#getFullRoadGraph()} can return a graph with edges on cycle edges that are
+ * not part of the initial {@link RoadsPlanarGraphModel#lowLevelRoadGraph}.
  */
 final class HolderOfSplitCycleEdges {
 	private final Map<Segment2D, UndirectedGraph<Point2D, Segment2D>> edgesToSubEdgeGraphs = new HashMap<>();
@@ -26,7 +26,7 @@ final class HolderOfSplitCycleEdges {
 	 * Remembers that {@code edgeToSplit} is split into a graph of sub-edges.
 	 *
 	 * @param edgeToSplit
-	 * 	An edge of {@link PathGeometry#lowLevelRoadGraph}, or a sub-edge.
+	 * 	An edge of {@link RoadsPlanarGraphModel#lowLevelRoadGraph}, or a sub-edge.
 	 * @param point
 	 * 	A point to split the edge with.
 	 */

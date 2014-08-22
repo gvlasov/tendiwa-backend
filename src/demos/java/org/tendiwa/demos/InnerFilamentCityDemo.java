@@ -5,7 +5,7 @@ import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
-import org.tendiwa.settlements.PathGeometry;
+import org.tendiwa.settlements.RoadsPlanarGraphModel;
 import org.tendiwa.settlements.CityGeometryBuilder;
 
 public class InnerFilamentCityDemo implements Runnable {
@@ -30,10 +30,10 @@ public class InnerFilamentCityDemo implements Runnable {
                 .edge(0, 8)
                 .edge(6, 9);
         TestCanvas canvas = Demos.createCanvas();
-        PathGeometry pathGeometry = new CityGeometryBuilder(gc.graph())
+        RoadsPlanarGraphModel roadsPlanarGraphModel = new CityGeometryBuilder(gc.graph())
                 .withDefaults()
                 .withRoadSegmentLength(50)
                 .build();
-        canvas.draw(pathGeometry, new CityDrawer());
+        canvas.draw(roadsPlanarGraphModel, new CityDrawer());
     }
 }

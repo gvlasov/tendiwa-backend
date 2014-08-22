@@ -22,6 +22,9 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 /**
+ * A geometrical model of a city on the most basic level: roads (represented as {@link org.tendiwa.geometry.Segment2D})
+ * and polygonal empty areas between those roads.
+ * <p>
  * This class serves two purposes:
  * <ol>
  * <li>
@@ -33,15 +36,16 @@ import static java.util.stream.Collectors.toSet;
  * </li>
  * </ol>
  * <p>
- * The intended use of this class is to create the geometry of {@link org.tendiwa.settlements.buildings.City}'s roads
- * and then to find housing quarters between those roads. More generally, this class can build randomized networks
- * inside arbitrary polygonal areas defined by minimal cycles of some planar non-self-intersecting graphs.
+ * The intended use of this class is to create the geometry of {@link org.tendiwa.settlements.buildings.City}'s roads,
+ * and then to find housing quarters between those roads. More generally speaking, this class can build randomized
+ * networks inside arbitrary polygonal areas defined by minimal cycles of some planar non-self-intersecting graph.
  */
-public final class PathGeometry {
+public final class RoadsPlanarGraphModel {
 	/**
 	 * [Kelly section 4.2]
 	 * <p>
 	 */
+	// TODO: This field is probably not needed at all.
 	private final UndirectedGraph<Point2D, Segment2D> highLevelRoadGraph;
 	private final SampleSelectionStrategy strategy;
 	/**
@@ -122,7 +126,7 @@ public final class PathGeometry {
 	 * 	If {@code numberOfSamples <= 0} or if {@code deviationAngle == 0 && numberOfSamples >= 1}, or if
 	 * 	#lowLevelRoadGraph produced from #highLevelRoadGraph intersects itself.
 	 */
-	public PathGeometry(
+	RoadsPlanarGraphModel(
 		UndirectedGraph<Point2D, Segment2D> highLevelRoadGraph,
 		SampleSelectionStrategy strategy,
 		double sampleRadius,
@@ -499,16 +503,17 @@ public final class PathGeometry {
 		return fanBuilder.build();
 	}
 
-	@SuppressWarnings("unused")
 	public UndirectedGraph<Point2D, Segment2D> getHighLevelRoadGraph() {
 		return highLevelRoadGraph;
 	}
 
-	@SuppressWarnings("unused")
 	public UndirectedGraph<Point2D, Segment2D> getLowLevelRoadGraph() {
 		return lowLevelRoadGraph;
 	}
 
+	/**
+	 * @return Polygonal empty areas between roads.
+	 */
 	public Set<SecondaryRoadNetworkBlock> getBlocks() {
 		return networks.stream().flatMap(cell -> cell.getEnclosedBlocks().stream()).collect(toSet());
 	}
@@ -549,7 +554,7 @@ public final class PathGeometry {
 
 	/**
 	 * In each {@link org.tendiwa.settlements.NetworkWithinCycle} that this {@link
-	 * org.tendiwa.settlements.PathGeometry} consists of, finds such edges that are part of only one
+	 * RoadsPlanarGraphModel} consists of, finds such edges that are part of only one
 	 * {@link NetworkWithinCycle#cycle()}.
 	 *
 	 * @return Map from {@link org.tendiwa.settlements.NetworkWithinCycle} to subgraphs of {@link

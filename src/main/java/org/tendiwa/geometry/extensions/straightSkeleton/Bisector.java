@@ -3,7 +3,7 @@ package org.tendiwa.geometry.extensions.straightSkeleton;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Vector2D;
-import org.tendiwa.settlements.RayIntersection;
+import org.tendiwa.geometry.RayIntersection;
 
 class Bisector {
 	final Segment2D segment;

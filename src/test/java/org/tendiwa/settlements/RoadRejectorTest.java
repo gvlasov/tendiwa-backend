@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
+import org.tendiwa.settlements.utils.RoadRejector;
 
 import java.util.Random;
 
@@ -13,7 +14,7 @@ import static org.junit.Assert.*;
 
 public class RoadRejectorTest {
 
-	private PathGeometry geometry;
+	private RoadsPlanarGraphModel geometry;
 	private UndirectedGraph<Point2D, Segment2D> fullRoadGraph;
 
 	@Before

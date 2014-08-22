@@ -5,7 +5,7 @@ import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
-import org.tendiwa.settlements.PathGeometry;
+import org.tendiwa.settlements.RoadsPlanarGraphModel;
 import org.tendiwa.settlements.CityGeometryBuilder;
 
 public class FirstCityGenerationDemo {
@@ -24,9 +24,9 @@ public class FirstCityGenerationDemo {
                 .vertex(9, new Point2D(184, 187))
                 .cycle(0, 1, 2, 3, 4)
                 .cycle(3, 5, 9, 8, 7, 6, 1, 2);
-        PathGeometry pathGeometry = new CityGeometryBuilder(gc.graph())
+        RoadsPlanarGraphModel roadsPlanarGraphModel = new CityGeometryBuilder(gc.graph())
                 .withDefaults()
                 .build();
-        canvas.draw(pathGeometry, new CityDrawer());
+        canvas.draw(roadsPlanarGraphModel, new CityDrawer());
     }
 }

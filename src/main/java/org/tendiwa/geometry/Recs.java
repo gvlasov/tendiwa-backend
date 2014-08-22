@@ -230,21 +230,21 @@ public final class Recs {
 			if (Math.abs(newPointPosition) < Vectors2D.EPSILON) {
 				break;
 			}
-			if (newPointPosition != pointPosition) {
+			if (Math.signum(newPointPosition) != Math.signum(pointPosition)) {
 				break;
 			}
 			newPointPosition = pointRelativeToLine(r.x, r.getMaxY(), segment);
 			if (Math.abs(newPointPosition) < Vectors2D.EPSILON) {
 				break;
 			}
-			if (newPointPosition != pointPosition) {
+			if (Math.signum(newPointPosition) != Math.signum(pointPosition)) {
 				break;
 			}
 			newPointPosition = pointRelativeToLine(r.getMaxX(), r.getMaxY(), segment);
 			if (Math.abs(newPointPosition) < Vectors2D.EPSILON) {
 				break;
 			}
-			if (newPointPosition != pointPosition) {
+			if (Math.signum(newPointPosition) != Math.signum(pointPosition)) {
 				break;
 			}
 			return false;
@@ -258,7 +258,7 @@ public final class Recs {
 			segmentBoundsMin = segment.end.x;
 			segmentBoundsMax = segment.start.x;
 		}
-		if (!(segmentBoundsMax < r.x || r.getMaxX() > segmentBoundsMin)) {
+		if (segmentBoundsMax < r.x || segmentBoundsMin > r.getMaxX()) {
 			return false;
 		}
 		if (segment.start.y < segment.end.y) {
@@ -268,7 +268,7 @@ public final class Recs {
 			segmentBoundsMin = segment.end.y;
 			segmentBoundsMax = segment.start.y;
 		}
-		if (!(segmentBoundsMax < r.y || r.getMaxY() > segmentBoundsMin)) {
+		if (segmentBoundsMax < r.y || segmentBoundsMin > r.getMaxY()) {
 			return false;
 		}
 		return true;

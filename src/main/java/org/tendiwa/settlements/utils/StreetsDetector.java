@@ -1,4 +1,4 @@
-package org.tendiwa.settlements;
+package org.tendiwa.settlements.utils;
 
 import com.google.common.collect.*;
 import org.jgrapht.UndirectedGraph;
@@ -17,7 +17,7 @@ public final class StreetsDetector {
 	private final HashSet<Segment2D> usedEdges = new HashSet<>();
 	private final Table<Segment2D, Point2D, Object> joiningProhibited = HashBasedTable.create();
 
-	public static Set<List<Point2D>> detectStreets(UndirectedGraph<Point2D, Segment2D> cityGraph) {
+	public static Set<ImmutableList<Point2D>> detectStreets(UndirectedGraph<Point2D, Segment2D> cityGraph) {
 		return new StreetsDetector(cityGraph).compute();
 	}
 
@@ -26,7 +26,7 @@ public final class StreetsDetector {
 		this.usedVertices = new HashSet<>(cityGraph.vertexSet().size());
 	}
 
-	private Set<List<Point2D>> compute() {
+	private Set<ImmutableList<Point2D>> compute() {
 		for (Point2D vertex : cityGraph.vertexSet()) {
 			if (cityGraph.degreeOf(vertex) <= 2) {
 				if (usedVertices.contains(vertex)) {
@@ -49,11 +49,12 @@ public final class StreetsDetector {
 		}
 		assembleDeferredChains();
 
-		Set<List<Point2D>> answer = new LinkedHashSet<>();
+		Set<ImmutableList<Point2D>> answer = new LinkedHashSet<>();
 		for (Deque<Point2D> chain : ends.values()) {
 			// LinkedList implements both Deque and List interfaces
-			answer.add((List<Point2D>) chain);
+			answer.add(ImmutableList.copyOf((List<Point2D>) chain));
 		}
+		// TODO: Detect chains that end inside themselves and break them into several chains
 		return answer;
 	}
 
@@ -417,7 +418,7 @@ public final class StreetsDetector {
 		 * Angle in radians between segments coming from the same Point2D.
 		 * Value of this field may be {@code > Math.PI} angle or the corresponding {@code < Math.PI} angle (depending
 		 * on whether you go clockwise or counterclockwise to measure angle),
-		 * it doesn't matter for {@link #compareTo(org.tendiwa.settlements.StreetsDetector.EdgePair)}.
+		 * it doesn't matter for {@link #compareTo(StreetsDetector.EdgePair)}.
 		 */
 		private final double angle;
 		private final Point2D start;

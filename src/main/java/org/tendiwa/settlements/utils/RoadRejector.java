@@ -1,4 +1,4 @@
-package org.tendiwa.settlements;
+package org.tendiwa.settlements.utils;
 
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.alg.ConnectivityInspector;
@@ -7,13 +7,15 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.math.StonesInBasketsSolver;
+import org.tendiwa.settlements.NetworkWithinCycle;
+import org.tendiwa.settlements.RoadsPlanarGraphModel;
 
 import java.util.*;
 
 /**
  * Static methods of this class create a view of a city's road network graph that rejects some of its edges so cities
  * don't have to be enclosed in a road around them (enclosing cities in a road around them is the core mechanics of
- * constructing a {@link PathGeometry}.
+ * constructing a {@link org.tendiwa.settlements.RoadsPlanarGraphModel}.
  */
 public final class RoadRejector {
 	private static final Comparator<Point2D> ANY_NEIGHBOR_COMPARATOR = (p1, p2) -> {
@@ -43,17 +45,17 @@ public final class RoadRejector {
 	 * {@code cityGeometry}.
 	 *
 	 * @param graph
-	 * 	A full road graph ({@link PathGeometry#getFullRoadGraph()}) of {@code cityGeometry}.
-	 * @param pathGeometry
+	 * 	A full road graph ({@link org.tendiwa.settlements.RoadsPlanarGraphModel#getFullRoadGraph()}) of {@code cityGeometry}.
+	 * @param roadsPlanarGraphModel
 	 * 	A geometry of a city.
 	 * @return A view of a road graph without roads forming city's cells' enclosing cycles.
 	 */
 	public static UndirectedGraph<Point2D, Segment2D> rejectAllCellsBorders(
 		UndirectedGraph<Point2D, Segment2D> graph,
-		PathGeometry pathGeometry // TODO: Maybe extract an interface with cycle() method so graph and cityGeometry won't seem coupled
+		RoadsPlanarGraphModel roadsPlanarGraphModel // TODO: Maybe extract an interface with cycle() method so graph and cityGeometry won't seem coupled
 	) {
 		UndirectedSubgraph<Point2D, Segment2D> modifiedGraph = new UndirectedSubgraph<>(graph, graph.vertexSet(), graph.edgeSet());
-		for (NetworkWithinCycle networkWithinCycle : pathGeometry.getNetworks()) {
+		for (NetworkWithinCycle networkWithinCycle : roadsPlanarGraphModel.getNetworks()) {
 			for (Segment2D edge : networkWithinCycle.cycle().edgeSet()) {
 				if (modifiedGraph.containsEdge(edge)) {
 					modifiedGraph.removeEdge(edge);
@@ -71,25 +73,25 @@ public final class RoadRejector {
 
 	public static UndirectedGraph<Point2D, Segment2D> rejectPartOfNetworksBorders(
 		UndirectedGraph<Point2D, Segment2D> graph,
-		PathGeometry pathGeometry,
+		RoadsPlanarGraphModel roadsPlanarGraphModel,
 		double probability,
 		Random random
 	) {
 		if (probability < 0 || probability > 1) {
 			throw new IllegalArgumentException("probability must be in [0..1] (now it is " + probability + ")");
 		}
-		return new RoadRejector(graph, random).rejectRoads(pathGeometry, probability);
+		return new RoadRejector(graph, random).rejectRoads(roadsPlanarGraphModel, probability);
 	}
 
 	/**
 	 * Removes some of the outer cycle edges
 	 *
-	 * @param pathGeometry
+	 * @param roadsPlanarGraphModel
 	 * @param probability
 	 * @return
 	 */
 	private UndirectedGraph<Point2D, Segment2D> rejectRoads(
-		PathGeometry pathGeometry,
+		RoadsPlanarGraphModel roadsPlanarGraphModel,
 		double probability
 	) {
 		UndirectedSubgraph<Point2D, Segment2D> modifiedGraph = new UndirectedSubgraph<>(
@@ -97,7 +99,7 @@ public final class RoadRejector {
 			fullGraph.vertexSet(),
 			fullGraph.edgeSet()
 		);
-		List<List<Segment2D>> chains = findChainsBetween3DegreeCycleVertices(pathGeometry);
+		List<List<Segment2D>> chains = findChainsBetween3DegreeCycleVertices(roadsPlanarGraphModel);
 		int[][] subchainsToRemove = findSubChainsToRemove(chains, probability);
 		for (int i = 0; i < subchainsToRemove.length; i++) {
 			int firstEdgeIndex = subchainsToRemove[i][0];
@@ -165,9 +167,9 @@ public final class RoadRejector {
 		return numberOfEdgesInAllChains;
 	}
 
-	private List<List<Segment2D>> findChainsBetween3DegreeCycleVertices(PathGeometry pathGeometry) {
+	private List<List<Segment2D>> findChainsBetween3DegreeCycleVertices(RoadsPlanarGraphModel roadsPlanarGraphModel) {
 		List<List<Segment2D>> answer = new ArrayList<>();
-		for (UndirectedGraph<Point2D, Segment2D> outerCycleEdges : pathGeometry.outerCycleEdges().values()) {
+		for (UndirectedGraph<Point2D, Segment2D> outerCycleEdges : roadsPlanarGraphModel.outerCycleEdges().values()) {
 			// Outer cycle edges of a network may be either a continuous cycle (if a network doesn't adjoin other
 			// networks of the same pathGeometry), or a set of chains with outerCycleEdges.degreeOf(vertex) == 1 on
 			// their ends.
@@ -269,7 +271,7 @@ public final class RoadRejector {
 	 * Walks along chains of edges in a subgraph of {@link #fullGraph} ({@code outerCycleEdges}),
 	 * extracting the sub-chains that start and end with vertices having degree > 2 in {@link #fullGraph}.
 	 *
-	 * @see PathGeometry#outerCycleEdges() for what kind of subgraph is walked along.
+	 * @see org.tendiwa.settlements.RoadsPlanarGraphModel#outerCycleEdges() for what kind of subgraph is walked along.
 	 */
 	private class NonCycleChainWalker {
 		private final UndirectedGraph<Point2D, Segment2D> outerCycleEdges;

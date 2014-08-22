@@ -79,14 +79,14 @@ public final class NetworkWithinCycle {
 
 	/**
 	 * @param graph
-	 * 	A preconstructed graph of low level roads, constructed by {@link PathGeometry#constructCityCellGraph(org.tendiwa.graphs.MinimalCycle,
+	 * 	A preconstructed graph of low level roads, constructed by {@link RoadsPlanarGraphModel#constructCityCellGraph(org.tendiwa.graphs.MinimalCycle,
 	 *    java.util.Set, java.util.Collection)}
 	 * @param originalMinimalCycle
 	 * 	A MinimalCycle that contains this NetworkWithinCycle's secondary road network inside it.
 	 * @param lowLevelRoadGraph
 	 * 	Graph that is bounding all cells.
 	 * @param filamentEdges
-	 * 	A collection of all the edges of a {@link PathGeometry#lowLevelRoadGraph} that are not
+	 * 	A collection of all the edges of a {@link RoadsPlanarGraphModel#lowLevelRoadGraph} that are not
 	 * 	part of any minimal cycles. The same collection is passed to all the CityCells.
 	 * @param roadsFromPoint
 	 * 	[Kelly figure 42, variable ParamDegree]
@@ -125,7 +125,7 @@ public final class NetworkWithinCycle {
 	 * 	A NetworkWithinCycle is not guaranteed to have exactly {@code maxRoadsFromPoint} starting roads, because such
 	 * 	amount might not fit into a cell.
 	 * @param random
-	 * 	A seeded {@link java.util.Random} used to generate the parent {@link PathGeometry}.
+	 * 	A seeded {@link java.util.Random} used to generate the parent {@link RoadsPlanarGraphModel}.
 	 * @param favourAxisAlignedSegments
 	 * @param holderOfSplitCycleEdges
 	 */
@@ -331,7 +331,7 @@ public final class NetworkWithinCycle {
 	 * [Kelly figure 42]
 	 *
 	 * @param edge
-	 * 	An edge of {@link PathGeometry#lowLevelRoadGraph}.
+	 * 	An edge of {@link RoadsPlanarGraphModel#lowLevelRoadGraph}.
 	 * @return An angle in radians perpendicular to {@code edge}. The angle is probably slightly deviated.
 	 */
 	private double deviatedBoundaryPerpendicular(Segment2D edge) {
@@ -503,10 +503,8 @@ public final class NetworkWithinCycle {
 	/**
 	 * [Kelly figure 42]
 	 * <p>
-	 * Adds new node between two existing nodes, removing an existing road between them and placing 2 new roads. to
-	 * road
-	 * network. Since {@link org.tendiwa.settlements.RoadGraph} is immutable, new nodes are saved in a separate
-	 * collection.
+	 * Adds new node between two existing nodes, removing an existing road between them and placing 2 new roads to
+	 * road network.
 	 *
 	 * @param road
 	 * 	A road from {@link #relevantNetwork} on which a node is being inserted.

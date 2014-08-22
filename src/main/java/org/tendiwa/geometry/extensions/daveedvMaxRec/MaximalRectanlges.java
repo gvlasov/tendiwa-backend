@@ -26,7 +26,7 @@ public class MaximalRectanlges {
 	 * more polygon to find whose area is greater than {@code minimumArea}.
 	 *
 	 * @param rasterizedPolygon
-	 * 	A bitmap to find rectangles in.
+	 * 	A bitmap to find rectangles in. It is mutated in this method.
 	 * @param minimumArea
 	 * 	Rectangles will be produced until one's area is less than {@code minimumArea}.
 	 * @return List of rectangles within {@code rasterizedPolygon}. Rectangle with greater index will have lesser or

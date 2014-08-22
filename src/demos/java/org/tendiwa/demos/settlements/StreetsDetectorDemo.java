@@ -1,5 +1,6 @@
 package org.tendiwa.demos.settlements;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.google.inject.Inject;
 import org.jgrapht.graph.SimpleGraph;
@@ -9,7 +10,7 @@ import org.tendiwa.drawing.extensions.DrawingChain;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
-import org.tendiwa.settlements.StreetsDetector;
+import org.tendiwa.settlements.utils.StreetsDetector;
 
 import java.awt.Color;
 import java.util.Iterator;
@@ -46,7 +47,7 @@ public class StreetsDetectorDemo implements Runnable {
 			.edge(11, 12)
 			.edge(11, 20)
 			.graph();
-		Set<List<Point2D>> streets = StreetsDetector.detectStreets(graph);
+		Set<ImmutableList<Point2D>> streets = StreetsDetector.detectStreets(graph);
 		Iterator<Color> colors = Iterators.cycle(Color.red, Color.blue, Color.green, Color.cyan, Color.magenta, Color.orange);
 		for (List<Point2D> street : streets) {
 			canvas.draw(street, DrawingChain.withColor(colors.next()));
