@@ -180,9 +180,9 @@ public final class RoadsPlanarGraphModel {
 		approachingPerSample = Math.cos(deviationAngle);
 		highLevelGraphEdges = highLevelRoadGraph.edgeSet();
 		lowLevelRoadGraph = buildLowLevelGraph();
-		if (!PlanarGraphEdgesSelfIntersection.test(lowLevelRoadGraph)) {
+		if (!PlanarGraphEdgesSelfIntersection.test(lowLevelRoadGraph.edgeSet())) {
 			ImmutableCollection<Point2D> allIntersections = PlanarGraphEdgesSelfIntersection
-				.findAllIntersections(lowLevelRoadGraph);
+				.findAllIntersections(lowLevelRoadGraph.edgeSet());
 			for (Point2D point : allIntersections) {
 				TestCanvas.canvas.draw(point.toCell(), DrawingCell.withColorAndSize(Color.RED, 4));
 			}

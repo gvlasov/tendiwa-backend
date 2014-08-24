@@ -236,6 +236,7 @@ public final class NetworkWithinCycle {
 			}
 		}
 		Set<DirectionFromPoint> filamentEnds = new HashSet<>();
+		assert !nodeQueue.isEmpty();
 		while (!nodeQueue.isEmpty()) {
 			DirectionFromPoint node = nodeQueue.removeLast();
 			boolean addedAnySegments = false;

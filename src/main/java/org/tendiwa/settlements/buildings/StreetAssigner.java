@@ -34,8 +34,8 @@ public final class StreetAssigner {
 	) {
 		this.streetsWidth = streetsWidth;
 		for (List<Point2D> street : streets) {
-			int size = street.size() - 1;
-			for (int i = 0; i < size; i++) {
+			int lastButOne = street.size() - 1;
+			for (int i = 0; i < lastButOne; i++) {
 				segmentsToStreets.put(
 					new Segment2D(
 						street.get(i),
@@ -57,6 +57,7 @@ public final class StreetAssigner {
 	public void addBuilding(Rectangle lot) {
 		int maxX = lot.getMaxX();
 		int maxY = lot.getMaxY();
+		Rectangle extendedLot = lot.stretch((int) Math.ceil(streetsWidth));
 		segmentsToStreets.keySet().stream()
 			.filter(segment -> {
 				double roadMinX = Math.min(segment.start.x, segment.end.x) - streetsWidth;
@@ -66,12 +67,8 @@ public final class StreetAssigner {
 				// http://stackoverflow.com/questions/306316/determine-if-two-rectangles-overlap-each-other
 				return lot.x < roadMaxX && maxX > roadMinX && lot.y < roadMaxY && maxY > roadMinY;
 			})
-			.filter(segment -> Recs.rectangleIntersectsSegment(lot, segment))
+			.filter(segment -> Recs.rectangleIntersectsSegment(extendedLot, segment))
 			.forEach(segment -> {
-				Segment2D s = segment;
-				Rectangle l = lot;
-				TestCanvas.canvas.draw(lot, DrawingRectangle.withColor(Color.red));
-				TestCanvas.canvas.draw(segment, DrawingSegment2D.withColor(Color.black));
 				lotsToStreetSegments.put(lot, segment);
 			});
 		Set<List<Point2D>> streets1 = collectStreetsForBuildingPlace(lot);

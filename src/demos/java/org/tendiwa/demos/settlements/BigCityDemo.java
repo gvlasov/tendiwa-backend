@@ -50,11 +50,11 @@ public class BigCityDemo implements Runnable {
 			RoadsPlanarGraphModel roadsPlanarGraphModel = new CityGeometryBuilder(graph)
 				.withDefaults()
 				.withMaxStartPointsPerCycle(5)
-				.withRoadsFromPoint(4)
+				.withRoadsFromPoint(2)
 				.withSecondaryRoadNetworkDeviationAngle(0.5)
-				.withConnectivity(0.3)
-				.withRoadSegmentLength(30, 40)
-				.withSnapSize(4)
+				.withConnectivity(0.0)
+				.withRoadSegmentLength(10)
+				.withSnapSize(1)
 				.withSeed(seed)
 				.withAxisAlignedSegments(false)
 				.build();
@@ -75,7 +75,7 @@ public class BigCityDemo implements Runnable {
 			UndirectedGraph<Point2D, Segment2D> allRoads = RoadRejector.rejectPartOfNetworksBorders(
 				roadsPlanarGraphModel.getFullRoadGraph(),
 				roadsPlanarGraphModel,
-				0.0,
+				1.0,
 				new Random(1)
 			);
 //			UndirectedGraph<Point2D, Segment2D> allRoads = pathGeometry.getFullRoadGraph();
@@ -106,11 +106,10 @@ public class BigCityDemo implements Runnable {
 					);
 				}
 			}
-//			Set<SecondaryRoadNetworkBlock> blocks = cityGeometry.getBlocks()
+//			Set<EnclosedBlock> blocks = roadsPlanarGraphModel.getBlocks()
 //				.stream()
 //				.flatMap(b -> b.shrinkToRegions(3, 0).stream())
 //				.collect(Collectors.toSet());
-
 //			for (EnclosedBlock block : blocks) {
 //				canvas.draw(block, DrawingEnclosedBlock.withColor(Color.lightGray));
 //			}

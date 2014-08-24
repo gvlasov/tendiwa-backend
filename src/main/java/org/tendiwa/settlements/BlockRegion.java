@@ -7,7 +7,9 @@ import org.tendiwa.drawing.extensions.DrawingGraph;
 import org.tendiwa.drawing.extensions.DrawingPoint2D;
 import org.tendiwa.geometry.GeometryException;
 import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Vector2D;
+import org.tendiwa.geometry.extensions.InnerFreeSpaceOfPolygon;
 import org.tendiwa.geometry.extensions.straightSkeleton.PolygonShrinker;
 import org.tendiwa.geometry.extensions.twakStraightSkeleton.TwakStraightSkeleton;
 
@@ -101,9 +103,9 @@ public class BlockRegion extends EnclosedBlock {
 	 * Consecutively splits a block into lesser blocks until blocks are small enough.
 	 *
 	 * @param lotWidth
-	 * 	Dimenstion of a lot along the road.
+	 * 	Dimension of a lot along the road.
 	 * @param lotDepth
-	 * 	Another dimenstion of a lot, perpendicular to {@code lotWidth}.
+	 * 	Another dimension of a lot, perpendicular to {@code lotWidth}.
 	 * @param lotDeviance
 	 * 	Coefficient for possible lot width and depth deviance.
 	 * 	Actual lot widths and depths (sizes) may be [size*(1-deviance/2); size*(1+deviance/2)]. So deviance of 0
@@ -114,26 +116,52 @@ public class BlockRegion extends EnclosedBlock {
 	 */
 	public Set<BlockRegion> subdivideLots(double lotWidth, double lotDepth, double lotDeviance) {
 		if (lotDeviance < 0 || lotDeviance > 1) {
-			throw new IllegalArgumentException("lotDeviance must be in [0;1)");
+			throw new IllegalArgumentException("lotDeviance must be in [0;1]");
 		}
 		Queue<BlockRegion> queue = new LinkedList<>();
 		Set<BlockRegion> output = new HashSet<>();
 		queue.add(this);
+		boolean firstSplit = true;
 		while (!queue.isEmpty()) {
 			BlockRegion region = queue.poll();
-			LongestRoadAndNonRoadPair longest = region.getLongestEdges();
-			Node longestEdgeStart = longest.road;
 			double splitSize;
-			if (longestEdgeStart == null || region.getRoadLength(longestEdgeStart) < lotWidth * 2) {
-				longestEdgeStart = longest.nonRoad;
-				if (longestEdgeStart == null || region.getRoadLength(longestEdgeStart) < lotDepth * 2) {
-					output.add(region);
-					continue;
-				} else {
-					splitSize = lotDepth;
-				}
+			Node longestEdgeStart;
+			if (firstSplit) {
+				Segment2D bestSegment = InnerFreeSpaceOfPolygon.compute(toPolygon()).get(0);
+				Node current = startNode;
+				longestEdgeStart = null;
+				do {
+					if (current.point == bestSegment.start) {
+						if (roadPoints.get(current.point) == bestSegment.end) {
+							longestEdgeStart = current;
+							break;
+						}
+					}
+					if (current.point == bestSegment.end) {
+						if (roadPoints.get(current.point) == bestSegment.start) {
+							longestEdgeStart = current;
+							break;
+						}
+					}
+					current = current.next;
+				} while (current != startNode);
+				assert longestEdgeStart != null;
+				splitSize = region.getRoadLength(longestEdgeStart) / 2;
+				firstSplit = false;
 			} else {
-				splitSize = lotWidth;
+				LongestRoadAndNonRoadPair longest = region.getLongestEdges();
+				longestEdgeStart = longest.road;
+				if (longestEdgeStart == null || region.getRoadLength(longestEdgeStart) < lotWidth * 2) {
+					longestEdgeStart = longest.nonRoad;
+					if (longestEdgeStart == null || region.getRoadLength(longestEdgeStart) < lotDepth * 2) {
+						output.add(region);
+						continue;
+					} else {
+						splitSize = lotDepth;
+					}
+				} else {
+					splitSize = lotWidth;
+				}
 			}
 			Point2D splitStart = getSplitStart(longestEdgeStart, splitSize, lotDeviance);
 			Point2D splitEnd = splitStart.add(
@@ -142,10 +170,6 @@ public class BlockRegion extends EnclosedBlock {
 				).cross()
 			);
 			Set<BlockRegion> newRegions = splitRegion(region, splitStart, splitEnd);
-//			assert !newRegions.isEmpty();
-//			for (BlockRegion newRegion : newRegions) {
-//				canvas.draw(newRegion, DrawingEnclosedBlock.withColor(Color.red));
-//			}
 
 			queue.addAll(newRegions);
 		}

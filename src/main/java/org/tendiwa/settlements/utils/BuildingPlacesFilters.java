@@ -25,14 +25,8 @@ public class BuildingPlacesFilters {
 	) {
 		StreetAssigner streetAssigner = new StreetAssigner(roads, distance);
 		return buildingPlace -> {
-			StreetAssigner sas = streetAssigner;
 			streetAssigner.addBuilding(buildingPlace.rectangle);
-			boolean b = streetAssigner.hasStreets(buildingPlace.rectangle);
-			if (b) {
-				TestCanvas.canvas.draw(buildingPlace.rectangle, DrawingRectangle.withColor(Color.red));
-				System.out.println(1);
-			}
-			return b;
+			return streetAssigner.hasStreets(buildingPlace.rectangle);
 		};
 	}
 }
