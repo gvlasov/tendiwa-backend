@@ -4,16 +4,20 @@ import org.tendiwa.geometry.Placeable;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.lexeme.Localizable;
+import org.tendiwa.settlements.RectangleWithNeighbors;
 
 import java.util.*;
 
 public final class City {
 	private final Localizable name;
-	final Map<Rectangle, Building> buildings;
+	final Map<RectangleWithNeighbors, Building> buildings;
 	final Set<Street> streets;
 	final Set<Placeable> districts;
+	public static CityBuilder builder() {
+		return new CityBuilder();
+	}
 
-	City(Localizable name, Map<Rectangle, Building> buildings, Set<Street> streets, Set<Placeable> districts) {
+	City(Localizable name, Map<RectangleWithNeighbors, Building> buildings, Set<Street> streets, Set<Placeable> districts) {
 		this.name = name;
 		this.buildings = buildings;
 		this.streets = streets;
@@ -24,12 +28,12 @@ public final class City {
 	/**
 	 * Checks if a place is already occupied by some building.
 	 *
-	 * @param rectangle
-	 * 	A place.
+	 * @param buildingPlace
+	 * 	A place for a building.
 	 * @return true if it is occupied, false if it is free or if it is not even a valid building place for this City.
 	 */
-	boolean isOccupied(Rectangle rectangle) {
-		return buildings.get(rectangle) != null;
+	boolean isOccupied(RectangleWithNeighbors buildingPlace) {
+		return buildings.get(buildingPlace) != null;
 	}
 
 }

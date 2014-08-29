@@ -14,7 +14,6 @@ import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.settlements.*;
-import org.tendiwa.settlements.buildings.StreetAssigner;
 import org.tendiwa.settlements.utils.BuildingPlacesFilters;
 import org.tendiwa.settlements.utils.RectangularBuildingLots;
 import org.tendiwa.settlements.utils.RoadRejector;
@@ -54,7 +53,7 @@ public class BigCityDemo implements Runnable {
 				.withSecondaryRoadNetworkDeviationAngle(0.5)
 				.withConnectivity(0.0)
 				.withRoadSegmentLength(10)
-				.withSnapSize(1)
+				.withSnapSize(5)
 				.withSeed(seed)
 				.withAxisAlignedSegments(false)
 				.build();

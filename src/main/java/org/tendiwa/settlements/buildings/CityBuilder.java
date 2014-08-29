@@ -1,21 +1,19 @@
 package org.tendiwa.settlements.buildings;
 
-import com.google.common.collect.ImmutableList;
 import org.tendiwa.geometry.Placeable;
 import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Rectangle;
+import org.tendiwa.settlements.RectangleWithNeighbors;
 
 import java.util.*;
-import java.util.function.Function;
 
 public class CityBuilder {
-	private final Map<Rectangle, Building> buildings = new HashMap<>();
-	private String localiationId;
-	private final Set<Street> streets = new LinkedHashSet<>();
+	private final Map<RectangleWithNeighbors, Building> buildings = new HashMap<>();
+	private String localizationId;
+	private final Map<List<Point2D>, Street> streets = new IdentityHashMap<>();
 	private final Set<Placeable> districts = new LinkedHashSet<>();
 	private final Info info = new Info();
 
-	public CityBuilder() {
+	CityBuilder() {
 
 	}
 
@@ -23,8 +21,8 @@ public class CityBuilder {
 		placer.placeBuildings(info);
 	}
 
-	public void addLots(Collection<Rectangle> lots) {
-		for (Rectangle lot : lots) {
+	public void addLots(Collection<RectangleWithNeighbors> lots) {
+		for (RectangleWithNeighbors lot : lots) {
 			if (buildings.containsKey(lot)) {
 				throw new IllegalArgumentException(
 					"Building lot " + lot + " has already been added"
@@ -34,32 +32,38 @@ public class CityBuilder {
 		}
 	}
 
-	public void mapLotsToStreets(Function<Rectangle, Street> mapper) {
-		for (Rectangle lot : buildings.keySet()) {
-			Street street = mapper.apply(lot);
+	public void mapLotsToStreets(StreetAssigner mapper) {
+		for (RectangleWithNeighbors lot : buildings.keySet()) {
+			List<Point2D> street = mapper.apply(lot);
 			if (street == null) {
-				throw new NullPointerException("Lot can't be mapped to Street null");
+				throw new NullPointerException("Lot can't be mapped to null Street");
 			}
-			if (!streets.contains(street)) {
-				streets.add(street);
+			if (!streets.containsKey(street)) {
+				streets.put(street, null);
 			}
 		}
 	}
 
 	public void setLocalizationId(String localizationId) {
-		this.localiationId = localizationId;
+		this.localizationId = localizationId;
 	}
 
 	public class Info {
-		private final Set<Rectangle> buildingPlaces = Collections.unmodifiableSet(CityBuilder.this.buildings.keySet());
-		private final Set<Street> streets = Collections.unmodifiableSet(CityBuilder.this.streets);
-		private final Set<Placeable> districts = Collections.unmodifiableSet(CityBuilder.this.districts);
+		private final Set<RectangleWithNeighbors> buildingPlaces = Collections.unmodifiableSet(
+			CityBuilder.this.buildings.keySet()
+		);
+		private final Collection<Street> streets = Collections.unmodifiableCollection(
+			CityBuilder.this.streets.values()
+		);
+		private final Set<Placeable> districts = Collections.unmodifiableSet(
+			CityBuilder.this.districts
+		);
 
-		public Set<Rectangle> getBuildingPlaces() {
+		public Set<RectangleWithNeighbors> getBuildingPlaces() {
 			return buildingPlaces;
 		}
 
-		public Set<Street> getStreets() {
+		public Collection<Street> getStreets() {
 			return streets;
 		}
 

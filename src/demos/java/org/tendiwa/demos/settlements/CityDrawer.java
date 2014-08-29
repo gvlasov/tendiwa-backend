@@ -13,7 +13,7 @@ public class CityDrawer implements DrawingAlgorithm<RoadsPlanarGraphModel> {
 
     @Override
     public void draw(RoadsPlanarGraphModel roadsPlanarGraphModel, TestCanvas canvas) {
-		Iterator<Color> colors = Iterators.cycle(Color.red, Color.blue, Color.green, Color.orange, Color.cyan, Color.black);
+//		Iterator<Color> colors = Iterators.cycle(Color.red, Color.blue, Color.green, Color.orange, Color.cyan, Color.black);
         roadsPlanarGraphModel.getNetworks().stream()
                 .forEach(c -> c.network().edgeSet().stream()
                         .forEach(line -> {
@@ -24,7 +24,7 @@ public class CityDrawer implements DrawingAlgorithm<RoadsPlanarGraphModel> {
 //            canvas.drawLine(roadSegment, colors.next());
 //			System.out.println(1);
 		}
-		roadsPlanarGraphModel.getFullRoadGraph().edgeSet().forEach(e->canvas.drawLine(e, colors.next()));
+		roadsPlanarGraphModel.getFullRoadGraph().edgeSet().forEach(e->canvas.drawLine(e, Color.red));
 //		for (Point2D vertex : city.getLowLevelRoadGraph().vertexSet()) {
 //			canvas.draw(vertex, DrawingPoint2D.withColorAndSize(Color.orange, 8));
 //		}

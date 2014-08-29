@@ -24,9 +24,9 @@ public final class RectangularBuildingLots {
 			.flatMap(b -> b.shrinkToRegions(3.3, 0).stream())
 			.flatMap(b -> b.subdivideLots(10, 10, 1).stream())
 			.collect(Collectors.toSet());
-//		for (EnclosedBlock encBlock : encBlocks) {
-//			TestCanvas.canvas.draw(encBlock, DrawingEnclosedBlock.withColor(Color.black));
-//		}
+		for (EnclosedBlock encBlock : encBlocks) {
+			TestCanvas.canvas.draw(encBlock, DrawingEnclosedBlock.withColor(Color.black));
+		}
 
 		return encBlocks.stream()
 			.map(lot -> PolygonRasterizer.rasterize(lot.toPolygon()))

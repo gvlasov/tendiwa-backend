@@ -50,11 +50,16 @@ public final class InnerFreeSpaceOfPolygon {
 				}
 				Segment2D anotherEdge = edges.get(j);
 				RayIntersection rayIntersection = new RayIntersection(edgeCenter, target, anotherEdge);
+				if (!rayIntersection.intersects) {
+					distancesToOtherEdges[j] = Double.MAX_VALUE;
+					continue;
+				}
 				Point2D intersectionPoint = rayIntersection.getLinesIntersectionPoint();
 				if (rayIntersection.r < 0 || !pointInSegmentRectangle(intersectionPoint, anotherEdge)) {
 					distancesToOtherEdges[j] = Double.MAX_VALUE;
 					continue;
 				}
+				assert rayIntersection.r != 0;
 				distancesToOtherEdges[j] = rayIntersection.r;
 			}
 			double min = Double.MAX_VALUE;

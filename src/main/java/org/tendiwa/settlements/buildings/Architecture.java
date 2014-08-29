@@ -3,6 +3,7 @@ package org.tendiwa.settlements.buildings;
 import org.tendiwa.core.CardinalDirection;
 import org.tendiwa.core.Location;
 import org.tendiwa.geometry.Rectangle;
+import org.tendiwa.settlements.RectangleWithNeighbors;
 
 
 /**
@@ -32,7 +33,7 @@ public interface Architecture {
 	 * 	A place to raise buildings at.
 	 * @return true if this place has right size for a building to be raised in it, false otherwise.
 	 */
-	public boolean fits(Rectangle rectangle);
+	public boolean fits(RectangleWithNeighbors rectangle);
 
 	public Rectangle typicalBuildingPlace();
 

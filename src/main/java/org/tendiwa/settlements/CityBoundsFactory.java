@@ -11,10 +11,11 @@ import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.extensions.CachedCellSet;
 import org.tendiwa.geometry.extensions.ChebyshevDistanceBufferBorder;
+import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.pathfinding.dijkstra.PathTable;
 
 /**
- * Creates graphs used as a base for a {@link RoadsPlanarGraphModel}.
+ * From {@link CellSet}, creates a graph used as a base for a {@link RoadsPlanarGraphModel}.
  */
 public class CityBoundsFactory {
 	private final CellSet water;
@@ -75,7 +76,7 @@ public class CityBoundsFactory {
 	}
 
 	private UndirectedGraph<Point2D, Segment2D> bufferBorderToGraph(CachedCellSet bufferBorder) {
-		UndirectedGraph<Point2D, Segment2D> graph = new SimpleGraph<>(org.tendiwa.geometry.extensions.PlanarGraphs.getEdgeFactory());
+		UndirectedGraph<Point2D, Segment2D> graph = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
 		BiMap<Cell, Point2D> cell2PointMap = HashBiMap.create();
 		ImmutableSet<Cell> borderCells = bufferBorder.toSet();
 		for (Cell cell : borderCells) {
@@ -93,6 +94,7 @@ public class CityBoundsFactory {
 			}
 		}
 		new EdgeReducer(graph, cell2PointMap).reduceEdges();
+		SameLineGraphEdgesPerturbations.perturbIfHasSameLineEdges(graph,1e-4);
 		return graph;
 	}
 

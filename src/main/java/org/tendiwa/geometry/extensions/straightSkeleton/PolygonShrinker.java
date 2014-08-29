@@ -3,6 +3,8 @@ package org.tendiwa.geometry.extensions.straightSkeleton;
 import com.google.common.collect.*;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
+import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawingGraph;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
@@ -86,6 +88,7 @@ public class PolygonShrinker {
 
 		Map<Segment2D, Iterable<Segment2D>> edgeToFace = new HashMap<>();
 
+		TestCanvas.canvas.draw(graph, DrawingGraph.withColorAndAntialiasing(Color.blue));
 		for (MinimalCycle<Point2D, Segment2D> cycle : basis.minimalCyclesSet()) {
 			Segment2D originalFaceEdge = findUnusedEdgeForFace(
 				unusedEdges,
@@ -93,7 +96,10 @@ public class PolygonShrinker {
 			);
 			assert !edgeToFace.containsKey(originalFaceEdge) : originalFaceEdge;
 			// None of faces may include more than 1 original edge.
-			assert Lists.newArrayList(cycle).stream().allMatch(p -> !unusedEdges.contains(p));
+			// http://twak.blogspot.ru/2011/01/degeneracy-in-weighted-straight.html Ctrl+F parallel consecutive edge
+			assert Lists.newArrayList(cycle).stream().allMatch(p -> !unusedEdges.contains(p)) : "Not all edges of " +
+				"straight skeleton could be constructed; presumably because at some stage of skeleton construction 2 " +
+				"parallel edges become adjacent; please draw the graph to make sure";
 			edgeToFace.put(originalFaceEdge, cycle);
 		}
 		return edgeToFace;

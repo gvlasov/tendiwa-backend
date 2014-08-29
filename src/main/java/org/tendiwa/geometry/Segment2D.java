@@ -45,7 +45,7 @@ public class Segment2D {
 	}
 
 	/**
-	 * Distance by x-axis from {@link #start} to {@link #end}.
+	 * Distance by x-axis from {@link #start} to {@link #end}. May be negative.
 	 *
 	 * @return {@code end.x-start.x}.
 	 */
@@ -54,7 +54,7 @@ public class Segment2D {
 	}
 
 	/**
-	 * Distance by y-axis from {@link #start} to {@link #end}.
+	 * Distance by y-axis from {@link #start} to {@link #end}. May be negative.
 	 *
 	 * @return {@code end.y-start.y}.
 	 */

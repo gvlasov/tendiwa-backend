@@ -1,20 +1,25 @@
 package org.tendiwa.settlements.buildings;
 
+import com.sun.org.apache.xalan.internal.xsltc.dom.DocumentCache;
+import org.tendiwa.core.CardinalDirection;
 import org.tendiwa.core.Character;
 import org.tendiwa.geometry.CellSet;
 import org.tendiwa.geometry.Rectangle;
+import org.tendiwa.settlements.RectangleWithNeighbors;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 public class BuildingFeatures {
 	private final List<Room> rooms = new LinkedList<>();
 	private Character owner;
-	private Street street;
-	private Rectangle lot;
+	private RectangleWithNeighbors lot;
 	private String localizationId;
+	private CardinalDirection front;
 
-	public void setPlace(Rectangle rectangle) {
+	public void setPlace(RectangleWithNeighbors rectangle) {
+		Objects.requireNonNull(rectangle);
 		this.lot = rectangle;
 	}
 
@@ -23,11 +28,13 @@ public class BuildingFeatures {
 	}
 
 	public void setOwner(Character owner) {
+		Objects.requireNonNull(owner);
 		this.owner = owner;
 	}
 
-	public void setStreet(Street street) {
-		this.street = street;
+	public void setFront(CardinalDirection front) {
+		Objects.requireNonNull(front);
+		this.front = front;
 	}
 
 	public void setLocalizationId(String localizationId) {
@@ -35,7 +42,7 @@ public class BuildingFeatures {
 	}
 
 	public Building build() {
-		return new Building(lot, rooms, owner, street, localizationId);
+		return new Building(lot, rooms, owner, front, localizationId);
 	}
 
 }

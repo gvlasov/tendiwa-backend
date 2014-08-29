@@ -4,7 +4,6 @@ public class Line2D {
 	private final double a;
 	private final double b;
 	private final double c;
-	private static final double EPSILON = 1e-10;
 
 	/**
 	 * Creates a new Line2D defined by 2 points.
@@ -38,7 +37,7 @@ public class Line2D {
 	 */
 	public Point2D intersectionWith(Line2D line) {
 		double zn = det(a, b, line.a, line.b);
-		if (Math.abs(zn) < EPSILON) {
+		if (Math.abs(zn) < Vectors2D.EPSILON) {
 			return null;
 		}
 		return new Point2D(

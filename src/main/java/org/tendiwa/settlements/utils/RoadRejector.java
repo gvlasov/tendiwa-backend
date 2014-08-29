@@ -202,6 +202,7 @@ public final class RoadRejector {
 			List<Segment2D> chain = new LinkedList<>();
 			do {
 				Segment2D cycleEdge = outerCycleEdges.getEdge(previousVertex, currentVertex);
+				assert cycleEdge != null;
 				chain.add(cycleEdge);
 				if (fullGraph.degreeOf(currentVertex) > 2) {
 					assert fullGraph.degreeOf(chain.get(0).start) > 2
@@ -230,10 +231,13 @@ public final class RoadRejector {
 				assert previousVertex == null;
 				assert currentVertex == null;
 				throw new RuntimeException("Initial vertices not found");
+			} else {
+				assert previousVertex != currentVertex;
 			}
 		}
 
 		private Point2D getNextVertex(Point2D previousVertex, Point2D currentVertex) {
+			assert !previousVertex.equals(currentVertex);
 			assert outerCycleEdges.edgesOf(currentVertex).size() == 2;
 			for (Segment2D edge : outerCycleEdges.edgesOf(currentVertex)) {
 				if (edge.start == previousVertex) {
@@ -337,7 +341,6 @@ public final class RoadRejector {
 		}
 	}
 
-
 	private Point2D selectAnyNeighbor(Point2D vertex, UndirectedGraph<Point2D, Segment2D> cycle) {
 		Set<Segment2D> edges = cycle.edgesOf(vertex);
 		// Sorted collection is used here so ordering will remain constant between application start-ups.
@@ -350,6 +353,8 @@ public final class RoadRejector {
 				possibleAnyNeighbor.add(edge.end);
 			}
 		}
+		possibleAnyNeighbor.remove(vertex);
+		assert possibleAnyNeighbor.last() != vertex;
 		return possibleAnyNeighbor.last();
 	}
 }

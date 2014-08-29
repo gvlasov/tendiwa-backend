@@ -14,129 +14,132 @@ import java.util.stream.Collector;
  * A potentially infinite set of cells.
  */
 public interface CellSet {
-    /**
-     * Checks if a cell is in the set.
-     *
-     * @param x
-     *         X coordinate of a cell.
-     * @param y
-     *         Y coordinate of a cell.
-     * @return true if a cell is in the set, false otherwise.
-     */
-    public boolean contains(int x, int y);
 
-    /**
-     * Checks if a cell is in the set.
-     *
-     * @param cell
-     *         A cell.
-     * @return true if a cell is in the set, false otherwise.
-     */
-    @SuppressWarnings("unused")
-    public default boolean contains(Cell cell) {
-        return contains(cell.x, cell.y);
-    }
+	static final Function<ScatteredMutableCellSet, FiniteCellSet> scatteredMutableCellSetFiniteCellSetFunction = (a) -> a;
 
-    /**
-     * Creates a set that is an intersection of this set and another set.
-     *
-     * @param set
-     *         Another set.
-     * @return A set that is an intersection of this set and another set.
-     */
-    public default CellSet and(CellSet set) {
-        return (x, y) -> contains(x, y) && set.contains(x, y);
-    }
+	/**
+	 * Checks if a cell is in the set.
+	 *
+	 * @param x
+	 * 	X coordinate of a cell.
+	 * @param y
+	 * 	Y coordinate of a cell.
+	 * @return true if a cell is in the set, false otherwise.
+	 */
+	public boolean contains(int x, int y);
 
-    /**
-     * Creates a set that is a union of this set and another set.
-     *
-     * @param set
-     *         Another set.
-     * @return A set that is a union of this set and another set.
-     */
-    public default CellSet or(CellSet set) {
-        return (x, y) -> contains(x, y) || set.contains(x, y);
-    }
+	/**
+	 * Checks if a cell is in the set.
+	 *
+	 * @param cell
+	 * 	A cell.
+	 * @return true if a cell is in the set, false otherwise.
+	 */
+	@SuppressWarnings("unused")
+	public default boolean contains(Cell cell) {
+		return contains(cell.x, cell.y);
+	}
 
-    public static Collector<Cell, ?, FiniteCellSet> toCellSet() {
-        return new Collector<Cell, ScatteredMutableCellSet, FiniteCellSet>() {
-            @Override
-            public Supplier<ScatteredMutableCellSet> supplier() {
-                return ScatteredMutableCellSet::new;
-            }
+	/**
+	 * Creates a set that is an intersection of this set and another set.
+	 *
+	 * @param set
+	 * 	Another set.
+	 * @return A set that is an intersection of this set and another set.
+	 */
+	public default CellSet and(CellSet set) {
+		return (x, y) -> contains(x, y) && set.contains(x, y);
+	}
 
-            @Override
-            public BiConsumer<ScatteredMutableCellSet, Cell> accumulator() {
-                return ScatteredMutableCellSet::add;
-            }
+	/**
+	 * Creates a set that is a union of this set and another set.
+	 *
+	 * @param set
+	 * 	Another set.
+	 * @return A set that is a union of this set and another set.
+	 */
+	public default CellSet or(CellSet set) {
+		return (x, y) -> contains(x, y) || set.contains(x, y);
+	}
 
-            @Override
-            public BinaryOperator<ScatteredMutableCellSet> combiner() {
-                return (left, right) -> {
-                    left.addAll(right);
-                    return left;
-                };
-            }
+	public static Collector<Cell, ?, FiniteCellSet> toCellSet() {
+		return new Collector<Cell, ScatteredMutableCellSet, FiniteCellSet>() {
+			@Override
+			public Supplier<ScatteredMutableCellSet> supplier() {
+				return ScatteredMutableCellSet::new;
+			}
 
-            @Override
-            public Function<ScatteredMutableCellSet, FiniteCellSet> finisher() {
-                return (a) -> a;
-            }
+			@Override
+			public BiConsumer<ScatteredMutableCellSet, Cell> accumulator() {
+				return ScatteredMutableCellSet::add;
+			}
 
-            @Override
-            public Set<Characteristics> characteristics() {
-                return ImmutableSet.of(
-                        Characteristics.IDENTITY_FINISH,
-                        Characteristics.UNORDERED
-                );
-            }
-        };
-    }
+			@Override
+			public BinaryOperator<ScatteredMutableCellSet> combiner() {
+				return (left, right) -> {
+					left.addAll(right);
+					return left;
+				};
+			}
 
-    /**
-     * Returns a cell set that doesn't contain any cells.
-     *
-     * @return A cell set that doesn't contain any cells.
-     */
-    public static CellSet empty() {
-        return (x, y) -> false;
-    }
+			@Override
+			public Function<ScatteredMutableCellSet, FiniteCellSet> finisher() {
+				return scatteredMutableCellSetFiniteCellSetFunction;
+			}
 
-    public static Collector<Cell, ?, BoundedCellSet> toBoundedCellSet(Rectangle bounds) {
+			@Override
+			public Set<Characteristics> characteristics() {
+				return ImmutableSet.of(
+					Characteristics.IDENTITY_FINISH,
+					Characteristics.UNORDERED
+				);
+			}
+		};
+	}
 
-        return new Collector<Cell, Mutable2DCellSet, BoundedCellSet>() {
-            @Override
-            public Supplier<Mutable2DCellSet> supplier() {
-                return () -> new Mutable2DCellSet(bounds);
-            }
+	/**
+	 * Returns a cell set that doesn't contain any cells.
+	 *
+	 * @return A cell set that doesn't contain any cells.
+	 */
+	public static CellSet empty() {
+		return (x, y) -> false;
+	}
 
-            @Override
-            public BiConsumer<Mutable2DCellSet, Cell> accumulator() {
-                return Mutable2DCellSet::add;
-            }
+	public static Collector<Cell, ?, BoundedCellSet> toBoundedCellSet(Rectangle bounds) {
 
-            @Override
-            public BinaryOperator<Mutable2DCellSet> combiner() {
-                return (left, right) -> {
-                    left.addAll(right);
-                    return left;
-                };
-            }
+		return new Collector<Cell, Mutable2DCellSet, BoundedCellSet>() {
+			@Override
+			public Supplier<Mutable2DCellSet> supplier() {
+				return () -> new Mutable2DCellSet(bounds);
+			}
 
-            @Override
-            public Function<Mutable2DCellSet, BoundedCellSet> finisher() {
-                return (a) -> a;
-            }
+			@Override
+			public BiConsumer<Mutable2DCellSet, Cell> accumulator() {
+				return Mutable2DCellSet::add;
+			}
 
-            @Override
-            public Set<Characteristics> characteristics() {
-                return ImmutableSet.of(
-                        Characteristics.IDENTITY_FINISH,
-                        Characteristics.UNORDERED
-                );
-            }
-        };
-    }
+			@Override
+			public BinaryOperator<Mutable2DCellSet> combiner() {
+				return (left, right) -> {
+					left.addAll(right);
+					return left;
+				};
+			}
+
+			@Override
+			public Function<Mutable2DCellSet, BoundedCellSet> finisher() {
+				return (a) -> a;
+			}
+
+			@Override
+			public Set<Characteristics> characteristics() {
+				return ImmutableSet.of(
+					Characteristics.IDENTITY_FINISH,
+					Characteristics.UNORDERED
+				);
+			}
+		};
+	}
 
 }

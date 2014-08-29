@@ -4,6 +4,7 @@ import org.tendiwa.core.CardinalDirection;
 import org.tendiwa.core.HorizontalPlane;
 import org.tendiwa.core.Location;
 import org.tendiwa.geometry.Rectangle;
+import org.tendiwa.settlements.RectangleWithNeighbors;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +20,7 @@ public final class UrbanPlanner implements BuildingPlacer {
 	private final Map<Architecture, ArchitecturePolicy> architecture = new HashMap<>();
 	private final HorizontalPlane plane;
 	private final double streetsWidth;
-	private StreetAssigner streetAssigner;
+	private BuildingsTouchingStreets buildingsTouchingStreets;
 
 
 	UrbanPlanner(HorizontalPlane plane, double streetsWidth) {
@@ -30,17 +31,17 @@ public final class UrbanPlanner implements BuildingPlacer {
 
 	@Override
 	public void placeBuildings(CityBuilder.Info cityInfo) {
-		streetAssigner = new StreetAssigner(
+		buildingsTouchingStreets = new BuildingsTouchingStreets(
 			cityInfo.getStreets().stream().map(Street::getPoints).collect(Collectors.toSet()),
 			streetsWidth
 		);
-		Map<Rectangle, Architecture> placement = new BranchAndBoundUrbanPlanningStrategy(
+		Map<RectangleWithNeighbors, Architecture> placement = new BranchAndBoundUrbanPlanningStrategy(
 			architecture,
-			streetAssigner,
+			buildingsTouchingStreets,
 			cityInfo.getBuildingPlaces(),
 			new Random(0)
 		).compute();
-		for (Rectangle rectangle : placement.keySet()) {
+		for (RectangleWithNeighbors rectangle : placement.keySet()) {
 			addBuilding(rectangle, placement.get(rectangle), cityInfo);
 		}
 	}
@@ -49,7 +50,7 @@ public final class UrbanPlanner implements BuildingPlacer {
 		this.architecture.put(architecture, policy);
 	}
 
-	private void addBuilding(Rectangle where, Architecture what, CityBuilder.Info info) {
+	private void addBuilding(RectangleWithNeighbors where, Architecture what, CityBuilder.Info info) {
 		if (!what.fits(where)) {
 			throw new ArchitectureError(
 				"Architecture " + what.getClass().getName() + " doesn't fit in rectangle " + where
@@ -63,7 +64,7 @@ public final class UrbanPlanner implements BuildingPlacer {
 		what.draw(
 			features,
 			CardinalDirection.S,
-			new Location(plane, where.x, where.y, where.width, where.height)
+			new Location(plane, where.rectangle.x, where.rectangle.y, where.rectangle.width, where.rectangle.height)
 		);
 		info.addBuilding(features.build());
 	}
