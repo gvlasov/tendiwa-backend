@@ -3,6 +3,8 @@ package org.tendiwa.settlements.buildings;
 import org.tendiwa.geometry.Placeable;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.settlements.RectangleWithNeighbors;
+import org.tendiwa.settlements.streets.Street;
+import org.tendiwa.settlements.streets.LotStreetAssigner;
 
 import java.util.*;
 
@@ -32,9 +34,9 @@ public class CityBuilder {
 		}
 	}
 
-	public void mapLotsToStreets(StreetAssigner mapper) {
+	public void mapLotsToStreets(LotStreetAssigner mapper) {
 		for (RectangleWithNeighbors lot : buildings.keySet()) {
-			List<Point2D> street = mapper.apply(lot);
+			List<Point2D> street = mapper.assignStreet(lot);
 			if (street == null) {
 				throw new NullPointerException("Lot can't be mapped to null Street");
 			}

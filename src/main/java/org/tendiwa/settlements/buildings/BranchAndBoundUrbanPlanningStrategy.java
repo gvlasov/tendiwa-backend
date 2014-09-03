@@ -3,6 +3,7 @@ package org.tendiwa.settlements.buildings;
 import org.tendiwa.geometry.Recs;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.settlements.RectangleWithNeighbors;
+import org.tendiwa.settlements.streets.Street;
 
 import java.util.*;
 
@@ -72,7 +73,7 @@ final class BranchAndBoundUrbanPlanningStrategy {
 			Collection<Set<RectangleWithNeighbors>> setsByConstraints = new ArrayList<>(3);
 			if (!policy.onStreet.isEmpty()) {
 				for (Street street : policy.onStreet) {
-					setsByConstraints.add(buildingsTouchingStreets.getPlacesOnStreet(street));
+					setsByConstraints.add(buildingsTouchingStreets.getLotsOnStreet(street));
 				}
 			}
 			if (policy.allowedArea != null) {

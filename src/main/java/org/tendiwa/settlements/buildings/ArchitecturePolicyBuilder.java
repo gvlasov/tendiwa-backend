@@ -3,6 +3,7 @@ package org.tendiwa.settlements.buildings;
 import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.hash.TObjectDoubleHashMap;
 import org.tendiwa.geometry.Placeable;
+import org.tendiwa.settlements.streets.Street;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;

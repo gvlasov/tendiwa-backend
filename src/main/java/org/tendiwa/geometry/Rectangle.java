@@ -294,8 +294,8 @@ public class Rectangle implements Placeable, BoundedCellSet {
 	 *
 	 * @return
 	 */
-	public Cell getCenterPoint() {
-		return new Cell(x + width / 2, y + height / 2);
+	public Point2D getCenterPoint() {
+		return new Point2D(x + ((double)width / 2), ((double)y + height / 2));
 	}
 
 	public int getCenterX() {
@@ -719,8 +719,63 @@ public class Rectangle implements Placeable, BoundedCellSet {
 		return y;
 	}
 
+	/**
+	 * Checks if a rectangle contains a <i>cell</i> with given coordinates.
+	 *
+	 * @param x
+	 * 	X coordinate of a cell.
+	 * @param y
+	 * 	Y coordinate of a cell.
+	 * @return true if rectangle contains the cell, false otherwise.
+	 * @see #containsDoubleNonStrict(double, double) Not to mix up with this method!
+	 * @see #containsDoubleStrict(double, double) Not to mix up with this method too!
+	 */
 	public boolean contains(int x, int y) {
 		return x >= this.x && x < this.x + this.width && y >= this.y && y < this.y + this.height;
+	}
+
+	/**
+	 * Checks if a rectangle contains a <i>point</i> with given coordinates inside itself or on its borders.
+	 * <p>
+	 * Don't mix up this method with {@link #contains(int, int)} — that method checks for a <i>cell</i> (which has
+	 * width and height of 1 unit), not a point (which doesn't have width of height). For example:
+	 * <pre>
+	 * // true, because the point {5:5} is right on rectangle's  border.
+	 * new Rectangle(0,0,5,5).containsDoubleNonStrict(5,0);
+	 * // false, because the cell {5:5} is outside the rectangle.
+	 * new Rectangle(0,0,5,5).contains(5,0);
+	 * </pre>
+	 *
+	 * @param x
+	 * 	X coordinate of a cell.
+	 * @param y
+	 * 	Y coordinate of a cell.
+	 * @return true if rectangle contains the point, false otherwise.
+	 * @see #containsDoubleStrict(double, double)
+	 */
+	public boolean containsDoubleNonStrict(double x, double y) {
+		return x >= this.x && x <= this.x + this.width && y >= this.y && y <= this.y + this.height;
+	}
+
+	/**
+	 * Checks if a rectangle contains a <i>point</i> with given coordinates inside itself, but not on its borders.
+	 * <p>
+	 * Don't mix up this method with {@link #contains(int, int)} — that method checks for a <i>cell</i> (which has
+	 * width and height of 1 unit), not a point (which doesn't have width of height). For example:
+	 * <pre>
+	 * new Rectangle(0,0,5,5).contains(0,0); // true, because the cell {0:0} is inside rectangle.
+	 * new Rectangle(0,0,5,5).containsDoubleStrict(0,0); // false, because the point {5:5} is on rectangle's border
+	 * </pre>
+	 *
+	 * @param x
+	 * 	X coordinate of a cell.
+	 * @param y
+	 * 	Y coordinate of a cell.
+	 * @return true if rectangle contains the point, false otherwise.
+	 * @see #containsDoubleNonStrict(double, double)
+	 */
+	public boolean containsDoubleStrict(double x, double y) {
+		return x >= this.x && x <= this.x + this.width && y >= this.y && y <= this.y + this.height;
 	}
 
 	public int getWidth() {
@@ -731,6 +786,7 @@ public class Rectangle implements Placeable, BoundedCellSet {
 		return height;
 	}
 
+	// TODO: Get rid of this method
 	public java.awt.Rectangle toAwtRectangle() {
 		return new java.awt.Rectangle(x, y, width, height);
 	}
@@ -803,6 +859,7 @@ public class Rectangle implements Placeable, BoundedCellSet {
 				throw new UnsupportedOperationException();
 		}
 	}
+
 
 /**
  * Finds out which side of this rectangle intersects by its dynamic coord an opposite side of another rectangle.

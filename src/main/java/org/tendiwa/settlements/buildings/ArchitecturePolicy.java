@@ -2,6 +2,7 @@ package org.tendiwa.settlements.buildings;
 
 import gnu.trove.map.TObjectDoubleMap;
 import org.tendiwa.geometry.Placeable;
+import org.tendiwa.settlements.streets.Street;
 
 import java.util.Collection;
 

@@ -3,8 +3,8 @@ package org.tendiwa.settlements.buildings;
 import org.tendiwa.core.CardinalDirection;
 import org.tendiwa.core.HorizontalPlane;
 import org.tendiwa.core.Location;
-import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.settlements.RectangleWithNeighbors;
+import org.tendiwa.settlements.streets.Street;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +23,7 @@ public final class UrbanPlanner implements BuildingPlacer {
 	private BuildingsTouchingStreets buildingsTouchingStreets;
 
 
-	UrbanPlanner(HorizontalPlane plane, double streetsWidth) {
+	public UrbanPlanner(HorizontalPlane plane, double streetsWidth) {
 		this.plane = plane;
 		this.streetsWidth = streetsWidth;
 	}
@@ -59,7 +59,7 @@ public final class UrbanPlanner implements BuildingPlacer {
 		BuildingFeatures features = new BuildingFeatures();
 		features.setPlace(where);
 //		features.setStreet(
-//			streetAssigner.getStreetsForBuildingPlace(where).iterator().next()
+//			streetAssigner.getStreetsForLot(where).iterator().next()
 //		);
 		what.draw(
 			features,

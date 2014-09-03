@@ -22,7 +22,7 @@ public class BuildingPlacesFilters {
 	) {
 		BuildingsTouchingStreets buildingsTouchingStreets = new BuildingsTouchingStreets(roads, distance);
 		return buildingPlace -> {
-			buildingsTouchingStreets.addBuilding(buildingPlace);
+			buildingsTouchingStreets.addLot(buildingPlace);
 			return buildingsTouchingStreets.hasStreets(buildingPlace);
 		};
 	}

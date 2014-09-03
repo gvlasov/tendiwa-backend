@@ -1,10 +1,9 @@
 package org.tendiwa.settlements.buildings;
 
 import org.tendiwa.geometry.Placeable;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.lexeme.Localizable;
 import org.tendiwa.settlements.RectangleWithNeighbors;
+import org.tendiwa.settlements.streets.Street;
 
 import java.util.*;
 

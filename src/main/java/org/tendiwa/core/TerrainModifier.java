@@ -475,8 +475,8 @@ public void fillContents(TypePlaceableInCell placeable) {
 public void drawLines(TypePlaceableInCell placeable) {
 	Graph<Rectangle, RectangleSystem.Neighborship> graph = rs.getGraph();
 	for (RectangleSystem.Neighborship e : graph.edgeSet()) {
-		Cell c1 = graph.getEdgeSource(e).getCenterPoint();
-		Cell c2 = graph.getEdgeTarget(e).getCenterPoint();
+		Cell c1 = new Cell(graph.getEdgeSource(e).getCenterPoint());
+		Cell c2 = new Cell(graph.getEdgeTarget(e).getCenterPoint());
 		location.line(c1.getX(), c1.getY(), c2.getX(), c2.getY(), placeable);
 	}
 }

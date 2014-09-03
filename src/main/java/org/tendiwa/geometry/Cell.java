@@ -5,8 +5,15 @@ import org.tendiwa.core.Orientation;
 import org.tendiwa.core.meta.CellPosition;
 
 /**
- * Cell introduces several useful methods over Point class, as well as introduces a new concept of <b>dynamic
- * coordinate</b> and <b>static coordinate</b>. They are the same as x-coordinate and y-coordinate.
+ * Cell is a square 1×1 units large with integer coordinates.
+ * <p>
+ * Cells are more useful and optimal than {@link org.tendiwa.geometry.Point2D}s when operating on coordinates of
+ * objects
+ * in game word.
+ * <p>
+ * Cell introduces several useful methods over a similar {@link Point2D} class, as well as introduces a new concept of
+ * <b>dynamic coordinate</b> and <b>static coordinate</b>. They are the somewhat the same as x-coordinate and
+ * y-coordinate.
  * <p>
  * X-coordinate is a horizontal dynamic coordinate, and it is a vertical static coordinate.
  * <p>
@@ -23,6 +30,17 @@ public class Cell implements CellPosition {
 	public Cell(int x, int y) {
 		this.x = x;
 		this.y = y;
+	}
+
+
+	/**
+	 * Creates a cell that would contain {@code point}, i.e. with coordinates of a point rounded down;
+	 *
+	 * @param point
+	 */
+	public Cell(Point2D point) {
+		this.x = (int) Math.floor(point.x);
+		this.y = (int) Math.floor(point.y);
 	}
 
 	/**
@@ -211,5 +229,9 @@ public class Cell implements CellPosition {
 	 */
 	public double diagonalComponent(Cell neighbor) {
 		return x - neighbor.x == 0 || y - neighbor.y == 0 ? 1 : SQRT_2;
+	}
+
+	public Point2D asPoint() {
+		return new Point2D(x, y);
 	}
 }
