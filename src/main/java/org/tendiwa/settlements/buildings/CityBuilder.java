@@ -23,7 +23,7 @@ public class CityBuilder {
 		placer.placeBuildings(info);
 	}
 
-	public void addLots(Collection<RectangleWithNeighbors> lots) {
+	public CityBuilder addLots(Collection<RectangleWithNeighbors> lots) {
 		for (RectangleWithNeighbors lot : lots) {
 			if (buildings.containsKey(lot)) {
 				throw new IllegalArgumentException(
@@ -32,11 +32,12 @@ public class CityBuilder {
 			}
 			this.buildings.put(lot, null);
 		}
+		return this;
 	}
 
 	public void mapLotsToStreets(LotStreetAssigner mapper) {
 		for (RectangleWithNeighbors lot : buildings.keySet()) {
-			List<Point2D> street = mapper.assignStreet(lot);
+			List<Point2D> street = mapper.getStreet(lot);
 			if (street == null) {
 				throw new NullPointerException("Lot can't be mapped to null Street");
 			}

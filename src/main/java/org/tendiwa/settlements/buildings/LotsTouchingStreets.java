@@ -1,8 +1,6 @@
 package org.tendiwa.settlements.buildings;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.*;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Recs;
 import org.tendiwa.geometry.Rectangle;
@@ -16,7 +14,7 @@ import java.util.*;
  * Finds out which building places are one which streets. A building place can be on more than one street as a result
  * of this algorithm, and deciding the address of a lot is not up to this class.
  */
-public final class BuildingsTouchingStreets {
+public final class LotsTouchingStreets {
 
 	private final Multimap<RectangleWithNeighbors, Segment2D> lotsToStreetSegments = HashMultimap.create();
 	// TODO: Try to use IdentityHashMap here (makes ordering non-deterministic?)
@@ -25,10 +23,14 @@ public final class BuildingsTouchingStreets {
 	private final Map<RectangleWithNeighbors, Set<List<Point2D>>> lotsToStreets = new LinkedHashMap<>();
 	private final double streetsWidth;
 
-	public BuildingsTouchingStreets(
+	public LotsTouchingStreets(
 		Set<ImmutableList<Point2D>> streets,
 		double streetsWidth
 	) {
+		Objects.requireNonNull(streets);
+		if (streetsWidth <= 0) {
+			throw new IllegalArgumentException("street width must be > 0");
+		}
 		this.streetsWidth = streetsWidth;
 		for (List<Point2D> street : streets) {
 			int lastButOne = street.size() - 1;
@@ -45,8 +47,8 @@ public final class BuildingsTouchingStreets {
 		}
 	}
 
-	public Collection<RectangleWithNeighbors> getLots() {
-		return lotsToStreets.keySet();
+	public ImmutableCollection<RectangleWithNeighbors> getLots() {
+		return ImmutableSet.copyOf(lotsToStreets.keySet());
 	}
 
 	/**
@@ -56,6 +58,7 @@ public final class BuildingsTouchingStreets {
 	 * 	A lot to assign a street to.
 	 */
 	public void addLot(RectangleWithNeighbors lot) {
+		Objects.requireNonNull(lot);
 		int maxX = lot.rectangle.getMaxX();
 		int maxY = lot.rectangle.getMaxY();
 		Rectangle extendedLot = lot.rectangle.stretch((int) Math.ceil(streetsWidth));
@@ -87,10 +90,12 @@ public final class BuildingsTouchingStreets {
 	}
 
 	Set<RectangleWithNeighbors> getLotsOnStreet(Street street) {
+		Objects.requireNonNull(street);
 		return Collections.unmodifiableSet(streetsToLots.get(street.getPoints()));
 	}
 
 	public Set<List<Point2D>> getStreetsForLot(RectangleWithNeighbors where) {
+		Objects.requireNonNull(where);
 		return lotsToStreets.get(where);
 	}
 
@@ -102,6 +107,7 @@ public final class BuildingsTouchingStreets {
 	 * @return True if there are any streets to which this building place is assigned, false otherwise.
 	 */
 	public boolean hasStreets(RectangleWithNeighbors buildingPlace) {
+		Objects.requireNonNull(buildingPlace);
 		return !lotsToStreets.get(buildingPlace).isEmpty();
 	}
 
@@ -113,6 +119,28 @@ public final class BuildingsTouchingStreets {
 	 * @return All street segments that are near a lot.
 	 */
 	public Collection<Segment2D> getSegmentsForLot(RectangleWithNeighbors lot) {
+		Objects.requireNonNull(lot);
 		return lotsToStreetSegments.get(lot);
+	}
+
+	/**
+	 * Constructs new immutable collection containing all streets known to this {@link
+	 * org.tendiwa.settlements.buildings.LotsTouchingStreets}
+	 *
+	 * @return
+	 */
+	public ImmutableCollection<List<Point2D>> getStreets() {
+		return ImmutableSet.copyOf(streetsToLots.keySet());
+	}
+
+	/**
+	 * Returns a street that contains a segment.
+	 *
+	 * @param segment
+	 * @return A street, or null if not street contains that segment.
+	 */
+	public List<Point2D> getStreetForSegment(Segment2D segment) {
+		Objects.requireNonNull(segment);
+		return segmentsToStreets.get(segment);
 	}
 }

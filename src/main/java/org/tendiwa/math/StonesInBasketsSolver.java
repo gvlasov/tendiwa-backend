@@ -7,13 +7,13 @@ import java.util.Random;
  */
 public class StonesInBasketsSolver {
 	/**
-	 * Solves a problem of generating a random uniformly distributed partition of {@code numberOfStones} into several
-	 * baskets with given capacity.
+	 * Solves a problem of generating a random uniformly distributed partition of N
+	 * indistinguishable stones into M distinguishable baskets with given capacity.
 	 *
 	 * @param basketsCapacity
-	 * 	Capacities of baskets.
+	 * 	Capacities of baskets, array of length M.
 	 * @param numberOfStones
-	 * 	Number of stones to put in baskets.
+	 * 	Number of stones to put in baskets (N).
 	 * @param random
 	 * 	A random number generator. Calling this method will always pick only one number from {@code random}.
 	 * @see <a href="http://www.reddit.com/r/algorithms/comments/2do7xr/randomly_map_a_list_of_natural_numbers_to_another/">
@@ -25,7 +25,7 @@ public class StonesInBasketsSolver {
 		int totalCapacity = computeTotalBasketsCapacity(basketsCapacity);
 		if (numberOfStones > totalCapacity) {
 			throw new IllegalArgumentException(
-				"Number of stones must be less than total capacity of baskets " +
+				"Number of stones must be no greater than total capacity of baskets " +
 					"(" + numberOfStones + " stones, " + totalCapacity + " total capacity of baskets)"
 			);
 		}

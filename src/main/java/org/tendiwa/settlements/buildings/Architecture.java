@@ -29,12 +29,17 @@ public interface Architecture {
 	/**
 	 * Checks if this Architecture may raise a building in a particular place.
 	 *
-	 * @param rectangle
+	 * @param lot
 	 * 	A place to raise buildings at.
 	 * @return true if this place has right size for a building to be raised in it, false otherwise.
 	 */
-	public boolean fits(RectangleWithNeighbors rectangle);
+	public boolean fits(RectangleWithNeighbors lot);
 
+	/**
+	 * Returns a rectangle that is of an appropriate size to raise this building at.
+	 *
+	 * @return
+	 */
 	public Rectangle typicalBuildingPlace();
 
 	/**

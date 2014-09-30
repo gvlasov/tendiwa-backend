@@ -10,5 +10,5 @@ import java.util.List;
  * A strategy of determining what lot is on what street.
  */
 public interface LotStreetAssigner {
-	public List<Point2D> assignStreet(RectangleWithNeighbors buildingPlace);
+	public List<Point2D> getStreet(RectangleWithNeighbors buildingPlace);
 }

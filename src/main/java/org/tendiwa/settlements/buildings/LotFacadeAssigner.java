@@ -6,5 +6,5 @@ import org.tendiwa.settlements.RectangleWithNeighbors;
 
 @FunctionalInterface
 public interface LotFacadeAssigner {
-	public CardinalDirection assignDirection(RectangleWithNeighbors lot);
+	public CardinalDirection getFacadeDirection(RectangleWithNeighbors lot);
 }

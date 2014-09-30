@@ -11,9 +11,11 @@ public final class ArchitecturePolicy {
 	final int maxInstances;
 	final Priority priority;
 	final Placeable allowedArea;
-	final Collection<Architecture> presence;
 	final Collection<Street> onStreet;
+	// Dependent
 	final TObjectDoubleMap<Architecture> closeEnough;
+	// Dependent
+	final Collection<Architecture> presence;
 
 	ArchitecturePolicy(
 		int minInstances,

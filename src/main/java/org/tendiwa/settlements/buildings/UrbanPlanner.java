@@ -17,10 +17,10 @@ import java.util.stream.Collectors;
  */
 public final class UrbanPlanner implements BuildingPlacer {
 
-	private final Map<Architecture, ArchitecturePolicy> architecture = new HashMap<>();
+	private final Map<ArchitecturePolicy, Architecture> architecture = new HashMap<>();
 	private final HorizontalPlane plane;
 	private final double streetsWidth;
-	private BuildingsTouchingStreets buildingsTouchingStreets;
+	private LotsTouchingStreets lotsTouchingStreets;
 
 
 	public UrbanPlanner(HorizontalPlane plane, double streetsWidth) {
@@ -31,13 +31,13 @@ public final class UrbanPlanner implements BuildingPlacer {
 
 	@Override
 	public void placeBuildings(CityBuilder.Info cityInfo) {
-		buildingsTouchingStreets = new BuildingsTouchingStreets(
+		lotsTouchingStreets = new LotsTouchingStreets(
 			cityInfo.getStreets().stream().map(Street::getPoints).collect(Collectors.toSet()),
 			streetsWidth
 		);
 		Map<RectangleWithNeighbors, Architecture> placement = new BranchAndBoundUrbanPlanningStrategy(
 			architecture,
-			buildingsTouchingStreets,
+			lotsTouchingStreets,
 			cityInfo.getBuildingPlaces(),
 			new Random(0)
 		).compute();
@@ -47,7 +47,10 @@ public final class UrbanPlanner implements BuildingPlacer {
 	}
 
 	public void addAvailableArchitecture(Architecture architecture, ArchitecturePolicy policy) {
-		this.architecture.put(architecture, policy);
+		if (this.architecture.containsKey(policy)) {
+			throw new IllegalArgumentException("This policy is already contained in this UrbanPlanner");
+		}
+		this.architecture.put(policy, architecture);
 	}
 
 	private void addBuilding(RectangleWithNeighbors where, Architecture what, CityBuilder.Info info) {
