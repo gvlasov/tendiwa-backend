@@ -1,5 +1,6 @@
 package org.tendiwa.settlements.buildings;
 
+import com.google.common.collect.ImmutableSet;
 import org.tendiwa.geometry.Placeable;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.settlements.RectangleWithNeighbors;
@@ -14,9 +15,9 @@ public class CityBuilder {
 	private final Map<List<Point2D>, Street> streets = new IdentityHashMap<>();
 	private final Set<Placeable> districts = new LinkedHashSet<>();
 	private final Info info = new Info();
+	private boolean used = false;
 
 	CityBuilder() {
-
 	}
 
 	public void placeBuildings(BuildingPlacer placer) {
@@ -49,6 +50,22 @@ public class CityBuilder {
 
 	public void setLocalizationId(String localizationId) {
 		this.localizationId = localizationId;
+	}
+
+	/**
+	 * Creates a new City object from this CityBuilder.
+	 *
+	 * @return New City.
+	 * @throws java.lang.UnsupportedOperationException
+	 * 	when this method is being used more than one time on the same
+	 * 	CityBuilder.
+	 */
+	public City build() {
+		if (used) {
+			throw new UnsupportedOperationException("Trying to reuse CityBuilder");
+		}
+		used = true;
+		return new City(localizationId, buildings, ImmutableSet.copyOf(streets.values()), districts);
 	}
 
 	public class Info {

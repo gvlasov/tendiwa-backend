@@ -2,18 +2,12 @@ package org.tendiwa.settlements;
 
 import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.hash.TObjectDoubleHashMap;
-import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingGraph;
-import org.tendiwa.drawing.extensions.DrawingPoint2D;
 import org.tendiwa.geometry.GeometryException;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Vector2D;
 import org.tendiwa.geometry.extensions.InnerFreeSpaceOfPolygon;
-import org.tendiwa.geometry.extensions.straightSkeleton.PolygonShrinker;
-import org.tendiwa.geometry.extensions.twakStraightSkeleton.TwakStraightSkeleton;
 
-import java.awt.Color;
 import java.util.*;
 
 public class BlockRegion extends EnclosedBlock {

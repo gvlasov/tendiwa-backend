@@ -24,9 +24,8 @@ import java.util.Collections;
  * some {@link org.tendiwa.core.Module}. To draw something on a canvas, use its draw() methods.
  */
 public final class TestCanvas implements DrawableInto {
-
 	private static final AffineTransform defaultTransform = new AffineTransform();
-	public static TestCanvas canvas;
+	public static DrawableInto canvas;
 
 	static {
 		defaultTransform.setToScale(1, 1);
@@ -212,7 +211,7 @@ public final class TestCanvas implements DrawableInto {
 		return pixelBounds.height;
 	}
 
-	class Layer {
+	public class Layer {
 		final BufferedImage image;
 		final Graphics2D graphics;
 		private final JComponent component;

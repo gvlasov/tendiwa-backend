@@ -3,8 +3,6 @@ package org.tendiwa.settlements;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.jgrapht.UndirectedGraph;
-import org.tendiwa.drawing.GraphExplorer;
-import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.GeometryException;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
@@ -12,9 +10,7 @@ import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
 import org.tendiwa.geometry.extensions.twakStraightSkeleton.TwakStraightSkeleton;
 import org.tendiwa.graphs.MinimumCycleBasis;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 

@@ -52,7 +52,8 @@ public class StonesInBasketsSolver {
 	 * @return Index of a basket where to put a new stone.
 	 */
 	private static int findWhereToPutStone(int[] basketsCapacity, int[] basketPutChances, int numberOfBaskets, int[] stonesPartition, int generatedPlace) {
-		int index = binarySearchWithClamp(basketPutChances, generatedPlace);
+		int index = ArrayUtils.indexOfEqualOrHigher(basketPutChances, generatedPlace);
+		assert index != -1;
 		if (stonesPartition[index] == basketsCapacity[index]) {
 			// If a basket is full, select next basket until we find one that is not full.
 			int j = 1;
@@ -66,38 +67,6 @@ public class StonesInBasketsSolver {
 			assert j < numberOfBaskets : "Nowhere to put stones!";
 		}
 		return index;
-	}
-
-	/**
-	 * In O(log(n)), finds an element in array that is {@code >= value} for which the previous element is {@code <
-	 * value}.
-	 *
-	 * @param array
-	 * 	A sorted array to search in.
-	 * @param value
-	 * 	A value.
-	 * @return Index of an element in {@code array} that is {@code >= value} for which the previous element is {@code <
-	 * value}.
-	 */
-	private static int binarySearchWithClamp(int[] array, int value) {
-		int imax = array.length - 1;
-		int imin = 0;
-		int lastGreaterImid = -1;
-		while (imax >= imin) {
-			int imid = imax + imin / 2;
-			if (array[imid] == value) {
-				return imid;
-			}
-			if (array[imid] < value) {
-				imin = imid + 1;
-			} else {
-				assert array[imid] > value;
-				lastGreaterImid = imid;
-				imax = imid - 1;
-			}
-		}
-		assert lastGreaterImid != -1;
-		return lastGreaterImid;
 	}
 
 

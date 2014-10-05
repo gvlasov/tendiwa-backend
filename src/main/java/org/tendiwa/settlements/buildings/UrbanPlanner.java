@@ -20,12 +20,14 @@ public final class UrbanPlanner implements BuildingPlacer {
 	private final Map<ArchitecturePolicy, Architecture> architecture = new HashMap<>();
 	private final HorizontalPlane plane;
 	private final double streetsWidth;
+	private final Random random;
 	private LotsTouchingStreets lotsTouchingStreets;
 
 
-	public UrbanPlanner(HorizontalPlane plane, double streetsWidth) {
+	public UrbanPlanner(HorizontalPlane plane, double streetsWidth, Random random) {
 		this.plane = plane;
 		this.streetsWidth = streetsWidth;
+		this.random = random;
 	}
 
 
@@ -35,11 +37,11 @@ public final class UrbanPlanner implements BuildingPlacer {
 			cityInfo.getStreets().stream().map(Street::getPoints).collect(Collectors.toSet()),
 			streetsWidth
 		);
-		Map<RectangleWithNeighbors, Architecture> placement = new BranchAndBoundUrbanPlanningStrategy(
+		Map<RectangleWithNeighbors, Architecture> placement = new UrbanPlanningStrategy(
 			architecture,
 			lotsTouchingStreets,
 			cityInfo.getBuildingPlaces(),
-			new Random(0)
+			random
 		).compute();
 		for (RectangleWithNeighbors rectangle : placement.keySet()) {
 			addBuilding(rectangle, placement.get(rectangle), cityInfo);

@@ -88,7 +88,7 @@ public class PolygonShrinker {
 
 		Map<Segment2D, Iterable<Segment2D>> edgeToFace = new HashMap<>();
 
-		TestCanvas.canvas.draw(graph, DrawingGraph.withColorAndAntialiasing(Color.blue));
+//		TestCanvas.canvas.draw(graph, DrawingGraph.withColorAndAntialiasing(Color.blue));
 		for (MinimalCycle<Point2D, Segment2D> cycle : basis.minimalCyclesSet()) {
 			Segment2D originalFaceEdge = findUnusedEdgeForFace(
 				unusedEdges,

@@ -8,11 +8,9 @@ import org.jgraph.graph.DefaultGraphCell;
 import org.jgraph.graph.GraphConstants;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.ext.JGraphModelAdapter;
-import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
-import org.tendiwa.graphs.GraphConstructor;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -26,10 +24,11 @@ import java.util.Map;
 public class GraphExplorer {
 
 	public static final Dimension DEFAULT_SIZE = new Dimension(800, 600);
-	public static final int vertexSize = 30;
+	private final int vertexSize;
 	private final JGraphModelAdapter<Point2D, Segment2D> adapter;
 
-	public GraphExplorer(UndirectedGraph<Point2D, Segment2D> graph) {
+	public GraphExplorer(UndirectedGraph<Point2D, Segment2D> graph, int width, int height, int vertexSize) {
+		this.vertexSize = vertexSize;
 		graph = PlanarGraphs.copyRelevantNetwork(graph);
 		adapter = new JGraphModelAdapter<>(graph);
 		JGraph jgraph = new JGraph(adapter);
@@ -43,7 +42,7 @@ public class GraphExplorer {
 
 		adjustDisplaySettings(jgraph);
 		JFrame frame = new JFrame("Hello");
-		jgraph.setPreferredSize(new Dimension(2000, 2000));
+		jgraph.setPreferredSize(new Dimension(width, height));
 		JScrollPane scrollpane = new JScrollPane(jgraph);
 		frame.getContentPane().add(scrollpane);
 		frame.setPreferredSize(DEFAULT_SIZE);
@@ -76,8 +75,8 @@ public class GraphExplorer {
 		GraphConstants.setBounds(
 			attributes,
 			new Rectangle(
-				(int) vertex.x*3-100 - vertexSize / 2,
-				(int) vertex.y*3-100 - vertexSize / 2,
+				(int) vertex.x - vertexSize / 2,
+				(int) vertex.y - vertexSize / 2,
 				vertexSize,
 				vertexSize
 			)
