@@ -9,7 +9,7 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.geometry.Recs;
 import org.tendiwa.geometry.Rectangle;
-import org.tendiwa.math.JerrumSinclairMarkovChain;
+import org.tendiwa.graphs.algorithms.jerrumSinclair.QuasiJerrumSinclairMarkovChain;
 import org.tendiwa.settlements.RectangleWithNeighbors;
 import org.tendiwa.settlements.streets.Street;
 import org.tendiwa.terrain.WorldGenerationException;
@@ -129,9 +129,10 @@ final class UrbanPlanningStrategy {
 		}
 
 		assert matchingToMutate.edgeSet().size() == partition1.size();
-		UndirectedGraph<Object, DefaultEdge> generatedMaximumMatching = JerrumSinclairMarkovChain
+		UndirectedGraph<Object, DefaultEdge> generatedMaximumMatching = QuasiJerrumSinclairMarkovChain
 			.inGraph(bigraph)
-			.withInitialMatchingToMutate(matchingToMutate)
+			.withInitialMatching(maximumMatchingEdges)
+			.withOneOfPartitions(partition1)
 			.withNumberOfSteps(100)
 			.withRandom(random);
 		generatedMaximumMatching.removeVertex(IMAGINARY_POLICY_FOR_THE_REST);
@@ -147,7 +148,7 @@ final class UrbanPlanningStrategy {
 	 * @param lotsClaimed
 	 * 	How many lots are already claimed by actual (as opposed to the imaginary one being
 	 * 	added) policies.
-	 * @see org.tendiwa.math.JerrumSinclairMarkovChain
+	 * @see org.tendiwa.graphs.algorithms.jerrumSinclair.QuasiJerrumSinclairMarkovChain
 	 */
 	private void addImaginaryPolicyForTheRestOfLots(UndirectedGraph<Object, DefaultEdge> bigraph, int lotsClaimed) {
 		// This policy will want the number of lots lacking for a configuration to be a perfect matching in bigraph

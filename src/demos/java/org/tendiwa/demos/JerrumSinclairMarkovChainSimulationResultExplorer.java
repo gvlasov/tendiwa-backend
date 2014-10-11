@@ -9,9 +9,8 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.math.IntegerPermutationGenerator;
-import org.tendiwa.math.JerrumSinclairMarkovChain;
+import org.tendiwa.graphs.algorithms.jerrumSinclair.QuasiJerrumSinclairMarkovChain;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -50,31 +49,31 @@ public class JerrumSinclairMarkovChainSimulationResultExplorer implements Runnab
 				);
 				assert edge != null;
 			}
-
-			System.out.println("Vertex " + i + " has " + underlyingGraph.edgesOf(vertex).size() + " edges");
 		}
+		ImmutableSet<Point2D> onePartition = ImmutableSet.copyOf(partition1);
 		Set<Segment2D> matching = new HopcroftKarpBipartiteMatching<>(
 			underlyingGraph,
-			ImmutableSet.copyOf(partition1),
+			onePartition,
 			ImmutableSet.copyOf(partition2)
 		).getMatching();
 		int failures = 0, successes = 0;
-		for (int i = 0; i < 1000; i++) {
-//			try {
+		for (int i = 0; i < 110; i++) {
+			try {
 				UndirectedGraph<Point2D, Segment2D> matchingGraph = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
 				underlyingGraph.vertexSet().forEach(matchingGraph::addVertex);
 				matching.forEach(e -> matchingGraph.addEdge(e.start, e.end, e));
-				UndirectedGraph<Point2D, Segment2D> generatedMatching = JerrumSinclairMarkovChain
+				UndirectedGraph<Point2D, Segment2D> generatedMatching = QuasiJerrumSinclairMarkovChain
 					.inGraph(underlyingGraph)
-					.withInitialMatchingToMutate(matchingGraph)
-					.withNumberOfSteps(i)
-					.withRandom(new Random(1123123));
+					.withInitialMatching(matching)
+					.withOneOfPartitions(onePartition)
+					.withNumberOfSteps(8000)
+					.withRandom(new Random(i));
 				successes++;
-//			} catch (RuntimeException e) {
-//				failures++;
-//			}
+			} catch (RuntimeException e) {
+				failures++;
+			}
+//			new GraphExplorer(generatedMatching, 800, 600, 10);
 		}
 		System.out.println("Failures: " + failures + ", successes: " + successes);
-//		new GraphExplorer(generatedMatching, 800, 600, 10);
 	}
 }
