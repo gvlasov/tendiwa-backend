@@ -1,9 +1,11 @@
 package org.tendiwa.math;
 
+import com.google.common.collect.ImmutableMap;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.custom_hash.TObjectIntCustomHashMap;
 import gnu.trove.strategy.IdentityHashingStrategy;
 
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.ToIntFunction;
 
@@ -18,8 +20,15 @@ import java.util.function.ToIntFunction;
  * This algorithm works in O(n*m)
  */
 public class IntersectingSetsFiller<T> {
+
+	private final TObjectIntMap<Set<T>> positionsLeft;
+	private final Random random;
+	private final ImmutableMap<T, Set<T>> answer;
+	private int positionsLeftSum;
+	private final Class<?> elementSetClass;
+
 	/**
-	 * @param contents
+	 * @param superset
 	 * 	Set <i>A</i> of <i>n</i> distinguishable objects.
 	 * @param subsetsToCaps
 	 * 	A map from sets <i>B<sub>i</sub></i> to their caps <i>c<sub>i</sub></i>.
@@ -29,44 +38,69 @@ public class IntersectingSetsFiller<T> {
 	 * 	iteration order (i.e. {@link java.util.LinkedHashSet}, but not {@link java.util.HashSet}).
 	 */
 	public IntersectingSetsFiller(
-		Set<T> contents,
-		ToIntFunction<Set<T>> subsetsToCaps,
+		Set<T> superset,
 		Set<Set<T>> subsets,
+		ToIntFunction<Set<T>> subsetsToCaps,
 		Random random
 	) {
-		random = new Random(random.nextInt());
-		assert areSubsets(subsets, contents);
-		TObjectIntMap<Set<T>> positionsLeft = new TObjectIntCustomHashMap<>(
+		this.random = new Random(random.nextInt());
+		assert areSubsets(subsets, superset);
+		positionsLeft = new TObjectIntCustomHashMap<>(
 			new IdentityHashingStrategy<>(),
 			subsets.size()
 		);
-		int positionsLeftSum = 0;
+		elementSetClass = Set.class;
+		positionsLeftSum = 0;
 		for (Set<T> subset : subsets) {
 			int value = subsetsToCaps.applyAsInt(subset);
 			positionsLeft.put(subset, value);
 			positionsLeftSum += value;
 		}
 
-		Map<T, Set<T>[]> containing = prepareContainingMap(contents, subsets);
-		int contentsSize = contents.size();
+		Map<T, Set<T>[]> containing = prepareContainingMap(superset, subsets);
+		int contentsSize = superset.size();
 		int[] indices = IntegerPermutationGenerator.generateUsingFisherYates(contentsSize, contentsSize, random);
-		T[] arrayContents = (T[]) contents.toArray();
+		T[] arrayContents = (T[]) superset.toArray();
+		ImmutableMap.Builder<T, Set<T>> builder = ImmutableMap.builder();
 		for (int index : indices) {
 			T element = arrayContents[index];
 			Set<T>[] whereContained = containing.get(element);
-			Set<T> subset = whereContained[getSubsetIndex(whereContained, positionsLeft, positionsLeftSum, random)];
+			int indexOfSubset = getIndexOfSubset(whereContained);
+			if (indexOfSubset == -1) {
+				continue;
+			}
+			Set<T> subset = whereContained[indexOfSubset];
+			if (positionsLeft.get(subset) == 0) {
+				continue;
+			}
 			positionsLeft.adjustValue(subset, -1);
 			positionsLeftSum--;
+			builder.put(element, subset);
 		}
+		answer = builder.build();
 	}
 
-	private int getSubsetIndex(
-		Set<T>[] whereContained,
-		TObjectIntMap<Set<T>> positionsLeft,
-		int positionsLeftSum,
-		Random random
+	public ImmutableMap<T, Set<T>> getAnswer() {
+		return answer;
+	}
+
+	private int getIndexOfSubset(
+		Set<T>[] whereContained
 	) {
-		return random.nextInt(whereContained.length);
+		int elementsLeft = 0;
+		for (Set<T> set : whereContained) {
+			elementsLeft += positionsLeft.get(set);
+		}
+		elementsLeft = random.nextInt(elementsLeft);
+		int i;
+		for (i = 0; i < whereContained.length; i++) {
+			elementsLeft -= positionsLeft.get(whereContained[i]);
+			if (elementsLeft <= 0) {
+				return i;
+			}
+		}
+		assert i == whereContained.length;
+		return -1;
 	}
 
 
@@ -88,7 +122,9 @@ public class IntersectingSetsFiller<T> {
 					elementSubsets.add(subset);
 				}
 			}
-			containing.put(element, elementSubsets);
+			Set<T>[] array = (Set<T>[]) Array.newInstance(elementSetClass, elementSubsets.size());
+			elementSubsets.toArray(array);
+			containing.put(element, array);
 		}
 		return containing;
 	}
