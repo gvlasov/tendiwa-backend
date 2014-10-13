@@ -4,12 +4,11 @@ import com.google.common.collect.ImmutableSet;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.alg.HopcroftKarpBipartiteMatching;
 import org.jgrapht.graph.SimpleGraph;
-import org.tendiwa.drawing.GraphExplorer;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
-import org.tendiwa.math.IntegerPermutationGenerator;
 import org.tendiwa.graphs.algorithms.jerrumSinclair.QuasiJerrumSinclairMarkovChain;
+import org.tendiwa.math.IntegerPermutationGenerator;
 
 import java.util.List;
 import java.util.Random;
@@ -19,6 +18,9 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 
 public class JerrumSinclairMarkovChainSimulationResultExplorer implements Runnable {
+
+	public static final int NUMBER_OF_MATCHINGS_TO_GENERATE = 110;
+
 	public static void main(String[] args) {
 		Demos.run(JerrumSinclairMarkovChainSimulationResultExplorer.class);
 	}
@@ -56,24 +58,16 @@ public class JerrumSinclairMarkovChainSimulationResultExplorer implements Runnab
 			onePartition,
 			ImmutableSet.copyOf(partition2)
 		).getMatching();
-		int failures = 0, successes = 0;
-		for (int i = 0; i < 110; i++) {
-			try {
-				UndirectedGraph<Point2D, Segment2D> matchingGraph = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
-				underlyingGraph.vertexSet().forEach(matchingGraph::addVertex);
-				matching.forEach(e -> matchingGraph.addEdge(e.start, e.end, e));
-				UndirectedGraph<Point2D, Segment2D> generatedMatching = QuasiJerrumSinclairMarkovChain
-					.inGraph(underlyingGraph)
-					.withInitialMatching(matching)
-					.withOneOfPartitions(onePartition)
-					.withNumberOfSteps(8000)
-					.withRandom(new Random(i));
-				successes++;
-			} catch (RuntimeException e) {
-				failures++;
-			}
-//			new GraphExplorer(generatedMatching, 800, 600, 10);
+		for (int i = 0; i < NUMBER_OF_MATCHINGS_TO_GENERATE; i++) {
+			UndirectedGraph<Point2D, Segment2D> matchingGraph = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
+			underlyingGraph.vertexSet().forEach(matchingGraph::addVertex);
+			matching.forEach(e -> matchingGraph.addEdge(e.start, e.end, e));
+			UndirectedGraph<Point2D, Segment2D> generatedMatching = QuasiJerrumSinclairMarkovChain
+				.inGraph(underlyingGraph)
+				.withInitialMatching(matching)
+				.withOneOfPartitions(onePartition)
+				.withNumberOfSteps(8000)
+				.withRandom(new Random(i));
 		}
-		System.out.println("Failures: " + failures + ", successes: " + successes);
 	}
 }

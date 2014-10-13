@@ -70,6 +70,7 @@ public final class IntegerPermutationGenerator {
 
 
 	private static void fisherYatesShuffleArray(int[] ar, Random random) {
+		random = new Random(random.nextInt());
 		for (int i = ar.length - 1; i > 0; i--) {
 			int index = random.nextInt(i + 1);
 			// Simple swap

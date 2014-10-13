@@ -81,6 +81,7 @@ public final class LotsTouchingStreets {
 	}
 
 	private Set<List<Point2D>> collectStreetsForLot(RectangleWithNeighbors buildingPlace) {
+		Objects.requireNonNull(buildingPlace);
 		Set<List<Point2D>> answer = new LinkedHashSet<>();
 		for (Segment2D segment : lotsToStreetSegments.get(buildingPlace)) {
 			List<Point2D> street = segmentsToStreets.get(segment);

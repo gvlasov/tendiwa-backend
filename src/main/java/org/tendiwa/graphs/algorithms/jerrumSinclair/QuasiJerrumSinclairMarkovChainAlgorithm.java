@@ -11,6 +11,7 @@ public class QuasiJerrumSinclairMarkovChainAlgorithm<V, E> {
 	private final Random random;
 	private final Matching<V, E> currentMatching;
 	private final int numberOfAllVertices;
+	private final UndirectedGraph<V, E> graph;
 
 	/**
 	 * Generates a perfect matching with distribution close to uniform from a set of all possible perfect matchings
@@ -46,6 +47,7 @@ public class QuasiJerrumSinclairMarkovChainAlgorithm<V, E> {
 		int numberOfSteps,
 		Random random
 	) {
+		this.graph = graph;
 		int numberOfVerticesInPartition = partition1.size();
 		this.numberOfAllVertices = numberOfVerticesInPartition * 2;
 		assert partition1.size() * 2 == graph.vertexSet().size() : partition1.size() + " " + graph.vertexSet().size();
@@ -78,13 +80,13 @@ public class QuasiJerrumSinclairMarkovChainAlgorithm<V, E> {
 	 * false otherwise.
 	 */
 	public boolean isPerfectMatching(Set<E> matching, Set<V> partition) {
-		assert partition.size() * 2 == bipartiteGraphVertexIndex.graph.vertexSet().size();
+		assert partition.size() * 2 == graph.vertexSet().size();
 		if (matching.size() != partition.size()) {
 			return false;
 		}
 		for (E edge : matching) {
-			V source = bipartiteGraphVertexIndex.graph.getEdgeSource(edge);
-			V target = bipartiteGraphVertexIndex.graph.getEdgeTarget(edge);
+			V source = graph.getEdgeSource(edge);
+			V target = graph.getEdgeTarget(edge);
 			if (!(partition.contains(source) ^ partition.contains(target))) {
 				return false;
 			}
@@ -93,7 +95,7 @@ public class QuasiJerrumSinclairMarkovChainAlgorithm<V, E> {
 	}
 
 	UndirectedGraph<V, E> compute() {
-		E[] edges = (E[]) bipartiteGraphVertexIndex.graph.edgeSet().toArray();
+		E[] edges = (E[]) graph.edgeSet().toArray();
 
 		RememberedMatching rememberedMatching = new RememberedMatching(numberOfAllVertices);
 		rememberedMatching.updateWith(currentMatching);

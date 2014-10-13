@@ -16,9 +16,18 @@ public class ArchitecturePolicyBuilder {
 	private Placeable allowedArea;
 	private Collection<Architecture> presence = new LinkedHashSet<>();
 	private Collection<Street> streets = new LinkedHashSet<>();
+	private int minInstancesTopBound = Integer.MAX_VALUE;
 
 	public ArchitecturePolicyBuilder withMinInstances(int minInstances) {
 		this.minInstances = minInstances;
+		return this;
+	}
+
+	public ArchitecturePolicyBuilder withMinInstancesNoGreaterThan(int minInstancesTopBound) {
+		if (minInstancesTopBound < 0) {
+			throw new IllegalArgumentException("Min instances top bound must be >= 0");
+		}
+		this.minInstancesTopBound = minInstancesTopBound;
 		return this;
 	}
 
@@ -75,6 +84,7 @@ public class ArchitecturePolicyBuilder {
 	public ArchitecturePolicy build() {
 		return new ArchitecturePolicy(
 			minInstances,
+			minInstancesTopBound,
 			maxInstances,
 			closeEnough.isEmpty() ? closeEnough : null,
 			priority,

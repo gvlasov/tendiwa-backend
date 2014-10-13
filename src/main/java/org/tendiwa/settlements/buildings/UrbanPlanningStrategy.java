@@ -7,11 +7,8 @@ import org.jgrapht.UndirectedGraph;
 import org.jgrapht.alg.HopcroftKarpBipartiteMatching;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
-import org.tendiwa.geometry.Recs;
-import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.graphs.algorithms.jerrumSinclair.QuasiJerrumSinclairMarkovChain;
 import org.tendiwa.settlements.RectangleWithNeighbors;
-import org.tendiwa.settlements.streets.Street;
 import org.tendiwa.terrain.WorldGenerationException;
 
 import java.util.*;
@@ -21,13 +18,11 @@ import java.util.*;
  */
 final class UrbanPlanningStrategy {
 	private final Map<ArchitecturePolicy, Architecture> architecture;
-	private final LotsTouchingStreets lotsTouchingStreets;
 	private final Set<RectangleWithNeighbors> lots;
 	private final Random random;
 	private static final EdgeFactory<Object, DefaultEdge> edgeFactory = (a, b) -> new DefaultEdge();
 	private final Set<RectangleWithNeighbors> usedLots = new HashSet<>();
 	private final LinkedHashMap<ArchitecturePolicy, LinkedHashSet<RectangleWithNeighbors>> possiblePlaces;
-	public static final Partition1Vertex IMAGINARY_POLICY_FOR_THE_REST = new Partition1Vertex(null);
 
 	/**
 	 * @param architecture
@@ -43,49 +38,59 @@ final class UrbanPlanningStrategy {
 		Random random
 	) {
 		this.architecture = architecture;
-		this.lotsTouchingStreets = lotsTouchingStreets;
 		this.lots = lots;
 		this.random = new Random(random.nextInt());
-		this.possiblePlaces = findPossiblePlaces(architecture, lots);
+		this.possiblePlaces = new PossiblePlacesFinder(lotsTouchingStreets)
+			.findPossiblePlaces(architecture, lots);
 	}
 
+	/**
+	 * Generates a configuration of what {@link Architecture} is going to what {@link
+	 * org.tendiwa.settlements.RectangleWithNeighbors} based on
+	 * what policies are assigned to those Architectures.
+	 *
+	 * @return A mapping from lots to architecture in those lots.
+	 */
 	public Map<RectangleWithNeighbors, Architecture> compute() {
 		validateEnoughLotsForMinInstancesConstraint();
 
-		UndirectedGraph<Object, DefaultEdge> bigraph = new SimpleGraph<>(edgeFactory);
+		UndirectedGraph<Object, DefaultEdge> bipartiteGraph = new SimpleGraph<>(edgeFactory);
 		Set<Object> partition1 = new LinkedHashSet<>();
 		Set<Object> partition2 = new LinkedHashSet<>();
 
 		Map<RectangleWithNeighbors, Architecture> answer = new LinkedHashMap<>();
 		int lotsClaimed = 0;
 		for (ArchitecturePolicy policy : architecture.keySet()) {
-			for (int i = 0; i < policy.minInstances; i++) {
-				Partition1Vertex needForPlace = new Partition1Vertex(policy);
+			int minInstances = policy.getAcualMinInstances(possiblePlaces.get(policy).size());
+			for (int i = 0; i < minInstances; i++) {
+				NeedForPlace needForPlace = new NeedForPlace(policy);
 				partition1.add(needForPlace);
-				bigraph.addVertex(needForPlace);
+				bipartiteGraph.addVertex(needForPlace);
 				for (RectangleWithNeighbors place : possiblePlaces.get(policy)) {
 					partition2.add(place);
-					bigraph.addVertex(place);
-					bigraph.addEdge(needForPlace, place);
+					bipartiteGraph.addVertex(place);
+					bipartiteGraph.addEdge(needForPlace, place);
 				}
-				lotsClaimed += policy.minInstances;
+				lotsClaimed += minInstances;
+				assert lotsClaimed <= lots.size();
 			}
 		}
-		addImaginaryPolicyForTheRestOfLots(bigraph, lotsClaimed);
-
+		assert partition2.size() <= lots.size();
+		addImaginaryPolicyForTheRestOfLots(bipartiteGraph, lotsClaimed, partition1, partition2);
 
 		UndirectedGraph<Object, DefaultEdge> generatedMaximumMatching = generateMaximumMatching(
-			bigraph,
+			bipartiteGraph,
 			partition1,
 			partition2
 		);
-		putAssignmentsToAnswerMap(answer, generatedMaximumMatching);
-		int minInstancesSum = architecture.keySet().stream().map(p -> p.minInstances).reduce(0, (a, b) -> a + b);
+		putMandatoryAssignments(answer, generatedMaximumMatching);
+		int minInstancesSum = architecture
+			.keySet()
+			.stream()
+			.map(p -> p.getAcualMinInstances(possiblePlaces.get(p).size()))
+			.reduce(0, (a, b) -> a + b);
 		assert answer.size() >= minInstancesSum : answer.size() + " " + minInstancesSum;
-
-
-		addToAnswerUntilMaximumsForPoliciesIsReached(answer);
-
+		putArbitraryAssignments(answer);
 		return answer;
 	}
 
@@ -99,18 +104,24 @@ final class UrbanPlanningStrategy {
 	 * @param generatedMaximumMatching
 	 * 	A matching, where each edge is an assignment of a policy to a lot.
 	 */
-	private void putAssignmentsToAnswerMap(Map<RectangleWithNeighbors, Architecture> answerMap, UndirectedGraph<Object, DefaultEdge> generatedMaximumMatching) {
+	private void putMandatoryAssignments(
+		Map<RectangleWithNeighbors, Architecture> answerMap,
+		UndirectedGraph<Object, DefaultEdge> generatedMaximumMatching
+	) {
 		for (DefaultEdge edge : generatedMaximumMatching.edgeSet()) {
 			ArchitecturePolicy policy;
 			RectangleWithNeighbors lot;
 			Object source = generatedMaximumMatching.getEdgeSource(edge);
-			if (source instanceof Partition1Vertex) {
-				policy = ((Partition1Vertex) source).policy;
+			if (source instanceof NeedForPlace) {
+				policy = ((NeedForPlace) source).policy;
 				lot = (RectangleWithNeighbors) generatedMaximumMatching.getEdgeTarget(edge);
-			} else {
-				assert source instanceof RectangleWithNeighbors;
-				policy = ((Partition1Vertex) generatedMaximumMatching.getEdgeTarget(edge)).policy;
+			} else if (source instanceof RectangleWithNeighbors) {
+				policy = ((NeedForPlace) generatedMaximumMatching.getEdgeTarget(edge)).policy;
 				lot = (RectangleWithNeighbors) source;
+			} else {
+				assert source instanceof ImaginaryNeedForPlace
+					|| generatedMaximumMatching.getEdgeTarget(edge) instanceof ImaginaryNeedForPlace;
+				continue;
 			}
 
 			answerMap.put(lot, architecture.get(policy));
@@ -118,7 +129,11 @@ final class UrbanPlanningStrategy {
 		}
 	}
 
-	private UndirectedGraph<Object, DefaultEdge> generateMaximumMatching(UndirectedGraph<Object, DefaultEdge> bigraph, Set<Object> partition1, Set<Object> partition2) {
+	private UndirectedGraph<Object, DefaultEdge> generateMaximumMatching(
+		UndirectedGraph<Object, DefaultEdge> bigraph,
+		Set<Object> partition1,
+		Set<Object> partition2
+	) {
 		Set<DefaultEdge> maximumMatchingEdges = new HopcroftKarpBipartiteMatching<>(bigraph, partition1, partition2).getMatching();
 		UndirectedGraph<Object, DefaultEdge> matchingToMutate = new SimpleGraph<>(edgeFactory);
 		for (Object vertex : bigraph.vertexSet()) {
@@ -135,46 +150,75 @@ final class UrbanPlanningStrategy {
 			.withOneOfPartitions(partition1)
 			.withNumberOfSteps(100)
 			.withRandom(random);
-		generatedMaximumMatching.removeVertex(IMAGINARY_POLICY_FOR_THE_REST);
+		for (Object vertex : partition1) {
+			if (vertex instanceof ImaginaryNeedForPlace) {
+				generatedMaximumMatching.removeVertex(vertex);
+			}
+		}
 		return generatedMaximumMatching;
 	}
 
 	/**
-	 * Adds a new vertex with its edges into {@code bigraph} for bigraph to have enough edges to contain a perfect
-	 * matching.
+	 * Adds a new vertex with its edges into {@code bipartiteGraph} for bipartite graph to have enough edges to
+	 * contain a perfect matching.
 	 *
-	 * @param bigraph
-	 * 	A bigraph to add an extra vertex and 1+ extra edges to.
+	 * @param bipartiteGraph
+	 * 	A bipartite graph to add an extra vertex and 1+ extra edges to.
 	 * @param lotsClaimed
 	 * 	How many lots are already claimed by actual (as opposed to the imaginary one being
 	 * 	added) policies.
+	 * @param partition1
+	 * @param partition2
 	 * @see org.tendiwa.graphs.algorithms.jerrumSinclair.QuasiJerrumSinclairMarkovChain
 	 */
-	private void addImaginaryPolicyForTheRestOfLots(UndirectedGraph<Object, DefaultEdge> bigraph, int lotsClaimed) {
-		// This policy will want the number of lots lacking for a configuration to be a perfect matching in bigraph
+	private void addImaginaryPolicyForTheRestOfLots(
+		UndirectedGraph<Object, DefaultEdge> bipartiteGraph,
+		int lotsClaimed,
+		Set<Object> partition1,
+		Set<Object> partition2
+	) {
 		int numberOfAllLots = lots.size();
-		Iterator<ArchitecturePolicy> iter = possiblePlaces.keySet().iterator();
-		bigraph.addVertex(IMAGINARY_POLICY_FOR_THE_REST);
-		while (lotsClaimed < numberOfAllLots) {
-			assert iter.hasNext();
-			ArchitecturePolicy policy = iter.next();
-			LinkedHashSet<RectangleWithNeighbors> lotsForPolicy = possiblePlaces.get(policy);
-			int numberOfLotsForPolicy = policy.minInstances;
-			int numberOfLotsLeftToFill = numberOfAllLots - lotsClaimed;
-			if (numberOfLotsForPolicy < numberOfLotsLeftToFill) {
-				for (RectangleWithNeighbors lot : lotsForPolicy) {
-					bigraph.addEdge(IMAGINARY_POLICY_FOR_THE_REST, lot);
-				}
-				lotsClaimed += numberOfLotsForPolicy;
-			} else {
-				Iterator<RectangleWithNeighbors> iter2 = lotsForPolicy.iterator();
-				for (int i = 0; i < numberOfLotsLeftToFill; i++) {
-					bigraph.addEdge(IMAGINARY_POLICY_FOR_THE_REST, iter2.next());
-				}
-				lotsClaimed += numberOfLotsLeftToFill;
+		for (RectangleWithNeighbors lot : lots) {
+			// Lots that are already present in partition2 will just not be added.
+			partition2.add(lot);
+		}
+
+		for (int i = lotsClaimed; i < numberOfAllLots; i++) {
+			ImaginaryNeedForPlace imaginaryPolicyNeed = new ImaginaryNeedForPlace();
+			bipartiteGraph.addVertex(imaginaryPolicyNeed);
+			for (RectangleWithNeighbors lot : lots) {
+				bipartiteGraph.addEdge(imaginaryPolicyNeed, lot);
+				partition1.add(imaginaryPolicyNeed);
 			}
 		}
-		assert lotsClaimed == numberOfAllLots;
+//		// This policy will want the number of lots lacking for a configuration
+//		// to be a perfect matching in bipartite graph.
+//		assert lotsClaimed < numberOfAllLots;
+//		Iterator<ArchitecturePolicy> iter = possiblePlaces.keySet().iterator();
+//		bipartiteGraph.addVertex(IMAGINARY_POLICY_FOR_THE_REST);
+//		while (lotsClaimed < numberOfAllLots) {
+//			assert iter.hasNext();
+//			ArchitecturePolicy policy = iter.next();
+//			LinkedHashSet<RectangleWithNeighbors> lotsForPolicy = possiblePlaces.get(policy);
+//			int lotsAvailableToPolicy = possiblePlaces.get(policy).size();
+//			int lotsNotClaimedForPolicy = lotsAvailableToPolicy - policy.getAcualMinInstances(lotsAvailableToPolicy);
+//			int lotsLeftToFill = numberOfAllLots - lotsClaimed;
+//			if (lotsNotClaimedForPolicy < lotsLeftToFill) {
+//				for (RectangleWithNeighbors lot : lotsForPolicy) {
+//					bipartiteGraph.addEdge(IMAGINARY_POLICY_FOR_THE_REST, lot);
+//				}
+//				lotsClaimed += lotsNotClaimedForPolicy;
+//				assert lotsClaimed < numberOfAllLots;
+//			} else {
+//				Iterator<RectangleWithNeighbors> iter2 = lotsForPolicy.iterator();
+//				for (int i = 0; i < lotsLeftToFill; i++) {
+//					bipartiteGraph.addEdge(IMAGINARY_POLICY_FOR_THE_REST, iter2.next());
+//				}
+//				lotsClaimed += lotsLeftToFill;
+//				assert lotsClaimed < numberOfAllLots;
+//			}
+//		}
+//		assert lotsClaimed == numberOfAllLots;
 	}
 
 	/**
@@ -197,19 +241,22 @@ final class UrbanPlanningStrategy {
 	}
 
 	/**
-	 * Maps lots to policies until {@link org.tendiwa.settlements.buildings.ArchitecturePolicy#maxInstances} of all
-	 * policies prevent remaining lots from being added.
+	 * Maps lots to policies until {@link org.tendiwa.settlements.buildings.ArchitecturePolicy#maxInstances} of each
+	 * policy prevent remaining lots from being added.
 	 *
 	 * @param answer
-	 * 	A map to collect all mappings of lots to policies.
+	 * 	A map to collect all the resulting mappings of lots to policies.
 	 */
-	private void addToAnswerUntilMaximumsForPoliciesIsReached(Map<RectangleWithNeighbors, Architecture> answer) {
-		TObjectIntMap<ArchitecturePolicy> policiesThatNeedLot = preparePoliciesThatNeedLot(possiblePlaces);
+	private void putArbitraryAssignments(
+		Map<RectangleWithNeighbors, Architecture> answer
+	) {
+		TObjectIntMap<ArchitecturePolicy> policiesThatNeedLot = preparePoliciesThatNeedLots(possiblePlaces);
 		while (!policiesThatNeedLot.isEmpty()) {
-			ArchitecturePolicy policyThatNeedsLot;
+			boolean found = false;
 			for (RectangleWithNeighbors lot : lots) {
-				policyThatNeedsLot = chooseRandomPolicyThatNeedsLot(policiesThatNeedLot);
+				ArchitecturePolicy policyThatNeedsLot = chooseRandomPolicyThatNeedsLot(policiesThatNeedLot);
 				if (!usedLots.contains(lot)) {
+					found = true;
 					usedLots.add(lot);
 					answer.put(lot, architecture.get(policyThatNeedsLot));
 					if (policiesThatNeedLot.get(policyThatNeedsLot) == 1) {
@@ -219,118 +266,53 @@ final class UrbanPlanningStrategy {
 					}
 				}
 			}
+			assert found;
 		}
 	}
 
-	private TObjectIntMap<ArchitecturePolicy> preparePoliciesThatNeedLot(LinkedHashMap<ArchitecturePolicy,
-		LinkedHashSet<RectangleWithNeighbors>> possiblePlaces) {
+	private TObjectIntMap<ArchitecturePolicy> preparePoliciesThatNeedLots(
+		LinkedHashMap<ArchitecturePolicy, LinkedHashSet<RectangleWithNeighbors>> possiblePlaces
+	) {
 		TObjectIntMap<ArchitecturePolicy> policiesThatNeedLot = new TObjectIntHashMap<>(
 			possiblePlaces.keySet().size()
 		);
+
 		for (Map.Entry<ArchitecturePolicy, LinkedHashSet<RectangleWithNeighbors>> e : possiblePlaces.entrySet()) {
-			int lotsLeftToOccupy = Math.min(e.getValue().size(), e.getKey().maxInstances) - e.getKey().minInstances;
+			ArchitecturePolicy policy = e.getKey();
+			LinkedHashSet<RectangleWithNeighbors> availableLots = e.getValue();
+			int availableLotsSize = availableLots.size();
+			int lotsLeftToOccupy = Math.min(availableLotsSize, policy.maxInstances)
+				- policy.getAcualMinInstances(availableLotsSize);
 			assert lotsLeftToOccupy >= 0;
 			if (lotsLeftToOccupy > 0) {
-				policiesThatNeedLot.put(e.getKey(), lotsLeftToOccupy);
+				policiesThatNeedLot.put(policy, lotsLeftToOccupy);
 			}
 		}
 		return policiesThatNeedLot;
 	}
 
-	private ArchitecturePolicy chooseRandomPolicyThatNeedsLot(TObjectIntMap<ArchitecturePolicy> policiesThatNeedLot) {
+	private ArchitecturePolicy chooseRandomPolicyThatNeedsLot(
+		TObjectIntMap<ArchitecturePolicy> policiesThatNeedLot
+	) {
 		int size = policiesThatNeedLot.size();
-		return ((ArchitecturePolicy[]) policiesThatNeedLot.keys())
-			[(int) Math.floor((size + 1) * random.nextDouble())];
+		return (ArchitecturePolicy) policiesThatNeedLot.keys()
+			[(int) Math.floor(size * random.nextDouble())];
+	}
+
+
+	private static class NeedForPlace {
+		private final ArchitecturePolicy policy;
+
+		public NeedForPlace(ArchitecturePolicy policy) {
+			assert policy != null;
+			this.policy = policy;
+		}
 	}
 
 	/**
-	 * Searches for sets of lots that are defined with the following constraints:
-	 * <ul>
-	 * <li>
-	 * {@link org.tendiwa.settlements.buildings.ArchitecturePolicy#onStreet};
-	 * </li>
-	 * <li>
-	 * {@link org.tendiwa.settlements.buildings.ArchitecturePolicy#allowedArea};
-	 * </li>
-	 * <li>
-	 * {@link org.tendiwa.settlements.buildings.Architecture#fits(org.tendiwa.settlements.RectangleWithNeighbors)} )}.
-	 * </li>
-	 * </ul>
-	 * <p>
-	 * These constraints are dependency-less, that is, satisfying a constraint can't be a cause of not satisfying
-	 * another constraint.
-	 *
-	 * @param architectures
-	 * 	Architectures and their policies.
-	 * @param allPlaces
-	 * 	All available unoccupied lots.
-	 * @return A map from Architecture to a set of lots where it can be placed.
+	 * With instances of this class, we fill a bipartite graph to compute a perfect matching.
 	 */
-	private LinkedHashMap<ArchitecturePolicy, LinkedHashSet<RectangleWithNeighbors>> findPossiblePlaces(
-		Map<ArchitecturePolicy, Architecture> architectures,
-		Set<RectangleWithNeighbors> allPlaces
-	) {
-		LinkedHashMap<ArchitecturePolicy, LinkedHashSet<RectangleWithNeighbors>> answer = new LinkedHashMap<>();
-		for (Map.Entry<ArchitecturePolicy, Architecture> e : architectures.entrySet()) {
-			Architecture architecture = e.getValue();
-			ArchitecturePolicy policy = e.getKey();
-			LinkedHashSet<RectangleWithNeighbors> places = new LinkedHashSet<>();
-			answer.put(policy, places);
-			Collection<LinkedHashSet<RectangleWithNeighbors>> setsByConstraints = new ArrayList<>(3);
-			if (!policy.onStreet.isEmpty()) {
-				for (Street street : policy.onStreet) {
-					setsByConstraints.add(new LinkedHashSet<>(lotsTouchingStreets.getLotsOnStreet(street)));
-				}
-			}
-			if (policy.allowedArea != null) {
-				LinkedHashSet<RectangleWithNeighbors> allowedArea = new LinkedHashSet<>();
-				Rectangle boundingRec = policy.allowedArea.getBounds();
-				for (RectangleWithNeighbors place : allPlaces) {
-					Optional<Rectangle> intersection = boundingRec.intersectionWith(place.rectangle);
-					if (intersection.isPresent() && intersection.get().equals(place.rectangle)) {
-						allowedArea.add(place);
-					}
-				}
-				Iterator<RectangleWithNeighbors> iter = allowedArea.iterator();
-				while (iter.hasNext()) {
-					RectangleWithNeighbors rectangle = iter.next();
-					if (!Recs.placeableContainsRectangle(policy.allowedArea, rectangle.rectangle)) {
-						iter.remove();
-					}
-				}
+	private static class ImaginaryNeedForPlace {
 
-				setsByConstraints.add(allowedArea);
-			}
-			// Leave only those sets that satisfy certain policy constraints (not all policy constraints,
-			// only the simplest ones).
-			if (setsByConstraints.isEmpty()) {
-				answer.put(policy, new LinkedHashSet<>(allPlaces));
-			} else {
-				Iterator<LinkedHashSet<RectangleWithNeighbors>> iter = setsByConstraints.iterator();
-				LinkedHashSet<RectangleWithNeighbors> allConstraintsApplied = iter.next();
-				while (iter.hasNext()) {
-					Set<RectangleWithNeighbors> anotherConstraint = iter.next();
-					allConstraintsApplied.retainAll(anotherConstraint);
-				}
-				answer.put(policy, allConstraintsApplied);
-			}
-			Iterator<RectangleWithNeighbors> iter = answer.get(policy).iterator();
-			while (iter.hasNext()) {
-				// Leave only those lots where architecture fits
-				RectangleWithNeighbors rec = iter.next();
-				if (!architecture.fits(rec)) {
-					iter.remove();
-				}
-			}
-		}
-		return answer;
-	}
-
-	private static class Partition1Vertex {
-		private final ArchitecturePolicy policy;
-
-		public Partition1Vertex(ArchitecturePolicy policy) {
-			this.policy = policy;
-		}
 	}
 }
