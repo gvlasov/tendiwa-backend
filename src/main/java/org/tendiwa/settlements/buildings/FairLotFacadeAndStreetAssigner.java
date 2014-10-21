@@ -1,8 +1,8 @@
 package org.tendiwa.settlements.buildings;
 
-import com.google.common.collect.*;
-import gnu.trove.map.TObjectDoubleMap;
-import gnu.trove.map.hash.TObjectDoubleHashMap;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.Multimap;
 import org.tendiwa.core.CardinalDirection;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingRectangle;
@@ -277,20 +277,4 @@ public final class FairLotFacadeAndStreetAssigner implements LotFacadeAssigner, 
 	public List<Point2D> getStreet(RectangleWithNeighbors buildingPlace) {
 		return null;
 	}
-
-	public static void main(String[] args) {
-//		CardinalDirection dir = getDirectionToSegment(new Rectangle(10, 10, 10, 10), Segment2D.create(8, 8, 16, 7));
-//		System.out.println(dir);
-//		dir = getDirectionToSegment(new Rectangle(10, 10, 10, 10), Segment2D.create(9, 11, 8.5, 0));
-//		System.out.println(dir);
-//		dir = getDirectionToSegment(new Rectangle(10, 10, 10, 10), Segment2D.create(0, 5, 8, 5));
-//		System.out.println(dir);
-		Segment2D segment = Segment2D.create(22, 6, 34, 12);
-		CardinalDirection dir = getDirectionToSegment(segment, new Rectangle(10, 10, 10, 10));
-		System.out.println(dir);
-		TestCanvas canvas = new TestCanvas(1, 400, 300);
-		canvas.draw(new Rectangle(10, 10, 10, 10), DrawingRectangle.withColor(Color.red));
-		canvas.draw(segment, DrawingSegment2D.withColor(Color.blue));
-	}
-
 }

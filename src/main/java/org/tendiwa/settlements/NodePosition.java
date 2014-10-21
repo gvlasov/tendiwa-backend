@@ -39,6 +39,7 @@ final class NodePosition {
 	 * 	A point whose relative location of a segment is to be found.
 	 */
 	public NodePosition(Point2D segmentStart, Point2D segmentEnd, Point2D point) {
+		// TODO: We can get rid of sqrt() here in distanceTo()
 		double l = segmentStart.distanceTo(segmentEnd);
 		r = ((point.x - segmentStart.x) * (segmentEnd.x - segmentStart.x)
 			+ (point.y - segmentStart.y) * (segmentEnd.y - segmentStart.y))

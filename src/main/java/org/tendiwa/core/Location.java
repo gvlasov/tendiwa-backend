@@ -3,7 +3,6 @@ package org.tendiwa.core;
 import org.tendiwa.core.meta.Chance;
 import org.tendiwa.core.settlements.BuildingPlace;
 import org.tendiwa.geometry.*;
-import org.tendiwa.geometry.Rectangle;
 
 import java.util.*;
 
@@ -817,7 +816,8 @@ public class Location {
 				}
 			}
 		} catch (IndexOutOfBoundsException e) {
-			throw new LocationException("Trying to place entity " + placeable + " outside of location at cell " + x + ":" + y);
+			throw new LocationException("Trying to place entity " + placeable + " outside of location at absolute " +
+				"cell " + x + ":" + y + " (relative " + (x - r.x) + ":" + (y - r.y) + ")");
 		}
 	}
 
@@ -882,7 +882,7 @@ public class Location {
 	public void drawCellSet(FiniteCellSet cellSet, TypePlaceableInCell placeable) {
 		Objects.requireNonNull(placeable);
 		for (Cell cell : cellSet) {
-			activePlane.place(placeable, this.x+cell.x, this.y+cell.y);
+			activePlane.place(placeable, this.x + cell.x, this.y + cell.y);
 		}
 	}
 

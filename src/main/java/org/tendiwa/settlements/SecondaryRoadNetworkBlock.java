@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
+
 public final class SecondaryRoadNetworkBlock extends EnclosedBlock {
 	private final List<Point2D> outline;
 

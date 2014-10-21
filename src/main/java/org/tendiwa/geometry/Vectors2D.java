@@ -1,6 +1,12 @@
 package org.tendiwa.geometry;
 
 public class Vectors2D {
+	/**
+	 * We use this value to compare two numbers when rounding errors may not allow to compare them directly. If
+	 * {@code Math.abs(a-b)-Vectors2D.ESPSILON}, then <i>a</i> may be considered equal to <i>b</i>. That is,
+	 * we assume that if two numbers differ in less than EPSILON,
+	 * then that difference should come from rounding errors, and those numbers are better to be treated as equal.
+	 */
 	public static final double EPSILON = 1e-10;
 
 	/**

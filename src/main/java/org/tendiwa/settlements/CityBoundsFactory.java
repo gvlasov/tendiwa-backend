@@ -77,8 +77,9 @@ public class CityBoundsFactory {
 
 	private UndirectedGraph<Point2D, Segment2D> bufferBorderToGraph(CachedCellSet bufferBorder) {
 		UndirectedGraph<Point2D, Segment2D> graph = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
-		BiMap<Cell, Point2D> cell2PointMap = HashBiMap.create();
+
 		ImmutableSet<Cell> borderCells = bufferBorder.toSet();
+		BiMap<Cell, Point2D> cell2PointMap = HashBiMap.create();
 		for (Cell cell : borderCells) {
 			cell2PointMap.put(cell, new Point2D(cell.x, cell.y));
 		}

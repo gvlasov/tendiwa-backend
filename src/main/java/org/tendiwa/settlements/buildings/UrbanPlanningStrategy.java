@@ -1,5 +1,6 @@
 package org.tendiwa.settlements.buildings;
 
+import com.google.common.collect.ImmutableMap;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import org.jgrapht.EdgeFactory;
@@ -8,6 +9,7 @@ import org.jgrapht.alg.HopcroftKarpBipartiteMatching;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.graphs.algorithms.jerrumSinclair.QuasiJerrumSinclairMarkovChain;
+import org.tendiwa.math.IntersectingSetsFiller;
 import org.tendiwa.settlements.RectangleWithNeighbors;
 import org.tendiwa.terrain.WorldGenerationException;
 
@@ -180,7 +182,9 @@ final class UrbanPlanningStrategy {
 		int numberOfAllLots = lots.size();
 		for (RectangleWithNeighbors lot : lots) {
 			// Lots that are already present in partition2 will just not be added.
-			partition2.add(lot);
+			if (partition2.add(lot)) {
+				bipartiteGraph.addVertex(lot);
+			}
 		}
 
 		for (int i = lotsClaimed; i < numberOfAllLots; i++) {
@@ -250,24 +254,40 @@ final class UrbanPlanningStrategy {
 	private void putArbitraryAssignments(
 		Map<RectangleWithNeighbors, Architecture> answer
 	) {
-		TObjectIntMap<ArchitecturePolicy> policiesThatNeedLot = preparePoliciesThatNeedLots(possiblePlaces);
-		while (!policiesThatNeedLot.isEmpty()) {
-			boolean found = false;
-			for (RectangleWithNeighbors lot : lots) {
-				ArchitecturePolicy policyThatNeedsLot = chooseRandomPolicyThatNeedsLot(policiesThatNeedLot);
-				if (!usedLots.contains(lot)) {
-					found = true;
-					usedLots.add(lot);
-					answer.put(lot, architecture.get(policyThatNeedsLot));
-					if (policiesThatNeedLot.get(policyThatNeedsLot) == 1) {
-						policiesThatNeedLot.remove(policyThatNeedsLot);
-					} else {
-						policiesThatNeedLot.adjustValue(policyThatNeedsLot, -1);
-					}
-				}
-			}
-			assert found;
+		Map<Set<RectangleWithNeighbors>, ArchitecturePolicy> sizesOfSubsets = new IdentityHashMap<>(possiblePlaces.size());
+		for (ArchitecturePolicy policy : possiblePlaces.keySet()) {
+			sizesOfSubsets.put(possiblePlaces.get(policy), policy);
 		}
+
+		ImmutableMap<RectangleWithNeighbors, Set<RectangleWithNeighbors>> map = new IntersectingSetsFiller<>(
+			lots,
+			possiblePlaces.values(),
+			a -> sizesOfSubsets.get(a).maxInstances,
+			random
+		).getAnswer();
+		for (RectangleWithNeighbors lot : map.keySet()) {
+			answer.put(lot, architecture.get(sizesOfSubsets.get(map.get(lot))));
+		}
+//
+//
+//		TObjectIntMap<ArchitecturePolicy> policiesThatNeedLot = preparePoliciesThatNeedLots(possiblePlaces);
+//		while (!policiesThatNeedLot.isEmpty()) {
+//			boolean found = false;
+//			for (RectangleWithNeighbors lot : lots) {
+//				ArchitecturePolicy policyThatNeedsLot = chooseRandomPolicyThatNeedsLot(policiesThatNeedLot);
+//				if (!usedLots.contains(lot)) {
+//					found = true;
+//					usedLots.add(lot);
+//					answer.put(lot, architecture.get(policyThatNeedsLot));
+//					if (policiesThatNeedLot.get(policyThatNeedsLot) == 1) {
+//						policiesThatNeedLot.remove(policyThatNeedsLot);
+//					} else {
+//						policiesThatNeedLot.adjustValue(policyThatNeedsLot, -1);
+//					}
+//				}
+//			}
+//			assert found;
+//		}
 	}
 
 	private TObjectIntMap<ArchitecturePolicy> preparePoliciesThatNeedLots(

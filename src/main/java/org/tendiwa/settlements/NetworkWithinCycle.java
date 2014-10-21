@@ -7,15 +7,12 @@ import com.vividsolutions.jts.geom.Coordinate;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.graph.UnmodifiableUndirectedGraph;
-import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Vectors2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.graphs.MinimalCycle;
 
-import java.awt.Color;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -236,7 +233,7 @@ public final class NetworkWithinCycle {
 			}
 		}
 		Set<DirectionFromPoint> filamentEnds = new HashSet<>();
-		assert !nodeQueue.isEmpty();
+//		assert !nodeQueue.isEmpty();
 		while (!nodeQueue.isEmpty()) {
 			DirectionFromPoint node = nodeQueue.removeLast();
 			boolean addedAnySegments = false;
@@ -385,9 +382,7 @@ public final class NetworkWithinCycle {
 		double dy = roadLength * Math.sin(direction);
 		Point2D targetNode = new Point2D(source.x + dx, source.y + dy);
 		SnapEvent snapEvent = new SnapTest(snapSize, source, targetNode, relevantNetwork, holderOfSplitCycleEdges).snap();
-		if (source.equals(snapEvent.targetNode)) {
-			assert false;
-		}
+		assert !source.equals(snapEvent.targetNode);
 		switch (snapEvent.eventType) {
 			case NO_SNAP:
 				assert targetNode == snapEvent.targetNode;
@@ -532,11 +527,6 @@ public final class NetworkWithinCycle {
 		}
 		boolean a = addRoad(road.start, point);
 		boolean b = addRoad(point, road.end);
-		if (a != b) {
-			TestCanvas.canvas.draw(new Segment2D(road.start, point), DrawingSegment2D.withColor(a ? Color.red : Color.blue));
-			TestCanvas.canvas.draw(new Segment2D(point, road.end), DrawingSegment2D.withColor(b ? Color.red : Color
-				.blue));
-		}
 		if (cycleNodes.contains(road.start) && cycleNodes.contains(road.end)) {
 			cycleNodes.add(point);
 			outerPointsBuilder.add(point);

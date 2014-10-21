@@ -41,6 +41,11 @@ public class ScatteredCellSet implements FiniteCellSet {
         }
         cells = builder.build();
     }
+	public ScatteredCellSet(Iterable<Cell> cells) {
+		ImmutableSet.Builder<Cell> builder = ImmutableSet.builder();
+		builder.addAll(cells);
+		this.cells  = builder.build();
+	}
 
 
     @Override

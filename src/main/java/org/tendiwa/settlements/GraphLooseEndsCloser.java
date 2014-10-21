@@ -33,7 +33,6 @@ final class GraphLooseEndsCloser {
 		double snapSize,
 		Set<DirectionFromPoint> filamentEnds
 	) {
-
 		this.sourceGraph = sourceGraph;
 		this.snapSize = snapSize;
 		this.filamentEnds = filamentEnds == null ? createFilamentEnds(sourceGraph) : filamentEnds;
@@ -104,6 +103,7 @@ final class GraphLooseEndsCloser {
 				sourceGraph.addVertex(test.targetNode);
 				sourceGraph.addEdge(end.node, test.targetNode);
 				sourceGraph.addEdge(test.road.start, test.targetNode);
+				assert !test.road.end.equals(test.targetNode) : test.road.end;
 				sourceGraph.addEdge(test.road.end, test.targetNode);
 				break;
 			case NO_NODE:

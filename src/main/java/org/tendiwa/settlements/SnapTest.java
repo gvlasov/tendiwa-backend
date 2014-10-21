@@ -5,6 +5,7 @@ import org.tendiwa.core.meta.Range;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.RayIntersection;
 import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.Vectors2D;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -14,10 +15,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * A test that checks if a 2d segment defined by a start and an end points snaps to any vertex or edge of a planar
+ * Checks if a 2d segment defined by a start and an end points snaps to any vertex or edge of a planar
  * graph.
  */
-public class SnapTest {
+final class SnapTest {
 	private final double snapSize;
 	private final Point2D sourceNode;
 	private Point2D targetNode;
@@ -25,6 +26,23 @@ public class SnapTest {
 	private final HolderOfSplitCycleEdges holderOfSplitCycleEdges;
 	private double minR;
 
+	/**
+	 * Checks if a 2d segment defined by a start and an end points snaps to any vertex or edge of a planar
+	 * graph.
+	 *
+	 * @param snapSize
+	 * 	Radius of snapping. If {@code targetNode} has any vertices or edges in this radius,
+	 * 	it will be snapped to the closest of such vertices and edges. If this is less than {@link
+	 * 	org.tendiwa.geometry.Vectors2D#EPSILON}, then it is set to that constant.
+	 * @param sourceNode
+	 * 	Start point of a 2d segment.
+	 * @param targetNode
+	 * 	End point of a 2d segment.
+	 * @param relevantRoadNetwork
+	 * 	A planar graph whose edges and vertices are tested for proximity to a 2d segment from {@code sourceNode} to
+	 * 	{@code targetNode}.
+	 * @param holderOfSplitCycleEdges
+	 */
 	SnapTest(
 		double snapSize,
 		Point2D sourceNode,
@@ -32,7 +50,7 @@ public class SnapTest {
 		UndirectedGraph<Point2D, Segment2D> relevantRoadNetwork,
 		HolderOfSplitCycleEdges holderOfSplitCycleEdges
 	) {
-		this.snapSize = snapSize;
+		this.snapSize = Math.max(snapSize, Vectors2D.EPSILON);
 		this.sourceNode = sourceNode;
 		this.targetNode = targetNode;
 		this.relevantRoadNetwork = relevantRoadNetwork;
@@ -52,16 +70,7 @@ public class SnapTest {
 		}
 		Collection<Segment2D> roadsToTest = findSegmentsToTest(sourceNode, targetNode, snapSize);
 		Point2D snapNode = null;
-		Set<Point2D> verticesToTest = new HashSet<>();
-		for (Segment2D segment : roadsToTest) {
-			// Individual vertices will be added only once
-			if (!segment.start.equals(sourceNode) && !segment.end.equals(sourceNode)) {
-				assert !segment.start.equals(sourceNode);
-				assert !segment.end.equals(sourceNode);
-				verticesToTest.add(segment.start);
-				verticesToTest.add(segment.end);
-			}
-		}
+		Set<Point2D> verticesToTest = findEndpointsToTestForNodeSnap(roadsToTest);
 		for (Point2D vertex : verticesToTest) {
 //            if (isNeighborOfSourceNode(vertex) && minimalCycle
 //                    .vertexList().contains(vertex)) {
@@ -76,7 +85,7 @@ public class SnapTest {
 		SnapEvent snapEvent = null;
 		if (snapNode != null) {
 			snapEvent = new SnapEvent(snapNode, SnapEventType.NODE_SNAP, null);
-			setTargetNode(snapNode);
+//			setTargetNode(snapNode);
 		}
 		for (Segment2D road : roadsToTest) {
 			if (isRoadSticksToSegment(road)) {
@@ -86,7 +95,7 @@ public class SnapTest {
 				RayIntersection intersection = new RayIntersection(
 					sourceNode,
 					targetNode,
-					// TODO: Maybe there should be just road, since it is a segment itself?
+					// TODO: Maybe there should be just a road, since it is a segment itself?
 					new Segment2D(road.start, road.end)
 				);
 				if (intersection.r >= minR || intersection.r < 0) {
@@ -99,7 +108,11 @@ public class SnapTest {
 					if (isIntersectionOnSourcePoint) {
 						return new SnapEvent(null, SnapEventType.NO_NODE, null);
 					}
+					if (snapEvent != null && intersectionPoint.equals(snapEvent.targetNode)) {
+						continue;
+					}
 					assert !iDontRememberWhatItAsserts(road, intersectionPoint);
+					assert !intersectionPoint.equals(road.end) : road.end.hashCode() + " it should have been a point snap";
 					snapEvent = new SnapEvent(
 						intersectionPoint,
 						SnapEventType.ROAD_SNAP,
@@ -125,7 +138,7 @@ public class SnapTest {
 			if (nodePosition.r < 0 || nodePosition.r > 1) {
 				continue;
 			}
-			if (nodePosition.distance > snapSize) {
+			if (Math.abs(nodePosition.distance - snapSize) > Vectors2D.EPSILON) {
 				continue;
 			}
 			Point2D targetPoint = new Point2D(
@@ -142,8 +155,29 @@ public class SnapTest {
 		return new SnapEvent(targetNode, SnapEventType.NO_SNAP, null);
 	}
 
+	/**
+	 * Among endpoints of {@code segments}, finds a set of vertices to test for a {@link org.tendiwa.settlements
+	 * .SnapEventType#NODE_SNAP} event.
+	 *
+	 * @param segments
+	 * @return
+	 */
+	private Set<Point2D> findEndpointsToTestForNodeSnap(Collection<Segment2D> segments) {
+		Set<Point2D> answer = new HashSet<>();
+		for (Segment2D segment : segments) {
+			// Individual vertices will be added only once
+			if (!segment.start.equals(sourceNode) && !segment.end.equals(sourceNode)) {
+				assert !segment.start.equals(sourceNode);
+				assert !segment.end.equals(sourceNode);
+				answer.add(segment.start);
+				answer.add(segment.end);
+			}
+		}
+		return answer;
+	}
+
 	private boolean iDontRememberWhatItAsserts(Segment2D road, Point2D intersectionPoint) {
-		// TODO: What it asserts?
+		// TODO: What the fuck it asserts?
 		return Math.abs(road.start.distanceTo(road.end) - road.start.distanceTo(intersectionPoint) - road
 			.end.distanceTo(intersectionPoint)) > 1;
 	}

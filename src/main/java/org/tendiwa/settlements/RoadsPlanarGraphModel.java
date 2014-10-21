@@ -7,15 +7,16 @@ import gnu.trove.map.hash.TObjectIntHashMap;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.graph.UndirectedSubgraph;
-import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingCell;
-import org.tendiwa.drawing.extensions.DrawingGraph;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.extensions.*;
-import org.tendiwa.graphs.*;
+import org.tendiwa.geometry.extensions.PlanarGraphEdgesSelfIntersection;
+import org.tendiwa.geometry.extensions.PlanarGraphs;
+import org.tendiwa.geometry.extensions.Point2DRowComparator;
+import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
+import org.tendiwa.graphs.Filament;
+import org.tendiwa.graphs.MinimalCycle;
+import org.tendiwa.graphs.MinimumCycleBasis;
 
-import java.awt.Color;
 import java.util.*;
 
 import static java.util.stream.Collectors.toList;
@@ -183,10 +184,10 @@ public final class RoadsPlanarGraphModel {
 		if (!PlanarGraphEdgesSelfIntersection.test(lowLevelRoadGraph.edgeSet())) {
 			ImmutableCollection<Point2D> allIntersections = PlanarGraphEdgesSelfIntersection
 				.findAllIntersections(lowLevelRoadGraph.edgeSet());
-			for (Point2D point : allIntersections) {
-				TestCanvas.canvas.draw(point.toCell(), DrawingCell.withColorAndSize(Color.RED, 4));
-			}
-			TestCanvas.canvas.draw(lowLevelRoadGraph, DrawingGraph.withColor(Color.blue));
+//			for (Point2D point : allIntersections) {
+//				TestCanvas.canvas.draw(point.toCell(), DrawingCell.withColorAndSize(Color.RED, 4));
+//			}
+//			TestCanvas.canvas.draw(lowLevelRoadGraph, DrawingGraph.withColor(Color.blue));
 			throw new IllegalArgumentException("Graph intersects itself");
 		}
 

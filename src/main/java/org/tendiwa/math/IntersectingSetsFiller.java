@@ -24,14 +24,17 @@ public class IntersectingSetsFiller<T> {
 	private final TObjectIntMap<Set<T>> positionsLeft;
 	private final Random random;
 	private final ImmutableMap<T, Set<T>> answer;
-	private int positionsLeftSum;
 	private final Class<?> elementSetClass;
 
 	/**
 	 * @param superset
 	 * 	Set <i>A</i> of <i>n</i> distinguishable objects.
+	 * @param subsets
+	 * 	Subsets of {@code superset}.
 	 * @param subsetsToCaps
-	 * 	A map from sets <i>B<sub>i</sub></i> to their caps <i>c<sub>i</sub></i>.
+	 * 	A function that maps from sets <i>B<sub>i</sub></i> to their caps <i>c<sub>i</sub></i>.
+	 * @param random
+	 * 	Source of randomness. Only one integer is taken from it by this algorithm.
 	 * 	<p>
 	 * 	In order for the result of this
 	 * 	algorithm to be deterministic, this argument should contain {@link java.util.Set}s with deterministic
@@ -39,7 +42,7 @@ public class IntersectingSetsFiller<T> {
 	 */
 	public IntersectingSetsFiller(
 		Set<T> superset,
-		Set<Set<T>> subsets,
+		Collection<? extends Set<T>> subsets,
 		ToIntFunction<Set<T>> subsetsToCaps,
 		Random random
 	) {
@@ -50,11 +53,9 @@ public class IntersectingSetsFiller<T> {
 			subsets.size()
 		);
 		elementSetClass = Set.class;
-		positionsLeftSum = 0;
 		for (Set<T> subset : subsets) {
 			int value = subsetsToCaps.applyAsInt(subset);
 			positionsLeft.put(subset, value);
-			positionsLeftSum += value;
 		}
 
 		Map<T, Set<T>[]> containing = prepareContainingMap(superset, subsets);
@@ -74,7 +75,6 @@ public class IntersectingSetsFiller<T> {
 				continue;
 			}
 			positionsLeft.adjustValue(subset, -1);
-			positionsLeftSum--;
 			builder.put(element, subset);
 		}
 		answer = builder.build();
@@ -91,6 +91,10 @@ public class IntersectingSetsFiller<T> {
 		for (Set<T> set : whereContained) {
 			elementsLeft += positionsLeft.get(set);
 		}
+		if (elementsLeft == 0) {
+			return -1;
+		}
+		assert elementsLeft > 0;
 		elementsLeft = random.nextInt(elementsLeft);
 		int i;
 		for (i = 0; i < whereContained.length; i++) {
@@ -113,7 +117,7 @@ public class IntersectingSetsFiller<T> {
 	 * 	Subsets.
 	 * @return A mapping from contents to subsets.
 	 */
-	private Map<T, Set<T>[]> prepareContainingMap(Set<T> contents, Set<Set<T>> subsets) {
+	private Map<T, Set<T>[]> prepareContainingMap(Set<T> contents, Collection<? extends Set<T>> subsets) {
 		Map<T, Set<T>[]> containing = new LinkedHashMap<>(contents.size());
 		for (T element : contents) {
 			LinkedHashSet<Set<T>> elementSubsets = new LinkedHashSet<>();
@@ -138,7 +142,7 @@ public class IntersectingSetsFiller<T> {
 	 * 	A set of all available objects.
 	 * @return true if contents contains all elements of each set in {@code subsets}, false otherwise.
 	 */
-	private boolean areSubsets(Set<Set<T>> subsets, Set<T> contents) {
+	private boolean areSubsets(Collection<? extends Set<T>> subsets, Set<T> contents) {
 		for (Set<T> subset : subsets) {
 			if (!contents.containsAll(subset)) {
 				return false;

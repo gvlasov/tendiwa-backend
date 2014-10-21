@@ -18,10 +18,10 @@ public class IntersectingSetsFillerTest {
 			add(a);
 			add(b);
 			add(c);
-			add(d);
-			add(e);
-			add(f);
-			add(g);
+//			add(d);
+//			add(e);
+//			add(f);
+//			add(g);
 		}
 	};
 	Set<Set<String>> subsets = new HashSet<Set<String>>() {
@@ -31,27 +31,27 @@ public class IntersectingSetsFillerTest {
 					add(a);
 					add(b);
 					add(c);
-					add(f);
+//					add(f);
 				}
 			});
-			add(new HashSet<String>() {
-				{
-					add(c);
-					add(d);
-					add(g);
-					add(f);
-				}
-			});
-			add(new HashSet<String>() {
-				{
-					add(g);
-					add(a);
-					add(c);
-					add(b);
-					add(e);
-					add(f);
-				}
-			});
+//			add(new HashSet<String>() {
+//				{
+//					add(c);
+//					add(d);
+//					add(g);
+//					add(f);
+//				}
+//			});
+//			add(new HashSet<String>() {
+//				{
+//					add(g);
+//					add(a);
+//					add(c);
+//					add(b);
+//					add(e);
+//					add(f);
+//				}
+//			});
 		}
 	};
 
@@ -61,7 +61,7 @@ public class IntersectingSetsFillerTest {
 			superset,
 			subsets,
 			(set) -> set.size() - 1,
-			new Random(3)
+			new Random(1)
 		).getAnswer();
 		Map<Set<String>, Set<String>> map = new HashMap<>();
 		for (Map.Entry<String, Set<String>> e : answer.entrySet()) {
@@ -70,7 +70,6 @@ public class IntersectingSetsFillerTest {
 			}
 			map.get(e.getValue()).add(e.getKey());
 		}
-
 		System.out.println(map);
 	}
 
