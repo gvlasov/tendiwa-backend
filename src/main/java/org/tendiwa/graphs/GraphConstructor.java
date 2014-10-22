@@ -110,7 +110,7 @@ public class GraphConstructor<V, E> {
 	}
 
 	public GraphConstructor<V, E> cycleOfVertices(List<V> vertices) {
-		int firstAlias = lastVertexAlias == Integer.MIN_VALUE ? 0 : lastVertexAlias;
+		int firstAlias = lastVertexAlias == Integer.MIN_VALUE ? 0 : lastVertexAlias+1;
 		int i = 0;
 		for (V v : vertices) {
 			vertex(firstAlias + i, v);

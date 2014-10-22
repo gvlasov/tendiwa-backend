@@ -3,6 +3,8 @@ package org.tendiwa.settlements.utils;
 import com.google.common.collect.*;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.alg.ConnectivityInspector;
+import org.jgrapht.graph.Subgraph;
+import org.jgrapht.graph.UndirectedSubgraph;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Vectors2D;
@@ -27,14 +29,36 @@ public final class StreetsDetector {
 	 *
 	 * @param cityGraph
 	 * 	A planar graph.
-	 * @return
+	 * @return Streets found in a road graph.
 	 */
 	public static Set<ImmutableList<Point2D>> detectStreets(UndirectedGraph<Point2D, Segment2D> cityGraph) {
-		return new StreetsDetector(cityGraph).compute();
+		List<Set<Point2D>> connectivityComponents = new ConnectivityInspector<>(cityGraph).connectedSets();
+		ImmutableSet.Builder<ImmutableList<Point2D>> builder = ImmutableSet.builder();
+		for (Set<Point2D> component : connectivityComponents) {
+			UndirectedSubgraph<Point2D, Segment2D> componentSubgraph = new UndirectedSubgraph<>(
+				cityGraph,
+				component,
+				findEdgesOfComponent(cityGraph, component)
+			);
+			Set<ImmutableList<Point2D>> streets = new StreetsDetector(componentSubgraph).compute();
+			builder.addAll(streets);
+		}
+		return builder.build();
+	}
+
+	private static Set<Segment2D> findEdgesOfComponent(UndirectedGraph<Point2D, Segment2D> cityGraph, Set<Point2D> component) {
+		ImmutableSet.Builder<Segment2D> builder = ImmutableSet.builder();
+		for (Point2D vertex : component) {
+			for (Segment2D edge : cityGraph.edgesOf(vertex)) {
+				if (component.contains(edge.start) && component.contains(edge.end)) {
+					builder.add(edge);
+				}
+			}
+		}
+		return builder.build();
 	}
 
 	private StreetsDetector(UndirectedGraph<Point2D, Segment2D> cityGraph) {
-		assert new ConnectivityInspector<>(cityGraph).isGraphConnected();
 		this.cityGraph = cityGraph;
 		this.usedVertices = new HashSet<>(cityGraph.vertexSet().size());
 	}
@@ -411,6 +435,11 @@ public final class StreetsDetector {
 						nextNeighbor = nextEdge.end;
 						break;
 					}
+				}
+				if (nextNeighbor == vertex) {
+					// If we did a full circle to the vertex we started with,
+					// then break the loop
+					break;
 				}
 			}
 			if (cityGraph.degreeOf(nextNeighbor) == 1) {
