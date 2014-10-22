@@ -173,7 +173,6 @@ public final class TestCanvas implements DrawableInto {
 		setLayer(DEFAULT_LAYER);
 		how.draw(what, this);
 		panel.repaint();
-		throw new RuntimeException();
 	}
 
 	public <T> void drawAll(Collection<T> whats, DrawingAlgorithm<? super T> how) {

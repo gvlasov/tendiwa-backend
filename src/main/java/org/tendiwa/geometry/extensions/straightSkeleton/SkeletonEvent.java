@@ -2,6 +2,7 @@ package org.tendiwa.geometry.extensions.straightSkeleton;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
+import org.tendiwa.drawing.DrawableInto;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Point2D;
 
@@ -18,7 +19,7 @@ public class SkeletonEvent extends Point2D implements Comparable<SkeletonEvent> 
 	final OppositeEdgeStartMovement oppositeEdgeEndMovement;
 	Node oppositeEdgeStart;
 	Node oppositeEdgeEnd;
-	private final TestCanvas canvas;
+	private final DrawableInto canvas;
 	final Node va;
 	final Node vb;
 	static Iterator<Color> colors = Iterators.cycle(Color.orange, Color.blue, Color.magenta, Color.black);
@@ -31,7 +32,7 @@ public class SkeletonEvent extends Point2D implements Comparable<SkeletonEvent> 
 		Node va,
 		Node vb,
 		EventType event,
-		TestCanvas canvas
+		DrawableInto canvas
 	) {
 		super(x, y);
 		this.oppositeEdgeStartMovement = oppositeEdgeStartMovement;

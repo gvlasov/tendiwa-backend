@@ -1,5 +1,6 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
+import org.tendiwa.drawing.DrawableInto;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Segment2D;
@@ -15,7 +16,7 @@ public class OppositeEdgeStartMovement {
 	private Node start;
 	private Node end;
 	private List<SkeletonEvent> startObservers = new ArrayList<>(1);
-	static TestCanvas canvas;
+	static DrawableInto canvas;
 	private List<SkeletonEvent> endObservers = new ArrayList<>(1);
 
 	public OppositeEdgeStartMovement(Node start) {

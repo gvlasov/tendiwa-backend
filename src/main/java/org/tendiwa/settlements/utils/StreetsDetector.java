@@ -2,12 +2,17 @@ package org.tendiwa.settlements.utils;
 
 import com.google.common.collect.*;
 import org.jgrapht.UndirectedGraph;
+import org.jgrapht.alg.ConnectivityInspector;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Vectors2D;
 
 import java.util.*;
 
+/**
+ * Finds chains of {@link org.tendiwa.geometry.Segment2D} that are to form {@link org.tendiwa.settlements.streets.Street}s
+ * among edges of a planar graph.
+ */
 public final class StreetsDetector {
 	private static final Object JOINING_PROHIBITED = Boolean.TRUE;
 	private final UndirectedGraph<Point2D, Segment2D> cityGraph;
@@ -17,11 +22,19 @@ public final class StreetsDetector {
 	private final HashSet<Segment2D> usedEdges = new HashSet<>();
 	private final Table<Segment2D, Point2D, Object> joiningProhibited = HashBasedTable.create();
 
+	/**
+	 * Finds streets made of edges of a planar graph.
+	 *
+	 * @param cityGraph
+	 * 	A planar graph.
+	 * @return
+	 */
 	public static Set<ImmutableList<Point2D>> detectStreets(UndirectedGraph<Point2D, Segment2D> cityGraph) {
 		return new StreetsDetector(cityGraph).compute();
 	}
 
 	private StreetsDetector(UndirectedGraph<Point2D, Segment2D> cityGraph) {
+		assert new ConnectivityInspector<>(cityGraph).isGraphConnected();
 		this.cityGraph = cityGraph;
 		this.usedVertices = new HashSet<>(cityGraph.vertexSet().size());
 	}

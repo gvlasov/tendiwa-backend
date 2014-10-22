@@ -3,6 +3,7 @@ package org.tendiwa.geometry.extensions;
 import org.junit.Test;
 import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.FiniteCellSet;
+import org.tendiwa.geometry.extensions.intershapeNetwork.IntershapeNetwork;
 
 import java.util.List;
 
@@ -24,9 +25,8 @@ public class IntershapeNetworkTest {
 			.withWalkableCells(
 				(x, y) -> rectangle(10, 10).contains(x, y)
 			)
-			.getGraph()
 			.edgeSet()
 			.size();
-		assertTrue(String.valueOf(numberOfEdges), numberOfEdges > 3);
+		assertTrue(String.valueOf(numberOfEdges), numberOfEdges == 3);
 	}
 }

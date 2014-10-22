@@ -31,7 +31,7 @@
     <orderEntry type="library" name="Maven: kendzi.math:kendzi-straight-skeleton:0.0.10-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: kendzi.math:kendzi-math-geometry:0.0.10-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: com.googlecode.efficient-java-matrix-library:ejml:0.20" level="project" />
-    <orderEntry type="library" name="Maven: log4j:log4j:1.2.12" level="project" />
+    <orderEntry type="library" name="Maven: log4j:log4j:1.2.16" level="project" />
     <orderEntry type="library" name="Maven: java3d:vecmath:1.3.1" level="project" />
     <orderEntry type="library" name="Maven: kendzi.math:kendzi-math-geometry-debug:0.0.10-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.tendiwa:twakStraightSkeleton:1.0-SNAPSHOT" level="project" />

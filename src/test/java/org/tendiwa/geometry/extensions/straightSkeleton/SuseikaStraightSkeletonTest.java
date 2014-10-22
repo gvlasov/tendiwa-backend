@@ -1,6 +1,5 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
-import org.junit.Test;
 import org.tendiwa.geometry.Point2D;
 
 import java.util.ArrayList;
@@ -9,8 +8,14 @@ import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
 
+/**
+ * This is a test for class {@link org.tendiwa.geometry.extensions.straightSkeleton.SuseikaStraightSkeleton} that has
+ * been written well, but never used because it works only for a subset of all problems it is supposed to solve. That
+ * clas and this test are not deleted just because I don't know if these will be useful in future or not.
+ *
+ * @author suseika
+ */
 public class SuseikaStraightSkeletonTest {
-	@Test
 	public void nonConvexPolygonWithoutHoles() {
 		List<Point2D> vertices = new ArrayList<Point2D>() {{
 			add(new Point2D(4, 30));
@@ -35,8 +40,10 @@ public class SuseikaStraightSkeletonTest {
 		new SuseikaStraightSkeleton(vertices);
 	}
 
-	@Test
-	public void testManySimilarPolygons() {
+	/**
+	 * Mutates a given polygon, testing with each slightly different polygon that the algorithm runs without any error.
+	 */
+	public void manySimilarPolygons() {
 		List<Point2D> points = new ArrayList<Point2D>() {{
 			add(new Point2D(11, 14));
 			add(new Point2D(26, 61));
@@ -56,16 +63,14 @@ public class SuseikaStraightSkeletonTest {
 			add(new Point2D(89, 54));
 			add(new Point2D(100, 13));
 		}};
-		IntStream.range(0, 180).forEach(i -> {
-			new SuseikaStraightSkeleton(
-				points.stream().map(p -> {
-					double angle = Math.PI * 2 / (180 / (points.indexOf(p) % 6 + 1)) * i;
-					return new Point2D(
-						p.x + Math.cos(angle) * 6,
-						p.y + Math.sin(angle) * 6
-					);
-				}).collect(toList())
-			);
-		});
+		IntStream.range(0, 180).forEach(i -> new SuseikaStraightSkeleton(
+			points.stream().map(p -> {
+				double angle = Math.PI * 2 / (180 / (points.indexOf(p) % 6 + 1)) * i;
+				return new Point2D(
+					p.x + Math.cos(angle) * 6,
+					p.y + Math.sin(angle) * 6
+				);
+			}).collect(toList())
+		));
 	}
 }

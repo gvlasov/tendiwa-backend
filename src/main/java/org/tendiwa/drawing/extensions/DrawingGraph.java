@@ -43,7 +43,7 @@ public class DrawingGraph {
 		};
 	}
 
-	public static DrawingAlgorithm<? super UndirectedGraph<Point2D, org.tendiwa.geometry.Segment2D>> withColor(Color color) {
+	public static DrawingAlgorithm<? super UndirectedGraph<Point2D, Segment2D>> withColor(Color color) {
 		return withColorAndVertexSize(color, 6);
 	}
 

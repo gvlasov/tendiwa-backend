@@ -1,5 +1,6 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
+import org.tendiwa.drawing.DrawableInto;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
@@ -18,7 +19,7 @@ class ListOfActiveVertices {
 	 * @param vertices
 	 * 	List of points going counter-clockwise.
 	 */
-	ListOfActiveVertices(List<Point2D> vertices, TestCanvas canvas) {
+	ListOfActiveVertices(List<Point2D> vertices, DrawableInto canvas) {
 		vertices = removeVerticesOnLineBetweenNeighbors(vertices);
 		edges = createEdgesBetweenVertices(vertices, canvas);
 		assert vertices.size() == edges.size();
@@ -46,7 +47,7 @@ class ListOfActiveVertices {
 		nodes.getFirst().connectWithPrevious(nodes.getLast());
 	}
 
-	private List<Segment2D> createEdgesBetweenVertices(List<Point2D> vertices, TestCanvas canvas) {
+	private List<Segment2D> createEdgesBetweenVertices(List<Point2D> vertices, DrawableInto canvas) {
 		int l = vertices.size();
 		List<Segment2D> edges = new ArrayList<>(l);
 		for (int i = 0; i < l; i++) {

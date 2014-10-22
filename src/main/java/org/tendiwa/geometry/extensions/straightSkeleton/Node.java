@@ -1,6 +1,7 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
 import com.google.common.collect.ImmutableList;
+import org.tendiwa.drawing.DrawableInto;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
@@ -18,7 +19,7 @@ class Node implements Iterable<Node> {
 	Node next;
 	Node previous;
 	final Point2D vertex;
-	static TestCanvas canvas;
+	static DrawableInto canvas;
 
 	Node(Segment2D previousEdge, Segment2D currentEdge, Point2D point) {
 		assert !previousEdge.equals(currentEdge);

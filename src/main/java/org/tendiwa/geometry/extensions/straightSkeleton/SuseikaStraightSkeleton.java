@@ -6,9 +6,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
+import org.tendiwa.drawing.DrawableInto;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingPoint2D;
 import org.tendiwa.drawing.extensions.DrawingSegment2D;
+import org.tendiwa.drawing.extensions.FakeCanvas;
 import org.tendiwa.geometry.*;
 import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.geometry.RayIntersection;
@@ -24,7 +26,8 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 
 	private final ListOfActiveVertices lav;
 	private SkeletonEvent watchEvent;
-	TestCanvas canvas = new TestCanvas(1, 200, 400);
+	//	TestCanvas canvas = new TestCanvas(1, 200, 400);
+	DrawableInto canvas = new FakeCanvas();
 	private final PriorityQueue<SkeletonEvent> queue;
 	public final Multimap<Point2D, Point2D> arcs = HashMultimap.create();
 	static final double EPSILON = 1e-10;
@@ -231,7 +234,9 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 			}
 		}
 		assert !arcs.isEmpty();
-		canvas.close();
+		if (canvas instanceof TestCanvas) {
+			((TestCanvas) canvas).close();
+		}
 	}
 
 	private void outputPoints(List<Point2D> vertices) {

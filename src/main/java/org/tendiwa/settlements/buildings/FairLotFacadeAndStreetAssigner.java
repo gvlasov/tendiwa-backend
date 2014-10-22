@@ -4,9 +4,6 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.Multimap;
 import org.tendiwa.core.CardinalDirection;
-import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingRectangle;
-import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Recs;
 import org.tendiwa.geometry.Rectangle;
@@ -14,7 +11,6 @@ import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.settlements.RectangleWithNeighbors;
 import org.tendiwa.settlements.streets.LotStreetAssigner;
 
-import java.awt.Color;
 import java.util.*;
 
 /**
@@ -264,7 +260,7 @@ public final class FairLotFacadeAndStreetAssigner implements LotFacadeAssigner, 
 	 * 	Which streets are near which building lots.
 	 * @return
 	 */
-	public static LotFacadeAssigner create(LotsTouchingStreets lotsTouchingStreets) {
+	public static FairLotFacadeAndStreetAssigner create(LotsTouchingStreets lotsTouchingStreets) {
 		return new FairLotFacadeAndStreetAssigner(lotsTouchingStreets);
 	}
 

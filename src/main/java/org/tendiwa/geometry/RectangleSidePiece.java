@@ -162,7 +162,7 @@ public class RectangleSidePiece {
 			width = segment.getLength();
 			height = anotherDimensionLength;
 		}
-		return Recs.growFromPoint(
+		return Recs.growFromCell(
 			startPoint.getX(),
 			startPoint.getY(),
 			growDirection,

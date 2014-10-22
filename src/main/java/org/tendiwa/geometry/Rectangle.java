@@ -289,13 +289,13 @@ public class Rectangle implements Placeable, BoundedCellSet {
 	}
 
 	/**
-	 * Returns a Coordinate of Rectangle's middle point. If {@link Rectangle} has odd width or height, Coordinate will
-	 * be rounded up.
+	 * Returns a {@link Point2D} that is right in the middle of this Rectangle.
 	 *
+	 * @see #getCenter
 	 * @return
 	 */
 	public Point2D getCenterPoint() {
-		return new Point2D(x + ((double)width / 2), ((double)y + height / 2));
+		return new Point2D(x + ((double) width / 2), (y + ((double) height / 2)));
 	}
 
 	public int getCenterX() {
@@ -519,13 +519,19 @@ public class Rectangle implements Placeable, BoundedCellSet {
 		);
 	}
 
-	public Segment getIntersectionSegment(Rectangle r) {
+	/**
+	 * Computes a projection of rectangle {@code r} on this rectangle's closest side.
+	 *
+	 * @param r
+	 * @return A segment with all its cells inside this rectangle.
+	 */
+	public Segment getProjectionSegment(Rectangle r) {
 		if (this == r) {
 			throw new IllegalArgumentException("You can't get intersection segment of a rectanlge with itself");
 		}
 		assert !this.intersects(r);
 		if (overlapsByStaticRange(r, Orientation.HORIZONTAL)) {
-			int y = this.y < r.y ? this.y : this.y + this.height - 1;
+			int y = this.y < r.y ? this.y + this.height - 1 : this.y;
 			Range range = Range.intersectionOf(
 				x, x + width - 1,
 				r.x, r.x + r.width - 1
@@ -533,7 +539,7 @@ public class Rectangle implements Placeable, BoundedCellSet {
 			return new Segment(range.min, y, range.getLength(), Orientation.HORIZONTAL);
 		}
 		if (overlapsByStaticRange(r, Orientation.VERTICAL)) {
-			int x = this.x < r.x ? this.x : this.x + this.width - 1;
+			int x = this.x < r.x ? this.x + this.width - 1 : this.x;
 			Range range = Range.intersectionOf(
 				y, y + height - 1,
 				r.y, r.y + r.height - 1

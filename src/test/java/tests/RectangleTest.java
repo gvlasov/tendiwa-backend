@@ -3,12 +3,11 @@ package tests;
 import org.junit.Test;
 import org.tendiwa.core.Directions;
 import org.tendiwa.core.Orientation;
-import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.*;
 
 import java.util.ArrayList;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.tendiwa.geometry.DSL.*;
 
 public class RectangleTest {
@@ -44,33 +43,34 @@ public class RectangleTest {
 	public void testGrowFromPoint() {
 		assertEquals(
 			new Rectangle(0, 0, 10, 10),
-			Recs.growFromPoint(0, 0, Directions.SE, 10, 10)
+			Recs.growFromCell(0, 0, Directions.SE, 10, 10)
 		);
 		assertEquals(
 			new Rectangle(11, 20, 10, 10),
-			Recs.growFromPoint(20, 20, Directions.SW, 10, 10)
+			Recs.growFromCell(20, 20, Directions.SW, 10, 10)
 		);
 		assertEquals(
 			new Rectangle(11, 11, 10, 10),
-			Recs.growFromPoint(20, 20, Directions.NW, 10, 10)
+			Recs.growFromCell(20, 20, Directions.NW, 10, 10)
 		);
 		assertEquals(
 			new Rectangle(20, 11, 10, 10),
-			Recs.growFromPoint(20, 20, Directions.NE, 10, 10)
+			Recs.growFromCell(20, 20, Directions.NE, 10, 10)
 		);
 
 	}
 
 	@Test
-	public void adjacencySegmentTest() {
+	public void projectRectangleOnAnotherRectangle() {
 		RectangleSystemBuilder builder = builder(0)
 			.place("one", rectangle(10, 20), atPoint(0, 0))
 			.place("two", rectangle(20, 15), near(LAST_RECTANGLE).fromSide(E).align(S).shift(4));
 		Rectangle rec1 = (Rectangle) builder.getByName("one");
 		Rectangle rec2 = (Rectangle) builder.getByName("two");
+		Segment projection = rec1.getProjectionSegment(rec2);
 		assertEquals(
-			new Segment(11, 9, 11, Orientation.VERTICAL),
-			rec1.getIntersectionSegment(rec2)
+			new Segment(9, 9, 11, Orientation.VERTICAL),
+			projection
 		);
 	}
 
@@ -81,13 +81,8 @@ public class RectangleTest {
 	public void intersectionBetween2RectanglesWhenOneIsInsideAnother() {
 		Rectangle r1 = new Rectangle(-10, -20, 50, 90);
 		Rectangle r2 = new Rectangle(10, 20, 30, 40);
-		Rectangle intersection = r1
-			.intersectionWith(r2)
-			.get();
-		assertEquals(
-			r2,
-			intersection
-		);
+		Rectangle intersection = r1.intersectionWith(r2).get();
+		assertEquals(r2, intersection);
 	}
 
 	/**
@@ -101,26 +96,26 @@ public class RectangleTest {
 	}
 
 	/**
-	 * Creates a rectangle using method {@link Recs#growFromPoint(int, int, org.tendiwa.core.OrdinalDirection, int,
+	 * Creates a rectangle using method {@link Recs#growFromCell(int, int, org.tendiwa.core.OrdinalDirection, int,
 	 * int)}.
 	 */
 	@Test
 	public void growFromPoint() {
 		assertEquals(
-			Recs.growFromPoint(0, 0, Directions.NE, 4, 7),
-			new Rectangle(0, -6, 4, 7)
+			new Rectangle(0, -6, 4, 7),
+			Recs.growFromCell(0, 0, Directions.NE, 4, 7)
 		);
 		assertEquals(
-			Recs.growFromPoint(0, 0, Directions.NW, 2, 1),
-			new Rectangle(-2, -1, 2, 1)
+			new Rectangle(-1, 0, 2, 1),
+			Recs.growFromCell(0, 0, Directions.NW, 2, 1)
 		);
 		assertEquals(
-			Recs.growFromPoint(0, 0, Directions.SW, 2, 3),
-			new Rectangle(-2, 0, 2, 3)
+			new Rectangle(-1, 0, 2, 3),
+			Recs.growFromCell(0, 0, Directions.SW, 2, 3)
 		);
 		assertEquals(
-			Recs.growFromPoint(0, 0, Directions.SE, 9, 3),
-			new Rectangle(0, 0, 9, 3)
+			new Rectangle(0, 0, 9, 3),
+			Recs.growFromCell(0, 0, Directions.SE, 9, 3)
 		);
 	}
 

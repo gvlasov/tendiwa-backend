@@ -78,7 +78,6 @@ public class Wave implements Iterable<Cell> {
     public BoundedCellSet asCellSet(Rectangle bounds) {
         Mutable2DCellSet answer = new Mutable2DCellSet(bounds);
         for (Cell cell : this) {
-            System.out.println("add " + cell);
             answer.add(cell);
         }
         return answer;

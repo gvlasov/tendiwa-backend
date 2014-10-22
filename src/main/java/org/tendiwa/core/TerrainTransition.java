@@ -138,7 +138,7 @@ private void drawNoSideCorner(Location location, TypePlaceableInCell from, Recta
 
 private void drawTwoSideCorner(Location location, TypePlaceableInCell from, Rectangle rectangle, int depth, OrdinalDirection corner) {
 	Cell cornerPoint = rectangle.getCorner(corner);
-	Rectangle cornerRec = Recs.growFromPoint(cornerPoint.getX(), cornerPoint.getY(), corner.opposite(), depth, depth);
+	Rectangle cornerRec = Recs.growFromCell(cornerPoint.getX(), cornerPoint.getY(), corner.opposite(), depth, depth);
 	location.square(cornerRec, from, true);
 }
 
@@ -168,7 +168,7 @@ private void drawSingleSideCorner(Location location, TypePlaceableInCell from, R
 			EntityPlacer.place(location.getActivePlane(), from, location.x + cornerFormingCell.getX(), location.y + cornerFormingCell.getY());
 		}
 	}
-	Rectangle cornerRectangle = Recs.growFromPoint(cornerPoint.getX(), cornerPoint.getY(), corner.opposite(), depth, depth);
+	Rectangle cornerRectangle = Recs.growFromCell(cornerPoint.getX(), cornerPoint.getY(), corner.opposite(), depth, depth);
 	cornerRectangle.getSideAsSegment(side);
 }
 

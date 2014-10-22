@@ -2,10 +2,7 @@ package org.tendiwa.geometry;
 
 import org.tendiwa.core.OrdinalDirection;
 import org.tendiwa.core.meta.Coordinate;
-import org.tendiwa.core.meta.Range;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -15,24 +12,32 @@ public final class Recs {
 	}
 
 	/**
-	 * A more convenient method for creating rectangles. Takes a point, places another point from ordinal direction
-	 * from
-	 * the initial point.
+	 * Takes a cell, and creates a Rectangle with one corner in this cell, and another corner in some other cell.
+	 * <p>
+	 * The advantage of this method over a plain {@link org.tendiwa.geometry.Rectangle} constructor is that this
+	 * method allows more intuitive descriptions of a rectangle (the constructor creates rectangles by their NW
+	 * corner, whereas with this method you can create a rectangle counting from any corner).
 	 *
 	 * @param x
-	 * 	Initial point
+	 * 	X-coordinate of the first corner.
 	 * @param y
-	 * 	Initial point
-	 * @param side
+	 * 	Y-coordinate of the first corner.
+	 * @param anotherCornerDirection
 	 * 	Location of the second point relatively from the initial point.
 	 * @param width
-	 * 	How far is the second point from the initial point on x-axis.
+	 * 	How far is the second point from the initial point on the x-axis.
 	 * @param height
-	 * 	How far is the second point from the initial point on y-axis.
-	 * @return New rectangle that grown from a point in certain direciton.
+	 * 	How far is the second point from the initial point on the y-axis.
+	 * @return A new rectangle grown from the point in the specified direction.
 	 */
-	public static Rectangle growFromPoint(int x, int y, OrdinalDirection side, int width, int height) {
-		switch (side) {
+	public static Rectangle growFromCell(
+		int x,
+		int y,
+		OrdinalDirection anotherCornerDirection,
+		int width,
+		int height
+	) {
+		switch (anotherCornerDirection) {
 			case SE:
 				return new Rectangle(x, y, width, height);
 			case NE:
@@ -153,7 +158,7 @@ public final class Recs {
 	 * @param height
 	 * 	Height of the resulting rectangle.
 	 * @return
-	 * @see {@link #growFromPoint(int, int, org.tendiwa.core.OrdinalDirection, int, int)}
+	 * @see {@link #growFromCell(int, int, org.tendiwa.core.OrdinalDirection, int, int)}
 	 */
 	public static Rectangle growFromIntersection(IntercellularLine line1, IntercellularLine line2, OrdinalDirection side, int width, int height) {
 		if (!line1.isPerpendicular(line2)) {
@@ -182,7 +187,7 @@ public final class Recs {
 	 */
 	public static Rectangle growFromIntersection(IntercellularLinesIntersection intersection, OrdinalDirection side, int width, int height) {
 		Cell point = intersection.getCornerPointOfQuarter(side);
-		return growFromPoint(point.getX(), point.getY(), side, width, height);
+		return growFromCell(point.getX(), point.getY(), side, width, height);
 	}
 
 	/**
