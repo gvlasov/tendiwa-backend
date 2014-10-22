@@ -1,5 +1,6 @@
 package org.tendiwa.geometry.extensions;
 
+import com.sun.media.sound.SoftLowFrequencyOscillator;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Polygon;
@@ -13,7 +14,10 @@ import java.util.stream.Collectors;
 
 import static java.util.Objects.*;
 
-public class ShapeFromOutline {
+public final class ShapeFromOutline {
+	private ShapeFromOutline() {
+
+	}
     public static BoundedCellSet from(UndirectedGraph<Point2D, Segment2D> outline) {
 
         FiniteCellSet edgeCells = requireNonNull(outline)

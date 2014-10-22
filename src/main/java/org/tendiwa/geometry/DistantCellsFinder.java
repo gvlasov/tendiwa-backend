@@ -7,8 +7,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
- * In a {@link FiniteCellSet}, greedily finds a set of cells where there is at least certain distance between each
- * found cell.
+ * In a {@link FiniteCellSet}, greedily finds a set of cells where there is at least certain Chebyshov distance between
+ * each found cell.
  * <p>
  * Example:
  * <pre>{@code

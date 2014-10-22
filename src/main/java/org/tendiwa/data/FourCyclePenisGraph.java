@@ -6,6 +6,10 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.graphs.GraphConstructor;
 
 public final class FourCyclePenisGraph {
+	private FourCyclePenisGraph() {
+		throw new UnsupportedOperationException();
+	}
+
 	public static GraphConstructor<Point2D, Segment2D> create() {
 		return new GraphConstructor<>(Segment2D::new)
 			.vertex(0, new Point2D(50, 50))

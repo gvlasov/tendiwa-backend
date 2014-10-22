@@ -48,6 +48,22 @@ public class Mutable2DCellSet implements MutableCellSet, BoundedCellSet {
 		cells[x - bounds.x][y - bounds.y] = true;
 	}
 
+	/**
+	 * Adds a new cell to this cell set without checking if that cell is already present.
+	 * <p>
+	 * If the cell is already present, it remains present.
+	 * <p>
+	 * This method is much more effective than {@link #add(int, int)}.
+	 *
+	 * @param x
+	 * 	X coordinate of a cell.
+	 * @param y
+	 * 	Y coordinate of a cell.
+	 */
+	public void addAnyway(int x, int y) {
+		cells[x - bounds.x][y - bounds.y] = true;
+	}
+
 	@Override
 	public void add(Cell cell) {
 		add(cell.x, cell.y);

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Set;
 
-public class SameLineGraphEdgesPerturbations {
+public final class SameLineGraphEdgesPerturbations {
 	private static Comparator<Segment2D> HORIZONTAL_COMPARATOR = (a, b) -> {
 		assert a.start.y == a.end.y && b.start.y == b.end.y;
 		double d = a.start.y - b.start.y;
@@ -91,7 +91,7 @@ public class SameLineGraphEdgesPerturbations {
 		double magnitude
 	) {
 		Set<Segment2D> edges = ImmutableSet.copyOf(graph.edgesOf(vertex));
-		assert edges.size() == 2;
+		assert edges.size() == 2 : edges.size();
 		// We move by both axes so both vertical and
 		// horizontal edges will become not on the same line
 		// with those with which they were on the same line.

@@ -25,6 +25,29 @@ public class CityBoundsFactory {
 	}
 
 	/**
+	 * Creates a new graph that can be used as a base for {@link RoadsPlanarGraphModel}.
+	 *
+	 * @param startCell
+	 * 	A cell from which a City originates. Roughly denotes its final position.
+	 * @param maxCityRadius
+	 * 	A maximum radius of a Rectangle containing resulting City.
+	 * @return A new graph that can be used as a base for {@link RoadsPlanarGraphModel}.
+	 * @see CityGeometryBuilder
+	 */
+	public UndirectedGraph<Point2D, Segment2D> create(
+		BoundedCellSet cityShape,
+		Cell startCell,
+		int maxCityRadius
+	) {
+		if (water.contains(startCell.x, startCell.y)) {
+			throw new IllegalArgumentException(
+				"Start cell " + startCell + " must be a ground cell, not water cell"
+			);
+		}
+		return computeCityBoundingRoads(cityShape, startCell, maxCityRadius);
+	}
+
+	/**
 	 * Culls the cells that will produce intersecting bounding roads.
 	 *
 	 * @param bufferBorder
@@ -63,7 +86,7 @@ public class CityBoundsFactory {
 			bufferBorder,
 			startCell,
 			cityShape.getBounds(),
-			radius
+			radius+1
 		);
 		CachedCellSet culledBufferBorder = new CachedCellSet(
 			new ChebyshevDistanceBufferBorder(
@@ -75,6 +98,14 @@ public class CityBoundsFactory {
 		return bufferBorderToGraph(culledBufferBorder);
 	}
 
+	/*
+	 * Transforms a 1 cell wide border to a graph.
+	 *
+	 * @param bufferBorder
+	 * 	One cell wide border, with cells beigh neighbors with each other from cardinal sides.
+	 * @return A graph where vertices are all the cells of the one cell wide border,
+	 * and edges are two cells being near each other from cardinal sides.
+	 */
 	private UndirectedGraph<Point2D, Segment2D> bufferBorderToGraph(CachedCellSet bufferBorder) {
 		UndirectedGraph<Point2D, Segment2D> graph = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
 
@@ -95,30 +126,8 @@ public class CityBoundsFactory {
 			}
 		}
 		new EdgeReducer(graph, cell2PointMap).reduceEdges();
-		SameLineGraphEdgesPerturbations.perturbIfHasSameLineEdges(graph,1e-4);
+		SameLineGraphEdgesPerturbations.perturbIfHasSameLineEdges(graph, 1e-4);
 		return graph;
 	}
 
-	/**
-	 * Creates a new graph that can be used as a base for {@link RoadsPlanarGraphModel}.
-	 *
-	 * @param startCell
-	 * 	A cell from which a City originates. Roughly denotes its final position.
-	 * @param maxCityRadius
-	 * 	A maximum radius of a Rectangle containing resulting City.
-	 * @return A new graph that can be used as a base for {@link RoadsPlanarGraphModel}.
-	 * @see CityGeometryBuilder
-	 */
-	public UndirectedGraph<Point2D, Segment2D> create(
-		BoundedCellSet cityShape,
-		Cell startCell,
-		int maxCityRadius
-	) {
-		if (water.contains(startCell.x, startCell.y)) {
-			throw new IllegalArgumentException(
-				"Start cell " + startCell + " must be a ground cell, not water cell"
-			);
-		}
-		return computeCityBoundingRoads(cityShape, startCell, maxCityRadius);
-	}
 }

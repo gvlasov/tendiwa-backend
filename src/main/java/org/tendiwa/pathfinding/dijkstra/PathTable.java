@@ -6,6 +6,7 @@ import org.tendiwa.geometry.Cells;
 import org.tendiwa.geometry.Rectangle;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 
 public class PathTable implements BoundedCellSet {
@@ -35,9 +36,7 @@ public class PathTable implements BoundedCellSet {
 
 
         for (int i = 0; i < width; i++) {
-            for (int j = 0; j < width; j++) {
-                pathTable[i][j] = NOT_COMPUTED_CELL;
-            }
+			Arrays.fill(pathTable[i], NOT_COMPUTED_CELL);
         }
         // Zero-wave consists of a single cell, which is path table's start
         pathTable[maxDepth][maxDepth] = 0;
@@ -106,9 +105,9 @@ public class PathTable implements BoundedCellSet {
     }
 
     private boolean nextWave() {
-        if (step == maxDepth) {
-            return false;
-        }
+//        if (step == maxDepth) {
+//            return false;
+//        }
         ArrayList<Cell> oldFront = newFront;
         newFront = new ArrayList<>();
         for (Cell anOldFront : oldFront) {
@@ -124,6 +123,9 @@ public class PathTable implements BoundedCellSet {
                 computeCell(thisNumX, thisNumY, tableX, tableY);
             }
         }
+		if (newFront.isEmpty()) {
+			return false;
+		}
         step++;
         return true;
     }
@@ -142,7 +144,8 @@ public class PathTable implements BoundedCellSet {
      *         Y coordinate of a cell in table coordinates.
      */
     protected void computeCell(int thisNumX, int thisNumY, int tableX, int tableY) {
-        if (pathTable[tableX][tableY] == NOT_COMPUTED_CELL && walker.canStepOn(thisNumX, thisNumY)) {
+        if (bounds.contains(thisNumX, thisNumY) && pathTable[tableX][tableY] == NOT_COMPUTED_CELL && walker.canStepOn
+			(thisNumX, thisNumY)) {
             // Step to cell if character can see it and it is free
             // or character cannot se it and it is not PASSABILITY_NO
             pathTable[tableX][tableY] = step + 1;

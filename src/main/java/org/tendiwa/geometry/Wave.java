@@ -17,8 +17,8 @@ public class Wave implements Iterable<Cell> {
     private CellSet passableCells;
     Set<Cell> newFront = new HashSet<>();
     Set<Cell> previousFront;
-    private int[] dx = new int[]{1, 0, 0, 0 - 1, 1, 1, 0 - 1, 0 - 1};
-    private int[] dy = new int[]{0, 0 - 1, 1, 0, 1, 0 - 1, 1, 0 - 1};
+    private static final int[] dx = new int[]{1, 0, 0, 0 - 1, 1, 1, 0 - 1, 0 - 1};
+    private static final int[] dy = new int[]{0, 0 - 1, 1, 0, 1, 0 - 1, 1, 0 - 1};
 
     Wave(Cell startCell, CellSet passableCells, int directions) {
         assert directions == 4 || directions == 8;
