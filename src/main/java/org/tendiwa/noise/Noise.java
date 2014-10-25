@@ -112,7 +112,7 @@ public class Noise {
 
 
          /*START BLOCK FOR VALUE NOISE*/
-         /*
+		 /*
           alt1&=0xFFFF;
           alt2&=0xFFFF;
           alt3&=0xFFFF;

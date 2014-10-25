@@ -50,7 +50,7 @@ public class ShapeFromOutlineTest {
 
 	@Test
 	public void shouldFindZeroInnerCells() {
-        /*
+		/*
         This is the graph:
         O###O
         O###O

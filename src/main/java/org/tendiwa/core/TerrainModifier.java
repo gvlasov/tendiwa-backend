@@ -381,7 +381,8 @@ public class TerrainModifier {
 	}
 
 	/**
-	 * Draws borders around rectangles from those their segments that don't touch any neighbor rectangle. Note that sets
+	 * Draws borders around rectangles from those their segments that don't touch any neighbor rectangle. Note that
+	 * sets
 	 * of
 	 * cells of which inner and outer borders consist never intersect.
 	 *

@@ -86,9 +86,11 @@ public class Seer {
 
 	/**
 	 * <p>Returns the last index on y axis of a relative table (a FOV table, for example) which resides inside world
-	 * recangle.</p> <p/> <p>There is only one method for the first index, but two methods for the last indices, because
+	 * recangle.</p> <p/> <p>There is only one method for the first index, but two methods for the last indices,
+	 * because
 	 * the
-	 * least world coordinate is 0 on both x and y axes, but the greatest is different (world.width or world.height) for
+	 * least world coordinate is 0 on both x and y axes, but the greatest is different (world.width or world.height)
+	 * for
 	 * x
 	 * and y axes.</p>
 	 *

@@ -305,7 +305,7 @@ public class RectangleSystem extends RectangleSequence {
 		if (side == CardinalDirection.N) {
 			for (Rectangle neighbor : content) {
 				/*
-		         * The part starting from Utils.integersRangeIntersection in
+				 * The part starting from Utils.integersRangeIntersection in
 				 * each case checks if a neighbor rectangle touches _side_ (not
 				 * border!) of the rectangle r with its direction _or_ border.
 				 */
@@ -1204,7 +1204,8 @@ public class RectangleSystem extends RectangleSequence {
 		}
 
 		/**
-		 * Prepares the iterable to iterate over all rectangles in clockwise order. Before calling this method, you must
+		 * Prepares the iterable to iterate over all rectangles in clockwise order. Before calling this method, you
+		 * must
 		 * set a
 		 * starting rectangle either implicitly with {@link NeighboursIterable#setStartingNeigbour(Rectangle)} or
 		 * explicitly with {@link NeighboursIterable#setRandomStartingNeighbour()}.
