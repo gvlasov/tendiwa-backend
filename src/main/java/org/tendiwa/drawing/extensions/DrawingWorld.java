@@ -64,9 +64,9 @@ public class DrawingWorld {
 						canvas.drawCell(x, y, colorMap.colors.get(gameObject));
 						continue;
 					}
-					FloorType floor = defaultPlane.getFloor(x,y);
+					FloorType floor = defaultPlane.getFloor(x, y);
 					if (colorMap.colors.containsKey(floor)) {
-						canvas.drawCell(x,y,colorMap.colors.get(floor));
+						canvas.drawCell(x, y, colorMap.colors.get(floor));
 					}
 				}
 			}

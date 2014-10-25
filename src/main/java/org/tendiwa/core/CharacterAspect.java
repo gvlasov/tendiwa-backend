@@ -6,5 +6,5 @@ package org.tendiwa.core;
  * string and a generated integer.
  */
 public enum CharacterAspect {
-HUMANOID, ANIMAL, ROBOT, ELEMENTAL
+	HUMANOID, ANIMAL, ROBOT, ELEMENTAL
 }

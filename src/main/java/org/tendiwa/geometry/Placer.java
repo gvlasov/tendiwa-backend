@@ -1,5 +1,5 @@
 package org.tendiwa.geometry;
 
 public interface Placer {
-    void place(Placeable placeable, RectangleSystemBuilder builder);
+	void place(Placeable placeable, RectangleSystemBuilder builder);
 }

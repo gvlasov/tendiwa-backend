@@ -2,7 +2,7 @@ package org.tendiwa.demos;
 
 import com.google.common.base.Stopwatch;
 import com.google.inject.Inject;
-import org.tendiwa.drawing.*;
+import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingCell;
 import org.tendiwa.drawing.extensions.DrawingRectangle;
 import org.tendiwa.geometry.Cell;
@@ -14,11 +14,10 @@ import org.tendiwa.pathfinding.dijkstra.PathTable;
 import org.tendiwa.terrain.BlobArea;
 import org.tendiwa.terrain.CellParams;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.List;
 
-import static java.awt.Color.GREEN;
-import static java.awt.Color.RED;
+import static java.awt.Color.*;
 
 public class NoiseDemo implements Runnable {
 

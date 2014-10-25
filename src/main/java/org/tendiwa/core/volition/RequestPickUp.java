@@ -10,25 +10,26 @@ import org.tendiwa.core.Request;
 import java.util.Iterator;
 
 public class RequestPickUp implements Request {
-private final Character player;
+	private final Character player;
 
-@Inject
-RequestPickUp(
-	@Named("player") Character player
-) {
-	this.player = player;
-}
-
-@Override
-public void process() {
-	HorizontalPlane plane = player.getPlane();
-	Iterator<Item> iterator = plane.getItems(player.getX(), player.getY()).iterator();
-	if (iterator.hasNext()) {
-		player.pickUp(iterator.next());
+	@Inject
+	RequestPickUp(
+		@Named("player") Character player
+	) {
+		this.player = player;
 	}
 
-}
-public static interface Factory {
-	public RequestPickUp create();
-}
+	@Override
+	public void process() {
+		HorizontalPlane plane = player.getPlane();
+		Iterator<Item> iterator = plane.getItems(player.getX(), player.getY()).iterator();
+		if (iterator.hasNext()) {
+			player.pickUp(iterator.next());
+		}
+
+	}
+
+	public static interface Factory {
+		public RequestPickUp create();
+	}
 }

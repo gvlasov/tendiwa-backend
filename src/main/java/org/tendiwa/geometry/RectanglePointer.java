@@ -13,7 +13,8 @@ public enum RectanglePointer {
 	 */
 	LAST_RECTANGLE,
 	/**
-	 * A rectangle after placing which {@link org.tendiwa.geometry.RectangleSystemBuilder#rememberRectangle()} was called in
+	 * A rectangle after placing which {@link org.tendiwa.geometry.RectangleSystemBuilder#rememberRectangle()} was
+	 * called in
 	 * method chain.
 	 */
 	REMEMBERED_RECTANGLE,

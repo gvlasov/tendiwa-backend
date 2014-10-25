@@ -12,9 +12,11 @@ public class Coordinate extends Point {
 	public Coordinate(int x, int y) {
 		super(x, y);
 	}
+
 	public Coordinate(Coordinate c) {
 		super(c.x, c.y);
 	}
+
 	public boolean equals(Object o) {
 		if (!(o instanceof Coordinate)) {
 			return false;
@@ -22,9 +24,11 @@ public class Coordinate extends Point {
 		Coordinate coordinate = (Coordinate) o;
 		return coordinate.x == x && coordinate.y == y;
 	}
+
 	public String toString() {
 		return x + ":" + y;
 	}
+
 	public boolean isNear(int x, int y) {
 		int ableX = Math.abs(this.x - x);
 		int ableY = Math.abs(this.y - y);
@@ -33,6 +37,7 @@ public class Coordinate extends Point {
 		}
 		return false;
 	}
+
 	public static boolean isNear(int startX, int startY, int endX, int endY) {
 		int ableX = Math.abs(startX - endX);
 		int ableY = Math.abs(startY - endY);
@@ -41,12 +46,15 @@ public class Coordinate extends Point {
 		}
 		return false;
 	}
+
 	public int distance(int x, int y) {
 		return (int) Math.sqrt(Math.pow(this.x - x, 2) + Math.pow(this.y - y, 2));
 	}
+
 	public int distance(Coordinate e) {
 		return (int) Math.sqrt(Math.pow(this.x - e.x, 2) + Math.pow(this.y - e.y, 2));
 	}
+
 	public Coordinate moveToSide(Direction side, int distance) {
 		if (side == CardinalDirection.N) {
 			y -= distance;

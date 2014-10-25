@@ -8,9 +8,8 @@ import org.tendiwa.core.ScriptShell;
 import org.tendiwa.core.Tendiwa;
 import org.tendiwa.core.World;
 import org.tendiwa.core.WorldProvidingModule;
-import org.tendiwa.core.dependencies.WorldProvider;
-import org.tendiwa.drawing.extensions.DrawingModule;
 import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawingModule;
 import org.tendiwa.drawing.extensions.DrawingWorld;
 
 public final class Demos {

@@ -7,7 +7,7 @@ public class ClientMessagePlayerCreate {
 	public int race;
 	public String cls;
 	public int[] skills;
-	
+
 	public ClientMessagePlayerCreate() {
 
 	}

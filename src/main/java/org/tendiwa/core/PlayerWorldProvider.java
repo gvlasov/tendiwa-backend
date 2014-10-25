@@ -7,15 +7,15 @@ import org.tendiwa.core.dependencies.PlayerCharacterProvider;
 
 @Singleton
 public class PlayerWorldProvider implements Provider<World> {
-private final PlayerCharacterProvider playerCharacterProvider;
+	private final PlayerCharacterProvider playerCharacterProvider;
 
-@Inject
-PlayerWorldProvider(PlayerCharacterProvider playerCharacterProvider) {
-	this.playerCharacterProvider = playerCharacterProvider;
-}
+	@Inject
+	PlayerWorldProvider(PlayerCharacterProvider playerCharacterProvider) {
+		this.playerCharacterProvider = playerCharacterProvider;
+	}
 
-@Override
-public World get() {
-	return playerCharacterProvider.get().getWorld();
-}
+	@Override
+	public World get() {
+		return playerCharacterProvider.get().getWorld();
+	}
 }

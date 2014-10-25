@@ -6,8 +6,8 @@ import com.google.inject.name.Named;
 public class DefaultTestCanvasProvider implements Provider<TestCanvas> {
 
 
-    @Override
-    public TestCanvas get() {
-        return new TestCanvas(1, 800, 600);
-    }
+	@Override
+	public TestCanvas get() {
+		return new TestCanvas(1, 800, 600);
+	}
 }

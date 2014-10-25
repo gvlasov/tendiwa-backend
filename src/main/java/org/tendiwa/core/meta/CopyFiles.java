@@ -16,8 +16,11 @@ import java.nio.channels.FileChannel;
  */
 public final class CopyFiles {
 
-	/** This may fail for VERY large files. 
-	 * @throws IOException */
+	/**
+	 * This may fail for VERY large files.
+	 *
+	 * @throws IOException
+	 */
 	public static void copyWithChannels(File aSourceFile, File aTargetFile) throws IOException {
 		ensureTargetDirectoryExists(aTargetFile.getParentFile());
 		FileChannel inChannel = null;

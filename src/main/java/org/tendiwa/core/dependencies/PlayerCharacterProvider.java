@@ -4,19 +4,19 @@ import com.google.inject.Provider;
 import org.tendiwa.core.Character;
 
 public class PlayerCharacterProvider implements Provider<Character> {
-private Character playerCharacter;
+	private Character playerCharacter;
 
-public PlayerCharacterProvider() {
+	public PlayerCharacterProvider() {
 
-}
+	}
 
-public void setCharacter(Character playerCharacter) {
-	this.playerCharacter = playerCharacter;
-}
+	public void setCharacter(Character playerCharacter) {
+		this.playerCharacter = playerCharacter;
+	}
 
-@Override
-public Character get() {
-	assert playerCharacter != null;
-	return playerCharacter;
-}
+	@Override
+	public Character get() {
+		assert playerCharacter != null;
+		return playerCharacter;
+	}
 }

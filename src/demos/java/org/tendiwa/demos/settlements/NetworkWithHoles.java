@@ -7,8 +7,8 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PointTrail;
 import org.tendiwa.graphs.GraphConstructor;
-import org.tendiwa.settlements.RoadsPlanarGraphModel;
 import org.tendiwa.settlements.CityGeometryBuilder;
+import org.tendiwa.settlements.RoadsPlanarGraphModel;
 
 public class NetworkWithHoles implements Runnable {
 	public static void main(String[] args) {

@@ -21,57 +21,57 @@ import java.util.HashSet;
  * @author suseika
  */
 public class Settlement extends Location {
-public HashSet<RectangleSystem> quarters = new HashSet<>();
-public ArrayList<BuildingOld> buildings = new ArrayList<>();
-protected RoadSystem roadSystem = new RoadSystem();
-protected QuarterSystem quarterSystem;
+	public HashSet<RectangleSystem> quarters = new HashSet<>();
+	public ArrayList<BuildingOld> buildings = new ArrayList<>();
+	protected RoadSystem roadSystem = new RoadSystem();
+	protected QuarterSystem quarterSystem;
 
-public Settlement(HorizontalPlane plane, int x, int y, int width, int height) {
-	super(plane, x, y, width, height);
-	quarterSystem = new QuarterSystem(this);
-}
+	public Settlement(HorizontalPlane plane, int x, int y, int width, int height) {
+		super(plane, x, y, width, height);
+		quarterSystem = new QuarterSystem(this);
+	}
 
-public void placeBuilding(BuildingPlace place, Class<? extends BuildingOld> cls, CardinalDirection side) {
-	BuildingOld building;
-	try {
-		@SuppressWarnings("unchecked")
-		Constructor<? extends BuildingOld> ctor = (Constructor<? extends BuildingOld>) cls.getDeclaredConstructors()[0];
-		building = ctor.newInstance(this, place, side);
-		if (building.fitsToPlace(place)) {
-			building.draw();
-			buildings.add(building);
-		} else {
-			throw new RuntimeException("Couldn't place building " + cls.getSimpleName());
+	public void placeBuilding(BuildingPlace place, Class<? extends BuildingOld> cls, CardinalDirection side) {
+		BuildingOld building;
+		try {
+			@SuppressWarnings("unchecked")
+			Constructor<? extends BuildingOld> ctor = (Constructor<? extends BuildingOld>) cls.getDeclaredConstructors()[0];
+			building = ctor.newInstance(this, place, side);
+			if (building.fitsToPlace(place)) {
+				building.draw();
+				buildings.add(building);
+			} else {
+				throw new RuntimeException("Couldn't place building " + cls.getSimpleName());
+			}
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			e.printStackTrace();
 		}
-	} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-		e.printStackTrace();
+
+		// if (ammunitionType == BuildingType.TEST) {
+		// buildings.add(new TestBuilding(this, place));
+		// } else if (ammunitionType == BuildingType.INN) {
+		// buildings.add(new Inn(this, place));
+		// } else if (ammunitionType == BuildingType.ONE_ROOM_HOUSE) {
+		// buildings.add(new OneRoomHouse(this, place));
+		// } else if (ammunitionType == BuildingType.TEMPLE) {
+		// buildings.add(new Temple(this, place));
+		// }
 	}
 
-	// if (ammunitionType == BuildingType.TEST) {
-	// buildings.add(new TestBuilding(this, place));
-	// } else if (ammunitionType == BuildingType.INN) {
-	// buildings.add(new Inn(this, place));
-	// } else if (ammunitionType == BuildingType.ONE_ROOM_HOUSE) {
-	// buildings.add(new OneRoomHouse(this, place));
-	// } else if (ammunitionType == BuildingType.TEMPLE) {
-	// buildings.add(new Temple(this, place));
-	// }
-}
-
-public void createRandomRoadSystem() {
-	for (int y = Chance.rand(0, 20); y < height; y += Chance.rand(20, 25)) {
-		roadSystem.createRoad(Chance.rand(0, 5), y, Chance.rand(width - 5, width - 1), y);
+	public void createRandomRoadSystem() {
+		for (int y = Chance.rand(0, 20); y < height; y += Chance.rand(20, 25)) {
+			roadSystem.createRoad(Chance.rand(0, 5), y, Chance.rand(width - 5, width - 1), y);
+		}
+		for (int x = Chance.rand(0, 20); x < width; x += Chance.rand(20, 25)) {
+			roadSystem.createRoad(x, Chance.rand(0, 5), x, Chance.rand(height - 5, height - 1));
+		}
 	}
-	for (int x = Chance.rand(0, 20); x < width; x += Chance.rand(20, 25)) {
-		roadSystem.createRoad(x, Chance.rand(0, 5), x, Chance.rand(height - 5, height - 1));
-	}
-}
 
-public void markQuarter(Rectangle r, int minWidth/* =8 */, int borderWidth/* =2 */) {
-	// Разметить квартал - создать систему прямоугольников и занести её в
-	// Settlement::quarters
-	// in: индекс пярмоугольника, на котором строится квартал, в
-	// Settlement::rectangles
-	quarters.add(RecursivelySplitRectangleSystemFactory.create(r.getX() + 1, r.getY() + 1, r.getWidth() - 2, r.getHeight() - 2, minWidth, borderWidth));
-}
+	public void markQuarter(Rectangle r, int minWidth/* =8 */, int borderWidth/* =2 */) {
+		// Разметить квартал - создать систему прямоугольников и занести её в
+		// Settlement::quarters
+		// in: индекс пярмоугольника, на котором строится квартал, в
+		// Settlement::rectangles
+		quarters.add(RecursivelySplitRectangleSystemFactory.create(r.getX() + 1, r.getY() + 1, r.getWidth() - 2, r.getHeight() - 2, minWidth, borderWidth));
+	}
 }

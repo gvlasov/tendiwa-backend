@@ -1,20 +1,15 @@
 package org.tendiwa.demos.geometry;
 
 import com.google.inject.Inject;
-import org.jgrapht.UndirectedGraph;
 import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingGraph;
 import org.tendiwa.drawing.extensions.DrawingModule;
 import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.Trail;
 import org.tendiwa.geometry.extensions.PointTrail;
 import org.tendiwa.geometry.extensions.twakStraightSkeleton.TwakStraightSkeleton;
-import org.tendiwa.graphs.GraphConstructor;
 
 import java.awt.Color;
-import java.util.ArrayList;
 import java.util.List;
 
 public class TwakStraightSkeletonDemo implements Runnable {

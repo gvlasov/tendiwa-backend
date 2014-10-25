@@ -45,7 +45,8 @@ public final class RoadRejector {
 	 * {@code cityGeometry}.
 	 *
 	 * @param graph
-	 * 	A full road graph ({@link org.tendiwa.settlements.RoadsPlanarGraphModel#getFullRoadGraph()}) of {@code cityGeometry}.
+	 * 	A full road graph ({@link org.tendiwa.settlements.RoadsPlanarGraphModel#getFullRoadGraph()}) of {@code
+	 * 	cityGeometry}.
 	 * @param roadsPlanarGraphModel
 	 * 	A geometry of a city.
 	 * @return A view of a road graph without roads forming city's cells' enclosing cycles.
@@ -185,6 +186,38 @@ public final class RoadRejector {
 		return answer;
 	}
 
+	private List<List<Segment2D>> tryFindingChainsAssumingGraphWithGaps(UndirectedGraph<Point2D, Segment2D> outerCycleEdges) {
+		List<List<Segment2D>> answer = new ArrayList<>(10);
+		Collection<Point2D> usedVertices = new HashSet<>();
+		for (Point2D vertex : outerCycleEdges.vertexSet()) {
+			if (usedVertices.contains(vertex)) {
+				continue;
+			}
+			if (outerCycleEdges.degreeOf(vertex) == 1) {
+				new NonCycleChainWalker(outerCycleEdges, vertex).addIntersectionlessChainsTo(answer);
+			}
+			usedVertices.add(vertex);
+		}
+		return answer;
+	}
+
+	private Point2D selectAnyNeighbor(Point2D vertex, UndirectedGraph<Point2D, Segment2D> cycle) {
+		Set<Segment2D> edges = cycle.edgesOf(vertex);
+		// Sorted collection is used here so ordering will remain constant between application start-ups.
+		SortedSet<Point2D> possibleAnyNeighbor = new TreeSet<>(ANY_NEIGHBOR_COMPARATOR);
+		for (Segment2D edge : edges) {
+			if (!possibleAnyNeighbor.contains(edge.start)) {
+				possibleAnyNeighbor.add(edge.start);
+			}
+			if (!possibleAnyNeighbor.contains(edge.end)) {
+				possibleAnyNeighbor.add(edge.end);
+			}
+		}
+		possibleAnyNeighbor.remove(vertex);
+		assert possibleAnyNeighbor.last() != vertex;
+		return possibleAnyNeighbor.last();
+	}
+
 	private class CycleChainWalker {
 
 		private final UndirectedGraph<Point2D, Segment2D> outerCycleEdges;
@@ -256,21 +289,6 @@ public final class RoadRejector {
 		}
 	}
 
-	private List<List<Segment2D>> tryFindingChainsAssumingGraphWithGaps(UndirectedGraph<Point2D, Segment2D> outerCycleEdges) {
-		List<List<Segment2D>> answer = new ArrayList<>(10);
-		Collection<Point2D> usedVertices = new HashSet<>();
-		for (Point2D vertex : outerCycleEdges.vertexSet()) {
-			if (usedVertices.contains(vertex)) {
-				continue;
-			}
-			if (outerCycleEdges.degreeOf(vertex) == 1) {
-				new NonCycleChainWalker(outerCycleEdges, vertex).addIntersectionlessChainsTo(answer);
-			}
-			usedVertices.add(vertex);
-		}
-		return answer;
-	}
-
 	/**
 	 * Walks along chains of edges in a subgraph of {@link #fullGraph} ({@code outerCycleEdges}),
 	 * extracting the sub-chains that start and end with vertices having degree > 2 in {@link #fullGraph}.
@@ -339,22 +357,5 @@ public final class RoadRejector {
 				}
 			}
 		}
-	}
-
-	private Point2D selectAnyNeighbor(Point2D vertex, UndirectedGraph<Point2D, Segment2D> cycle) {
-		Set<Segment2D> edges = cycle.edgesOf(vertex);
-		// Sorted collection is used here so ordering will remain constant between application start-ups.
-		SortedSet<Point2D> possibleAnyNeighbor = new TreeSet<>(ANY_NEIGHBOR_COMPARATOR);
-		for (Segment2D edge : edges) {
-			if (!possibleAnyNeighbor.contains(edge.start)) {
-				possibleAnyNeighbor.add(edge.start);
-			}
-			if (!possibleAnyNeighbor.contains(edge.end)) {
-				possibleAnyNeighbor.add(edge.end);
-			}
-		}
-		possibleAnyNeighbor.remove(vertex);
-		assert possibleAnyNeighbor.last() != vertex;
-		return possibleAnyNeighbor.last();
 	}
 }

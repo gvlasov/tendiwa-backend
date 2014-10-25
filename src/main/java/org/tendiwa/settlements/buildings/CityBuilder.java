@@ -4,17 +4,17 @@ import com.google.common.collect.ImmutableSet;
 import org.tendiwa.geometry.Placeable;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.settlements.RectangleWithNeighbors;
-import org.tendiwa.settlements.streets.Street;
 import org.tendiwa.settlements.streets.LotStreetAssigner;
+import org.tendiwa.settlements.streets.Street;
 
 import java.util.*;
 
 public class CityBuilder {
 	private final Map<RectangleWithNeighbors, Building> buildings = new HashMap<>();
-	private String localizationId;
 	private final Map<List<Point2D>, Street> streets = new IdentityHashMap<>();
 	private final Set<Placeable> districts = new LinkedHashSet<>();
 	private final Info info = new Info();
+	private String localizationId;
 	private boolean used = false;
 
 	CityBuilder() {
@@ -75,13 +75,14 @@ public class CityBuilder {
 		private final Collection<Street> streets = Collections.unmodifiableCollection(
 			CityBuilder.this.streets.values()
 		);
-		private final Set<Placeable> districts = Collections.unmodifiableSet(
-			CityBuilder.this.districts
-		);
 
 		public Set<RectangleWithNeighbors> getBuildingPlaces() {
 			return buildingPlaces;
 		}
+
+		private final Set<Placeable> districts = Collections.unmodifiableSet(
+			CityBuilder.this.districts
+		);
 
 		public Collection<Street> getStreets() {
 			return streets;
@@ -94,6 +95,7 @@ public class CityBuilder {
 		public void addBuilding(Building building) {
 			CityBuilder.this.buildings.put(building.place, building);
 		}
+
 
 	}
 }

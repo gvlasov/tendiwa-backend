@@ -10,19 +10,19 @@ import org.tendiwa.data.DistantCellsInBufferBorderModule;
 
 import java.util.HashSet;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 @RunWith(JukitoRunner.class)
 @UseModules(DistantCellsInBufferBorderModule.class)
 public class DistantCellsInBufferBorderTest {
 
-    @Inject
-    DistantCellsFinder distantCells;
+	@Inject
+	DistantCellsFinder distantCells;
 
 
-    @Test
-    public void shouldShow5Points() {
-        HashSet<Cell> cells = Sets.newHashSet(distantCells);
-        assertFalse(String.valueOf(cells.size()), cells.isEmpty());
-    }
+	@Test
+	public void shouldShow5Points() {
+		HashSet<Cell> cells = Sets.newHashSet(distantCells);
+		assertFalse(String.valueOf(cells.size()), cells.isEmpty());
+	}
 }

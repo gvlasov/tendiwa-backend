@@ -4,18 +4,18 @@ import com.google.inject.Provider;
 import org.tendiwa.core.World;
 
 public class WorldProvider implements Provider<World> {
-private World world;
+	private World world;
 
-public WorldProvider() {
+	public WorldProvider() {
 
-}
+	}
 
-@Override
-public World get() {
-	return world;
-}
+	@Override
+	public World get() {
+		return world;
+	}
 
-public void setWorld(World world) {
-	this.world = world;
-}
+	public void setWorld(World world) {
+		this.world = world;
+	}
 }

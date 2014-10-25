@@ -9,18 +9,18 @@ import org.tendiwa.core.observation.ThreadProxy;
 
 @Singleton
 public class ThreadProxyProvider implements Provider<ThreadProxy> {
-private final Observable model;
+	private final Observable model;
 
-@Inject
-ThreadProxyProvider(
-	@Named("tendiwa") Observable model
-) {
+	@Inject
+	ThreadProxyProvider(
+		@Named("tendiwa") Observable model
+	) {
 
-	this.model = model;
-}
+		this.model = model;
+	}
 
-@Override
-public ThreadProxy get() {
-	return new ThreadProxy(model);
-}
+	@Override
+	public ThreadProxy get() {
+		return new ThreadProxy(model);
+	}
 }

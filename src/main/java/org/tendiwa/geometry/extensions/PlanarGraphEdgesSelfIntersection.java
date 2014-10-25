@@ -9,7 +9,6 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 
 import java.util.Collection;
-import java.util.Set;
 
 public class PlanarGraphEdgesSelfIntersection {
 	/**

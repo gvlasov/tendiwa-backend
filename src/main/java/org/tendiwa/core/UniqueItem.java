@@ -7,18 +7,18 @@ package org.tendiwa.core;
 public class UniqueItem extends Item {
 
 
-public UniqueItem(ItemType type) {
-	super(type);
-}
+	public UniqueItem(ItemType type) {
+		super(type);
+	}
 
-@Override
-public UniqueItem takeSingleItem() {
-	return this;
-}
+	@Override
+	public UniqueItem takeSingleItem() {
+		return this;
+	}
 
-@Override
-public boolean isContainedIn(ItemCollection items) {
-	return items.items.containsValue(this);
-}
+	@Override
+	public boolean isContainedIn(ItemCollection items) {
+		return items.items.containsValue(this);
+	}
 
 }

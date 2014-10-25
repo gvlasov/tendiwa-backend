@@ -1,17 +1,13 @@
 package tests;
 
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
+import org.junit.Test;
+import org.tendiwa.core.meta.Range;
 
 import java.util.Collection;
 
-import org.junit.Test;
-
-import org.tendiwa.core.meta.Range;
-
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
+import static org.junit.Assert.*;
 
 public class RangeTest {
 
@@ -48,6 +44,7 @@ public class RangeTest {
 			new Range(9, 13).intersection(new Range(10, 15)),
 			new Range(10, 13));
 	}
+
 	@Test
 	public void testIntersectionIntegers() {
 		assertEquals(Range.lengthOfIntersection(0, 10, 5, 190), 6);
@@ -59,6 +56,7 @@ public class RangeTest {
 		assertEquals(Range.lengthOfIntersection(-17, 17, -17, 17), 17 * 2 + 1);
 		assertEquals(Range.lengthOfIntersection(-17, -17, -17, 17), 1);
 	}
+
 	@Test
 	public void splitWithRanges() {
 		Collection<Range> ranges = Sets
@@ -82,6 +80,7 @@ public class RangeTest {
 		assertTrue(ranges.contains(new Range(1, 100)));
 		assertTrue(ranges.size() == 2);
 	}
+
 	@Test
 	public void staticContains() {
 		assertTrue(Range.contains(0, 5, 3));

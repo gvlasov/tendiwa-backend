@@ -32,8 +32,8 @@ class IntershapeNetworkAlgorithm {
 		UndirectedGraph<FiniteCellSet, CellSegment> graph = new SimpleGraph<>((a, b) -> {
 			throw new RuntimeException("Edges should not be automatically created in this graph");
 		});
-			for (FiniteCellSet exitSet : exitSets) {
-				graph.addVertex(exitSet);
+		for (FiniteCellSet exitSet : exitSets) {
+			graph.addVertex(exitSet);
 		}
 
 		Map<Cell, FiniteCellSet> cellsToSets = mapCellsToTheirSets(exitSets);

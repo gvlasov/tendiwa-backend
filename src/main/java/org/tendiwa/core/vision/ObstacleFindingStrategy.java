@@ -4,7 +4,7 @@ import org.tendiwa.core.Border;
 
 public interface ObstacleFindingStrategy {
 
-boolean isCellBlockingVision(int x, int y);
+	boolean isCellBlockingVision(int x, int y);
 
-boolean isBorderBlockingVision(Border border);
+	boolean isBorderBlockingVision(Border border);
 }

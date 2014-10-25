@@ -55,11 +55,11 @@ public class MinimumCycleBasis<V, E> {
 
 	/**
 	 * @param graph
-	 * A graph from which to extract a minimum cycle basis.
+	 * 	A graph from which to extract a minimum cycle basis.
 	 * @param positionAdapter
-	 * [Eberly 2005, formula on p. 25]
-	 * <p>
-	 * A strategy of two methods describing how to get x and y coordinates from vertices.
+	 * 	[Eberly 2005, formula on p. 25]
+	 * 	<p>
+	 * 	A strategy of two methods describing how to get x and y coordinates from vertices.
 	 */
 
 	public MinimumCycleBasis(UndirectedGraph<V, E> graph, VertexPositionAdapter<V> positionAdapter) {

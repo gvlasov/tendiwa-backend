@@ -5,10 +5,6 @@ import org.tendiwa.graphs.VertexPositionAdapter;
 
 public class Point2DVertexPositionAdapter {
 
-	private Point2DVertexPositionAdapter() {
-		throw new UnsupportedOperationException("Shouldn't be instantiated");
-	}
-
 	private static VertexPositionAdapter<Point2D> vertexPositionAdapter = new VertexPositionAdapter<Point2D>() {
 		@Override
 		public double getX(Point2D vertex) {
@@ -20,6 +16,10 @@ public class Point2DVertexPositionAdapter {
 			return vertex.y;
 		}
 	};
+
+	private Point2DVertexPositionAdapter() {
+		throw new UnsupportedOperationException("Shouldn't be instantiated");
+	}
 
 	public static VertexPositionAdapter<Point2D> get() {
 		return vertexPositionAdapter;

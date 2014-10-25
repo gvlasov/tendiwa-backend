@@ -9,46 +9,46 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 public class Quarter extends Rectangle {
-public final QuarterSystem system;
-public final ArrayList<Road> closeRoads = new ArrayList<>();
+	public final QuarterSystem system;
+	public final ArrayList<Road> closeRoads = new ArrayList<>();
 
-public Quarter(QuarterSystem system, Rectangle rectangle) {
-	super(rectangle);
-	this.system = system;
-	for (Road road : system.settlement.roadSystem.roads) {
+	public Quarter(QuarterSystem system, Rectangle rectangle) {
+		super(rectangle);
+		this.system = system;
+		for (Road road : system.settlement.roadSystem.roads) {
 					/* */// May fail for roads with even width
-		if (road.isRectangleOverlapsRoad(rectangle)) {
-			closeRoads.add(road);
+			if (road.isRectangleOverlapsRoad(rectangle)) {
+				closeRoads.add(road);
+			}
+		}
+
+		// Now we have a rectangle with border near roads' center line.
+		// Then we narrow rectangle by roads, according to roads' width.
+
+		for (Road road : system.settlement.roadSystem.roads) {
+			if (!road.crossesRectangle(this)) {
+				narrowRectangleByRoad(this, road);
+			}
 		}
 	}
 
-	// Now we have a rectangle with border near roads' center line.
-	// Then we narrow rectangle by roads, according to roads' width.
-
-	for (Road road : system.settlement.roadSystem.roads) {
-		if (!road.crossesRectangle(this)) {
-			narrowRectangleByRoad(this, road);
+	public HashSet<BuildingPlace> getBuildingPlaces(int minWidth) {
+		HashSet<BuildingPlace> answer = new HashSet<>();
+		TerrainModifier modifier = system.settlement.getTerrainModifier(RecursivelySplitRectangleSystemFactory.create(getX(), getY(), getWidth(), getHeight(), minWidth, 1));
+		RectangleSystem rs = modifier.getRectangleSystem();
+		for (Rectangle r : rs.getRectangles()) {
+			if (rs.isRectangleOuter(r)) {
+				answer.add(new BuildingPlace(r, this));
+			}
 		}
+		return answer;
 	}
-}
 
-public HashSet<BuildingPlace> getBuildingPlaces(int minWidth) {
-	HashSet<BuildingPlace> answer = new HashSet<>();
-	TerrainModifier modifier = system.settlement.getTerrainModifier(RecursivelySplitRectangleSystemFactory.create(getX(), getY(), getWidth(), getHeight(), minWidth, 1));
-	RectangleSystem rs = modifier.getRectangleSystem();
-	for (Rectangle r : rs.getRectangles()) {
-		if (rs.isRectangleOuter(r)) {
-			answer.add(new BuildingPlace(r, this));
-		}
-	}
-	return answer;
-}
-
-private void narrowRectangleByRoad(Rectangle rec, Road road) {
-	/**
-	 * Change rectangle start and dimensions as if road would
-	 * "bite off" a part of rectangle by road's width.
-	 */
+	private void narrowRectangleByRoad(Rectangle rec, Road road) {
+		/**
+		 * Change rectangle start and dimensions as if road would
+		 * "bite off" a part of rectangle by road's width.
+		 */
 //	CardinalDirection side = road.getSideOfRectangle(rec);
 //	if (side == CardinalDirection.N) {
 //		int newY = Math.max(road.start.y + road.width / 2 + 1, rec.y);
@@ -71,5 +71,5 @@ private void narrowRectangleByRoad(Rectangle rec, Road road) {
 //			rec.setBounds(newX, rec.y, rec.width - (newX - road.start.x) + 1, rec.height);
 //		}
 //	}
-}
+	}
 }

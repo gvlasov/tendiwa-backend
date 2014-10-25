@@ -1,30 +1,24 @@
 package org.tendiwa.demos.geometry;
 
 import com.google.inject.Inject;
-import org.jgrapht.UndirectedGraph;
-import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.demos.Demos;
-import org.tendiwa.drawing.*;
-import org.tendiwa.drawing.extensions.DrawingCell;
+import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingGraph;
-import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.drawing.extensions.DrawingModule;
-import org.tendiwa.geometry.Cell;
-import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Point2D;
-import org.tendiwa.graphs.*;
+import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.graphs.GraphConstructor;
 
-import java.awt.*;
-import java.util.stream.Collectors;
+import java.awt.Color;
 
 public class EberlyMinimumCycleBasisDemo implements Runnable {
+	@Inject
+	TestCanvas canvas;
+
 	public static void main(String[] args) {
 		Demos.run(EberlyMinimumCycleBasisDemo.class, new DrawingModule());
 	}
-
-	@Inject
-	TestCanvas canvas;
 
 	/**
 	 * Draws example from
@@ -36,7 +30,7 @@ public class EberlyMinimumCycleBasisDemo implements Runnable {
 	@Override
 	public void run() {
 		final GraphConstructor<Point2D, Segment2D> constructor =
-				new GraphConstructor<>(Segment2D::new)
+			new GraphConstructor<>(Segment2D::new)
 				.vertex(0, new Point2D(20, 20))
 				.vertex(1, new Point2D(30, 50))
 				.vertex(2, new Point2D(70, 55))

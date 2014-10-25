@@ -29,7 +29,7 @@ public class BlockRegionTest {
 			.moveBy(10, 0)
 			.moveBy(0, 30)
 			.moveBy(10, -30)
-				.moveBy(-30, -20)
+			.moveBy(-30, -20)
 //			.moveBy(0, 30)
 //			.moveBy(10, 0)
 //			.moveBy(0, -40)
@@ -48,6 +48,7 @@ public class BlockRegionTest {
 //		canvas.draw(point2Ds, DrawingEnclosedBlock.withColor(Color.blue));
 //		Demos.sleepIndefinitely();
 	}
+
 	@Test
 	public void splitLineSingleIntersectingVertices() {
 		List<Point2D> points = new PointTrail(20, 20)

@@ -11,10 +11,10 @@ import org.tendiwa.geometry.Cell;
  * @author suseika
  */
 public abstract class Intersection {
-/**
- * Returns the corner point of a quadrant defined by an ordinal {@link Direction}
- *
- * @param side
- */
-public abstract Cell getCornerPointOfQuarter(OrdinalDirection side);
+	/**
+	 * Returns the corner point of a quadrant defined by an ordinal {@link Direction}
+	 *
+	 * @param side
+	 */
+	public abstract Cell getCornerPointOfQuarter(OrdinalDirection side);
 }

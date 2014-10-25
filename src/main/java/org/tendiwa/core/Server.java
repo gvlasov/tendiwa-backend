@@ -10,47 +10,47 @@ import com.google.inject.Singleton;
  */
 @Singleton
 public class Server extends Thread {
-private static Request currentRequest;
-private boolean stopped = false;
-private int sleepTime = 100;
-private boolean hasRequestProcessing = false;
+	private static Request currentRequest;
+	private boolean stopped = false;
+	private int sleepTime = 100;
+	private boolean hasRequestProcessing = false;
 
-@Inject
-Server(
-) {
-	setName("Tendiwa Backend");
-}
+	@Inject
+	Server(
+	) {
+		setName("Tendiwa Backend");
+	}
 
-public boolean hasRequestToProcess() {
-	return hasRequestProcessing;
-}
+	public boolean hasRequestToProcess() {
+		return hasRequestProcessing;
+	}
 
-public void setSleepTime(int sleepTime) {
-	this.sleepTime = sleepTime;
-}
+	public void setSleepTime(int sleepTime) {
+		this.sleepTime = sleepTime;
+	}
 
-@Override
-public void run() {
-	while (!stopped) {
-		try {
-			Thread.sleep(sleepTime);
-		} catch (InterruptedException e) {
-			if (currentRequest != null) {
-				currentRequest.process();
-				currentRequest = null;
+	@Override
+	public void run() {
+		while (!stopped) {
+			try {
+				Thread.sleep(sleepTime);
+			} catch (InterruptedException e) {
+				if (currentRequest != null) {
+					currentRequest.process();
+					currentRequest = null;
+				}
+				hasRequestProcessing = false;
 			}
-			hasRequestProcessing = false;
 		}
 	}
-}
 
-public void passRequest(Request request) {
-	assert currentRequest == null : "Pushed " + request.getClass().getName() + " when there is already a request " + currentRequest.getClass().getName()
-		+ "; hasRequestProcessing = " + hasRequestProcessing;
-	hasRequestProcessing = true;
-	currentRequest = request;
-	interrupt();
-}
+	public void passRequest(Request request) {
+		assert currentRequest == null : "Pushed " + request.getClass().getName() + " when there is already a request " + currentRequest.getClass().getName()
+			+ "; hasRequestProcessing = " + hasRequestProcessing;
+		hasRequestProcessing = true;
+		currentRequest = request;
+		interrupt();
+	}
 
 //public void pushRequest(Request request) {
 //	assert currentRequest == null : "Pushed "+request.getClass().getName()+" when there is already a request "+currentRequest.getClass().getName()

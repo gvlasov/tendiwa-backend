@@ -62,6 +62,7 @@ public class Directions {
 				throw new Error("Not appropriate direction int!");
 		}
 	}
+
 	public static OrdinalDirection getDirectionBetween(CardinalDirection dir1, CardinalDirection dir2) {
 		if (dir1 == N) {
 			if (dir2 == E) {
@@ -91,14 +92,15 @@ public class Directions {
 		throw new IllegalArgumentException(
 			"Sides " + dir1 + " and " + dir2 + " are not close as cardinal directions");
 	}
+
 	/**
 	 * Converts shift in cells to a cardinal direction by finding out in what
 	 * 1/8 of full circle lies the shifted point.
-	 * 
+	 *
 	 * @param dx
-	 *            Shift in cells by x-axis, any integer.
+	 * 	Shift in cells by x-axis, any integer.
 	 * @param dy
-	 *            Shift in cells by y-axis, any integer.
+	 * 	Shift in cells by y-axis, any integer.
 	 * @return Direction that corresponds to the given shift.
 	 */
 	public static Direction shiftToDirection(int dx, int dy) {
@@ -149,6 +151,7 @@ public class Directions {
 		}
 		return NE;
 	}
+
 	/**
 	 * Randomly returns one of {@link CardinalDirection}s.
 	 */

@@ -9,10 +9,6 @@ public class IntersectingSetsFillerTest {
 	String a = "Hello";
 	String b = "Goodbye";
 	String c = "Greetings";
-	String d = "Hola";
-	String e = "Alloha";
-	String f = "Hi";
-	String g = "Bye";
 	Set<String> superset = new HashSet<String>() {
 		{
 			add(a);
@@ -54,6 +50,14 @@ public class IntersectingSetsFillerTest {
 //			});
 		}
 	};
+	String d = "Hola";
+	String e = "Alloha";
+	String f = "Hi";
+	String g = "Bye";
+
+	public static void main(String[] args) {
+		new IntersectingSetsFillerTest().test();
+	}
 
 	@Test
 	public void test() {
@@ -71,10 +75,6 @@ public class IntersectingSetsFillerTest {
 			map.get(e.getValue()).add(e.getKey());
 		}
 		System.out.println(map);
-	}
-
-	public static void main(String[] args) {
-		new IntersectingSetsFillerTest().test();
 	}
 
 }

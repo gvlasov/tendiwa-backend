@@ -16,7 +16,8 @@ import java.util.Map;
  * We can't mutate {@link org.tendiwa.settlements.NetworkWithinCycle#lowLevelRoadGraph}
  * itself because that breaks {@link org.tendiwa.graphs.MinimalCycle#iterator()}.
  * <p>
- * This class exists so {@link RoadsPlanarGraphModel#getFullRoadGraph()} can return a graph with edges on cycle edges that are
+ * This class exists so {@link RoadsPlanarGraphModel#getFullRoadGraph()} can return a graph with edges on cycle edges
+ * that are
  * not part of the initial {@link RoadsPlanarGraphModel#lowLevelRoadGraph}.
  */
 final class HolderOfSplitCycleEdges {

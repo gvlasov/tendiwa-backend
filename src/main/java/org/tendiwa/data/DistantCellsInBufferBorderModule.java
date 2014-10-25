@@ -14,42 +14,42 @@ import static org.tendiwa.geometry.DSL.rectangle;
 
 public class DistantCellsInBufferBorderModule extends AbstractModule {
 
-    @Override
-    protected void configure() {
-        bind(Integer.class)
-                .annotatedWith(named("minDistanceBetweenCells"))
-                .toInstance(9);
-        bind(Integer.class)
-                .annotatedWith(named("bufferDepth"))
-                .toInstance(5);
-        bind(Rectangle.class)
-                .annotatedWith(named("waterRectangle"))
-                .toInstance(new Rectangle(40, 40, 20, 20));
-        bind(Rectangle.class)
-                .annotatedWith(named("worldRectangle"))
-                .toInstance(rectangle(100, 100));
-    }
+	@Override
+	protected void configure() {
+		bind(Integer.class)
+			.annotatedWith(named("minDistanceBetweenCells"))
+			.toInstance(9);
+		bind(Integer.class)
+			.annotatedWith(named("bufferDepth"))
+			.toInstance(5);
+		bind(Rectangle.class)
+			.annotatedWith(named("waterRectangle"))
+			.toInstance(new Rectangle(40, 40, 20, 20));
+		bind(Rectangle.class)
+			.annotatedWith(named("worldRectangle"))
+			.toInstance(rectangle(100, 100));
+	}
 
-    @Provides
-    BoundedCellSet bufferBorder(
-            @Named("waterRectangle") Rectangle waterRectangle,
-            @Named("worldRectangle") Rectangle worldRectangle,
-            @Named("bufferDepth") int bufferDepth
-    ) {
-        return new CachedCellSet(
-                new ChebyshevDistanceBufferBorder(
-                        bufferDepth,
-                        waterRectangle::contains
-                ),
-                worldRectangle
-        );
-    }
+	@Provides
+	BoundedCellSet bufferBorder(
+		@Named("waterRectangle") Rectangle waterRectangle,
+		@Named("worldRectangle") Rectangle worldRectangle,
+		@Named("bufferDepth") int bufferDepth
+	) {
+		return new CachedCellSet(
+			new ChebyshevDistanceBufferBorder(
+				bufferDepth,
+				waterRectangle::contains
+			),
+			worldRectangle
+		);
+	}
 
-    @Provides
-    DistantCellsFinder distanceCells(
-            BoundedCellSet bufferBorder,
-            @Named("minDistanceBetweenCells") int minDistanceBetweenCells
-    ) {
-        return new DistantCellsFinder(bufferBorder, minDistanceBetweenCells);
-    }
+	@Provides
+	DistantCellsFinder distanceCells(
+		BoundedCellSet bufferBorder,
+		@Named("minDistanceBetweenCells") int minDistanceBetweenCells
+	) {
+		return new DistantCellsFinder(bufferBorder, minDistanceBetweenCells);
+	}
 }

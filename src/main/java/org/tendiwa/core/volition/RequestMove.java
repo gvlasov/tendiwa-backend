@@ -9,27 +9,27 @@ import org.tendiwa.core.MovingStyle;
 import org.tendiwa.core.Request;
 
 public class RequestMove implements Request {
-private final Direction direction;
-private final Character player;
+	private final Direction direction;
+	private final Character player;
 
-@Inject
-RequestMove(
-	@Assisted Direction direction,
-	@Named("player") Character player
+	@Inject
+	RequestMove(
+		@Assisted Direction direction,
+		@Named("player") Character player
 
-) {
-	this.direction = direction;
-	this.player = player;
-}
+	) {
+		this.direction = direction;
+		this.player = player;
+	}
 
-@Override
-public void process() {
-	int[] coords = direction.side2d();
-	player.move(player.getX() + coords[0], player.getY() + coords[1], MovingStyle.STEP);
+	@Override
+	public void process() {
+		int[] coords = direction.side2d();
+		player.move(player.getX() + coords[0], player.getY() + coords[1], MovingStyle.STEP);
 
-}
+	}
 
-public static interface Factory {
-	public RequestMove create(Direction direction);
-}
+	public static interface Factory {
+		public RequestMove create(Direction direction);
+	}
 }

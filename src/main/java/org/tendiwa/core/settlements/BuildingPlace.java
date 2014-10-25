@@ -11,28 +11,28 @@ import java.util.Set;
  * generation.
  */
 public class BuildingPlace extends Rectangle {
-public final HashSet<Road> closeRoads = new HashSet<>();
+	public final HashSet<Road> closeRoads = new HashSet<>();
 
-public BuildingPlace(Rectangle rectangle, Quarter quarter) {
-	super(rectangle);
-	for (Road road : quarter.closeRoads) {
-		if (road.isRectangleNearRoad(this)) {
-			closeRoads.add(road);
+	public BuildingPlace(Rectangle rectangle, Quarter quarter) {
+		super(rectangle);
+		for (Road road : quarter.closeRoads) {
+			if (road.isRectangleNearRoad(this)) {
+				closeRoads.add(road);
+			}
 		}
 	}
-}
 
-public BuildingPlace(int x, int y, int width, int height) {
-	super(x, y, width, height);
-}
+	public BuildingPlace(int x, int y, int width, int height) {
+		super(x, y, width, height);
+	}
 
-/**
- * Returns what sides the close roads are from.
- *
- * @return
- */
-public Set<CardinalDirection> getSidesOfCloseRoads() {
-	return new HashSet<CardinalDirection>();
-}
+	/**
+	 * Returns what sides the close roads are from.
+	 *
+	 * @return
+	 */
+	public Set<CardinalDirection> getSidesOfCloseRoads() {
+		return new HashSet<CardinalDirection>();
+	}
 
 }

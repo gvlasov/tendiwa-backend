@@ -3,8 +3,8 @@ package org.tendiwa.settlements.buildings;
 import org.tendiwa.geometry.CellSet;
 
 public class Room {
-	private Character owner;
 	private final CellSet shape;
+	private Character owner;
 
 	public Room(CellSet shape) {
 		this.shape = shape;

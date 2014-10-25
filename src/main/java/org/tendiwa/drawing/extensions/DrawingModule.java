@@ -10,15 +10,15 @@ import org.tendiwa.drawing.GifBuilderFactory;
 import org.tendiwa.drawing.TestCanvas;
 
 public class DrawingModule extends AbstractModule {
-    @Override
-    protected void configure() {
-        bind(TestCanvas.class)
-                .toProvider(DefaultTestCanvasProvider.class)
-                .in(Scopes.SINGLETON);
-        install(new FactoryModuleBuilder()
-                .build(GifBuilderFactory.class));
-        bind(Logger.class)
-                .annotatedWith(Names.named("imageInfoLogger"))
-                .toInstance(Logger.getLogger("imageInfoLogger"));
-    }
+	@Override
+	protected void configure() {
+		bind(TestCanvas.class)
+			.toProvider(DefaultTestCanvasProvider.class)
+			.in(Scopes.SINGLETON);
+		install(new FactoryModuleBuilder()
+			.build(GifBuilderFactory.class));
+		bind(Logger.class)
+			.annotatedWith(Names.named("imageInfoLogger"))
+			.toInstance(Logger.getLogger("imageInfoLogger"));
+	}
 }

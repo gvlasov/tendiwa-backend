@@ -2,16 +2,18 @@ package org.tendiwa.demos;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import org.tendiwa.drawing.extensions.DrawingModule;
-import org.tendiwa.geometry.*;
-import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.drawing.DrawingAlgorithm;
+import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawingModule;
 import org.tendiwa.drawing.extensions.DrawingRectangle;
 import org.tendiwa.drawing.extensions.DrawingRectangleSystem;
-import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.geometry.Placeable;
+import org.tendiwa.geometry.Recs;
+import org.tendiwa.geometry.Rectangle;
+import org.tendiwa.geometry.RectangleSystem;
 import org.tendiwa.geometry.extensions.RecursivelySplitRectangleSystemFactory;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.Collection;
 
 public class DrawingAlgorithmDemo implements Runnable {

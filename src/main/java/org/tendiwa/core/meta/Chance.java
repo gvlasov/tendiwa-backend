@@ -8,11 +8,10 @@ public class Chance {
 	private final int value;
 
 	/**
-	 * 
 	 * @param val
-	 *            A chance to return true.
+	 * 	A chance to return true.
 	 * @throws IllegalArgumentException
-	 *             if {@literal value < 0}.
+	 * 	if {@literal value < 0}.
 	 */
 	public Chance(int val) {
 		if (val < 0) {
@@ -23,7 +22,7 @@ public class Chance {
 
 	/**
 	 * Get true of false with a chance defined by constructor.
-	 * 
+	 *
 	 * @return true with probability this.value%
 	 */
 	public boolean roll() {
@@ -36,36 +35,38 @@ public class Chance {
 
 	/**
 	 * Returns a random int from between two ints inclusive.
-	 * 
+	 *
 	 * @param min
-	 *            min value <= max
+	 * 	min value <= max
 	 * @param max
-	 *            max value
+	 * 	max value
 	 * @return true with probability {@code this.value}
 	 * @throws IllegalArgumentException
-	 *             if min is lesser or equal to max.
+	 * 	if min is lesser or equal to max.
 	 */
 	public static int rand(int min, int max) {
 		if (min > max) {
 			throw new IllegalArgumentException(
-				"min ("+min+") must be lesser or equal to max ("+max+")");
+				"min (" + min + ") must be lesser or equal to max (" + max + ")");
 		}
 		return Math.min(min, max) + (int) Math.round(Math.random() * Math
 			.abs(max - min));
 	}
+
 	public static int rand(Range range) {
 		return rand(range.min, range.max);
 	}
+
 	/**
 	 * Returns a random long from between two longs inclusive.
-	 * 
+	 *
 	 * @param min
-	 *            min value
+	 * 	min value
 	 * @param max
-	 *            max value
+	 * 	max value
 	 * @return true with probability this.value%
 	 * @throws IllegalArgumentException
-	 *             if min is lesser or equal to max.
+	 * 	if min is lesser or equal to max.
 	 */
 	public static long rand(long min, long max) {
 		if (min > max) {

@@ -3,7 +3,6 @@ package org.tendiwa.settlements.utils;
 import com.google.common.collect.*;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.alg.ConnectivityInspector;
-import org.jgrapht.graph.Subgraph;
 import org.jgrapht.graph.UndirectedSubgraph;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
@@ -23,6 +22,11 @@ public final class StreetsDetector {
 	private final Collection<Point2D> usedVertices;
 	private final HashSet<Segment2D> usedEdges = new HashSet<>();
 	private final Table<Segment2D, Point2D, Object> joiningProhibited = HashBasedTable.create();
+
+	private StreetsDetector(UndirectedGraph<Point2D, Segment2D> cityGraph) {
+		this.cityGraph = cityGraph;
+		this.usedVertices = new HashSet<>(cityGraph.vertexSet().size());
+	}
 
 	/**
 	 * Finds streets made of edges of a planar graph.
@@ -56,11 +60,6 @@ public final class StreetsDetector {
 			}
 		}
 		return builder.build();
-	}
-
-	private StreetsDetector(UndirectedGraph<Point2D, Segment2D> cityGraph) {
-		this.cityGraph = cityGraph;
-		this.usedVertices = new HashSet<>(cityGraph.vertexSet().size());
 	}
 
 	private Set<ImmutableList<Point2D>> compute() {

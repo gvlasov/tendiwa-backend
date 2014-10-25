@@ -5,7 +5,8 @@ public class ClientMessagePutToContainer {
 	public int param;
 	public int x;
 	public int y;
+
 	public ClientMessagePutToContainer() {
-		
+
 	}
 }

@@ -13,7 +13,7 @@ public class ServerMessageCharacterAuthInfo {
 	}
 
 	public ServerMessageCharacterAuthInfo(int characterId, String name,
-			String cls, int race, int level, int[] equipment) {
+										  String cls, int race, int level, int[] equipment) {
 		this.characterId = characterId;
 		this.name = name;
 		this.cls = cls;

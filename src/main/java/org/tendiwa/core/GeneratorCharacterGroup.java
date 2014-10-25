@@ -5,6 +5,7 @@ public class GeneratorCharacterGroup {
 	public final String name;
 	public final int amount;
 	public final int fraction;
+
 	public GeneratorCharacterGroup(String t, String n, int a, int f) {
 		type = t;
 		name = n;

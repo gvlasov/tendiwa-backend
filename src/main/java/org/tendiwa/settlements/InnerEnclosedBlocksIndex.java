@@ -1,8 +1,5 @@
 package org.tendiwa.settlements;
 
-import com.google.common.collect.ImmutableSet;
-
-import java.util.HashSet;
 import java.util.Set;
 
 public class InnerEnclosedBlocksIndex {

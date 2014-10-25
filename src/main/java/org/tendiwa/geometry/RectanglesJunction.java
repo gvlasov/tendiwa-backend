@@ -8,25 +8,25 @@ import org.tendiwa.core.Orientation;
  * rectangles. You can think of junction as of a rectangular bridge with particular width between two rectangles.
  */
 public class RectanglesJunction {
-    final Rectangle r1;
-    final Rectangle r2;
-    private final Orientation orientation;
-    private final int coordinate;
-    private final int width;
+	final Rectangle r1;
+	final Rectangle r2;
+	private final Orientation orientation;
+	private final int coordinate;
+	private final int width;
 
-    public RectanglesJunction(Orientation orientation, int coordinate, int width, Rectangle r1, Rectangle r2) {
-        this.orientation = orientation;
-        this.coordinate = coordinate;
-        this.width = width;
-        this.r1 = r1;
-        this.r2 = r2;
-    }
+	public RectanglesJunction(Orientation orientation, int coordinate, int width, Rectangle r1, Rectangle r2) {
+		this.orientation = orientation;
+		this.coordinate = coordinate;
+		this.width = width;
+		this.r1 = r1;
+		this.r2 = r2;
+	}
 
-    Segment getSegmentOnRectangle(Rectangle r) {
-        throw new UnsupportedOperationException();
-    }
+	Segment getSegmentOnRectangle(Rectangle r) {
+		throw new UnsupportedOperationException();
+	}
 
-    Rectangle getRectangleBetweenRectangles() {
-        throw new UnsupportedOperationException();
-    }
+	Rectangle getRectangleBetweenRectangles() {
+		throw new UnsupportedOperationException();
+	}
 }

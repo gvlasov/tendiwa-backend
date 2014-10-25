@@ -20,8 +20,9 @@ import java.util.Set;
 public class StreetsDetectorDemo implements Runnable {
 	@Inject
 	TestCanvas canvas;
+
 	public static void main(String[] args) {
-	    Demos.run(StreetsDetectorDemo.class);
+		Demos.run(StreetsDetectorDemo.class);
 	}
 
 	@Override

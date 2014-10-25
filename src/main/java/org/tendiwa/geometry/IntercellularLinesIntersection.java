@@ -11,6 +11,7 @@ public class IntercellularLinesIntersection extends Intersection {
 
 	final int x;
 	final int y;
+
 	IntercellularLinesIntersection(IntercellularLine line1, IntercellularLine line2) {
 		IntercellularLine verticalLine, horizontalLine;
 		if (line1.orientation.isVertical()) {
@@ -24,22 +25,24 @@ public class IntercellularLinesIntersection extends Intersection {
 		x = verticalLine.getStaticCoordFromSide(CardinalDirection.E);
 		y = horizontalLine.getStaticCoordFromSide(CardinalDirection.N);
 	}
+
 	@Override
 	public Cell getCornerPointOfQuarter(OrdinalDirection side) {
 		switch (side) {
 			case NE:
 				return new Cell(x, y);
 			case SE:
-				return new Cell(x, y+1);
+				return new Cell(x, y + 1);
 			case SW:
-				return new Cell(x-1, y+1);
+				return new Cell(x - 1, y + 1);
 			case NW:
-				return new Cell(x-1, y);
+				return new Cell(x - 1, y);
 			default:
 				throw new IllegalArgumentException("Only ordinal sides can be used here");
-					
+
 		}
 	}
+
 	public OrdinalDirection getQuadrantWherePointLies(Point point) {
 		if (point.x >= x) {
 			if (point.y <= y) {

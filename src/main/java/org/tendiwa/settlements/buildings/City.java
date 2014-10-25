@@ -2,21 +2,17 @@ package org.tendiwa.settlements.buildings;
 
 import com.google.common.collect.ImmutableSet;
 import org.tendiwa.geometry.Placeable;
-import org.tendiwa.lexeme.Localizable;
 import org.tendiwa.settlements.RectangleWithNeighbors;
 import org.tendiwa.settlements.streets.Street;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 
 public final class City {
-	private final String localizationId;
 	final Map<RectangleWithNeighbors, Building> lotsToBuildings;
 	final Set<Street> streets;
 	final Set<Placeable> districts;
-
-	public static CityBuilder builder() {
-		return new CityBuilder();
-	}
+	private final String localizationId;
 
 	City(
 		String localizationId,
@@ -30,6 +26,9 @@ public final class City {
 		this.districts = districts;
 	}
 
+	public static CityBuilder builder() {
+		return new CityBuilder();
+	}
 
 	/**
 	 * Checks if a place is already occupied by some building.

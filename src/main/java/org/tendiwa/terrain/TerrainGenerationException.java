@@ -7,7 +7,7 @@ package org.tendiwa.terrain;
  */
 public class TerrainGenerationException extends WorldGenerationException {
 
-    public TerrainGenerationException(String message) {
-        super(message);
-    }
+	public TerrainGenerationException(String message) {
+		super(message);
+	}
 }

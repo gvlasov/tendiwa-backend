@@ -9,9 +9,9 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 
 public class ArchitecturePolicyBuilder {
+	private final TObjectDoubleMap<Architecture> closeEnough = new TObjectDoubleHashMap<>();
 	private int minInstances = 0;
 	private int maxInstances = Integer.MAX_VALUE;
-	private final TObjectDoubleMap<Architecture> closeEnough = new TObjectDoubleHashMap<>();
 	private ArchitecturePolicy.Priority priority = ArchitecturePolicy.Priority.DEFAULT;
 	private Placeable allowedArea;
 	private Collection<Architecture> presence = new LinkedHashSet<>();

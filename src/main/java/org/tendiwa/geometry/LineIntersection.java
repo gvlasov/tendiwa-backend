@@ -18,6 +18,7 @@ public class LineIntersection extends Intersection {
 		x = vertical.constantCoord;
 		y = horizontal.constantCoord;
 	}
+
 	@Override
 	public Cell getCornerPointOfQuarter(OrdinalDirection side) {
 		if (side == null) {
@@ -25,14 +26,14 @@ public class LineIntersection extends Intersection {
 		}
 		switch (side) {
 			case NE:
-				return new Cell(x,y);
+				return new Cell(x, y);
 			case SE:
-				return new Cell(x, y+1);
+				return new Cell(x, y + 1);
 			case SW:
-				return new Cell(x-1, y+1);
+				return new Cell(x - 1, y + 1);
 			case NW:
 			default:
-				return new Cell(x-1, y);
+				return new Cell(x - 1, y);
 		}
 	}
 

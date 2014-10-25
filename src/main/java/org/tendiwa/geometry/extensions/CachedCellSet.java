@@ -4,7 +4,7 @@ import org.tendiwa.geometry.BoundedCellSet;
 import org.tendiwa.geometry.CellSet;
 import org.tendiwa.geometry.Rectangle;
 
-import static java.util.Objects.requireNonNull;
+import static java.util.Objects.*;
 
 /**
  * A CellSet that holds a finite number of {@link org.tendiwa.geometry.Cell}s.
@@ -14,70 +14,69 @@ import static java.util.Objects.requireNonNull;
  */
 @SuppressWarnings("unused")
 public class CachedCellSet implements BoundedCellSet {
-    private static final short NOT_CACHED = 0;
-    private static final short IN_BUFFER = 1;
-    private static final short NOT_IN_BUFFER = 2;
-    private final CellSet source;
+	private static final short NOT_CACHED = 0;
+	private static final short IN_BUFFER = 1;
+	private static final short NOT_IN_BUFFER = 2;
+	private final CellSet source;
+	private final short[][] cache;
+	private Rectangle bounds;
 
-    @Override
-    public Rectangle getBounds() {
-        return bounds;
-    }
+	public CachedCellSet(CellSet source, Rectangle bounds) {
+		this.source = requireNonNull(source);
+		this.bounds = requireNonNull(bounds);
+		this.cache = new short[bounds.getWidth()][bounds.getHeight()];
+	}
 
-    private Rectangle bounds;
-    private final short[][] cache;
+	@Override
+	public Rectangle getBounds() {
+		return bounds;
+	}
 
-    public CachedCellSet(CellSet source, Rectangle bounds) {
-        this.source = requireNonNull(source);
-        this.bounds = requireNonNull(bounds);
-        this.cache = new short[bounds.getWidth()][bounds.getHeight()];
-    }
-
-    @Override
-    /**
-     * Retrieves cached cell status, or computes it and caches if it has not yet been cached.
-     */
-    public boolean contains(int x, int y) {
-        if (x < bounds.x || x > bounds.getMaxX()) {
+	@Override
+	/**
+	 * Retrieves cached cell status, or computes it and caches if it has not yet been cached.
+	 */
+	public boolean contains(int x, int y) {
+		if (x < bounds.x || x > bounds.getMaxX()) {
 //            throw new IllegalArgumentException(
 //                    "x must be in [" + bounds.x + ";" + bounds.getMaxX() + "] (x == " + x + ")"
 //            );
-            return false;
-        }
-        if (y < bounds.y || y > bounds.getMaxY()) {
+			return false;
+		}
+		if (y < bounds.y || y > bounds.getMaxY()) {
 //            throw new IllegalArgumentException(
 //                    "y must be in [" + bounds.y + ";" + bounds.getMaxY() + "] (y == " + y + ")");
-            return false;
-        }
-        if (cache[x - bounds.x][y - bounds.y] == NOT_CACHED) {
-            if (source.contains(x, y)) {
-                cache[x - bounds.x][y - bounds.y] = IN_BUFFER;
+			return false;
+		}
+		if (cache[x - bounds.x][y - bounds.y] == NOT_CACHED) {
+			if (source.contains(x, y)) {
+				cache[x - bounds.x][y - bounds.y] = IN_BUFFER;
 //                cellList.add(new Cell(x, y));
-            } else {
-                cache[x - bounds.x][y - bounds.y] = NOT_IN_BUFFER;
-            }
-        }
-        assert cache[x - bounds.x][y - bounds.y] == IN_BUFFER || cache[x - bounds.x][y - bounds.y] == NOT_IN_BUFFER;
-        assert cache[x - bounds.x][y - bounds.y] != NOT_CACHED;
-        return cache[x - bounds.x][y - bounds.y] == IN_BUFFER;
-    }
+			} else {
+				cache[x - bounds.x][y - bounds.y] = NOT_IN_BUFFER;
+			}
+		}
+		assert cache[x - bounds.x][y - bounds.y] == IN_BUFFER || cache[x - bounds.x][y - bounds.y] == NOT_IN_BUFFER;
+		assert cache[x - bounds.x][y - bounds.y] != NOT_CACHED;
+		return cache[x - bounds.x][y - bounds.y] == IN_BUFFER;
+	}
 
-    /**
-     * Test each cell in {@link #getBounds()} and saves it in the cache.
-     */
-    public CachedCellSet computeAll() {
-        for (int i = 0; i < bounds.getWidth(); i++) {
-            for (int j = 0; j < bounds.getHeight(); j++) {
-                contains(i + bounds.x, j + bounds.y);
-            }
-        }
-        return this;
-    }
+	/**
+	 * Test each cell in {@link #getBounds()} and saves it in the cache.
+	 */
+	public CachedCellSet computeAll() {
+		for (int i = 0; i < bounds.getWidth(); i++) {
+			for (int j = 0; j < bounds.getHeight(); j++) {
+				contains(i + bounds.x, j + bounds.y);
+			}
+		}
+		return this;
+	}
 
-    @Override
-    public String toString() {
-        return "CachedCellSet{" +
-                "bounds=" + bounds +
-                '}';
-    }
+	@Override
+	public String toString() {
+		return "CachedCellSet{" +
+			"bounds=" + bounds +
+			'}';
+	}
 }

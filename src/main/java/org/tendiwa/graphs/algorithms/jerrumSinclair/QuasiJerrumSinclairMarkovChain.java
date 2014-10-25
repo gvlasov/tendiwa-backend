@@ -17,7 +17,6 @@ import java.util.Set;
  * which each vertex has degree no less than n/2, where 2n is the number of vertices in graph, and n is the number of
  * vertices in each of two graph's partitions). However, this particular algorithm works for sparse (i.e. not dense)
  * graphs too.
- *
  */
 public class QuasiJerrumSinclairMarkovChain {
 

@@ -1,17 +1,12 @@
 package org.tendiwa.demos;
 
 import com.google.inject.Inject;
-import org.jukito.JukitoRunner;
-import org.jukito.UseModules;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.tendiwa.drawing.extensions.DrawingModule;
-import org.tendiwa.drawing.extensions.DrawingRectangleSystem;
 import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawingRectangleSystem;
 import org.tendiwa.geometry.RectangleSystem;
 import org.tendiwa.geometry.extensions.RecursivelySplitRectangleSystemFactory;
 
-import java.awt.*;
+import java.awt.Color;
 
 public class RectangleSystemDrawDemo implements Runnable {
 	@Inject

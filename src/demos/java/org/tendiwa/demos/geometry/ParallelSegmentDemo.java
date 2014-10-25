@@ -12,8 +12,9 @@ import java.awt.Color;
 public class ParallelSegmentDemo implements Runnable {
 	@Inject
 	TestCanvas canvas;
+
 	public static void main(String[] args) {
-	    Demos.run(ParallelSegmentDemo.class, new DrawingModule());
+		Demos.run(ParallelSegmentDemo.class, new DrawingModule());
 	}
 
 

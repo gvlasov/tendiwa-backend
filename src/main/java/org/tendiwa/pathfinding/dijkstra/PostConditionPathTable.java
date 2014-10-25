@@ -12,17 +12,17 @@ import org.tendiwa.geometry.Cell;
  */
 public class PostConditionPathTable extends PathTable {
 
-    public PostConditionPathTable(int startX, int startY, PathWalker walker, int maxDepth) {
-        super(startX, startY, walker, maxDepth);
-    }
+	public PostConditionPathTable(int startX, int startY, PathWalker walker, int maxDepth) {
+		super(startX, startY, walker, maxDepth);
+	}
 
-    @Override
-    protected void computeCell(int thisNumX, int thisNumY, int tableX, int tableY) {
-        if (pathTable[tableX][tableY] == NOT_COMPUTED_CELL) {
-            pathTable[tableX][tableY] = step + 1;
-            if (walker.canStepOn(thisNumX, thisNumY)) {
-                newFront.add(new Cell(thisNumX, thisNumY));
-            }
-        }
-    }
+	@Override
+	protected void computeCell(int thisNumX, int thisNumY, int tableX, int tableY) {
+		if (pathTable[tableX][tableY] == NOT_COMPUTED_CELL) {
+			pathTable[tableX][tableY] = step + 1;
+			if (walker.canStepOn(thisNumX, thisNumY)) {
+				newFront.add(new Cell(thisNumX, thisNumY));
+			}
+		}
+	}
 }

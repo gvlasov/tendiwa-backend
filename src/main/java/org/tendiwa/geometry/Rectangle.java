@@ -291,8 +291,8 @@ public class Rectangle implements Placeable, BoundedCellSet {
 	/**
 	 * Returns a {@link Point2D} that is right in the middle of this Rectangle.
 	 *
-	 * @see #getCenter
 	 * @return
+	 * @see #getCenter
 	 */
 	public Point2D getCenterPoint() {
 		return new Point2D(x + ((double) width / 2), (y + ((double) height / 2)));

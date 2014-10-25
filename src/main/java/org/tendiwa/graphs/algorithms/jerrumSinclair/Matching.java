@@ -35,6 +35,7 @@ class Matching<V, E> {
 		adjacency = new int[numberOfAllVertices];
 		initAdjacencyVector();
 	}
+
 	public boolean isPerfect() {
 		return isPerfect;
 	}

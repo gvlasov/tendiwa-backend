@@ -7,16 +7,16 @@ import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.Segment;
 
 public class DrawingSegment {
-    private DrawingSegment() {
-    }
+	private DrawingSegment() {
+	}
 
-    public static DrawingAlgorithm<Segment> withColor(final Color color) {
-        return (segment, canvas) -> {
-            for (Cell point : segment) {
-                canvas.drawCell(point.getX(), point.getY(), color);
-            }
+	public static DrawingAlgorithm<Segment> withColor(final Color color) {
+		return (segment, canvas) -> {
+			for (Cell point : segment) {
+				canvas.drawCell(point.getX(), point.getY(), color);
+			}
 
-        };
-    }
+		};
+	}
 
 }

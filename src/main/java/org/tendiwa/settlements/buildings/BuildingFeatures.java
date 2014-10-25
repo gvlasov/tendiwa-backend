@@ -1,10 +1,8 @@
 package org.tendiwa.settlements.buildings;
 
-import com.sun.org.apache.xalan.internal.xsltc.dom.DocumentCache;
 import org.tendiwa.core.CardinalDirection;
 import org.tendiwa.core.Character;
 import org.tendiwa.geometry.CellSet;
-import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.settlements.RectangleWithNeighbors;
 
 import java.util.LinkedList;

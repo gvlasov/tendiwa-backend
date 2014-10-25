@@ -4,9 +4,9 @@ import org.tendiwa.lexeme.Localizable;
 
 public interface DamageSource extends Localizable {
 
-public DamageSourceType getSourceType();
+	public DamageSourceType getSourceType();
 
-enum DamageSourceType {
-	CHARACTER, ITEM
-}
+	enum DamageSourceType {
+		CHARACTER, ITEM
+	}
 }

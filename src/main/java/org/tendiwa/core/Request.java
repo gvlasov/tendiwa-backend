@@ -6,5 +6,5 @@ package org.tendiwa.core;
  * which is error-inducing.
  */
 public interface Request {
-public void process();
+	public void process();
 }

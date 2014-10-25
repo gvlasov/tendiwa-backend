@@ -20,6 +20,7 @@ import java.awt.Color;
 public class MinimumCycleBasisDemo implements Runnable {
 	@Inject
 	TestCanvas canvas;
+
 	public static void main(String[] args) {
 		Demos.run(MinimumCycleBasisDemo.class, new DrawingModule());
 	}

@@ -11,6 +11,7 @@ public class MaximalCellRectangleFinder {
 	private MaximalCellRectangleFinder() {
 		throw new UnsupportedOperationException();
 	}
+
 	/**
 	 * Finds a large enough axis-parallel rectangle in a 2d array of obstacles.
 	 *

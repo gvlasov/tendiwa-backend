@@ -24,9 +24,11 @@ enum BodyPartType {
 	 * af a particular character!).
 	 */
 	final int id;
+
 	BodyPartType(int id) {
 		this.id = id;
 	}
+
 	public static BodyPartType string2BodyPart(String value) {
 		if (value.equals("head")) {
 			return BodyPartType.HEAD;
@@ -63,16 +65,18 @@ enum BodyPartType {
 		} else if (value.equals("tongue")) {
 			return BodyPartType.TONGUE;
 		} else {
-			throw new Error("Wrong body part name `"+value+"`");
+			throw new Error("Wrong body part name `" + value + "`");
 		}
 	}
+
 	public String toString() {
 		return super.toString().toLowerCase();
 	}
+
 	/**
 	 * Returns an id of this body part ammunitionType.
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public int getId() {
 		return id;

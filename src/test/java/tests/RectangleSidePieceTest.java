@@ -48,6 +48,7 @@ public class RectangleSidePieceTest {
 		assertFalse(bigPiece.contains(wrongPiece));
 		assertTrue(wrongPiece.contains(wrongPiece));
 	}
+
 	@Test
 	public void splitWithPieces() {
 		RectangleSidePiece piece = new RectangleSidePiece(

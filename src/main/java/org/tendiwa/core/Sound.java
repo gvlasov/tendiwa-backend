@@ -3,10 +3,9 @@ package org.tendiwa.core;
 /**
  * Represents a single sound that is, unlike {@link SoundSource} heard by
  * characters at certain moment.
- * 
- * @see SoundSource.
+ *
  * @author suseika
- * 
+ * @see SoundSource.
  */
 public class Sound {
 	public SoundType type;

@@ -6,6 +6,7 @@ public class NodeObserver {
 	public NodeObserver(Node node) {
 		this.node = node;
 	}
+
 	public void changeNode(Node from, Node to) {
 		assert node == from;
 		node = to;

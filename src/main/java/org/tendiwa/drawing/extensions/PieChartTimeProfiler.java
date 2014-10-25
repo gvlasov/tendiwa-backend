@@ -40,10 +40,10 @@ public class PieChartTimeProfiler {
 	 */
 	public void draw() {
 		chart.setTitleSupplier(() -> "Time elapsed: " + chart
-			.getData()
-			.stream()
-			.map(PieChart.Data::getPieValue)
-			.reduce((double) 0, (a, b) -> a + b) + " " + PieChartTimeProfiler.abbreviate(timeUnit)
+				.getData()
+				.stream()
+				.map(PieChart.Data::getPieValue)
+				.reduce((double) 0, (a, b) -> a + b) + " " + PieChartTimeProfiler.abbreviate(timeUnit)
 		);
 		chart.draw();
 	}

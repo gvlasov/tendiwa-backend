@@ -1,16 +1,16 @@
 package org.tendiwa.graphs;
 
 public class IsolatedVertex<V> implements Primitive<V> {
-    private V vertex;
+	private V vertex;
 
-    public IsolatedVertex(V vertex) {
-        super();
+	public IsolatedVertex(V vertex) {
+		super();
 
-        this.vertex = vertex;
-    }
+		this.vertex = vertex;
+	}
 
-    @Override
-    public void insert(V vertex) {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public void insert(V vertex) {
+		throw new UnsupportedOperationException();
+	}
 }

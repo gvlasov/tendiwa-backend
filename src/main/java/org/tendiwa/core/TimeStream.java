@@ -28,59 +28,61 @@ import java.util.Set;
  * </ol>
  */
 public class TimeStream {
-/**
- * How far from character should terrain be loaded (in chunks)
- */
-public static int BASE_ENERGY = 500;
-private final Observable model;
-private final SinglePlayerMode singlePlayerMode;
-/**
- * All the Characters that take their turns in this TimeStream, both PlayerCharacters and NonPlayerCharacters.
- */
-HashSet<Character> characters = new HashSet<>();
-/**
- * Chunks of territory that belong to this TimeStream.
- */
-HashSet<Chunk> chunks = new HashSet<>();
-/**
- * What character is currently seen by who is saved here. Personally, each character himself knows a set of characters
- * he sees; this field contains backward relation - a set of characters a character is seen by. Only NonPlayerCharacters
- * are considered the ones who can see - vision of PlayerCharacters is computed on the client side.
- *
- * @see TimeStream#notifyNeighborsVisiblilty(Character)
- */
-private HashMap<Character, Set<NonPlayerCharacter>> observersOf = new HashMap<>();
-/**
- * All the NonPlayerCharacters that take their turns in this TimeStream.
- */
-private HashSet<NonPlayerCharacter> nonPlayerCharacters = new HashSet<>();
+	/**
+	 * How far from character should terrain be loaded (in chunks)
+	 */
+	public static int BASE_ENERGY = 500;
+	private final Observable model;
+	private final SinglePlayerMode singlePlayerMode;
+	/**
+	 * All the Characters that take their turns in this TimeStream, both PlayerCharacters and NonPlayerCharacters.
+	 */
+	HashSet<Character> characters = new HashSet<>();
+	/**
+	 * Chunks of territory that belong to this TimeStream.
+	 */
+	HashSet<Chunk> chunks = new HashSet<>();
+	/**
+	 * What character is currently seen by who is saved here. Personally, each character himself knows a set of
+	 * characters
+	 * he sees; this field contains backward relation - a set of characters a character is seen by. Only
+	 * NonPlayerCharacters
+	 * are considered the ones who can see - vision of PlayerCharacters is computed on the client side.
+	 *
+	 * @see TimeStream#notifyNeighborsVisiblilty(Character)
+	 */
+	private HashMap<Character, Set<NonPlayerCharacter>> observersOf = new HashMap<>();
+	/**
+	 * All the NonPlayerCharacters that take their turns in this TimeStream.
+	 */
+	private HashSet<NonPlayerCharacter> nonPlayerCharacters = new HashSet<>();
 /**
  * Events, accumulated here in this ArrayList each turn, ready to send out to clients.
  */
 
-/**
- * Initiate a TimeStream around one PlayerCharacter. Places a PlayerCharacter in this TimeStream, which makes
- * PlayerCharacter's client receive events from this TimeStream and determines PlayerCharacter's turn queue.
- */
-@Inject
-public TimeStream(
-	@Named("tendiwa") Observable model,
-    SinglePlayerMode singlePlayerMode
-) {
-	this.model = model;
-	this.singlePlayerMode = singlePlayerMode;
-	characters = new HashSet<>();
-}
+	/**
+	 * Initiate a TimeStream around one PlayerCharacter. Places a PlayerCharacter in this TimeStream, which makes
+	 * PlayerCharacter's client receive events from this TimeStream and determines PlayerCharacter's turn queue.
+	 */
+	@Inject
+	public TimeStream(
+		@Named("tendiwa") Observable model,
+		SinglePlayerMode singlePlayerMode
+	) {
+		this.model = model;
+		this.singlePlayerMode = singlePlayerMode;
+		characters = new HashSet<>();
+	}
 
-private void makeObservable() {
+	private void makeObservable() {
 
-}
+	}
 
-public HashSet<Character> getCharacters() {
-	return characters;
-}
+	public HashSet<Character> getCharacters() {
+		return characters;
+	}
 
-public void addNonPlayerCharacter(NonPlayerCharacter character) {
+	public void addNonPlayerCharacter(NonPlayerCharacter character) {
 //	assert character.chunk != null;
 //	if (!chunks.contains(character.chunk)) {
 //		throw new RuntimeException(
@@ -88,118 +90,119 @@ public void addNonPlayerCharacter(NonPlayerCharacter character) {
 //				+ " must be in a timeStream's chunk to be added to timeStream. "
 //				+ "His chunk is " + character.chunk);
 //	}
-	nonPlayerCharacters.add(character);
-	characters.add(character);
-	observersOf.put(character, new HashSet<NonPlayerCharacter>());
-	character.setTimeStream(this);
-}
-
-public void removeCharacter(Character character) {
-	if (!characters.contains(character)) {
-		throw new Error("Character " + character + " is not in this time stream");
+		nonPlayerCharacters.add(character);
+		characters.add(character);
+		observersOf.put(character, new HashSet<NonPlayerCharacter>());
+		character.setTimeStream(this);
 	}
-	characters.remove(character);
-}
 
-public void removeCharacter(NonPlayerCharacter character) {
-	if (!characters.contains(character)) {
-		throw new Error("Character " + character
-			+ " is not in this time stream");
-	}
-	characters.remove(character);
-	nonPlayerCharacters.remove(character);
-}
-
-public void makeSound(int x, int y, SoundType type, Localizable soundSource) {
-	assert type != null;
-	model.emitEvent(new EventSound(type, soundSource, x, y));
-}
-
-public Character getCharacterById(int characterId) {
-	for (Character character : characters) {
-		if (character.getId() == characterId) {
-			return character;
+	public void removeCharacter(Character character) {
+		if (!characters.contains(character)) {
+			throw new Error("Character " + character + " is not in this time stream");
 		}
+		characters.remove(character);
 	}
-	throw new Error("No character with id " + characterId);
-}
 
-/**
- * Get the next character in turn queue.
- *
- * @return Character
- */
-public Character next() {
-	Character nextCharacter = null;
-	// Get the character with the greatest action points left
-	for (Character ch : characters) {
-		if (nextCharacter == null
-			|| ch.getActionPoints() > nextCharacter.getActionPoints()) {
-			nextCharacter = ch;
+	public void removeCharacter(NonPlayerCharacter character) {
+		if (!characters.contains(character)) {
+			throw new Error("Character " + character
+				+ " is not in this time stream");
 		}
+		characters.remove(character);
+		nonPlayerCharacters.remove(character);
 	}
-	// If all the characters' energy is less than 0, then here goes the next
-	// turn
-	if (nextCharacter.getActionPoints() <= 0) {
+
+	public void makeSound(int x, int y, SoundType type, Localizable soundSource) {
+		assert type != null;
+		model.emitEvent(new EventSound(type, soundSource, x, y));
+	}
+
+	public Character getCharacterById(int characterId) {
+		for (Character character : characters) {
+			if (character.getId() == characterId) {
+				return character;
+			}
+		}
+		throw new Error("No character with id " + characterId);
+	}
+
+	/**
+	 * Get the next character in turn queue.
+	 *
+	 * @return Character
+	 */
+	public Character next() {
+		Character nextCharacter = null;
+		// Get the character with the greatest action points left
 		for (Character ch : characters) {
-			ch.increaseActionPoints(BASE_ENERGY);
+			if (nextCharacter == null
+				|| ch.getActionPoints() > nextCharacter.getActionPoints()) {
+				nextCharacter = ch;
+			}
 		}
-		return next();
+		// If all the characters' energy is less than 0, then here goes the next
+		// turn
+		if (nextCharacter.getActionPoints() <= 0) {
+			for (Character ch : characters) {
+				ch.increaseActionPoints(BASE_ENERGY);
+			}
+			return next();
+		}
+		assert nextCharacter != null;
+		return nextCharacter;
 	}
-	assert nextCharacter != null;
-	return nextCharacter;
-}
 
-/**
- * Add a chunk to the TimeStream, set chunk's timeStream pointer to this TimeStream and add an event for players that
- * this chunk has been added to the TimeStream.
- *
- * @param chunk
- */
-void addChunk(Chunk chunk) {
-	chunk.setTimeStream(this);
-	chunks.add(chunk);
+	/**
+	 * Add a chunk to the TimeStream, set chunk's timeStream pointer to this TimeStream and add an event for players
+	 * that
+	 * this chunk has been added to the TimeStream.
+	 *
+	 * @param chunk
+	 */
+	void addChunk(Chunk chunk) {
+		chunk.setTimeStream(this);
+		chunks.add(chunk);
 //	throw new UnsupportedOperationException();
-}
-
-public void excludeChunk(Chunk chunk) {
-	if (!chunk.belongsToTimeStream(this)) {
-		throw new Error(chunk + " is not in this time stream!");
 	}
-	chunks.remove(chunk);
-	chunk.setTimeStream(null);
-	throw new UnsupportedOperationException();
-}
 
-/**
- * Gets a set of characters that are near this character in square with VISION_RANGE*2+1 side length.
- *
- * @return A set of characters that are close enough to this character.
- */
-public HashSet<NonPlayerCharacter> getNearbyNonPlayerCharacters(Character character) {
-	HashSet<NonPlayerCharacter> answer = new HashSet<>();
-	for (NonPlayerCharacter neighbor : nonPlayerCharacters) {
-		// Quickly select characters that could be seen (including this Seer
-		// itself)
-		if (Math.abs(neighbor.x - character.x) <= Seer.VISION_RANGE && Math.abs(neighbor.y - character.y) <= Seer.VISION_RANGE) {
-			answer.add(neighbor);
+	public void excludeChunk(Chunk chunk) {
+		if (!chunk.belongsToTimeStream(this)) {
+			throw new Error(chunk + " is not in this time stream!");
+		}
+		chunks.remove(chunk);
+		chunk.setTimeStream(null);
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * Gets a set of characters that are near this character in square with VISION_RANGE*2+1 side length.
+	 *
+	 * @return A set of characters that are close enough to this character.
+	 */
+	public HashSet<NonPlayerCharacter> getNearbyNonPlayerCharacters(Character character) {
+		HashSet<NonPlayerCharacter> answer = new HashSet<>();
+		for (NonPlayerCharacter neighbor : nonPlayerCharacters) {
+			// Quickly select characters that could be seen (including this Seer
+			// itself)
+			if (Math.abs(neighbor.x - character.x) <= Seer.VISION_RANGE && Math.abs(neighbor.y - character.y) <= Seer.VISION_RANGE) {
+				answer.add(neighbor);
+			}
+		}
+		answer.remove(character);
+		return answer;
+	}
+
+	public void unloadUnusedChunks(HorizontalPlane plane) {
+		Set<Chunk> chunksToExclude = new HashSet<>();
+		for (Chunk chunk : chunks) {
+			if (chunk.plane != plane) {
+				continue;
+			}
+		}
+		for (Chunk chunk : chunksToExclude) {
+			this.excludeChunk(chunk);
 		}
 	}
-	answer.remove(character);
-	return answer;
-}
-
-public void unloadUnusedChunks(HorizontalPlane plane) {
-	Set<Chunk> chunksToExclude = new HashSet<>();
-	for (Chunk chunk : chunks) {
-		if (chunk.plane != plane) {
-			continue;
-		}
-	}
-	for (Chunk chunk : chunksToExclude) {
-		this.excludeChunk(chunk);
-	}
-}
 
 	/*
 	 * NonPlayerCharacters may observe Characters -  and so track their current
@@ -213,78 +216,80 @@ public void unloadUnusedChunks(HorizontalPlane plane) {
 	 * by player himself, and their visibility is computed on the client-side.
 	 */
 
-/**
- * Remember that Character aim can now be seen by NonPlayerCharacter observer.
- *
- * @param aim
- * 	Key; who is observed
- * @param observer
- * 	Value; who is he observed by;
- */
-void addObserver(Character aim, NonPlayerCharacter observer) {
-	observersOf.get(aim).add(observer);
-}
+	/**
+	 * Remember that Character aim can now be seen by NonPlayerCharacter observer.
+	 *
+	 * @param aim
+	 * 	Key; who is observed
+	 * @param observer
+	 * 	Value; who is he observed by;
+	 */
+	void addObserver(Character aim, NonPlayerCharacter observer) {
+		observersOf.get(aim).add(observer);
+	}
 
-/**
- * Tells every nearby {@link NonPlayerCharacter} about this Character's new position, so nearby characters can update
- * status of this character as seen/unseen and remember where they have seen this aim last time.
- */
-public void notifyNeighborsVisiblilty(Character aim) {
+	/**
+	 * Tells every nearby {@link NonPlayerCharacter} about this Character's new position, so nearby characters can
+	 * update
+	 * status of this character as seen/unseen and remember where they have seen this aim last time.
+	 */
+	public void notifyNeighborsVisiblilty(Character aim) {
 	/*
 	 * First each of NonPlayerCharacters in TimeStream tries to see the aim,
 	 * then all of the aim's observers try to unsee it. Then all the current
 	 * observers remember aim's coordinate.
 	 */
-	for (NonPlayerCharacter neighbor : nonPlayerCharacters) {
-		if (neighbor == aim) {
-			continue;
+		for (NonPlayerCharacter neighbor : nonPlayerCharacters) {
+			if (neighbor == aim) {
+				continue;
+			}
+			neighbor.tryToSee(aim);
 		}
-		neighbor.tryToSee(aim);
+		Set<NonPlayerCharacter> currentObservers = observersOf.get(aim);
+		// Need to copy observers because its contents will change in the next
+		// for loop.
+		HashSet<NonPlayerCharacter> observersCopy = new HashSet<>(currentObservers);
+		for (NonPlayerCharacter neighbor : observersCopy) {
+			neighbor.tryToUnsee(aim);
+		}
+		for (NonPlayerCharacter character : currentObservers) {
+			character.updateObservation(aim, aim.x, aim.y);
+		}
 	}
-	Set<NonPlayerCharacter> currentObservers = observersOf.get(aim);
-	// Need to copy observers because its contents will change in the next
-	// for loop.
-	HashSet<NonPlayerCharacter> observersCopy = new HashSet<>(currentObservers);
-	for (NonPlayerCharacter neighbor : observersCopy) {
-		neighbor.tryToUnsee(aim);
-	}
-	for (NonPlayerCharacter character : currentObservers) {
-		character.updateObservation(aim, aim.x, aim.y);
-	}
-}
 
-void removeObserver(Character aim, NonPlayerCharacter observer) {
-	observersOf.get(aim).remove(observer);
-}
+	void removeObserver(Character aim, NonPlayerCharacter observer) {
+		observersOf.get(aim).remove(observer);
+	}
 
-public void claimCharacterDisappearance(Character character) {
-	for (NonPlayerCharacter ch : observersOf.get(character)) {
-		ch.unsee(character);
+	public void claimCharacterDisappearance(Character character) {
+		for (NonPlayerCharacter ch : observersOf.get(character)) {
+			ch.unsee(character);
 //		removeObserver(character, ch); this caused concurrent modification
-	}
-	if (!singlePlayerMode.isPlayer(character)) {
-		for (Character ch : observersOf.keySet()) {
-			removeObserver(ch, (NonPlayerCharacter) character);
 		}
+		if (!singlePlayerMode.isPlayer(character)) {
+			for (Character ch : observersOf.keySet()) {
+				removeObserver(ch, (NonPlayerCharacter) character);
+			}
+		}
+		observersOf.remove(character);
 	}
-	observersOf.remove(character);
-}
 
-public void addPlayerCharacter(Character character) {
-	characters.add(character);
-	character.setTimeStream(this);
-	observersOf.put(character, new HashSet<NonPlayerCharacter>());
-}
+	public void addPlayerCharacter(Character character) {
+		characters.add(character);
+		character.setTimeStream(this);
+		observersOf.put(character, new HashSet<NonPlayerCharacter>());
+	}
 
-/**
- * Returns what {@link NonPlayerCharacter} can currently see a particular Character (whether he is a NonPlayerCharacter
- * or a player character).
- *
- * @param character
- * 	A character to see.
- * @return What non-player characters can see a {@code character}.
- */
-Set<NonPlayerCharacter> getObservers(Character character) {
-	return observersOf.get(character);
-}
+	/**
+	 * Returns what {@link NonPlayerCharacter} can currently see a particular Character (whether he is a
+	 * NonPlayerCharacter
+	 * or a player character).
+	 *
+	 * @param character
+	 * 	A character to see.
+	 * @return What non-player characters can see a {@code character}.
+	 */
+	Set<NonPlayerCharacter> getObservers(Character character) {
+		return observersOf.get(character);
+	}
 }

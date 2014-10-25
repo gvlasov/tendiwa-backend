@@ -15,6 +15,7 @@ public final class UniqueObject {
 	public final int getId() {
 		return id;
 	}
+
 	public final int hashCode() {
 		return id;
 	}

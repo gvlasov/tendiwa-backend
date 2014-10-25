@@ -1,12 +1,11 @@
 package org.tendiwa.graphs;
 
 import org.junit.Test;
+import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Segment2D;
 
 import static org.junit.Assert.*;
 import static org.tendiwa.geometry.Vectors2D.*;
-
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Segment2D;
 
 public class Vectors2DTest {
 	@Test

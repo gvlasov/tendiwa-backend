@@ -8,6 +8,7 @@ import java.util.Map;
 
 class MovementRegistry {
 	private Map<Segment2D, OppositeEdgeStartMovement> movements = new HashMap<>();
+
 	MovementRegistry(List<Node> nodes) {
 		for (Node node : nodes) {
 			movements.put(node.currentEdge, new OppositeEdgeStartMovement(node));

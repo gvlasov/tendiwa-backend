@@ -2,8 +2,6 @@ package org.tendiwa.demos.geometry;
 
 import com.google.inject.Inject;
 import org.tendiwa.demos.Demos;
-import org.tendiwa.demos.geometry.polygons.ConvexAndReflexAmoeba;
-import org.tendiwa.demos.geometry.polygons.CutUpRing;
 import org.tendiwa.drawing.GifBuilder;
 import org.tendiwa.drawing.GifBuilderFactory;
 import org.tendiwa.drawing.TestCanvas;
@@ -13,18 +11,13 @@ import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.StraightSkeleton;
-import org.tendiwa.geometry.extensions.PointTrail;
-import org.tendiwa.geometry.extensions.straightSkeleton.KendziStraightSkeleton;
-import org.tendiwa.geometry.extensions.straightSkeleton.PolygonShrinker;
 import org.tendiwa.geometry.extensions.straightSkeleton.SuseikaStraightSkeleton;
-import org.tendiwa.geometry.extensions.twakStraightSkeleton.TwakStraightSkeleton;
 
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PrimitiveIterator;
 import java.util.function.IntSupplier;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;

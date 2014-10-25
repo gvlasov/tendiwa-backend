@@ -13,7 +13,7 @@ import java.util.Iterator;
  * Note: this class has natural ordering that is inconsistent with {@link Object#equals(Object)}.
  */
 public class SkeletonEvent extends Point2D implements Comparable<SkeletonEvent> {
-	 final double distanceToOriginalEdge;
+	final double distanceToOriginalEdge;
 	final EventType event;
 	final OppositeEdgeStartMovement oppositeEdgeStartMovement;
 	final OppositeEdgeStartMovement oppositeEdgeEndMovement;

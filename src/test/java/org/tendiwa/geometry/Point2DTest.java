@@ -15,7 +15,7 @@ public class Point2DTest {
 			1e-10
 		);
 		assertEquals(point.distanceToLine(
-			Segment2D.create(40, 20, 40, 100)),
+				Segment2D.create(40, 20, 40, 100)),
 			20,
 			1e-10
 		);

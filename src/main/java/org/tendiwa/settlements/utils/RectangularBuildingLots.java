@@ -1,8 +1,5 @@
 package org.tendiwa.settlements.utils;
 
-import com.google.common.collect.Iterators;
-import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingEnclosedBlock;
 import org.tendiwa.geometry.extensions.PolygonRasterizer;
 import org.tendiwa.geometry.extensions.daveedvMaxRec.MaximalRectanlges;
 import org.tendiwa.settlements.EnclosedBlock;
@@ -10,8 +7,6 @@ import org.tendiwa.settlements.InnerEnclosedBlocksIndex;
 import org.tendiwa.settlements.RectangleWithNeighbors;
 import org.tendiwa.settlements.RoadsPlanarGraphModel;
 
-import java.awt.Color;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.Collectors;
 

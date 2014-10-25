@@ -19,10 +19,10 @@ import java.util.*;
  * Finds a mapping from lots to architecture that satisfies architecture policies.
  */
 final class UrbanPlanningStrategy {
+	private static final EdgeFactory<Object, DefaultEdge> edgeFactory = (a, b) -> new DefaultEdge();
 	private final Map<ArchitecturePolicy, Architecture> architecture;
 	private final Set<RectangleWithNeighbors> lots;
 	private final Random random;
-	private static final EdgeFactory<Object, DefaultEdge> edgeFactory = (a, b) -> new DefaultEdge();
 	private final Set<RectangleWithNeighbors> usedLots = new HashSet<>();
 	private final LinkedHashMap<ArchitecturePolicy, LinkedHashSet<RectangleWithNeighbors>> possiblePlaces;
 

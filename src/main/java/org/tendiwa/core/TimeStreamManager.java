@@ -11,39 +11,39 @@ import java.util.HashSet;
 
 @Singleton
 public class TimeStreamManager {
-private final SinglePlayerMode singlePlayerMode;
-private final TimeStreamFactory factory;
-private final Collection<TimeStream> timeStreams = new HashSet<>();
+	private final SinglePlayerMode singlePlayerMode;
+	private final TimeStreamFactory factory;
+	private final Collection<TimeStream> timeStreams = new HashSet<>();
 
-@Inject
-TimeStreamManager(
-	SinglePlayerMode singlePlayerMode,
-	TimeStreamFactory factory
-) {
+	@Inject
+	TimeStreamManager(
+		SinglePlayerMode singlePlayerMode,
+		TimeStreamFactory factory
+	) {
 
-	this.singlePlayerMode = singlePlayerMode;
-	this.factory = factory;
-}
+		this.singlePlayerMode = singlePlayerMode;
+		this.factory = factory;
+	}
 
-public void populate(World world) {
-	TimeStream playerTimeStream = createTimeStream();
-	for (HorizontalPlane horizontalPlane : world.getPlanes()) {
-		for (Chunk chunk : horizontalPlane.getChunks()) {
-			for (Character character : chunk.getCharacters()) {
-				if (singlePlayerMode.isPlayer(character)) {
-					playerTimeStream.addPlayerCharacter(character);
-				} else {
-					playerTimeStream.addNonPlayerCharacter((NonPlayerCharacter) character);
+	public void populate(World world) {
+		TimeStream playerTimeStream = createTimeStream();
+		for (HorizontalPlane horizontalPlane : world.getPlanes()) {
+			for (Chunk chunk : horizontalPlane.getChunks()) {
+				for (Character character : chunk.getCharacters()) {
+					if (singlePlayerMode.isPlayer(character)) {
+						playerTimeStream.addPlayerCharacter(character);
+					} else {
+						playerTimeStream.addNonPlayerCharacter((NonPlayerCharacter) character);
+					}
 				}
 			}
 		}
+		assert timeStreams.size() > 0;
 	}
-	assert timeStreams.size() > 0;
-}
 
-public TimeStream createTimeStream() {
-	TimeStream timeStream = factory.create();
-	timeStreams.add(timeStream);
-	return timeStream;
-}
+	public TimeStream createTimeStream() {
+		TimeStream timeStream = factory.create();
+		timeStreams.add(timeStream);
+		return timeStream;
+	}
 }

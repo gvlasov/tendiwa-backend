@@ -52,48 +52,6 @@ public final class FairLotFacadeAndStreetAssigner implements LotFacadeAssigner, 
 		fairlyAssignTheRestOfBuildings();
 	}
 
-	/**
-	 * Assigns a street to lots. For each lot, algorithms selects a street that has the greatest <i>thirst for
-	 * lot</i>. Thirst for lot is {@code length(street)/numberOfLotsAlreadyAssignedTo(street)} and may change with each
-	 * iteration.
-	 */
-	private void fairlyAssignTheRestOfBuildings() {
-		for (List<Point2D> street : streets) {
-			streetLengths.put(street, computeStreetLength(street));
-			// Initially all streets have effectively infinite thirst (because they h
-			if (!streetThirstsForLot.containsKey(street)) {
-				streetThirstsForLot.put(street, Double.MAX_VALUE);
-			}
-		}
-		for (RectangleWithNeighbors lot : lots) {
-			if (facades.containsKey(lot)) {
-				continue;
-			}
-			List<Point2D> thirstiestStreet = null;
-			Segment2D thirstiestSegment = null;
-			double maxThirst = -1;
-			for (Segment2D segment : lotsAndStreets.getSegmentsForLot(lot)) {
-				List<Point2D> street = lotsAndStreets.getStreetForSegment(segment);
-				double thirst = streetThirstsForLot.get(street);
-				if (thirst > maxThirst) {
-					thirstiestStreet = street;
-					maxThirst = thirst;
-					thirstiestSegment = segment;
-				}
-			}
-			assert thirstiestStreet != null;
-			assert thirstiestSegment != null;
-			lotToStreet.put(lot, thirstiestStreet);
-			facades.put(lot, getDirectionToSegment(thirstiestSegment, lot.rectangle));
-			streetToLots.put(thirstiestStreet, lot);
-			updateThirst(thirstiestStreet);
-		}
-	}
-
-	private void updateThirst(List<Point2D> street) {
-		streetThirstsForLot.put(street, streetLengths.get(street) / streetToLots.get(street).size());
-	}
-
 	private static double computeStreetLength(List<Point2D> street) {
 		int size = street.size();
 		double sum = 0;
@@ -102,27 +60,6 @@ public final class FairLotFacadeAndStreetAssigner implements LotFacadeAssigner, 
 		}
 		return sum;
 	}
-
-	/**
-	 * Assign facade directions and streets to those buildings that have only a single street near them according to
-	 * {@link #lotsAndStreets}.
-	 */
-	private void assignSingleStreetBuildings() {
-		for (RectangleWithNeighbors lot : lotsAndStreets.getLots()) {
-			Set<List<Point2D>> streetsForLot = lotsAndStreets.getStreetsForLot(lot);
-			if (streetsForLot.size() == 1) {
-				Collection<Segment2D> segmentsForLot = lotsAndStreets.getSegmentsForLot(lot);
-				for (Segment2D segment : segmentsForLot) {
-					facades.put(lot, getDirectionToSegment(segment, lot.rectangle));
-					List<Point2D> street = streetsForLot.iterator().next();
-					lotToStreet.put(lot, street);
-					streetToLots.put(street, lot);
-					updateThirst(street);
-				}
-			}
-		}
-	}
-
 
 	/**
 	 * Returns a direction you need to go from {@code rectangle}'s side to get to {@code segment}.
@@ -262,6 +199,68 @@ public final class FairLotFacadeAndStreetAssigner implements LotFacadeAssigner, 
 	 */
 	public static FairLotFacadeAndStreetAssigner create(LotsTouchingStreets lotsTouchingStreets) {
 		return new FairLotFacadeAndStreetAssigner(lotsTouchingStreets);
+	}
+
+	/**
+	 * Assigns a street to lots. For each lot, algorithms selects a street that has the greatest <i>thirst for
+	 * lot</i>. Thirst for lot is {@code length(street)/numberOfLotsAlreadyAssignedTo(street)} and may change with each
+	 * iteration.
+	 */
+	private void fairlyAssignTheRestOfBuildings() {
+		for (List<Point2D> street : streets) {
+			streetLengths.put(street, computeStreetLength(street));
+			// Initially all streets have effectively infinite thirst (because they h
+			if (!streetThirstsForLot.containsKey(street)) {
+				streetThirstsForLot.put(street, Double.MAX_VALUE);
+			}
+		}
+		for (RectangleWithNeighbors lot : lots) {
+			if (facades.containsKey(lot)) {
+				continue;
+			}
+			List<Point2D> thirstiestStreet = null;
+			Segment2D thirstiestSegment = null;
+			double maxThirst = -1;
+			for (Segment2D segment : lotsAndStreets.getSegmentsForLot(lot)) {
+				List<Point2D> street = lotsAndStreets.getStreetForSegment(segment);
+				double thirst = streetThirstsForLot.get(street);
+				if (thirst > maxThirst) {
+					thirstiestStreet = street;
+					maxThirst = thirst;
+					thirstiestSegment = segment;
+				}
+			}
+			assert thirstiestStreet != null;
+			assert thirstiestSegment != null;
+			lotToStreet.put(lot, thirstiestStreet);
+			facades.put(lot, getDirectionToSegment(thirstiestSegment, lot.rectangle));
+			streetToLots.put(thirstiestStreet, lot);
+			updateThirst(thirstiestStreet);
+		}
+	}
+
+	private void updateThirst(List<Point2D> street) {
+		streetThirstsForLot.put(street, streetLengths.get(street) / streetToLots.get(street).size());
+	}
+
+	/**
+	 * Assign facade directions and streets to those buildings that have only a single street near them according to
+	 * {@link #lotsAndStreets}.
+	 */
+	private void assignSingleStreetBuildings() {
+		for (RectangleWithNeighbors lot : lotsAndStreets.getLots()) {
+			Set<List<Point2D>> streetsForLot = lotsAndStreets.getStreetsForLot(lot);
+			if (streetsForLot.size() == 1) {
+				Collection<Segment2D> segmentsForLot = lotsAndStreets.getSegmentsForLot(lot);
+				for (Segment2D segment : segmentsForLot) {
+					facades.put(lot, getDirectionToSegment(segment, lot.rectangle));
+					List<Point2D> street = streetsForLot.iterator().next();
+					lotToStreet.put(lot, street);
+					streetToLots.put(street, lot);
+					updateThirst(street);
+				}
+			}
+		}
 	}
 
 	@Override
