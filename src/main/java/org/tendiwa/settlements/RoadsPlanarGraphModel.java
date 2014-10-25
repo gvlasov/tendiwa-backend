@@ -9,10 +9,7 @@ import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.graph.UndirectedSubgraph;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.extensions.PlanarGraphEdgesSelfIntersection;
-import org.tendiwa.geometry.extensions.PlanarGraphs;
-import org.tendiwa.geometry.extensions.Point2DRowComparator;
-import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
+import org.tendiwa.geometry.extensions.*;
 import org.tendiwa.graphs.Filament;
 import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.graphs.MinimumCycleBasis;
@@ -111,7 +108,7 @@ public final class RoadsPlanarGraphModel {
 	 * 	<p>
 	 * 	A radius around secondary roads' end points inside which new end points would snap to existing ones.
 	 * @param maxStartPointsPerCell
-	 * 	Number of starting points for road generation in each NetworkWithinCycle.
+	 * 	Number of starting points for road generation in each NetworkWithinCycle. Must be 0 or greater.
 	 * 	<p>
 	 * 	A NetworkWithinCycle is not guaranteed to have exactly {@code maxRoadsFromPoint} starting roads, because
 	 * 	such amount might not fit into a cell.
@@ -161,8 +158,8 @@ public final class RoadsPlanarGraphModel {
 		if (deviationAngle == 0 && samplesPerStep > 1) {
 			throw new IllegalArgumentException("When deviationAngle is 0, then number of samples may be only 1");
 		}
-		if (maxStartPointsPerCell < 1) {
-			throw new IllegalArgumentException("NumOfStartPoints must be at least 1");
+		if (maxStartPointsPerCell < 0) {
+			throw new IllegalArgumentException("NumOfStartPoints must be at least 0");
 		}
 		this.random = new Random(random.nextInt());
 		this.roadsFromPoint = roadsFromPoint;
@@ -181,25 +178,25 @@ public final class RoadsPlanarGraphModel {
 		approachingPerSample = Math.cos(deviationAngle);
 		highLevelGraphEdges = highLevelRoadGraph.edgeSet();
 		lowLevelRoadGraph = buildLowLevelGraph();
-		if (!PlanarGraphEdgesSelfIntersection.test(lowLevelRoadGraph.edgeSet())) {
-			ImmutableCollection<Point2D> allIntersections = PlanarGraphEdgesSelfIntersection
-				.findAllIntersections(lowLevelRoadGraph.edgeSet());
-//			for (Point2D point : allIntersections) {
-//				TestCanvas.canvas.draw(point.toCell(), DrawingCell.withColorAndSize(Color.RED, 4));
-//			}
-//			TestCanvas.canvas.draw(lowLevelRoadGraph, DrawingGraph.withColor(Color.blue));
+		if (ShamosHoeyAlgorithm.areIntersected(lowLevelRoadGraph.edgeSet())) {
 			throw new IllegalArgumentException("Graph intersects itself");
 		}
 
 		ImmutableSet.Builder<NetworkWithinCycle> cellsBuilder = ImmutableSet.builder();
-		fillBuilderWithCells(cellsBuilder);
+		fillBuilderWithNetworks(cellsBuilder);
 		networks = cellsBuilder.build();
 		if (networks.isEmpty()) {
 			throw new SettlementGenerationException("A City with 0 city networks was made");
 		}
 	}
 
-	private void fillBuilderWithCells(ImmutableSet.Builder<NetworkWithinCycle> cellsBuilder) {
+	/**
+	 * Creates {@link org.tendiwa.settlements.NetworkWithinCycle}s and puts them to {@code celslBuilder}.
+	 *
+	 * @param cellsBuilder
+	 * 	Where to put new networks.
+	 */
+	private void fillBuilderWithNetworks(ImmutableSet.Builder<NetworkWithinCycle> cellsBuilder) {
 		MinimumCycleBasis<Point2D, Segment2D> primitives = new MinimumCycleBasis<>(
 			lowLevelRoadGraph,
 			Point2DVertexPositionAdapter.get()

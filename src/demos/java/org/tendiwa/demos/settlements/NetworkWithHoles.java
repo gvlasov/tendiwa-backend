@@ -5,34 +5,29 @@ import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.extensions.PointTrail;
 import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.settlements.RoadsPlanarGraphModel;
 import org.tendiwa.settlements.CityGeometryBuilder;
 
 public class NetworkWithHoles implements Runnable {
-    public static void main(String[] args) {
-        Demos.run(NetworkWithHoles.class);
-    }
+	public static void main(String[] args) {
+		Demos.run(NetworkWithHoles.class);
+	}
 
-    @Override
-    public void run() {
-        TestCanvas canvas = new TestCanvas(2, 400, 400);
-        SimpleGraph<Point2D, Segment2D> graph = new GraphConstructor<>(Segment2D::new)
-                .vertex(0, new Point2D(10, 10))
-                .vertex(1, new Point2D(10, 110))
-                .vertex(2, new Point2D(110, 110))
-                .vertex(3, new Point2D(110, 10))
-                .cycle(0, 1, 2, 3)
-                .vertex(4, new Point2D(30, 30))
-                .vertex(5, new Point2D(30,70))
-                .vertex(6, new Point2D(70,70))
-                .vertex(7, new Point2D(70,30))
-                .cycle(4,5,6,7)
-                .graph();
-        RoadsPlanarGraphModel roadsPlanarGraphModel = new CityGeometryBuilder(graph)
-                .withDefaults()
-                .build();
-        canvas.draw(roadsPlanarGraphModel, new CityDrawer());
+	@Override
+	public void run() {
+		TestCanvas canvas = new TestCanvas(2, 400, 400);
+		SimpleGraph<Point2D, Segment2D> graph = new GraphConstructor<>(Segment2D::new)
+			.cycleOfVertices(new PointTrail(60, 40).moveBy(30, 0).moveBy(0, 30).moveBy(-30, 0).points())
+			.cycleOfVertices(new PointTrail(20, 20).moveBy(0, 30).moveBy(30, 0).moveBy(0, -30).points())
+			.cycleOfVertices(new PointTrail(10, 10).moveBy(0, 100).moveBy(100, 0).moveBy(0, -100).points())
+			.graph();
+		RoadsPlanarGraphModel roadsPlanarGraphModel = new CityGeometryBuilder(graph)
+			.withDefaults()
+			.withMaxStartPointsPerCycle(1)
+			.build();
+		canvas.draw(roadsPlanarGraphModel, new CityDrawer());
 
-    }
+	}
 }

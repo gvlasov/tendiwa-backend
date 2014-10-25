@@ -32,7 +32,7 @@ public final class InnerFreeSpaceOfPolygon {
 		}
 		edges.add(new Segment2D(polygon.get(lastButOne), polygon.get(0)));
 
-		assert PlanarGraphEdgesSelfIntersection.test(edges);
+		assert !ShamosHoeyAlgorithm.areIntersected(edges);
 		TObjectDoubleMap<Segment2D> map = new TObjectDoubleHashMap<>(polygonSize);
 		double[] distancesToOtherEdges = new double[polygonSize];
 		for (int i = 0; i < polygonSize; i++) {

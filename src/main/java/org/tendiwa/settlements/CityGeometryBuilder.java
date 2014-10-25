@@ -78,8 +78,8 @@ public class CityGeometryBuilder {
 
 	@SuppressWarnings("unused")
 	public CityGeometryBuilder withMaxStartPointsPerCycle(int amount) {
-		if (amount < 1) {
-			throw new IllegalArgumentException("NumOfStartPoints must be at least 1");
+		if (amount < 0) {
+			throw new IllegalArgumentException("NumOfStartPoints must be at least 0");
 		}
 		this.maxNumOfStartPoints = amount;
 		return this;

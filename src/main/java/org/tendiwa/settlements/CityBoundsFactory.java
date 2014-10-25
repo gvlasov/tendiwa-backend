@@ -7,12 +7,19 @@ import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.core.Direction;
 import org.tendiwa.core.Directions;
+import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.extensions.CachedCellSet;
 import org.tendiwa.geometry.extensions.ChebyshevDistanceBufferBorder;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
+import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
+import org.tendiwa.graphs.MinimalCycle;
+import org.tendiwa.graphs.MinimumCycleBasis;
 import org.tendiwa.pathfinding.dijkstra.PathTable;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * From {@link CellSet}, creates a graph used as a base for a {@link RoadsPlanarGraphModel}.
@@ -44,7 +51,33 @@ public class CityBoundsFactory {
 				"Start cell " + startCell + " must be a ground cell, not water cell"
 			);
 		}
-		return computeCityBoundingRoads(cityShape, startCell, maxCityRadius);
+		UndirectedGraph<Point2D, Segment2D> answer = computeCityBoundingRoads(cityShape, startCell, maxCityRadius);
+		assert !minimalCyclesOfGraphHaveCommonVertices(answer);
+		return answer;
+	}
+
+	/**
+	 * Checks if there in any vertex in graph that is present in more than one of graph's minimal cycles.
+	 *
+	 * @param graph
+	 * 	A graph.
+	 * @return true if there is such vertex, false otherwise.
+	 */
+	private boolean minimalCyclesOfGraphHaveCommonVertices(UndirectedGraph<Point2D, Segment2D> graph) {
+		Set<MinimalCycle<Point2D, Segment2D>> minimalCycles = new MinimumCycleBasis<>(graph,
+			Point2DVertexPositionAdapter.get())
+			.minimalCyclesSet();
+		Set<Point2D> usedVertices = new HashSet<>();
+		for (MinimalCycle<Point2D, Segment2D> cycle : minimalCycles) {
+			for (Point2D vertex : cycle.vertexList()) {
+				boolean added = usedVertices.add(vertex);
+				if (!added) {
+					System.out.println(vertex);
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -86,7 +119,7 @@ public class CityBoundsFactory {
 			bufferBorder,
 			startCell,
 			cityShape.getBounds(),
-			radius+1
+			radius + 1
 		);
 		CachedCellSet culledBufferBorder = new CachedCellSet(
 			new ChebyshevDistanceBufferBorder(

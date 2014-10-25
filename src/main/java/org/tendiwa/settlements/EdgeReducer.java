@@ -10,26 +10,27 @@ import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.terrain.KnownWorldGenerationException;
-import org.tendiwa.terrain.WorldGenerationException;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.Set;
 
 //TODO: This class mutates constructor argument. Check that out.
 
-/**
- * Joins edges of a graph that are consecutive and lie on the same line. Graph is mutated as a result.
- */
 class EdgeReducer {
 
 	private final CardinalDirection[] growingDirs = {CardinalDirection.N, CardinalDirection.E};
 	private UndirectedGraph<Point2D, Segment2D> graph;
 	private BiMap<Cell, Point2D> map;
 
-	public EdgeReducer(UndirectedGraph<Point2D, Segment2D> graph, BiMap<Cell, Point2D> map) {
-		this.graph = graph;
+	/**
+	 * @param graphToMutate
+	 * 	A graph to be mutated by the algorithm.
+	 * @param map
+	 * 	A mapping to vertices of {@code graphToMutate} from those vertices transformed to {@link Cell}s.
+	 */
+	public EdgeReducer(UndirectedGraph<Point2D, Segment2D> graphToMutate, BiMap<Cell, Point2D> map) {
+		this.graph = graphToMutate;
 		this.map = map;
 	}
 
@@ -55,6 +56,13 @@ class EdgeReducer {
 		return answer;
 	}
 
+	/**
+	 * Joins edges of a planar graph that are consecutive and lie on the same straight horizontal or vertical line.
+	 * Graph is mutated as a result.
+	 * <p>
+	 * This operation mostly removes vertices and adds new edges, but is some rare (but absolutely legitimate) cases it
+	 * may also have to add new vertices.
+	 */
 	public void reduceEdges() {
 		boolean changesMade;
 		Collection<Point2D> finalVertices = new CompactHashSet<>(map.size() / 4);
@@ -110,7 +118,7 @@ class EdgeReducer {
 //                            canvas.drawCell(oppositeMovedCell, YELLOW);
 //                            canvas.drawCell(movedCell, RED);
 						if (!graph.containsVertex(map.get(oppositeMovedCell))) {
-							indicateBorderGoesAlongItselfProblem();
+							indicateThatBorderGoesAlongItselfProblem();
 						}
 						graph.addEdge(map.get(movedCell), map.get(oppositeMovedCell));
 						finalVertices.add(map.get(movedCell));
@@ -128,11 +136,11 @@ class EdgeReducer {
 	}
 
 	/**
-	 * Notice how pink border goes along itself where inner space encounters outer space.
+	 * Notice how the pink border goes along itself where inner space encounters outer space.
 	 * <p>
 	 * <img src="http://tendiwa.org/doc-illustrations/edge-reducer-with-border-going-along-itself.png" />
 	 */
-	private void indicateBorderGoesAlongItselfProblem() {
+	private void indicateThatBorderGoesAlongItselfProblem() throws KnownWorldGenerationException {
 		throw new KnownWorldGenerationException("Border given to EdgeReducer goes along itself");
 	}
 }

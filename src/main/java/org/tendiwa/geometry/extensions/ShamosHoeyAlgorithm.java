@@ -1,8 +1,12 @@
 package org.tendiwa.geometry.extensions;
+
 import org.tendiwa.geometry.Segment2D;
 
 import java.util.*;
 
+/**
+ * This algorithm needs O(n) space and runs in O(n*log n) time.
+ */
 public class ShamosHoeyAlgorithm {
 
 	public static boolean areIntersected(Collection<Segment2D> lines) {
