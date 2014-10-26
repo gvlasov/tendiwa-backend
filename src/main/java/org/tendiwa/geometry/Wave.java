@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Set;
 
 import static java.util.Objects.*;
@@ -31,6 +32,7 @@ public class Wave implements Iterable<Cell> {
 	}
 
 	public static StepGoingOver from(Cell startCell) {
+		Objects.requireNonNull(startCell);
 		return new StepGoingOver(startCell);
 	}
 
@@ -48,9 +50,14 @@ public class Wave implements Iterable<Cell> {
 	 * @return A set of all cells of this Wave.
 	 * @throws java.lang.IndexOutOfBoundsException
 	 * 	If number of cells collected exceeds {@code limit}.
+	 * @throws java.lang.IllegalArgumentException
+	 * 	if {@code limit} is < 0.
 	 * @see #asCellSet(Rectangle)
 	 */
 	public ScatteredCellSet asCellSet(int limit) {
+		if (limit < 0) {
+			throw new IllegalArgumentException("Limit must be >= 0");
+		}
 		ImmutableSet.Builder<Cell> answer = ImmutableSet.builder();
 		int i = 0;
 		for (Cell cell : this) {

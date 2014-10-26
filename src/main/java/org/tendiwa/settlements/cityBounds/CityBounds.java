@@ -1,4 +1,4 @@
-package org.tendiwa.settlements;
+package org.tendiwa.settlements.cityBounds;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -8,52 +8,73 @@ import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.core.Direction;
 import org.tendiwa.core.Directions;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.geometry.Rectangle;
+import org.tendiwa.drawing.extensions.DrawingCellSet;
 import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.extensions.CachedCellSet;
-import org.tendiwa.geometry.extensions.ChebyshevDistanceBufferBorder;
+import org.tendiwa.geometry.extensions.ChebyshovDistanceBufferBorder;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
 import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.graphs.MinimumCycleBasis;
 import org.tendiwa.pathfinding.dijkstra.PathTable;
+import org.tendiwa.terrain.WorldGenerationException;
 
+import java.awt.Color;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * From {@link CellSet}, creates a graph used as a base for a {@link RoadsPlanarGraphModel}.
+ * From {@link CellSet}, creates a graph used as a base for a {@link org.tendiwa.settlements.RoadsPlanarGraphModel}.
  */
-public class CityBoundsFactory {
-	private final CellSet water;
+public final class CityBounds {
 
-	public CityBoundsFactory(CellSet water) {
-		this.water = water;
+	private CityBounds() {
 	}
 
 	/**
-	 * Creates a new graph that can be used as a base for {@link RoadsPlanarGraphModel}.
+	 * Creates a new graph that can be used as a base for {@link org.tendiwa.settlements.RoadsPlanarGraphModel}.
 	 *
 	 * @param startCell
 	 * 	A cell from which a City originates. Roughly denotes its final position.
 	 * @param maxCityRadius
 	 * 	A maximum radius of a Rectangle containing resulting City.
-	 * @return A new graph that can be used as a base for {@link RoadsPlanarGraphModel}.
-	 * @see CityGeometryBuilder
+	 * @return A new graph that can be used as a base for {@link org.tendiwa.settlements.RoadsPlanarGraphModel}.
+	 * @see org.tendiwa.settlements.CityGeometryBuilder
 	 */
-	public UndirectedGraph<Point2D, Segment2D> create(
+	public static UndirectedGraph<Point2D, Segment2D> create(
 		BoundedCellSet cityShape,
 		Cell startCell,
 		int maxCityRadius
 	) {
-		if (water.contains(startCell.x, startCell.y)) {
+		if (!isCellDeepEnoughInsideShape(startCell, cityShape)) {
 			throw new IllegalArgumentException(
-				"Start cell " + startCell + " must be a ground cell, not water cell"
+				"Start cell " + startCell + " must be within cityShape " +
+					"and at least 1 cell away from cityShape's border"
 			);
 		}
 		UndirectedGraph<Point2D, Segment2D> answer = computeCityBoundingRoads(cityShape, startCell, maxCityRadius);
 		assert !minimalCyclesOfGraphHaveCommonVertices(answer);
 		return answer;
+	}
+
+	/**
+	 * Checks that eight cells around {@code cell} and {@code cell} itseft are all contained in
+	 * {@code shape}.
+	 *
+	 * @param cell
+	 * @param shape
+	 * @return
+	 */
+	private static boolean isCellDeepEnoughInsideShape(Cell cell, CellSet shape) {
+		return shape.contains(cell)
+			&& shape.contains(cell.x, cell.y - 1)
+			&& shape.contains(cell.x + 1, cell.y - 1)
+			&& shape.contains(cell.x + 1, cell.y)
+			&& shape.contains(cell.x + 1, cell.y + 1)
+			&& shape.contains(cell.x, cell.y + 1)
+			&& shape.contains(cell.x - 1, cell.y + 1)
+			&& shape.contains(cell.x - 1, cell.y)
+			&& shape.contains(cell.x - 1, cell.y - 1);
 	}
 
 	/**
@@ -63,7 +84,7 @@ public class CityBoundsFactory {
 	 * 	A graph.
 	 * @return true if there is such vertex, false otherwise.
 	 */
-	private boolean minimalCyclesOfGraphHaveCommonVertices(UndirectedGraph<Point2D, Segment2D> graph) {
+	private static boolean minimalCyclesOfGraphHaveCommonVertices(UndirectedGraph<Point2D, Segment2D> graph) {
 		Set<MinimalCycle<Point2D, Segment2D>> minimalCycles = new MinimumCycleBasis<>(graph,
 			Point2DVertexPositionAdapter.get())
 			.minimalCyclesSet();
@@ -72,7 +93,6 @@ public class CityBoundsFactory {
 			for (Point2D vertex : cycle.vertexList()) {
 				boolean added = usedVertices.add(vertex);
 				if (!added) {
-					System.out.println(vertex);
 					return true;
 				}
 			}
@@ -81,7 +101,7 @@ public class CityBoundsFactory {
 	}
 
 	/**
-	 * Culls the cells that will produce intersecting bounding roads.
+	 * Flood-fills all the area inside {@code bufferBorder}, but not the cells of {@code bufferBorder} itself.
 	 *
 	 * @param bufferBorder
 	 * 	Coastal road's cells.
@@ -89,7 +109,7 @@ public class CityBoundsFactory {
 	 * 	The point from which the City originated.
 	 * @return A path table whose bounds end on bufferBorder's cells, but not past them.
 	 */
-	private PathTable cullIntersectingBoundingRoadsCells(
+	private static PathTable areaBoundedByBufferBorderExclusive(
 		CellSet bufferBorder,
 		Cell start,
 		Rectangle boundingRec,
@@ -103,35 +123,45 @@ public class CityBoundsFactory {
 		).computeFull();
 	}
 
-	private UndirectedGraph<Point2D, Segment2D> computeCityBoundingRoads(
+	private static UndirectedGraph<Point2D, Segment2D> computeCityBoundingRoads(
 		BoundedCellSet cityShape,
 		Cell startCell,
 		int radius
 	) {
 		CachedCellSet bufferBorder = new CachedCellSet(
-			new ChebyshevDistanceBufferBorder(
+			new ChebyshovDistanceBufferBorder(
 				1,
 				(x, y) -> !cityShape.getBounds().contains(x, y) || !cityShape.contains(x, y)
 			),
 			cityShape.getBounds()
 		).computeAll();
-		PathTable culledTable = cullIntersectingBoundingRoadsCells(
+		if (bufferBorder.contains(startCell)) {
+			throw new WorldGenerationException(
+				"Starting cell for computing bounds of a city resides right on the city bound."
+			);
+		}
+		PathTable cellsInsideBufferBorder = areaBoundedByBufferBorderExclusive(
 			bufferBorder,
 			startCell,
 			cityShape.getBounds(),
 			radius + 1
 		);
+		CellSet cellsRejectedBecauseOfKnots = new KnotResolver2(bufferBorder, cellsInsideBufferBorder);
 		CachedCellSet culledBufferBorder = new CachedCellSet(
-			new ChebyshevDistanceBufferBorder(
+			new ChebyshovDistanceBufferBorder(
 				1,
-				culledTable::isCellComputed
+				(x, y) -> cellsInsideBufferBorder.isCellComputed(x, y) && !cellsRejectedBecauseOfKnots.contains(x, y)
 			),
-			culledTable.getBounds()
+			cellsInsideBufferBorder.getBounds()
 		).computeAll();
+		TestCanvas.canvas.draw(cellsInsideBufferBorder, DrawingCellSet.withColor(Color.green));
+		TestCanvas.canvas.draw(cellsRejectedBecauseOfKnots, DrawingCellSet.onWholeCanvasWithColor(Color.red));
+		TestCanvas.canvas.draw(bufferBorder, DrawingCellSet.withColor(Color.blue));
 		return bufferBorderToGraph(culledBufferBorder);
 	}
 
-	/*
+
+	/**
 	 * Transforms a 1 cell wide border to a graph.
 	 *
 	 * @param bufferBorder
@@ -139,7 +169,7 @@ public class CityBoundsFactory {
 	 * @return A graph where vertices are all the cells of the one cell wide border,
 	 * and edges are two cells being near each other from cardinal sides.
 	 */
-	private UndirectedGraph<Point2D, Segment2D> bufferBorderToGraph(CachedCellSet bufferBorder) {
+	private static UndirectedGraph<Point2D, Segment2D> bufferBorderToGraph(CachedCellSet bufferBorder) {
 		UndirectedGraph<Point2D, Segment2D> graph = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
 
 		ImmutableSet<Cell> borderCells = bufferBorder.toSet();

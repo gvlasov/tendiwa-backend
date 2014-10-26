@@ -7,7 +7,7 @@ import org.tendiwa.geometry.BoundedCellSet;
 import org.tendiwa.geometry.DistantCellsFinder;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.extensions.CachedCellSet;
-import org.tendiwa.geometry.extensions.ChebyshevDistanceBufferBorder;
+import org.tendiwa.geometry.extensions.ChebyshovDistanceBufferBorder;
 
 import static com.google.inject.name.Names.named;
 import static org.tendiwa.geometry.DSL.rectangle;
@@ -37,7 +37,7 @@ public class DistantCellsInBufferBorderModule extends AbstractModule {
 		@Named("bufferDepth") int bufferDepth
 	) {
 		return new CachedCellSet(
-			new ChebyshevDistanceBufferBorder(
+			new ChebyshovDistanceBufferBorder(
 				bufferDepth,
 				waterRectangle::contains
 			),

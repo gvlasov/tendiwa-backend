@@ -3,6 +3,7 @@ package org.tendiwa.geometry;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.Iterator;
+import java.util.function.Consumer;
 
 /**
  * A finite set of cells. All the cells reside within certain rectangle.
@@ -18,6 +19,13 @@ public interface BoundedCellSet extends FiniteCellSet {
 	 */
 	public Rectangle getBounds();
 
+	/**
+	 * Iterates over cells in this {@link CellSet}.
+	 * <p>
+	 * Most of the time it is better to use {@link org.tendiwa.geometry.BoundedCellSet#forEach(CellConsumer)}.
+	 *
+	 * @return
+	 */
 	@Override
 	public default Iterator<Cell> iterator() {
 		return new Iterator<Cell>() {
@@ -69,13 +77,45 @@ public interface BoundedCellSet extends FiniteCellSet {
 	 */
 	public default ImmutableSet<Cell> toSet() {
 		ImmutableSet.Builder<Cell> builder = ImmutableSet.builder();
-		for (int i = 0; i < getBounds().getWidth(); i++) {
-			for (int j = 0; j < getBounds().getHeight(); j++) {
+		int width = getBounds().getWidth();
+		int height = getBounds().getHeight();
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
 				if (contains(i + getBounds().x, j + getBounds().y)) {
 					builder.add(new Cell(i + getBounds().x, j + getBounds().y));
 				}
 			}
 		}
 		return builder.build();
+	}
+
+	@Override
+	public default void forEach(Consumer<? super Cell> action) {
+		int startX = getBounds().x;
+		int startY = getBounds().y;
+		int maxX = getBounds().getMaxX()+1;
+		int maxY = getBounds().getMaxY()+1;
+		for (int x = startX; x < maxX; x++) {
+			for (int y = startY; y < maxY; y++) {
+				if (contains(x, y)) {
+					action.accept(new Cell(x, y));
+				}
+			}
+		}
+	}
+
+	@Override
+	public default void forEach(CellConsumer action) {
+		int startX = getBounds().x;
+		int startY = getBounds().y;
+		int maxX = getBounds().getMaxX()+1;
+		int maxY = getBounds().getMaxY()+1;
+		for (int x = startX; x < maxX; x++) {
+			for (int y = startY; y < maxY; y++) {
+				if (contains(x, y)) {
+					action.consume(x, y);
+				}
+			}
+		}
 	}
 }

@@ -16,13 +16,13 @@ public final class RectangularBuildingLots {
 	}
 
 	public static Set<RectangleWithNeighbors> placeInside(
-		RoadsPlanarGraphModel roadsPlanarGraphModel,
-		InnerEnclosedBlocksIndex index
+		RoadsPlanarGraphModel roadsPlanarGraphModel
+//		InnerEnclosedBlocksIndex index
 	) {
 		Set<EnclosedBlock> encBlocks = roadsPlanarGraphModel
 			.getBlocks()
 			.stream()
-			.filter(b -> !index.contains(b))
+//			.filter(b -> !index.contains(b))
 			.flatMap(b -> b.shrinkToRegions(3.3, 0).stream())
 			.flatMap(b -> b.subdivideLots(16, 16, 1).stream())
 			.collect(Collectors.toSet());

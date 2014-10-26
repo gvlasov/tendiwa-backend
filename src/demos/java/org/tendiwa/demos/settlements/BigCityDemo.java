@@ -94,7 +94,7 @@ public class BigCityDemo implements Runnable {
 				canvas.draw(street, DrawingChain.withColor(streetColor));
 			}
 			Set<RectangleWithNeighbors> recGroups = RectangularBuildingLots
-				.placeInside(roadsPlanarGraphModel, new InnerEnclosedBlocksIndex(null))
+				.placeInside(roadsPlanarGraphModel)
 				.stream()
 				.filter(BuildingPlacesFilters.closeToRoads(streets, 8))
 				.collect(Collectors.toSet());

@@ -51,7 +51,7 @@ public class ShapeFromOutlineTest {
 	@Test
 	public void shouldFindZeroInnerCells() {
 		/*
-        This is the graph:
+		This is the graph:
         O###O
         O###O
         It has no cells within graph shape (inner cells) that are not on graph edges.

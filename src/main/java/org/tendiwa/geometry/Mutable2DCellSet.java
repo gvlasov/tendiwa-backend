@@ -1,5 +1,7 @@
 package org.tendiwa.geometry;
 
+import java.util.function.Consumer;
+
 /**
  * An editable CellSet that holds a finite number of {@link org.tendiwa.geometry.Cell}s.
  * <p>
@@ -131,5 +133,27 @@ public class Mutable2DCellSet implements MutableCellSet, BoundedCellSet {
 	@Override
 	public boolean contains(int x, int y) {
 		return bounds.contains(x, y) && cells[x - bounds.x][y - bounds.y];
+	}
+
+	@Override
+	public void forEach(CellConsumer action) {
+		for (int x = 0; x < bounds.width; x++) {
+			for (int y = 0; y < bounds.height; y++) {
+				if (cells[x][y]) {
+					action.consume(x + bounds.x, y + bounds.y);
+				}
+			}
+		}
+	}
+
+	@Override
+	public void forEach(Consumer<? super Cell> action) {
+		for (int x = 0; x < bounds.width; x++) {
+			for (int y = 0; y < bounds.height; y++) {
+				if (cells[x][y]) {
+					action.accept(new Cell(x + bounds.x, y + bounds.y));
+				}
+			}
+		}
 	}
 }

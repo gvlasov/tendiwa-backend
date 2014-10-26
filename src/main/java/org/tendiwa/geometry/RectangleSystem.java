@@ -372,7 +372,7 @@ public class RectangleSystem extends RectangleSequence {
 	public Set<Rectangle> getRectanglesCloseToSideOrBorder(Rectangle r, CardinalDirection side) {
 		Set<Rectangle> rectanglesFromThatSide = new HashSet<>();
 		// TODO: Add somewhere examples of such rectangles as in comment below.
-	    /*
+		/*
 	     * Not only neighbors can shorten free segments, but also the rectangles
 		 * that touch this rectangle only with their border can
 		 * too. That's why we check all the rectangles, and not only

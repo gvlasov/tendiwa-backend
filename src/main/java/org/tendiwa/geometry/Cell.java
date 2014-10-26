@@ -168,7 +168,7 @@ public class Cell implements CellPosition {
 	 * 	Shift by y-axis.
 	 * @return New Cell.
 	 */
-	public Cell newRelativePoint(int dx, int dy) {
+	public Cell newRelativeCell(int dx, int dy) {
 		return new Cell(x + dx, y + dy);
 	}
 

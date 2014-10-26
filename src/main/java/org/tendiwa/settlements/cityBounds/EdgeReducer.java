@@ -1,4 +1,4 @@
-package org.tendiwa.settlements;
+package org.tendiwa.settlements.cityBounds;
 
 import com.aliasi.util.CompactHashSet;
 import com.google.common.collect.BiMap;
@@ -7,15 +7,13 @@ import org.jgrapht.UndirectedGraph;
 import org.tendiwa.core.CardinalDirection;
 import org.tendiwa.core.Direction;
 import org.tendiwa.geometry.Cell;
-import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.terrain.KnownWorldGenerationException;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
-//TODO: This class mutates constructor argument. Check that out.
 
 class EdgeReducer {
 
@@ -49,8 +47,10 @@ class EdgeReducer {
 					neighbourCells++;
 				}
 			}
+			// TODO: Remove neighbour cells, I don't need them any more for anything other than bug detection.
 			if (neighbourCells > 2) {
 				answer.add(cell);
+				throw new RuntimeException(cell.toString());
 			}
 		}
 		return answer;

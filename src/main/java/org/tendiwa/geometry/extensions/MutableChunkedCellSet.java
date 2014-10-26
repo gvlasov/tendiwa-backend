@@ -9,13 +9,13 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Iterator;
 
-public class MutableChunkedCellSet implements MutableCellSet, BoundedCellSet {
+public final class MutableChunkedCellSet implements MutableCellSet, BoundedCellSet {
 	private final Rectangle bounds;
 	private final int chunkSize;
 	private final Chunk[] chunks;
 	private final int chunksInRow;
 
-	MutableChunkedCellSet(Rectangle bounds, int chunkSize) {
+	public MutableChunkedCellSet(Rectangle bounds, int chunkSize) {
 		this.bounds = bounds;
 		this.chunkSize = chunkSize;
 		this.chunksInRow = getWholeNumberOfChunks(bounds.width, chunkSize);
@@ -24,21 +24,35 @@ public class MutableChunkedCellSet implements MutableCellSet, BoundedCellSet {
 	}
 
 	private int getWholeNumberOfChunks(int fullSize, int chunkSize) {
-		return fullSize / chunkSize + fullSize % chunkSize > 0 ? 1 : 0;
+		return fullSize / chunkSize + (fullSize % chunkSize > 0 ? 1 : 0);
 	}
 
-	private Chunk getChunkByCell(int x, int y) {
-		return chunks[(x - bounds.x) / chunkSize + (y - bounds.y) / chunkSize * chunksInRow];
+	private Chunk lazilyGetChunkByCell(int x, int y) {
+		int chunkIndex = (x - bounds.x) / chunkSize + (y - bounds.y) / chunkSize * chunksInRow;
+		if (chunks[chunkIndex] == null) {
+			chunks[chunkIndex] = new Chunk();
+		}
+		return chunks[chunkIndex];
 	}
 
 	@Override
 	public void add(int x, int y) {
-		getChunkByCell(x, y).add((x - bounds.x) % chunkSize, (y - bounds.y) % chunkSize);
+		lazilyGetChunkByCell(x, y).add((x - bounds.x) % chunkSize, (y - bounds.y) % chunkSize);
+	}
+
+	@Override
+	public void add(Cell cell) {
+		lazilyGetChunkByCell(cell.x, cell.y).add((cell.x - bounds.x) % chunkSize, (cell.y - bounds.y) % chunkSize);
 	}
 
 	@Override
 	public void remove(int x, int y) {
-		getChunkByCell(x, y).remove((x - bounds.x) % chunkSize, (y - bounds.y) % chunkSize);
+		lazilyGetChunkByCell(x, y).remove((x - bounds.x) % chunkSize, (y - bounds.y) % chunkSize);
+	}
+
+	@Override
+	public void remove(Cell cell) {
+		lazilyGetChunkByCell(cell.x, cell.y).remove((cell.x - bounds.x) % chunkSize, (cell.y - bounds.y) % chunkSize);
 	}
 
 	@Override
@@ -69,7 +83,7 @@ public class MutableChunkedCellSet implements MutableCellSet, BoundedCellSet {
 
 	@Override
 	public boolean contains(int x, int y) {
-		return getChunkByCell(x, y).contains((x - bounds.x) % chunkSize, (y - bounds.y) % chunkSize);
+		return lazilyGetChunkByCell(x, y).contains((x - bounds.x) % chunkSize, (y - bounds.y) % chunkSize);
 	}
 
 	@Override
@@ -85,7 +99,7 @@ public class MutableChunkedCellSet implements MutableCellSet, BoundedCellSet {
 	private class Chunk {
 		private final boolean[][] cells;
 
-		private Chunk(int chunkSize) {
+		private Chunk() {
 			cells = new boolean[chunkSize][chunkSize];
 		}
 
