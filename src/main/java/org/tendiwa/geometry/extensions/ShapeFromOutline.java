@@ -4,10 +4,15 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Polygon;
 import org.jgrapht.UndirectedGraph;
+import org.jgrapht.alg.ConnectivityInspector;
 import org.tendiwa.geometry.*;
+import org.tendiwa.graphs.GraphCycleTraverser;
 import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.graphs.MinimumCycleBasis;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.*;
@@ -18,6 +23,16 @@ public final class ShapeFromOutline {
 	}
 
 	public static BoundedCellSet from(UndirectedGraph<Point2D, Segment2D> outline) {
+		List<Set<Point2D>> sets = new ConnectivityInspector<>(outline).connectedSets();
+		List<List<Point2D>> polygons = new ArrayList<>(sets.size());
+		for (Set<Point2D> component : sets) {
+			List<Point2D> polygon = new ArrayList<>(component.size());
+			GraphCycleTraverser
+				.traverse(outline)
+				.startingWith(component.iterator().next())
+				.forEachPair((current, next) -> polygon.add(next));
+			polygons.add(polygon);
+		}
 
 		FiniteCellSet edgeCells = requireNonNull(outline)
 			.edgeSet()

@@ -11,6 +11,9 @@ final class LadderyEdgesOptimizer {
 	/**
 	 * Replaces pairs of orthogonal neighbor edges of length 1 with a single diagonal edge of length sqrt(2) if all
 	 * the cells in a {@link org.tendiwa.geometry.Rectangle} hulling that pair of edges are in {@code shape}.
+	 * <p>
+	 * This optimization changes bounds of {@code ladderyCycleGraph} only in such a way,
+	 * that its new inner cells are completely inside {@code shape}.
 	 *
 	 * @param ladderyCycleGraph
 	 * 	A graph with all its vertices of degree 2 (i.e. a graph consisting only of cycles),
@@ -49,7 +52,7 @@ final class LadderyEdgesOptimizer {
 			removeVertex(vertex, neighbors.one, neighbors.another, ladderyCycleGraph);
 			verticesRemoved++;
 		}
-		System.out.println(verticesRemoved + "/"+ initialVerticesNumber +" vertices removed");
+		System.out.println(verticesRemoved + "/" + initialVerticesNumber + " vertices removed");
 		return ladderyCycleGraph;
 	}
 
