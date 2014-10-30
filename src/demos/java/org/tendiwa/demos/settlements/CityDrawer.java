@@ -3,7 +3,7 @@ package org.tendiwa.demos.settlements;
 import org.tendiwa.drawing.DrawingAlgorithm;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.settlements.RoadsPlanarGraphModel;
+import org.tendiwa.settlements.networks.RoadsPlanarGraphModel;
 
 import java.awt.Color;
 

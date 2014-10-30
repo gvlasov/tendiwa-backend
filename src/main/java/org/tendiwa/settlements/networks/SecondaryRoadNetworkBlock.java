@@ -1,4 +1,4 @@
-package org.tendiwa.settlements;
+package org.tendiwa.settlements.networks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -9,6 +9,8 @@ import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
 import org.tendiwa.geometry.extensions.twakStraightSkeleton.TwakStraightSkeleton;
 import org.tendiwa.graphs.MinimumCycleBasis;
+import org.tendiwa.settlements.BlockRegion;
+import org.tendiwa.settlements.EnclosedBlock;
 
 import java.util.List;
 import java.util.Set;

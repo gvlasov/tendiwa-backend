@@ -16,15 +16,16 @@ import java.util.stream.Collectors;
 /**
  * This is mainly intended to be used as {@link java.util.stream.Stream#filter(java.util.function.Predicate)} argument.
  */
-final class EnclosedCycleFilter implements Predicate<MinimalCycle<Point2D, Segment2D>> {
+public final class EnclosedCycleFilter implements Predicate<MinimalCycle<Point2D, Segment2D>> {
 	private final Collection<Geometry> geometries;
 	private final GeometryFactory factory = new GeometryFactory();
 
 	public EnclosedCycleFilter(Collection<MinimalCycle<Point2D, Segment2D>> cycles) {
 		geometries = new ArrayList<>(cycles.size());
-		for (MinimalCycle<Point2D, Segment2D> cycle : cycles) {
-			geometries.add(toGeometry(cycle));
-		}
+		cycles
+			.stream()
+			.map(this::toGeometry)
+			.forEach(geometries::add);
 	}
 
 	private Geometry toGeometry(MinimalCycle<Point2D, Segment2D> cycle) {

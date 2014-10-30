@@ -1,4 +1,4 @@
-package org.tendiwa.settlements;
+package org.tendiwa.settlements.networks;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
@@ -7,12 +7,15 @@ import com.vividsolutions.jts.geom.Coordinate;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.graph.UnmodifiableUndirectedGraph;
+import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawingPoint2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Vectors2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.graphs.MinimalCycle;
 
+import java.awt.Color;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -24,8 +27,11 @@ import java.util.stream.Collectors;
  * 4.3.1, figure 41].
  */
 public final class NetworkWithinCycle {
-	private final SimpleGraph<Point2D, Segment2D> relevantNetwork;
-	private final Set<Point2D> cycleNodes;
+	private final UndirectedGraph<Point2D, Segment2D> relevantNetwork;
+	/**
+	 * Nodes that form the enclosing cycle of this {@link NetworkWithinCycle}.
+	 */
+	final Set<Point2D> cycleNodes;
 	private final NetworkToBlocks blockDivision;
 	private final boolean favourAxisAlignedSegments;
 	private final HolderOfSplitCycleEdges holderOfSplitCycleEdges;
@@ -51,13 +57,13 @@ public final class NetworkWithinCycle {
 	private final boolean isCycleClockwise;
 	private final double snapSize;
 	private final double connectivity;
-	private double secondaryRoadNetworkDeviationAngle;
 	private final Random random;
-	private Set<Point2D> deadEnds = new HashSet<>();
-	private ImmutableSet.Builder<Point2D> outerPointsBuilder = ImmutableSet.builder();
-	private ImmutableSet<Point2D> exitsOnCycles;
+	private final Set<Point2D> deadEnds = new HashSet<>();
+	private final ImmutableSet.Builder<Point2D> outerPointsBuilder = ImmutableSet.builder();
+	private final ImmutableSet<Point2D> exitsOnCycles;
 	private final int maxNumOfStartPoints;
-	private double secondaryRoadNetworkRoadLengthDeviation;
+	private final double secondaryRoadNetworkRoadLengthDeviation;
+	private final double secondaryRoadNetworkDeviationAngle;
 	public double v;
 	private Set<DirectionFromPoint> filamentEnds;
 	/**
@@ -76,7 +82,8 @@ public final class NetworkWithinCycle {
 
 	/**
 	 * @param graph
-	 * 	A preconstructed graph of low level roads, constructed by {@link RoadsPlanarGraphModel#constructCityCellGraph(org.tendiwa.graphs.MinimalCycle,
+	 * 	A preconstructed graph of low level roads, constructed by
+	 * 	{@link org.tendiwa.settlements.networks.RoadsPlanarGraphModel#constructNetworkOriginalGraph(org.tendiwa.graphs.MinimalCycle,
 	 *    java.util.Set, java.util.Collection)}
 	 * @param originalMinimalCycle
 	 * 	A MinimalCycle that contains this NetworkWithinCycle's secondary road network inside it.
@@ -128,7 +135,7 @@ public final class NetworkWithinCycle {
 	 */
 
 	NetworkWithinCycle(
-		SimpleGraph<Point2D, Segment2D> graph,
+		UndirectedGraph<Point2D, Segment2D> graph,
 		MinimalCycle<Point2D, Segment2D> originalMinimalCycle,
 		UndirectedGraph<Point2D, Segment2D> lowLevelRoadGraph,
 		Collection<Segment2D> filamentEdges,
@@ -161,20 +168,10 @@ public final class NetworkWithinCycle {
 		secRoadNetwork = new SimpleGraph<>(graph.getEdgeFactory());
 
 
-		for (Point2D vertex : relevantNetwork.vertexSet()) {
-			deadEnds.add(vertex);
-		}
+		relevantNetwork.vertexSet().forEach(deadEnds::add);
 
 
-		Coordinate[] coordinates = pointListToCoordinateArray(originalMinimalCycle.vertexList());
-		// TODO: Are all cycles counter-clockwise? (because of the MCB algorithm)
-		if (!CGAlgorithms.isCCW(coordinates)) {
-			List<Coordinate> list = Arrays.asList(coordinates);
-			Collections.reverse(list);
-			ring = list.toArray(new Coordinate[list.size()]);
-		} else {
-			ring = coordinates;
-		}
+		ring = buildRing(originalMinimalCycle);
 		isCycleClockwise = false;
 		cycleNodes = new HashSet<>(originalMinimalCycle.vertexList());
 
@@ -188,6 +185,20 @@ public final class NetworkWithinCycle {
 			roadSegmentLength + secondaryRoadNetworkRoadLengthDeviation,
 			holderOfSplitCycleEdges
 		);
+	}
+
+	private Coordinate[] buildRing(MinimalCycle<Point2D, Segment2D> originalMinimalCycle) {
+		Coordinate[] coordinates = pointListToCoordinateArray(originalMinimalCycle.vertexList());
+		// TODO: Are all cycles counter-clockwise? (because of the MCB algorithm)
+		Coordinate[] ring;
+		if (!CGAlgorithms.isCCW(coordinates)) {
+			List<Coordinate> list = Arrays.asList(coordinates);
+			Collections.reverse(list);
+			ring = list.toArray(new Coordinate[list.size()]);
+		} else {
+			ring = coordinates;
+		}
+		return ring;
 	}
 
 	/**
@@ -449,7 +460,7 @@ public final class NetworkWithinCycle {
 		secRoadNetwork.addVertex(target);
 		secRoadNetwork.addEdge(source, target);
 		if (cycleNodes.contains(target)) {
-			// Builder may contain the target point, but then it just won't be added.
+			// outerPointsBuilder may contain the target point, but then it just won't be added.
 			outerPointsBuilder.add(target);
 		}
 		return true;
@@ -513,11 +524,10 @@ public final class NetworkWithinCycle {
 		}
 		assert !road.start.equals(point) : "point is start";
 		assert !road.end.equals(point) : "point is end";
-		assert road.start.distanceTo(point) > Vectors2D.EPSILON : road.start.distanceTo(point) + " " + road.start.distanceTo
-			(road
-				.end);
-		assert road.end.distanceTo(point) > Vectors2D.EPSILON : road.end.distanceTo(point) + " " + road.start.distanceTo
-			(road.end);
+		assert road.start.distanceTo(point) > Vectors2D.EPSILON
+			: road.start.distanceTo(point) + " " + road.start.distanceTo(road.end);
+		assert road.end.distanceTo(point) > Vectors2D.EPSILON
+			: road.end.distanceTo(point) + " " + road.start.distanceTo(road.end);
 		relevantNetwork.removeEdge(road);
 		relevantNetwork.addVertex(point);
 		secRoadNetwork.removeEdge(road);
@@ -525,8 +535,8 @@ public final class NetworkWithinCycle {
 		if (lowLevelRoadGraph.containsEdge(road) || holderOfSplitCycleEdges.isEdgeSplit(road)) {
 			holderOfSplitCycleEdges.splitEdge(road, point);
 		}
-		boolean a = addRoad(road.start, point);
-		boolean b = addRoad(point, road.end);
+		addRoad(road.start, point);
+		addRoad(point, road.end);
 		if (cycleNodes.contains(road.start) && cycleNodes.contains(road.end)) {
 			cycleNodes.add(point);
 			outerPointsBuilder.add(point);

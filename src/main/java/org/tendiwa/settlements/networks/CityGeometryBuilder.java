@@ -1,4 +1,4 @@
-package org.tendiwa.settlements;
+package org.tendiwa.settlements.networks;
 
 import org.jgrapht.UndirectedGraph;
 import org.tendiwa.geometry.Point2D;
@@ -76,7 +76,6 @@ public class CityGeometryBuilder {
 		this.graph = graph;
 	}
 
-	@SuppressWarnings("unused")
 	public CityGeometryBuilder withMaxStartPointsPerCycle(int amount) {
 		if (amount < 0) {
 			throw new IllegalArgumentException("NumOfStartPoints must be at least 0");
@@ -85,7 +84,6 @@ public class CityGeometryBuilder {
 		return this;
 	}
 
-	@SuppressWarnings("unused")
 	public CityGeometryBuilder withSampleRadius(double sampleRadius) {
 		if (sampleRadius <= 0) {
 			throw new IllegalArgumentException("Sample radius must be > 0");
@@ -94,7 +92,6 @@ public class CityGeometryBuilder {
 		return this;
 	}
 
-	@SuppressWarnings("unused")
 	public CityGeometryBuilder withRoadSegmentLength(double length) {
 		if (length <= 0) {
 			throw new IllegalArgumentException(
@@ -105,7 +102,6 @@ public class CityGeometryBuilder {
 		return this;
 	}
 
-	@SuppressWarnings("unused")
 	public CityGeometryBuilder withRoadSegmentLength(double min, double max) {
 		if (min > max) {
 			throw new IllegalArgumentException("min must be <= max");
@@ -115,7 +111,6 @@ public class CityGeometryBuilder {
 		return this;
 	}
 
-	@SuppressWarnings("unused")
 	public CityGeometryBuilder withSamplesPerStep(int samplesPerStep) {
 		if (samplesPerStep <= 0) {
 			throw new IllegalArgumentException("Samples per step must be > 0");
@@ -124,7 +119,6 @@ public class CityGeometryBuilder {
 		return this;
 	}
 
-	@SuppressWarnings("unused")
 	public CityGeometryBuilder withDeviationAngle(double dAngle) {
 		if (dAngle < 0 || dAngle >= Math.PI / 4) {
 			throw new IllegalArgumentException(
@@ -146,7 +140,6 @@ public class CityGeometryBuilder {
 	 * 	Angle in radians.
 	 * @return The same builder.
 	 */
-	@SuppressWarnings("unused")
 	public CityGeometryBuilder withSecondaryRoadNetworkDeviationAngle(double dAngle) {
 		if (Math.abs(secondaryRoadNetworkDeviationAngle) >= Math.PI * 2) {
 			throw new IllegalArgumentException(
@@ -157,7 +150,6 @@ public class CityGeometryBuilder {
 		return this;
 	}
 
-	@SuppressWarnings("unused")
 	public CityGeometryBuilder withSecondaryRoadNetworkRoadLengthDeviation(double dLength) {
 		if (Math.abs(dLength) >= roadSegmentLength) {
 			throw new IllegalArgumentException(
@@ -170,7 +162,6 @@ public class CityGeometryBuilder {
 		return this;
 	}
 
-	@SuppressWarnings("unused")
 	public CityGeometryBuilder withConnectivity(double connectivity) {
 		if (connectivity < 0 || connectivity > 1) {
 			throw new IllegalArgumentException(
@@ -181,7 +172,6 @@ public class CityGeometryBuilder {
 		return this;
 	}
 
-	@SuppressWarnings("unused")
 	public CityGeometryBuilder withRoadsFromPoint(int amount) {
 		if (amount < 2) {
 			throw new IllegalArgumentException("roadsFromPoint must be >= 2");
@@ -190,7 +180,6 @@ public class CityGeometryBuilder {
 		return this;
 	}
 
-	@SuppressWarnings("unused")
 	public CityGeometryBuilder withSnapSize(double snapSize) {
 		if (snapSize < 0) {
 			throw new IllegalArgumentException("snapSize must be >= 0");
@@ -199,7 +188,6 @@ public class CityGeometryBuilder {
 		return this;
 	}
 
-	@SuppressWarnings("unused")
 	public CityGeometryBuilder withAxisAlignedSegments(boolean favourAxisAligned) {
 		this.favourAxisAlignedSegments = favourAxisAligned;
 		return this;
@@ -211,7 +199,6 @@ public class CityGeometryBuilder {
 	 *
 	 * @return this
 	 */
-	@SuppressWarnings("unused")
 	public CityGeometryBuilder withDefaults() {
 		sampleRadius = DEFAULT_SAMPLE_RADIUS;
 		samplesPerStep = DEFAULT_SAMPLES_PER_STEP;
@@ -227,7 +214,6 @@ public class CityGeometryBuilder {
 		return this;
 	}
 
-	@SuppressWarnings("unused")
 	public RoadsPlanarGraphModel build() {
 		if (graph == null) {
 			throw new IllegalStateException("Graph not set");

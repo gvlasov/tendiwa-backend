@@ -3,9 +3,9 @@ package org.tendiwa.settlements.utils;
 import org.tendiwa.geometry.extensions.PolygonRasterizer;
 import org.tendiwa.geometry.extensions.daveedvMaxRec.MaximalRectanlges;
 import org.tendiwa.settlements.EnclosedBlock;
-import org.tendiwa.settlements.InnerEnclosedBlocksIndex;
+import org.tendiwa.settlements.networks.EnclosedCyclesSet;
 import org.tendiwa.settlements.RectangleWithNeighbors;
-import org.tendiwa.settlements.RoadsPlanarGraphModel;
+import org.tendiwa.settlements.networks.RoadsPlanarGraphModel;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -17,12 +17,12 @@ public final class RectangularBuildingLots {
 
 	public static Set<RectangleWithNeighbors> placeInside(
 		RoadsPlanarGraphModel roadsPlanarGraphModel
-//		InnerEnclosedBlocksIndex index
 	) {
+		EnclosedCyclesSet enclosedCycles = new EnclosedCyclesSet(roadsPlanarGraphModel);
 		Set<EnclosedBlock> encBlocks = roadsPlanarGraphModel
-			.getBlocks()
+			.getNetworks()
 			.stream()
-//			.filter(b -> !index.contains(b))
+			.flatMap(n -> n.getEnclosedBlocks().stream().filter(b -> !enclosedCycles.contains(b)))
 			.flatMap(b -> b.shrinkToRegions(3.3, 0).stream())
 			.flatMap(b -> b.subdivideLots(16, 16, 1).stream())
 			.collect(Collectors.toSet());

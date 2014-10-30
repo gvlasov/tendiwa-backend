@@ -1,8 +1,8 @@
-package org.tendiwa.settlements;
+package org.tendiwa.settlements.networks;
 
 import org.tendiwa.geometry.Point2D;
 
-public class DirectionFromPoint {
+final class DirectionFromPoint {
 	public final Point2D node;
 	public final double direction;
 

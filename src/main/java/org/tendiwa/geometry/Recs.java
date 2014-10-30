@@ -58,11 +58,22 @@ public final class Recs {
 	/**
 	 * Returns rectangle defined by two corner points
 	 */
-	public static Rectangle getRectangleFromTwoCorners(Coordinate c1, Coordinate c2) {
+	public static Rectangle getRectangleFromTwoCorners(Cell c1, Cell c2) {
 		int startX = Math.min(c1.x, c2.x);
 		int startY = Math.min(c1.y, c2.y);
 		int recWidth = Math.max(c1.x, c2.x) - startX + 1;
 		int recHeight = Math.max(c1.y, c2.y) - startY + 1;
+		return new Rectangle(startX, startY, recWidth, recHeight);
+	}
+
+	/**
+	 * Returns rectangle defined by two corner points
+	 */
+	public static Rectangle getRectangleFromTwoCorners(int x1, int y1, int x2, int y2) {
+		int startX = Math.min(x1, x2);
+		int startY = Math.min(y1, y2);
+		int recWidth = Math.max(x1, x2) - startX + 1;
+		int recHeight = Math.max(y1, y2) - startY + 1;
 		return new Rectangle(startX, startY, recWidth, recHeight);
 	}
 

@@ -12,6 +12,7 @@ import org.tendiwa.graphs.*;
 import java.awt.Color;
 import java.awt.geom.Line2D;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.function.Function;
 
 public class DrawingGraph {
@@ -53,7 +54,7 @@ public class DrawingGraph {
 	) {
 		return (shape, canvas) -> {
 			DrawingAlgorithm<Cell> pointDrawing = DrawingCell.withColorAndSize(color, size);
-			for (org.tendiwa.geometry.Segment2D e : shape.edgeSet()) {
+			for (Segment2D e : shape.edgeSet()) {
 				Point2D source = shape.getEdgeSource(e);
 				Point2D target = shape.getEdgeTarget(e);
 				canvas.drawLine(

@@ -1,4 +1,4 @@
-package org.tendiwa.settlements;
+package org.tendiwa.settlements.networks;
 
 import org.jgrapht.UndirectedGraph;
 import org.tendiwa.geometry.Point2D;

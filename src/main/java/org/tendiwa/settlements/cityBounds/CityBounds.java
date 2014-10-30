@@ -24,7 +24,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * From {@link CellSet}, creates a graph used as a base for a {@link org.tendiwa.settlements.RoadsPlanarGraphModel}.
+ * From {@link CellSet}, creates a graph used as a base for a {@link org.tendiwa.settlements.networks.RoadsPlanarGraphModel}.
  */
 public final class CityBounds {
 
@@ -32,14 +32,14 @@ public final class CityBounds {
 	}
 
 	/**
-	 * Creates a new graph that can be used as a base for {@link org.tendiwa.settlements.RoadsPlanarGraphModel}.
+	 * Creates a new graph that can be used as a base for {@link org.tendiwa.settlements.networks.RoadsPlanarGraphModel}.
 	 *
 	 * @param startCell
 	 * 	A cell from which a City originates. Roughly denotes its final position.
 	 * @param maxCityRadius
 	 * 	A maximum radius of a Rectangle containing resulting City.
-	 * @return A new graph that can be used as a base for {@link org.tendiwa.settlements.RoadsPlanarGraphModel}.
-	 * @see org.tendiwa.settlements.CityGeometryBuilder
+	 * @return A new graph that can be used as a base for {@link org.tendiwa.settlements.networks.RoadsPlanarGraphModel}.
+	 * @see org.tendiwa.settlements.networks.CityGeometryBuilder
 	 */
 	public static UndirectedGraph<Point2D, Segment2D> create(
 		BoundedCellSet cityShape,
@@ -154,10 +154,10 @@ public final class CityBounds {
 			),
 			cellsInsideBufferBorder.getBounds()
 		).computeAll();
-		TestCanvas.canvas.draw(cellsInsideBufferBorder, DrawingCellSet.withColor(Color.green));
-		TestCanvas.canvas.draw(cellsRejectedBecauseOfKnots, DrawingCellSet.onWholeCanvasWithColor(Color.red));
-		TestCanvas.canvas.draw(bufferBorder, DrawingCellSet.withColor(Color.blue));
-		return bufferBorderToGraph(culledBufferBorder);
+//		TestCanvas.canvas.draw(cellsInsideBufferBorder, DrawingCellSet.withColor(Color.green));
+//		TestCanvas.canvas.draw(cellsRejectedBecauseOfKnots, DrawingCellSet.onWholeCanvasWithColor(Color.red));
+//		TestCanvas.canvas.draw(bufferBorder, DrawingCellSet.withColor(Color.blue));
+		return bufferBorderToGraph(culledBufferBorder, cellsInsideBufferBorder);
 	}
 
 
@@ -165,11 +165,16 @@ public final class CityBounds {
 	 * Transforms a 1 cell wide border to a graph.
 	 *
 	 * @param bufferBorder
-	 * 	One cell wide border, with cells beigh neighbors with each other from cardinal sides.
+	 * 	One cell wide border, with cells being neighbors with each other from cardinal sides.
+	 * @param cellsInsideBufferBorder
+	 * 	Cells inside {@code bufferBorder}. Doesn't include any cells of {@code bufferBorder}.
 	 * @return A graph where vertices are all the cells of the one cell wide border,
 	 * and edges are two cells being near each other from cardinal sides.
 	 */
-	private static UndirectedGraph<Point2D, Segment2D> bufferBorderToGraph(CachedCellSet bufferBorder) {
+	private static UndirectedGraph<Point2D, Segment2D> bufferBorderToGraph(
+		FiniteCellSet bufferBorder,
+		CellSet cellsInsideBufferBorder
+	) {
 		UndirectedGraph<Point2D, Segment2D> graph = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
 
 		ImmutableSet<Cell> borderCells = bufferBorder.toSet();
@@ -188,7 +193,8 @@ public final class CityBounds {
 				}
 			}
 		}
-		new EdgeReducer(graph, cell2PointMap).reduceEdges();
+		EdgeReducer.reduceEdges(graph, cell2PointMap);
+		LadderyEdgesOptimizer.optimize(graph, cellsInsideBufferBorder.or(bufferBorder), 2);
 		SameLineGraphEdgesPerturbations.perturbIfHasSameLineEdges(graph, 1e-4);
 		return graph;
 	}

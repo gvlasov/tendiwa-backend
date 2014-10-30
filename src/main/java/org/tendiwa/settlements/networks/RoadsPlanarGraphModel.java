@@ -1,6 +1,7 @@
-package org.tendiwa.settlements;
+package org.tendiwa.settlements.networks;
 
 import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
@@ -9,15 +10,20 @@ import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.graph.UndirectedSubgraph;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.extensions.*;
+import org.tendiwa.geometry.extensions.PlanarGraphs;
+import org.tendiwa.geometry.extensions.Point2DRowComparator;
+import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
+import org.tendiwa.geometry.extensions.ShamosHoeyAlgorithm;
 import org.tendiwa.graphs.Filament;
 import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.graphs.MinimumCycleBasis;
+import org.tendiwa.settlements.EnclosedCycleFilter;
+import org.tendiwa.settlements.SettlementGenerationException;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 
 /**
  * A geometrical model of a city on the most basic level: roads (represented as {@link org.tendiwa.geometry.Segment2D})
@@ -59,7 +65,7 @@ public final class RoadsPlanarGraphModel {
 	private final double approachingPerSample;
 	private final Set<Segment2D> highLevelGraphEdges;
 	private final ImmutableSet<NetworkWithinCycle> networks;
-	private Random random;
+	private final Random random;
 	private final int roadsFromPoint;
 	private final double connectivity;
 	private final double roadSegmentLength;
@@ -69,6 +75,7 @@ public final class RoadsPlanarGraphModel {
 	private double secondaryRoadNetworkRoadLengthDeviation;
 	private final boolean favourAxisAlignedSegments;
 	private final HolderOfSplitCycleEdges holderOfSplitCycleEdges = new HolderOfSplitCycleEdges();
+	private ImmutableMap<Point2D, Segment2D> splitEdgesToOriginalEdges;
 
 	/**
 	 * @param highLevelRoadGraph
@@ -191,7 +198,7 @@ public final class RoadsPlanarGraphModel {
 	}
 
 	/**
-	 * Creates {@link org.tendiwa.settlements.NetworkWithinCycle}s and puts them to {@code celslBuilder}.
+	 * Creates {@link NetworkWithinCycle}s and puts them to {@code celslBuilder}.
 	 *
 	 * @param cellsBuilder
 	 * 	Where to put new networks.
@@ -201,7 +208,8 @@ public final class RoadsPlanarGraphModel {
 			lowLevelRoadGraph,
 			Point2DVertexPositionAdapter.get()
 		);
-		Map<MinimalCycle<Point2D, Segment2D>, SimpleGraph<Point2D, Segment2D>> cellGraphs = constructCityCellGraphs(primitives);
+		Map<MinimalCycle<Point2D, Segment2D>, UndirectedGraph<Point2D, Segment2D>> cellGraphs =
+			constructNetworkGraphs(primitives);
 		Collection<Segment2D> filamentEdges = new HashSet<>();
 		for (Filament<Point2D, Segment2D> filament : primitives.filamentsSet()) {
 			for (Segment2D line : filament) {
@@ -248,30 +256,31 @@ public final class RoadsPlanarGraphModel {
 
 
 	/**
-	 * Constructs all the graphs for this City's CityCells.
+	 * Constructs all the graphs for this City's {@link NetworkWithinCycle}s.
 	 *
 	 * @param primitives
 	 * 	A MinimumCycleBasis of this City's {@link #lowLevelRoadGraph}.
 	 * @return A map from MinimalCycles to CityCells residing in those cycles.
 	 */
-	private static Map<MinimalCycle<Point2D, Segment2D>, SimpleGraph<Point2D, Segment2D>> constructCityCellGraphs(
+	private static Map<MinimalCycle<Point2D, Segment2D>, UndirectedGraph<Point2D, Segment2D>> constructNetworkGraphs(
 		MinimumCycleBasis<Point2D, Segment2D> primitives
 	) {
 		Set<Filament<Point2D, Segment2D>> filaments = primitives.filamentsSet();
-		Map<MinimalCycle<Point2D, Segment2D>, SimpleGraph<Point2D, Segment2D>> answer = new LinkedHashMap<>();
-		EnclosedCycleFilter enclosedCycleFilter = new EnclosedCycleFilter(
-			primitives
-				.minimalCyclesSet()
-				.stream()
-					// TODO: Do we really need this sorting here?
-				.sorted((a, b) ->
-						Point2DRowComparator.getInstance().compare(
-							a.iterator().next().start,
-							b.iterator().next().start
-						)
-				)
-				.collect(toList())
-		);
+		Map<MinimalCycle<Point2D, Segment2D>, UndirectedGraph<Point2D, Segment2D>> answer = new LinkedHashMap<>();
+		Predicate<MinimalCycle<Point2D, Segment2D>> enclosedCycleFilter =
+			new EnclosedCycleFilter(
+				primitives
+					.minimalCyclesSet()
+					.stream()
+						// TODO: Do we really need this sorting here?
+					.sorted((a, b) ->
+							Point2DRowComparator.getInstance().compare(
+								a.iterator().next().start,
+								b.iterator().next().start
+							)
+					)
+					.collect(toList())
+			);
 		Collection<MinimalCycle<Point2D, Segment2D>> enclosingCycles = primitives
 			.minimalCyclesSet()
 			.stream()
@@ -282,8 +291,11 @@ public final class RoadsPlanarGraphModel {
 			.stream()
 			.filter(a -> !enclosedCycleFilter.test(a))
 			.collect(toList());
-		for (MinimalCycle<Point2D, Segment2D> cycle : enclosingCycles) {
-			answer.put(cycle, constructCityCellGraph(cycle, filaments, enclosedCycles));
+		for (MinimalCycle<Point2D, Segment2D> enclosingCycle : enclosingCycles) {
+			answer.put(
+				enclosingCycle,
+				constructNetworkOriginalGraph(enclosingCycle, filaments, enclosedCycles)
+			);
 		}
 		return answer;
 	}
@@ -300,30 +312,27 @@ public final class RoadsPlanarGraphModel {
 	 * @return A graph containing the {@code cycle} and all the {@code filaments}.
 	 */
 
-	private static SimpleGraph<Point2D, Segment2D> constructCityCellGraph(
+	private static UndirectedGraph<Point2D, Segment2D> constructNetworkOriginalGraph(
 		MinimalCycle<Point2D, Segment2D> cycle,
 		Set<Filament<Point2D, Segment2D>> filaments,
 		Collection<MinimalCycle<Point2D, Segment2D>> enclosedCycles
 	) {
-		SimpleGraph<Point2D, Segment2D> graph = new SimpleGraph<>(org.tendiwa.geometry.extensions.PlanarGraphs.getEdgeFactory());
+		UndirectedGraph<Point2D, Segment2D> graph = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
 		for (Filament<Point2D, Segment2D> filament : filaments) {
-			for (Point2D vertex : filament.vertexList()) {
-				graph.addVertex(vertex);
-			}
+			filament.vertexList().forEach(graph::addVertex);
 			for (Segment2D line : filament) {
 				graph.addEdge(line.start, line.end, line);
 			}
 		}
-		for (Point2D vertex : cycle.vertexList()) {
-			graph.addVertex(vertex);
-		}
+		cycle.vertexList().forEach(graph::addVertex);
 		for (Segment2D edge : cycle) {
 			graph.addEdge(edge.start, edge.end, edge);
 		}
 		for (MinimalCycle<Point2D, Segment2D> enclosedCycle : enclosedCycles) {
-			for (Point2D point : enclosedCycle.vertexList()) {
-				graph.addVertex(point);
-			}
+			enclosedCycle.vertexList().forEach(graph::addVertex);
+			// If a cycle is enclosed, all the networks know about that cycle,
+			// whether a network encloses that cycle or not. The cycle just won't affect building a network
+			// if it is not within that network.
 			for (Segment2D edge : enclosedCycle) {
 				graph.addEdge(edge.start, edge.end, edge);
 			}
@@ -375,9 +384,7 @@ public final class RoadsPlanarGraphModel {
 		Collection<Segment2D> edges
 	) {
 		UndirectedGraph<Point2D, Segment2D> answer = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
-		for (Point2D vertex : vertices) {
-			answer.addVertex(vertex);
-		}
+		vertices.forEach(answer::addVertex);
 		for (Segment2D edge : edges) {
 			answer.addEdge(edge.start, edge.end, edge);
 		}
@@ -510,23 +517,16 @@ public final class RoadsPlanarGraphModel {
 	}
 
 	/**
-	 * @return Polygonal empty areas between roads.
+	 * @return A graph of all actual resulting roads in this city.
+	 * @see #getLowLevelRoadGraph() for the graph of <i>original</i> roads which are split to get <i>actual</i> roads.
 	 */
-	public Set<SecondaryRoadNetworkBlock> getBlocks() {
-		return networks.stream().flatMap(cell -> cell.getEnclosedBlocks().stream()).collect(toSet());
-	}
-
 	public UndirectedGraph<Point2D, Segment2D> getFullRoadGraph() {
-		UndirectedGraph<Point2D, Segment2D> union = new SimpleGraph<>(org.tendiwa.geometry.extensions.PlanarGraphs.getEdgeFactory());
-		for (Point2D vertex : lowLevelRoadGraph.vertexSet()) {
-			union.addVertex(vertex);
-		}
+		UndirectedGraph<Point2D, Segment2D> union = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
+		lowLevelRoadGraph.vertexSet().forEach(union::addVertex);
 		for (Segment2D edge : lowLevelRoadGraph.edgeSet()) {
 			if (holderOfSplitCycleEdges.isEdgeSplit(edge)) {
 				UndirectedGraph<Point2D, Segment2D> graph = holderOfSplitCycleEdges.getGraph(edge);
-				for (Point2D subEdgeVertex : graph.vertexSet()) {
-					union.addVertex(subEdgeVertex);
-				}
+				graph.vertexSet().forEach(union::addVertex);
 				for (Segment2D subEdge : graph.edgeSet()) {
 					boolean added = union.addEdge(subEdge.start, subEdge.end, subEdge);
 					assert added;
@@ -536,26 +536,28 @@ public final class RoadsPlanarGraphModel {
 			}
 		}
 		for (NetworkWithinCycle cell : networks) {
-			for (Point2D vertex : cell.network().vertexSet()) {
-				if (!union.containsVertex(vertex)) {
-					union.addVertex(vertex);
-				}
-			}
-			for (Segment2D edge : cell.network().edgeSet()) {
-				if (!union.containsEdge(edge)) {
-					union.addEdge(edge.start, edge.end, edge);
-				}
-			}
+			cell.network()
+				.vertexSet()
+				.stream()
+					// TODO: Do we need this filter?
+				.filter(vertex -> !union.containsVertex(vertex))
+				.forEach(union::addVertex);
+			cell.network()
+				.edgeSet()
+				.stream()
+					// TODO: Do we need this filter?
+				.filter(edge -> !union.containsEdge(edge))
+				.forEach(edge -> union.addEdge(edge.start, edge.end, edge));
 		}
 		return union;
 	}
 
 	/**
-	 * In each {@link org.tendiwa.settlements.NetworkWithinCycle} that this {@link
+	 * In each {@link NetworkWithinCycle} that this {@link
 	 * RoadsPlanarGraphModel} consists of, finds such edges that are part of only one
 	 * {@link NetworkWithinCycle#cycle()}.
 	 *
-	 * @return Map from {@link org.tendiwa.settlements.NetworkWithinCycle} to subgraphs of {@link
+	 * @return Map from {@link NetworkWithinCycle} to subgraphs of {@link
 	 * NetworkWithinCycle#network()} described in this method's description.
 	 */
 	public Map<NetworkWithinCycle, UndirectedGraph<Point2D, Segment2D>> outerCycleEdges() {
@@ -595,5 +597,19 @@ public final class RoadsPlanarGraphModel {
 			.flatMap(graph -> graph.edgeSet().stream())
 			.allMatch(edge -> usedEdges.get(edge) == 1);
 		return answer;
+	}
+
+	/**
+	 * Lazily return a map from split points to the original edges they split.
+	 *
+	 * @return
+	 * @see HolderOfSplitCycleEdges#getMapFromSplitToOriginalSegments()
+	 */
+	public Map<Point2D, Segment2D> splitEdgesToOriginalEdges() {
+		if (this.splitEdgesToOriginalEdges == null) {
+			this.splitEdgesToOriginalEdges = holderOfSplitCycleEdges.getMapFromSplitToOriginalSegments();
+			assert splitEdgesToOriginalEdges.values().stream().allMatch(lowLevelRoadGraph::containsEdge);
+		}
+		return this.splitEdgesToOriginalEdges;
 	}
 }

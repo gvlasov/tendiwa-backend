@@ -15,22 +15,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-class EdgeReducer {
+final class EdgeReducer {
 
-	private final CardinalDirection[] growingDirs = {CardinalDirection.N, CardinalDirection.E};
-	private UndirectedGraph<Point2D, Segment2D> graph;
-	private BiMap<Cell, Point2D> map;
-
-	/**
-	 * @param graphToMutate
-	 * 	A graph to be mutated by the algorithm.
-	 * @param map
-	 * 	A mapping to vertices of {@code graphToMutate} from those vertices transformed to {@link Cell}s.
-	 */
-	public EdgeReducer(UndirectedGraph<Point2D, Segment2D> graphToMutate, BiMap<Cell, Point2D> map) {
-		this.graph = graphToMutate;
-		this.map = map;
-	}
+	private static final CardinalDirection[] growingDirs = {CardinalDirection.N, CardinalDirection.E};
 
 
 	/**
@@ -38,7 +25,7 @@ class EdgeReducer {
 	 *
 	 * @return A collection of all cells on border that have 3 or 4 neighbors.
 	 */
-	private Collection<Cell> findIntersectionCells() {
+	private static Collection<Cell> findIntersectionCells(BiMap<Cell, Point2D> map) {
 		Collection<Cell> answer = new HashSet<>();
 		for (Cell cell : map.keySet()) {
 			int neighbourCells = 0;
@@ -62,16 +49,25 @@ class EdgeReducer {
 	 * <p>
 	 * This operation mostly removes vertices and adds new edges, but is some rare (but absolutely legitimate) cases it
 	 * may also have to add new vertices.
+	 *
+	 * @param graphToMutate
+	 * 	A graph to be mutated by the algorithm.
+	 * @param map
+	 * 	A mapping to vertices of {@code graphToMutate} from those vertices transformed to {@link Cell}s.
+	 * @return Mutated {@code graphToMutate}.
 	 */
-	public void reduceEdges() {
+	public static UndirectedGraph<Point2D, Segment2D> reduceEdges(
+		UndirectedGraph<Point2D, Segment2D> graphToMutate,
+		BiMap<Cell, Point2D> map
+	) {
 		boolean changesMade;
 		Collection<Point2D> finalVertices = new CompactHashSet<>(map.size() / 4);
-		Set<Point2D> vertices = ImmutableSet.copyOf(graph.vertexSet());
+		Set<Point2D> vertices = ImmutableSet.copyOf(graphToMutate.vertexSet());
 		do {
 			changesMade = false;
-			Collection<Cell> intersectionCells = findIntersectionCells();
+			Collection<Cell> intersectionCells = findIntersectionCells(map);
 			for (Point2D point : vertices) {
-				if (!graph.containsVertex(point) || finalVertices.contains(point)) {
+				if (!graphToMutate.containsVertex(point) || finalVertices.contains(point)) {
 					continue;
 				}
 				Cell graphCell = map.inverse().get(point);
@@ -81,7 +77,7 @@ class EdgeReducer {
 					while (true) {
 						// Find a cell on one side of a straight segment
 						movedCell = movedCell.moveToSide(dir);
-						if (map.containsKey(movedCell) && graph.containsVertex(map.get(movedCell))) {
+						if (map.containsKey(movedCell) && graphToMutate.containsVertex(map.get(movedCell))) {
 							combinedEdgeLength++;
 							if (intersectionCells.contains(movedCell)) {
 								break;
@@ -95,7 +91,7 @@ class EdgeReducer {
 					while (true) {
 						// Find a cell on the other side of a straight segment
 						oppositeMovedCell = oppositeMovedCell.moveToSide(dir.opposite());
-						if (map.containsKey(oppositeMovedCell) && graph.containsVertex(map.get(oppositeMovedCell))) {
+						if (map.containsKey(oppositeMovedCell) && graphToMutate.containsVertex(map.get(oppositeMovedCell))) {
 							combinedEdgeLength++;
 							if (intersectionCells.contains(oppositeMovedCell)) {
 								break;
@@ -111,16 +107,16 @@ class EdgeReducer {
 							!cell.equals(oppositeMovedCell) && !finalVertices.contains(map.get(cell));
 							cell = cell.moveToSide(dir.opposite())
 							) {
-							boolean removed = graph.removeVertex(map.get(cell));
+							boolean removed = graphToMutate.removeVertex(map.get(cell));
 							assert removed;
 						}
 						changesMade = true;
 //                            canvas.drawCell(oppositeMovedCell, YELLOW);
 //                            canvas.drawCell(movedCell, RED);
-						if (!graph.containsVertex(map.get(oppositeMovedCell))) {
+						if (!graphToMutate.containsVertex(map.get(oppositeMovedCell))) {
 							indicateThatBorderGoesAlongItselfProblem();
 						}
-						graph.addEdge(map.get(movedCell), map.get(oppositeMovedCell));
+						graphToMutate.addEdge(map.get(movedCell), map.get(oppositeMovedCell));
 						finalVertices.add(map.get(movedCell));
 						finalVertices.add(map.get(oppositeMovedCell));
 					} else if (combinedEdgeLength == 2) {
@@ -133,6 +129,7 @@ class EdgeReducer {
 				}
 			}
 		} while (changesMade);
+		return graphToMutate;
 	}
 
 	/**
@@ -140,7 +137,7 @@ class EdgeReducer {
 	 * <p>
 	 * <img src="http://tendiwa.org/doc-illustrations/edge-reducer-with-border-going-along-itself.png" />
 	 */
-	private void indicateThatBorderGoesAlongItselfProblem() throws KnownWorldGenerationException {
+	private static void indicateThatBorderGoesAlongItselfProblem() throws KnownWorldGenerationException {
 		throw new KnownWorldGenerationException("Border given to EdgeReducer goes along itself");
 	}
 }

@@ -18,6 +18,7 @@ import java.awt.image.RenderedImage;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 
 /**
  * Window where you can draw world, locations or anything for what there is a {@link DrawingAlgorithm} registered in
@@ -170,6 +171,7 @@ public final class TestCanvas implements DrawableInto {
 	 */
 	@Override
 	public <T> void draw(T what, DrawingAlgorithm<? super T> how) {
+		Objects.requireNonNull(what);
 		setLayer(DEFAULT_LAYER);
 		how.draw(what, this);
 		panel.repaint();

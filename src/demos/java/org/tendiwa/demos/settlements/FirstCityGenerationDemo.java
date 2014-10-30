@@ -5,8 +5,8 @@ import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
-import org.tendiwa.settlements.CityGeometryBuilder;
-import org.tendiwa.settlements.RoadsPlanarGraphModel;
+import org.tendiwa.settlements.networks.CityGeometryBuilder;
+import org.tendiwa.settlements.networks.RoadsPlanarGraphModel;
 
 public class FirstCityGenerationDemo {
 	public static void main(String[] args) {

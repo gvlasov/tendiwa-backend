@@ -1,4 +1,4 @@
-package org.tendiwa.settlements;
+package org.tendiwa.settlements.networks;
 
 import com.google.common.collect.ImmutableSet;
 import org.jgrapht.UndirectedGraph;
@@ -15,7 +15,7 @@ import static java.util.stream.Collectors.toSet;
 /**
  * Divides space inside a network into enclosed blocks.
  */
-public class NetworkToBlocks {
+class NetworkToBlocks {
 	private final Set<SecondaryRoadNetworkBlock> enclosedBlocks;
 
 	NetworkToBlocks(

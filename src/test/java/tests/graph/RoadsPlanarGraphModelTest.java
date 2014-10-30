@@ -10,7 +10,7 @@ import org.tendiwa.drawing.extensions.DrawingModule;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
-import org.tendiwa.settlements.CityGeometryBuilder;
+import org.tendiwa.settlements.networks.CityGeometryBuilder;
 
 import java.util.Arrays;
 import java.util.Collection;
