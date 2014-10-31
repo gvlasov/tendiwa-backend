@@ -6,25 +6,33 @@ import org.tendiwa.geometry.extensions.CachedCellSet;
 import java.util.HashSet;
 import java.util.Set;
 
-public class KnotResolver2 implements CellSet {
-	private final CellSet cellsInsideBufferBorder;
+/**
+ * For a border and cells inside it, computes a set of prohibited cells that should be excluded from {@code
+ * cellsInsideBorder}, so border can be rebuilt around that modified {@code cellsInsideBorder} in such a way that for
+ * each cell of the new border there are exactly 2 neighbor cells in that border.
+ * <p>
+ * A <i>knot</i> is a situation when a cell in {@code border} has more than 2 neighbor cells (i.e. cells for cardinal
+ * sides around it that are too contained in {@code border}). More than 2 is either 3 or 4,
+ * because there are 4 cardinal sides.
+ * <p>
+ * Every 4-knot is considered to be also a 3-knot.
+ */
+final class KnotResolvingCells implements CellSet {
+	private final CellSet cellsInsideBorder;
 	private Set<Cell> prohibitedCells;
 
-	public KnotResolver2(CachedCellSet bufferBorder, CellSet cellsInsideBufferBorder) {
-		this.cellsInsideBufferBorder = cellsInsideBufferBorder;
-		prohibitedCells = new HashSet<>();
+	public KnotResolvingCells(CachedCellSet border, CellSet cellsInsideBorder) {
+		this.cellsInsideBorder = cellsInsideBorder;
+		this.prohibitedCells = new HashSet<>();
 		// Cells with 3 neighbors
 		Set<Cell> knots3 = new HashSet<>();
 		// Cells with 4 neighbors
 		Set<Cell> knots4 = new HashSet<>();
-		bufferBorder.forEach((x, y) -> {
-			int score = (bufferBorder.contains(x + 1, y) ? 1 : 0) +
-				(bufferBorder.contains(x, y + 1) ? 1 : 0) +
-				(bufferBorder.contains(x - 1, y) ? 1 : 0) +
-				(bufferBorder.contains(x, y - 1) ? 1 : 0);
-			if (score == 3) {
+		border.forEach((x, y) -> {
+			int neighbors = howManyNeighborsCellHas(x, y, border);
+			if (neighbors == 3) {
 				knots3.add(new Cell(x, y));
-			} else if (score == 4) {
+			} else if (neighbors == 4) {
 				Cell cell = new Cell(x, y);
 				knots4.add(cell);
 				// A cell with 4 neighbors may also form a prohibited area
@@ -34,32 +42,55 @@ public class KnotResolver2 implements CellSet {
 		});
 		for (Cell cell : knots3) {
 			// Because here we only check two of four cardinal sides (east and north),
-			// none of the cells will be operated upon twice (which would be the case if we checked all four sides).
+			// none of the cells will be operated upon twice
+			// (which would be the case if we checked all four sides).
 			tryFixingKnot3(knots3, cell, true);
 			tryFixingKnot3(knots3, cell, false);
 		}
-		for (Cell cell : knots4) {
-			fixKnot4(cell);
-		}
+		knots4.forEach(this::fixKnot4);
 	}
 
+	/**
+	 * Counts how many cells contained in {@code cells} are there from 4 cardinal sides of cell {@code x:y}.
+	 *
+	 * @param x
+	 * 	X-coordinate of a cell.
+	 * @param y
+	 * 	Y-coordinate of a cell.
+	 * @param cells
+	 * 	A set of cells.
+	 * @return An integer in [0;4]
+	 */
+	private int howManyNeighborsCellHas(int x, int y, CellSet cells) {
+		return (cells.contains(x + 1, y) ? 1 : 0) +
+			(cells.contains(x, y + 1) ? 1 : 0) +
+			(cells.contains(x - 1, y) ? 1 : 0) +
+			(cells.contains(x, y - 1) ? 1 : 0);
+	}
+
+	/**
+	 * Adds cells to {@link #prohibitedCells} so a 4-knot in {@code cell} is resolved.
+	 *
+	 * @param cell
+	 * 	A cell with a 4-knot.
+	 */
 	private void fixKnot4(Cell cell) {
 		if (
-			cellsInsideBufferBorder.contains(cell.x - 1, cell.y - 1)
-				&& cellsInsideBufferBorder.contains(cell.x + 1, cell.y + 1)
+			cellsInsideBorder.contains(cell.x - 1, cell.y - 1)
+				&& cellsInsideBorder.contains(cell.x + 1, cell.y + 1)
 			) {
 			Cell cornerCell = cell.newRelativeCell(-1, -1);
 			Cell anotherCornerCell = cell.newRelativeCell(1, 1);
-			assert !cellsInsideBufferBorder.contains(cell.x + 1, cell.y - 1);
-			assert !cellsInsideBufferBorder.contains(cell.x - 1, cell.y + 1);
+			assert !cellsInsideBorder.contains(cell.x + 1, cell.y - 1);
+			assert !cellsInsideBorder.contains(cell.x - 1, cell.y + 1);
 			prohibitedCells.add(cornerCell);
 			prohibitedCells.add(anotherCornerCell);
 		} else if (
-			cellsInsideBufferBorder.contains(cell.x + 1, cell.y - 1)
-				&& cellsInsideBufferBorder.contains(cell.x - 1, cell.y + 1)
+			cellsInsideBorder.contains(cell.x + 1, cell.y - 1)
+				&& cellsInsideBorder.contains(cell.x - 1, cell.y + 1)
 			) {
-			assert !cellsInsideBufferBorder.contains(cell.x + 1, cell.y + 1);
-			assert !cellsInsideBufferBorder.contains(cell.x - 1, cell.y - 1);
+			assert !cellsInsideBorder.contains(cell.x + 1, cell.y + 1);
+			assert !cellsInsideBorder.contains(cell.x - 1, cell.y - 1);
 			Cell cornerCell = cell.newRelativeCell(1, -1);
 			Cell anotherCornerCell = cell.newRelativeCell(-1, 1);
 			prohibitedCells.add(cornerCell);
@@ -67,9 +98,20 @@ public class KnotResolver2 implements CellSet {
 		}
 	}
 
+	/**
+	 * Resolves a 3-knot in {@code cell} by prohibiting inner cells around it if there is another 3-knot near
+	 * {@code cell}.
+	 *
+	 * @param knots
+	 * 	A set of existing knots.
+	 * @param cell
+	 * 	A cell with a 3-knot.
+	 * @param vertical
+	 * 	See {@link #hasNeighborKnot(java.util.Set, org.tendiwa.geometry.Cell, boolean)}.
+	 */
 	private void tryFixingKnot3(Set<Cell> knots, Cell cell, boolean vertical) {
 		if (hasNeighborKnot(knots, cell, vertical)) {
-			BoundedCellSet knotSurroundings = findCellsAroundTwoKnotCells(cell, vertical);
+			BoundedCellSet knotSurroundings = findInnerCellsAround2BorderNeighbors(cell, vertical);
 			Cell anySurroundingCell = knotSurroundings.iterator().next();
 			if (anySurroundingCell == null) {
 				return;
@@ -91,11 +133,49 @@ public class KnotResolver2 implements CellSet {
 		}
 	}
 
+	/**
+	 * Checks if there is a knot to the east or to the south from a {@code cell}.
+	 *
+	 * @param knots
+	 * 	A set of existing knots.
+	 * @param knot
+	 * 	A cell where there is a knot.
+	 * @param vertical
+	 * 	Whether we're checking a cell from south (true) or east (false).
+	 * @return true if there is a knot in the specified neighbor cell, false othewise.
+	 */
 	private boolean hasNeighborKnot(Set<Cell> knots, Cell knot, boolean vertical) {
 		return knots.contains(knot.newRelativeCell(vertical ? 0 : 1, vertical ? 1 : 0));
 	}
 
-	private BoundedCellSet findCellsAroundTwoKnotCells(Cell cell, boolean vertical) {
+	/**
+	 * Finds cells that are contained in {@link #cellsInsideBorder} and surround two members of border: {@code cell}
+	 * and its cardinal neighbor.
+	 * <p>
+	 * A maximum of 10 cells can be found. Cells are situated in the following manner:
+	 * <p>
+	 * <pre>
+	 * ####
+	 * #CN#
+	 * ####
+	 * </pre>
+	 * or
+	 * <pre>
+	 * ###
+	 * #C#
+	 * #N#
+	 * ###
+	 * </pre>
+	 * <p>
+	 * Where {@code C} is {@code cell}, {@code N} is its neighbor and {@code #} are the found cells.
+	 *
+	 * @param cell
+	 * 	A cell
+	 * @param vertical
+	 * 	if true, a neighbor from south will be picked; else a neighbor from east will be picked.
+	 * @return A set of all cells that are arount
+	 */
+	private BoundedCellSet findInnerCellsAround2BorderNeighbors(Cell cell, boolean vertical) {
 		Mutable2DCellSet markedCells;
 		if (vertical) {
 			markedCells = new Mutable2DCellSet(new Rectangle(cell.x - 1, cell.y - 1, 3, 4));
@@ -126,7 +206,7 @@ public class KnotResolver2 implements CellSet {
 	}
 
 	private void markCellIfItIsInside(MutableCellSet markedCells, int x, int y) {
-		if (cellsInsideBufferBorder.contains(x, y)) {
+		if (cellsInsideBorder.contains(x, y)) {
 			markedCells.add(x, y);
 		}
 	}

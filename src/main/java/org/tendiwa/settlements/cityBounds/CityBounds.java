@@ -7,8 +7,6 @@ import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.core.Direction;
 import org.tendiwa.core.Directions;
-import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingCellSet;
 import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.extensions.CachedCellSet;
 import org.tendiwa.geometry.extensions.ChebyshovDistanceBufferBorder;
@@ -19,7 +17,6 @@ import org.tendiwa.graphs.MinimumCycleBasis;
 import org.tendiwa.pathfinding.dijkstra.PathTable;
 import org.tendiwa.terrain.WorldGenerationException;
 
-import java.awt.Color;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -146,7 +143,7 @@ public final class CityBounds {
 			cityShape.getBounds(),
 			radius + 1
 		);
-		CellSet cellsRejectedBecauseOfKnots = new KnotResolver2(bufferBorder, cellsInsideBufferBorder);
+		CellSet cellsRejectedBecauseOfKnots = new KnotResolvingCells(bufferBorder, cellsInsideBufferBorder);
 		CachedCellSet culledBufferBorder = new CachedCellSet(
 			new ChebyshovDistanceBufferBorder(
 				1,
