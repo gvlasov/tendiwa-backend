@@ -1,18 +1,23 @@
 package org.tendiwa.geometry.extensions;
 
 import gnu.trove.list.TDoubleList;
+import gnu.trove.list.TIntList;
 import gnu.trove.list.linked.TDoubleLinkedList;
+import gnu.trove.list.linked.TIntLinkedList;
 import org.tendiwa.geometry.*;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
-public class PolygonRasterizer {
+public final class PolygonRasterizer {
 	private PolygonRasterizer() {
 		throw new UnsupportedOperationException();
 	}
 
-	public static Result rasterize(List<Point2D> polygon) {
+	private static ResultData rasterize(List<Point2D> polygon) {
 		double minXd = Integer.MAX_VALUE,
 			maxXd = Integer.MIN_VALUE,
 			minYd = Integer.MAX_VALUE,
@@ -48,26 +53,48 @@ public class PolygonRasterizer {
 		boolean[][] bitmap = new boolean[maxY - minY + 1][maxX - minX + 1];
 		boolean anythingWasRasterized = false;
 		for (int y = minY; y <= maxY; y++) {
-			TDoubleList intersections = new TDoubleLinkedList();
-			for (int i = 0; i < edges.length; i++) {
+			TIntList intersections = new TIntLinkedList();
+			for (int i = 0; i < numberOfVertices; i++) {
 				Segment2D edge = edges[i];
-				if (edge.start.y < y && edge.end.y > y || edge.start.y > y && edge.end.y < y) {
-					intersections.add(edge.toLine().intersectionWith(new Line2D(0, y, 1, y)).x);
-				} else if (edge.start.y == y) {
-					intersections.add(edge.start.x);
-					if (areEdgesFromSameSide(
-						edges[i - 1 < 0 ? edges.length - 1 : i - 1].start,
-						edge.start,
-						edge.end)) {
-						intersections.add(edge.start.x);
-					}
+				Point2D vertex = polygon.get(i);
+				Point2D nextVertex = polygon.get(i + 1 == numberOfVertices ? 0 : i + 1);
+				if (vertex.y < y && nextVertex.y > y || vertex.y > y && nextVertex.y < y) {
+					intersections.add(i);
+					// edge.toLine().intersectionWith(new Line2D(0, y, 1, y)).x
+				} else if (vertex.y == y) {
+					intersections.add(i);
+//					if (
+//						areEdgesFromSameSide(
+//							edges[i - 1 < 0 ? edges.length - 1 : i - 1].start,
+//							edge.start,
+//							edge.end
+//						)
+//						) {
+//						// Add the same coordinate one more time
+//						intersections.add(edge.start.x);
+//					} else if (edge.end.y == y) {
+//						double previousVertexY = polygon.get(i-1).y;
+//						int startIndex= i;
+//						i+=1;
+//						while (i<numberOfVertices && polygon.get(i+1).y == y) {
+//							i++;
+//						}
+//						int endIndex = i;
+//						double nextVertexY = polygon.get(i+1).y;
+//						if (previousVertexY > y && nextVertexY < y || previousVertexY < y && nextVertexY > y) {
+//
+//						}
+//						intersections.add(polygon.get(startIndex).x);
+//						intersections.add(polygon.get(endIndex).x);
+//
+//					}
 				}
 				// Case for edge.start.y is omitted (though it may be present instead of the edge.start.x case)
 				// because otherwise it would produce 2 equal x-values when testing neighbor edges.
-
 			}
-			intersections.sort();
-			assert intersections.size() % 2 == 0;
+			int[] array = intersections.toArray();
+//			Arrays.sort(array, (a, b) -> Double.compare(polygon.get(a).x, polygon.get(b).x));
+			assert intersections.size() % 2 == 0 : intersections.size() + ", y=" + y;
 			for (int i = 0; i < intersections.size(); i += 2) {
 				Arrays.fill(
 					bitmap[y - minY],
@@ -82,7 +109,29 @@ public class PolygonRasterizer {
 		if (!anythingWasRasterized || bitmap[0].length == 0) {
 			bitmap = new boolean[0][0];
 		}
-		return new Result(minX, minY, bitmap);
+		return new ResultData(minX, minY, bitmap);
+	}
+
+	public static BoundedCellSet rasterizeToCellSet(List<Point2D> polygon) {
+		ResultData data = rasterize(polygon);
+		return new Result(data.minX, data.minY, data.bitmap);
+	}
+
+	public static MutableResult rasterizeToMutable(List<Point2D> polygon) {
+		ResultData data = rasterize(polygon);
+		return new MutableResult(data.minX, data.minY, data.bitmap);
+	}
+
+	private final static class ResultData {
+		final int minX;
+		final int minY;
+		final boolean[][] bitmap;
+
+		public ResultData(int minX, int minY, boolean[][] bitmap) {
+			this.minX = minX;
+			this.minY = minY;
+			this.bitmap = bitmap;
+		}
 	}
 
 	/**
@@ -97,41 +146,19 @@ public class PolygonRasterizer {
 		return Math.signum(middle.y - oneEnd.y) == Math.signum(middle.y - anotherEnd.y);
 	}
 
-	/**
-	 * Represents the result of polygon rasterization: a grid within a rectangular area with cells that either belong
-	 * to polygon's area or not.
-	 * <p>
-	 * This class is <b>mutable</b> for performance reasons.
-	 */
-	public static class Result {
+	public static class MutableResult {
 		public final int x;
 		public final int y;
 		public final int width;
 		public final int height;
-		/**
-		 * Array of obstacles. {@code false} means an obstacle, {@code true} means no obstacle. First index is
-		 * y-coordinate, second index is x-coordinate.
-		 * <p>
-		 * Bitmap itself has to be public (and hence <b>mutable</b>),
-		 * because otherwise we would need to defensively copy it each time the result is
-		 * passed to another algorithm, which is time-consuming.
-		 */
 		public final boolean[][] bitmap;
 
-		Result(int x, int y, boolean[][] bitmap) {
-			this.x = x;
-			this.y = y;
+		MutableResult(int minX, int minY, boolean[][] bitmap) {
+			this.x = minX;
+			this.y = minY;
+			this.width = (bitmap.length == 0) ? 0 : bitmap[0].length;
 			this.height = bitmap.length;
-			if (this.height == 0) {
-				this.width = 0;
-			} else {
-				this.width = bitmap[0].length;
-			}
 			this.bitmap = bitmap;
-		}
-
-		public boolean get(int x, int y) {
-			return bitmap[y][x];
 		}
 
 		/**
@@ -154,21 +181,75 @@ public class PolygonRasterizer {
 				);
 			}
 		}
+	}
 
-		public BoundedCellSet toCellSet() {
-			return new BoundedCellSet() {
-				@Override
-				public Rectangle getBounds() {
-					return new Rectangle(x, y, width, height);
-				}
+	/**
+	 * Represents the result of polygon rasterization: a grid within a rectangular area with cells that either belong
+	 * to polygon's area or not.
+	 * <p>
+	 * This class is <b>mutable</b> for performance reasons.
+	 */
+	public static class Result implements BoundedCellSet {
+		private final Rectangle bounds;
+		/**
+		 * Array of obstacles. {@code false} means an obstacle, {@code true} means no obstacle. First index is
+		 * y-coordinate, second index is x-coordinate.
+		 * <p>
+		 * Bitmap itself has to be public (and hence <b>mutable</b>),
+		 * because otherwise we would need to defensively copy it each time the result is
+		 * passed to another algorithm, which is time-consuming.
+		 */
+		private final boolean[][] bitmap;
 
-				@Override
-				public boolean contains(int x, int y) {
-					return bitmap[y - Result.this.y][x - Result.this.x];
-				}
-			};
+		Result(int x, int y, boolean[][] bitmap) {
+			this.bounds = new Rectangle(
+				x,
+				y,
+				(bitmap.length == 0) ? 0 : bitmap[0].length,
+				bitmap.length
+			);
+			this.bitmap = bitmap;
+		}
+
+		public boolean get(int x, int y) {
+			return bitmap[y][x];
 		}
 
 
+		@Override
+		public boolean contains(int x, int y) {
+			return bounds.contains(x, y) && bitmap[y - bounds.y][x - bounds.x];
+		}
+
+		@Override
+		public void forEach(Consumer<? super Cell> action) {
+			int maxX = bounds.getMaxX();
+			int maxY = bounds.getMaxY();
+			for (int i = bounds.x; i < maxX; i++) {
+				for (int j = bounds.y; j < maxY; j++) {
+					if (bitmap[j - bounds.y][i - bounds.x]) {
+						action.accept(new Cell(i, j));
+					}
+				}
+			}
+		}
+
+		@Override
+		public void forEach(CellConsumer action) {
+			int maxX = bounds.getMaxX();
+			int maxY = bounds.getMaxY();
+			for (int i = bounds.x; i < maxX; i++) {
+				for (int j = bounds.y; j < maxY; j++) {
+					if (bitmap[j - bounds.y][i - bounds.x]) {
+						action.consume(i, j);
+					}
+				}
+			}
+		}
+
+		@Override
+		public Rectangle getBounds() {
+			return bounds;
+		}
 	}
 }

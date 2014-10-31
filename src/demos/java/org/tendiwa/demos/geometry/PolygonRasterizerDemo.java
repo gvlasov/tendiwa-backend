@@ -29,7 +29,7 @@ public class PolygonRasterizerDemo implements Runnable {
 			.moveBy(0, 40)
 			.moveBy(-40, 0)
 			.points();
-		BoundedCellSet rasterizedPolygon = PolygonRasterizer.rasterize(polygon).toCellSet();
+		BoundedCellSet rasterizedPolygon = PolygonRasterizer.rasterizeToCellSet(polygon);
 		canvas.draw(rasterizedPolygon, DrawingCellSet.withColor(Color.red));
 
 	}

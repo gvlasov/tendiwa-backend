@@ -8,7 +8,7 @@ import org.tendiwa.geometry.extensions.PolygonRasterizer;
 import java.util.Optional;
 
 public class MaximalRectanlges {
-	public static Optional<Rectangle> findLargestIn(PolygonRasterizer.Result rasterizedPolygon) {
+	public static Optional<Rectangle> findLargestIn(PolygonRasterizer.MutableResult rasterizedPolygon) {
 		Optional<Rectangle> r = MaximalCellRectangleFinder.compute(rasterizedPolygon.bitmap);
 		if (r.isPresent()) {
 			return Optional.of(Recs.rectangleMovedFromOriginal(
@@ -33,7 +33,7 @@ public class MaximalRectanlges {
 	 * equal area to the previous rectangle in list. No rectangle in list has area greater than {@code minimumArea}.
 	 */
 	public static ImmutableList<Rectangle> searchUntilSmallEnoughMutatingBitmap(
-		PolygonRasterizer.Result rasterizedPolygon,
+		PolygonRasterizer.MutableResult rasterizedPolygon,
 		int minimumArea
 	) {
 		Optional<Rectangle> r;

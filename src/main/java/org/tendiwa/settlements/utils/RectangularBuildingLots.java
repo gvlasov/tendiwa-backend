@@ -33,7 +33,7 @@ public final class RectangularBuildingLots {
 
 
 		return encBlocks.stream()
-			.map(lot -> PolygonRasterizer.rasterize(lot.toPolygon()))
+			.map(lot -> PolygonRasterizer.rasterizeToMutable(lot.toPolygon()))
 			.map(rasterized -> MaximalRectanlges.searchUntilSmallEnoughMutatingBitmap(rasterized, 21))
 			.filter(list -> !list.isEmpty())
 			.map(list -> new RectangleWithNeighbors(list.get(0), list.subList(1, list.size())))

@@ -62,6 +62,18 @@ public interface CellSet {
 		return (x, y) -> contains(x, y) || set.contains(x, y);
 	}
 
+	/**
+	 * Creates a set that is a symmetric difference of this set and another set.
+	 *
+	 * @param set
+	 * 	Another set.
+	 * @return A set that is a symmetric difference of this set and another set.
+	 * @see <a href="http://en.wikipedia.org/wiki/Symmetric_difference">Symmetric difference</a>
+	 */
+	public default CellSet xor(CellSet set) {
+		return (x, y) -> contains(x, y) ^ set.contains(x, y);
+	}
+
 	public static Collector<Cell, ?, FiniteCellSet> toCellSet() {
 		return new Collector<Cell, ScatteredMutableCellSet, FiniteCellSet>() {
 			@Override

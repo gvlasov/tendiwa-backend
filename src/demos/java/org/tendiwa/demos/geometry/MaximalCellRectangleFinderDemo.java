@@ -8,9 +8,8 @@ import org.tendiwa.drawing.extensions.DrawingCellSet;
 import org.tendiwa.drawing.extensions.DrawingModule;
 import org.tendiwa.drawing.extensions.DrawingRectangle;
 import org.tendiwa.drawing.extensions.PieChartTimeProfiler;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Recs;
-import org.tendiwa.geometry.Rectangle;
+import org.tendiwa.geometry.*;
+import org.tendiwa.geometry.extensions.CachedCellSet;
 import org.tendiwa.geometry.extensions.PolygonRasterizer;
 import org.tendiwa.geometry.extensions.daveedvMaxRec.MaximalCellRectangleFinder;
 
@@ -36,13 +35,26 @@ public class MaximalCellRectangleFinderDemo implements Runnable {
 //			.moveBy(-30, 10)
 //			.points();
 		PieChartTimeProfiler chart = new PieChartTimeProfiler();
-		PolygonRasterizer.Result rasterizedPolygon = PolygonRasterizer.rasterize(polygon);
+		PolygonRasterizer.MutableResult rasterizedPolygon = PolygonRasterizer.rasterizeToMutable(polygon);
 		chart.saveTime("Rasterization");
 		Rectangle largestRectangle = MaximalCellRectangleFinder.compute(
 			rasterizedPolygon.bitmap
 		).get();
 		chart.saveTime("Rectangle search");
-		canvas.draw(rasterizedPolygon.toCellSet(), DrawingCellSet.withColor(Color.red));
+		Rectangle bounds = new Rectangle(
+			rasterizedPolygon.x,
+			rasterizedPolygon.y,
+			rasterizedPolygon.width,
+			rasterizedPolygon.height
+		);
+		canvas.draw(
+			new CachedCellSet(
+				(x, y) -> bounds.contains(x, y)
+					&& rasterizedPolygon.bitmap[y - rasterizedPolygon.y][x - rasterizedPolygon.x],
+				bounds
+			),
+			DrawingCellSet.withColor(Color.red)
+		);
 		canvas.draw(
 			Recs.rectangleMovedFromOriginal(largestRectangle, rasterizedPolygon.x, rasterizedPolygon.y),
 			DrawingRectangle.withColor(Color.blue)
