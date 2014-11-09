@@ -7,7 +7,7 @@ import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
 
-public class IntDoublyLinkedListTest {
+public class IntDoublyLinkedCircularListTest {
 	/**
 	 * From a list of numbers [0;9] removes numbers 0, 3, 7, 8 and 9, and checks that the numbers that are left are
 	 * 1, 2, 4, 5 and 6.
@@ -19,7 +19,7 @@ public class IntDoublyLinkedListTest {
 		Iterator<IntDoublyLinkedList.Node> iter = list.iterator();
 		while (iter.hasNext()) {
 			IntDoublyLinkedList.Node node = iter.next();
-			if (node.value == 0 || node.value == 3 || node.value == 9 || node.value == 7 || node.value == 8) {
+			if (node.value == 0 || node.value == 3 || node.value == 7 || node.value == 8 || node.value == 9) {
 				iter.remove();
 			}
 		}

@@ -8,7 +8,7 @@ import org.tendiwa.drawing.extensions.DrawingModule;
 import org.tendiwa.geometry.BoundedCellSet;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.extensions.PointTrail;
-import org.tendiwa.geometry.extensions.PolygonRasterizer;
+import org.tendiwa.geometry.extensions.polygonRasterization.PolygonRasterizer;
 
 import java.awt.Color;
 import java.util.List;

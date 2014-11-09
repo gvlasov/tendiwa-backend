@@ -53,7 +53,7 @@ public class DrawingGraph {
 		int size
 	) {
 		return (shape, canvas) -> {
-			DrawingAlgorithm<Cell> pointDrawing = DrawingCell.withColorAndSize(color, size);
+			DrawingAlgorithm<Point2D> pointDrawing = DrawingPoint2D.withColorAndSize(color, size);
 			for (Segment2D e : shape.edgeSet()) {
 				Point2D source = shape.getEdgeSource(e);
 				Point2D target = shape.getEdgeTarget(e);
@@ -66,7 +66,7 @@ public class DrawingGraph {
 				);
 			}
 			for (Point2D v : shape.vertexSet()) {
-				canvas.draw(new Cell((int) Math.round(v.x), (int) Math.round(v.y)), pointDrawing);
+				canvas.draw(v, pointDrawing);
 			}
 		};
 	}

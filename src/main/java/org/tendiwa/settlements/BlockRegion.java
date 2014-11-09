@@ -103,9 +103,9 @@ public class BlockRegion extends EnclosedBlock {
 	 * @param lotDeviance
 	 * 	Coefficient for possible lot width and depth deviance.
 	 * 	Actual lot widths and depths (sizes) may be [size*(1-deviance/2); size*(1+deviance/2)]. So deviance of 0
-	 * 	means that lots will have exactly the width and height specified in corresponding arguments,
+	 * 	means that lots will try to have exactly the width and height specified in corresponding arguments,
 	 * 	and any other deviance value means lots can be up to 1.5 times larger or up to 0 size,
-	 * 	but never exactly 2 times larger or 0.
+	 * 	but never exactly 1.5 times larger or 0.
 	 * @return A set of lots subdivided from this one.
 	 */
 	public Set<BlockRegion> subdivideLots(double lotWidth, double lotDepth, double lotDeviance) {

@@ -3,13 +3,19 @@ package org.tendiwa.geometry.extensions.twakStraightSkeleton;
 import com.google.common.collect.Lists;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
+import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawingSegment;
+import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.*;
+import org.tendiwa.geometry.extensions.ShamosHoeyAlgorithm;
 import org.tendiwa.geometry.extensions.straightSkeleton.CycleExtraVerticesRemover;
 import org.tendiwa.geometry.extensions.twakStraightSkeleton.ui.Bar;
 import org.tendiwa.geometry.extensions.twakStraightSkeleton.utils.*;
 
+import javax.swing.text.html.HTMLDocument;
 import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -69,7 +75,19 @@ public class TwakStraightSkeleton implements StraightSkeleton {
 		}
 
 		Skeleton skeleton = new Skeleton(out, true);
-		skeleton.skeleton();
+		try {
+			skeleton.skeleton();
+		} catch (RuntimeException e) {
+			List<Segment2D> originalEdges1 = pointsToSegments(
+				vertices
+					.stream()
+					.map(v -> new Point2D(v.x + 300, v.y - 200))
+					.collect(Collectors.toList())
+			);
+
+			new TestCanvas(1, 600, 600).drawAll(originalEdges1, DrawingSegment2D.withColor(Color.red));
+			throw e;
+		}
 		return new TwakStraightSkeleton(skeleton, pointsToSegments(vertices));
 	}
 

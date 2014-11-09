@@ -10,7 +10,8 @@ import org.tendiwa.drawing.extensions.DrawingRectangle;
 import org.tendiwa.drawing.extensions.PieChartTimeProfiler;
 import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.extensions.CachedCellSet;
-import org.tendiwa.geometry.extensions.PolygonRasterizer;
+import org.tendiwa.geometry.extensions.polygonRasterization.MutableRasterizationResult;
+import org.tendiwa.geometry.extensions.polygonRasterization.PolygonRasterizer;
 import org.tendiwa.geometry.extensions.daveedvMaxRec.MaximalCellRectangleFinder;
 
 import java.awt.Color;
@@ -35,7 +36,7 @@ public class MaximalCellRectangleFinderDemo implements Runnable {
 //			.moveBy(-30, 10)
 //			.points();
 		PieChartTimeProfiler chart = new PieChartTimeProfiler();
-		PolygonRasterizer.MutableResult rasterizedPolygon = PolygonRasterizer.rasterizeToMutable(polygon);
+		MutableRasterizationResult rasterizedPolygon = PolygonRasterizer.rasterizeToMutable(polygon);
 		chart.saveTime("Rasterization");
 		Rectangle largestRectangle = MaximalCellRectangleFinder.compute(
 			rasterizedPolygon.bitmap

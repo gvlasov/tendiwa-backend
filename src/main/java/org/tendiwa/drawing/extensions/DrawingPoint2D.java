@@ -12,8 +12,8 @@ public class DrawingPoint2D {
 		return (shape, canvas) -> {
 			canvas.fillShape(
 				new Ellipse2D.Double(
-					shape.x - diameter / 2,
-					shape.y - diameter / 2,
+					shape.x - diameter / 2 + 0.5,
+					shape.y - diameter / 2 + 0.5,
 					diameter,
 					diameter
 				),

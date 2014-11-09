@@ -213,6 +213,10 @@ public final class TestCanvas implements DrawableInto {
 		return pixelBounds.height;
 	}
 
+	public int getScale() {
+		return scale;
+	}
+
 	public class Layer {
 		final BufferedImage image;
 		final Graphics2D graphics;

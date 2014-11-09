@@ -28,7 +28,7 @@ public class MaximalCellRectangleFinder {
 	 * Note that, since {@code cells} has width and height but no defined top-left corner, the
 	 * @throws java.lang.IllegalArgumentException
 	 * 	if {@code maximumArea < 0}.
-	 * @see org.tendiwa.geometry.extensions.PolygonRasterizer One way to produce the {@code cells} array.
+	 * @see org.tendiwa.geometry.extensions.polygonRasterization.PolygonRasterizer One way to produce the {@code cells} array.
 	 * @see <a href="http://stackoverflow.com/a/20039017/1028367">Stackoverflow question</a>
 	 * @see <a href="http://www.drdobbs.com/database/the-maximal-rectangle-problem/184410529">Article with the
 	 * description of the algorithm</a>

@@ -6,6 +6,7 @@ import com.vividsolutions.jts.geom.Polygon;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.alg.ConnectivityInspector;
 import org.tendiwa.geometry.*;
+import org.tendiwa.geometry.extensions.polygonRasterization.PolygonRasterizer;
 import org.tendiwa.graphs.GraphCycleTraverser;
 import org.tendiwa.graphs.MinimalCycle;
 

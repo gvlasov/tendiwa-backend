@@ -5,10 +5,11 @@ import org.jgrapht.UndirectedGraph;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 
 public final class SameLineGraphEdgesPerturbations {
-	private static Comparator<Segment2D> HORIZONTAL_COMPARATOR = (a, b) -> {
+	private static final Comparator<Segment2D> HORIZONTAL_COMPARATOR = (a, b) -> {
 		assert a.start.y == a.end.y && b.start.y == b.end.y;
 		double d = a.start.y - b.start.y;
 		if (d < 0) {
@@ -19,7 +20,7 @@ public final class SameLineGraphEdgesPerturbations {
 		}
 		return 0;
 	};
-	private static Comparator<Segment2D> VERTICAL_COMPARATOR = (a, b) -> {
+	private static final Comparator<Segment2D> VERTICAL_COMPARATOR = (a, b) -> {
 		assert a.start.x == a.end.x && b.start.x == b.end.x;
 		double d = a.start.x - b.start.x;
 		if (d < 0) {
@@ -45,8 +46,8 @@ public final class SameLineGraphEdgesPerturbations {
 	 * 	A planar graph to be mutated.
 	 */
 	public static void perturbIfHasSameLineEdges(UndirectedGraph<Point2D, Segment2D> graph, double magnitude) {
-		ArrayList<Segment2D> verticalEdges = new ArrayList<>(graph.edgeSet().size());
-		ArrayList<Segment2D> horizontalEdges = new ArrayList<>(graph.edgeSet().size());
+		List<Segment2D> verticalEdges = new ArrayList<>(graph.edgeSet().size());
+		List<Segment2D> horizontalEdges = new ArrayList<>(graph.edgeSet().size());
 		for (Segment2D edge : graph.edgeSet()) {
 			if (edge.start.x == edge.end.x) {
 				verticalEdges.add(edge);

@@ -87,7 +87,7 @@ public class Rectangle implements Placeable, BoundedCellSet {
 		return answer;
 	}
 
-	public boolean isCellOnRectangleBorder(int x, int y, java.awt.Rectangle r) {
+	public boolean isCellOnRectangleBorder(int x, int y, Rectangle r) {
 		return x == this.x || y == this.y || x == this.x + this.width - 1 || y == this.y + this.height - 1;
 	}
 
@@ -292,7 +292,6 @@ public class Rectangle implements Placeable, BoundedCellSet {
 	 * Returns a {@link Point2D} that is right in the middle of this Rectangle.
 	 *
 	 * @return
-	 * @see #getCenter
 	 */
 	public Point2D getCenterPoint() {
 		return new Point2D(x + ((double) width / 2), (y + ((double) height / 2)));

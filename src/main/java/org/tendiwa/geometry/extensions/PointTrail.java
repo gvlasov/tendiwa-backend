@@ -25,6 +25,16 @@ public class PointTrail {
 		return this;
 	}
 
+	public PointTrail moveByX(double dx) {
+		add(last.moveBy(dx, 0));
+		return this;
+	}
+
+	public PointTrail moveByY(double dy) {
+		add(last.moveBy(0, dy));
+		return this;
+	}
+
 	public List<Point2D> points() {
 		return builder.build();
 	}

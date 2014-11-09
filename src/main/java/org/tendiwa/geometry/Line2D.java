@@ -59,7 +59,7 @@ public class Line2D {
 	 * 	a22
 	 * @return Determinant of a 2×2 matrix.
 	 */
-	private static double det(double a, double b, double c, double d) {
+	public static double det(double a, double b, double c, double d) {
 		return a * d - b * c;
 	}
 

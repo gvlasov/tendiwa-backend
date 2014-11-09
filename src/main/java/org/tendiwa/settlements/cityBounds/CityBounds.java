@@ -8,10 +8,7 @@ import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.core.Direction;
 import org.tendiwa.core.Directions;
 import org.tendiwa.geometry.*;
-import org.tendiwa.geometry.extensions.CachedCellSet;
-import org.tendiwa.geometry.extensions.ChebyshovDistanceBufferBorder;
-import org.tendiwa.geometry.extensions.PlanarGraphs;
-import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
+import org.tendiwa.geometry.extensions.*;
 import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.graphs.MinimumCycleBasis;
 import org.tendiwa.pathfinding.dijkstra.PathTable;
@@ -192,7 +189,7 @@ public final class CityBounds {
 		}
 		EdgeReducer.reduceEdges(graph, cell2PointMap);
 		LadderyEdgesOptimizer.optimize(graph, cellsInsideBufferBorder.or(bufferBorder), 2);
-		SameLineGraphEdgesPerturbations.perturbIfHasSameLineEdges(graph, 1e-4);
+		SameSlopeGraphEdgesPerturbations.perturb(graph, 1e-4);
 		return graph;
 	}
 

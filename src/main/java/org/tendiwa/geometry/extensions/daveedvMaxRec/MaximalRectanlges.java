@@ -3,12 +3,12 @@ package org.tendiwa.geometry.extensions.daveedvMaxRec;
 import com.google.common.collect.ImmutableList;
 import org.tendiwa.geometry.Recs;
 import org.tendiwa.geometry.Rectangle;
-import org.tendiwa.geometry.extensions.PolygonRasterizer;
+import org.tendiwa.geometry.extensions.polygonRasterization.MutableRasterizationResult;
 
 import java.util.Optional;
 
 public class MaximalRectanlges {
-	public static Optional<Rectangle> findLargestIn(PolygonRasterizer.MutableResult rasterizedPolygon) {
+	public static Optional<Rectangle> findLargestIn(MutableRasterizationResult rasterizedPolygon) {
 		Optional<Rectangle> r = MaximalCellRectangleFinder.compute(rasterizedPolygon.bitmap);
 		if (r.isPresent()) {
 			return Optional.of(Recs.rectangleMovedFromOriginal(
@@ -33,7 +33,7 @@ public class MaximalRectanlges {
 	 * equal area to the previous rectangle in list. No rectangle in list has area greater than {@code minimumArea}.
 	 */
 	public static ImmutableList<Rectangle> searchUntilSmallEnoughMutatingBitmap(
-		PolygonRasterizer.MutableResult rasterizedPolygon,
+		MutableRasterizationResult rasterizedPolygon,
 		int minimumArea
 	) {
 		Optional<Rectangle> r;
