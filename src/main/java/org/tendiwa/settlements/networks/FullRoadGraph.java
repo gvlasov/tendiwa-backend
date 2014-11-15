@@ -4,10 +4,13 @@ import com.google.common.collect.ImmutableSet;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.graph.UndirectedSubgraph;
+import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
 
+import java.awt.Color;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -34,16 +37,21 @@ final class FullRoadGraph {
 		Set<Segment2D> edgesOfCyclesSubgraph = new HashSet<>();
 		for (Segment2D edge : lowLevelRoadGraph.edgeSet()) {
 			if (holderOfSplitCycleEdges.isEdgeSplit(edge)) {
+				TestCanvas.canvas.draw(edge, DrawingSegment2D.withColor(Color.white));
 				UndirectedGraph<Point2D, Segment2D> graph = holderOfSplitCycleEdges.getGraph(edge);
 				graph.vertexSet().forEach(union::addVertex);
 				graph.vertexSet().forEach(verticesOfCyclesSubgraph::add);
 				for (Segment2D subEdge : graph.edgeSet()) {
 					boolean added = union.addEdge(subEdge.start, subEdge.end, subEdge);
-					edgesOfCyclesSubgraph.add(subEdge);
 					assert added;
+					edgesOfCyclesSubgraph.add(subEdge);
 				}
 			} else {
+				TestCanvas.canvas.draw(edge, DrawingSegment2D.withColor(Color.blue));
 				union.addEdge(edge.start, edge.end, edge);
+				verticesOfCyclesSubgraph.add(edge.start);
+				verticesOfCyclesSubgraph.add(edge.end);
+				edgesOfCyclesSubgraph.add(edge);
 			}
 		}
 		for (NetworkWithinCycle cell : networks) {
@@ -65,8 +73,6 @@ final class FullRoadGraph {
 	}
 
 	UndirectedGraph<Point2D, Segment2D> getFullRoadGraph() {
-		if (fullRoadGraph == null) {
-		}
 		return fullRoadGraph;
 	}
 

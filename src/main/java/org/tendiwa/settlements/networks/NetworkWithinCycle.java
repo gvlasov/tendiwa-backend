@@ -255,11 +255,13 @@ public final class NetworkWithinCycle {
 			if (snapEvent != null && snapEvent.targetNode != null && !isDeadEnd(snapEvent.targetNode)) {
 				nodeQueue.push(new DirectionFromPoint(snapEvent.targetNode, direction));
 				outerPointsBuilder.add(sourceNode);
-			} else {
-				TestCanvas.canvas.draw(sourceNode, DrawingPoint2D.withColorAndSize(Color.cyan, 4));
 			}
-			if (snapEvent != null && snapEvent.eventType == SnapEventType.ROAD_SNAP && startingRoads.contains(snapEvent
-				.road)) {
+			if (
+				snapEvent != null
+					&& snapEvent.eventType == SnapEventType.ROAD_SNAP
+					&& startingRoads.contains(snapEvent.road)) {
+
+
 				startingRoadsSnappedTo.add(snapEvent.road);
 			}
 			deadEnds.add(sourceNode);
@@ -289,10 +291,6 @@ public final class NetworkWithinCycle {
 		}
 		this.filamentEnds = removeMultidegreeFilamentEnds(filamentEnds);
 		filamentEndPoints = nodes2TheirPoints(filamentEnds);
-	}
-
-	private boolean numberOfRoadsChanged(int oldNumberOfRoads) {
-		return relevantNetwork.edgeSet().size() != oldNumberOfRoads;
 	}
 
 	/**
@@ -495,12 +493,6 @@ public final class NetworkWithinCycle {
 			outerPointsBuilder.add(target);
 		}
 		return true;
-	}
-
-	private Collection<Segment2D> findEdgesAroundPoint(Point2D point, double distance) {
-		return relevantNetwork.edgeSet().stream()
-			.filter(e -> e.start.distanceTo(point) < distance || e.end.distanceTo(point) < distance)
-			.collect(Collectors.toSet());
 	}
 
 	/**

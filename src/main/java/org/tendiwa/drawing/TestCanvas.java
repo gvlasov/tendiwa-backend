@@ -317,7 +317,7 @@ public final class TestCanvas implements DrawableInto {
 		graphics.setColor(color);
 		AffineTransform transform = new AffineTransform();
 		transform.setToScale(scale, scale);
-//        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.setTransform(transform);
 		g2d.draw(shape);
 		g2d.setTransform(defaultTransform);

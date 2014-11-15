@@ -5,12 +5,13 @@ import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Vector2D;
 
 import java.awt.*;
+import java.awt.geom.Line2D;
 
 public class DrawingSegment2D {
-	public static DrawingAlgorithm<Segment2D> withColor(final Color color) {
+	public static DrawingAlgorithm<Segment2D> withColorThin(final Color color) {
 		return (shape, canvas) ->
 			canvas.drawShape(
-				new java.awt.geom.Line2D.Double(
+				new Line2D.Double(
 					shape.start.x,
 					shape.start.y,
 					shape.end.x,
@@ -39,5 +40,10 @@ public class DrawingSegment2D {
 			canvas.draw(leftHalfarrow, DrawingSegment2D.withColor(color));
 			canvas.draw(rightHalfarrow, DrawingSegment2D.withColor(color));
 		};
+	}
+
+	public static DrawingAlgorithm<Segment2D> withColor(final Color color) {
+		return (shape, canvas) ->
+			canvas.drawRasterLine(shape, color);
 	}
 }

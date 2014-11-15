@@ -28,6 +28,7 @@ public final class EnclosedCyclesSet {
 		if (!iter.hasNext()) {
 			return false;
 		}
+//		TestCanvas.canvas.draw(cyclesRoadGraph, DrawingGraph.withColorAndAntialiasing(Color.white));
 
 		Point2D first = iter.next();
 		Point2D previous = first;
