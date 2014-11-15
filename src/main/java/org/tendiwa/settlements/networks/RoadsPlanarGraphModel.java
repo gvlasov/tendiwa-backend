@@ -23,6 +23,7 @@ import org.tendiwa.settlements.SettlementGenerationException;
 import java.util.*;
 import java.util.function.Predicate;
 
+import static java.util.stream.Collectors.reducing;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -76,6 +77,7 @@ public final class RoadsPlanarGraphModel {
 	private final boolean favourAxisAlignedSegments;
 	private final HolderOfSplitCycleEdges holderOfSplitCycleEdges = new HolderOfSplitCycleEdges();
 	private ImmutableMap<Point2D, Segment2D> splitEdgesToOriginalEdges;
+	private final FullRoadGraph fullRoadGraph;
 
 	/**
 	 * @param highLevelRoadGraph
@@ -195,10 +197,11 @@ public final class RoadsPlanarGraphModel {
 		if (networks.isEmpty()) {
 			throw new SettlementGenerationException("A City with 0 city networks was made");
 		}
+		fullRoadGraph = new FullRoadGraph(lowLevelRoadGraph,holderOfSplitCycleEdges, networks);
 	}
 
 	/**
-	 * Creates {@link NetworkWithinCycle}s and puts them to {@code celslBuilder}.
+	 * Creates {@link NetworkWithinCycle}s and puts them to {@code cellsBuilder}.
 	 *
 	 * @param cellsBuilder
 	 * 	Where to put new networks.
@@ -521,36 +524,9 @@ public final class RoadsPlanarGraphModel {
 	 * @see #getLowLevelRoadGraph() for the graph of <i>original</i> roads which are split to get <i>actual</i> roads.
 	 */
 	public UndirectedGraph<Point2D, Segment2D> getFullRoadGraph() {
-		UndirectedGraph<Point2D, Segment2D> union = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
-		lowLevelRoadGraph.vertexSet().forEach(union::addVertex);
-		for (Segment2D edge : lowLevelRoadGraph.edgeSet()) {
-			if (holderOfSplitCycleEdges.isEdgeSplit(edge)) {
-				UndirectedGraph<Point2D, Segment2D> graph = holderOfSplitCycleEdges.getGraph(edge);
-				graph.vertexSet().forEach(union::addVertex);
-				for (Segment2D subEdge : graph.edgeSet()) {
-					boolean added = union.addEdge(subEdge.start, subEdge.end, subEdge);
-					assert added;
-				}
-			} else {
-				union.addEdge(edge.start, edge.end, edge);
-			}
-		}
-		for (NetworkWithinCycle cell : networks) {
-			cell.network()
-				.vertexSet()
-				.stream()
-					// TODO: Do we need this filter?
-				.filter(vertex -> !union.containsVertex(vertex))
-				.forEach(union::addVertex);
-			cell.network()
-				.edgeSet()
-				.stream()
-					// TODO: Do we need this filter?
-				.filter(edge -> !union.containsEdge(edge))
-				.forEach(edge -> union.addEdge(edge.start, edge.end, edge));
-		}
-		return union;
+		return fullRoadGraph.getFullRoadGraph();
 	}
+
 
 	/**
 	 * In each {@link NetworkWithinCycle} that this {@link
@@ -611,5 +587,9 @@ public final class RoadsPlanarGraphModel {
 			assert splitEdgesToOriginalEdges.values().stream().allMatch(lowLevelRoadGraph::containsEdge);
 		}
 		return this.splitEdgesToOriginalEdges;
+	}
+
+	public UndirectedGraph<Point2D, Segment2D> getCyclesRoadGraph() {
+		return fullRoadGraph.getCyclesRoadGraph();
 	}
 }

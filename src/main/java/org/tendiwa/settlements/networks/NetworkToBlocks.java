@@ -6,6 +6,7 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
+import org.tendiwa.geometry.extensions.ShamosHoeyAlgorithm;
 import org.tendiwa.graphs.MinimumCycleBasis;
 
 import java.util.Set;
@@ -24,7 +25,6 @@ class NetworkToBlocks {
 		double snapSize,
 		HolderOfSplitCycleEdges holderOfSplitCycleEdges) {
 		if (!filamentEnds.isEmpty()) {
-			UndirectedGraph<Point2D, Segment2D> r = relevantNetwork;
 			relevantNetwork = PlanarGraphs.copyRelevantNetwork(relevantNetwork);
 			Set<Segment2D> edgesCopy = ImmutableSet.copyOf(relevantNetwork.edgeSet());
 			for (Segment2D edge : edgesCopy) {

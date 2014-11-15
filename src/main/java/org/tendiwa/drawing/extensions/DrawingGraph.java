@@ -12,7 +12,6 @@ import org.tendiwa.graphs.*;
 import java.awt.Color;
 import java.awt.geom.Line2D;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.function.Function;
 
 public class DrawingGraph {
@@ -160,7 +159,7 @@ public class DrawingGraph {
 		return (graph, canvas) -> graph
 			.edgeSet()
 			.stream()
-			.forEach(edge -> canvas.drawLine(
+			.forEach(edge -> canvas.drawRasterLine(
 				edge.start.toCell(),
 				edge.end.toCell(),
 				colors.next()

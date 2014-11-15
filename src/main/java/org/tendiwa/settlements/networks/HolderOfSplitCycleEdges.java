@@ -61,8 +61,8 @@ final class HolderOfSplitCycleEdges {
 			return;
 		}
 		if (graph.containsVertex(point)) {
-			// TODO: Maybe here we should only check this. If this assert works, then we sure should.
-			assert point.equals(edgeToSplit.start) || point.equals(edgeToSplit.end);
+//			TODO: Maybe here we should only check this. If this assert works, then we sure should.
+//			assert point.equals(edgeToSplit.start) || point.equals(edgeToSplit.end);
 			return;
 		}
 		Segment2D parentEdge = findSubEdgeThatContainsPoint(graph, point);

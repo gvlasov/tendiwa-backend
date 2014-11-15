@@ -5,7 +5,11 @@ import org.tendiwa.geometry.Segment2D;
 import java.util.*;
 
 /**
- * This algorithm needs O(n) space and runs in O(n*log n) time.
+ * Checks line segments for intersection.
+ * <p>
+ * Algorithm needs O(n) space.
+ * <p>
+ * Unlike the naive O(n^2) approach, this algorithm runs in O(n*log n) time.
  */
 public class ShamosHoeyAlgorithm {
 

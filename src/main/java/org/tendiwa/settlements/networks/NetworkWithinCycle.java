@@ -13,6 +13,7 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Vectors2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
+import org.tendiwa.geometry.extensions.ShamosHoeyAlgorithm;
 import org.tendiwa.graphs.MinimalCycle;
 
 import java.awt.Color;
@@ -58,6 +59,14 @@ public final class NetworkWithinCycle {
 	private final double snapSize;
 	private final double connectivity;
 	private final Random random;
+	/**
+	 * A set of point including:
+	 * <ol>
+	 * <li>Vertices of the original graph;</li>
+	 * <li>Vertices created on edges of the original graph;</li>
+	 * <li>Vertices created on edges of the secondary road graph</li>
+	 * </ol>
+	 */
 	private final Set<Point2D> deadEnds = new HashSet<>();
 	private final ImmutableSet.Builder<Point2D> outerPointsBuilder = ImmutableSet.builder();
 	private final ImmutableSet<Point2D> exitsOnCycles;
@@ -228,7 +237,12 @@ public final class NetworkWithinCycle {
 	 */
 	private void buildSegment2DNetwork(MinimalCycle<Point2D, Segment2D> cycle) {
 		Deque<DirectionFromPoint> nodeQueue = new ArrayDeque<>();
-		for (Segment2D road : startingRoads(cycle)) {
+		Collection<Segment2D> startingRoads = startingRoads(cycle);
+		Collection<Segment2D> startingRoadsSnappedTo = new HashSet<>(startingRoads.size());
+		for (Segment2D road : startingRoads) {
+			if (startingRoadsSnappedTo.contains(road)) {
+				continue;
+			}
 			Point2D sourceNode = calculateDeviatedMidPoint(road);
 			// Made dead end so two new roads are not inserted to network.
 			deadEnds.add(sourceNode);
@@ -236,21 +250,32 @@ public final class NetworkWithinCycle {
 			// Made not-dead end so a road can be placed from it.
 			deadEnds.remove(sourceNode);
 			double direction = deviatedBoundaryPerpendicular(road);
-			Point2D newNode = tryPlacingRoad(sourceNode, direction);
-			if (newNode != null && !isDeadEnd(newNode)) {
-				nodeQueue.push(new DirectionFromPoint(newNode, direction));
-				deadEnds.add(sourceNode);
+
+			SnapEvent snapEvent = tryPlacingRoad(sourceNode, direction);
+			if (snapEvent != null && snapEvent.targetNode != null && !isDeadEnd(snapEvent.targetNode)) {
+				nodeQueue.push(new DirectionFromPoint(snapEvent.targetNode, direction));
 				outerPointsBuilder.add(sourceNode);
+			} else {
+				TestCanvas.canvas.draw(sourceNode, DrawingPoint2D.withColorAndSize(Color.cyan, 4));
 			}
+			if (snapEvent != null && snapEvent.eventType == SnapEventType.ROAD_SNAP && startingRoads.contains(snapEvent
+				.road)) {
+				startingRoadsSnappedTo.add(snapEvent.road);
+			}
+			deadEnds.add(sourceNode);
 		}
 		Set<DirectionFromPoint> filamentEnds = new HashSet<>();
-//		assert !nodeQueue.isEmpty();
+		assert !nodeQueue.isEmpty();
 		while (!nodeQueue.isEmpty()) {
 			DirectionFromPoint node = nodeQueue.removeLast();
 			boolean addedAnySegments = false;
 			for (int i = 1; i < roadsFromPoint; i++) {
 				double newDirection = deviateDirection(node.direction + Math.PI + i * (Math.PI * 2 / roadsFromPoint));
-				Point2D newNode = tryPlacingRoad(node.node, newDirection);
+				SnapEvent snapEvent = tryPlacingRoad(node.node, newDirection);
+				if (snapEvent == null) {
+					continue;
+				}
+				Point2D newNode = snapEvent.targetNode;
 				if (newNode != null && !isDeadEnd(newNode)) {
 					nodeQueue.push(new DirectionFromPoint(newNode, newDirection));
 					addedAnySegments = true;
@@ -264,6 +289,10 @@ public final class NetworkWithinCycle {
 		}
 		this.filamentEnds = removeMultidegreeFilamentEnds(filamentEnds);
 		filamentEndPoints = nodes2TheirPoints(filamentEnds);
+	}
+
+	private boolean numberOfRoadsChanged(int oldNumberOfRoads) {
+		return relevantNetwork.edgeSet().size() != oldNumberOfRoads;
 	}
 
 	/**
@@ -315,7 +344,8 @@ public final class NetworkWithinCycle {
 	 *
 	 * @param newDirection
 	 * 	Original angle in radians.
-	 * @return Slightly changed angle in radians.
+	 * @return Slightly changed angle in radians. Answer is not constrained to [0; 2*PI] interval — it may be any
+	 * number.
 	 */
 	private double deviateDirection(double newDirection) {
 		v = random.nextDouble();
@@ -341,26 +371,25 @@ public final class NetworkWithinCycle {
 	 *
 	 * @param edge
 	 * 	An edge of {@link RoadsPlanarGraphModel#lowLevelRoadGraph}.
-	 * @return An angle in radians perpendicular to {@code edge}. The angle is probably slightly deviated.
+	 * @return An angle in radians perpendicular to {@code edge}. The angle is slightly deviated.
 	 */
 	private double deviatedBoundaryPerpendicular(Segment2D edge) {
 		// TODO: Actually deviate the angle
 		double angle = edge.start.angleTo(edge.end);
 		return deviateDirection(angle + Math.PI / 2
 			* (isCycleClockwise ? -1 : 1)
-			* (isStartBeforeEndInRing(new Coordinate(edge.start.x, edge.start.y), new Coordinate(edge.end.x, edge.end.y)) ? 1 : -1));
+			* (isStartBeforeEndInRing(edge) ? 1 : -1));
 	}
 
 	/**
-	 * Checks if one coordinate appears earlier in looped {@link #ring}.
+	 * Checks if {@link org.tendiwa.geometry.Segment2D#start} of an edge appears earlier in a {@link #ring} than
+	 * {@link org.tendiwa.geometry.Segment2D#end}.
 	 *
-	 * @param start
-	 * 	One coordinate.
-	 * @param end
-	 * 	Another coordinate.
-	 * @return true if {@code start} appears earlier, false otherwise.
+	 * @return true if {@code edge.start} appears earlier than {@code edge.end}, false otherwise.
 	 */
-	private boolean isStartBeforeEndInRing(Coordinate start, Coordinate end) {
+	private boolean isStartBeforeEndInRing(Segment2D edge) {
+		Coordinate start = new Coordinate(edge.start.x, edge.start.y);
+		Coordinate end = new Coordinate(edge.end.x, edge.end.y);
 		assert start != end;
 		for (int i = 0; i < ring.length; i++) {
 			if (ring[i].equals(start)) {
@@ -386,7 +415,7 @@ public final class NetworkWithinCycle {
 	 * 	Angle of a road to x-axis.
 	 * @return The new node, or null if placing did not succeed.
 	 */
-	private Point2D tryPlacingRoad(Point2D source, double direction) {
+	private SnapEvent tryPlacingRoad(Point2D source, double direction) {
 		assert !isDeadEnd(source);
 		double roadLength = deviatedLength(roadSegmentLength);
 		double dx = roadLength * Math.cos(direction);
@@ -402,7 +431,7 @@ public final class NetworkWithinCycle {
 					return null;
 				}
 				addRoad(source, targetNode);
-				return snapEvent.targetNode;
+				return snapEvent;
 			case ROAD_SNAP:
 				if (random.nextDouble() < connectivity) {
 					if (isDeadEnd(snapEvent.road.start) && isDeadEnd(snapEvent.road.end)) {
@@ -417,13 +446,13 @@ public final class NetworkWithinCycle {
 					if (!filamentEdges.contains(snapEvent.road)) {
 						deadEnds.add(snapEvent.targetNode);
 					}
-					return snapEvent.targetNode;
+					return snapEvent;
 				} else {
 					return null;
 				}
 			case NODE_SNAP:
 				if (random.nextDouble() < connectivity) {
-					if (isDeadEnd(snapEvent.targetNode) && isDeadEnd(source)) {
+					if (isDeadEnd(snapEvent.targetNode)) {
 						return null;
 					}
 					if (!relevantNetwork.containsVertex(snapEvent.targetNode)) {
@@ -453,7 +482,9 @@ public final class NetworkWithinCycle {
 		assert relevantNetwork.containsVertex(source);
 		assert relevantNetwork.containsVertex(target);
 		relevantNetwork.addEdge(source, target);
+		assert !ShamosHoeyAlgorithm.areIntersected(relevantNetwork.edgeSet());
 		if (isDeadEnd(source) && isDeadEnd(target)) {
+			// This happens when a node is inserted into a road, for both new roads.
 			return false;
 		}
 		secRoadNetwork.addVertex(source);
@@ -464,6 +495,12 @@ public final class NetworkWithinCycle {
 			outerPointsBuilder.add(target);
 		}
 		return true;
+	}
+
+	private Collection<Segment2D> findEdgesAroundPoint(Point2D point, double distance) {
+		return relevantNetwork.edgeSet().stream()
+			.filter(e -> e.start.distanceTo(point) < distance || e.end.distanceTo(point) < distance)
+			.collect(Collectors.toSet());
 	}
 
 	/**
@@ -565,7 +602,8 @@ public final class NetworkWithinCycle {
 			edges,
 			(o1, o2) -> (int) Math.signum(o2.start.distanceTo(o2.end) - o1.start.distanceTo(o1.end))
 		);
-		int numberOfStartPoints = Math.min(maxNumOfStartPoints, originalMinimalCycle.vertexList().size());
+//		int numberOfStartPoints = Math.min(maxNumOfStartPoints, originalMinimalCycle.vertexList().size());
+		int numberOfStartPoints = cycle.size();
 		return edges.subList(0, numberOfStartPoints);
 	}
 

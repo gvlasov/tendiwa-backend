@@ -48,6 +48,15 @@ public final class MinimalCycle<V, E> implements Primitive<V>, Iterable<E> {
 		return answer;
 	}
 
+	/**
+	 * Returns the number of edges or vertices in this cycle, which is the same number by definition of a cycle.
+	 *
+	 * @return Number of edges or vertices in this cycle.
+	 */
+	public int size() {
+		return cycle.size();
+	}
+
 	@Override
 	@Deprecated
 	/**

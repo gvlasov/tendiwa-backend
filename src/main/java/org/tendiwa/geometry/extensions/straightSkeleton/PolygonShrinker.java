@@ -108,6 +108,7 @@ public class PolygonShrinker {
 	private Segment2D findUnusedEdgeForFace(Set<Segment2D> unusedEdges, Set<Point2D> face) {
 		Segment2D originalFaceEdge = null;
 		for (Segment2D edge : unusedEdges) {
+			assert edge != null;
 			if (face.contains(edge.start) && face.contains(edge.end)) {
 				originalFaceEdge = edge;
 				unusedEdges.remove(originalFaceEdge);

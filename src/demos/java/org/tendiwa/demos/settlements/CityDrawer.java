@@ -15,14 +15,14 @@ public class CityDrawer implements DrawingAlgorithm<RoadsPlanarGraphModel> {
 		roadsPlanarGraphModel.getNetworks().stream()
 			.forEach(c -> c.network().edgeSet().stream()
 					.forEach(line -> {
-//							canvas.drawLine(line.start.toCell(), line.end.toCell(), colors.next());
+//							canvas.drawRasterLine(line.start.toCell(), line.end.toCell(), colors.next());
 					})
 			);
 		for (Segment2D roadSegment : roadsPlanarGraphModel.getLowLevelRoadGraph().edgeSet()) {
-//            canvas.drawLine(roadSegment, colors.next());
+//            canvas.drawRasterLine(roadSegment, colors.next());
 //			System.out.println(1);
 		}
-		roadsPlanarGraphModel.getFullRoadGraph().edgeSet().forEach(e -> canvas.drawLine(e, Color.red));
+		roadsPlanarGraphModel.getFullRoadGraph().edgeSet().forEach(e -> canvas.drawRasterLine(e, Color.red));
 //		for (Point2D vertex : city.getLowLevelRoadGraph().vertexSet()) {
 //			canvas.draw(vertex, DrawingPoint2D.withColorAndSize(Color.orange, 8));
 //		}

@@ -1,9 +1,11 @@
 package org.tendiwa.drawing.extensions;
 
+import org.tendiwa.core.meta.Utils;
 import org.tendiwa.drawing.DrawingAlgorithm;
 import org.tendiwa.geometry.Point2D;
 
 import java.awt.Color;
+import java.awt.geom.Line2D;
 import java.util.List;
 
 public class DrawingPolygon {
@@ -11,9 +13,23 @@ public class DrawingPolygon {
 		return (polygon, canvas) -> {
 			int size = polygon.size();
 			for (int i = 0; i < size; i++) {
-				canvas.drawLine(
+				canvas.drawRasterLine(
 					polygon.get(i).toCell(),
 					polygon.get(i + 1 == size ? 0 : i + 1).toCell(),
+					color
+				);
+			}
+		};
+	}
+
+	public static DrawingAlgorithm<List<Point2D>> withColorNonRaster(Color color) {
+		return (polygon, canvas) -> {
+			int size = polygon.size();
+			for (int i = 0; i < size; i++) {
+				Point2D point1 = polygon.get(i);
+				Point2D point2 = polygon.get(Utils.nextIndex(size, i));
+				canvas.drawShape(
+					new Line2D.Double(point1.x, point1.y, point2.x, point2.y),
 					color
 				);
 			}
@@ -25,7 +41,7 @@ public class DrawingPolygon {
 			DrawingAlgorithm<Point2D> drawingVertices = DrawingPoint2D.withColorAndSize(vertices, vertexSize);
 			int size = polygon.size();
 			for (int i = 0; i < size; i++) {
-				canvas.drawLine(
+				canvas.drawRasterLine(
 					polygon.get(i).toCell(),
 					polygon.get(i + 1 == size ? 0 : i + 1).toCell(),
 					edges

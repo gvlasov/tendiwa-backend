@@ -21,8 +21,7 @@ import java.util.Collections;
 import java.util.Objects;
 
 /**
- * Window where you can draw world, locations or anything for what there is a {@link DrawingAlgorithm} registered in
- * some {@link org.tendiwa.core.Module}. To draw something on a canvas, use its draw() methods.
+ * Window where you can draw world, locations or anything for what there is a {@link DrawingAlgorithm}.
  */
 public final class TestCanvas implements DrawableInto {
 	private static final AffineTransform defaultTransform = new AffineTransform();
@@ -281,14 +280,14 @@ public final class TestCanvas implements DrawableInto {
 //		r.getHeight() * canvas.scale);
 	}
 
-	public void drawLine(Cell p1, Cell p2, Color color) {
+	public void drawRasterLine(Cell p1, Cell p2, Color color) {
 		for (Cell coordinate : CellSegment.cells(p1.x, p1.y, p2.x, p2.y)) {
 			drawCell(coordinate.x, coordinate.y, color);
 		}
 	}
 
-	public void drawLine(Segment2D line, Color color) {
-		drawLine(line.start.toCell(), line.end.toCell(), color);
+	public void drawRasterLine(Segment2D line, Color color) {
+		drawRasterLine(line.start.toCell(), line.end.toCell(), color);
 	}
 
 	public void drawLine(double startX, double startY, double endX, double endY, Color color) {

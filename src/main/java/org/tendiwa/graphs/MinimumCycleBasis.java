@@ -13,6 +13,8 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Vectors2D;
 import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
+import org.tendiwa.geometry.extensions.PolygonSegments;
+import org.tendiwa.geometry.extensions.ShamosHoeyAlgorithm;
 
 import java.awt.Color;
 import java.util.*;

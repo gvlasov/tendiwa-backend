@@ -7,6 +7,8 @@ import org.tendiwa.geometry.GeometryException;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
+import org.tendiwa.geometry.extensions.PolygonSegments;
+import org.tendiwa.geometry.extensions.ShamosHoeyAlgorithm;
 import org.tendiwa.geometry.extensions.twakStraightSkeleton.TwakStraightSkeleton;
 import org.tendiwa.graphs.MinimumCycleBasis;
 import org.tendiwa.settlements.BlockRegion;
@@ -22,6 +24,7 @@ public final class SecondaryRoadNetworkBlock extends EnclosedBlock {
 	SecondaryRoadNetworkBlock(List<Point2D> outline) {
 		super(outline);
 		assert outline.size() > 2;
+		assert !ShamosHoeyAlgorithm.areIntersected(PolygonSegments.toSegments(outline));
 		this.outline = ImmutableList.copyOf(outline);
 	}
 

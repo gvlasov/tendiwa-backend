@@ -84,7 +84,7 @@ public class Point2D implements Vector2D {
 	}
 
 	public Cell toCell() {
-		return new Cell((int) x, (int) y);
+		return new Cell((int) Math.round(x), (int) Math.round(y));
 	}
 
 	/**

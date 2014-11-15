@@ -41,7 +41,7 @@ public class DrawingRectangleSystem {
 			}
 			Graph<Rectangle, RectangleSystem.Neighborship> graph = rs.getGraph();
 			for (RectangleSystem.Neighborship edge : graph.edgeSet()) {
-				canvas.drawLine(
+				canvas.drawRasterLine(
 					new Cell(graph.getEdgeSource(edge).getCenterPoint()),
 					new Cell(graph.getEdgeTarget(edge).getCenterPoint()),
 					graphColor
@@ -66,7 +66,7 @@ public class DrawingRectangleSystem {
 			}
 			Graph<Rectangle, RectangleSystem.Neighborship> graph = rs.getGraph();
 			for (RectangleSystem.Neighborship edge : graph.edgeSet()) {
-				canvas.drawLine(
+				canvas.drawRasterLine(
 					new Cell(graph.getEdgeSource(edge).getCenterPoint()),
 					new Cell(graph.getEdgeTarget(edge).getCenterPoint()),
 					(edge.isNeighborship()) ? neighborshipColor : unionColor

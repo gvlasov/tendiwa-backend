@@ -3,11 +3,11 @@ package org.tendiwa.settlements.utils;
 import com.google.common.collect.Iterators;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingEnclosedBlock;
-import org.tendiwa.geometry.extensions.polygonRasterization.PolygonRasterizer;
 import org.tendiwa.geometry.extensions.daveedvMaxRec.MaximalRectanlges;
+import org.tendiwa.geometry.extensions.polygonRasterization.PolygonRasterizer;
 import org.tendiwa.settlements.EnclosedBlock;
-import org.tendiwa.settlements.networks.EnclosedCyclesSet;
 import org.tendiwa.settlements.RectangleWithNeighbors;
+import org.tendiwa.settlements.networks.EnclosedCyclesSet;
 import org.tendiwa.settlements.networks.RoadsPlanarGraphModel;
 
 import java.awt.Color;
@@ -35,6 +35,11 @@ public final class RectangularBuildingLots {
 		encBlocks
 			.forEach(block -> TestCanvas.canvas.draw(block, DrawingEnclosedBlock.withColor(colors.next())));
 
+		roadsPlanarGraphModel.getNetworks()
+			.stream()
+			.flatMap(n->n.getEnclosedBlocks().stream().filter(enclosedCycles::contains))
+			.flatMap(b->b.shrinkToRegions(3.3, 0).stream())
+			.forEach(b->TestCanvas.canvas.draw(b, DrawingEnclosedBlock.withColor(Color.blue)));
 
 		return encBlocks.stream()
 			.map(lot -> PolygonRasterizer.rasterizeToMutable(lot.toPolygon()))
