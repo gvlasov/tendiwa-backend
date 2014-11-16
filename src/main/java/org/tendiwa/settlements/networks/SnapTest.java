@@ -15,16 +15,22 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Checks if a 2d segment defined by a start and an end points snaps to any vertex or edge of a planar
- * graph.
+ * Checks if a 2d segment defined by a start and an end points snaps to any vertex or edge of a 2d graph.
  */
 final class SnapTest {
 	private final double snapSize;
+	/**
+	 * Start of the unsnapped segment.
+	 */
 	private final Point2D sourceNode;
-	private Point2D targetNode;
+	/**
+	 * End of the unsnapped segment.
+	 */
+	private final Point2D targetNode;
 	private final UndirectedGraph<Point2D, Segment2D> relevantRoadNetwork;
 	private final HolderOfSplitCycleEdges holderOfSplitCycleEdges;
 	private double minR;
+	private SnapEvent preliminaryResultNode;
 
 	/**
 	 * Checks if a 2d segment defined by a start and an end points snaps to any vertex or edge of a planar
@@ -35,9 +41,9 @@ final class SnapTest {
 	 * 	it will be snapped to the closest of such vertices and edges. If this is less than {@link
 	 * 	org.tendiwa.geometry.Vectors2D#EPSILON}, then it is set to that constant.
 	 * @param sourceNode
-	 * 	Start point of a 2d segment.
+	 * 	Start point of the unsnapped segment.
 	 * @param targetNode
-	 * 	End point of a 2d segment.
+	 * 	End point of the unsnapped segment.
 	 * @param relevantRoadNetwork
 	 * 	A planar graph whose edges and vertices are tested for proximity to a 2d segment from {@code sourceNode} to
 	 * 	{@code targetNode}.
@@ -55,104 +61,120 @@ final class SnapTest {
 		this.targetNode = targetNode;
 		this.relevantRoadNetwork = relevantRoadNetwork;
 		this.holderOfSplitCycleEdges = holderOfSplitCycleEdges;
-		setTargetNode(targetNode);
-		minR = 1 + snapSize / sourceNode.distanceTo(targetNode);
+		this.minR = 1 + snapSize / sourceNode.distanceTo(targetNode);
 	}
 
-	private void setTargetNode(Point2D node) {
-		targetNode = node;
-		minR = 1;
-	}
-
+	/**
+	 * Does all the node/road snapping computations are done here and tells how the unsnapped segment should be
+	 * snapped to something or even not snapped to anything at all.
+	 *
+	 * @return A description of how {@link #targetNode} snaps to a node, a road, or nothing.
+	 */
 	SnapEvent snap() {
 		if (relevantRoadNetwork.containsVertex(targetNode)) {
 			return new SnapEvent(targetNode, SnapEventType.NODE_SNAP, null);
 		}
-		Collection<Segment2D> roadsToTest = findSegmentsToTest(sourceNode, targetNode, snapSize);
+		Collection<Segment2D> roadsToTest = findNearbySegments(sourceNode, targetNode, snapSize);
+		Point2D snapNode = findSnapNode(roadsToTest);
+		boolean snapNodeFound = snapNode != null;
+		if (snapNodeFound) {
+			preliminaryResultNode = new SnapEvent(snapNode, SnapEventType.NODE_SNAP, null);
+		}
+		roadsToTest.forEach(this::tryFindingRoadIntersection);
+		boolean roadIntersectionFound = preliminaryResultNode != null;
+		if (snapNodeFound || roadIntersectionFound) {
+			return preliminaryResultNode;
+		}
+		roadsToTest.forEach(this::trySnappingToRoad);
+		boolean snappedToRoad = preliminaryResultNode != null;
+		if (snappedToRoad) {
+			return preliminaryResultNode;
+		}
+		return new SnapEvent(targetNode, SnapEventType.NO_SNAP, null);
+	}
+
+	private void trySnappingToRoad(Segment2D road) {
+		if (road.start == sourceNode || road.end == sourceNode) {
+			return;
+		}
+		NodePosition nodePosition = new NodePosition(
+			road.start,
+			road.end,
+			targetNode
+		);
+		if (nodePosition.r < 0 || nodePosition.r > 1) {
+			return;
+		}
+		if (Math.abs(nodePosition.distance - snapSize) > Vectors2D.EPSILON) {
+			return;
+		}
+		Point2D targetPoint = new Point2D(
+			road.start.x + nodePosition.r * (road.end.x - road.start.x),
+			road.start.y + nodePosition.r * (road.end.y - road.start.y)
+		);
+		assert !targetPoint.equals(sourceNode);
+		preliminaryResultNode = new SnapEvent(
+			targetPoint,
+			SnapEventType.ROAD_SNAP,
+			road
+		);
+	}
+
+	/**
+	 * Checks if {@code road} intersects the unsnapped segment, and sets {@link #preliminaryResultNode} if it does.
+	 *
+	 * @param road
+	 * 	A road that may intersect the unsnapped segment.
+	 */
+	private void tryFindingRoadIntersection(Segment2D road) {
+		if (roadSticksToUnsnappedSegment(road)) {
+			return;
+		}
+		if (isSegmentIntersectionProbable(sourceNode, targetNode, road.start, road.end)) {
+			RayIntersection intersection = new RayIntersection(sourceNode, targetNode, road);
+			if (isIntersectionInsideUnsnappedSegment(intersection)) {
+				Point2D intersectionPoint = intersection.getLinesIntersectionPoint();
+				assert !intersectionPoint.equals(sourceNode) : "Commented code below should be used";
+//					if (intersectionPoint.equals(sourceNode)) {
+//						return new SnapEvent(null, SnapEventType.NO_NODE, null);
+//					}
+				if (preliminaryResultNode != null && intersectionPoint.equals(preliminaryResultNode.targetNode)) {
+					return;
+				}
+				assert !iDontRememberWhatItAsserts(road, intersectionPoint);
+				assert !intersectionPoint.equals(road.end) : road.end.hashCode() + " it should have been a point snap";
+				preliminaryResultNode = new SnapEvent(
+					intersectionPoint,
+					SnapEventType.ROAD_SNAP,
+					road
+				);
+				minR = intersection.r;
+			}
+		}
+	}
+
+	/**
+	 * Find a node to which segment from {@link #sourceNode} to {@link #targetNode} should snap.
+	 *
+	 * @param roadsToTest
+	 * 	In which roads to search for the desired node.
+	 * @return The node to snap to.
+	 */
+	private Point2D findSnapNode(Collection<Segment2D> roadsToTest) {
 		Point2D snapNode = null;
 		Set<Point2D> verticesToTest = findEndpointsToTestForNodeSnap(roadsToTest);
 		for (Point2D vertex : verticesToTest) {
-//            if (isNeighborOfSourceNode(vertex) && minimalCycle
-//                    .vertexList().contains(vertex)) {
-//                continue;
-//            }
 			NodePosition nodePosition = new NodePosition(sourceNode, targetNode, vertex);
 			if (isCloserSnapVertex(nodePosition)) {
 				minR = nodePosition.r;
 				snapNode = vertex;
 			}
 		}
-		SnapEvent snapEvent = null;
-		if (snapNode != null) {
-			snapEvent = new SnapEvent(snapNode, SnapEventType.NODE_SNAP, null);
-//			setTargetNode(snapNode);
-		}
-		for (Segment2D road : roadsToTest) {
-			if (isRoadSticksToSegment(road)) {
-				continue;
-			}
-			if (isSegmentIntersectionProbable(sourceNode, targetNode, road.start, road.end)) {
-				RayIntersection intersection = new RayIntersection(
-					sourceNode,
-					targetNode,
-					// TODO: Maybe there should be just a road, since it is a segment itself?
-					new Segment2D(road.start, road.end)
-				);
-				if (intersection.r >= minR || intersection.r < 0) {
-					continue;
-				}
-				if (intersection.intersects) {
-					Point2D intersectionPoint = intersection.getLinesIntersectionPoint();
-					boolean isIntersectionOnSourcePoint = intersectionPoint.equals(sourceNode);
-//                    assert !(isIntersectionOnSourcePoint && snapSize > 0) : snapSize;
-					if (isIntersectionOnSourcePoint) {
-						return new SnapEvent(null, SnapEventType.NO_NODE, null);
-					}
-					if (snapEvent != null && intersectionPoint.equals(snapEvent.targetNode)) {
-						continue;
-					}
-					assert !iDontRememberWhatItAsserts(road, intersectionPoint);
-					assert !intersectionPoint.equals(road.end) : road.end.hashCode() + " it should have been a point snap";
-					snapEvent = new SnapEvent(
-						intersectionPoint,
-						SnapEventType.ROAD_SNAP,
-						road
-					);
-					minR = intersection.r;
-				}
-			}
-		}
-		if (snapEvent != null) {
-			return snapEvent;
-		}
+		return snapNode;
+	}
 
-		for (Segment2D road : roadsToTest) {
-			if (road.start == sourceNode || road.end == sourceNode) {
-				continue;
-			}
-			NodePosition nodePosition = new NodePosition(
-				road.start,
-				road.end,
-				targetNode
-			);
-			if (nodePosition.r < 0 || nodePosition.r > 1) {
-				continue;
-			}
-			if (Math.abs(nodePosition.distance - snapSize) > Vectors2D.EPSILON) {
-				continue;
-			}
-			Point2D targetPoint = new Point2D(
-				road.start.x + nodePosition.r * (road.end.x - road.start.x),
-				road.start.y + nodePosition.r * (road.end.y - road.start.y)
-			);
-			assert !targetPoint.equals(sourceNode);
-			return new SnapEvent(
-				targetPoint,
-				SnapEventType.ROAD_SNAP,
-				road
-			);
-		}
-		return new SnapEvent(targetNode, SnapEventType.NO_SNAP, null);
+	private boolean isIntersectionInsideUnsnappedSegment(RayIntersection intersection) {
+		return intersection.r < minR && intersection.r >= 0 && intersection.intersects;
 	}
 
 	/**
@@ -189,7 +211,7 @@ final class SnapTest {
 	 * 	A road.
 	 * @return true if a road has {@link #sourceNode} or {@link #targetNode} as one of its ends, false otherwise.
 	 */
-	private boolean isRoadSticksToSegment(Segment2D road) {
+	private boolean roadSticksToUnsnappedSegment(Segment2D road) {
 		return road.start == sourceNode
 			|| road.end == sourceNode
 			|| road.start == targetNode
@@ -268,7 +290,7 @@ final class SnapTest {
 	 * 	With of the grey area on the figure — how far away from the original segment do we search.
 	 * @return A collection of all the segments that are close enough to the segment <i>ab</i>.
 	 */
-	private Collection<Segment2D> findSegmentsToTest(Point2D source, Point2D target, double snapSize) {
+	private Collection<Segment2D> findNearbySegments(Point2D source, Point2D target, double snapSize) {
 		double minX = Math.min(source.x, target.x) - snapSize;
 		double minY = Math.min(source.y, target.y) - snapSize;
 		double maxX = Math.max(source.x, target.x) + snapSize;

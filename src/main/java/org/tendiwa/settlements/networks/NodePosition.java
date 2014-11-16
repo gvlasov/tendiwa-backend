@@ -13,18 +13,18 @@ final class NodePosition {
 	 * <p>
 	 * {@code r == 0} means {@code point == a}, {@code r == 1} means {@code point == b}.
 	 */
-	public final double r;
+	final double r;
 	/**
 	 * Position of a point {@code point} relative to a perpendicular of ab.
 	 * <p>
 	 * {@code s > 0} means point is to the right from a segment (looking from segment start to segment end),
 	 * {@code s < 0} means point is to the left from a segment.
 	 */
-	public final double s;
+	final double s;
 	/**
 	 * Perpendicular distance from {@code point} to segment's line.
 	 */
-	public final double distance;
+	final double distance;
 
 	/**
 	 * Computes distance from a point to a line.
@@ -38,7 +38,7 @@ final class NodePosition {
 	 * @param point
 	 * 	A point whose relative location of a segment is to be found.
 	 */
-	public NodePosition(Point2D segmentStart, Point2D segmentEnd, Point2D point) {
+	NodePosition(Point2D segmentStart, Point2D segmentEnd, Point2D point) {
 		// TODO: We can get rid of sqrt() here in distanceTo()
 		double l = segmentStart.distanceTo(segmentEnd);
 		r = ((point.x - segmentStart.x) * (segmentEnd.x - segmentStart.x)
