@@ -196,7 +196,6 @@ public final class NetworkWithinCycle {
 			roadSegmentLength + secondaryRoadNetworkRoadLengthDeviation,
 			holderOfSplitCycleEdges
 		);
-		TestCanvas.canvas.drawAll(filamentEdges, DrawingSegment2D.withColor(Color.white));
 	}
 
 	private Coordinate[] buildRing(MinimalCycle<Point2D, Segment2D> originalMinimalCycle) {
@@ -431,6 +430,9 @@ public final class NetworkWithinCycle {
 			case ROAD_SNAP:
 				if (random.nextDouble() < connectivity) {
 					if (isDeadEnd(snapEvent.road.start) && isDeadEnd(snapEvent.road.end)) {
+						if (isStartingRoad) {
+							return null;
+						}
 						deadEnds.add(snapEvent.targetNode);
 					}
 					if (holderOfSplitCycleEdges.isEdgeSplit(snapEvent.road)) {

@@ -17,6 +17,7 @@ public class DrawingMinimalCycle {
 		return (what, canvas) -> {
 			List<V> list = what.vertexList();
 			V previous = list.get(list.size() - 1);
+			DrawingAlgorithm<Segment2D> how = DrawingSegment2D.withColorThin(color);
 			for (V v : list) {
 				canvas.draw(new Segment2D(
 					new Point2D(
@@ -27,7 +28,7 @@ public class DrawingMinimalCycle {
 						adapter.getX(v),
 						adapter.getY(v)
 					)
-				), DrawingSegment2D.withColor(color));
+				), how);
 				previous = v;
 			}
 		};

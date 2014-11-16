@@ -37,7 +37,6 @@ final class FullRoadGraph {
 		Set<Segment2D> edgesOfCyclesSubgraph = new HashSet<>();
 		for (Segment2D edge : lowLevelRoadGraph.edgeSet()) {
 			if (holderOfSplitCycleEdges.isEdgeSplit(edge)) {
-				TestCanvas.canvas.draw(edge, DrawingSegment2D.withColor(Color.white));
 				UndirectedGraph<Point2D, Segment2D> graph = holderOfSplitCycleEdges.getGraph(edge);
 				graph.vertexSet().forEach(union::addVertex);
 				graph.vertexSet().forEach(verticesOfCyclesSubgraph::add);
@@ -47,7 +46,6 @@ final class FullRoadGraph {
 					edgesOfCyclesSubgraph.add(subEdge);
 				}
 			} else {
-				TestCanvas.canvas.draw(edge, DrawingSegment2D.withColor(Color.blue));
 				union.addEdge(edge.start, edge.end, edge);
 				verticesOfCyclesSubgraph.add(edge.start);
 				verticesOfCyclesSubgraph.add(edge.end);

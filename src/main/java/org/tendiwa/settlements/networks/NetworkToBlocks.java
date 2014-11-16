@@ -65,9 +65,11 @@ class NetworkToBlocks {
 			for (Segment2D segment : line) {
 				TestCanvas.canvas.draw(
 					segment,
-					DrawingSegment2D.withColor(Color.blue)
+					DrawingSegment2D.withColorThin(Color.cyan)
 				);
 			}
+			List<MinimalCycle<Point2D, Segment2D>> list = basis.minimalCyclesSet().stream().filter(c -> c.size() < 4).collect(toList());
+			System.out.println(1);
 		}
 
 		enclosedBlocks = basis

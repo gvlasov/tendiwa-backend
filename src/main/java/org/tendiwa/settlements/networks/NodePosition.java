@@ -11,7 +11,7 @@ final class NodePosition {
 	/**
 	 * Position of a projection of point {@code point} to a line.
 	 * <p>
-	 * {@code r == 0} means {@code point == a}, {@code r == 1} means {@code point == b}.
+	 * {@code r == 0} means {@code point == segmentStart}, {@code r == 1} means {@code point == segmentEnd}.
 	 */
 	final double r;
 	/**
@@ -39,7 +39,6 @@ final class NodePosition {
 	 * 	A point whose relative location of a segment is to be found.
 	 */
 	NodePosition(Point2D segmentStart, Point2D segmentEnd, Point2D point) {
-		// TODO: We can get rid of sqrt() here in distanceTo()
 		double l = segmentStart.distanceTo(segmentEnd);
 		r = ((point.x - segmentStart.x) * (segmentEnd.x - segmentStart.x)
 			+ (point.y - segmentStart.y) * (segmentEnd.y - segmentStart.y))

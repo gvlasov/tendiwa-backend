@@ -31,6 +31,7 @@ final class SnapTest {
 	private final HolderOfSplitCycleEdges holderOfSplitCycleEdges;
 	private double minR;
 	private SnapEvent result;
+	private NodePosition bestPosition;
 
 	/**
 	 * Checks if a 2d segment defined by a start and an end points snaps to any vertex or edge of a planar
@@ -71,6 +72,7 @@ final class SnapTest {
 	 * @return A description of how {@link #targetNode} snaps to a node, a road, or nothing.
 	 */
 	SnapEvent snap() {
+		Point2D originalTargetNode = targetNode;
 		if (relevantRoadNetwork.containsVertex(targetNode)) {
 			return new SnapEvent(targetNode, SnapEventType.NODE_SNAP, null);
 		}
@@ -128,8 +130,8 @@ final class SnapTest {
 	}
 
 	/**
-	 * Find the road intersecting the unsnapped segment as close to segment's source as possible, and sets {@link
-	 * #result} if it does.
+	 * Tries finding the road intersecting the unsnapped segment as close to segment's source as possible, and sets
+	 * {@link #result} if it is found.
 	 */
 	private void tryIntersectingRoad(Segment2D road) {
 		if (roadSticksToUnsnappedSegment(road)) {
@@ -164,11 +166,13 @@ final class SnapTest {
 	 */
 	private void findSnapNode(Collection<Segment2D> roadsToTest) {
 		Set<Point2D> verticesToTest = findEndpointsToTestForNodeSnap(roadsToTest);
+		bestPosition = null;
 		for (Point2D vertex : verticesToTest) {
 			NodePosition nodePosition = new NodePosition(sourceNode, targetNode, vertex);
 			if (isCloserSnapVertex(nodePosition)) {
 				minR = nodePosition.r;
 				result = new SnapEvent(vertex, SnapEventType.NODE_SNAP, null);
+				bestPosition = nodePosition;
 			}
 		}
 	}
