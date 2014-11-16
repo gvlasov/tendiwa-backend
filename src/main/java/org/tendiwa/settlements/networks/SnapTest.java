@@ -26,7 +26,7 @@ final class SnapTest {
 	/**
 	 * End of the unsnapped segment.
 	 */
-	private final Point2D targetNode;
+	private Point2D targetNode;
 	private final UndirectedGraph<Point2D, Segment2D> relevantRoadNetwork;
 	private final HolderOfSplitCycleEdges holderOfSplitCycleEdges;
 	private double minR;
@@ -75,18 +75,20 @@ final class SnapTest {
 			return new SnapEvent(targetNode, SnapEventType.NODE_SNAP, null);
 		}
 		Collection<Segment2D> roadsToTest = findNearbySegments(sourceNode, targetNode, snapSize);
+		// These three lines try various snappings and set #result to the best possible snap event.
+		snapToNothing();
 		findSnapNode(roadsToTest);
-		roadsToTest.forEach(this::tryFindingRoadIntersection);
-		boolean roadIntersectionFound = result != null && result.eventType == SnapEventType.ROAD_SNAP;
-		if (roadIntersectionFound) {
-			return result;
+		if (result.eventType == SnapEventType.NODE_SNAP) {
+			targetNode = result.targetNode;
+			minR = 1;
 		}
+		roadsToTest.forEach(this::tryIntersectingRoad);
 		roadsToTest.forEach(this::trySnappingToRoad);
-		boolean snappedToRoad = result != null;
-		if (snappedToRoad) {
-			return result;
-		}
-		return new SnapEvent(targetNode, SnapEventType.NO_SNAP, null);
+		return result;
+	}
+
+	private void snapToNothing() {
+		result = new SnapEvent(targetNode, SnapEventType.NO_SNAP, null);
 	}
 
 	/**
@@ -126,12 +128,10 @@ final class SnapTest {
 	}
 
 	/**
-	 * Checks if {@code road} intersects the unsnapped segment, and sets {@link #result} if it does.
-	 *
-	 * @param road
-	 * 	A road that may intersect the unsnapped segment.
+	 * Find the road intersecting the unsnapped segment as close to segment's source as possible, and sets {@link
+	 * #result} if it does.
 	 */
-	private void tryFindingRoadIntersection(Segment2D road) {
+	private void tryIntersectingRoad(Segment2D road) {
 		if (roadSticksToUnsnappedSegment(road)) {
 			return;
 		}
@@ -148,35 +148,28 @@ final class SnapTest {
 				}
 				assert !iDontRememberWhatItAsserts(road, intersectionPoint);
 				assert !intersectionPoint.equals(road.end) : road.end.hashCode() + " it should have been a point snap";
-				result = new SnapEvent(
-					intersectionPoint,
-					SnapEventType.ROAD_SNAP,
-					road
-				);
+				result = new SnapEvent(intersectionPoint, SnapEventType.ROAD_SNAP, road);
 				minR = intersection.r;
 			}
 		}
 	}
 
 	/**
-	 * Set {@link #result} to which segment from {@link #sourceNode} to {@link #targetNode} should snap.
+	 * Sets {@link #result} to snap to the best (closest) node, or to be unsnapped (snap to nothing) if there is no
+	 * appropriate node to snap to.
 	 *
 	 * @param roadsToTest
 	 * 	In which roads to search for the desired node.
 	 * @return The node to snap to.
 	 */
 	private void findSnapNode(Collection<Segment2D> roadsToTest) {
-		Point2D snapNode = null;
 		Set<Point2D> verticesToTest = findEndpointsToTestForNodeSnap(roadsToTest);
 		for (Point2D vertex : verticesToTest) {
 			NodePosition nodePosition = new NodePosition(sourceNode, targetNode, vertex);
 			if (isCloserSnapVertex(nodePosition)) {
 				minR = nodePosition.r;
-				snapNode = vertex;
+				result = new SnapEvent(vertex, SnapEventType.NODE_SNAP, null);
 			}
-		}
-		if (snapNode != null) {
-			result = new SnapEvent(snapNode, SnapEventType.NODE_SNAP, null);
 		}
 	}
 

@@ -81,7 +81,7 @@ final class FullRoadGraph {
 	 * cycles and also split edges remembered in {@link org.tendiwa.settlements.networks.RoadsPlanarGraphModel#holderOfSplitCycleEdges}.
 	 *
 	 * @return Actual road cycles graph.
-	 * @see org.tendiwa.settlements.networks.RoadsPlanarGraphModel#lowLevelRoadGraph for original cycles.
+	 * @see org.tendiwa.settlements.networks.RoadsPlanarGraphModel#originalRoadGraph for original cycles.
 	 */
 	UndirectedGraph<Point2D, Segment2D> getCyclesRoadGraph() {
 		return actualCyclesRoadGraph;

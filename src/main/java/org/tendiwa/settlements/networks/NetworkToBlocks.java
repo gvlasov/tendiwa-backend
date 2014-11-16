@@ -2,15 +2,25 @@ package org.tendiwa.settlements.networks;
 
 import com.google.common.collect.ImmutableSet;
 import org.jgrapht.UndirectedGraph;
+import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawingEnclosedBlock;
+import org.tendiwa.drawing.extensions.DrawingMinimalCycle;
+import org.tendiwa.drawing.extensions.DrawingPolygon;
+import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
 import org.tendiwa.geometry.extensions.ShamosHoeyAlgorithm;
+import org.tendiwa.graphs.Filament;
+import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.graphs.MinimumCycleBasis;
 
+import java.awt.Color;
+import java.util.List;
 import java.util.Set;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 /**
@@ -23,7 +33,8 @@ class NetworkToBlocks {
 		UndirectedGraph<Point2D, Segment2D> relevantNetwork,
 		Set<DirectionFromPoint> filamentEnds,
 		double snapSize,
-		HolderOfSplitCycleEdges holderOfSplitCycleEdges) {
+		HolderOfSplitCycleEdges holderOfSplitCycleEdges
+	) {
 		if (!filamentEnds.isEmpty()) {
 			relevantNetwork = PlanarGraphs.copyRelevantNetwork(relevantNetwork);
 			Set<Segment2D> edgesCopy = ImmutableSet.copyOf(relevantNetwork.edgeSet());
@@ -46,7 +57,20 @@ class NetworkToBlocks {
 				.withFilamentEnds(filamentEnds)
 				.mutateGraph(relevantNetwork);
 		}
-		enclosedBlocks = new MinimumCycleBasis<>(relevantNetwork, Point2DVertexPositionAdapter.get())
+		MinimumCycleBasis<Point2D, Segment2D> basis = new MinimumCycleBasis<>(relevantNetwork, Point2DVertexPositionAdapter.get());
+		Set<MinimalCycle<Point2D, Segment2D>> what = basis.minimalCyclesSet();
+		TestCanvas.canvas.drawAll(what, DrawingMinimalCycle.withColor(Color.white, Point2DVertexPositionAdapter.get()));
+		Set<Filament<Point2D, Segment2D>> lines = basis.filamentsSet();
+		for (Filament<Point2D, Segment2D> line : lines) {
+			for (Segment2D segment : line) {
+				TestCanvas.canvas.draw(
+					segment,
+					DrawingSegment2D.withColor(Color.blue)
+				);
+			}
+		}
+
+		enclosedBlocks = basis
 			.minimalCyclesSet()
 			.stream()
 			.map(cycle -> new SecondaryRoadNetworkBlock(cycle.vertexList()))

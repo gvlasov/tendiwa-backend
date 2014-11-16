@@ -31,9 +31,9 @@ public final class RectangularBuildingLots {
 			.flatMap(b -> b.subdivideLots(16, 16, 0.5).stream())
 			.collect(Collectors.toSet());
 
-		Iterator<Color> colors = Iterators.cycle(Color.magenta, Color.cyan, Color.orange);
-		encBlocks
-			.forEach(block -> TestCanvas.canvas.draw(block, DrawingEnclosedBlock.withColor(colors.next())));
+//		Iterator<Color> colors = Iterators.cycle(Color.magenta, Color.cyan, Color.orange);
+//		encBlocks
+//			.forEach(block -> TestCanvas.canvas.draw(block, DrawingEnclosedBlock.withColor(colors.next())));
 
 		roadsPlanarGraphModel.getNetworks()
 			.stream()
