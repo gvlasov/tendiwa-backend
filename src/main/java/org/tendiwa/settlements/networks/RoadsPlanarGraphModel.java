@@ -56,7 +56,7 @@ public final class RoadsPlanarGraphModel {
 	/**
 	 * [Kelly beginning of chapter 4.2]
 	 */
-	private final UndirectedGraph<Point2D, Segment2D> lowLevelRoadGraph;
+	private final UndirectedGraph<Point2D, Segment2D> originalRoadGraph;
 	/**
 	 * [Kelly section 4.2.2]
 	 */
@@ -131,7 +131,7 @@ public final class RoadsPlanarGraphModel {
 	 * 	and "calculate deviated boundaryRoad perpendicular".
 	 * @throws IllegalArgumentException
 	 * 	If {@code numberOfSamples <= 0} or if {@code deviationAngle == 0 && numberOfSamples >= 1}, or if
-	 * 	#lowLevelRoadGraph produced from #highLevelRoadGraph intersects itself.
+	 * 	#originalRoadGraph produced from #highLevelRoadGraph intersects itself.
 	 */
 	RoadsPlanarGraphModel(
 		UndirectedGraph<Point2D, Segment2D> highLevelRoadGraph,
@@ -186,8 +186,8 @@ public final class RoadsPlanarGraphModel {
 		this.deviationAngleRad = deviationAngle;
 		approachingPerSample = Math.cos(deviationAngle);
 		highLevelGraphEdges = highLevelRoadGraph.edgeSet();
-		lowLevelRoadGraph = buildLowLevelGraph();
-		if (ShamosHoeyAlgorithm.areIntersected(lowLevelRoadGraph.edgeSet())) {
+		originalRoadGraph = buildLowLevelGraph();
+		if (ShamosHoeyAlgorithm.areIntersected(originalRoadGraph.edgeSet())) {
 			throw new IllegalArgumentException("Graph intersects itself");
 		}
 
@@ -197,7 +197,7 @@ public final class RoadsPlanarGraphModel {
 		if (networks.isEmpty()) {
 			throw new SettlementGenerationException("A City with 0 city networks was made");
 		}
-		fullRoadGraph = new FullRoadGraph(lowLevelRoadGraph,holderOfSplitCycleEdges, networks);
+		fullRoadGraph = new FullRoadGraph(originalRoadGraph,holderOfSplitCycleEdges, networks);
 	}
 
 	/**
@@ -208,7 +208,7 @@ public final class RoadsPlanarGraphModel {
 	 */
 	private void fillBuilderWithNetworks(ImmutableSet.Builder<NetworkWithinCycle> cellsBuilder) {
 		MinimumCycleBasis<Point2D, Segment2D> primitives = new MinimumCycleBasis<>(
-			lowLevelRoadGraph,
+			originalRoadGraph,
 			Point2DVertexPositionAdapter.get()
 		);
 		Map<MinimalCycle<Point2D, Segment2D>, UndirectedGraph<Point2D, Segment2D>> cellGraphs =
@@ -241,7 +241,7 @@ public final class RoadsPlanarGraphModel {
 			cellsBuilder.add(new NetworkWithinCycle(
 				cellGraphs.get(cycle),
 				cycle,
-				lowLevelRoadGraph,
+				originalRoadGraph,
 				filamentEdges,
 				roadsFromPoint,
 				roadSegmentLength,
@@ -262,7 +262,7 @@ public final class RoadsPlanarGraphModel {
 	 * Constructs all the graphs for this City's {@link NetworkWithinCycle}s.
 	 *
 	 * @param primitives
-	 * 	A MinimumCycleBasis of this City's {@link #lowLevelRoadGraph}.
+	 * 	A MinimumCycleBasis of this City's {@link #originalRoadGraph}.
 	 * @return A map from MinimalCycles to CityCells residing in those cycles.
 	 */
 	private static Map<MinimalCycle<Point2D, Segment2D>, UndirectedGraph<Point2D, Segment2D>> constructNetworkGraphs(
@@ -309,9 +309,9 @@ public final class RoadsPlanarGraphModel {
 	 * @param cycle
 	 * 	A MinimalCycle inside which a NetworkWithinCycle resides.
 	 * @param filaments
-	 * 	All the filaments of {@link #lowLevelRoadGraph}.
+	 * 	All the filaments of {@link #originalRoadGraph}.
 	 * @param enclosedCycles
-	 * 	All the cycles of {@link #lowLevelRoadGraph}'s MinimalCycleBasis that reside inside other cycles.
+	 * 	All the cycles of {@link #originalRoadGraph}'s MinimalCycleBasis that reside inside other cycles.
 	 * @return A graph containing the {@code cycle} and all the {@code filaments}.
 	 */
 
@@ -515,13 +515,13 @@ public final class RoadsPlanarGraphModel {
 		return highLevelRoadGraph;
 	}
 
-	public UndirectedGraph<Point2D, Segment2D> getLowLevelRoadGraph() {
-		return lowLevelRoadGraph;
+	public UndirectedGraph<Point2D, Segment2D> getOriginalRoadGraph() {
+		return originalRoadGraph;
 	}
 
 	/**
 	 * @return A graph of all actual resulting roads in this city.
-	 * @see #getLowLevelRoadGraph() for the graph of <i>original</i> roads which are split to get <i>actual</i> roads.
+	 * @see #getOriginalRoadGraph() for the graph of <i>original</i> roads which are split to get <i>actual</i> roads.
 	 */
 	public UndirectedGraph<Point2D, Segment2D> getFullRoadGraph() {
 		return fullRoadGraph.getFullRoadGraph();
@@ -584,7 +584,7 @@ public final class RoadsPlanarGraphModel {
 	public Map<Point2D, Segment2D> splitEdgesToOriginalEdges() {
 		if (this.splitEdgesToOriginalEdges == null) {
 			this.splitEdgesToOriginalEdges = holderOfSplitCycleEdges.getMapFromSplitToOriginalSegments();
-			assert splitEdgesToOriginalEdges.values().stream().allMatch(lowLevelRoadGraph::containsEdge);
+			assert splitEdgesToOriginalEdges.values().stream().allMatch(originalRoadGraph::containsEdge);
 		}
 		return this.splitEdgesToOriginalEdges;
 	}

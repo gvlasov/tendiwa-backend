@@ -101,7 +101,7 @@ public final class NetworkWithinCycle {
 	 * @param lowLevelRoadGraph
 	 * 	Graph that is bounding all cells.
 	 * @param filamentEdges
-	 * 	A collection of all the edges of a {@link RoadsPlanarGraphModel#lowLevelRoadGraph} that are not
+	 * 	A collection of all the edges of a {@link RoadsPlanarGraphModel#originalRoadGraph} that are not
 	 * 	part of any minimal cycles. The same collection is passed to all the CityCells.
 	 * @param roadsFromPoint
 	 * 	[Kelly figure 42, variable ParamDegree]
@@ -267,7 +267,7 @@ public final class NetworkWithinCycle {
 			deadEnds.add(sourceNode);
 		}
 		Set<DirectionFromPoint> filamentEnds = new HashSet<>();
-		assert !nodeQueue.isEmpty();
+//		assert !nodeQueue.isEmpty();
 		while (!nodeQueue.isEmpty()) {
 			DirectionFromPoint node = nodeQueue.removeLast();
 			boolean addedAnySegments = false;
@@ -368,7 +368,7 @@ public final class NetworkWithinCycle {
 	 * [Kelly figure 42]
 	 *
 	 * @param edge
-	 * 	An edge of {@link RoadsPlanarGraphModel#lowLevelRoadGraph}.
+	 * 	An edge of {@link RoadsPlanarGraphModel#originalRoadGraph}.
 	 * @return An angle in radians perpendicular to {@code edge}. The angle is slightly deviated.
 	 */
 	private double deviatedBoundaryPerpendicular(Segment2D edge) {
@@ -563,8 +563,6 @@ public final class NetworkWithinCycle {
 		relevantNetwork.addVertex(point);
 		if (isCycleEdge) {
 			holderOfSplitCycleEdges.splitEdge(road, point);
-			assert !secRoadNetwork.containsEdge(road);
-			assert !secRoadNetwork.containsVertex(point);
 			addRoad(road.start, point);
 			addRoad(point, road.end);
 		} else {
