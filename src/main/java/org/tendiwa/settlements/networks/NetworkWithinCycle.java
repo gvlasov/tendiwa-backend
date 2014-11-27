@@ -1,24 +1,19 @@
 package org.tendiwa.settlements.networks;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.geom.Coordinate;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.graph.UnmodifiableUndirectedGraph;
-import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingPoint2D;
-import org.tendiwa.drawing.extensions.DrawingSegment;
-import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Vectors2D;
+import org.tendiwa.geometry.extensions.IntervalsAlongPolygonBorder;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.geometry.extensions.ShamosHoeyAlgorithm;
 import org.tendiwa.graphs.MinimalCycle;
 
-import java.awt.Color;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -239,14 +234,17 @@ public final class NetworkWithinCycle {
 	 */
 	private void buildSegment2DNetwork(MinimalCycle<Point2D, Segment2D> cycle) {
 		Deque<DirectionFromPoint> nodeQueue = new ArrayDeque<>();
-		Collection<Segment2D> startingRoads = startingRoads(cycle);
-		Collection<Segment2D> startingRoadsSnappedTo = new HashSet<>(startingRoads.size());
-		for (Segment2D road : startingRoads) {
-			if (startingRoadsSnappedTo.contains(road)) {
-				continue;
-			}
-			Point2D sourceNode = calculateDeviatedMidPoint(road);
+		Map<Segment2D, List<Point2D>> startingPoints = startingPoints(cycle);
+		Collection<Segment2D> startingRoadsSnappedTo = new HashSet<>(startingPoints.size());
+		for (Point2D sourceNode : startingPoints.get(null)) {
+//			if (startingRoadsSnappedTo.contains(road)) {
+//				continue;
+//			}
+//			Point2D sourceNode = calculateDeviatedMidPoint(road);
 			// Made dead end so two new roads are not inserted to network.
+
+			// TODO: PENIS
+			Segment2D road = null;
 			deadEnds.add(sourceNode);
 			insertNode(road, sourceNode);
 			// Made not-dead end so a road can be placed from it.
@@ -254,16 +252,17 @@ public final class NetworkWithinCycle {
 			double direction = deviatedBoundaryPerpendicular(road);
 
 			SnapEvent snapEvent = tryPlacingRoad(sourceNode, direction, true);
-			if (snapEvent != null && snapEvent.targetNode != null && !isDeadEnd(snapEvent.targetNode)) {
+			if (doesntSnapToDeadEnd(snapEvent)) {
 				nodeQueue.push(new DirectionFromPoint(snapEvent.targetNode, direction));
 				outerPointsBuilder.add(sourceNode);
 			}
-			if (
-				snapEvent != null
-					&& snapEvent.eventType == SnapEventType.ROAD_SNAP
-					&& startingRoads.contains(snapEvent.road)) {
-				startingRoadsSnappedTo.add(snapEvent.road);
-			}
+			// TODO: This should not be commented out
+//			if (
+//				snapEvent != null
+//					&& snapEvent.eventType == SnapEventType.ROAD_SNAP
+//					&& startingPoints.contains(snapEvent.road)) {
+//				startingRoadsSnappedTo.add(snapEvent.road);
+//			}
 			deadEnds.add(sourceNode);
 		}
 		Set<DirectionFromPoint> filamentEnds = new HashSet<>();
@@ -291,6 +290,10 @@ public final class NetworkWithinCycle {
 		}
 		this.filamentEnds = removeMultidegreeFilamentEnds(filamentEnds);
 		filamentEndPoints = nodes2TheirPoints(filamentEnds);
+	}
+
+	private boolean doesntSnapToDeadEnd(SnapEvent snapEvent) {
+		return snapEvent != null && snapEvent.targetNode != null && !isDeadEnd(snapEvent.targetNode);
 	}
 
 	/**
@@ -609,15 +612,22 @@ public final class NetworkWithinCycle {
 	 * 	A MinimalCycle that contains this NetworkWithinCycle's secondary road network inside it.
 	 * @return Several roads.
 	 */
-	private Collection<Segment2D> startingRoads(MinimalCycle<Point2D, Segment2D> cycle) {
-		List<Segment2D> edges = Lists.newArrayList(cycle);
-		Collections.sort(
-			edges,
-			(o1, o2) -> (int) Math.signum(o2.start.distanceTo(o2.end) - o1.start.distanceTo(o1.end))
+	private Map<Segment2D, List<Point2D>> startingPoints(MinimalCycle<Point2D, Segment2D> cycle) {
+		return IntervalsAlongPolygonBorder.compute(
+			cycle.vertexList(),
+			roadSegmentLength,
+			secondaryRoadNetworkRoadLengthDeviation,
+			relevantNetwork::getEdge,
+			random
 		);
+//		List<Segment2D> edges = Lists.newArrayList(cycle);
+//		Collections.sort(
+//			edges,
+//			(o1, o2) -> (int) Math.signum(o2.start.distanceTo(o2.end) - o1.start.distanceTo(o1.end))
+//		);
 //		int numberOfStartPoints = Math.min(maxNumOfStartPoints, originalMinimalCycle.vertexList().size());
-		int numberOfStartPoints = cycle.size();
-		return edges.subList(0, numberOfStartPoints);
+//		int numberOfStartPoints = cycle.size();
+//		return edges.subList(0, numberOfStartPoints);
 	}
 
 	public Set<SecondaryRoadNetworkBlock> getEnclosedBlocks() {

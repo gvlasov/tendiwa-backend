@@ -78,6 +78,18 @@ public class Segment2D {
 		return start.distanceTo(end);
 	}
 
+	/**
+	 * Effectively computes {@code this.length()*this.length()}.
+	 * <p>
+	 * Squared length is quicker to compute than {@link #length()} (no expensive square root operation). Instead of
+	 * comparing lengths of two segments, one might compare their squared lengths.
+	 *
+	 * @return {@code this.length()*this.length()}
+	 */
+	public double squaredLength() {
+		return (end.x - start.x) * (end.x - start.x) + (end.y - start.y) * (end.y - start.y);
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -172,4 +184,20 @@ public class Segment2D {
 		);
 	}
 
+	/**
+	 * @param point
+	 * 	A point that {@link Object#equals(Object)} to {@code this.start} or {@link this.end}.
+	 * @return {@link #start} if {@code point == this.end}, or {@link #end} if {@code point = this.start}.
+	 * @throws java.lang.IllegalArgumentException
+	 * 	if {@code point} is neither {@code this.start} nor {@code this.end}.
+	 */
+	public Point2D anotherPoint(Point2D point) {
+		if (point.equals(start)) {
+			return end;
+		}
+		if (point.equals(end)) {
+			return start;
+		}
+		throw new IllegalArgumentException("Argument must be either start or end point");
+	}
 }

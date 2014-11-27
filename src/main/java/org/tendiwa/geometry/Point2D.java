@@ -83,6 +83,10 @@ public class Point2D implements Vector2D {
 		return Math.sqrt((end.x - this.x) * (end.x - this.x) + (end.y - this.y) * (end.y - this.y));
 	}
 
+	public double squaredDistanceTo(Point2D end) {
+		return (end.x - this.x) * (end.x - this.x) + (end.y - this.y) * (end.y - this.y);
+	}
+
 	public Cell toCell() {
 		return new Cell((int) Math.round(x), (int) Math.round(y));
 	}
