@@ -148,9 +148,6 @@ public final class CityBounds {
 			),
 			cellsInsideBufferBorder.getBounds()
 		).computeAll();
-//		TestCanvas.canvas.draw(cellsInsideBufferBorder, DrawingCellSet.withColor(Color.green));
-//		TestCanvas.canvas.draw(cellsRejectedBecauseOfKnots, DrawingCellSet.onWholeCanvasWithColor(Color.red));
-//		TestCanvas.canvas.draw(bufferBorder, DrawingCellSet.withColor(Color.blue));
 		return bufferBorderToGraph(culledBufferBorder, cellsInsideBufferBorder);
 	}
 

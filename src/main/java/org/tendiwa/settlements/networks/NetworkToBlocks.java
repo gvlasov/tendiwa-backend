@@ -2,11 +2,9 @@ package org.tendiwa.settlements.networks;
 
 import com.google.common.collect.ImmutableSet;
 import org.jgrapht.UndirectedGraph;
+import org.tendiwa.drawing.DrawingAlgorithm;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingEnclosedBlock;
-import org.tendiwa.drawing.extensions.DrawingMinimalCycle;
-import org.tendiwa.drawing.extensions.DrawingPolygon;
-import org.tendiwa.drawing.extensions.DrawingSegment2D;
+import org.tendiwa.drawing.extensions.*;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
@@ -60,6 +58,13 @@ class NetworkToBlocks {
 		MinimumCycleBasis<Point2D, Segment2D> basis = new MinimumCycleBasis<>(relevantNetwork, Point2DVertexPositionAdapter.get());
 		Set<MinimalCycle<Point2D, Segment2D>> what = basis.minimalCyclesSet();
 		TestCanvas.canvas.drawAll(what, DrawingMinimalCycle.withColor(Color.white, Point2DVertexPositionAdapter.get()));
+		TestCanvas.canvas.drawAll(what, (shape, canvas)->{
+			DrawingAlgorithm<Point2D> alg = DrawingPoint2D.withColorAndSize(Color.cyan, 3);
+			for (Point2D point2D : shape.vertexList()) {
+				canvas.draw(point2D, alg);
+			}
+
+		});
 		Set<Filament<Point2D, Segment2D>> lines = basis.filamentsSet();
 		for (Filament<Point2D, Segment2D> line : lines) {
 			for (Segment2D segment : line) {
@@ -69,7 +74,6 @@ class NetworkToBlocks {
 				);
 			}
 			List<MinimalCycle<Point2D, Segment2D>> list = basis.minimalCyclesSet().stream().filter(c -> c.size() < 4).collect(toList());
-			System.out.println(1);
 		}
 
 		enclosedBlocks = basis

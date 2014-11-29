@@ -9,6 +9,7 @@ import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
 import org.tendiwa.geometry.extensions.PolygonSegments;
 import org.tendiwa.geometry.extensions.ShamosHoeyAlgorithm;
+import org.tendiwa.geometry.extensions.straightSkeleton.SuseikaStraightSkeleton;
 import org.tendiwa.geometry.extensions.twakStraightSkeleton.TwakStraightSkeleton;
 import org.tendiwa.graphs.MinimumCycleBasis;
 import org.tendiwa.settlements.BlockRegion;
@@ -31,7 +32,7 @@ public final class SecondaryRoadNetworkBlock extends EnclosedBlock {
 	public Set<BlockRegion> shrinkToRegions(double depth, int seed) {
 		UndirectedGraph<Point2D, Segment2D> cap;
 		try {
-			cap = TwakStraightSkeleton.create(outline).cap(depth);
+			cap = new SuseikaStraightSkeleton(outline).cap(depth);
 		} catch (GeometryException e) {
 			return ImmutableSet.of();
 		}

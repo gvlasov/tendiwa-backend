@@ -11,6 +11,7 @@ import java.util.Iterator;
  * Finds out which cycles in a {@link org.tendiwa.settlements.networks.RoadsPlanarGraphModel} are enclosed within
  * another cycle.
  */
+// TODO: Move to the method of NetworkWithinCycle
 public final class EnclosedCyclesSet {
 
 	private final UndirectedGraph<Point2D, Segment2D> cyclesRoadGraph;

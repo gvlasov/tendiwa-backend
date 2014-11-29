@@ -122,11 +122,16 @@ public final class SameSlopeGraphEdgesPerturbations {
 		}
 
 		void addEdge(Segment2D edge) {
+			if (shitpoint.distanceTo(edge.start) < 1.5 || shitpoint.distanceTo(edge.end) < 1.5) {
+				System.out.println(edge + " " + computeSlope(edge));
+			}
 			graph.addEdge(
 				getPerturbed(edge.start),
 				getPerturbed(edge.end)
 			);
 		}
+
+		private static Point2D shitpoint = new Point2D(1441, 344);
 
 		boolean hasBeenApplied() {
 			return applied;
@@ -173,7 +178,7 @@ public final class SameSlopeGraphEdgesPerturbations {
 		 * @param newPosition
 		 * 	Changed vertex.
 		 */
-		public static void moveVertex(
+		static void moveVertex(
 			UndirectedGraph<Point2D, Segment2D> graph,
 			Point2D originalVertex,
 			Point2D newPosition

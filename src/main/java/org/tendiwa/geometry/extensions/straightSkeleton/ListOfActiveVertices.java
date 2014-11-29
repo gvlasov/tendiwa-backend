@@ -57,7 +57,7 @@ class ListOfActiveVertices {
 					vertices.get(i + 1 < l ? i + 1 : 0)
 				)
 			);
-			canvas.draw(edges.get(i), DrawingSegment2D.withColor(Color.RED));
+			canvas.draw(edges.get(i), DrawingSegment2D.withColorThin(Color.RED));
 		}
 		return edges;
 	}

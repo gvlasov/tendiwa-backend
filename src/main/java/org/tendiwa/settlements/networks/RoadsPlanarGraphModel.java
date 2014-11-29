@@ -8,6 +8,8 @@ import gnu.trove.map.hash.TObjectIntHashMap;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.graph.UndirectedSubgraph;
+import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawingGraph;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
@@ -20,6 +22,7 @@ import org.tendiwa.graphs.MinimumCycleBasis;
 import org.tendiwa.settlements.EnclosedCycleFilter;
 import org.tendiwa.settlements.SettlementGenerationException;
 
+import java.awt.Color;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -186,8 +189,10 @@ public final class RoadsPlanarGraphModel {
 		this.deviationAngleRad = deviationAngle;
 		approachingPerSample = Math.cos(deviationAngle);
 		highLevelGraphEdges = highLevelRoadGraph.edgeSet();
-		originalRoadGraph = buildLowLevelGraph();
+//		originalRoadGraph = buildLowLevelGraph();
+		originalRoadGraph = highLevelRoadGraph;
 		if (ShamosHoeyAlgorithm.areIntersected(originalRoadGraph.edgeSet())) {
+			TestCanvas.canvas.draw(originalRoadGraph, DrawingGraph.withColorAndAntialiasing(Color.cyan));
 			throw new IllegalArgumentException("Graph intersects itself");
 		}
 
@@ -259,7 +264,7 @@ public final class RoadsPlanarGraphModel {
 
 
 	/**
-	 * Constructs all the graphs for this City's {@link NetworkWithinCycle}s.
+	 * Constructs all the cycle graphs for this City's {@link NetworkWithinCycle}s.
 	 *
 	 * @param primitives
 	 * 	A MinimumCycleBasis of this City's {@link #originalRoadGraph}.
@@ -460,7 +465,6 @@ public final class RoadsPlanarGraphModel {
 		}
 		forwardList.addAll(reverseList);
 		return forwardList;
-
 	}
 
 	/**

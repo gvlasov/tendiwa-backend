@@ -19,23 +19,23 @@ final class FullRoadGraph {
 	private UndirectedGraph<Point2D, Segment2D> actualCyclesRoadGraph;
 
 	public FullRoadGraph(
-		UndirectedGraph<Point2D, Segment2D> lowLevelRoadGraph,
+		UndirectedGraph<Point2D, Segment2D> originalRoadGraph,
 		HolderOfSplitCycleEdges holderOfSplitCycleEdges,
 		ImmutableSet<NetworkWithinCycle> networks
 	) {
-		compute(lowLevelRoadGraph, holderOfSplitCycleEdges, networks);
+		compute(originalRoadGraph, holderOfSplitCycleEdges, networks);
 	}
 
 	void compute(
-		UndirectedGraph<Point2D, Segment2D> lowLevelRoadGraph,
+		UndirectedGraph<Point2D, Segment2D> originalRoadGraph,
 		HolderOfSplitCycleEdges holderOfSplitCycleEdges,
 		ImmutableSet<NetworkWithinCycle> networks
 	) {
 		UndirectedGraph<Point2D, Segment2D> union = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
-		lowLevelRoadGraph.vertexSet().forEach(union::addVertex);
+		originalRoadGraph.vertexSet().forEach(union::addVertex);
 		Set<Point2D> verticesOfCyclesSubgraph = new HashSet<>();
 		Set<Segment2D> edgesOfCyclesSubgraph = new HashSet<>();
-		for (Segment2D edge : lowLevelRoadGraph.edgeSet()) {
+		for (Segment2D edge : originalRoadGraph.edgeSet()) {
 			if (holderOfSplitCycleEdges.isEdgeSplit(edge)) {
 				UndirectedGraph<Point2D, Segment2D> graph = holderOfSplitCycleEdges.getGraph(edge);
 				graph.vertexSet().forEach(union::addVertex);

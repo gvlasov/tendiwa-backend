@@ -57,6 +57,19 @@ public final class IntegerPermutationGenerator {
 	}
 
 
+	/**
+	 * Generates a random sequence of {@code k} unique numbers between {@code 0} and {@code n-1}.
+	 * <p>
+	 * Always picks only one value from {@code random}.
+	 *
+	 * @param n
+	 * 	Greatest number.
+	 * @param k
+	 * 	Number of numbers to generate.
+	 * @param random
+	 * 	A source of randomness. Only one value will be used.
+	 * @return
+	 */
 	public static int[] generateUsingFisherYates(int n, int k, Random random) {
 		int[] array = new int[n];
 		for (int i = 0; i < n; i++) {

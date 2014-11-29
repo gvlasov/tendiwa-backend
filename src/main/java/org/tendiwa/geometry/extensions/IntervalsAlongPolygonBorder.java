@@ -23,19 +23,19 @@ public final class IntervalsAlongPolygonBorder {
 	private final List<Point2D> polygon;
 	private final double interval;
 	private final double deviation;
-	private Point2D nextPoint;
-	private Point2D currentPoint;
-	private int nextNextPointIndex;
-	private Point2D firstMiddlePoint;
-	private Map<Segment2D, List<Point2D>> answer;
+	private final int numOfVertices;
+	private final BiFunction<Point2D, Point2D, Segment2D> endpointsToSegments;
+	private final Map<Segment2D, List<Point2D>> answer;
+	private Point2D nextVertex;
+	private Point2D currentVertex;
+	private int nextNextVertexIndex;
+	private Point2D firstAnswerPoint;
 	private Point2D lastCircleIntersection;
 	private double intervalToSpend;
-	private int numOfVertices;
 	private boolean returnedToEdgeIndex0 = false;
 	private boolean returnedToEdgeIndex1 = false;
 	private boolean isChainEnclosed = false;
 	private List<Point2D> currentAnswerList;
-	private BiFunction<Point2D, Point2D, Segment2D> endpointsToSegments;
 
 	private IntervalsAlongPolygonBorder(List<Point2D> polygon, double interval, double deviation, BiFunction<Point2D, Point2D, Segment2D> endpointsToSegments, Random random) {
 		if (interval <= 0) {
@@ -55,12 +55,11 @@ public final class IntervalsAlongPolygonBorder {
 		this.interval = interval;
 		this.deviation = deviation;
 		this.numOfVertices = polygon.size();
+		this.answer = new HashMap<>();
 	}
 
 	public Map<Segment2D, List<Point2D>> compute() {
 		setUpChainStartPoint();
-		generateNextDistance();
-
 		while (!isChainEnclosed) {
 			List<Point2D> intersections = computeIntersectionsOfCircleWithSegment();
 			if (intersections.isEmpty()) {
@@ -74,20 +73,28 @@ public final class IntervalsAlongPolygonBorder {
 
 	private List<Point2D> computeIntersectionsOfCircleWithSegment() {
 		List<Point2D> intersections = LineCircleIntersection.findIntersections(
-			currentPoint,
-			nextPoint,
+			currentVertex,
+			nextVertex,
 			lastCircleIntersection,
 			intervalToSpend
 		);
-		double minX = Math.min(currentPoint.x, nextPoint.x);
-		double maxX = Math.max(currentPoint.x, nextPoint.x);
-		double minY = Math.min(currentPoint.y, nextPoint.y);
-		double maxY = Math.max(currentPoint.y, nextPoint.y);
+		double minX = Math.min(currentVertex.x, nextVertex.x);
+		double maxX = Math.max(currentVertex.x, nextVertex.x);
+		double minY = Math.min(currentVertex.y, nextVertex.y);
+		double maxY = Math.max(currentVertex.y, nextVertex.y);
 		assert minX != maxX && minY != maxY; // I just don't know what to do in this case, though it is legit.
 		intersections.removeIf(p -> !Range.contains(minX, maxX, p.x) || !Range.contains(minY, maxY, p.y));
+		assert intersections.stream().allMatch(p -> !p.equals(nextVertex)); // I just don't knot what to do in this case, though it is legit.
 		return intersections;
 	}
 
+	/**
+	 * Places a point on the polygon border if the point to place doesn't go past the 0'th point from the other end
+	 * after making the full cycle.
+	 *
+	 * @param intersections
+	 * 	[0..2] points where a circle intersects the current edge.
+	 */
 	private void tryPlacingNextPointOnCurrentSegment(List<Point2D> intersections) {
 		assert intersections.size() <= 2;
 		Point2D intersectionPoint;
@@ -102,32 +109,31 @@ public final class IntervalsAlongPolygonBorder {
 				isChainEnclosed = true;
 			}
 		} else {
-			placeNextPointOnCurrentSegment(intersectionPoint);
-			if (returnedToEdgeIndex0 && isCircleIntersectionBetweenFirstPointAndFirstVertex()) {
-				undoPlacingLastNextPoint();
+			placePointOnCurrentSegment(intersectionPoint);
+			if (returnedToEdgeIndex1 || returnedToEdgeIndex0 && isCircleIntersectionBetween0thPointAnd1stVertex()) {
+				undoPlacingLastPoint();
 				isChainEnclosed = true;
 			}
 		}
 	}
 
-	private void undoPlacingLastNextPoint() {
-//		TestCanvas.canvas.draw(answer.get(answer.size()-1), DrawingPoint2D.withColorAndSize(Color.cyan, 3));
+	private void undoPlacingLastPoint() {
 		currentAnswerList.remove(currentAnswerList.size() - 1);
 	}
 
-	private void placeNextPointOnCurrentSegment(Point2D intersectionPoint) {
-		lastCircleIntersection = intersectionPoint;
+	private void placePointOnCurrentSegment(Point2D point) {
+		lastCircleIntersection = point;
 		currentAnswerList.add(lastCircleIntersection);
 		generateNextDistance();
 	}
 
-	private boolean isCircleIntersectionBetweenFirstPointAndFirstVertex() {
+	private boolean isCircleIntersectionBetween0thPointAnd1stVertex() {
 		assert returnedToEdgeIndex0;
 		Point2D polygon1 = polygon.get(1);
-		double minX = Math.min(firstMiddlePoint.x, polygon1.x);
-		double maxX = Math.max(firstMiddlePoint.x, polygon1.x);
-		double minY = Math.min(firstMiddlePoint.y, polygon1.y);
-		double maxY = Math.max(firstMiddlePoint.y, polygon1.y);
+		double minX = Math.min(firstAnswerPoint.x, polygon1.x);
+		double maxX = Math.max(firstAnswerPoint.x, polygon1.x);
+		double minY = Math.min(firstAnswerPoint.y, polygon1.y);
+		double maxY = Math.max(firstAnswerPoint.y, polygon1.y);
 		return Range.contains(minX, maxX, lastCircleIntersection.x)
 			&& Range.contains(minY, maxY, lastCircleIntersection.y);
 	}
@@ -137,15 +143,14 @@ public final class IntervalsAlongPolygonBorder {
 	 * first point of the polygon, and sets up all the fields necessary for computation.
 	 */
 	private void setUpChainStartPoint() {
-		nextPoint = polygon.get(1);
-		currentPoint = polygon.get(0);
-		lastCircleIntersection = findFirstPointPosition(currentPoint, nextPoint);
-		firstMiddlePoint = lastCircleIntersection;
-		nextNextPointIndex = 2;
-		answer = new HashMap<>();
-		switchToNewSegmentList(currentPoint, nextPoint);
+		nextVertex = polygon.get(1);
+		currentVertex = polygon.get(0);
+		lastCircleIntersection = findFirstPointPosition(currentVertex, nextVertex);
+		firstAnswerPoint = lastCircleIntersection;
+		nextNextVertexIndex = 2;
+		switchToNewSegmentList(currentVertex, nextVertex);
 		currentAnswerList.add(lastCircleIntersection);
-		returnedToEdgeIndex0 = false;
+		generateNextDistance();
 	}
 
 	private void switchToNewSegmentList(Point2D currentPoint, Point2D nextPoint) {
@@ -163,14 +168,14 @@ public final class IntervalsAlongPolygonBorder {
 	}
 
 	private void moveToNextSegment() {
-		currentPoint = nextPoint;
-		nextPoint = polygon.get(nextNextPointIndex);
-		switchToNewSegmentList(currentPoint, nextPoint);
-		nextNextPointIndex = Utils.nextIndex(numOfVertices, nextNextPointIndex);
-		if (nextNextPointIndex == 2) {
+		currentVertex = nextVertex;
+		nextVertex = polygon.get(nextNextVertexIndex);
+		switchToNewSegmentList(currentVertex, nextVertex);
+		nextNextVertexIndex = Utils.nextIndex(numOfVertices, nextNextVertexIndex);
+		if (nextNextVertexIndex == 2) {
 			returnedToEdgeIndex0 = true;
 		}
-		if (returnedToEdgeIndex0 && nextNextPointIndex == 3) {
+		if (returnedToEdgeIndex0 && nextNextVertexIndex == 3) {
 			returnedToEdgeIndex1 = true;
 		}
 	}
@@ -197,26 +202,14 @@ public final class IntervalsAlongPolygonBorder {
 	}
 
 	private boolean isBeforeCurrentPoint(Point2D intersectionPoint) {
-		return intersectionPoint.squaredDistanceTo(nextPoint) > lastCircleIntersection.squaredDistanceTo(nextPoint);
-	}
-
-	private static int approximateListSize(List<Point2D> polygon, double interval) {
-		Point2D previousVertex = polygon.get(0);
-		int size = polygon.size();
-		double combinedLength = polygon.get(size - 1).distanceTo(previousVertex);
-		for (int i = 1; i < size; i++) {
-			Point2D currentVertex = polygon.get(i);
-			combinedLength += currentVertex.distanceTo(previousVertex);
-			previousVertex = currentVertex;
-		}
-		return (int) Math.ceil(combinedLength / interval);
+		return intersectionPoint.squaredDistanceTo(nextVertex) > lastCircleIntersection.squaredDistanceTo(nextVertex);
 	}
 
 	private Point2D getPointCloserToNextPoint(List<Point2D> points) {
 		assert points.size() == 2;
 		Point2D point1 = points.get(0);
 		Point2D point2 = points.get(1);
-		return point1.squaredDistanceTo(nextPoint) < point2.squaredDistanceTo(nextPoint) ? point1 : point2;
+		return point1.squaredDistanceTo(nextVertex) < point2.squaredDistanceTo(nextVertex) ? point1 : point2;
 	}
 
 	private void generateNextDistance() {

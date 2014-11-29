@@ -10,7 +10,6 @@ import org.tendiwa.drawing.DrawableInto;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingPoint2D;
 import org.tendiwa.drawing.extensions.DrawingSegment2D;
-import org.tendiwa.drawing.extensions.FakeCanvas;
 import org.tendiwa.geometry.*;
 import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.geometry.RayIntersection;
@@ -18,7 +17,6 @@ import org.tendiwa.geometry.RayIntersection;
 import java.awt.Color;
 import java.util.*;
 
-import static org.tendiwa.drawing.extensions.DrawingSegment2D.withColor;
 import static org.tendiwa.geometry.Vectors2D.perpDotProduct;
 
 // TODO: Split this class into more classes.
@@ -27,7 +25,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 	private final ListOfActiveVertices lav;
 	private SkeletonEvent watchEvent;
 	//	TestCanvas canvas = new TestCanvas(1, 200, 400);
-	DrawableInto canvas = new FakeCanvas();
+	DrawableInto canvas = TestCanvas.canvas;
 	private final PriorityQueue<SkeletonEvent> queue;
 	public final Multimap<Point2D, Point2D> arcs = HashMultimap.create();
 	static final double EPSILON = 1e-10;
@@ -91,21 +89,11 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 				assert point.va.next == point.vb : point.va.next.vertex + " " + point.vb.vertex;
 				// Convex 2c
 				if (point.va.previous.previous == point.vb) {
-					outputArc(point.va.vertex, point);
-					point.va.setProcessed();
-					point.vb.setProcessed();
-					point.va.previous.setProcessed();
-					outputArc(point.vb.vertex, point);
-					assert point.va.previous == point.vb.next : point.va.previous.vertex + " " + point.vb.next.vertex;
-					outputArc(point.va.previous.vertex, point);
+					connectLast3SegmentsForEdgeEvent(point);
 					continue;
 				}
 				if (point.va.next.next == point.va) {
-					assert point.vb != null;
-					// Eliminating LAVs consisting only of 2 nodes
-					outputArc(point.va.vertex, point.vb.vertex);
-					point.va.setProcessed();
-					point.vb.setProcessed();
+					eliminate2NodeLav(point);
 					continue;
 				}
 				// Convex 2d
@@ -159,25 +147,22 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 				}
 				// Non-convex 2c
 				if (point.va.previous.previous.previous == point.va) {
-					outputArc(point.va.vertex, point);
-					point.va.setProcessed();
-					point.vb.setProcessed();
-					point.va.previous.setProcessed();
-					outputArc(point.vb.vertex, point);
-					assert point.va.previous == point.vb.next;
-					outputArc(point.va.previous.vertex, point);
+					connectLast3EdgesForSplitEvent(point);
 					continue;
 				}
 				if (point.va.next.next == point.va) {
-					// Eliminating LAVs consisting only of 2 nodes
-					outputArc(point.va.vertex, point.vb.vertex);
-					point.va.setProcessed();
-					point.vb.setProcessed();
+					eliminate2NodeLav(point);
 					continue;
 				}
 				// Non-convex 2D
 				outputArc(point.va.vertex, point);
-				assert !point.oppositeEdgeStart.isProcessed();
+				if (point.oppositeEdgeStart.isProcessed()) {
+					canvas.draw(point.oppositeEdgeStart.bisector.segment, DrawingSegment2D.withColorThin(Color.orange));
+					canvas.draw(point.oppositeEdgeStart.currentEdge, DrawingSegment2D.withColorThin(Color.magenta));
+					canvas.draw(point, DrawingPoint2D.withColorAndSize(Color.green, 3));
+					canvas.draw(point.oppositeEdgeStart.vertex, DrawingPoint2D.withColorAndSize(Color.green, 2));
+					assert false;
+				}
 				// Non-convex 2e
 
 				Node node1 = new Node(
@@ -234,9 +219,37 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 			}
 		}
 		assert !arcs.isEmpty();
-		if (canvas instanceof TestCanvas) {
-			((TestCanvas) canvas).close();
-		}
+//		if (canvas instanceof TestCanvas) {
+//			((TestCanvas) canvas).close();
+//		}
+	}
+
+	private void connectLast3EdgesForSplitEvent(SkeletonEvent point) {
+		outputArc(point.va.vertex, point);
+		point.va.setProcessed();
+		point.vb.setProcessed();
+		point.va.previous.setProcessed();
+		outputArc(point.vb.vertex, point);
+		assert point.va.previous == point.vb.next;
+		outputArc(point.va.previous.vertex, point);
+	}
+
+	private void eliminate2NodeLav(SkeletonEvent point) {
+		assert point.vb != null;
+		// Eliminating LAVs consisting only of 2 nodes
+		outputArc(point.va.vertex, point.vb.vertex);
+		point.va.setProcessed();
+		point.vb.setProcessed();
+	}
+
+	private void connectLast3SegmentsForEdgeEvent(SkeletonEvent point) {
+		outputArc(point.va.vertex, point);
+		point.va.setProcessed();
+		point.vb.setProcessed();
+		point.va.previous.setProcessed();
+		outputArc(point.vb.vertex, point);
+		assert point.va.previous == point.vb.next : point.va.previous.vertex + " " + point.vb.next.vertex;
+		outputArc(point.va.previous.vertex, point);
 	}
 
 	private void outputPoints(List<Point2D> vertices) {
@@ -334,14 +347,14 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 	}
 
 	private void draw(Segment2D segment) {
-		canvas.draw(segment, DrawingSegment2D.withColor(Color.green));
+		canvas.draw(segment, DrawingSegment2D.withColorThin(Color.green));
 	}
 
 	private void outputArc(Point2D start, Point2D end) {
 		assert start != null;
 		assert end != null;
 		arcs.put(start, end);
-		canvas.draw(new Segment2D(start, end), withColor(Color.CYAN));
+		canvas.draw(new Segment2D(start, end), DrawingSegment2D.withColorThin(Color.CYAN));
 	}
 
 	private SkeletonEvent computeNearerBisectorsIntersection(Node node) {

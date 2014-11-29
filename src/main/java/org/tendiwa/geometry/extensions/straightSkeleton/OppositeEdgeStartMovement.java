@@ -26,13 +26,15 @@ public class OppositeEdgeStartMovement {
 	}
 
 	public void moveTo(Node newEnd) {
-//		canvas.draw(
-//			new Segment2D(
-//				end.vertex,
-//				newEnd.vertex
-//			),
-//			DrawingSegment2D.withColorDirected(Color.blue)
-//		);
+		if (end.vertex.distanceTo(newEnd.vertex) > 0) {
+			canvas.draw(
+				new Segment2D(
+					end.vertex,
+					newEnd.vertex
+				),
+				DrawingSegment2D.withColorDirected(Color.blue)
+			);
+		}
 
 		assert newEnd != null;
 		assert newEnd != start;

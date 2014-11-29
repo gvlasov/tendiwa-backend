@@ -1,6 +1,7 @@
 package org.tendiwa.settlements.networks;
 
 import com.google.common.collect.ImmutableMap;
+import javafx.geometry.Point3D;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.core.meta.Range;
@@ -14,13 +15,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Holds chains of edges that are result of splitting edges of {@link RoadsPlanarGraphModel#lowLevelRoadGraph}.
+ * Holds chains of edges that are result of splitting edges of {@link RoadsPlanarGraphModel#originalRoadGraph}.
  * <p>
- * We can't mutate {@link NetworkWithinCycle#lowLevelRoadGraph}
+ * We can't mutate {@link NetworkWithinCycle#originalRoadGraph}
  * itself because that breaks {@link org.tendiwa.graphs.MinimalCycle#iterator()}.
  * <p>
  * This class exists so {@link RoadsPlanarGraphModel#getFullRoadGraph()} can return a graph with edges on cycle edges
- * that are not part of the initial {@link RoadsPlanarGraphModel#lowLevelRoadGraph}.
+ * that are not part of the initial {@link RoadsPlanarGraphModel#originalRoadGraph}.
  * <p>
  * One of the reasons why we need this class is that when we split a road of
  * {@link NetworkWithinCycle}, that road may be shared with another
@@ -47,7 +48,7 @@ final class HolderOfSplitCycleEdges {
 	 * Remembers that {@code edgeToSplit} is split into a graph of sub-edges.
 	 *
 	 * @param edgeToSplit
-	 * 	An edge of {@link RoadsPlanarGraphModel#lowLevelRoadGraph} (those are called "original edges" within this
+	 * 	An edge of {@link RoadsPlanarGraphModel#originalRoadGraph} (those are called "original edges" within this
 	 * 	class, or a sub-edge.
 	 * @param point
 	 * 	A point to split the edge with.
@@ -81,7 +82,7 @@ final class HolderOfSplitCycleEdges {
 	 * @param edge
 	 * @return
 	 */
-	private Segment2D findOriginalEdge(Segment2D edge) {
+	Segment2D findOriginalEdge(Segment2D edge) {
 		Segment2D answer = splitPointsToOriginalEdges.get(edge.start);
 		if (answer == null) {
 			answer = splitPointsToOriginalEdges.get(edge.end);
@@ -90,7 +91,7 @@ final class HolderOfSplitCycleEdges {
 	}
 
 	/**
-	 * @return A new {@link com.google.common.collect.ImmutableMap} that maps original edges
+	 * @return A new {@link com.google.common.collect.ImmutableMap} that maps original edges to their split parts
 	 */
 	ImmutableMap<Point2D, Segment2D> getMapFromSplitToOriginalSegments() {
 		return ImmutableMap.copyOf(splitPointsToOriginalEdges);
