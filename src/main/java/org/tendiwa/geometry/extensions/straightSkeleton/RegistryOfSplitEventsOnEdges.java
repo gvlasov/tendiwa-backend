@@ -51,13 +51,17 @@ class RegistryOfSplitEventsOnEdges {
 	}
 
 	Node getNodeFromLeft(Segment2D edge, Node node) {
-		Node node1 = edgesToSplitNodes.get(edge).higher(
+		Node node1 = null;
+		SplitEventOnEdge higher = edgesToSplitNodes.get(edge).higher(
 			new SplitEventOnEdge(
 				node,
 				Orientation.LEFT,
 				projectionOnEdge(node.vertex, edge)
 			)
-		).node;
+		);
+		if (higher != null) {
+			node1 = higher.node;
+		}
 		if (node1 == null) {
 			assert originalEdgeEnds.containsKey(edge);
 			return originalEdgeEnds.get(edge);

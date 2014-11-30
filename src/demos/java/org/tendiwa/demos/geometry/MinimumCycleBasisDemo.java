@@ -34,7 +34,7 @@ public class MinimumCycleBasisDemo implements Runnable {
 			graph,
 			Point2DVertexPositionAdapter.get()
 		);
-		canvas.draw(graph, DrawingGraph.withColor(Color.red));
+		canvas.draw(graph, DrawingGraph.withColorAndVertexSize(Color.red, 1));
 		for (MinimalCycle<Point2D, Segment2D> cycle : basis.minimalCyclesSet()) {
 			canvas.draw(cycle, DrawingMinimalCycle.withColor(Color.green, Point2DVertexPositionAdapter.get()));
 		}

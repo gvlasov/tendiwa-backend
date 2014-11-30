@@ -13,7 +13,7 @@ public interface DrawableInto {
 
 	<T> void draw(T what, DrawingAlgorithm<? super T> how);
 
-	<T> void drawAll(Collection<T> what, DrawingAlgorithm<? super T> how);
+	<T> void drawAll(Iterable<T> what, DrawingAlgorithm<? super T> how);
 
 	void fillBackground(Color backgroundColor);
 

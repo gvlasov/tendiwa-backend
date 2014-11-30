@@ -27,13 +27,7 @@ public class OppositeEdgeStartMovement {
 
 	public void moveTo(Node newEnd) {
 		if (end.vertex.distanceTo(newEnd.vertex) > 0) {
-			canvas.draw(
-				new Segment2D(
-					end.vertex,
-					newEnd.vertex
-				),
-				DrawingSegment2D.withColorDirected(Color.blue)
-			);
+			drawMovement(newEnd);
 		}
 
 		assert newEnd != null;
@@ -45,6 +39,16 @@ public class OppositeEdgeStartMovement {
 		for (SkeletonEvent observer : endObservers) {
 			observer.changeOppositeEdgeEnd(start, newEnd);
 		}
+	}
+
+	private void drawMovement(Node newEnd) {
+		canvas.draw(
+			new Segment2D(
+				end.vertex,
+				newEnd.vertex
+			),
+			DrawingSegment2D.withColorDirected(Color.blue)
+		);
 	}
 
 	public Node getStart() {

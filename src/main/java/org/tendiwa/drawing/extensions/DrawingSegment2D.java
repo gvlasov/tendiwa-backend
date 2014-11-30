@@ -12,10 +12,10 @@ public class DrawingSegment2D {
 		return (shape, canvas) ->
 			canvas.drawShape(
 				new Line2D.Double(
-					shape.start.x,
-					shape.start.y,
-					shape.end.x,
-					shape.end.y
+					shape.start.x+0.5,
+					shape.start.y+0.5,
+					shape.end.x+0.5,
+					shape.end.y+0.5
 				),
 				color
 			);

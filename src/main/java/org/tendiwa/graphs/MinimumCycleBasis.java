@@ -30,7 +30,6 @@ import static org.tendiwa.geometry.Vectors2D.*;
  * @param <E>
  * 	Type of edges.
  */
-// TODO: Maybe it would be good to aggregate MCB and Graph<Point2D, Segment2D> into one class to reuse the MCB.
 public class MinimumCycleBasis<V, E> {
 	private final ListenableUndirectedGraph<V, E> graph;
 	private final Comparator<V> comparator = new Comparator<V>() {
@@ -52,8 +51,7 @@ public class MinimumCycleBasis<V, E> {
 	private final NeighborIndex<V, E> neighborIndex;
 	private UndirectedGraph<V, E> originalGraph;
 	private VertexPositionAdapter<V> positionAdapter;
-	private static final Iterator<Color> colors = Iterators.cycle(Color.red, Color.blue, Color.yellow, Color.green,
-		Color.cyan);
+	private static final Iterator<Color> colors = Iterators.cycle(Color.red, Color.blue, Color.yellow, Color.green, Color.cyan);
 
 	/**
 	 * @param graph

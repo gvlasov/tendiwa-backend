@@ -22,7 +22,7 @@ public class FakeCanvas implements DrawableInto {
 	}
 
 	@Override
-	public <T> void drawAll(Collection<T> what, DrawingAlgorithm<? super T> how) {
+	public <T> void drawAll(Iterable<T> what, DrawingAlgorithm<? super T> how) {
 
 	}
 

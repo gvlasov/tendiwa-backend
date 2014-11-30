@@ -1,6 +1,7 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import org.tendiwa.drawing.DrawableInto;
 import org.tendiwa.drawing.TestCanvas;
@@ -61,7 +62,7 @@ public class SkeletonEvent extends Point2D implements Comparable<SkeletonEvent> 
 
 	private Node changeOppositeEdgeNode(Node to, Node currentNode) {
 		assert to != null;
-		assert !to.isProcessed();
+		assert !to.isProcessed() : to.vertex;
 //		canvas.draw(
 //			new Segment2D(
 //				from.vertex,
@@ -70,10 +71,12 @@ public class SkeletonEvent extends Point2D implements Comparable<SkeletonEvent> 
 //		);
 		ImmutableList<Node> nodes = ImmutableList.copyOf(to);
 		if (event == EventType.EDGE) {
+			// TODO: Replace with Iterators.contains
 			if (nodes.contains(va) /*|| nodes.contains(vb)*/) {
 				return to;
 			}
 		} else if (event == EventType.SPLIT) {
+			// TODO: Replace with Iterators.contains
 			if (nodes.contains(va)) {
 				return to;
 			}

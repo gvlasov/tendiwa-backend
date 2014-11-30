@@ -14,6 +14,7 @@ import static org.tendiwa.geometry.extensions.straightSkeleton.CycleExtraVertice
 class ListOfActiveVertices {
 	final LinkedList<Node> nodes = new LinkedList<>();
 	final List<Segment2D> edges;
+	private final int size;
 
 	/**
 	 * @param vertices
@@ -27,6 +28,10 @@ class ListOfActiveVertices {
 		for (Node node : nodes) {
 			node.computeReflexAndBisector();
 		}
+		this.size = edges.size();
+	}
+	int size() {
+		return size;
 	}
 
 	private void createAndConnectNodes(List<Segment2D> edges) {

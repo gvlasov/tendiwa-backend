@@ -37,11 +37,11 @@ public class StraightSkeletonDemo implements Runnable {
 	public void run() {
 		Config config = new Config();
 		config.saveGif = false;
-		config.drawToCanvas = true;
+		config.drawToCanvas = false;
 		config.startIteration = 0;
-		config.numberOfIterations = 180;
+		config.numberOfIterations = 1;
 		config.gifPath = System.getProperty("user.home") + "/test.gif";
-		config.drawEdges = true;
+		config.drawEdges = false;
 		config.fps = 30;
 
 		List<Point2D> points =
@@ -79,8 +79,9 @@ public class StraightSkeletonDemo implements Runnable {
 		if (config.saveGif) {
 			config.drawToCanvas = true;
 		}
+		canvas = new TestCanvas(1, 400, 400);
+		TestCanvas.canvas = canvas;
 		if (config.drawToCanvas) {
-			canvas = new TestCanvas(1, 400, 400);
 			gifBuilder = factory.create(canvas, config.fps);
 		}
 		int endIteration = config.startIteration + config.numberOfIterations;
@@ -105,7 +106,6 @@ public class StraightSkeletonDemo implements Runnable {
 		for (int i = config.startIteration; i < endIteration; i++) {
 			if (config.drawToCanvas) {
 				assert canvas != null;
-				TestCanvas.canvas = canvas;
 				canvas.clear();
 			}
 			if (config.printDebugInfo) {

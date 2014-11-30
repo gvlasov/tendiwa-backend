@@ -191,7 +191,7 @@ class BaseTestCanvas implements DrawableInto {
 	}
 
 	@Override
-	public <T> void drawAll(Collection<T> whats, DrawingAlgorithm<? super T> how) {
+	public <T> void drawAll(Iterable<T> whats, DrawingAlgorithm<? super T> how) {
 		for (T what : whats) {
 			draw(what, how);
 		}
