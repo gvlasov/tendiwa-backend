@@ -34,7 +34,7 @@ class Node implements Iterable<Node> {
 	}
 
 	/**
-	 * Makes this point processed
+	 * Remembers that this point is processed, that is, it is not a part of some LAV anymore.
 	 */
 	void setProcessed() {
 		isProcessed = true;
@@ -109,7 +109,7 @@ class Node implements Iterable<Node> {
 					drawLav();
 					canvas.draw(node.vertex, DrawingPoint2D.withColorAndSize(Color.green, 2));
 					canvas.draw(start.vertex, DrawingPoint2D.withColorAndSize(Color.yellow, 2));
-					assert false;
+					throw new RuntimeException("Node not in lav");
 				}
 				if (++i > 100) {
 					drawLav();

@@ -1,6 +1,5 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
-import Jama.Matrix;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -15,7 +14,6 @@ import org.tendiwa.geometry.*;
 import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.geometry.RayIntersection;
 
-import javax.vecmath.Vector2d;
 import java.awt.Color;
 import java.util.*;
 
@@ -47,7 +45,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 	private SuseikaStraightSkeleton(List<Point2D> vertices, boolean trustCounterClockwise) {
 //		vertices = Lists.reverse(vertices);
 		Node.canvas = canvas;
-		OppositeEdgeStartMovement.canvas = canvas;
+		NodeMovement.canvas = canvas;
 		if (!trustCounterClockwise && !JTSUtils.isYDownCCW(vertices)) {
 			vertices = Lists.reverse(vertices);
 		}
@@ -58,7 +56,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		this.queue = new PriorityQueue<>(initialLav.size());
 		// [Obdrzalek 1998, paragraph 2.2, algorithm step 1c]
 		registry = new MovementRegistry(initialLav.nodes);
-		splitEventsRegistry = new RegistryOfSplitEventsOnEdges(initialLav.nodes);
+		splitEventsRegistry = new RegistryOfSplitEventsOnEdges(initialLav.nodes, registry);
 		queueInitialEvents(initialLav.size());
 		assert !queue.isEmpty();
 		while (!queue.isEmpty()) {
@@ -131,7 +129,8 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		);
 
 		Node lav1NextNode;
-		if (point.va.isInTheSameLav(point.oppositeEdgeEnd)) {
+		boolean inTheSameLav = point.va.isInTheSameLav(point.oppositeEdgeEnd);
+		if (inTheSameLav) {
 			lav1NextNode = point.oppositeEdgeEnd;
 		} else {
 			lav1NextNode = splitEventsRegistry.getNodeFromLeft(point.oppositeEdgeEnd.previous.currentEdge, node1);
@@ -147,7 +146,11 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		lav1NextNode.connectWithPrevious(node1);
 
 		// TODO: Why do we need this?
-		ImmutableList.copyOf(node1);
+		try {
+			ImmutableList.copyOf(node1);
+		} catch (RuntimeException e) {
+			assert false;
+		}
 //				draw(node1, Color.green);
 
 		node2.connectWithPrevious(lav2PreviousNode);
@@ -161,12 +164,12 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		pairSplitNodes(node1, node2);
 
 		splitEventsRegistry.addSplitNode(
-			point.oppositeEdgeStartMovement.getStart().currentEdge,
+			point.oppositeEdgeStartMovement.getTail().currentEdge,
 			node1,
 			RegistryOfSplitEventsOnEdges.Orientation.LEFT
 		);
 		splitEventsRegistry.addSplitNode(
-			point.oppositeEdgeStartMovement.getStart().currentEdge,
+			point.oppositeEdgeStartMovement.getTail().currentEdge,
 			node2,
 			RegistryOfSplitEventsOnEdges.Orientation.RIGHT
 		);
@@ -215,7 +218,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		point.va.setProcessed();
 		point.vb.setProcessed();
 		if (!hasPairOf(point.va)) {
-			// Move starts only to edge event nodes.
+			// Move beginnings only to edge event nodes.
 			registry.getByOriginalEdge(point.va.currentEdge).moveTo(node);
 		}
 		if (!hasPairOf(point.vb)) {

@@ -3,6 +3,7 @@ package org.tendiwa.geometry.extensions.straightSkeleton;
 import org.tendiwa.drawing.DrawableInto;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingSegment2D;
+import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 
 import java.awt.Color;
@@ -10,53 +11,76 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class tracks the movement of a start point of a segment that sweeps a polygon's face.
+ * {@link Node} produces a chain of {@link Node}s as edges collapse.
+ * {@link org.tendiwa.geometry.extensions.straightSkeleton.NodeMovement} holds the end of such chain and remembers
+ * which nodes observe {@link Node}'s movement.
  */
-public class OppositeEdgeStartMovement {
-	private Node start;
-	private Node end;
+final class NodeMovement {
+	/**
+	 * First node in the chain.
+	 * <p>
+	 * Used only in asserts, may be removed when the whole algorithm works properly.
+	 */
+	// TODO: Remove tail node.
+	private final Node tail;
+	/**
+	 * Last node in the chain.
+	 */
+	private Node head;
 	private List<SkeletonEvent> startObservers = new ArrayList<>(1);
 	static DrawableInto canvas;
 	private List<SkeletonEvent> endObservers = new ArrayList<>(1);
 
-	public OppositeEdgeStartMovement(Node start) {
+	NodeMovement(Node start) {
 		assert start != null;
-		this.start = start;
-		this.end = start;
+		this.tail = start;
+		this.head = start;
 	}
 
-	public void moveTo(Node newEnd) {
-		if (end.vertex.distanceTo(newEnd.vertex) > 0) {
+	/**
+	 * Moves chain's head to {@code newEnd}
+	 *
+	 * @param newEnd
+	 * 	New chain head.
+	 */
+	void moveTo(Node newEnd) {
+		if (head.vertex.distanceTo(newEnd.vertex) > 0) {
 			drawMovement(newEnd);
 		}
 
 		assert newEnd != null;
-		assert newEnd != start;
-		this.end = newEnd;
+		assert newEnd != tail;
+		if (tail.vertex.chebyshovDistanceTo(new Point2D(331, 703)) < 1.3) {
+			TestCanvas.canvas.draw(
+				new Segment2D(head.vertex, newEnd.vertex), DrawingSegment2D.withColorThin(Color.magenta)
+			);
+			System.out.println(1);
+		}
+		this.head = newEnd;
 		for (SkeletonEvent observer : startObservers) {
-			observer.changeOppositeEdgeStart(start, newEnd);
+			observer.changeOppositeEdgeStart(tail, newEnd);
 		}
 		for (SkeletonEvent observer : endObservers) {
-			observer.changeOppositeEdgeEnd(start, newEnd);
+			observer.changeOppositeEdgeEnd(tail, newEnd);
 		}
 	}
 
 	private void drawMovement(Node newEnd) {
 		canvas.draw(
 			new Segment2D(
-				end.vertex,
+				head.vertex,
 				newEnd.vertex
 			),
 			DrawingSegment2D.withColorDirected(Color.blue)
 		);
 	}
 
-	public Node getStart() {
-		return start;
+	public Node getTail() {
+		return tail;
 	}
 
-	public Node getEnd() {
-		return end;
+	public Node getHead() {
+		return head;
 	}
 
 
@@ -78,14 +102,14 @@ public class OppositeEdgeStartMovement {
 //
 //	public void notifyObservers(Node nextNode, List<SkeletonEvent> observers) {
 //		assert nextNode != null;
-//		assert end != nextNode;
+//		assert head != nextNode;
 //		ImmutableList<Node> lav = ImmutableList.copyOf(nextNode); // NextNode works as Iterable<Node> here.
 //		for (SkeletonEvent intersection : observers) {
 //			TODO: Do we have to copy observers?
 //			We have to copy observers because otherwise that list
 //			will be concurrently modified inside this loop.
 //			if (lav.contains(intersection.va)) {
-//				intersection.changeOppositeEdgeStart(end, nextNode);
+//				intersection.changeOppositeEdgeStart(head, nextNode);
 //			}
 //		}
 //	}

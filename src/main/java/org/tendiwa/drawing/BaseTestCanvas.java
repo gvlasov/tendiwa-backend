@@ -123,7 +123,9 @@ class BaseTestCanvas implements DrawableInto {
 	 * @return "x:y"
 	 */
 	private String getClickCoordinatesAsString(MouseEvent e) {
-		return (pixelBounds.x + e.getX()) / scale + ":" + (pixelBounds.y + e.getY()) / scale;
+		return "point.chebyshovDistanceTo(new Point2D("
+			+(pixelBounds.x + e.getX()) / scale + "," + (pixelBounds.y + e.getY()) / scale
+			+")<1.5";
 	}
 
 	public void close() {

@@ -16,8 +16,10 @@ class RegistryOfSplitEventsOnEdges {
 	private final Map<Segment2D, TreeSet<SplitEventOnEdge>> edgesToSplitNodes = new HashMap<>();
 	private final Map<Segment2D, Node> originalEdgeStarts = new HashMap<>();
 	private final Map<Segment2D, Node> originalEdgeEnds = new HashMap<>();
+	private final MovementRegistry movementRegistry;
 
-	RegistryOfSplitEventsOnEdges(LinkedList<Node> nodes) {
+	RegistryOfSplitEventsOnEdges(LinkedList<Node> nodes, MovementRegistry movementRegistry) {
+		this.movementRegistry = movementRegistry;
 		for (Node node : nodes) {
 			initOriginalEdge(node.currentEdge, node);
 		}
@@ -44,7 +46,7 @@ class RegistryOfSplitEventsOnEdges {
 		).node;
 		if (node1 == null) {
 			assert originalEdgeStarts.containsKey(edge);
-			return originalEdgeStarts.get(edge);
+			return movementRegistry.getByOriginalEdge(originalEdgeStarts.get(edge).currentEdge).getHead();
 		} else {
 			return node1;
 		}
@@ -64,7 +66,7 @@ class RegistryOfSplitEventsOnEdges {
 		}
 		if (node1 == null) {
 			assert originalEdgeEnds.containsKey(edge);
-			return originalEdgeEnds.get(edge);
+			return movementRegistry.getByOriginalEdge(originalEdgeEnds.get(edge).currentEdge).getHead();
 		} else {
 			return node1;
 		}
