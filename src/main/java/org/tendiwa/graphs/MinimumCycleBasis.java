@@ -447,9 +447,9 @@ public class MinimumCycleBasis<V, E> {
 	}
 
 	private class PrimitiveContainer<V> {
-		private final Set<V> isolatedVertices = new HashSet<>();
-		private final Set<Filament<V, E>> filaments = new HashSet<>();
-		private final Set<MinimalCycle<V, E>> minimalCycles = new HashSet<>();
+		private final Set<V> isolatedVertices = new LinkedHashSet<>();
+		private final Set<Filament<V, E>> filaments = new LinkedHashSet<>();
+		private final Set<MinimalCycle<V, E>> minimalCycles = new LinkedHashSet<>();
 
 		private void add(V isolatedVertex) {
 			isolatedVertices.add(isolatedVertex);

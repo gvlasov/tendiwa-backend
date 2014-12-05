@@ -10,60 +10,51 @@ import java.util.Iterator;
 
 /**
  * Note: this class has natural ordering that is inconsistent with {@link Object#equals(Object)}.
+ *
+ * {@link org.tendiwa.geometry.extensions.straightSkeleton.SkeletonEvent}s watch for
+ * {@link NodeFlow}s and update their {@link #oppositeEdgeStartMovementHead}
+ * and {@link #oppositeEdgeEndMovementHead} on each head move if
  */
 public class SkeletonEvent extends Point2D implements Comparable<SkeletonEvent> {
 	final double distanceToOriginalEdge;
-	final EventType event;
-	final NodeMovement oppositeEdgeStartMovement;
-	final NodeMovement oppositeEdgeEndMovement;
-	Node oppositeEdgeStart;
-	Node oppositeEdgeEnd;
-	private final DrawableInto canvas;
-	/**
-	 * When {@link #event} is {@link org.tendiwa.geometry.extensions.straightSkeleton.EventType#EDGE}, {@link #va}
-	 * and {@link #vb} are, accordingly, left and right predecessors of this SkeletonEvent.
-	 * <p>
-	 * When {@link #event} is {@link org.tendiwa.geometry.extensions.straightSkeleton.EventType#SPLIT}, {@link #va}
-	 * is the predecessor and {@link #vb} is null.
-	 */
+	static DrawableInto canvas;
 	final Node va;
+	/**
+	 * {@code vb == null} means it is a split event, otherwise it is an edge event
+	 */
 	final Node vb;
 	static Iterator<Color> colors = Iterators.cycle(Color.orange, Color.blue, Color.magenta, Color.black);
+	private Node oppositeEdgeStartMovementHead;
+	private Node oppositeEdgeEndMovementHead;
+	public NodeFlow oppositeEdgeStartMovement;
 
 	SkeletonEvent(
 		double x,
 		double y,
-		NodeMovement oppositeEdgeStartMovement,
-		NodeMovement oppositeEdgeEndMovement,
+		NodeFlow oppositeEdgeStartMovement,
+		NodeFlow oppositeEdgeEndMovement,
 		Node va,
-		Node vb,
-		EventType event,
-		DrawableInto canvas
+		Node vb
 	) {
+		// TODO: Make SkeletonEvent not extend Point2D
 		super(x, y);
+		assert oppositeEdgeStartMovement != null;
+		assert oppositeEdgeEndMovement != null;
+		assert va != null;
 		this.oppositeEdgeStartMovement = oppositeEdgeStartMovement;
-		this.oppositeEdgeEndMovement = oppositeEdgeEndMovement;
-		this.canvas = canvas;
-		this.oppositeEdgeStartMovement.addStartObserver(this);
-		this.oppositeEdgeEndMovement.addEndObserver(this);
+//		this.oppositeEdgeEndMovement.addEndObserver(this);
+		oppositeEdgeStartMovementHead = oppositeEdgeStartMovement.getHead();
+		oppositeEdgeEndMovementHead = oppositeEdgeEndMovement.getHead();
+		this.distanceToOriginalEdge = distanceToLine(va.currentEdge);
 		this.va = va;
 		this.vb = vb;
-		this.event = event;
 //		assert oppositeEdgeStartMovement.getTail() == oppositeEdgeStartMovement.getHead();
-		this.distanceToOriginalEdge = distanceToLine(oppositeEdgeStartMovement.getTail().currentEdge);
-		oppositeEdgeStart = this.oppositeEdgeStartMovement.getHead();
-		oppositeEdgeEnd = this.oppositeEdgeEndMovement.getHead();
 	}
 
-	void changeOppositeEdgeStart(Node start, Node to) {
-		assert oppositeEdgeStartMovement.getTail() == start;
-		oppositeEdgeStart = changeOppositeEdgeNode(to, oppositeEdgeStart);
+	boolean isSplitEvent() {
+		return vb == null;
 	}
 
-	public void changeOppositeEdgeEnd(Node start, Node to) {
-		assert oppositeEdgeEndMovement.getTail() == start;
-		oppositeEdgeEnd = changeOppositeEdgeNode(to, oppositeEdgeEnd);
-	}
 
 	private Node changeOppositeEdgeNode(Node to, Node currentNode) {
 		assert to != null;
@@ -77,18 +68,16 @@ public class SkeletonEvent extends Point2D implements Comparable<SkeletonEvent> 
 //			);
 //		}
 		ImmutableList<Node> nodes = ImmutableList.copyOf(to);
-		if (event == EventType.EDGE) {
-			// TODO: Replace with Iterators.contains
-			if (nodes.contains(va) /*|| nodes.contains(vb)*/) {
-				return to;
-			}
-		} else if (event == EventType.SPLIT) {
+		if (isSplitEvent()) {
 			// TODO: Replace with Iterators.contains
 			if (nodes.contains(va)) {
 				return to;
 			}
 		} else {
-			throw new RuntimeException("Wrong event type");
+			// TODO: Replace with Iterators.contains
+			if (nodes.contains(va) /*|| nodes.contains(vb)*/) {
+				return to;
+			}
 		}
 		return currentNode;
 	}
@@ -103,4 +92,19 @@ public class SkeletonEvent extends Point2D implements Comparable<SkeletonEvent> 
 		return 0;
 	}
 
+	void setOppositeEdgeStartMovementHead(Node oppositeEdgeStartMovementHead) {
+		this.oppositeEdgeStartMovementHead = oppositeEdgeStartMovementHead;
+	}
+
+	void setOppositeEdgeEndMovementHead(Node oppositeEdgeEndMovementHead) {
+		this.oppositeEdgeEndMovementHead = oppositeEdgeEndMovementHead;
+	}
+
+	public Node getOppositeEdgeStartMovementHead() {
+		return oppositeEdgeStartMovementHead;
+	}
+
+	public Node getOppositeEdgeEndMovementHead() {
+		return oppositeEdgeEndMovementHead;
+	}
 }

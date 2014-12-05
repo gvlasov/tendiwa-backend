@@ -29,25 +29,27 @@ public final class SecondaryRoadNetworkBlock extends EnclosedBlock {
 		this.outline = ImmutableList.copyOf(outline);
 	}
 
-	public Set<BlockRegion> shrinkToRegions(double depth, int seed) {
+	public List<BlockRegion> shrinkToRegions(double depth, int seed) {
 		UndirectedGraph<Point2D, Segment2D> cap;
 		try {
 			cap = new SuseikaStraightSkeleton(outline).cap(depth);
 		} catch (GeometryException e) {
-			return ImmutableSet.of();
+			return ImmutableList.of();
 		}
 		MinimumCycleBasis<Point2D, Segment2D> basis = new MinimumCycleBasis<>(
 			cap,
 			Point2DVertexPositionAdapter.get()
 		);
-		Set<BlockRegion> blocks = basis
+		//		assert blocks.size() > 0;
+		return basis
 			.minimalCyclesSet()
 			.stream()
 			.map(cycle -> new BlockRegion(cycle.vertexList(), seed))
-			.collect(Collectors.toSet());
-//		assert blocks.size() > 0;
-		return blocks;
+			.collect(Collectors.toList());
 	}
 
-
+	@Override
+	public String toString() {
+		return "Block from "+outline.get(0);
+	}
 }

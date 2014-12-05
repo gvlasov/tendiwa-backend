@@ -15,6 +15,7 @@ import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.graphs.MinimumCycleBasis;
 
 import java.awt.Color;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -25,7 +26,7 @@ import static java.util.stream.Collectors.toSet;
  * Divides space inside a network into enclosed blocks.
  */
 class NetworkToBlocks {
-	private final Set<SecondaryRoadNetworkBlock> enclosedBlocks;
+	private final List<SecondaryRoadNetworkBlock> enclosedBlocks;
 
 	NetworkToBlocks(
 		UndirectedGraph<Point2D, Segment2D> relevantNetwork,
@@ -80,14 +81,14 @@ class NetworkToBlocks {
 			.minimalCyclesSet()
 			.stream()
 			.map(cycle -> new SecondaryRoadNetworkBlock(cycle.vertexList()))
-			.collect(toSet());
+			.collect(toList());
 	}
 
 	private boolean areAllEdgesOfDegree1(Set<DirectionFromPoint> filamentEnds, UndirectedGraph<Point2D, Segment2D> r) {
 		return filamentEnds.stream().allMatch(e -> r.degreeOf(e.node) == 1);
 	}
 
-	public Set<SecondaryRoadNetworkBlock> getEnclosedBlocks() {
+	public List<SecondaryRoadNetworkBlock> getEnclosedBlocks() {
 		return enclosedBlocks;
 	}
 

@@ -11,7 +11,7 @@ import java.util.*;
 
 import static org.tendiwa.geometry.extensions.straightSkeleton.CycleExtraVerticesRemover.removeVerticesOnLineBetweenNeighbors;
 
-class ListOfActiveVertices {
+class InitialListOfActiveVertices {
 	final LinkedList<Node> nodes = new LinkedList<>();
 	final List<Segment2D> edges;
 	private final int size;
@@ -20,7 +20,7 @@ class ListOfActiveVertices {
 	 * @param vertices
 	 * 	List of points going counter-clockwise.
 	 */
-	ListOfActiveVertices(List<Point2D> vertices, DrawableInto canvas) {
+	InitialListOfActiveVertices(List<Point2D> vertices, DrawableInto canvas) {
 		vertices = removeVerticesOnLineBetweenNeighbors(vertices);
 		edges = createEdgesBetweenVertices(vertices, canvas);
 		assert vertices.size() == edges.size();

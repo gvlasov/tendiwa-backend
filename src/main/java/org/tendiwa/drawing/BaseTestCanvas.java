@@ -3,7 +3,6 @@ package org.tendiwa.drawing;
 import com.google.inject.Inject;
 import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.CellSegment;
-import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Rectangle;
 
 import javax.swing.*;
@@ -90,7 +89,7 @@ class BaseTestCanvas implements DrawableInto {
 		panel.addMouseListener(new MouseListener() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				System.out.println(getClickCoordinatesAsString(e));
+				System.out.println(clickOutput(e));
 			}
 
 			@Override
@@ -122,10 +121,14 @@ class BaseTestCanvas implements DrawableInto {
 	 * @param e
 	 * @return "x:y"
 	 */
-	private String getClickCoordinatesAsString(MouseEvent e) {
+	private String clickOutput(MouseEvent e) {
 		return "point.chebyshovDistanceTo(new Point2D("
-			+(pixelBounds.x + e.getX()) / scale + "," + (pixelBounds.y + e.getY()) / scale
-			+")<1.5";
+			+ (pixelBounds.x + e.getX()) / scale + "," + (pixelBounds.y + e.getY()) / scale
+			+ ")<1.5";
+	}
+
+	private String getClickCoordinatesAsString(MouseEvent e) {
+		return (pixelBounds.x + e.getX()) / scale + "," + (pixelBounds.y + e.getY()) / scale;
 	}
 
 	public void close() {

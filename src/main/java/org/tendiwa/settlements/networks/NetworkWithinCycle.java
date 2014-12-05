@@ -8,6 +8,7 @@ import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.MinimalCycle;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
@@ -145,7 +146,7 @@ public final class NetworkWithinCycle {
 	}
 
 
-	public Set<SecondaryRoadNetworkBlock> enclosedBlocks() {
+	public List<SecondaryRoadNetworkBlock> enclosedBlocks() {
 		return blockDivision.getEnclosedBlocks();
 	}
 

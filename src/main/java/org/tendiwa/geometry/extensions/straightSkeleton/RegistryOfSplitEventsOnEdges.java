@@ -16,10 +16,10 @@ class RegistryOfSplitEventsOnEdges {
 	private final Map<Segment2D, TreeSet<SplitEventOnEdge>> edgesToSplitNodes = new HashMap<>();
 	private final Map<Segment2D, Node> originalEdgeStarts = new HashMap<>();
 	private final Map<Segment2D, Node> originalEdgeEnds = new HashMap<>();
-	private final MovementRegistry movementRegistry;
+	private final NodeFlowRegistry nodeFlowRegistry;
 
-	RegistryOfSplitEventsOnEdges(LinkedList<Node> nodes, MovementRegistry movementRegistry) {
-		this.movementRegistry = movementRegistry;
+	RegistryOfSplitEventsOnEdges(LinkedList<Node> nodes, NodeFlowRegistry nodeFlowRegistry) {
+		this.nodeFlowRegistry = nodeFlowRegistry;
 		for (Node node : nodes) {
 			initOriginalEdge(node.currentEdge, node);
 		}
@@ -46,7 +46,7 @@ class RegistryOfSplitEventsOnEdges {
 		).node;
 		if (node1 == null) {
 			assert originalEdgeStarts.containsKey(edge);
-			return movementRegistry.getByOriginalEdge(originalEdgeStarts.get(edge).currentEdge).getHead();
+			return nodeFlowRegistry.getChainByTail(originalEdgeStarts.get(edge)).getHead();
 		} else {
 			return node1;
 		}
@@ -66,7 +66,7 @@ class RegistryOfSplitEventsOnEdges {
 		}
 		if (node1 == null) {
 			assert originalEdgeEnds.containsKey(edge);
-			return movementRegistry.getByOriginalEdge(originalEdgeEnds.get(edge).currentEdge).getHead();
+			return nodeFlowRegistry.getChainByTail(originalEdgeEnds.get(edge)).getHead();
 		} else {
 			return node1;
 		}
@@ -75,6 +75,7 @@ class RegistryOfSplitEventsOnEdges {
 	private void initOriginalEdge(Segment2D edge, Node node) {
 		assert edge != null;
 		assert node.next != null;
+		// TODO: Remove unused tree set?
 		TreeSet<SplitEventOnEdge> set = new TreeSet<>(
 			(o1, o2) -> {
 				if (o1 == o2) {

@@ -74,13 +74,14 @@ public class DrawingGraph {
 		final Color color
 	) {
 		return (shape, canvas) -> {
+			DrawingAlgorithm<Segment2D> how = DrawingSegment2D.withColorThin(color);
 			for (org.tendiwa.geometry.Segment2D e : shape.edgeSet()) {
 				Point2D source = shape.getEdgeSource(e);
 				Point2D target = shape.getEdgeTarget(e);
-				Line2D.Double shape1 = new Line2D.Double(source.x, source.y, target.x, target.y);
-				canvas.drawShape(
+				Segment2D shape1 = Segment2D.create(source.x, source.y, target.x, target.y);
+				canvas.draw(
 					shape1,
-					color
+					how
 				);
 			}
 		};

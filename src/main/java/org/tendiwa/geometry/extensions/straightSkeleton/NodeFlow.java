@@ -11,11 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * {@link Node} produces a chain of {@link Node}s as edges collapse.
- * {@link org.tendiwa.geometry.extensions.straightSkeleton.NodeMovement} holds the end of such chain and remembers
- * which nodes observe {@link Node}'s movement.
+ * Represents a chain of parent {@link Node}s. Chain has a tail and a head, and head can be changes. Observers of the
+ * chain are notified when chain's head is changed.
  */
-final class NodeMovement {
+final class NodeFlow {
 	/**
 	 * First node in the chain.
 	 * <p>
@@ -31,37 +30,38 @@ final class NodeMovement {
 	static DrawableInto canvas;
 	private List<SkeletonEvent> endObservers = new ArrayList<>(1);
 
-	NodeMovement(Node start) {
+	NodeFlow(Node start) {
 		assert start != null;
 		this.tail = start;
 		this.head = start;
 	}
 
 	/**
-	 * Moves chain's head to {@code newEnd}
+	 * Moves chain's head to {@code newHead}
 	 *
-	 * @param newEnd
+	 * @param newHead
 	 * 	New chain head.
 	 */
-	void moveTo(Node newEnd) {
-		if (head.vertex.distanceTo(newEnd.vertex) > 0) {
-			drawMovement(newEnd);
+	void changeHead(Node newHead) {
+		if (head.vertex.distanceTo(newHead.vertex) > 0) {
+//			drawMovement(newHead);
 		}
 
-		assert newEnd != null;
-		assert newEnd != tail;
-		if (tail.vertex.chebyshovDistanceTo(new Point2D(331, 703)) < 1.3) {
-			TestCanvas.canvas.draw(
-				new Segment2D(head.vertex, newEnd.vertex), DrawingSegment2D.withColorThin(Color.magenta)
-			);
-			System.out.println(1);
-		}
-		this.head = newEnd;
+		assert newHead != null;
+		assert newHead != tail;
+		assert !newHead.isProcessed();
+		this.head = newHead;
+
 		for (SkeletonEvent observer : startObservers) {
-			observer.changeOppositeEdgeStart(tail, newEnd);
+			if (newHead.isInTheSameLav(observer.va)) {
+				observer.setOppositeEdgeStartMovementHead(newHead);
+			}
+			// TODO: Remove observer if it is found that a node moved to another lav?
 		}
 		for (SkeletonEvent observer : endObservers) {
-			observer.changeOppositeEdgeEnd(tail, newEnd);
+			if (newHead.isInTheSameLav(observer.va)) {
+				observer.setOppositeEdgeEndMovementHead(newHead);
+			}
 		}
 	}
 
@@ -91,6 +91,7 @@ final class NodeMovement {
 	public void addEndObserver(SkeletonEvent skeletonEvent) {
 		endObservers.add(skeletonEvent);
 	}
+
 //	/**
 //	 * Notifies previously computed split events of change in their start points.
 //	 *

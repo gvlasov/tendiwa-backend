@@ -10,6 +10,8 @@ import org.tendiwa.settlements.networks.EnclosedCyclesSet;
 import org.tendiwa.settlements.networks.RoadsPlanarGraphModel;
 
 import java.awt.Color;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -22,12 +24,12 @@ public final class RectangularBuildingLots {
 		RoadsPlanarGraphModel roadsPlanarGraphModel
 	) {
 		EnclosedCyclesSet enclosedCycles = new EnclosedCyclesSet(roadsPlanarGraphModel);
-		Set<EnclosedBlock> encBlocks = roadsPlanarGraphModel.getNetworks()
+		List<EnclosedBlock> encBlocks = roadsPlanarGraphModel.getNetworks()
 			.stream()
 			.flatMap(n -> n.enclosedBlocks().stream().filter(b -> !enclosedCycles.contains(b)))
 			.flatMap(b -> b.shrinkToRegions(3.3, 0).stream())
 			.flatMap(b -> b.subdivideLots(16, 16, 0.5).stream())
-			.collect(Collectors.toSet());
+			.collect(Collectors.toList());
 
 //		Iterator<Color> colors = Iterators.cycle(Color.magenta, Color.cyan, Color.orange);
 //		encBlocks

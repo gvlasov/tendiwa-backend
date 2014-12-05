@@ -88,7 +88,7 @@ public class PolygonShrinker {
 
 		Map<Segment2D, Iterable<Segment2D>> edgeToFace = new HashMap<>();
 
-//		TestCanvas.canvas.draw(graph, DrawingGraph.withColorAndAntialiasing(Color.blue));
+//		TestCanvas.canvas.draw(graph, DrawingGraph.withColorAndAntialiasing(Color.yellow));
 		for (MinimalCycle<Point2D, Segment2D> cycle : basis.minimalCyclesSet()) {
 			Segment2D originalFaceEdge = findUnusedEdgeForFace(
 				unusedEdges,
@@ -97,9 +97,12 @@ public class PolygonShrinker {
 			assert !edgeToFace.containsKey(originalFaceEdge) : originalFaceEdge;
 			// None of faces may include more than 1 original edge.
 			// http://twak.blogspot.ru/2011/01/degeneracy-in-weighted-straight.html Ctrl+F parallel consecutive edge
-			assert Lists.newArrayList(cycle).stream().allMatch(p -> !unusedEdges.contains(p)) : "Not all edges of " +
-				"straight skeleton could be constructed; presumably because at some stage of skeleton construction 2 " +
-				"parallel edges become adjacent; please draw the graph to make sure";
+			boolean allMatch = Lists.newArrayList(cycle).stream().allMatch(p -> !unusedEdges.contains(p));
+			if (!allMatch) {
+				assert false : "Not all edges of " +
+					"straight skeleton could be constructed; presumably because at some stage of skeleton construction 2 " +
+					"parallel edges become adjacent; please draw the graph to make sure";
+			}
 			edgeToFace.put(originalFaceEdge, cycle);
 		}
 		return edgeToFace;

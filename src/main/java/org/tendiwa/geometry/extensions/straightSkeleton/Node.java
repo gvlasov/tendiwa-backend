@@ -1,19 +1,23 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import org.tendiwa.drawing.DrawableInto;
-import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingPoint2D;
 import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 
 import java.awt.Color;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import static org.tendiwa.geometry.Vectors2D.perpDotProduct;
 
+/**
+ * A node in a circular list of active vertices.
+ */
 class Node implements Iterable<Node> {
 	Bisector bisector;
 	private boolean isProcessed = false; // As said in 1a in [Obdrzalek 1998, paragraph 2.1]
@@ -82,6 +86,9 @@ class Node implements Iterable<Node> {
 		this.previous = previous;
 		previous.next = this;
 	}
+	boolean isInLavOf2Nodes() {
+		return next.next == this;
+	}
 
 	/**
 	 * Iterates over the current LAV of the node. All the nodes iterated upon are non-processed.
@@ -137,9 +144,7 @@ class Node implements Iterable<Node> {
 	 * @return true if this node and another node are in the same LAV, false otherwise.
 	 */
 	public boolean isInTheSameLav(Node node) {
-		// TODO: This is too heavy
-//		assert ImmutableList.copyOf(node).contains(this) == ImmutableList.copyOf(this).contains(node);
-		return ImmutableList.copyOf(this).contains(node);
+		return Iterables.contains(this, node);
 	}
 
 }
