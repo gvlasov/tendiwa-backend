@@ -22,6 +22,7 @@ class Node implements Iterable<Node> {
 	Bisector bisector;
 	private boolean isProcessed = false; // As said in 1a in [Obdrzalek 1998, paragraph 2.1]
 	boolean isReflex;
+	// TODO: Don't store previous edge, use current edge of the previous node.
 	Segment2D previousEdge;
 	Segment2D currentEdge;
 	Node next;
@@ -86,6 +87,7 @@ class Node implements Iterable<Node> {
 		this.previous = previous;
 		previous.next = this;
 	}
+
 	boolean isInLavOf2Nodes() {
 		return next.next == this;
 	}
@@ -113,9 +115,12 @@ class Node implements Iterable<Node> {
 			public Node next() {
 				node = node.next;
 				if (node.isProcessed()) {
-					drawLav();
-					canvas.draw(node.vertex, DrawingPoint2D.withColorAndSize(Color.green, 2));
-					canvas.draw(start.vertex, DrawingPoint2D.withColorAndSize(Color.yellow, 2));
+					Node current = start;
+					do {
+						canvas.draw(new Segment2D(current.vertex, current.next.vertex), DrawingSegment2D
+							.withColorDirected(Color.cyan, 0.5));
+						current = current.next;
+					} while (current != node);
 					throw new RuntimeException("Node not in lav");
 				}
 				if (++i > 100) {

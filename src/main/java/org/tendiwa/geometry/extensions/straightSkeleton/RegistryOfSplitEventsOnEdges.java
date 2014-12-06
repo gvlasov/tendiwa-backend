@@ -4,12 +4,15 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Vector2D;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.TreeSet;
 
 import static org.tendiwa.geometry.Vector2D.fromStartToEnd;
 
 /**
- * Tracks what edges are split by what split events. Keeps all split events on an edge sorted by length of projection
+ * Tracks which edges are split by which split events. Keeps all split events on an edge sorted by length of projection
  * of event-edge.start on edge.
  */
 class RegistryOfSplitEventsOnEdges {
@@ -46,7 +49,7 @@ class RegistryOfSplitEventsOnEdges {
 		).node;
 		if (node1 == null) {
 			assert originalEdgeStarts.containsKey(edge);
-			return nodeFlowRegistry.getChainByTail(originalEdgeStarts.get(edge)).getHead();
+			return nodeFlowRegistry.getChainByOriginalTail(originalEdgeStarts.get(edge)).getHead();
 		} else {
 			return node1;
 		}
@@ -66,7 +69,7 @@ class RegistryOfSplitEventsOnEdges {
 		}
 		if (node1 == null) {
 			assert originalEdgeEnds.containsKey(edge);
-			return nodeFlowRegistry.getChainByTail(originalEdgeEnds.get(edge)).getHead();
+			return nodeFlowRegistry.getChainByOriginalTail(originalEdgeEnds.get(edge)).getHead();
 		} else {
 			return node1;
 		}

@@ -24,6 +24,7 @@ import java.util.Objects;
  */
 class BaseTestCanvas implements DrawableInto {
 	private static final AffineTransform defaultTransform = new AffineTransform();
+	private final BasicStroke singleWidthStroke;
 	public static DrawableInto canvas;
 
 	static {
@@ -113,6 +114,7 @@ class BaseTestCanvas implements DrawableInto {
 			}
 		});
 		setLayer(DEFAULT_LAYER);
+		singleWidthStroke = new BasicStroke(1f / scale);
 	}
 
 	/**
@@ -253,7 +255,6 @@ class BaseTestCanvas implements DrawableInto {
 			);
 			graphics = image.createGraphics();
 			graphics.setBackground(new Color(255, 255, 255, 1));
-			graphics.setStroke(new BasicStroke(0.2f));
 			component = new JComponent() {
 				private static final long serialVersionUID = 1L;
 
@@ -336,6 +337,7 @@ class BaseTestCanvas implements DrawableInto {
 		g2d.setTransform(transform);
 		g2d.fill(shape);
 		g2d.setTransform(defaultTransform);
+		g2d.setStroke(singleWidthStroke);
 	}
 
 	@Override
@@ -349,6 +351,7 @@ class BaseTestCanvas implements DrawableInto {
 		g2d.setTransform(transform);
 		g2d.draw(shape);
 		g2d.setTransform(defaultTransform);
+		g2d.setStroke(singleWidthStroke);
 	}
 
 	@Override

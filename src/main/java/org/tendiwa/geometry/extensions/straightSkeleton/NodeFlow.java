@@ -1,9 +1,7 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
 import org.tendiwa.drawing.DrawableInto;
-import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingSegment2D;
-import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 
 import java.awt.Color;
@@ -44,7 +42,7 @@ final class NodeFlow {
 	 */
 	void changeHead(Node newHead) {
 		if (head.vertex.distanceTo(newHead.vertex) > 0) {
-//			drawMovement(newHead);
+			drawMovement(newHead);
 		}
 
 		assert newHead != null;
@@ -53,13 +51,13 @@ final class NodeFlow {
 		this.head = newHead;
 
 		for (SkeletonEvent observer : startObservers) {
-			if (newHead.isInTheSameLav(observer.va)) {
+			if (newHead.isInTheSameLav(observer.leftParent)) {
 				observer.setOppositeEdgeStartMovementHead(newHead);
 			}
 			// TODO: Remove observer if it is found that a node moved to another lav?
 		}
 		for (SkeletonEvent observer : endObservers) {
-			if (newHead.isInTheSameLav(observer.va)) {
+			if (newHead.isInTheSameLav(observer.leftParent)) {
 				observer.setOppositeEdgeEndMovementHead(newHead);
 			}
 		}
@@ -71,7 +69,7 @@ final class NodeFlow {
 				head.vertex,
 				newEnd.vertex
 			),
-			DrawingSegment2D.withColorDirected(Color.blue)
+			DrawingSegment2D.withColorDirected(Color.blue, .2)
 		);
 	}
 
@@ -109,7 +107,7 @@ final class NodeFlow {
 //			TODO: Do we have to copy observers?
 //			We have to copy observers because otherwise that list
 //			will be concurrently modified inside this loop.
-//			if (lav.contains(intersection.va)) {
+//			if (lav.contains(intersection.leftParent)) {
 //				intersection.changeOppositeEdgeStart(head, nextNode);
 //			}
 //		}

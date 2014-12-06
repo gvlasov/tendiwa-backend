@@ -29,7 +29,7 @@ class NodeFlowRegistry {
 	 * 	A node that was constructed at {@link InitialListOfActiveVertices}
 	 * @return Movement whose tail is the specified node.
 	 */
-	NodeFlow getChainByTail(Node tail) {
+	NodeFlow getChainByOriginalTail(Node tail) {
 		assert chainByTail.containsKey(tail);
 		return chainByTail.get(tail);
 	}
@@ -43,13 +43,14 @@ class NodeFlowRegistry {
 	 */
 	NodeFlow getChainByHead(Node head) {
 		try {
-			return drains.get(head).getInitialThread();
+			return drains.get(head).getOriginalFlow();
 		}catch (NullPointerException e) {
 			throw new RuntimeException();
 		}
 	}
 
 	void move(Node oldHead, Node newHead) {
+		assert drains.containsKey(oldHead);
 		NodeDrain atCurrentHead = drains.get(oldHead);
 		if (drains.containsKey(newHead)) {
 			drains.get(newHead).combineWith(atCurrentHead);
@@ -98,7 +99,7 @@ class NodeFlowRegistry {
 		}
 
 
-		NodeFlow getInitialThread() {
+		NodeFlow getOriginalFlow() {
 			return movements.getFirst();
 		}
 	}

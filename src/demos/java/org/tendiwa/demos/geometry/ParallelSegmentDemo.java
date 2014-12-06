@@ -21,9 +21,9 @@ public class ParallelSegmentDemo implements Runnable {
 	@Override
 	public void run() {
 		Segment2D segment = Segment2D.create(20, 30, 70, 105);
-		canvas.draw(segment, DrawingSegment2D.withColorDirected(Color.red));
-		canvas.draw(segment.createParallelSegment(10, true), DrawingSegment2D.withColorDirected(Color.blue));
-		canvas.draw(segment.createParallelSegment(20, false), DrawingSegment2D.withColorDirected(Color.green));
+		canvas.draw(segment, DrawingSegment2D.withColorDirected(Color.red, 3));
+		canvas.draw(segment.createParallelSegment(10, true), DrawingSegment2D.withColorDirected(Color.blue, 3));
+		canvas.draw(segment.createParallelSegment(20, false), DrawingSegment2D.withColorDirected(Color.green, 3));
 		System.out.println(segment.createParallelSegment(10, true));
 	}
 }
