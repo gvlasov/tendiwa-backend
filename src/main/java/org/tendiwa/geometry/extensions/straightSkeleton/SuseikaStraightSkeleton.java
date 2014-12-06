@@ -224,23 +224,23 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 //		}
 //		if (!hasPairOf(point.rightParent)) {
 //		}
-		if (hasPairOf(point.rightParent)) {
-			Node parentPair = pairOf(point.rightParent);
-			if (!parentPair.isProcessed()) {
-				nodeFlowRegistry.split(point.leftParent, node, parentPair);
-			}
-//			nodeFlowRegistry.move(parentPair, node);
-		} else  if (hasPairOf(point.leftParent)) {
-			Node parentPair = pairOf(point.leftParent);
-			if (!parentPair.isProcessed()) {
-				nodeFlowRegistry.split(node, parentPair, parentPair);
-			}
-//			nodeFlowRegistry.move(parentPair, node);
-		} else {
-			assert hasPairOf(point.rightParent) ^ hasPairOf(point.leftParent);
+//		if (hasPairOf(point.rightParent)) {
+//			Node parentPair = pairOf(point.rightParent);
+//			if (!parentPair.isProcessed()) {
+//				nodeFlowRegistry.split(point.leftParent, node, parentPair);
+//			}
+////			nodeFlowRegistry.move(parentPair, node);
+//		} else  if (hasPairOf(point.leftParent)) {
+//			Node parentPair = pairOf(point.leftParent);
+//			if (!parentPair.isProcessed()) {
+//				nodeFlowRegistry.split(node, parentPair, parentPair);
+//			}
+////			nodeFlowRegistry.move(parentPair, node);
+//		} else {
+//			assert hasPairOf(point.rightParent) ^ hasPairOf(point.leftParent);
 			nodeFlowRegistry.move(point.leftParent, node);
 			nodeFlowRegistry.move(point.rightParent, node);
-		}
+//		}
 
 		// Convex 2f
 		SkeletonEvent e = computeNearerBisectorsIntersection(node);
