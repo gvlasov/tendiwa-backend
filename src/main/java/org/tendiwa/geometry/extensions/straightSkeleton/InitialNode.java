@@ -17,4 +17,13 @@ class InitialNode extends Node {
 		previousEdgeStart = node;
 	}
 
+	@Override
+	boolean isSplitRightNode() {
+		return false;
+	}
+
+	@Override
+	boolean isSplitLeftNode() {
+		return false;
+	}
 }

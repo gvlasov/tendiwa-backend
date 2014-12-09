@@ -117,15 +117,17 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		// Non-convex 2e
 
 		// Split event produces two nodes at the same point, and those two nodes have distinct LAVs.
-		Node leftNode = new Node(
+		Node leftNode = new SpiltNode(
 			point,
 			point.leftParent().previousEdgeStart,
-			point.getOppositeEdgeEndMovementHead().previous().currentEdgeStart
+			point.getOppositeEdgeEndMovementHead().previous().currentEdgeStart,
+			true
 		);
-		Node rightNode = new Node(
+		Node rightNode = new SpiltNode(
 			point,
 			point.getOppositeEdgeEndMovementHead().previousEdgeStart,
-			point.leftParent().currentEdgeStart
+			point.leftParent().currentEdgeStart,
+			false
 		);
 
 		Node leftLavNextNode;
@@ -212,7 +214,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		outputArc(point.rightParent().vertex, point);
 
 		// Convex 2e
-		Node node = new Node(
+		Node node = new ShrinkedNode(
 			point,
 			point.leftParent().previousEdgeStart,
 			point.rightParent().currentEdgeStart
@@ -225,10 +227,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		point.rightParent().setProcessed();
 		boolean hasLeftPair = hasPairOf(point.leftParent());
 		boolean hasRightPair = hasPairOf(point.rightParent());
-		if (areFlowTailsNeighborsInInitialLav(point)) {
-			nodeFlowRegistry.move(point.leftParent(), node);
-			nodeFlowRegistry.move(point.rightParent(), node);
-		} else {
+		if (shouldHeadJump(point)) {
 			if (!hasLeftPair) {
 				// Move beginnings only to edge event nodes.
 				nodeFlowRegistry.move(point.rightParent(), node);
@@ -250,6 +249,9 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 //				}
 				nodeFlowRegistry.move(point.rightParent(), parentPair);
 			}
+		} else {
+			nodeFlowRegistry.move(point.leftParent(), node);
+			nodeFlowRegistry.move(point.rightParent(), node);
 		}
 
 		// Convex 2f
@@ -259,10 +261,13 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		}
 	}
 
-	private boolean areFlowTailsNeighborsInInitialLav(SkeletonEvent point) {
-		return point.leftParent().currentEdgeStart == point.rightParent().currentEdgeStart
-			|| point.rightParent().currentEdgeStart == point.leftParent().previousEdgeStart;
+	private boolean shouldHeadJump(SkeletonEvent point) {
+		return point.leftParent().isSplitLeftNode() && !pairOf(point.leftParent()).isProcessed()
+			||
+//			return
+			point.rightParent().isSplitRightNode() && !pairOf(point.rightParent()).isProcessed();
 	}
+
 
 	private void connectLast3SegmentsOfLav(SkeletonEvent point) {
 		outputArc(point.leftParent().vertex, point);

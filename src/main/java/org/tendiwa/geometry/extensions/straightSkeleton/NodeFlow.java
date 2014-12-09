@@ -42,7 +42,7 @@ final class NodeFlow {
 	 */
 	void changeHead(Node newHead) {
 		if (head.vertex.distanceTo(newHead.vertex) > 0) {
-//			drawMovement(newHead);
+			drawMovement(newHead);
 		}
 
 		assert newHead != null;

@@ -18,7 +18,7 @@ import static org.tendiwa.geometry.Vectors2D.perpDotProduct;
 /**
  * A node in a circular list of active vertices.
  */
-class Node implements Iterable<Node> {
+abstract class Node implements Iterable<Node> {
 	Bisector bisector;
 	private boolean isProcessed = false; // As said in 1a in [Obdrzalek 1998, paragraph 2.1]
 	boolean isReflex;
@@ -72,6 +72,8 @@ class Node implements Iterable<Node> {
 	public boolean isProcessed() {
 		return isProcessed;
 	}
+	abstract boolean isSplitRightNode();
+	abstract boolean isSplitLeftNode();
 
 	public void computeReflexAndBisector() {
 		assert bisector == null;
