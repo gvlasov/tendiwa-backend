@@ -13,7 +13,7 @@ class NodeFlowRegistry {
 	private final Map<Node, NodeDrain> drains = new HashMap<>();
 	private final Map<Node, NodeFlow> chainByTail;
 
-	NodeFlowRegistry(List<Node> tails) {
+	NodeFlowRegistry(List<? extends Node> tails) {
 		chainByTail = new HashMap<>(tails.size());
 		for (Node node : tails) {
 			NodeFlow movement = new NodeFlow(node);

@@ -18,16 +18,20 @@ import java.util.Iterator;
 public class SkeletonEvent extends Point2D implements Comparable<SkeletonEvent> {
 	final double distanceToOriginalEdge;
 	static DrawableInto canvas;
+
+
 	/**
 	 * <i>v<sub>a</sub></i> in [Obdrzalek 1998]
 	 */
-	final Node leftParent;
+	private final Node leftParent;
+
+
 	/**
 	 * <i>v<sub>b</sub></i> in [Obdrzalek 1998]
 	 * <p>
 	 * {@code rightParent == null} means it is a split event, otherwise it is an edge event
 	 */
-	final Node rightParent;
+	private final Node rightParent;
 	static Iterator<Color> colors = Iterators.cycle(Color.orange, Color.blue, Color.magenta, Color.black);
 	private Node oppositeEdgeStartMovementHead;
 	private Node oppositeEdgeEndMovementHead;
@@ -54,6 +58,14 @@ public class SkeletonEvent extends Point2D implements Comparable<SkeletonEvent> 
 		this.leftParent = leftParent;
 		this.rightParent = rightParent;
 //		assert oppositeEdgeStartMovement.getTail() == oppositeEdgeStartMovement.getHead();
+	}
+	public Node leftParent() {
+		assert leftParent != null;
+		return leftParent;
+	}
+	public Node rightParent() {
+		assert rightParent != null;
+		return rightParent;
 	}
 
 	boolean isSplitEvent() {

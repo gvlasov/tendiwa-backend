@@ -22,20 +22,44 @@ class Node implements Iterable<Node> {
 	Bisector bisector;
 	private boolean isProcessed = false; // As said in 1a in [Obdrzalek 1998, paragraph 2.1]
 	boolean isReflex;
-	// TODO: Don't store previous edge, use current edge of the previous node.
-	Segment2D previousEdge;
-	Segment2D currentEdge;
-	Node next;
-	Node previous;
+	private Node next;
+	private Node previous;
+	protected InitialNode currentEdgeStart;
+	protected InitialNode previousEdgeStart;
+	protected Segment2D currentEdge;
 	final Point2D vertex;
 	static DrawableInto canvas;
 
-	Node(Segment2D previousEdge, Segment2D currentEdge, Point2D point) {
-		assert !previousEdge.equals(currentEdge);
-		assert !(previousEdge.end.equals(currentEdge.start) && previousEdge.isParallel(currentEdge));
-		this.previousEdge = previousEdge;
-		this.currentEdge = currentEdge;
-		this.vertex = point;
+	Node(Point2D point, InitialNode previousEdgeStart, InitialNode currentEdgeStart) {
+		this(point);
+		currentEdge = currentEdgeStart.currentEdge;
+		this.currentEdgeStart = currentEdgeStart;
+		this.previousEdgeStart = previousEdgeStart;
+		assert !previousEdge().equals(currentEdge()) : previousEdge();
+		assert !(previousEdge().equals(currentEdge())
+			&& previousEdge().isParallel(previousEdge()));
+	}
+
+	protected Node(Point2D vertex) {
+		this.vertex = vertex;
+	}
+
+	Node next() {
+		assert next != null;
+		return next;
+	}
+
+	Node previous() {
+		assert previous != null;
+		return previous;
+	}
+
+	Segment2D previousEdge() {
+		return previousEdgeStart.currentEdge;
+	}
+
+	public Segment2D currentEdge() {
+		return currentEdgeStart.currentEdge;
 	}
 
 	/**
@@ -45,7 +69,7 @@ class Node implements Iterable<Node> {
 		isProcessed = true;
 	}
 
-	boolean isProcessed() {
+	public boolean isProcessed() {
 		return isProcessed;
 	}
 
@@ -57,7 +81,7 @@ class Node implements Iterable<Node> {
 			vertex,
 			next.vertex
 		);
-		bisector = new Bisector(previousEdge, currentEdge, vertex, isReflex);
+		bisector = new Bisector(previousEdgeStart.currentEdge, currentEdgeStart.currentEdge, vertex, isReflex);
 	}
 
 	/**
@@ -81,14 +105,14 @@ class Node implements Iterable<Node> {
 	}
 
 
-	void connectWithPrevious(Node previous) {
+	public void setPreviousInLav(Node previous) {
 		assert previous != this;
 		assert previous != null;
 		this.previous = previous;
 		previous.next = this;
 	}
 
-	boolean isInLavOf2Nodes() {
+	public boolean isInLavOf2Nodes() {
 		return next.next == this;
 	}
 
@@ -148,7 +172,7 @@ class Node implements Iterable<Node> {
 	 * 	Another node.
 	 * @return true if this node and another node are in the same LAV, false otherwise.
 	 */
-	public boolean isInTheSameLav(Node node) {
+	boolean isInTheSameLav(Node node) {
 		return Iterables.contains(this, node);
 	}
 

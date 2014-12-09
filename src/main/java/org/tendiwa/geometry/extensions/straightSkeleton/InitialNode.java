@@ -1,11 +1,20 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
-import org.tendiwa.geometry.Point2D;
+import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawingPoint2D;
 import org.tendiwa.geometry.Segment2D;
 
-public class InitialNode extends Node {
+import java.awt.Color;
 
-	InitialNode(Point2D point) {
-		super(previousEdge, currentEdge, point);
+class InitialNode extends Node {
+	InitialNode(Segment2D edge) {
+		super(edge.start);
+		TestCanvas.canvas.draw(edge.start, DrawingPoint2D.withColorAndSize(Color.white, 1));
+		currentEdge = edge;
+		currentEdgeStart = this;
 	}
+	void setPreviousInitial(InitialNode node) {
+		previousEdgeStart = node;
+	}
+
 }

@@ -124,7 +124,7 @@ final class SecondaryRoadNetwork {
 	private void buildSegment2DNetwork(MinimalCycle<Point2D, Segment2D> cycle) {
 		Map<Segment2D, List<Point2D>> pointsOnPolygonBorder = startingPoints(cycle);
 		List<Point2D> startingPoints = concatListsToOneList(pointsOnPolygonBorder);
-		TestCanvas.canvas.drawAll(startingPoints, DrawingPoint2D.withColorAndSize(Color.red, 5));
+//		TestCanvas.canvas.drawAll(startingPoints, DrawingPoint2D.withColorAndSize(Color.red, 5));
 
 		int numberOfStartingPoints = startingPoints.size();
 		int[] randomPointIndices = IntegerPermutationGenerator.generateUsingFisherYates(

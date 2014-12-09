@@ -5,7 +5,7 @@ import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Vector2D;
 
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
@@ -16,70 +16,67 @@ import static org.tendiwa.geometry.Vector2D.fromStartToEnd;
  * of event-edge.start on edge.
  */
 class RegistryOfSplitEventsOnEdges {
-	private final Map<Segment2D, TreeSet<SplitEventOnEdge>> edgesToSplitNodes = new HashMap<>();
-	private final Map<Segment2D, Node> originalEdgeStarts = new HashMap<>();
-	private final Map<Segment2D, Node> originalEdgeEnds = new HashMap<>();
+	private final Map<Node, TreeSet<SplitEventOnEdge>> edgesToSplitNodes = new HashMap<>();
 	private final NodeFlowRegistry nodeFlowRegistry;
 
-	RegistryOfSplitEventsOnEdges(LinkedList<Node> nodes, NodeFlowRegistry nodeFlowRegistry) {
+	RegistryOfSplitEventsOnEdges(List<? extends Node> nodes, NodeFlowRegistry nodeFlowRegistry) {
 		this.nodeFlowRegistry = nodeFlowRegistry;
-		for (Node node : nodes) {
-			initOriginalEdge(node.currentEdge, node);
-		}
+		nodes.forEach(this::initOriginalEdge);
 	}
 
-	void addSplitNode(Segment2D edge, Node node, Orientation orientation) {
-		assert edgesToSplitNodes.containsKey(edge);
-		edgesToSplitNodes.get(edge).add(
+	void addSplitNode(Node oppositeEdgeStart, Node node, Orientation orientation) {
+		assert edgesToSplitNodes.containsKey(oppositeEdgeStart);
+		edgesToSplitNodes.get(oppositeEdgeStart).add(
 			new SplitEventOnEdge(
 				node,
 				orientation,
-				projectionOnEdge(node.vertex, edge)
+				projectionOnEdge(node.vertex, oppositeEdgeStart.currentEdge)
 			)
 		);
 	}
 
-	Node getNodeFromRight(Segment2D edge, Node node) {
-		Node node1 = edgesToSplitNodes.get(edge).lower(
+	Node getNodeFromRight(Node oppositeEdgeStart, Node node) {
+		Node node1 = edgesToSplitNodes.get(oppositeEdgeStart).lower(
 			new SplitEventOnEdge(
 				node,
 				Orientation.RIGHT,
-				projectionOnEdge(node.vertex, edge)
+				projectionOnEdge(node.vertex, oppositeEdgeStart.currentEdge)
 			)
 		).node;
 		if (node1 == null) {
-			assert originalEdgeStarts.containsKey(edge);
-			return nodeFlowRegistry.getChainByOriginalTail(originalEdgeStarts.get(edge)).getHead();
+			return nodeFlowRegistry.getChainByOriginalTail(oppositeEdgeStart).getHead();
 		} else {
 			return node1;
 		}
 	}
 
-	Node getNodeFromLeft(Segment2D edge, Node node) {
+	Node getNodeFromLeft(Node oppositeEdgeStart, Node node) {
 		Node node1 = null;
-		SplitEventOnEdge higher = edgesToSplitNodes.get(edge).higher(
-			new SplitEventOnEdge(
-				node,
-				Orientation.LEFT,
-				projectionOnEdge(node.vertex, edge)
-			)
-		);
+		SplitEventOnEdge higher = null;
+		try {
+			higher = edgesToSplitNodes.get(oppositeEdgeStart).higher(
+				new SplitEventOnEdge(
+					node,
+					Orientation.LEFT,
+					projectionOnEdge(node.vertex, oppositeEdgeStart.currentEdge)
+				)
+			);
+		}catch (NullPointerException e) {
+			assert false;
+		}
 		if (higher != null) {
 			node1 = higher.node;
 		}
 		if (node1 == null) {
-			assert originalEdgeEnds.containsKey(edge);
-			return nodeFlowRegistry.getChainByOriginalTail(originalEdgeEnds.get(edge)).getHead();
+			return nodeFlowRegistry.getChainByOriginalTail(oppositeEdgeStart).getHead();
 		} else {
 			return node1;
 		}
 	}
 
-	private void initOriginalEdge(Segment2D edge, Node node) {
-		assert edge != null;
-		assert node.next != null;
-		// TODO: Remove unused tree set?
-		TreeSet<SplitEventOnEdge> set = new TreeSet<>(
+	private void initOriginalEdge(Node node) {
+		assert node.next() != null;
+		edgesToSplitNodes.put(node, new TreeSet<>(
 			(o1, o2) -> {
 				if (o1 == o2) {
 					return 0;
@@ -93,11 +90,7 @@ class RegistryOfSplitEventsOnEdges {
 					return (int) Math.signum(o1.projectionLength - o2.projectionLength);
 				}
 			}
-		);
-
-		originalEdgeStarts.put(edge, node);
-		originalEdgeEnds.put(edge, node.next);
-		edgesToSplitNodes.put(edge, set);
+		));
 	}
 
 	private static double projectionOnEdge(Point2D vertex, Segment2D edge) {

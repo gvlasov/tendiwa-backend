@@ -59,13 +59,13 @@ class NetworkToBlocks {
 		MinimumCycleBasis<Point2D, Segment2D> basis = new MinimumCycleBasis<>(relevantNetwork, Point2DVertexPositionAdapter.get());
 		Set<MinimalCycle<Point2D, Segment2D>> what = basis.minimalCyclesSet();
 		TestCanvas.canvas.drawAll(what, DrawingMinimalCycle.withColor(Color.white, Point2DVertexPositionAdapter.get()));
-		TestCanvas.canvas.drawAll(what, (shape, canvas)->{
-			DrawingAlgorithm<Point2D> alg = DrawingPoint2D.withColorAndSize(Color.cyan, 1);
-			for (Point2D point2D : shape.vertexList()) {
-				canvas.draw(point2D, alg);
-			}
-
-		});
+//		TestCanvas.canvas.drawAll(what, (shape, canvas)->{
+//			DrawingAlgorithm<Point2D> alg = DrawingPoint2D.withColorAndSize(Color.cyan, 1);
+//			for (Point2D point2D : shape.vertexList()) {
+//				canvas.draw(point2D, alg);
+//			}
+//
+//		});
 		Set<Filament<Point2D, Segment2D>> lines = basis.filamentsSet();
 		for (Filament<Point2D, Segment2D> line : lines) {
 			for (Segment2D segment : line) {

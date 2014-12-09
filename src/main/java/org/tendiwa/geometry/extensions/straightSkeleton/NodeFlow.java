@@ -42,22 +42,24 @@ final class NodeFlow {
 	 */
 	void changeHead(Node newHead) {
 		if (head.vertex.distanceTo(newHead.vertex) > 0) {
-			drawMovement(newHead);
+//			drawMovement(newHead);
 		}
 
 		assert newHead != null;
 		assert newHead != tail;
-		assert !newHead.isProcessed();
+		if (newHead.isProcessed()) {
+			assert false;
+		}
 		this.head = newHead;
 
 		for (SkeletonEvent observer : startObservers) {
-			if (newHead.isInTheSameLav(observer.leftParent)) {
+			if (newHead.isInTheSameLav(observer.leftParent())) {
 				observer.setOppositeEdgeStartMovementHead(newHead);
 			}
 			// TODO: Remove observer if it is found that a node moved to another lav?
 		}
 		for (SkeletonEvent observer : endObservers) {
-			if (newHead.isInTheSameLav(observer.leftParent)) {
+			if (newHead.isInTheSameLav(observer.leftParent())) {
 				observer.setOppositeEdgeEndMovementHead(newHead);
 			}
 		}
@@ -69,7 +71,7 @@ final class NodeFlow {
 				head.vertex,
 				newEnd.vertex
 			),
-			DrawingSegment2D.withColorDirected(Color.blue, .2)
+			DrawingSegment2D.withColorDirected(Color.blue, 1)
 		);
 	}
 
