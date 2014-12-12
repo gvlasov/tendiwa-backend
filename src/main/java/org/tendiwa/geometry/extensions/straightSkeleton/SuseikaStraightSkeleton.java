@@ -98,6 +98,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		}
 		// Non-convex 2D
 		outputArc(point.parent().vertex, point);
+		canvas.draw(new Segment2D(point.parent().vertex, point), DrawingSegment2D.withColorThin(Color.red));
 		if (point.getOppositeEdgeStartMovementHead().isProcessed()) {
 //			canvas.draw(point.getOppositeEdgeStartMovementHead().bisector.segment, DrawingSegment2D.withColorThin(Color.orange));
 			canvas.draw(point.getOppositeEdgeStartMovementHead().currentEdge, DrawingSegment2D.withColorThin(Color.magenta));
@@ -207,6 +208,8 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		// Convex 2d
 		outputArc(point.leftParent().vertex, point);
 		outputArc(point.rightParent().vertex, point);
+		canvas.draw(new Segment2D(point.leftParent().vertex, point), DrawingSegment2D.withColorThin(Color.yellow));
+		canvas.draw(new Segment2D(point.rightParent().vertex, point), DrawingSegment2D.withColorThin(Color.yellow));
 
 		// Convex 2e
 		Node node = new ShrinkedNode(
@@ -234,10 +237,10 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 
 			}
 		} else {
-			point.leftParent().previousEdgeStart.face.growEndHalfface(node);
-			point.leftParent().currentEdgeStart.face.growStartHalfface(node);
-			point.rightParent().previousEdgeStart.face.growEndHalfface(node);
-			point.rightParent().currentEdgeStart.face.growStartHalfface(node);
+			point.leftParent().previousEdgeStart.face.addEdge(point.leftParent(), node);
+			point.leftParent().currentEdgeStart.face.addEdge(point.leftParent(), node);
+			point.rightParent().previousEdgeStart.face.addEdge(point.rightParent(), node);
+			point.rightParent().currentEdgeStart.face.addEdge(point.rightParent(), node);
 		}
 
 		node.setPreviousInLav(point.leftParent().previous());
@@ -253,6 +256,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 			queue.add(e);
 		}
 	}
+
 	private boolean shouldHeadJump(EdgeEvent point) {
 		return point.leftParent().isSplitLeftNode() && !pairOf(point.leftParent()).isProcessed()
 			||
@@ -263,8 +267,11 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 	private void connectLast3SegmentsOfLav(EdgeEvent point) {
 		Node centerNode = new CenterNode(point);
 		outputArc(point.leftParent().vertex, point);
+		canvas.draw(new Segment2D(point.leftParent().vertex, point), DrawingSegment2D.withColorThin(Color.cyan));
 		outputArc(point.rightParent().vertex, point);
+		canvas.draw(new Segment2D(point.rightParent().vertex, point), DrawingSegment2D.withColorThin(Color.cyan));
 		outputArc(point.leftParent().previous().vertex, point);
+		canvas.draw(new Segment2D(point.leftParent().previous().vertex, point), DrawingSegment2D.withColorThin(Color.cyan));
 
 		growFaceEndWithPairOfSegments(point.leftParent(), centerNode, point.rightParent());
 		growFaceEndWithPairOfSegments(point.rightParent(), centerNode, point.leftParent().previous());
@@ -287,10 +294,10 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 
 	private void growFaceEndWithPairOfSegments(Node start, Node center, Node end) {
 		if (start.currentEdgeStart.face.startHalfface.getLast() == start) {
-			// If by moving counter-clockwise we close an edge
 			if (hasPair(end)) {
 				end = pairOf(end);
 			}
+			// If by moving counter-clockwise we close an edge
 			Face face = start.currentEdgeStart.face;
 			face.growStartHalfface(center);
 			face.growStartHalfface(end);
@@ -307,6 +314,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 	private void eliminate2NodeLav(Node node1, Node node2) {
 		assert node1.next() == node2 && node2.next() == node1;
 		outputArc(node1.vertex, node2.vertex);
+		canvas.draw(new Segment2D(node1.vertex, node2.vertex), DrawingSegment2D.withColorThin(Color.white));
 		node1.setProcessed();
 		node2.setProcessed();
 		if (hasPair(node1)) {
@@ -357,7 +365,6 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 			TestCanvas.canvas.draw(new Segment2D(start, end), DrawingSegment2D.withColorThin(Color.white));
 //			assert false;
 		}
-		canvas.draw(new Segment2D(start, end), DrawingSegment2D.withColorThin(Color.yellow));
 	}
 
 	private SkeletonEvent computeNearerBisectorsIntersection(Node node) {

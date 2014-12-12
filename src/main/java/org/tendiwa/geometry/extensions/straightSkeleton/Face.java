@@ -1,9 +1,6 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 final class Face {
 	final Deque<Node> startHalfface = new LinkedList<>();
@@ -17,14 +14,18 @@ final class Face {
 	Face(InitialNode edgeStart, InitialNode edgeEnd) {
 		startHalfface.add(edgeStart);
 		endHalfface.add(edgeEnd);
+		chains.add(startHalfface);
+		chains.add(endHalfface);
 	}
 
 	void growStartHalfface(Node node) {
-		grow(startHalfface, node);
+//		grow(startHalfface, node);
+		addEdge(startHalfface.getLast(), node);
 	}
 
 	void growEndHalfface(Node node) {
-		grow(endHalfface, node);
+//		grow(endHalfface, node);
+		addEdge(endHalfface.getLast(), node);
 	}
 
 	void grow(Deque<Node> halfface, Node node) {
@@ -74,6 +75,16 @@ final class Face {
 	}
 
 	private void uniteChainsWithAddedEdge() {
+		// We grow chain at end 1,
+		// but if chain at end 2 is the initial left or right half-face,
+		// then we grow it instead.
+		// Of course there is a case when the chain at end 1 is the left (right) half-face,
+		// and the chain at end 2 is the right (left) half-face. In that case order doesn't matter.
+		if (chainAtEnd2 == startHalfface || chainAtEnd2 == endHalfface) {
+			Deque<Node> buf = chainAtEnd1;
+			chainAtEnd1 = chainAtEnd2;
+			chainAtEnd2 = buf;
+		}
 		if (chainAtEnd1First && chainAtEnd2First) {
 			while (!chainAtEnd2.isEmpty()) {
 				chainAtEnd1.addFirst(chainAtEnd2.pollFirst());
@@ -91,12 +102,13 @@ final class Face {
 				chainAtEnd1.addLast(chainAtEnd2.pollLast());
 			}
 		}
+		chains.remove(chainAtEnd2);
 	}
 
 	private void findChainsAtEnds(Node oneEnd, Node anotherEnd) {
 		for (Deque<Node> chain : chains) {
 			if (chainAtEnd1 == null) {
-				if (chain.getFirst() == oneEnd) {
+				if (chain.getFirst() == oneEnd && chain.size() > 1) {
 					chainAtEnd1 = chain;
 					chainAtEnd1First = true;
 				} else if (chain.getLast() == oneEnd) {
@@ -104,14 +116,18 @@ final class Face {
 					chainAtEnd1First = false;
 				}
 			}
-			if (chainAtEnd2 == null) {
-				if (chain.getFirst() == anotherEnd) {
-					chainAtEnd2 = chain;
-					chainAtEnd2First = true;
-				} else if (chain.getLast() == anotherEnd) {
-					chainAtEnd2 = chain;
-					chainAtEnd2First = false;
+			try {
+				if (chainAtEnd2 == null) {
+					if (chain.getFirst() == anotherEnd) {
+						chainAtEnd2 = chain;
+						chainAtEnd2First = true;
+					} else if (chain.getLast() == anotherEnd) {
+						chainAtEnd2 = chain;
+						chainAtEnd2First = false;
+					}
 				}
+			} catch (NoSuchElementException e) {
+				assert false;
 			}
 		}
 	}
