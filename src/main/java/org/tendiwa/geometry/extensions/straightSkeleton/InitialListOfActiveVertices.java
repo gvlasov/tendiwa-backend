@@ -53,6 +53,7 @@ class InitialListOfActiveVertices {
 		InitialNode last = nodes.get(l - 1);
 		first.setPreviousInLav(last);
 		first.setPreviousInitial(last);
+		nodes.forEach(InitialNode::initFace);
 	}
 
 	private List<Segment2D> createEdgesBetweenVertices(List<Point2D> vertices, DrawableInto canvas) {

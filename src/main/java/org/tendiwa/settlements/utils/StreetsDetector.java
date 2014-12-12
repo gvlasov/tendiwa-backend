@@ -11,8 +11,8 @@ import org.tendiwa.geometry.Vectors2D;
 import java.util.*;
 
 /**
- * Finds chains of {@link org.tendiwa.geometry.Segment2D} that are to form {@link org.tendiwa.settlements.streets.Street}s
- * among edges of a planar graph.
+ * Finds chains of {@link org.tendiwa.geometry.Segment2D} to form {@link org.tendiwa.settlements.streets.Street}s
+ * among edges of a graph.
  */
 public final class StreetsDetector {
 	private static final Object JOINING_PROHIBITED = Boolean.TRUE;
@@ -50,6 +50,13 @@ public final class StreetsDetector {
 		return builder.build();
 	}
 
+	/**
+	 * Finds edges of a single connectivity component of a graph.
+	 *
+	 * @param cityGraph
+	 * @param component
+	 * @return
+	 */
 	private static Set<Segment2D> findEdgesOfComponent(UndirectedGraph<Point2D, Segment2D> cityGraph, Set<Point2D> component) {
 		ImmutableSet.Builder<Segment2D> builder = ImmutableSet.builder();
 		for (Point2D vertex : component) {
@@ -62,6 +69,11 @@ public final class StreetsDetector {
 		return builder.build();
 	}
 
+	/**
+	 * Finds streets represented as lists of graph vertices.
+	 *
+	 * @return
+	 */
 	private Set<ImmutableList<Point2D>> compute() {
 		for (Point2D vertex : cityGraph.vertexSet()) {
 			if (cityGraph.degreeOf(vertex) <= 2) {
@@ -367,7 +379,7 @@ public final class StreetsDetector {
 	 * @param chain
 	 * 	A chain that starts or ends with {@code end}. This collection may be mutated inside this method.
 	 * @param end
-	 * 	A point where both chaits start or end.
+	 * 	A point where both chains start or end.
 	 * @return
 	 */
 	private Deque<Point2D> joinChains(Deque<Point2D> chain, Point2D end) {

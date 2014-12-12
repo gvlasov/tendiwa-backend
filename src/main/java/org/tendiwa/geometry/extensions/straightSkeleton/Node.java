@@ -22,7 +22,7 @@ abstract class Node implements Iterable<Node> {
 	Bisector bisector;
 	private boolean isProcessed = false; // As said in 1a in [Obdrzalek 1998, paragraph 2.1]
 	boolean isReflex;
-	private Node next;
+	protected Node next;
 	private Node previous;
 	protected InitialNode currentEdgeStart;
 	protected InitialNode previousEdgeStart;
@@ -32,10 +32,15 @@ abstract class Node implements Iterable<Node> {
 
 	Node(Point2D point, InitialNode previousEdgeStart, InitialNode currentEdgeStart) {
 		this(point);
+		if (previousEdgeStart == currentEdgeStart) {
+			assert false;
+		}
 		currentEdge = currentEdgeStart.currentEdge;
 		this.currentEdgeStart = currentEdgeStart;
 		this.previousEdgeStart = previousEdgeStart;
-		assert !previousEdge().equals(currentEdge()) : previousEdge();
+		if (previousEdge().equals(currentEdge())) {
+			assert false;
+		}
 		assert !(previousEdge().equals(currentEdge())
 			&& previousEdge().isParallel(previousEdge()));
 	}
@@ -72,7 +77,9 @@ abstract class Node implements Iterable<Node> {
 	public boolean isProcessed() {
 		return isProcessed;
 	}
+
 	abstract boolean isSplitRightNode();
+
 	abstract boolean isSplitLeftNode();
 
 	public void computeReflexAndBisector() {

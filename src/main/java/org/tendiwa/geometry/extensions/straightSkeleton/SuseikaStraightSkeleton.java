@@ -30,7 +30,6 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 	public final Multimap<Point2D, Point2D> arcs = HashMultimap.create();
 	static final double EPSILON = 1e-10;
 	private final HashMap<Node, Node> splitNodePairs = new HashMap<>();
-	private final NodeFlowRegistry nodeFlowRegistry;
 	private final RegistryOfSplitEventsOnEdges splitEventsRegistry;
 
 	public SuseikaStraightSkeleton(MinimalCycle<Point2D, Segment2D> cycle) {
@@ -45,8 +44,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 	private SuseikaStraightSkeleton(List<Point2D> vertices, boolean trustCounterClockwise) {
 //		vertices = Lists.reverse(vertices);
 		Node.canvas = canvas;
-		NodeFlow.canvas = canvas;
-		SkeletonEvent.canvas = canvas;
+		SplitEvent.canvas = canvas;
 		if (!trustCounterClockwise && !JTSUtils.isYDownCCW(vertices)) {
 			vertices = Lists.reverse(vertices);
 		}
@@ -56,18 +54,17 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 
 		this.queue = new PriorityQueue<>(initialLav.size());
 		// [Obdrzalek 1998, paragraph 2.2, algorithm step 1c]
-		nodeFlowRegistry = new NodeFlowRegistry(initialLav.nodes);
-		splitEventsRegistry = new RegistryOfSplitEventsOnEdges(initialLav.nodes, nodeFlowRegistry);
-		queueInitialEvents(initialLav.size());
+		splitEventsRegistry = new RegistryOfSplitEventsOnEdges(initialLav.nodes);
+		queueInitialEvents();
 		assert !queue.isEmpty();
 
 		while (!queue.isEmpty()) {
 			// Convex 2a
 			SkeletonEvent point = queue.poll();
-			if (point.isSplitEvent()) {
-				handleSplitEvent(point);
+			if (point instanceof SplitEvent) {
+				handleSplitEvent((SplitEvent) point);
 			} else {
-				handleEdgeEvent(point);
+				handleEdgeEvent((EdgeEvent) point);
 			}
 		}
 		assert !arcs.isEmpty();
@@ -76,15 +73,8 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 //		}
 	}
 
-	private void queueInitialEvents(int size) {
-		int i = 0;
-		// TODO: We don't need a counter here, change to foreach
-		for (
-			Node node = initialLav.nodes.get(0);
-			i < size;
-			i++, node = node.next()
-			) {
-//			canvas.draw(node.bisector.segment, DrawingSegment2D.withColor(Color.green));
+	private void queueInitialEvents() {
+		for (InitialNode node : initialLav.nodes) {
 			SkeletonEvent e = computeNearerBisectorsIntersection(node);
 			if (e != null) {
 				queue.add(e);
@@ -92,22 +82,22 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		}
 	}
 
-	private void handleSplitEvent(SkeletonEvent point) {
-		assert point.isSplitEvent();
-		if (point.leftParent().isProcessed()) {
+	private void handleSplitEvent(SplitEvent point) {
+		if (point.parent().isProcessed()) {
 			return;
 		}
 		// Non-convex 2c
-		if (point.leftParent().previous().previous().previous() == point.leftParent()) {
-			connectLast3SegmentsOfLav(point);
+		if (point.parent().previous().previous().previous() == point.parent()) {
+//			connectLast3SegmentsOfLav(point);
+			assert false;
 			return;
 		}
-		if (point.leftParent().next().next() == point.leftParent()) {
-			eliminate2NodeLav(point.leftParent(), point.rightParent());
+		if (point.parent().next().next() == point.parent()) {
+			eliminate2NodeLav(point.parent(), point.parent().next().next());
 			return;
 		}
 		// Non-convex 2D
-		outputArc(point.leftParent().vertex, point);
+		outputArc(point.parent().vertex, point);
 		if (point.getOppositeEdgeStartMovementHead().isProcessed()) {
 //			canvas.draw(point.getOppositeEdgeStartMovementHead().bisector.segment, DrawingSegment2D.withColorThin(Color.orange));
 			canvas.draw(point.getOppositeEdgeStartMovementHead().currentEdge, DrawingSegment2D.withColorThin(Color.magenta));
@@ -119,35 +109,38 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		// Split event produces two nodes at the same point, and those two nodes have distinct LAVs.
 		Node leftNode = new SpiltNode(
 			point,
-			point.leftParent().previousEdgeStart,
+			point.parent().previousEdgeStart,
 			point.getOppositeEdgeEndMovementHead().previous().currentEdgeStart,
 			true
 		);
 		Node rightNode = new SpiltNode(
 			point,
 			point.getOppositeEdgeEndMovementHead().previousEdgeStart,
-			point.leftParent().currentEdgeStart,
+			point.parent().currentEdgeStart,
 			false
 		);
 
 		Node leftLavNextNode;
-		boolean inTheSameLav = point.leftParent().isInTheSameLav(point.getOppositeEdgeEndMovementHead());
+		boolean inTheSameLav = point.parent().isInTheSameLav(point.getOppositeEdgeEndMovementHead());
 		if (inTheSameLav) {
 			leftLavNextNode = point.getOppositeEdgeEndMovementHead();
 		} else {
 			leftLavNextNode = splitEventsRegistry.getNodeFromLeft(
-				point.oppositeEdgeStartMovement.getTail(),
+				point.oppositeEdgeStart(),
 				leftNode
 			);
 		}
 		Node rightLavPreviousNode;
-		if (point.leftParent().isInTheSameLav(point.getOppositeEdgeStartMovementHead())) {
+		if (point.parent().isInTheSameLav(point.getOppositeEdgeStartMovementHead())) {
 			rightLavPreviousNode = point.getOppositeEdgeStartMovementHead();
 		} else {
-			rightLavPreviousNode = splitEventsRegistry.getNodeFromRight(point.getOppositeEdgeStartMovementHead(), rightNode);
+			rightLavPreviousNode = splitEventsRegistry.getNodeFromRight(
+				point.oppositeEdgeStart(),
+				rightNode
+			);
 		}
 
-		leftNode.setPreviousInLav(point.leftParent().previous());
+		leftNode.setPreviousInLav(point.parent().previous());
 		leftLavNextNode.setPreviousInLav(leftNode);
 
 		// TODO: Why do we need this?
@@ -159,33 +152,35 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 //				draw(node1, Color.green);
 
 		rightNode.setPreviousInLav(rightLavPreviousNode);
-		point.leftParent().next().setPreviousInLav(rightNode);
+		point.parent().next().setPreviousInLav(rightNode);
 
 		// TODO: Why do we need this?
 //		ImmutableList.copyOf(rightNode);
 //				draw(node2, Color.blue);
 
-		point.leftParent().setProcessed();
+		point.parent().setProcessed();
 		pairSplitNodes(leftNode, rightNode);
 
 		splitEventsRegistry.addSplitNode(
-			point.oppositeEdgeStartMovement.getTail(),
+			point.oppositeEdgeStart(),
 			leftNode,
 			RegistryOfSplitEventsOnEdges.Orientation.LEFT
 		);
 		splitEventsRegistry.addSplitNode(
-			point.oppositeEdgeStartMovement.getTail(),
+			point.oppositeEdgeStart(),
 			rightNode,
 			RegistryOfSplitEventsOnEdges.Orientation.RIGHT
 		);
 
-		nodeFlowRegistry.split(point.leftParent(), leftNode, rightNode);
+		point.parent().currentEdgeStart.face.growStartHalfface(rightNode);
+		point.parent().previousEdgeStart.face.growEndHalfface(leftNode);
+
 		// Non-convex 2
 		integrateNewSplitNode(leftNode, point, false);
 		integrateNewSplitNode(rightNode, point, true);
 	}
 
-	private void handleEdgeEvent(SkeletonEvent point) {
+	private void handleEdgeEvent(EdgeEvent point) {
 		// Convex 2b
 		if (point.leftParent().isProcessed() || point.rightParent().isProcessed()) {
 			if (!(point.leftParent().isProcessed() && point.rightParent().isProcessed())) {
@@ -219,40 +214,38 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 			point.leftParent().previousEdgeStart,
 			point.rightParent().currentEdgeStart
 		);
+
+		if (shouldHeadJump(point)) {
+			if (hasPair(point.leftParent())) {
+				point.leftParent().previousEdgeStart.face.growEndHalfface(node);
+				point.rightParent().previousEdgeStart.face.growEndHalfface(node);
+				point.rightParent().currentEdgeStart.face.growStartHalfface(node);
+
+				Node pair = pairOf(point.leftParent());
+				point.rightParent().previousEdgeStart.face.growEndHalfface(pair);
+			} else {
+				assert hasPair(point.rightParent());
+				point.rightParent().currentEdgeStart.face.growStartHalfface(node);
+				point.leftParent().previousEdgeStart.face.growEndHalfface(node);
+				point.leftParent().currentEdgeStart.face.growStartHalfface(node);
+
+				Node pair = pairOf(point.rightParent());
+				point.leftParent().currentEdgeStart.face.growStartHalfface(pair);
+
+			}
+		} else {
+			point.leftParent().previousEdgeStart.face.growEndHalfface(node);
+			point.leftParent().currentEdgeStart.face.growStartHalfface(node);
+			point.rightParent().previousEdgeStart.face.growEndHalfface(node);
+			point.rightParent().currentEdgeStart.face.growStartHalfface(node);
+		}
+
 		node.setPreviousInLav(point.leftParent().previous());
 		point.rightParent().next().setPreviousInLav(node);
 		node.computeReflexAndBisector();
 
 		point.leftParent().setProcessed();
 		point.rightParent().setProcessed();
-		boolean hasLeftPair = hasPairOf(point.leftParent());
-		boolean hasRightPair = hasPairOf(point.rightParent());
-		if (shouldHeadJump(point)) {
-			if (!hasLeftPair) {
-				// Move beginnings only to edge event nodes.
-				nodeFlowRegistry.move(point.rightParent(), node);
-			}
-			if (!hasRightPair) {
-				nodeFlowRegistry.move(point.leftParent(), node);
-			}
-			if (hasRightPair) {
-				Node parentPair = pairOf(point.rightParent());
-//				if (!parentPair.isProcessed()) {
-//					nodeFlowRegistry.split(point.leftParent(), node, parentPair);
-//				}
-				nodeFlowRegistry.move(point.leftParent(), parentPair);
-			}
-			if (hasLeftPair) {
-				Node parentPair = pairOf(point.leftParent());
-//				if (!parentPair.isProcessed()) {
-//					nodeFlowRegistry.split(node, parentPair, parentPair);
-//				}
-				nodeFlowRegistry.move(point.rightParent(), parentPair);
-			}
-		} else {
-			nodeFlowRegistry.move(point.leftParent(), node);
-			nodeFlowRegistry.move(point.rightParent(), node);
-		}
 
 		// Convex 2f
 		SkeletonEvent e = computeNearerBisectorsIntersection(node);
@@ -260,74 +253,70 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 			queue.add(e);
 		}
 	}
-
-	private boolean shouldHeadJump(SkeletonEvent point) {
+	private boolean shouldHeadJump(EdgeEvent point) {
 		return point.leftParent().isSplitLeftNode() && !pairOf(point.leftParent()).isProcessed()
 			||
 //			return
 			point.rightParent().isSplitRightNode() && !pairOf(point.rightParent()).isProcessed();
 	}
 
-
-	private void connectLast3SegmentsOfLav(SkeletonEvent point) {
+	private void connectLast3SegmentsOfLav(EdgeEvent point) {
+		Node centerNode = new CenterNode(point);
 		outputArc(point.leftParent().vertex, point);
+		outputArc(point.rightParent().vertex, point);
+		outputArc(point.leftParent().previous().vertex, point);
+
+		growFaceEndWithPairOfSegments(point.leftParent(), centerNode, point.rightParent());
+		growFaceEndWithPairOfSegments(point.rightParent(), centerNode, point.leftParent().previous());
+		growFaceEndWithPairOfSegments(point.leftParent().previous(), centerNode, point.leftParent());
+
 		point.leftParent().setProcessed();
 		point.rightParent().setProcessed();
 		point.leftParent().previous().setProcessed();
-		outputArc(point.rightParent().vertex, point);
-		assert point.leftParent().previous() == point.rightParent().next()
-			: point.leftParent().previous().vertex + " " + point.rightParent().next().vertex;
-		outputArc(point.leftParent().previous().vertex, point);
-		movePairlessPointsToPairPoint(point);
+
+		assert point.leftParent().previous() == point.rightParent().next();
 	}
 
-	private void movePairlessPointsToPairPoint(SkeletonEvent point) {
-		tryCombination(point, point.leftParent(), point.rightParent(), point.leftParent().previous());
-		tryCombination(point, point.rightParent(), point.leftParent().previous(), point.leftParent());
-		tryCombination(point, point.leftParent().previous(), point.leftParent(), point.rightParent());
+	private boolean hasPair(Node node) {
+		return splitNodePairs.containsKey(node);
 	}
 
-	private void tryCombination(SkeletonEvent point, Node target, Node neighbor1, Node neighbor2) {
-		Node counterClockwiseNode = findCounterClockwiseMostNode(
-			point,
-			target,
-			neighbor1,
-			neighbor2
-		);
-		if (hasPairOf(counterClockwiseNode) && !pairOf(counterClockwiseNode).isProcessed()) {
-			nodeFlowRegistry.move(target, pairOf(counterClockwiseNode));
-//			movementRegistry.getByOriginalEdge(target.currentEdge).changeHead(pairOf(counterClockwiseNode));
+	private Node pairOf(Node node) {
+		return splitNodePairs.get(node);
+	}
+
+	private void growFaceEndWithPairOfSegments(Node start, Node center, Node end) {
+		if (start.currentEdgeStart.face.startHalfface.getLast() == start) {
+			// If by moving counter-clockwise we close an edge
+			if (hasPair(end)) {
+				end = pairOf(end);
+			}
+			Face face = start.currentEdgeStart.face;
+			face.growStartHalfface(center);
+			face.growStartHalfface(end);
+		} else {
+			if (hasPair(start)) {
+				start = pairOf(start);
+			}
+			Face face = end.previousEdgeStart.face;
+			face.growEndHalfface(center);
+			face.growEndHalfface(start);
 		}
-	}
-
-	private Node findCounterClockwiseMostNode(Point2D source, Node target, Node neighbor1, Node neighbor2) {
-		double originalAngle = target.vertex.angleTo(source);
-		double angle1 = computeAndRotateByOriginalAngle(source, neighbor1.vertex, originalAngle);
-		double angle2 = computeAndRotateByOriginalAngle(source, neighbor2.vertex, originalAngle);
-		/*
-		Now we are rotated in such a way that vector [target;source] has angle 0 radian, and the vector
-		counter-clockwise from [source;target] (swapping intended) is the one that has the least angle greater than 0.
-		 */
-		assert angle1 > 0;
-		assert angle2 > 0;
-		assert angle1 != angle2;
-		return angle1 > angle2 ? neighbor2 : neighbor1;
-	}
-
-	private double computeAndRotateByOriginalAngle(Point2D source, Point2D neighbor1, double originalAngle) {
-		double angle = (source.angleTo(neighbor1) - originalAngle) % Math.PI * 2;
-		while (angle < 0) {
-			angle += Math.PI * 2;
-		}
-		return angle;
 	}
 
 	private void eliminate2NodeLav(Node node1, Node node2) {
 		assert node1.next() == node2 && node2.next() == node1;
-		// Eliminating LAVs consisting only of 2 nodes
 		outputArc(node1.vertex, node2.vertex);
 		node1.setProcessed();
 		node2.setProcessed();
+		if (hasPair(node1)) {
+			node1 = pairOf(node1);
+		}
+		if (hasPair(node2)) {
+			node2 = pairOf(node2);
+		}
+		node1.currentEdgeStart.face.growStartHalfface(node2);
+		node2.currentEdgeStart.face.growStartHalfface(node1);
 	}
 
 	private void pairSplitNodes(Node node1, Node node2) {
@@ -337,10 +326,6 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		assert node1.vertex.equals(node2.vertex);
 		splitNodePairs.put(node1, node2);
 		splitNodePairs.put(node2, node1);
-	}
-
-	private boolean hasPairOf(Node node) {
-		return splitNodePairs.containsKey(node);
 	}
 
 	/**
@@ -353,19 +338,8 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		if (node.isInLavOf2Nodes()) {
 			// Such lavs can form after a split event
 			eliminate2NodeLav(node, node.next());
-			jumpIfNeighborHasPair(node.next(), node);
-			jumpIfNeighborHasPair(node, node.next());
 		} else {
 			node.computeReflexAndBisector();
-			// TODO: Functionality moved to NodeFlow.split, this commented out code must be removed
-//			if (isRightNode) {
-//				// Because that node contains the original current edge
-////				movementRegistry.getByOriginalEdge(point.leftParent.currentEdge).changeHead(node);
-//				nodeFlowRegistry.move(point.leftParent, node);
-//			} else {
-////				movementRegistry.getByOriginalEdge(point.leftParent.currentEdge).changeHead(node);
-//				nodeFlowRegistry.move(point.leftParent, node);
-//			}
 			SkeletonEvent e = computeNearerBisectorsIntersection(node);
 			if (e != null) {
 				queue.add(e);
@@ -373,50 +347,6 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		}
 	}
 
-	private void jumpIfNeighborHasPair(Node nodeToMove, Node neighbor) {
-		if (hasPairOf(neighbor)) {
-			nodeFlowRegistry.move(nodeToMove, pairOf(neighbor));
-		}
-	}
-
-
-	private Node pairOf(Node node) {
-		assert splitNodePairs.containsKey(node);
-		return splitNodePairs.get(node);
-	}
-
-
-	private void draw(Point2D point) {
-		canvas.draw(point, DrawingPoint2D.withColorAndSize(Color.black, 4));
-	}
-
-	private void draw(Node node, Color color) {
-		Iterator<Node> iter = node.iterator();
-		Node previous = iter.next();
-		while (iter.hasNext()) {
-			Node next = iter.next();
-			canvas.draw(
-				new Segment2D(
-					previous.vertex,
-					next.vertex
-				),
-				DrawingSegment2D.withColor(color)
-			);
-			previous = next;
-		}
-
-		canvas.draw(
-			new Segment2D(
-				previous.vertex,
-				node.vertex
-			),
-			DrawingSegment2D.withColor(color)
-		);
-	}
-
-	private void draw(Segment2D segment) {
-		canvas.draw(segment, DrawingSegment2D.withColorThin(Color.green));
-	}
 
 	private void outputArc(Point2D start, Point2D end) {
 		assert start != null;
@@ -514,19 +444,10 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 //			throw new RuntimeException();
 //		}
 
-		SkeletonEvent skeletonEvent = new SkeletonEvent(
-			nearer.x,
-			nearer.y,
-			nodeFlowRegistry.getChainByHead(originalEdgeStart),
-			nodeFlowRegistry.getChainByHead(originalEdgeStart.next()),
-			va,
-			vb
-		);
+		EdgeEvent skeletonEvent = new EdgeEvent(nearer.x, nearer.y, va, vb);
 //		if (!initialLav.nodes.contains(node)) {
 //			canvas.draw(new Segment2D(node.vertex, nearer), DrawingSegment2D.withColorThin(Color.yellow));
 //		}
-		nodeFlowRegistry.getChainByHead(originalEdgeStart).addStartObserver(skeletonEvent);
-		nodeFlowRegistry.getChainByHead(originalEdgeStart.next()).addEndObserver(skeletonEvent);
 		return skeletonEvent;
 	}
 
@@ -588,16 +509,15 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		if (originalEdgeStart == null) {
 			assert false;
 		}
-		SkeletonEvent skeletonEvent = new SkeletonEvent(
+		// TODO: If this is always true, we can get rid of casting
+		assert originalEdgeStart instanceof InitialNode;
+		SplitEvent skeletonEvent = new SplitEvent(
 			splitPoint.x,
 			splitPoint.y,
-			nodeFlowRegistry.getChainByHead(originalEdgeStart),
-			nodeFlowRegistry.getChainByHead(originalEdgeStart.next()),
 			reflexNode,
-			null
+			// TODO: Get rid of casting
+			(InitialNode) originalEdgeStart
 		);
-		nodeFlowRegistry.getChainByHead(originalEdgeStart).addStartObserver(skeletonEvent);
-		nodeFlowRegistry.getChainByHead(originalEdgeStart.next()).addEndObserver(skeletonEvent);
 		return skeletonEvent;
 	}
 

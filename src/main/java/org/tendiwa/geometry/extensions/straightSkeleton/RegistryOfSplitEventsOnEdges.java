@@ -17,10 +17,8 @@ import static org.tendiwa.geometry.Vector2D.fromStartToEnd;
  */
 class RegistryOfSplitEventsOnEdges {
 	private final Map<Node, TreeSet<SplitEventOnEdge>> edgesToSplitNodes = new HashMap<>();
-	private final NodeFlowRegistry nodeFlowRegistry;
 
-	RegistryOfSplitEventsOnEdges(List<? extends Node> nodes, NodeFlowRegistry nodeFlowRegistry) {
-		this.nodeFlowRegistry = nodeFlowRegistry;
+	RegistryOfSplitEventsOnEdges(List<? extends Node> nodes) {
 		nodes.forEach(this::initOriginalEdge);
 	}
 
@@ -36,15 +34,24 @@ class RegistryOfSplitEventsOnEdges {
 	}
 
 	Node getNodeFromRight(Node oppositeEdgeStart, Node node) {
-		Node node1 = edgesToSplitNodes.get(oppositeEdgeStart).lower(
-			new SplitEventOnEdge(
-				node,
-				Orientation.RIGHT,
-				projectionOnEdge(node.vertex, oppositeEdgeStart.currentEdge)
-			)
-		).node;
+		Node node1 = null;
+		SplitEventOnEdge lower = null;
+		try {
+			lower = edgesToSplitNodes.get(oppositeEdgeStart).lower(
+				new SplitEventOnEdge(
+					node,
+					Orientation.RIGHT,
+					projectionOnEdge(node.vertex, oppositeEdgeStart.currentEdge)
+				)
+			);
+		} catch (NullPointerException e) {
+			assert false;
+		}
+		if (lower != null) {
+			node1 = lower.node;
+		}
 		if (node1 == null) {
-			return nodeFlowRegistry.getChainByOriginalTail(oppositeEdgeStart).getHead();
+			return oppositeEdgeStart.currentEdgeStart.face().endHalfface.getLast();
 		} else {
 			return node1;
 		}
@@ -68,7 +75,7 @@ class RegistryOfSplitEventsOnEdges {
 			node1 = higher.node;
 		}
 		if (node1 == null) {
-			return nodeFlowRegistry.getChainByOriginalTail(oppositeEdgeStart).getHead();
+			return oppositeEdgeStart.currentEdgeStart.face().startHalfface.getLast();
 		} else {
 			return node1;
 		}
