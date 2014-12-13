@@ -108,18 +108,20 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		// Non-convex 2e
 
 		// Split event produces two nodes at the same point, and those two nodes have distinct LAVs.
-		Node leftNode = new SpiltNode(
+		SplitNode leftNode = new SplitNode(
 			point,
 			point.parent().previousEdgeStart,
 			point.getOppositeEdgeEndMovementHead().previous().currentEdgeStart,
 			true
 		);
-		Node rightNode = new SpiltNode(
+		SplitNode rightNode = new SplitNode(
 			point,
 			point.getOppositeEdgeEndMovementHead().previousEdgeStart,
 			point.parent().currentEdgeStart,
 			false
 		);
+		leftNode.setPair(rightNode);
+		rightNode.setPair(leftNode);
 
 		Node leftLavNextNode;
 		boolean inTheSameLav = point.parent().isInTheSameLav(point.getOppositeEdgeEndMovementHead());
@@ -173,8 +175,8 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 			RegistryOfSplitEventsOnEdges.Orientation.RIGHT
 		);
 
-		point.parent().currentEdgeStart.face.growStartHalfface(rightNode);
-		point.parent().previousEdgeStart.face.growEndHalfface(leftNode);
+		point.parent().growAdjacentFaces(rightNode);
+		point.parent().growAdjacentFaces(leftNode);
 
 		// Non-convex 2
 		integrateNewSplitNode(leftNode, point, false);
@@ -218,30 +220,30 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 			point.rightParent().currentEdgeStart
 		);
 
-		if (shouldHeadJump(point)) {
-			if (hasPair(point.leftParent())) {
-				point.leftParent().previousEdgeStart.face.growEndHalfface(node);
-				point.rightParent().previousEdgeStart.face.growEndHalfface(node);
-				point.rightParent().currentEdgeStart.face.growStartHalfface(node);
-
-				Node pair = pairOf(point.leftParent());
-				point.rightParent().previousEdgeStart.face.growEndHalfface(pair);
-			} else {
-				assert hasPair(point.rightParent());
-				point.rightParent().currentEdgeStart.face.growStartHalfface(node);
-				point.leftParent().previousEdgeStart.face.growEndHalfface(node);
-				point.leftParent().currentEdgeStart.face.growStartHalfface(node);
-
-				Node pair = pairOf(point.rightParent());
-				point.leftParent().currentEdgeStart.face.growStartHalfface(pair);
-
-			}
-		} else {
-			point.leftParent().previousEdgeStart.face.addEdge(point.leftParent(), node);
-			point.leftParent().currentEdgeStart.face.addEdge(point.leftParent(), node);
-			point.rightParent().previousEdgeStart.face.addEdge(point.rightParent(), node);
-			point.rightParent().currentEdgeStart.face.addEdge(point.rightParent(), node);
-		}
+//		if (shouldHeadJump(point)) {
+//			if (hasPair(point.leftParent())) {
+//				point.leftParent().previousEdgeStart.face.growEndHalfface(node);
+//				point.rightParent().previousEdgeStart.face.growEndHalfface(node);
+//				point.rightParent().currentEdgeStart.face.growStartHalfface(node);
+//
+//				Node pair = pairOf(point.leftParent());
+//				point.rightParent().previousEdgeStart.face.growEndHalfface(pair);
+//			} else {
+//				assert hasPair(point.rightParent());
+//				point.rightParent().currentEdgeStart.face.growStartHalfface(node);
+//				point.leftParent().previousEdgeStart.face.growEndHalfface(node);
+//				point.leftParent().currentEdgeStart.face.growStartHalfface(node);
+//
+//				Node pair = pairOf(point.rightParent());
+//				point.leftParent().currentEdgeStart.face.growStartHalfface(pair);
+//
+//			}
+//		} else {
+			point.leftParent().growAdjacentFaces(node);
+			point.leftParent().growAdjacentFaces(node);
+			point.rightParent().growAdjacentFaces(node);
+			point.rightParent().growAdjacentFaces(node);
+//		}
 
 		node.setPreviousInLav(point.leftParent().previous());
 		point.rightParent().next().setPreviousInLav(node);
@@ -258,10 +260,10 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 	}
 
 	private boolean shouldHeadJump(EdgeEvent point) {
-		return point.leftParent().isSplitLeftNode() && !pairOf(point.leftParent()).isProcessed()
+		return point.leftParent().isSplitLeftNode() && !point.leftParent().getPair().isProcessed()
 			||
 //			return
-			point.rightParent().isSplitRightNode() && !pairOf(point.rightParent()).isProcessed();
+			point.rightParent().isSplitRightNode() && !point.rightParent().getPair().isProcessed();
 	}
 
 	private void connectLast3SegmentsOfLav(EdgeEvent point) {
@@ -273,9 +275,9 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		outputArc(point.leftParent().previous().vertex, point);
 		canvas.draw(new Segment2D(point.leftParent().previous().vertex, point), DrawingSegment2D.withColorThin(Color.cyan));
 
-		growFaceEndWithPairOfSegments(point.leftParent(), centerNode, point.rightParent());
-		growFaceEndWithPairOfSegments(point.rightParent(), centerNode, point.leftParent().previous());
-		growFaceEndWithPairOfSegments(point.leftParent().previous(), centerNode, point.leftParent());
+		point.leftParent().growAdjacentFaces(centerNode);
+		point.rightParent().growAdjacentFaces(centerNode);
+		point.leftParent().previous().growAdjacentFaces(centerNode);
 
 		point.leftParent().setProcessed();
 		point.rightParent().setProcessed();
@@ -284,32 +286,24 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		assert point.leftParent().previous() == point.rightParent().next();
 	}
 
-	private boolean hasPair(Node node) {
-		return splitNodePairs.containsKey(node);
-	}
-
-	private Node pairOf(Node node) {
-		return splitNodePairs.get(node);
-	}
-
-	private void growFaceEndWithPairOfSegments(Node start, Node center, Node end) {
-		if (start.currentEdgeStart.face.startHalfface.getLast() == start) {
-			if (hasPair(end)) {
-				end = pairOf(end);
-			}
-			// If by moving counter-clockwise we close an edge
-			Face face = start.currentEdgeStart.face;
-			face.growStartHalfface(center);
-			face.growStartHalfface(end);
-		} else {
-			if (hasPair(start)) {
-				start = pairOf(start);
-			}
-			Face face = end.previousEdgeStart.face;
-			face.growEndHalfface(center);
-			face.growEndHalfface(start);
-		}
-	}
+//	private void growFaceEndWithPairOfSegments(Node start, Node center, Node end) {
+//		if (start.currentEdgeStart.face.whereStartMoved() == start) {
+//			if (hasPair(end)) {
+//				end = pairOf(end);
+//			}
+//			// If by moving counter-clockwise we close an edge
+//			Face face = start.currentEdgeStart.face;
+//			face.growStartHalfface(center);
+//			face.growStartHalfface(end);
+//		} else {
+//			if (hasPair(start)) {
+//				start = pairOf(start);
+//			}
+//			Face face = end.previousEdgeStart.face;
+//			face.growEndHalfface(center);
+//			face.growEndHalfface(start);
+//		}
+//	}
 
 	private void eliminate2NodeLav(Node node1, Node node2) {
 		assert node1.next() == node2 && node2.next() == node1;
@@ -317,14 +311,13 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		canvas.draw(new Segment2D(node1.vertex, node2.vertex), DrawingSegment2D.withColorThin(Color.white));
 		node1.setProcessed();
 		node2.setProcessed();
-		if (hasPair(node1)) {
-			node1 = pairOf(node1);
+		if (node1.hasPair()) {
+			node1 = node1.getPair();
 		}
-		if (hasPair(node2)) {
-			node2 = pairOf(node2);
+		if (node2.hasPair()) {
+			node2 = node2.getPair();
 		}
-		node1.currentEdgeStart.face.growStartHalfface(node2);
-		node2.currentEdgeStart.face.growStartHalfface(node1);
+		node1.growAdjacentFaces(node2);
 	}
 
 	private void pairSplitNodes(Node node1, Node node2) {

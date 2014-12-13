@@ -3,33 +3,19 @@ package org.tendiwa.geometry.extensions.straightSkeleton;
 import java.util.*;
 
 final class Face {
-	final Deque<Node> startHalfface = new LinkedList<>();
-	final Deque<Node> endHalfface = new LinkedList<>();
-	private final List<Deque<Node>> chains = new ArrayList<>();
-	private Deque<Node> chainAtEnd1;
-	private Deque<Node> chainAtEnd2;
-	private boolean chainAtEnd1First;
+	final Link startHalfface;
+	final Link endHalfface;
+	private Link linkAtEnd1;
+	private Link linkAtEnd2;
+	private boolean linkAtEnd1First;
 	private boolean chainAtEnd2First;
+	private Link lastAddedLink;
 
 	Face(InitialNode edgeStart, InitialNode edgeEnd) {
-		startHalfface.add(edgeStart);
-		endHalfface.add(edgeEnd);
-		chains.add(startHalfface);
-		chains.add(endHalfface);
-	}
-
-	void growStartHalfface(Node node) {
-//		grow(startHalfface, node);
-		addEdge(startHalfface.getLast(), node);
-	}
-
-	void growEndHalfface(Node node) {
-//		grow(endHalfface, node);
-		addEdge(endHalfface.getLast(), node);
-	}
-
-	void grow(Deque<Node> halfface, Node node) {
-		halfface.add(node);
+		startHalfface = new Link(edgeStart, edgeStart, null);
+		endHalfface = new Link(edgeEnd, edgeEnd, startHalfface);
+		startHalfface.setNext(endHalfface);
+		lastAddedLink = endHalfface;
 	}
 
 	/**
@@ -38,39 +24,39 @@ final class Face {
 	 * @param end2
 	 * 	Order doesn't matter.
 	 */
-	void addEdge(Node end1, Node end2) {
-		assert chainAtEnd1 == null && chainAtEnd2 == null;
-		findChainsAtEnds(end1, end2);
-		boolean hasChainAt1 = chainAtEnd1 != null;
-		boolean hasChainAt2 = chainAtEnd2 != null;
-		if (hasChainAt1 && hasChainAt2) {
+	void addLink(Node end1, Node end2) {
+		assert linkAtEnd1 == null && linkAtEnd2 == null;
+		findLinksAtEnds(end1, end2);
+		boolean hasLinkAt1 = linkAtEnd1 != null;
+		boolean hasLinkAt2 = linkAtEnd2 != null;
+		if (hasLinkAt1 && hasLinkAt2) {
 			uniteChainsWithAddedEdge();
-		} else if (hasChainAt1) {
+		} else if (hasLinkAt1) {
 			prolongChainAtEnd1(end2);
-		} else if (hasChainAt2) {
+		} else if (hasLinkAt2) {
 			prolongChainAtEnd2(end1);
 		} else {
-			createNewChain(end1, end2);
+			createNewLink(end1, end2);
 		}
 		// We don't have to reset chainAtEnd[12]First
 		// because they make sense and are changed only when chainAtEnd[12] is set.
-		chainAtEnd1 = chainAtEnd2 = null;
+		linkAtEnd1 = linkAtEnd2 = null;
 	}
 
 
 	private void prolongChainAtEnd1(Node end2) {
-		if (chainAtEnd1First) {
-			chainAtEnd1.addFirst(end2);
+		if (linkAtEnd1First) {
+			linkAtEnd1.moveFirst(end2);
 		} else {
-			chainAtEnd1.addLast(end2);
+			linkAtEnd1.moveLast(end2);
 		}
 	}
 
 	private void prolongChainAtEnd2(Node end1) {
 		if (chainAtEnd2First) {
-			chainAtEnd2.addFirst(end1);
+			linkAtEnd2.moveFirst(end1);
 		} else {
-			chainAtEnd2.addLast(end1);
+			linkAtEnd2.moveLast(end1);
 		}
 	}
 
@@ -80,62 +66,97 @@ final class Face {
 		// then we grow it instead.
 		// Of course there is a case when the chain at end 1 is the left (right) half-face,
 		// and the chain at end 2 is the right (left) half-face. In that case order doesn't matter.
-		if (chainAtEnd2 == startHalfface || chainAtEnd2 == endHalfface) {
-			Deque<Node> buf = chainAtEnd1;
-			chainAtEnd1 = chainAtEnd2;
-			chainAtEnd2 = buf;
+		if (linkAtEnd2 == startHalfface || linkAtEnd2 == endHalfface) {
+			Link buf = linkAtEnd1;
+			linkAtEnd1 = linkAtEnd2;
+			linkAtEnd2 = buf;
 		}
-		if (chainAtEnd1First && chainAtEnd2First) {
-			while (!chainAtEnd2.isEmpty()) {
-				chainAtEnd1.addFirst(chainAtEnd2.pollFirst());
-			}
-		} else if (chainAtEnd1First) {
-			while (!chainAtEnd2.isEmpty()) {
-				chainAtEnd1.addFirst(chainAtEnd2.pollLast());
-			}
+		if (linkAtEnd1First && chainAtEnd2First) {
+			linkAtEnd1.moveFirst(linkAtEnd2.first);
+		} else if (linkAtEnd1First) {
+			linkAtEnd1.moveFirst(linkAtEnd2.last);
 		} else if (chainAtEnd2First) {
-			while (!chainAtEnd2.isEmpty()) {
-				chainAtEnd1.addLast(chainAtEnd2.pollFirst());
-			}
+			linkAtEnd1.moveLast(linkAtEnd2.first);
 		} else {
-			while (!chainAtEnd2.isEmpty()) {
-				chainAtEnd1.addLast(chainAtEnd2.pollLast());
-			}
+			linkAtEnd1.moveLast(linkAtEnd2.last);
 		}
-		chains.remove(chainAtEnd2);
+		linkAtEnd2.replaceWith(linkAtEnd1);
 	}
 
-	private void findChainsAtEnds(Node oneEnd, Node anotherEnd) {
-		for (Deque<Node> chain : chains) {
-			if (chainAtEnd1 == null) {
-				if (chain.getFirst() == oneEnd && chain.size() > 1) {
-					chainAtEnd1 = chain;
-					chainAtEnd1First = true;
-				} else if (chain.getLast() == oneEnd) {
-					chainAtEnd1 = chain;
-					chainAtEnd1First = false;
+	private void findLinksAtEnds(Node oneEnd, Node anotherEnd) {
+		Link link = startHalfface;
+		while (link != null) {
+			if (linkAtEnd1 == null) {
+				if (link.first == oneEnd && link.first != link.last) {
+					linkAtEnd1 = link;
+					linkAtEnd1First = true;
+				} else if (link.last == oneEnd) {
+					linkAtEnd1 = link;
+					linkAtEnd1First = false;
 				}
 			}
 			try {
-				if (chainAtEnd2 == null) {
-					if (chain.getFirst() == anotherEnd) {
-						chainAtEnd2 = chain;
+				if (linkAtEnd2 == null) {
+					if (link.first == anotherEnd) {
+						linkAtEnd2 = link;
 						chainAtEnd2First = true;
-					} else if (chain.getLast() == anotherEnd) {
-						chainAtEnd2 = chain;
+					} else if (link.last == anotherEnd) {
+						linkAtEnd2 = link;
 						chainAtEnd2First = false;
 					}
 				}
 			} catch (NoSuchElementException e) {
 				assert false;
 			}
+			link = link.nextLink;
 		}
 	}
 
-	private void createNewChain(Node oneEnd, Node anotherEnd) {
-		LinkedList<Node> newChain = new LinkedList<>();
-		newChain.add(oneEnd);
-		newChain.add(anotherEnd);
-		chains.add(newChain);
+	private void createNewLink(Node oneEnd, Node anotherEnd) {
+		lastAddedLink = new Link(oneEnd, anotherEnd, lastAddedLink);
+	}
+
+	Node whereStartMoved() {
+		return startHalfface.last;
+	}
+
+	Node whereEndMoved() {
+		return endHalfface.last;
+	}
+
+	private final class Link {
+		private Node first;
+		private Node last;
+		/**
+		 * To iterate over all Links of this Face.
+		 */
+		private Link nextLink;
+		private Link previousLink;
+
+		private Link(Node oneEnd, Node last, Link previousLink) {
+			this.first = oneEnd;
+			this.last = last;
+			this.previousLink = previousLink;
+		}
+
+		private void setNext(Link previousLink) {
+			previousLink.nextLink = this;
+		}
+
+		private void moveFirst(Node newFirst) {
+			this.first = newFirst;
+		}
+		private void moveLast(Node newLast) {
+			this.last = newLast;
+		}
+
+		public void replaceWith(Link another) {
+			if (nextLink != null) {
+				nextLink.previousLink = another;
+			}
+			if (previousLink != null) {
+				previousLink.nextLink = another;
+			}
+		}
 	}
 }

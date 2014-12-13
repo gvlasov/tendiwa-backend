@@ -8,6 +8,16 @@ public class ShrinkedNode extends Node {
 	}
 
 	@Override
+	boolean hasPair() {
+		return false;
+	}
+
+	@Override
+	SplitNode getPair() {
+		throw new RuntimeException("CenterNode can't have a pair; only SplitNode can");
+	}
+
+	@Override
 	boolean isSplitRightNode() {
 		return false;
 	}

@@ -20,21 +20,20 @@ public class SplitEvent extends SkeletonEvent implements Comparable<SkeletonEven
 		this.oppositeEdgeStart = oppositeEdgeStart;
 	}
 
-	public Node parent() {
+	Node parent() {
 		return parent;
 	}
 
 
-
-	public Node getOppositeEdgeStartMovementHead() {
-		return oppositeEdgeStart.face.startHalfface.getLast();
+	Node getOppositeEdgeStartMovementHead() {
+		return oppositeEdgeStart.face.whereStartMoved();
 	}
 
-	public Node getOppositeEdgeEndMovementHead() {
-		return oppositeEdgeStart.face.endHalfface.getLast();
+	Node getOppositeEdgeEndMovementHead() {
+		return oppositeEdgeStart.face.whereEndMoved();
 	}
 
-	public Node oppositeEdgeStart() {
+	Node oppositeEdgeStart() {
 		return oppositeEdgeStart;
 	}
 }

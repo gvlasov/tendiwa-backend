@@ -51,7 +51,7 @@ class RegistryOfSplitEventsOnEdges {
 			node1 = lower.node;
 		}
 		if (node1 == null) {
-			return oppositeEdgeStart.currentEdgeStart.face().endHalfface.getLast();
+			return oppositeEdgeStart.currentEdgeStart.face().whereEndMoved();
 		} else {
 			return node1;
 		}
@@ -75,7 +75,7 @@ class RegistryOfSplitEventsOnEdges {
 			node1 = higher.node;
 		}
 		if (node1 == null) {
-			return oppositeEdgeStart.currentEdgeStart.face().startHalfface.getLast();
+			return oppositeEdgeStart.currentEdgeStart.face().whereStartMoved();
 		} else {
 			return node1;
 		}

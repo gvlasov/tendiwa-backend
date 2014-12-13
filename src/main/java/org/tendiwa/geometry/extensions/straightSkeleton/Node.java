@@ -24,6 +24,10 @@ abstract class Node implements Iterable<Node> {
 	boolean isReflex;
 	protected Node next;
 	private Node previous;
+	/**
+	 * Along with {@link #previousEdgeStart}, determines the direction of {@link #bisector} as well as two faces that
+	 * this Node divides.
+	 */
 	protected InitialNode currentEdgeStart;
 	protected InitialNode previousEdgeStart;
 	protected Segment2D currentEdge;
@@ -45,9 +49,46 @@ abstract class Node implements Iterable<Node> {
 			&& previousEdge().isParallel(previousEdge()));
 	}
 
+	/**
+	 * Adds {@code newNode} to faces at {@link #currentEdgeStart} and {@link #previousEdgeStart} <i>if</i> it is
+	 * necessary.
+	 */
+	void growAdjacentFaces(Node newNode) {
+		growFace(newNode, currentEdgeStart);
+		growFace(newNode, previousEdgeStart);
+	}
+
+	private void growFace(Node newNode, InitialNode faceHolder) {
+		Node linkStart = getPairIfNecessary(this, faceHolder);
+		Node linkEnd = getPairIfNecessary(newNode, faceHolder);
+		faceHolder.face.addLink(linkStart, linkEnd);
+	}
+
+	private Node getPairIfNecessary(Node node, InitialNode faceHolder) {
+		if (node.hasPair()) {
+			SplitNode pair = node.getPair();
+			if (pair.isProcessed()) {
+				return node;
+			}
+			boolean holderHoldsCurrentEdge = faceHolder == currentEdgeStart;
+			assert holderHoldsCurrentEdge || faceHolder == previousEdgeStart;
+			if (holderHoldsCurrentEdge && pair.previousEdgeStart == faceHolder) {
+				return pair;
+			}
+			if (!holderHoldsCurrentEdge && pair.currentEdgeStart == faceHolder) {
+				return pair;
+			}
+		}
+		return node;
+	}
+
 	protected Node(Point2D vertex) {
 		this.vertex = vertex;
 	}
+
+	abstract boolean hasPair();
+
+	abstract SplitNode getPair();
 
 	Node next() {
 		assert next != null;

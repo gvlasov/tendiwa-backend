@@ -26,6 +26,16 @@ class InitialNode extends Node {
 
 
 	@Override
+	boolean hasPair() {
+		return false;
+	}
+
+	@Override
+	SplitNode getPair() {
+		throw new RuntimeException("InitialNode can't have a pair; only SplitNode can");
+	}
+
+	@Override
 	boolean isSplitRightNode() {
 		return false;
 	}
