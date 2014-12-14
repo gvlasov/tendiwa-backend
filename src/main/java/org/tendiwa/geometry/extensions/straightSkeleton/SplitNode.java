@@ -2,8 +2,7 @@ package org.tendiwa.geometry.extensions.straightSkeleton;
 
 import org.tendiwa.geometry.Point2D;
 
-public class SplitNode extends Node {
-	private final boolean left;
+abstract class SplitNode extends Node {
 	/**
 	 * Node at the same {@link org.tendiwa.geometry.Point2D} created as a result of {@link org.tendiwa.geometry
 	 * .extensions.straightSkeleton.SplitEvent}. Its {@link #pair} points to this node.
@@ -13,9 +12,8 @@ public class SplitNode extends Node {
 	 */
 	private SplitNode pair;
 
-	SplitNode(Point2D point, InitialNode previousEdgeStart, InitialNode currentEdgeStart, boolean left) {
+	SplitNode(Point2D point, InitialNode previousEdgeStart, InitialNode currentEdgeStart) {
 		super(point, previousEdgeStart, currentEdgeStart);
-		this.left = left;
 	}
 
 	void setPair(SplitNode pair) {
@@ -34,13 +32,9 @@ public class SplitNode extends Node {
 		return pair;
 	}
 
-	@Override
-	boolean isSplitRightNode() {
-		return !left;
-	}
+	abstract boolean isLeft();
 
-	@Override
-	boolean isSplitLeftNode() {
-		return left;
+	public boolean isPair(SplitNode node) {
+		return pair == node;
 	}
 }

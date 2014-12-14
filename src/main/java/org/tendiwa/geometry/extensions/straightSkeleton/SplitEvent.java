@@ -33,7 +33,7 @@ public class SplitEvent extends SkeletonEvent implements Comparable<SkeletonEven
 		return oppositeEdgeStart.face.whereEndMoved();
 	}
 
-	Node oppositeEdgeStart() {
+	InitialNode oppositeEdgeStart() {
 		return oppositeEdgeStart;
 	}
 }

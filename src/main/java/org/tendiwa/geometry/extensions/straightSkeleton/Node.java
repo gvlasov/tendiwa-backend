@@ -54,28 +54,37 @@ abstract class Node implements Iterable<Node> {
 	 * necessary.
 	 */
 	void growAdjacentFaces(Node newNode) {
+		growLeftFace(newNode);
+		growRightFace(newNode);
+	}
+	void growRightFace(Node newNode) {
 		growFace(newNode, currentEdgeStart);
+	}
+	void growLeftFace(Node newNode ) {
 		growFace(newNode, previousEdgeStart);
 	}
 
-	private void growFace(Node newNode, InitialNode faceHolder) {
-		Node linkStart = getPairIfNecessary(this, faceHolder);
-		Node linkEnd = getPairIfNecessary(newNode, faceHolder);
-		faceHolder.face.addLink(linkStart, linkEnd);
+	private void growFace(Node newNode, InitialNode faceStart) {
+		Node linkStart = getPairIfNecessary(this, faceStart);
+		Node linkEnd = getPairIfNecessary(newNode, faceStart);
+		faceStart.face.addLink(linkStart, linkEnd);
+		if  (faceStart.face.startHalfface.first != faceStart) {
+			assert false;
+		}
 	}
 
-	private Node getPairIfNecessary(Node node, InitialNode faceHolder) {
+	private Node getPairIfNecessary(Node node, InitialNode faceStart) {
 		if (node.hasPair()) {
 			SplitNode pair = node.getPair();
 			if (pair.isProcessed()) {
 				return node;
 			}
-			boolean holderHoldsCurrentEdge = faceHolder == currentEdgeStart;
-			assert holderHoldsCurrentEdge || faceHolder == previousEdgeStart;
-			if (holderHoldsCurrentEdge && pair.previousEdgeStart == faceHolder) {
+			boolean holderHoldsCurrentEdge = faceStart == currentEdgeStart;
+			assert holderHoldsCurrentEdge || faceStart == previousEdgeStart;
+			if (holderHoldsCurrentEdge && pair.previousEdgeStart == faceStart) {
 				return pair;
 			}
-			if (!holderHoldsCurrentEdge && pair.currentEdgeStart == faceHolder) {
+			if (!holderHoldsCurrentEdge && pair.currentEdgeStart == faceStart) {
 				return pair;
 			}
 		}
@@ -118,10 +127,6 @@ abstract class Node implements Iterable<Node> {
 	public boolean isProcessed() {
 		return isProcessed;
 	}
-
-	abstract boolean isSplitRightNode();
-
-	abstract boolean isSplitLeftNode();
 
 	public void computeReflexAndBisector() {
 		assert bisector == null;

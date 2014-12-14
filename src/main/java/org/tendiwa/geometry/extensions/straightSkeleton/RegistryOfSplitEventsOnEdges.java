@@ -22,25 +22,23 @@ class RegistryOfSplitEventsOnEdges {
 		nodes.forEach(this::initOriginalEdge);
 	}
 
-	void addSplitNode(Node oppositeEdgeStart, Node node, Orientation orientation) {
+	void addSplitNode(InitialNode oppositeEdgeStart, SplitNode node) {
 		assert edgesToSplitNodes.containsKey(oppositeEdgeStart);
 		edgesToSplitNodes.get(oppositeEdgeStart).add(
 			new SplitEventOnEdge(
 				node,
-				orientation,
 				projectionOnEdge(node.vertex, oppositeEdgeStart.currentEdge)
 			)
 		);
 	}
 
-	Node getNodeFromRight(Node oppositeEdgeStart, Node node) {
+	Node getNodeFromRight(InitialNode oppositeEdgeStart, SplitNode node) {
 		Node node1 = null;
 		SplitEventOnEdge lower = null;
 		try {
 			lower = edgesToSplitNodes.get(oppositeEdgeStart).lower(
 				new SplitEventOnEdge(
 					node,
-					Orientation.RIGHT,
 					projectionOnEdge(node.vertex, oppositeEdgeStart.currentEdge)
 				)
 			);
@@ -57,20 +55,14 @@ class RegistryOfSplitEventsOnEdges {
 		}
 	}
 
-	Node getNodeFromLeft(Node oppositeEdgeStart, Node node) {
+	Node getNodeFromLeft(InitialNode oppositeEdgeStart, LeftSplitNode node) {
 		Node node1 = null;
-		SplitEventOnEdge higher = null;
-		try {
-			higher = edgesToSplitNodes.get(oppositeEdgeStart).higher(
-				new SplitEventOnEdge(
-					node,
-					Orientation.LEFT,
-					projectionOnEdge(node.vertex, oppositeEdgeStart.currentEdge)
-				)
-			);
-		}catch (NullPointerException e) {
-			assert false;
-		}
+		SplitEventOnEdge higher = edgesToSplitNodes.get(oppositeEdgeStart).higher(
+			new SplitEventOnEdge(
+				node,
+				projectionOnEdge(node.vertex, oppositeEdgeStart.currentEdge)
+			)
+		);
 		if (higher != null) {
 			node1 = higher.node;
 		}
@@ -89,9 +81,9 @@ class RegistryOfSplitEventsOnEdges {
 					return 0;
 				}
 				assert o1.node != o2.node;
-				if (o1.node.vertex.equals(o2.node.vertex)) {
-					assert o1.orientation != o2.orientation;
-					return o1.orientation == Orientation.LEFT ? 1 : -1;
+				if (o1.node.isPair(o2.node)) {
+					assert o1.node.isLeft() != o2.node.isLeft();
+					return o1.node.isLeft() ? 1 : -1;
 				} else {
 					assert o1.projectionLength != o2.projectionLength;
 					return (int) Math.signum(o1.projectionLength - o2.projectionLength);
@@ -110,14 +102,11 @@ class RegistryOfSplitEventsOnEdges {
 	}
 
 	private class SplitEventOnEdge {
-		private final Orientation orientation;
-		private final Node node;
+		private final SplitNode node;
 		private final double projectionLength;
 
-		private SplitEventOnEdge(Node node, Orientation orientation, double projectionLength) {
+		private SplitEventOnEdge(SplitNode node,  double projectionLength) {
 			assert node != null;
-			assert orientation != null;
-			this.orientation = orientation;
 			this.projectionLength = projectionLength;
 			this.node = node;
 		}

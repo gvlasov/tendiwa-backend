@@ -35,16 +35,6 @@ class InitialNode extends Node {
 		throw new RuntimeException("InitialNode can't have a pair; only SplitNode can");
 	}
 
-	@Override
-	boolean isSplitRightNode() {
-		return false;
-	}
-
-	@Override
-	boolean isSplitLeftNode() {
-		return false;
-	}
-
 	protected Face face() {
 		return face;
 	}

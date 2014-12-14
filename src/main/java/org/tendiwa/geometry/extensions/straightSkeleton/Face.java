@@ -15,6 +15,8 @@ final class Face {
 		startHalfface = new Link(edgeStart, edgeStart, null);
 		endHalfface = new Link(edgeEnd, edgeEnd, startHalfface);
 		startHalfface.setNext(endHalfface);
+		assert startHalfface.nextLink == endHalfface && endHalfface.previousLink == startHalfface
+			&& startHalfface.previousLink == null && endHalfface.nextLink == null;
 		lastAddedLink = endHalfface;
 	}
 
@@ -124,8 +126,8 @@ final class Face {
 		return endHalfface.last;
 	}
 
-	private final class Link {
-		private Node first;
+	final class Link {
+		Node first;
 		private Node last;
 		/**
 		 * To iterate over all Links of this Face.
@@ -140,7 +142,7 @@ final class Face {
 		}
 
 		private void setNext(Link previousLink) {
-			previousLink.nextLink = this;
+			nextLink = previousLink;
 		}
 
 		private void moveFirst(Node newFirst) {

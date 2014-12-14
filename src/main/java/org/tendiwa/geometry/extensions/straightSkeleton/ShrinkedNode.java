@@ -17,13 +17,4 @@ public class ShrinkedNode extends Node {
 		throw new RuntimeException("CenterNode can't have a pair; only SplitNode can");
 	}
 
-	@Override
-	boolean isSplitRightNode() {
-		return false;
-	}
-
-	@Override
-	boolean isSplitLeftNode() {
-		return false;
-	}
 }

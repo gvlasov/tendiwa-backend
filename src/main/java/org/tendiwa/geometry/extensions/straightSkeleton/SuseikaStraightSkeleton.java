@@ -61,6 +61,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		while (!queue.isEmpty()) {
 			// Convex 2a
 			SkeletonEvent point = queue.poll();
+			// TODO: move handling methods to the corresponding classes?
 			if (point instanceof SplitEvent) {
 				handleSplitEvent((SplitEvent) point);
 			} else {
@@ -108,17 +109,15 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		// Non-convex 2e
 
 		// Split event produces two nodes at the same point, and those two nodes have distinct LAVs.
-		SplitNode leftNode = new SplitNode(
+		LeftSplitNode leftNode = new LeftSplitNode(
 			point,
 			point.parent().previousEdgeStart,
-			point.getOppositeEdgeEndMovementHead().previous().currentEdgeStart,
-			true
+			point.getOppositeEdgeEndMovementHead().previous().currentEdgeStart
 		);
-		SplitNode rightNode = new SplitNode(
+		RightSplitNode rightNode = new RightSplitNode(
 			point,
 			point.getOppositeEdgeEndMovementHead().previousEdgeStart,
-			point.parent().currentEdgeStart,
-			false
+			point.parent().currentEdgeStart
 		);
 		leftNode.setPair(rightNode);
 		rightNode.setPair(leftNode);
@@ -166,17 +165,15 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 
 		splitEventsRegistry.addSplitNode(
 			point.oppositeEdgeStart(),
-			leftNode,
-			RegistryOfSplitEventsOnEdges.Orientation.LEFT
+			leftNode
 		);
 		splitEventsRegistry.addSplitNode(
 			point.oppositeEdgeStart(),
-			rightNode,
-			RegistryOfSplitEventsOnEdges.Orientation.RIGHT
+			rightNode
 		);
 
-		point.parent().growAdjacentFaces(rightNode);
-		point.parent().growAdjacentFaces(leftNode);
+		point.parent().growRightFace(rightNode);
+		point.parent().growLeftFace(leftNode);
 
 		// Non-convex 2
 		integrateNewSplitNode(leftNode, point, false);
@@ -239,10 +236,8 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 //
 //			}
 //		} else {
-			point.leftParent().growAdjacentFaces(node);
-			point.leftParent().growAdjacentFaces(node);
-			point.rightParent().growAdjacentFaces(node);
-			point.rightParent().growAdjacentFaces(node);
+		point.leftParent().growAdjacentFaces(node);
+		point.rightParent().growAdjacentFaces(node);
 //		}
 
 		node.setPreviousInLav(point.leftParent().previous());
@@ -257,13 +252,6 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		if (e != null) {
 			queue.add(e);
 		}
-	}
-
-	private boolean shouldHeadJump(EdgeEvent point) {
-		return point.leftParent().isSplitLeftNode() && !point.leftParent().getPair().isProcessed()
-			||
-//			return
-			point.rightParent().isSplitRightNode() && !point.rightParent().getPair().isProcessed();
 	}
 
 	private void connectLast3SegmentsOfLav(EdgeEvent point) {
@@ -353,10 +341,12 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		assert start != null;
 		assert end != null;
 		arcs.put(start, end);
-		if (ShamosHoeyAlgorithm.areIntersected(arcs.entries().stream().map(e -> new Segment2D(e.getKey(), e.getValue
-			())).collect(Collectors.toList()))) {
+		if (
+			ShamosHoeyAlgorithm.areIntersected(
+				arcs.entries().stream().map(e -> new Segment2D(e.getKey(), e.getValue())).collect(Collectors.toList()))
+			) {
 			TestCanvas.canvas.draw(new Segment2D(start, end), DrawingSegment2D.withColorThin(Color.white));
-//			assert false;
+			assert false;
 		}
 	}
 
