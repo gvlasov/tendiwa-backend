@@ -7,6 +7,7 @@ abstract class SkeletonEvent extends Point2D implements Comparable<SkeletonEvent
 	/**
 	 * <i>v<sub>a</sub></i> in [Obdrzalek 1998]
 	 */
+	// TODO: Move parent up in hierarchy
 	protected final Node parent;
 
 	SkeletonEvent(double x, double y, Node parent) {

@@ -22,7 +22,7 @@ class RegistryOfSplitEventsOnEdges {
 		nodes.forEach(this::initOriginalEdge);
 	}
 
-	void addSplitNode(InitialNode oppositeEdgeStart, SplitNode node) {
+	void addSplitNode(OriginalEdgeStart oppositeEdgeStart, SplitNode node) {
 		assert edgesToSplitNodes.containsKey(oppositeEdgeStart);
 		edgesToSplitNodes.get(oppositeEdgeStart).add(
 			new SplitEventOnEdge(
@@ -32,7 +32,7 @@ class RegistryOfSplitEventsOnEdges {
 		);
 	}
 
-	Node getNodeFromRight(InitialNode oppositeEdgeStart, SplitNode node) {
+	Node getNodeFromRight(OriginalEdgeStart oppositeEdgeStart, SplitNode node) {
 		Node node1 = null;
 		SplitEventOnEdge lower = null;
 		try {
@@ -55,7 +55,7 @@ class RegistryOfSplitEventsOnEdges {
 		}
 	}
 
-	Node getNodeFromLeft(InitialNode oppositeEdgeStart, LeftSplitNode node) {
+	Node getNodeFromLeft(OriginalEdgeStart oppositeEdgeStart, LeftSplitNode node) {
 		Node node1 = null;
 		SplitEventOnEdge higher = edgesToSplitNodes.get(oppositeEdgeStart).higher(
 			new SplitEventOnEdge(

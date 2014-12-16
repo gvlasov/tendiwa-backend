@@ -6,33 +6,28 @@ import org.tendiwa.geometry.Segment2D;
 
 import java.awt.Color;
 
-class InitialNode extends Node {
+class OriginalEdgeStart extends Node {
 	Face face;
 
-	InitialNode(Segment2D edge) {
+	OriginalEdgeStart(Segment2D edge) {
 		super(edge.start);
 		TestCanvas.canvas.draw(edge.start, DrawingPoint2D.withColorAndSize(Color.white, 1));
 		currentEdge = edge;
 		currentEdgeStart = this;
 	}
 
-	void setPreviousInitial(InitialNode node) {
+	void setPreviousInitial(OriginalEdgeStart node) {
 		previousEdgeStart = node;
 	}
 
 	void initFace() {
-		this.face = new Face(currentEdgeStart, (InitialNode) currentEdgeStart.next());
+		this.face = new Face(currentEdgeStart, (OriginalEdgeStart) currentEdgeStart.next());
 	}
 
 
 	@Override
 	boolean hasPair() {
 		return false;
-	}
-
-	@Override
-	SplitNode getPair() {
-		throw new RuntimeException("InitialNode can't have a pair; only SplitNode can");
 	}
 
 	protected Face face() {

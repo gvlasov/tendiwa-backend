@@ -12,7 +12,7 @@ abstract class SplitNode extends Node {
 	 */
 	private SplitNode pair;
 
-	SplitNode(Point2D point, InitialNode previousEdgeStart, InitialNode currentEdgeStart) {
+	SplitNode(Point2D point, OriginalEdgeStart previousEdgeStart, OriginalEdgeStart currentEdgeStart) {
 		super(point, previousEdgeStart, currentEdgeStart);
 	}
 

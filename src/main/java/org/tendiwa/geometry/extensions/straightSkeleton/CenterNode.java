@@ -13,9 +13,4 @@ public class CenterNode extends Node {
 		return false;
 	}
 
-	@Override
-	SplitNode getPair() {
-		throw new RuntimeException("CenterNode can't have a pair; only SplitNode can");
-	}
-
 }

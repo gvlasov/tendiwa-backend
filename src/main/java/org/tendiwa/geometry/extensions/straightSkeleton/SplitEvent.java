@@ -7,13 +7,13 @@ import org.tendiwa.drawing.DrawableInto;
  */
 public class SplitEvent extends SkeletonEvent implements Comparable<SkeletonEvent> {
 	static DrawableInto canvas;
-	private final InitialNode oppositeEdgeStart;
+	private final OriginalEdgeStart oppositeEdgeStart;
 
 	SplitEvent(
 		double x,
 		double y,
 		Node parent,
-		InitialNode oppositeEdgeStart
+		OriginalEdgeStart oppositeEdgeStart
 	) {
 		// TODO: Make SkeletonEvent not extend Point2D
 		super(x, y, parent);
@@ -33,7 +33,7 @@ public class SplitEvent extends SkeletonEvent implements Comparable<SkeletonEven
 		return oppositeEdgeStart.face.whereEndMoved();
 	}
 
-	InitialNode oppositeEdgeStart() {
+	OriginalEdgeStart oppositeEdgeStart() {
 		return oppositeEdgeStart;
 	}
 }

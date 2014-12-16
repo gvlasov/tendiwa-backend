@@ -67,6 +67,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 			} else {
 				handleEdgeEvent((EdgeEvent) point);
 			}
+			assert Boolean.TRUE;
 		}
 		assert !arcs.isEmpty();
 //		if (canvas instanceof TestCanvas) {
@@ -75,7 +76,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 	}
 
 	private void queueInitialEvents() {
-		for (InitialNode node : initialLav.nodes) {
+		for (OriginalEdgeStart node : initialLav.nodes) {
 			SkeletonEvent e = computeNearerBisectorsIntersection(node);
 			if (e != null) {
 				queue.add(e);
@@ -112,7 +113,8 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		LeftSplitNode leftNode = new LeftSplitNode(
 			point,
 			point.parent().previousEdgeStart,
-			point.getOppositeEdgeEndMovementHead().previous().currentEdgeStart
+//			point.getOppositeEdgeEndMovementHead().previous().currentEdgeStart
+			point.oppositeEdgeStart()
 		);
 		RightSplitNode rightNode = new RightSplitNode(
 			point,
@@ -178,6 +180,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		// Non-convex 2
 		integrateNewSplitNode(leftNode, point, false);
 		integrateNewSplitNode(rightNode, point, true);
+		assert Boolean.TRUE;
 	}
 
 	private void handleEdgeEvent(EdgeEvent point) {
@@ -192,9 +195,9 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 			}
 			return;
 		}
-		assert point.leftParent().next() == point.rightParent() : point.leftParent().next().vertex + " " + point
-			.rightParent()
-			.vertex;
+		if ( point.leftParent().next() != point.rightParent()) {
+			assert false;
+		}
 		// Convex 2c
 		if (point.leftParent().previous().previous() == point.rightParent()) {
 			connectLast3SegmentsOfLav(point);
@@ -252,6 +255,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		if (e != null) {
 			queue.add(e);
 		}
+		assert Boolean.TRUE;
 	}
 
 	private void connectLast3SegmentsOfLav(EdgeEvent point) {
@@ -294,9 +298,10 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 //	}
 
 	private void eliminate2NodeLav(Node node1, Node node2) {
+		// TODO: This branch doesn't seem to occur
 		assert node1.next() == node2 && node2.next() == node1;
 		outputArc(node1.vertex, node2.vertex);
-		canvas.draw(new Segment2D(node1.vertex, node2.vertex), DrawingSegment2D.withColorThin(Color.white));
+		canvas.draw(new Segment2D(node1.vertex, node2.vertex), DrawingSegment2D.withColorThin(Color.magenta));
 		node1.setProcessed();
 		node2.setProcessed();
 		if (node1.hasPair()) {
@@ -352,30 +357,18 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 
 	private SkeletonEvent computeNearerBisectorsIntersection(Node node) {
 		// Non-convex 1c
-		RayIntersection next = null;
-		try {
-			next = node.bisector.intersectionWith(node.next().bisector);
-		} catch (GeometryException e) {
-			canvas.draw(node.vertex, DrawingPoint2D.withColorAndSize(Color.red, 4));
-			canvas.draw(node.next().vertex, DrawingPoint2D.withColorAndSize(Color.black, 4));
-			canvas.draw(node.bisector.segment, DrawingSegment2D.withColorDirected(Color.blue, 1));
-			canvas.draw(node.next().bisector.segment, DrawingSegment2D.withColorDirected(Color.green, 1));
-			throw new RuntimeException(e);
+		RayIntersection next = node.bisector.intersectionWith(node.next().bisector);
+		EdgeEvent sameLineIntersection = trySameLineIntersection(next, node, node.next());
+		if (sameLineIntersection != null) {
+			return sameLineIntersection;
 		}
-		RayIntersection previous = null;
-		try {
-			previous = node.bisector.intersectionWith(node.previous().bisector);
-		} catch (GeometryException e) {
-			canvas.draw(node.vertex, DrawingPoint2D.withColorAndSize(Color.red, 4));
-			canvas.draw(node.previous().vertex, DrawingPoint2D.withColorAndSize(Color.black, 4));
-			canvas.draw(node.bisector.segment, DrawingSegment2D.withColorDirected(Color.blue, 1));
-			canvas.draw(node.previousEdge(), DrawingSegment2D.withColorDirected(Color.blue, 1));
-			canvas.draw(node.currentEdge, DrawingSegment2D.withColorDirected(Color.blue, 1));
-			canvas.draw(node.previous().bisector.segment, DrawingSegment2D.withColorDirected(Color.green, 1));
-			canvas.draw(node.previous().previousEdge(), DrawingSegment2D.withColorDirected(Color.green, 1));
-			canvas.draw(node.previous().currentEdge, DrawingSegment2D.withColorDirected(Color.green, 1));
-			throw new RuntimeException(e);
+
+		RayIntersection previous = node.bisector.intersectionWith(node.previous().bisector);
+		sameLineIntersection = trySameLineIntersection(previous, node, node.previous());
+		if (sameLineIntersection != null) {
+			return sameLineIntersection;
 		}
+
 		Point2D nearer = null;
 		Node originalEdgeStart = null;
 		Node va = null;
@@ -423,22 +416,19 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		if (nearer == null) {
 			return null;
 		}
-//		try {
-//			assert initialLav.nodes.contains(originalEdgeStart) : originalEdgeStart.vertex;
-//			assert initialLav.nodes.contains(originalEdgeStart.next) : originalEdgeStart.next.vertex;
-//		} catch (AssertionError e) {
-//
-//			TestCanvas.canvas.draw(originalEdgeStart.vertex, DrawingPoint2D.withColorAndSize(Color.yellow, 3));
-//			TestCanvas.canvas.draw(originalEdgeStart.next.vertex, DrawingPoint2D.withColorAndSize(Color.magenta, 3));
-//			TestCanvas.canvas.draw(node.bisector.segment, DrawingSegment2D.withColorDirected(Color.yellow));
-//			throw new RuntimeException();
-//		}
+		return new EdgeEvent(nearer.x, nearer.y, va, vb);
+	}
 
-		EdgeEvent skeletonEvent = new EdgeEvent(nearer.x, nearer.y, va, vb);
-//		if (!initialLav.nodes.contains(node)) {
-//			canvas.draw(new Segment2D(node.vertex, nearer), DrawingSegment2D.withColorThin(Color.yellow));
-//		}
-		return skeletonEvent;
+	private EdgeEvent trySameLineIntersection(RayIntersection intersection, Node current, Node target) {
+		if (Double.isInfinite(intersection.r)) {
+			return new EdgeEvent(
+				(target.vertex.x + current.vertex.x) / 2,
+				(target.next().vertex.y + current.vertex.y) / 2,
+				current,
+				target
+			);
+		}
+		return null;
 	}
 
 	/**
@@ -500,13 +490,13 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 			assert false;
 		}
 		// TODO: If this is always true, we can get rid of casting
-		assert originalEdgeStart instanceof InitialNode;
+		assert originalEdgeStart instanceof OriginalEdgeStart;
 		SplitEvent skeletonEvent = new SplitEvent(
 			splitPoint.x,
 			splitPoint.y,
 			reflexNode,
 			// TODO: Get rid of casting
-			(InitialNode) originalEdgeStart
+			(OriginalEdgeStart) originalEdgeStart
 		);
 		return skeletonEvent;
 	}

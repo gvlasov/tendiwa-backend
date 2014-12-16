@@ -1,9 +1,6 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
-import org.tendiwa.core.meta.Utils;
 import org.tendiwa.drawing.DrawableInto;
-import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingPoint2D;
 import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
@@ -14,7 +11,7 @@ import java.util.*;
 import static org.tendiwa.geometry.extensions.straightSkeleton.CycleExtraVerticesRemover.removeVerticesOnLineBetweenNeighbors;
 
 class InitialListOfActiveVertices {
-	final ArrayList<InitialNode> nodes = new ArrayList<>();
+	final ArrayList<OriginalEdgeStart> nodes = new ArrayList<>();
 	final List<Segment2D> edges;
 	private final int size;
 
@@ -39,9 +36,9 @@ class InitialListOfActiveVertices {
 
 	private void createAndConnectNodes(List<Segment2D> edges) {
 		int l = edges.size();
-		InitialNode previous = null;
+		OriginalEdgeStart previous = null;
 		for (int i = 0; i < l; i++) {
-			InitialNode node = new InitialNode(edges.get(i));
+			OriginalEdgeStart node = new OriginalEdgeStart(edges.get(i));
 			if (i > 0) {
 				node.setPreviousInLav(previous);
 				node.setPreviousInitial(previous);
@@ -49,11 +46,11 @@ class InitialListOfActiveVertices {
 			previous = node;
 			nodes.add(node);
 		}
-		InitialNode first = nodes.get(0);
-		InitialNode last = nodes.get(l - 1);
+		OriginalEdgeStart first = nodes.get(0);
+		OriginalEdgeStart last = nodes.get(l - 1);
 		first.setPreviousInLav(last);
 		first.setPreviousInitial(last);
-		nodes.forEach(InitialNode::initFace);
+		nodes.forEach(OriginalEdgeStart::initFace);
 	}
 
 	private List<Segment2D> createEdgesBetweenVertices(List<Point2D> vertices, DrawableInto canvas) {

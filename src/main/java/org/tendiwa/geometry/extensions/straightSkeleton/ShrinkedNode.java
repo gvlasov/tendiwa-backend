@@ -3,7 +3,7 @@ package org.tendiwa.geometry.extensions.straightSkeleton;
 import org.tendiwa.geometry.Point2D;
 
 public class ShrinkedNode extends Node {
-	ShrinkedNode(Point2D point, InitialNode previousEdgeStart, InitialNode currentEdgeStart) {
+	ShrinkedNode(Point2D point, OriginalEdgeStart previousEdgeStart, OriginalEdgeStart currentEdgeStart) {
 		super(point, previousEdgeStart, currentEdgeStart);
 	}
 
@@ -11,10 +11,4 @@ public class ShrinkedNode extends Node {
 	boolean hasPair() {
 		return false;
 	}
-
-	@Override
-	SplitNode getPair() {
-		throw new RuntimeException("CenterNode can't have a pair; only SplitNode can");
-	}
-
 }

@@ -28,13 +28,13 @@ abstract class Node implements Iterable<Node> {
 	 * Along with {@link #previousEdgeStart}, determines the direction of {@link #bisector} as well as two faces that
 	 * this Node divides.
 	 */
-	protected InitialNode currentEdgeStart;
-	protected InitialNode previousEdgeStart;
+	protected OriginalEdgeStart currentEdgeStart;
+	protected OriginalEdgeStart previousEdgeStart;
 	protected Segment2D currentEdge;
 	final Point2D vertex;
 	static DrawableInto canvas;
 
-	Node(Point2D point, InitialNode previousEdgeStart, InitialNode currentEdgeStart) {
+	Node(Point2D point, OriginalEdgeStart previousEdgeStart, OriginalEdgeStart currentEdgeStart) {
 		this(point);
 		if (previousEdgeStart == currentEdgeStart) {
 			assert false;
@@ -57,23 +57,26 @@ abstract class Node implements Iterable<Node> {
 		growLeftFace(newNode);
 		growRightFace(newNode);
 	}
+
 	void growRightFace(Node newNode) {
 		growFace(newNode, currentEdgeStart);
 	}
-	void growLeftFace(Node newNode ) {
+
+	void growLeftFace(Node newNode) {
 		growFace(newNode, previousEdgeStart);
 	}
 
-	private void growFace(Node newNode, InitialNode faceStart) {
+	private void growFace(Node newNode, OriginalEdgeStart faceStart) {
 		Node linkStart = getPairIfNecessary(this, faceStart);
 		Node linkEnd = getPairIfNecessary(newNode, faceStart);
 		faceStart.face.addLink(linkStart, linkEnd);
-		if  (faceStart.face.startHalfface.first != faceStart) {
+		if (faceStart.face.startHalfface.first != faceStart) {
 			assert false;
 		}
+		assert Boolean.TRUE;
 	}
 
-	private Node getPairIfNecessary(Node node, InitialNode faceStart) {
+	private Node getPairIfNecessary(Node node, OriginalEdgeStart faceStart) {
 		if (node.hasPair()) {
 			SplitNode pair = node.getPair();
 			if (pair.isProcessed()) {
@@ -97,7 +100,9 @@ abstract class Node implements Iterable<Node> {
 
 	abstract boolean hasPair();
 
-	abstract SplitNode getPair();
+	SplitNode getPair() {
+		throw new RuntimeException(this.getClass().getName() + " can't have a pair; only SplitNode can");
+	}
 
 	Node next() {
 		assert next != null;
@@ -202,12 +207,16 @@ abstract class Node implements Iterable<Node> {
 					} while (current != node);
 					throw new RuntimeException("Node not in lav");
 				}
-				if (++i > 100) {
+				checkLavCorrectness();
+				points.add(node.vertex);
+				return node;
+			}
+
+			private void checkLavCorrectness() {
+				if (++i > 1000) {
 					drawLav();
 					throw new RuntimeException("Too many iterations");
 				}
-				points.add(node.vertex);
-				return node;
 			}
 
 			private void drawLav() {

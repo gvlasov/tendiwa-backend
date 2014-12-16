@@ -1,5 +1,11 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
+import org.jetbrains.annotations.Nullable;
+import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawingSegment2D;
+import org.tendiwa.geometry.Segment2D;
+
+import java.awt.Color;
 import java.util.*;
 
 final class Face {
@@ -8,10 +14,10 @@ final class Face {
 	private Link linkAtEnd1;
 	private Link linkAtEnd2;
 	private boolean linkAtEnd1First;
-	private boolean chainAtEnd2First;
+	private boolean linkAtEnd2First;
 	private Link lastAddedLink;
 
-	Face(InitialNode edgeStart, InitialNode edgeEnd) {
+	Face(OriginalEdgeStart edgeStart, OriginalEdgeStart edgeEnd) {
 		startHalfface = new Link(edgeStart, edgeStart, null);
 		endHalfface = new Link(edgeEnd, edgeEnd, startHalfface);
 		startHalfface.setNext(endHalfface);
@@ -31,6 +37,16 @@ final class Face {
 		findLinksAtEnds(end1, end2);
 		boolean hasLinkAt1 = linkAtEnd1 != null;
 		boolean hasLinkAt2 = linkAtEnd2 != null;
+		if (endHalfface.first.vertex.hashCode() == -970673654) {
+			TestCanvas.canvas.draw(
+				new Segment2D(
+					end1.vertex,
+					end2.vertex
+				),
+				DrawingSegment2D.withColorThin(Color.magenta)
+			);
+			assert Boolean.TRUE;
+		}
 		if (hasLinkAt1 && hasLinkAt2) {
 			uniteChainsWithAddedEdge();
 		} else if (hasLinkAt1) {
@@ -55,7 +71,7 @@ final class Face {
 	}
 
 	private void prolongChainAtEnd2(Node end1) {
-		if (chainAtEnd2First) {
+		if (linkAtEnd2First) {
 			linkAtEnd2.moveFirst(end1);
 		} else {
 			linkAtEnd2.moveLast(end1);
@@ -67,22 +83,27 @@ final class Face {
 		// but if chain at end 2 is the initial left or right half-face,
 		// then we grow it instead.
 		// Of course there is a case when the chain at end 1 is the left (right) half-face,
-		// and the chain at end 2 is the right (left) half-face. In that case order doesn't matter.
+		// and the chain at end 2 is the another, right (left) half-face. In that case order doesn't matter.
 		if (linkAtEnd2 == startHalfface || linkAtEnd2 == endHalfface) {
-			Link buf = linkAtEnd1;
+			// Swap
+			Link linkBuf = linkAtEnd1;
 			linkAtEnd1 = linkAtEnd2;
-			linkAtEnd2 = buf;
+			linkAtEnd2 = linkBuf;
+			// Swap
+			boolean firstBuf = linkAtEnd1First;
+			linkAtEnd1First = linkAtEnd2First;
+			linkAtEnd2First = firstBuf;
 		}
-		if (linkAtEnd1First && chainAtEnd2First) {
-			linkAtEnd1.moveFirst(linkAtEnd2.first);
-		} else if (linkAtEnd1First) {
+		if (linkAtEnd1First && linkAtEnd2First) {
 			linkAtEnd1.moveFirst(linkAtEnd2.last);
-		} else if (chainAtEnd2First) {
-			linkAtEnd1.moveLast(linkAtEnd2.first);
-		} else {
+		} else if (linkAtEnd1First) {
+			linkAtEnd1.moveFirst(linkAtEnd2.first);
+		} else if (linkAtEnd2First) {
 			linkAtEnd1.moveLast(linkAtEnd2.last);
+		} else {
+			linkAtEnd1.moveLast(linkAtEnd2.first);
 		}
-		linkAtEnd2.replaceWith(linkAtEnd1);
+		linkAtEnd2.removeFromChain();
 	}
 
 	private void findLinksAtEnds(Node oneEnd, Node anotherEnd) {
@@ -101,10 +122,10 @@ final class Face {
 				if (linkAtEnd2 == null) {
 					if (link.first == anotherEnd) {
 						linkAtEnd2 = link;
-						chainAtEnd2First = true;
+						linkAtEnd2First = true;
 					} else if (link.last == anotherEnd) {
 						linkAtEnd2 = link;
-						chainAtEnd2First = false;
+						linkAtEnd2First = false;
 					}
 				}
 			} catch (NoSuchElementException e) {
@@ -116,6 +137,7 @@ final class Face {
 
 	private void createNewLink(Node oneEnd, Node anotherEnd) {
 		lastAddedLink = new Link(oneEnd, anotherEnd, lastAddedLink);
+		lastAddedLink.previousLink.setNext(lastAddedLink);
 	}
 
 	Node whereStartMoved() {
@@ -132,32 +154,33 @@ final class Face {
 		/**
 		 * To iterate over all Links of this Face.
 		 */
-		private Link nextLink;
-		private Link previousLink;
+		@Nullable private Link nextLink;
+		@Nullable private Link previousLink;
 
-		private Link(Node oneEnd, Node last, Link previousLink) {
+		private Link(Node oneEnd, Node last, @Nullable Link previousLink) {
 			this.first = oneEnd;
 			this.last = last;
 			this.previousLink = previousLink;
 		}
 
-		private void setNext(Link previousLink) {
-			nextLink = previousLink;
+		private void setNext(@Nullable Link nextLink) {
+			this.nextLink = nextLink;
 		}
 
 		private void moveFirst(Node newFirst) {
 			this.first = newFirst;
 		}
+
 		private void moveLast(Node newLast) {
 			this.last = newLast;
 		}
 
-		public void replaceWith(Link another) {
+		public void removeFromChain() {
 			if (nextLink != null) {
-				nextLink.previousLink = another;
+				nextLink.previousLink = previousLink;
 			}
 			if (previousLink != null) {
-				previousLink.nextLink = another;
+				previousLink.setNext(nextLink);
 			}
 		}
 	}

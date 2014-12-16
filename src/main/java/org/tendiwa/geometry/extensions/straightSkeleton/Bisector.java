@@ -12,25 +12,39 @@ class Bisector {
 		assert !previousEdge.start.equals(previousEdge.end);
 		assert !currentEdge.start.equals(currentEdge.end);
 		assert !previousEdge.equals(currentEdge);
+		// TODO: Do we compute parallel edges?
 		if (previousEdge.isParallel(currentEdge)) {
-			this.segment = new Segment2D(
-				new Point2D(
-					(previousEdge.start.x + currentEdge.end.x) / 2,
-					(previousEdge.start.y + currentEdge.end.y) / 2
-				),
-				new Point2D(
-					(previousEdge.end.x + currentEdge.start.x) / 2,
-					(previousEdge.end.y + currentEdge.start.y) / 2
-				)
-			);
+			this.segment = computeParallelSegment(previousEdge, currentEdge);
 		} else {
 //			Point2D edgeIntersection = new RayIntersection(previousEdge, currentEdge).getLinesIntersectionPoint();
-			this.segment = new Segment2D(
-				vertex,
-				computeEnd(previousEdge, currentEdge, vertex, isReflex)
-			);
+			this.segment = computeNonParallelSegment(previousEdge, currentEdge, vertex, isReflex);
 		}
 		assert !segment.start.equals(segment.end);
+	}
+
+	private Segment2D computeNonParallelSegment(
+		Segment2D previousEdge,
+		Segment2D currentEdge,
+		Point2D vertex,
+		boolean isReflex
+	) {
+		return new Segment2D(
+			vertex,
+			computeEnd(previousEdge, currentEdge, vertex, isReflex)
+		);
+	}
+
+	private Segment2D computeParallelSegment(Segment2D previousEdge, Segment2D currentEdge) {
+		return new Segment2D(
+			new Point2D(
+				(previousEdge.start.x + currentEdge.end.x) / 2,
+				(previousEdge.start.y + currentEdge.end.y) / 2
+			),
+			new Point2D(
+				(previousEdge.end.x + currentEdge.start.x) / 2,
+				(previousEdge.end.y + currentEdge.start.y) / 2
+			)
+		);
 	}
 
 	private Point2D computeEnd(
