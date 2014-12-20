@@ -67,8 +67,15 @@ abstract class Node implements Iterable<Node> {
 	}
 
 	private void growFace(Node newNode, OriginalEdgeStart faceStart) {
-		Node linkStart = getPairIfNecessary(this, faceStart);
-		Node linkEnd = getPairIfNecessary(newNode, faceStart);
+//		Node linkStart = getPairIfNecessary(this, faceStart);
+//		Node linkEnd = getPairIfNecessary(newNode, faceStart);
+		Node linkStart = this;
+		Node linkEnd = newNode;
+		boolean b = linkStart == this && linkEnd == newNode;
+		if (!b) {
+			assert false;
+		}
+		assert b;
 		faceStart.face.addLink(linkStart, linkEnd);
 		if (faceStart.face.startHalfface.first != faceStart) {
 			assert false;
@@ -79,9 +86,9 @@ abstract class Node implements Iterable<Node> {
 	private Node getPairIfNecessary(Node node, OriginalEdgeStart faceStart) {
 		if (node.hasPair()) {
 			SplitNode pair = node.getPair();
-			if (pair.isProcessed()) {
-				return node;
-			}
+//			if (pair.isProcessed()) {
+//				return node;
+//			}
 			boolean holderHoldsCurrentEdge = faceStart == currentEdgeStart;
 			assert holderHoldsCurrentEdge || faceStart == previousEdgeStart;
 			if (holderHoldsCurrentEdge && pair.previousEdgeStart == faceStart) {
@@ -126,6 +133,7 @@ abstract class Node implements Iterable<Node> {
 	 * Remembers that this point is processed, that is, it is not a part of some LAV anymore.
 	 */
 	void setProcessed() {
+		assert !isProcessed;
 		isProcessed = true;
 	}
 
@@ -240,4 +248,16 @@ abstract class Node implements Iterable<Node> {
 		return Iterables.contains(this, node);
 	}
 
+	/**
+	 * A usual node is never a pair for some other node. Only a {@link SplitNode} may be a pair to another {@link
+	 * SplitNode}.
+	 *
+	 * @param node
+	 * 	Another node.
+	 * @return true if this node and {@code node} were created by the same {@link org.tendiwa.geometry.extensions
+	 * .straightSkeleton.SplitEvent}, false otherwise.
+	 */
+	public boolean isPair(Node node) {
+		return false;
+	}
 }

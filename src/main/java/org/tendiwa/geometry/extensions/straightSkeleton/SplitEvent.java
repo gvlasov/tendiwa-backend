@@ -24,15 +24,6 @@ public class SplitEvent extends SkeletonEvent implements Comparable<SkeletonEven
 		return parent;
 	}
 
-
-	Node getOppositeEdgeStartMovementHead() {
-		return oppositeEdgeStart.face.whereStartMoved();
-	}
-
-	Node getOppositeEdgeEndMovementHead() {
-		return oppositeEdgeStart.face.whereEndMoved();
-	}
-
 	OriginalEdgeStart oppositeEdgeStart() {
 		return oppositeEdgeStart;
 	}

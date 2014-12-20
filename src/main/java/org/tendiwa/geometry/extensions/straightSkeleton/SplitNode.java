@@ -32,9 +32,11 @@ abstract class SplitNode extends Node {
 		return pair;
 	}
 
-	abstract boolean isLeft();
 
-	public boolean isPair(SplitNode node) {
+	@Override
+	public boolean isPair(Node node) {
 		return pair == node;
 	}
+
+	abstract boolean isLeft();
 }

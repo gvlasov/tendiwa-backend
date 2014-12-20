@@ -5,6 +5,8 @@ import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Vector2D;
 import org.tendiwa.geometry.RayIntersection;
 
+import javax.annotation.Nonnull;
+
 class Bisector {
 	final Segment2D segment;
 
@@ -80,12 +82,16 @@ class Bisector {
 		).r < 0 || new RayIntersection(currentEdge, reversePrevious).r < 0;
 	}
 
-	RayIntersection intersectionWith(Bisector bisector) {
-		return new RayIntersection(
-			segment.start,
-			segment.end,
-			bisector.segment
-		);
+	RayIntersection intersectionWith(@Nonnull Bisector bisector) {
+		try {
+			return new RayIntersection(
+				segment.start,
+				segment.end,
+				bisector.segment
+			);
+		} catch (NullPointerException e) {
+			throw e;
+		}
 	}
 
 }

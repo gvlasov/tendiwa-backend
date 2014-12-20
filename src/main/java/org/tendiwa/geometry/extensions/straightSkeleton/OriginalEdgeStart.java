@@ -6,6 +6,10 @@ import org.tendiwa.geometry.Segment2D;
 
 import java.awt.Color;
 
+/**
+ * Apart from being a {@link Node}, this class acts as an access point to an original edge of a polygon emanating
+ * from this node.
+ */
 class OriginalEdgeStart extends Node {
 	Face face;
 
@@ -33,4 +37,5 @@ class OriginalEdgeStart extends Node {
 	protected Face face() {
 		return face;
 	}
+
 }
