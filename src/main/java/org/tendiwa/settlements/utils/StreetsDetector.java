@@ -17,7 +17,7 @@ import java.util.*;
 public final class StreetsDetector {
 	private static final Object JOINING_PROHIBITED = Boolean.TRUE;
 	private final UndirectedGraph<Point2D, Segment2D> cityGraph;
-	private final Map<Point2D, Deque<Point2D>> ends = new HashMap<>();
+	private final Map<Point2D, Deque<Point2D>> ends = new LinkedHashMap<>();
 	private final Multimap<Segment2D, List<Point2D>> deferredChains = HashMultimap.create();
 	private final Collection<Point2D> usedVertices;
 	private final HashSet<Segment2D> usedEdges = new HashSet<>();
@@ -35,7 +35,7 @@ public final class StreetsDetector {
 	 * 	A planar graph.
 	 * @return Streets found in a road graph.
 	 */
-	public static Set<ImmutableList<Point2D>> detectStreets(UndirectedGraph<Point2D, Segment2D> cityGraph) {
+	public static ImmutableSet<ImmutableList<Point2D>> detectStreets(UndirectedGraph<Point2D, Segment2D> cityGraph) {
 		List<Set<Point2D>> connectivityComponents = new ConnectivityInspector<>(cityGraph).connectedSets();
 		ImmutableSet.Builder<ImmutableList<Point2D>> builder = ImmutableSet.builder();
 		for (Set<Point2D> component : connectivityComponents) {
@@ -262,7 +262,7 @@ public final class StreetsDetector {
 		}
 		// Here are stored edges coming from this vertex that already have the best pair.
 		Collection<Segment2D> chainedEdges = new HashSet<>();
-		Collection<Deque<Point2D>> answer = new HashSet<>();
+		Collection<Deque<Point2D>> answer = new LinkedHashSet<>();
 		// Add pairs of edges angle between which is closest to Math.PI radians.
 		while (!sorted.isEmpty()) {
 			EdgePair bestPair = sorted.first();
@@ -298,7 +298,6 @@ public final class StreetsDetector {
 			}
 		}
 		return answer;
-
 	}
 
 	/**

@@ -113,7 +113,7 @@ public class BlockRegion extends EnclosedBlock {
 			throw new IllegalArgumentException("lotDeviance must be in [0;1]");
 		}
 		Queue<BlockRegion> queue = new LinkedList<>();
-		Set<BlockRegion> output = new HashSet<>();
+		Set<BlockRegion> output = new LinkedHashSet<>();
 		queue.add(this);
 		boolean firstSplit = true;
 		while (!queue.isEmpty()) {
@@ -246,7 +246,7 @@ public class BlockRegion extends EnclosedBlock {
 	 * @return A set of polygons split by a line from the given polygon.
 	 */
 	private Set<BlockRegion> splitRegion(BlockRegion region, Point2D a, Point2D b) {
-		Set<BlockRegion> output = new HashSet<>();
+		Set<BlockRegion> output = new LinkedHashSet<>();
 		Vector2D ab = Vector2D.fromStartToEnd(a, b);
 		TObjectDoubleMap<Node> positions = computeEdgeStartPositions(region, a, b);
 		TObjectDoubleMap<Node> locationOnAb = new TObjectDoubleHashMap<>();

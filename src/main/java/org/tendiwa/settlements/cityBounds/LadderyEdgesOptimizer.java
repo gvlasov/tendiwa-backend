@@ -52,7 +52,7 @@ final class LadderyEdgesOptimizer {
 			removeVertex(vertex, neighbors.one, neighbors.another, ladderyCycleGraph);
 			verticesRemoved++;
 		}
-		System.out.println(verticesRemoved + "/" + initialVerticesNumber + " vertices removed");
+//		System.out.println(verticesRemoved + "/" + initialVerticesNumber + " vertices removed");
 		return ladderyCycleGraph;
 	}
 
