@@ -3,13 +3,14 @@ package org.tendiwa.settlements.buildings;
 import org.tendiwa.core.CardinalDirection;
 import org.tendiwa.core.HorizontalPlane;
 import org.tendiwa.core.Location;
-import org.tendiwa.settlements.RectangleWithNeighbors;
 import org.tendiwa.settlements.streets.Street;
+import org.tendiwa.settlements.utils.RectangleWithNeighbors;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * UrbanPlanner decides where to place individual {@link Building}s using {@link org.tendiwa.settlements.buildings
@@ -17,29 +18,32 @@ import java.util.stream.Collectors;
  */
 public final class UrbanPlanner implements BuildingPlacer {
 
-	private final Map<ArchitecturePolicy, Architecture> architecture = new HashMap<>();
+	private final Map<ArchitecturePolicy, Architecture> architecture = new LinkedHashMap<>();
 	private final HorizontalPlane plane;
 	private final double streetsWidth;
+	private final LotFacadeAssigner facadeAssigner;
 	private final Random random;
-	private LotsTouchingStreets lotsTouchingStreets;
+	private StreetEntranceSystem streetEntranceSystem;
 
 
-	public UrbanPlanner(HorizontalPlane plane, double streetsWidth, Random random) {
+	public UrbanPlanner(HorizontalPlane plane, double streetsWidth, LotFacadeAssigner facadeAssigner, Random random) {
 		this.plane = plane;
 		this.streetsWidth = streetsWidth;
+		this.facadeAssigner = facadeAssigner;
 		this.random = random;
 	}
 
 
 	@Override
 	public void placeBuildings(CityBuilder.Info cityInfo) {
-		lotsTouchingStreets = new LotsTouchingStreets(
-			cityInfo.getStreets().stream().map(Street::getPoints).collect(Collectors.toSet()),
+		streetEntranceSystem = new StreetEntranceSystem(
+			cityInfo.getStreets().stream().map(Street::getPoints).collect(toList()),
+			cityInfo.getBuildingPlaces(),
 			streetsWidth
 		);
 		Map<RectangleWithNeighbors, Architecture> placement = new UrbanPlanningStrategy(
 			architecture,
-			lotsTouchingStreets,
+			streetEntranceSystem,
 			cityInfo.getBuildingPlaces(),
 			random
 		).compute();
@@ -66,9 +70,11 @@ public final class UrbanPlanner implements BuildingPlacer {
 //		features.setStreet(
 //			streetAssigner.getStreetsForLot(where).iterator().next()
 //		);
+		CardinalDirection facadeDirection = facadeAssigner.getFacadeDirection(where);
+		assert facadeDirection != null;
 		what.draw(
 			features,
-			CardinalDirection.S,
+			facadeDirection,
 			new Location(plane, where.rectangle.x, where.rectangle.y, where.rectangle.width, where.rectangle.height)
 		);
 		info.addBuilding(features.build());

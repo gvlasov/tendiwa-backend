@@ -14,6 +14,7 @@ import java.util.Optional;
  * Adds more geometry methods to Rectangle. Unlike {@link java.awt.Rectangle}, this class can't be of zero width or
  * height.
  */
+// TODO: Make Rectangle immutable
 public class Rectangle implements Placeable, BoundedCellSet {
 	public final int x;
 	public final int y;
@@ -37,6 +38,7 @@ public class Rectangle implements Placeable, BoundedCellSet {
 		this.height = r.height;
 	}
 
+	// TODO: Get rid of this constructor
 	public Rectangle(java.awt.Rectangle r) {
 		this.x = r.x;
 		this.y = r.y;
@@ -705,7 +707,12 @@ public class Rectangle implements Placeable, BoundedCellSet {
 	 * @see #shrink(int) (int)
 	 */
 	public Rectangle stretch(int dSize) {
-		return new Rectangle(x - dSize, y - dSize, width + dSize * 2, height + dSize * 2);
+		return new Rectangle(
+			x - dSize,
+			y - dSize,
+			width + dSize * 2,
+			height + dSize * 2
+		);
 	}
 
 	public int getMaxX() {

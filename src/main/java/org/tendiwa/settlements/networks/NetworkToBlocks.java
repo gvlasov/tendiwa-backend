@@ -2,25 +2,22 @@ package org.tendiwa.settlements.networks;
 
 import com.google.common.collect.ImmutableSet;
 import org.jgrapht.UndirectedGraph;
-import org.tendiwa.drawing.DrawingAlgorithm;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.*;
+import org.tendiwa.drawing.extensions.DrawingMinimalCycle;
+import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
-import org.tendiwa.geometry.extensions.ShamosHoeyAlgorithm;
 import org.tendiwa.graphs.Filament;
 import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.graphs.MinimumCycleBasis;
 
 import java.awt.Color;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 
 /**
  * Divides space inside a network into enclosed blocks.

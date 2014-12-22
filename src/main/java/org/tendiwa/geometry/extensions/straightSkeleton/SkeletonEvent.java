@@ -1,22 +1,22 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
+import org.jetbrains.annotations.NotNull;
 import org.tendiwa.geometry.Point2D;
 
-abstract class SkeletonEvent extends Point2D implements Comparable<SkeletonEvent> {
+abstract class SkeletonEvent implements Comparable<SkeletonEvent> {
 	final double distanceToOriginalEdge;
+	final Point2D point;
 	/**
 	 * <i>v<sub>a</sub></i> in [Obdrzalek 1998]
 	 */
-	// TODO: Move parent up in hierarchy
-	protected final Node parent;
 
-	SkeletonEvent(double x, double y, Node parent) {
-		super(x, y);
-		this.distanceToOriginalEdge = distanceToLine(parent.currentEdge);
-		this.parent = parent;
+	SkeletonEvent(Point2D point, Node parent) {
+		this.point = point;
+		this.distanceToOriginalEdge = point.distanceToLine(parent.currentEdge);
 	}
+
 	@Override
-	public int compareTo(SkeletonEvent o) {
+	public int compareTo(@NotNull SkeletonEvent o) {
 		if (distanceToOriginalEdge > o.distanceToOriginalEdge) {
 			return 1;
 		} else if (distanceToOriginalEdge < o.distanceToOriginalEdge) {
@@ -24,4 +24,7 @@ abstract class SkeletonEvent extends Point2D implements Comparable<SkeletonEvent
 		}
 		return 0;
 	}
+
+	abstract void handle(SuseikaStraightSkeleton skeleton);
+
 }

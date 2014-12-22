@@ -3,7 +3,7 @@ package org.tendiwa.settlements.buildings;
 import org.tendiwa.core.CardinalDirection;
 import org.tendiwa.core.Character;
 import org.tendiwa.geometry.CellSet;
-import org.tendiwa.settlements.RectangleWithNeighbors;
+import org.tendiwa.settlements.utils.RectangleWithNeighbors;
 
 import java.util.LinkedList;
 import java.util.List;

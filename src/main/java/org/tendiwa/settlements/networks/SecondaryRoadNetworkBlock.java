@@ -30,12 +30,7 @@ public final class SecondaryRoadNetworkBlock extends EnclosedBlock {
 	}
 
 	public List<BlockRegion> shrinkToRegions(double depth, int seed) {
-		UndirectedGraph<Point2D, Segment2D> cap;
-		try {
-			cap = new SuseikaStraightSkeleton(outline).cap(depth);
-		} catch (GeometryException e) {
-			return ImmutableList.of();
-		}
+		UndirectedGraph<Point2D, Segment2D> cap = new SuseikaStraightSkeleton(outline).cap(depth);
 		MinimumCycleBasis<Point2D, Segment2D> basis = new MinimumCycleBasis<>(
 			cap,
 			Point2DVertexPositionAdapter.get()
@@ -50,6 +45,6 @@ public final class SecondaryRoadNetworkBlock extends EnclosedBlock {
 
 	@Override
 	public String toString() {
-		return "Block from "+outline.get(0);
+		return "Block from " + outline.get(0);
 	}
 }

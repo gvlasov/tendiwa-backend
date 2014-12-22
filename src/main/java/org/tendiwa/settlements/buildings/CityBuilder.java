@@ -3,7 +3,7 @@ package org.tendiwa.settlements.buildings;
 import com.google.common.collect.ImmutableSet;
 import org.tendiwa.geometry.Placeable;
 import org.tendiwa.geometry.Point2D;
-import org.tendiwa.settlements.RectangleWithNeighbors;
+import org.tendiwa.settlements.utils.RectangleWithNeighbors;
 import org.tendiwa.settlements.streets.LotStreetAssigner;
 import org.tendiwa.settlements.streets.Street;
 

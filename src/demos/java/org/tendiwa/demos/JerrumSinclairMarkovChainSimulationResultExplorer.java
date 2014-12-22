@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.alg.HopcroftKarpBipartiteMatching;
 import org.jgrapht.graph.SimpleGraph;
+import org.tendiwa.drawing.GraphExplorer;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
@@ -19,7 +20,7 @@ import static java.util.stream.IntStream.range;
 
 public class JerrumSinclairMarkovChainSimulationResultExplorer implements Runnable {
 
-	public static final int NUMBER_OF_MATCHINGS_TO_GENERATE = 110;
+	public static final int NUMBER_OF_MATCHINGS_TO_GENERATE = 8;
 
 	public static void main(String[] args) {
 		Demos.run(JerrumSinclairMarkovChainSimulationResultExplorer.class);
@@ -67,7 +68,8 @@ public class JerrumSinclairMarkovChainSimulationResultExplorer implements Runnab
 				.withInitialMatching(matching)
 				.withOneOfPartitions(onePartition)
 				.withNumberOfSteps(8000)
-				.withRandom(new Random(i));
+				.withRandom(new Random(0));
+			new GraphExplorer(generatedMatching, 400, 400, 2);
 		}
 	}
 }

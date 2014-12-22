@@ -38,8 +38,8 @@ public class StraightSkeletonDemo implements Runnable {
 		Config config = new Config();
 		config.saveGif = false;
 		config.drawToCanvas = false;
-		config.startIteration = 116;
-		config.numberOfIterations = 1;
+		config.startIteration = 0;
+		config.numberOfIterations = 180;
 		config.gifPath = System.getProperty("user.home") + "/test.gif";
 		config.drawEdges = false;
 		config.fps = 30;

@@ -16,7 +16,7 @@ public class ArchitecturePolicyBuilder {
 	private Placeable allowedArea;
 	private Collection<Architecture> presence = new LinkedHashSet<>();
 	private Collection<Street> streets = new LinkedHashSet<>();
-	private int minInstancesTopBound = Integer.MAX_VALUE;
+	private int minInstancesTopBound = 0;
 
 	public ArchitecturePolicyBuilder withMinInstances(int minInstances) {
 		this.minInstances = minInstances;

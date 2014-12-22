@@ -1,8 +1,6 @@
 package org.tendiwa.settlements.buildings;
 
 import com.google.common.collect.ImmutableMap;
-import gnu.trove.map.TObjectIntMap;
-import gnu.trove.map.hash.TObjectIntHashMap;
 import org.jgrapht.EdgeFactory;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.alg.HopcroftKarpBipartiteMatching;
@@ -10,7 +8,7 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.graphs.algorithms.jerrumSinclair.QuasiJerrumSinclairMarkovChain;
 import org.tendiwa.math.IntersectingSetsFiller;
-import org.tendiwa.settlements.RectangleWithNeighbors;
+import org.tendiwa.settlements.utils.RectangleWithNeighbors;
 import org.tendiwa.terrain.WorldGenerationException;
 
 import java.util.*;
@@ -28,27 +26,27 @@ final class UrbanPlanningStrategy {
 
 	/**
 	 * @param architecture
-	 * @param lotsTouchingStreets
+	 * @param streetEntranceSystem
 	 * @param lots
 	 * @param random
 	 * 	Seeded random.
 	 */
 	UrbanPlanningStrategy(
 		Map<ArchitecturePolicy, Architecture> architecture,
-		LotsTouchingStreets lotsTouchingStreets,
+		StreetEntranceSystem streetEntranceSystem,
 		Set<RectangleWithNeighbors> lots,
 		Random random
 	) {
 		this.architecture = architecture;
 		this.lots = lots;
 		this.random = new Random(random.nextInt());
-		this.possiblePlaces = new PossiblePlacesFinder(lotsTouchingStreets)
+		this.possiblePlaces = new PossiblePlacesFinder(streetEntranceSystem)
 			.findPossiblePlaces(architecture, lots);
 	}
 
 	/**
 	 * Generates a configuration of what {@link Architecture} is going to what {@link
-	 * org.tendiwa.settlements.RectangleWithNeighbors} based on
+	 * org.tendiwa.settlements.utils.RectangleWithNeighbors} based on
 	 * what policies are assigned to those Architectures.
 	 *
 	 * @return A mapping from lots to architecture in those lots.
@@ -63,7 +61,7 @@ final class UrbanPlanningStrategy {
 		Map<RectangleWithNeighbors, Architecture> answer = new LinkedHashMap<>();
 		int lotsClaimed = 0;
 		for (ArchitecturePolicy policy : architecture.keySet()) {
-			int minInstances = policy.getAcualMinInstances(possiblePlaces.get(policy).size());
+			int minInstances = policy.getActualMinInstances(possiblePlaces.get(policy).size());
 			for (int i = 0; i < minInstances; i++) {
 				NeedForPlace needForPlace = new NeedForPlace(policy);
 				partition1.add(needForPlace);
@@ -73,9 +71,9 @@ final class UrbanPlanningStrategy {
 					bipartiteGraph.addVertex(place);
 					bipartiteGraph.addEdge(needForPlace, place);
 				}
-				lotsClaimed += minInstances;
-				assert lotsClaimed <= lots.size();
 			}
+			lotsClaimed += minInstances;
+			assert lotsClaimed <= lots.size();
 		}
 		assert partition2.size() <= lots.size();
 		addImaginaryPolicyForTheRestOfLots(bipartiteGraph, lotsClaimed, partition1, partition2);
@@ -89,7 +87,7 @@ final class UrbanPlanningStrategy {
 		int minInstancesSum = architecture
 			.keySet()
 			.stream()
-			.map(p -> p.getAcualMinInstances(possiblePlaces.get(p).size()))
+			.map(p -> p.getActualMinInstances(possiblePlaces.get(p).size()))
 			.reduce(0, (a, b) -> a + b);
 		assert answer.size() >= minInstancesSum : answer.size() + " " + minInstancesSum;
 		putArbitraryAssignments(answer);
@@ -205,7 +203,7 @@ final class UrbanPlanningStrategy {
 //			ArchitecturePolicy policy = iter.next();
 //			LinkedHashSet<RectangleWithNeighbors> lotsForPolicy = possiblePlaces.get(policy);
 //			int lotsAvailableToPolicy = possiblePlaces.get(policy).size();
-//			int lotsNotClaimedForPolicy = lotsAvailableToPolicy - policy.getAcualMinInstances(lotsAvailableToPolicy);
+//			int lotsNotClaimedForPolicy = lotsAvailableToPolicy - policy.getActualMinInstances(lotsAvailableToPolicy);
 //			int lotsLeftToFill = numberOfAllLots - lotsClaimed;
 //			if (lotsNotClaimedForPolicy < lotsLeftToFill) {
 //				for (RectangleWithNeighbors lot : lotsForPolicy) {
@@ -259,65 +257,18 @@ final class UrbanPlanningStrategy {
 			sizesOfSubsets.put(possiblePlaces.get(policy), policy);
 		}
 
+		int numberOfLots = lots.size();
 		ImmutableMap<RectangleWithNeighbors, Set<RectangleWithNeighbors>> map = new IntersectingSetsFiller<>(
 			lots,
 			possiblePlaces.values(),
-			a -> sizesOfSubsets.get(a).maxInstances,
+			a -> Math.min(sizesOfSubsets.get(a).maxInstances, numberOfLots),
 			random
 		).getAnswer();
 		for (RectangleWithNeighbors lot : map.keySet()) {
 			answer.put(lot, architecture.get(sizesOfSubsets.get(map.get(lot))));
 		}
-//
-//
-//		TObjectIntMap<ArchitecturePolicy> policiesThatNeedLot = preparePoliciesThatNeedLots(possiblePlaces);
-//		while (!policiesThatNeedLot.isEmpty()) {
-//			boolean found = false;
-//			for (RectangleWithNeighbors lot : lots) {
-//				ArchitecturePolicy policyThatNeedsLot = chooseRandomPolicyThatNeedsLot(policiesThatNeedLot);
-//				if (!usedLots.contains(lot)) {
-//					found = true;
-//					usedLots.add(lot);
-//					answer.put(lot, architecture.get(policyThatNeedsLot));
-//					if (policiesThatNeedLot.get(policyThatNeedsLot) == 1) {
-//						policiesThatNeedLot.remove(policyThatNeedsLot);
-//					} else {
-//						policiesThatNeedLot.adjustValue(policyThatNeedsLot, -1);
-//					}
-//				}
-//			}
-//			assert found;
-//		}
 	}
 
-	private TObjectIntMap<ArchitecturePolicy> preparePoliciesThatNeedLots(
-		LinkedHashMap<ArchitecturePolicy, LinkedHashSet<RectangleWithNeighbors>> possiblePlaces
-	) {
-		TObjectIntMap<ArchitecturePolicy> policiesThatNeedLot = new TObjectIntHashMap<>(
-			possiblePlaces.keySet().size()
-		);
-
-		for (Map.Entry<ArchitecturePolicy, LinkedHashSet<RectangleWithNeighbors>> e : possiblePlaces.entrySet()) {
-			ArchitecturePolicy policy = e.getKey();
-			LinkedHashSet<RectangleWithNeighbors> availableLots = e.getValue();
-			int availableLotsSize = availableLots.size();
-			int lotsLeftToOccupy = Math.min(availableLotsSize, policy.maxInstances)
-				- policy.getAcualMinInstances(availableLotsSize);
-			assert lotsLeftToOccupy >= 0;
-			if (lotsLeftToOccupy > 0) {
-				policiesThatNeedLot.put(policy, lotsLeftToOccupy);
-			}
-		}
-		return policiesThatNeedLot;
-	}
-
-	private ArchitecturePolicy chooseRandomPolicyThatNeedsLot(
-		TObjectIntMap<ArchitecturePolicy> policiesThatNeedLot
-	) {
-		int size = policiesThatNeedLot.size();
-		return (ArchitecturePolicy) policiesThatNeedLot.keys()
-			[(int) Math.floor(size * random.nextDouble())];
-	}
 
 
 	private static class NeedForPlace {

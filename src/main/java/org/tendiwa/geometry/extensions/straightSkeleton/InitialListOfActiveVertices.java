@@ -1,15 +1,21 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
-import org.tendiwa.drawing.DrawableInto;
-import org.tendiwa.drawing.extensions.DrawingSegment2D;
+import com.google.common.collect.Lists;
+import org.tendiwa.core.meta.Utils;
+import org.tendiwa.geometry.JTSUtils;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 
-import java.awt.Color;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.tendiwa.geometry.extensions.straightSkeleton.CycleExtraVerticesRemover.removeVerticesOnLineBetweenNeighbors;
 
+/**
+ * From a list of vertices forming a polygon, creates
+ * {@link org.tendiwa.geometry.extensions.straightSkeleton.OriginalEdgeStart}s and connects those
+ * {@link org.tendiwa.geometry.extensions.straightSkeleton.OriginalEdgeStart}s with each other.
+ */
 class InitialListOfActiveVertices {
 	final ArrayList<OriginalEdgeStart> nodes = new ArrayList<>();
 	final List<Segment2D> edges;
@@ -19,14 +25,15 @@ class InitialListOfActiveVertices {
 	 * @param vertices
 	 * 	List of points going counter-clockwise.
 	 */
-	InitialListOfActiveVertices(List<Point2D> vertices, DrawableInto canvas) {
+	InitialListOfActiveVertices(List<Point2D> vertices, boolean trustCounterClockwise) {
+		if (!trustCounterClockwise && !JTSUtils.isYDownCCW(vertices)) {
+			vertices = Lists.reverse(vertices);
+		}
 		vertices = removeVerticesOnLineBetweenNeighbors(vertices);
-		edges = createEdgesBetweenVertices(vertices, canvas);
+		edges = createEdgesBetweenVertices(vertices);
 		assert vertices.size() == edges.size();
 		createAndConnectNodes(edges);
-		for (Node node : nodes) {
-			node.computeReflexAndBisector();
-		}
+		nodes.forEach(Node::computeReflexAndBisector);
 		this.size = edges.size();
 	}
 
@@ -53,17 +60,16 @@ class InitialListOfActiveVertices {
 		nodes.forEach(OriginalEdgeStart::initFace);
 	}
 
-	private List<Segment2D> createEdgesBetweenVertices(List<Point2D> vertices, DrawableInto canvas) {
+	private List<Segment2D> createEdgesBetweenVertices(List<Point2D> vertices) {
 		int l = vertices.size();
 		List<Segment2D> edges = new ArrayList<>(l);
 		for (int i = 0; i < l; i++) {
 			edges.add(
 				new Segment2D(
 					vertices.get(i),
-					vertices.get(i + 1 < l ? i + 1 : 0)
+					vertices.get(Utils.nextIndex(l, i))
 				)
 			);
-			canvas.draw(edges.get(i), DrawingSegment2D.withColorThin(Color.RED));
 		}
 		return edges;
 	}

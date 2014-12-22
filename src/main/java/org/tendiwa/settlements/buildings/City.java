@@ -2,7 +2,7 @@ package org.tendiwa.settlements.buildings;
 
 import com.google.common.collect.ImmutableSet;
 import org.tendiwa.geometry.Placeable;
-import org.tendiwa.settlements.RectangleWithNeighbors;
+import org.tendiwa.settlements.utils.RectangleWithNeighbors;
 import org.tendiwa.settlements.streets.Street;
 
 import java.util.Map;

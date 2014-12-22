@@ -16,8 +16,9 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
+import org.tendiwa.settlements.buildings.StreetEntranceSystem;
 import org.tendiwa.settlements.networks.CityGeometryBuilder;
-import org.tendiwa.settlements.RectangleWithNeighbors;
+import org.tendiwa.settlements.utils.RectangleWithNeighbors;
 import org.tendiwa.settlements.networks.RoadsPlanarGraphModel;
 import org.tendiwa.settlements.utils.BuildingPlacesFilters;
 import org.tendiwa.settlements.utils.RectangularBuildingLots;
@@ -92,10 +93,12 @@ public class BigCityDemo implements Runnable {
 				Color streetColor = streetsColoring.get(street);
 				canvas.draw(street, DrawingChain.withColor(streetColor));
 			}
-			Set<RectangleWithNeighbors> recGroups = RectangularBuildingLots
-				.placeInside(roadsPlanarGraphModel)
+			Set<RectangleWithNeighbors> lots = RectangularBuildingLots
+				.placeInside(roadsPlanarGraphModel);
+			StreetEntranceSystem streetEntranceSystem = new StreetEntranceSystem(streets, lots, 8);
+			Set<RectangleWithNeighbors> recGroups = lots
 				.stream()
-				.filter(BuildingPlacesFilters.closeToRoads(streets, 8))
+				.filter(BuildingPlacesFilters.closeToRoads(streets, lots, 8))
 				.collect(Collectors.toSet());
 
 			for (RectangleWithNeighbors rectangleWithNeighbors : recGroups) {

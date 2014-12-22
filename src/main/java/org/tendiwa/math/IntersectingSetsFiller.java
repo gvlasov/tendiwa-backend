@@ -53,13 +53,21 @@ public class IntersectingSetsFiller<T> {
 			subsets.size()
 		);
 		elementSetClass = Set.class;
+
+		int contentsSize = superset.size();
+
 		for (Set<T> subset : subsets) {
 			int value = subsetsToCaps.applyAsInt(subset);
+			if (value > contentsSize) {
+				throw new IllegalArgumentException(
+					"One of subsets has greater cap than the number of elements " +
+						"present in A (cap is " + value + ", cardinality of A is " + contentsSize
+				);
+			}
 			positionsLeft.put(subset, value);
 		}
 
 		Map<T, Set<T>[]> containing = prepareContainingMap(superset, subsets);
-		int contentsSize = superset.size();
 		int[] indices = IntegerPermutationGenerator.generateUsingFisherYates(contentsSize, contentsSize, random);
 		T[] arrayContents = (T[]) superset.toArray();
 		ImmutableMap.Builder<T, Set<T>> builder = ImmutableMap.builder();

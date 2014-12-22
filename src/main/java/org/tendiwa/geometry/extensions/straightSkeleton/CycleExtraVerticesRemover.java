@@ -1,6 +1,7 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
 import com.google.common.collect.Lists;
+import org.tendiwa.core.meta.Utils;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Vector2D;
@@ -32,11 +33,12 @@ public class CycleExtraVerticesRemover {
 			nonRemovedVertices.put(i, vertices.get(i));
 		}
 		for (int i = 0; i < l; i++) {
-			if (isOnLineBetweenPreviousAndNextNodes(
-				vertices.get(i - 1 == -1 ? l - 1 : i - 1),
-				vertices.get(i),
-				vertices.get(i + 1 == l ? 0 : i + 1)
-			)
+			if (
+				isOnLineBetweenPreviousAndNextNodes(
+					vertices.get(Utils.previousIndex(l, i)),
+					vertices.get(i),
+					vertices.get(Utils.nextIndex(l, i))
+				)
 				) {
 				nonRemovedVertices.remove(i);
 			}

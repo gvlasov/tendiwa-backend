@@ -5,9 +5,9 @@ import org.tendiwa.core.CardinalDirection;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.Segment2D;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.tendiwa.geometry.Segment2D.create;
-import static org.tendiwa.settlements.buildings.FairLotFacadeAndStreetAssigner.getDirectionToSegment;
+import static org.tendiwa.settlements.buildings.RectangleToSegmentDirection.getDirectionToSegment;
 
 public class FairLotFacadeAndStreetAssignerTest {
 	Rectangle rectangle = new Rectangle(50, 50, 50, 50);
@@ -62,7 +62,7 @@ public class FairLotFacadeAndStreetAssignerTest {
 	/**
 	 * Non axis-parallel segments that cross two borders of the area defined by the same side of a rectangle.
 	 *
-	 * @see org.tendiwa.settlements.buildings.FairLotFacadeAndStreetAssigner#pointIsFacingRectangleSide(org.tendiwa.geometry.Point2D,
+	 * @see org.tendiwa.settlements.buildings.RectangleToSegmentDirection#pointIsFacingRectangleSide(org.tendiwa.geometry.Point2D,
 	 * org.tendiwa.geometry.Rectangle)
 	 */
 	@Test
@@ -76,7 +76,7 @@ public class FairLotFacadeAndStreetAssignerTest {
 	/**
 	 * Segments that have none of their points in areas in front of rectangle's sides.
 	 *
-	 * @see org.tendiwa.settlements.buildings.FairLotFacadeAndStreetAssigner#pointIsFacingRectangleSide(org.tendiwa.geometry.Point2D,
+	 * @see org.tendiwa.settlements.buildings.RectangleToSegmentDirection#pointIsFacingRectangleSide(org.tendiwa.geometry.Point2D,
 	 * org.tendiwa.geometry.Rectangle)
 	 */
 	@Test

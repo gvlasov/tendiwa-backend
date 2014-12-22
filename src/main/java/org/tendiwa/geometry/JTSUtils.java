@@ -9,6 +9,7 @@ import java.util.List;
 public class JTSUtils {
 	public static final GeometryFactory DEFAULT_GEOMETRY_FACTORY = new GeometryFactory();
 
+	// TODO: http://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order
 	public static boolean isYDownCCW(List<Point2D> vertices) {
 
 		int l = vertices.size();

@@ -38,7 +38,7 @@ public final class ArchitecturePolicy {
 		this.onStreet = onStreet;
 	}
 
-	int getAcualMinInstances(int availableInstances) {
+	int getActualMinInstances(int availableInstances) {
 		if (minInstancesTopBound > 0) {
 			if (minInstancesTopBound > availableInstances) {
 				return availableInstances;

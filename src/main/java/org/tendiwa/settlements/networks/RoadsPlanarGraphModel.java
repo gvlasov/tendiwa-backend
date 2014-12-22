@@ -218,7 +218,7 @@ public final class RoadsPlanarGraphModel {
 		);
 		Map<MinimalCycle<Point2D, Segment2D>, UndirectedGraph<Point2D, Segment2D>> cellGraphs =
 			constructNetworkGraphs(primitives);
-		Collection<Segment2D> filamentEdges = new HashSet<>();
+		Collection<Segment2D> filamentEdges = new LinkedHashSet<>();
 		for (Filament<Point2D, Segment2D> filament : primitives.filamentsSet()) {
 			for (Segment2D line : filament) {
 				filamentEdges.add(line);
@@ -366,7 +366,7 @@ public final class RoadsPlanarGraphModel {
 	 * @return A graph of actual straight road segments.
 	 */
 	private UndirectedGraph<Point2D, Segment2D> buildLowLevelGraph() {
-		Collection<Point2D> vertices = new HashSet<>();
+		Collection<Point2D> vertices = new LinkedHashSet<>();
 		Collection<Segment2D> edges = new ArrayList<>(getMaxRoadSegmentsNumber(highLevelGraphEdges));
 		for (Segment2D edge : highLevelGraphEdges) {
 			if (!vertices.contains(edge.start)) {
@@ -541,7 +541,7 @@ public final class RoadsPlanarGraphModel {
 	 * NetworkWithinCycle#network()} described in this method's description.
 	 */
 	public Map<NetworkWithinCycle, UndirectedGraph<Point2D, Segment2D>> outerCycleEdges() {
-		Map<NetworkWithinCycle, UndirectedGraph<Point2D, Segment2D>> answer = new HashMap<>();
+		Map<NetworkWithinCycle, UndirectedGraph<Point2D, Segment2D>> answer = new LinkedHashMap<>();
 		TObjectIntMap<Segment2D> usedEdges = new TObjectIntHashMap<>();
 		for (NetworkWithinCycle network : networks) {
 			UndirectedGraph<Point2D, Segment2D> subgraph = new UndirectedSubgraph<>(

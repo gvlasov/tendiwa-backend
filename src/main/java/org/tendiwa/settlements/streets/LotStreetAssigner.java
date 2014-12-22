@@ -1,7 +1,7 @@
 package org.tendiwa.settlements.streets;
 
 import org.tendiwa.geometry.Point2D;
-import org.tendiwa.settlements.RectangleWithNeighbors;
+import org.tendiwa.settlements.utils.RectangleWithNeighbors;
 
 import java.util.List;
 

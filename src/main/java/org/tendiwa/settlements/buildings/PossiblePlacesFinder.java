@@ -2,17 +2,17 @@ package org.tendiwa.settlements.buildings;
 
 import org.tendiwa.geometry.Recs;
 import org.tendiwa.geometry.Rectangle;
-import org.tendiwa.settlements.RectangleWithNeighbors;
+import org.tendiwa.settlements.utils.RectangleWithNeighbors;
 import org.tendiwa.settlements.streets.Street;
 
 import java.util.*;
 
 public class PossiblePlacesFinder {
 
-	private final LotsTouchingStreets lotsTouchingStreets;
+	private final StreetEntranceSystem streetEntranceSystem;
 
-	public PossiblePlacesFinder(LotsTouchingStreets lotsTouchingStreets) {
-		this.lotsTouchingStreets = lotsTouchingStreets;
+	public PossiblePlacesFinder(StreetEntranceSystem streetEntranceSystem) {
+		this.streetEntranceSystem = streetEntranceSystem;
 	}
 
 	/**
@@ -25,7 +25,7 @@ public class PossiblePlacesFinder {
 	 * {@link org.tendiwa.settlements.buildings.ArchitecturePolicy#allowedArea};
 	 * </li>
 	 * <li>
-	 * {@link org.tendiwa.settlements.buildings.Architecture#fits(org.tendiwa.settlements.RectangleWithNeighbors)} )}.
+	 * {@link org.tendiwa.settlements.buildings.Architecture#fits(org.tendiwa.settlements.utils.RectangleWithNeighbors)} )}.
 	 * </li>
 	 * </ul>
 	 * <p>
@@ -51,7 +51,7 @@ public class PossiblePlacesFinder {
 			Collection<LinkedHashSet<RectangleWithNeighbors>> setsByConstraints = new ArrayList<>(3);
 			if (!policy.onStreet.isEmpty()) {
 				for (Street street : policy.onStreet) {
-					setsByConstraints.add(new LinkedHashSet<>(lotsTouchingStreets.getLotsOnStreet
+					setsByConstraints.add(new LinkedHashSet<>(streetEntranceSystem.getLotsOnStreet
 						(street)));
 				}
 			}

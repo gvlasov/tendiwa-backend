@@ -2,8 +2,7 @@ package org.tendiwa.drawing.extensions;
 
 import org.tendiwa.drawing.DrawingAlgorithm;
 import org.tendiwa.geometry.Rectangle;
-import org.tendiwa.settlements.RectangleWithNeighbors;
-import sun.java2d.loops.DrawRect;
+import org.tendiwa.settlements.utils.RectangleWithNeighbors;
 
 import java.awt.Color;
 

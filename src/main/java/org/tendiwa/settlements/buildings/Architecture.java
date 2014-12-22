@@ -3,7 +3,7 @@ package org.tendiwa.settlements.buildings;
 import org.tendiwa.core.CardinalDirection;
 import org.tendiwa.core.Location;
 import org.tendiwa.geometry.Rectangle;
-import org.tendiwa.settlements.RectangleWithNeighbors;
+import org.tendiwa.settlements.utils.RectangleWithNeighbors;
 
 
 /**
