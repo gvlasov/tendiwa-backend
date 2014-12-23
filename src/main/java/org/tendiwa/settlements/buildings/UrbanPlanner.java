@@ -1,5 +1,6 @@
 package org.tendiwa.settlements.buildings;
 
+import org.tendiwa.collections.Collectors;
 import org.tendiwa.core.CardinalDirection;
 import org.tendiwa.core.HorizontalPlane;
 import org.tendiwa.core.Location;
@@ -37,7 +38,7 @@ public final class UrbanPlanner implements BuildingPlacer {
 	@Override
 	public void placeBuildings(CityBuilder.Info cityInfo) {
 		polylineProximity = new PolylineProximity(
-			cityInfo.getStreets().stream().map(Street::getPoints).collect(toList()),
+			cityInfo.getStreets().stream().map(Street::getPoints).collect(Collectors.toImmutableSet()),
 			cityInfo.getBuildingPlaces(),
 			streetsWidth
 		);

@@ -17,7 +17,7 @@ import java.util.*;
  */
 public final class PolylineProximity {
 
-	private final Multimap<RectangleWithNeighbors, Segment2D> lotsToStreetSegments = HashMultimap.create();
+	private final Multimap<RectangleWithNeighbors, Segment2D> lotsToStreetSegments = LinkedHashMultimap.create();
 	// TODO: Try to use IdentityHashMap here (makes ordering non-deterministic?)
 	private final Map<Segment2D, List<Point2D>> segmentsToStreets = new LinkedHashMap<>();
 	private final Map<List<Point2D>, Set<RectangleWithNeighbors>> streetsToLots = new LinkedHashMap<>();
@@ -26,7 +26,7 @@ public final class PolylineProximity {
 	private final Set<Segment2D> allStreetSegments;
 
 	public PolylineProximity(
-		Collection<ImmutableList<Point2D>> streets,
+		Set<ImmutableList<Point2D>> streets,
 		Iterable<RectangleWithNeighbors> lots,
 		double streetsWidth
 	) {

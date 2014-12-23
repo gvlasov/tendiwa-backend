@@ -10,8 +10,9 @@ import org.tendiwa.settlements.streets.Street;
 import java.util.*;
 
 public class CityBuilder {
-	private final Map<RectangleWithNeighbors, Building> buildings = new HashMap<>();
-	private final Map<List<Point2D>, Street> streets = new IdentityHashMap<>();
+	private final Map<RectangleWithNeighbors, Building> buildings = new LinkedHashMap<>();
+	// TODO: Keys are lists, linked hash map has O(n) hashing!
+	private final Map<List<Point2D>, Street> streets = new LinkedHashMap<>();
 	private final Set<Placeable> districts = new LinkedHashSet<>();
 	private final Info info = new Info();
 	private String localizationId;

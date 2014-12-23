@@ -2,7 +2,7 @@ package org.tendiwa.collections;
 
 import java.util.Iterator;
 
-public class IntDoublyLinkedList implements Iterable<IntDoublyLinkedList.Node> {
+public final class IntDoublyLinkedList implements Iterable<IntDoublyLinkedList.Node> {
 	private Node head;
 	private Node tail;
 

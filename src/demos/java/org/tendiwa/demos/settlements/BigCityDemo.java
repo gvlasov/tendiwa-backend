@@ -5,6 +5,7 @@ import com.google.common.collect.Iterators;
 import com.google.inject.Inject;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
+import org.tendiwa.collections.Collectors;
 import org.tendiwa.data.FourCyclePenisGraph;
 import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.TestCanvas;
@@ -27,7 +28,6 @@ import org.tendiwa.settlements.utils.StreetsDetector;
 
 import java.awt.Color;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class BigCityDemo implements Runnable {
@@ -99,7 +99,7 @@ public class BigCityDemo implements Runnable {
 			Set<RectangleWithNeighbors> recGroups = lots
 				.stream()
 				.filter(BuildingPlacesFilters.closeToRoads(streets, lots, 8))
-				.collect(Collectors.toSet());
+				.collect(Collectors.toImmutableSet());
 
 			for (RectangleWithNeighbors rectangleWithNeighbors : recGroups) {
 				canvas.draw(

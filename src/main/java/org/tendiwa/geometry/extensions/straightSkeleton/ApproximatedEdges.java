@@ -44,7 +44,7 @@ public class ApproximatedEdges {
 	 * Chebyshov distance to {@code point}, then returns that closer point, otherwise returns {@code point}.
 	 */
 	private Point2D snapPointToExistingPoints(Point2D point) {
-		// TODO: This should probably rewritten without Streams API for better performance.
+		// TODO: This should probably be rewritten without Streams API for better performance.
 		Set<Point2D> closePoints = ImmutableSet
 			.<Point2D>builder()
 			.addAll(

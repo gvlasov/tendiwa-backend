@@ -49,7 +49,7 @@ public final class FairLotFacadeAndStreetAssigner implements LotFacadeAssigner, 
 		// TODO: would be great here, but there's no such thing in Guava.
 		streetToLots = HashMultimap.create(streetsSize, lotsSize / streetsSize);
 		facades = new HashMap<>(lotsSize);
-		lotToStreet = new LinkedHashMap<>(lotsSize); // LinkedHashMap used to preserve iteration order.
+		lotToStreet = new LinkedHashMap<>(lotsSize);
 		for (List<Point2D> street : streets) {
 			TestCanvas.canvas.draw(street, DrawingPointTrail.withColorThin(Color.red));
 		}
@@ -174,6 +174,7 @@ public final class FairLotFacadeAndStreetAssigner implements LotFacadeAssigner, 
 		if (facades.containsKey(lot)) {
 			return facades.get(lot);
 		} else {
+			// TODO: This is wrong
 			return CardinalDirection.E;
 		}
 	}
