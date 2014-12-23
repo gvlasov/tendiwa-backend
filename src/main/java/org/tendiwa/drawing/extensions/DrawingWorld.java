@@ -54,9 +54,6 @@ public class DrawingWorld {
 			HorizontalPlane defaultPlane = world.getPlane(0);
 			int width = world.getWidth();
 			int height = world.getHeight();
-			if (width > canvas.getWidth() || height > canvas.getHeight()) {
-				throw new RuntimeException("Size of world (" + width + "x" + height + ") is greater than size of canvas (" + width + "x" + height + ")");
-			}
 			for (int y = 0; y < height; y++) {
 				for (int x = 0; x < width; x++) {
 					GameObject gameObject = defaultPlane.getGameObject(x, y);

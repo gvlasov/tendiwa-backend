@@ -42,7 +42,6 @@ final class UrbanPlanningStrategy {
 		this.random = new Random(random.nextInt());
 		this.possiblePlaces = new PossiblePlacesFinder(polylineProximity)
 			.findPossiblePlaces(architecture, lots);
-		System.out.println();
 	}
 
 	/**

@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static org.tendiwa.geometry.Segment2D.create;
 import static org.tendiwa.settlements.buildings.RectangleToSegmentDirection.getDirectionToSegment;
 
-public class FairLotFacadeAndStreetAssignerTest {
+public class RectangleToSegmentDirectionTest {
 	Rectangle rectangle = new Rectangle(50, 50, 50, 50);
 
 	@Test
@@ -37,6 +37,7 @@ public class FairLotFacadeAndStreetAssignerTest {
 		assertSegmentIsFromSide(create(50, 25, 99, 25), CardinalDirection.N);
 		assertSegmentIsFromSide(create(51, 25, 101, 25), CardinalDirection.N);
 		assertSegmentIsFromSide(create(49, 25, 99, 25), CardinalDirection.N);
+		assertSegmentIsFromSide(create(25, 51, 150, 40), CardinalDirection.N);
 	}
 
 	@Test

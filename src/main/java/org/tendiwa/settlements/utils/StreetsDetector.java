@@ -37,7 +37,6 @@ public final class StreetsDetector {
 	 */
 	public static ImmutableSet<ImmutableList<Point2D>> detectStreets(UndirectedGraph<Point2D, Segment2D> cityGraph) {
 		List<Set<Point2D>> connectivityComponents = new ConnectivityInspector<>(cityGraph).connectedSets();
-		System.out.println(connectivityComponents);
 		ImmutableSet.Builder<ImmutableList<Point2D>> builder = ImmutableSet.builder();
 		for (Set<Point2D> component : connectivityComponents) {
 			UndirectedSubgraph<Point2D, Segment2D> componentSubgraph = new UndirectedSubgraph<>(

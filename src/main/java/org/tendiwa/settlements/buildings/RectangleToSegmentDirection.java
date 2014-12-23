@@ -115,7 +115,7 @@ final class RectangleToSegmentDirection {
 			return false;
 		}
 		return point.y >= rectangle.y && point.y <= rectangle.getMaxY()
-			|| point.x >= rectangle.x && point.x <= rectangle.getMaxY();
+			|| point.x >= rectangle.x && point.x <= rectangle.getMaxX();
 	}
 
 	/**
