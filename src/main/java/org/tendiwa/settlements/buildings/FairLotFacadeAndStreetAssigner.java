@@ -28,7 +28,7 @@ import java.util.*;
  * "unfortunate" streets could also belong to other streets).
  */
 public final class FairLotFacadeAndStreetAssigner implements LotFacadeAssigner, LotStreetAssigner {
-	private final StreetEntranceSystem lotsAndStreets;
+	private final PolylineProximity lotsAndStreets;
 	private final Map<RectangleWithNeighbors, CardinalDirection> facades;
 	private final Map<RectangleWithNeighbors, List<Point2D>> lotToStreet;
 	private final Multimap<List<Point2D>, RectangleWithNeighbors> streetToLots;
@@ -37,8 +37,8 @@ public final class FairLotFacadeAndStreetAssigner implements LotFacadeAssigner, 
 	private final ImmutableCollection<List<Point2D>> streets;
 	private final ImmutableCollection<RectangleWithNeighbors> lots;
 
-	private FairLotFacadeAndStreetAssigner(StreetEntranceSystem streetEntranceSystem) {
-		this.lotsAndStreets = streetEntranceSystem;
+	private FairLotFacadeAndStreetAssigner(PolylineProximity polylineProximity) {
+		this.lotsAndStreets = polylineProximity;
 		streets = lotsAndStreets.getStreets();
 		lots = lotsAndStreets.getLots();
 		int streetsSize = streets.size();
@@ -68,12 +68,12 @@ public final class FairLotFacadeAndStreetAssigner implements LotFacadeAssigner, 
 	}
 
 	/**
-	 * @param streetEntranceSystem
+	 * @param polylineProximity
 	 * 	Which streets are near which building lots.
 	 * @return
 	 */
-	public static FairLotFacadeAndStreetAssigner create(StreetEntranceSystem streetEntranceSystem) {
-		return new FairLotFacadeAndStreetAssigner(streetEntranceSystem);
+	public static FairLotFacadeAndStreetAssigner create(PolylineProximity polylineProximity) {
+		return new FairLotFacadeAndStreetAssigner(polylineProximity);
 	}
 
 	/**

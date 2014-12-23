@@ -26,21 +26,21 @@ final class UrbanPlanningStrategy {
 
 	/**
 	 * @param architecture
-	 * @param streetEntranceSystem
+	 * @param polylineProximity
 	 * @param lots
 	 * @param random
 	 * 	Seeded random.
 	 */
 	UrbanPlanningStrategy(
 		Map<ArchitecturePolicy, Architecture> architecture,
-		StreetEntranceSystem streetEntranceSystem,
+		PolylineProximity polylineProximity,
 		Set<RectangleWithNeighbors> lots,
 		Random random
 	) {
 		this.architecture = architecture;
 		this.lots = lots;
 		this.random = new Random(random.nextInt());
-		this.possiblePlaces = new PossiblePlacesFinder(streetEntranceSystem)
+		this.possiblePlaces = new PossiblePlacesFinder(polylineProximity)
 			.findPossiblePlaces(architecture, lots);
 	}
 

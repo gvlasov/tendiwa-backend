@@ -9,10 +9,10 @@ import java.util.*;
 
 public class PossiblePlacesFinder {
 
-	private final StreetEntranceSystem streetEntranceSystem;
+	private final PolylineProximity polylineProximity;
 
-	public PossiblePlacesFinder(StreetEntranceSystem streetEntranceSystem) {
-		this.streetEntranceSystem = streetEntranceSystem;
+	public PossiblePlacesFinder(PolylineProximity polylineProximity) {
+		this.polylineProximity = polylineProximity;
 	}
 
 	/**
@@ -51,7 +51,7 @@ public class PossiblePlacesFinder {
 			Collection<LinkedHashSet<RectangleWithNeighbors>> setsByConstraints = new ArrayList<>(3);
 			if (!policy.onStreet.isEmpty()) {
 				for (Street street : policy.onStreet) {
-					setsByConstraints.add(new LinkedHashSet<>(streetEntranceSystem.getLotsOnStreet
+					setsByConstraints.add(new LinkedHashSet<>(polylineProximity.getLotsOnStreet
 						(street)));
 				}
 			}

@@ -15,7 +15,7 @@ import java.util.*;
  * A building place can be on more than one street as a result of this algorithm, and deciding the unique street a
  * lot belongs to in not up to this class.
  */
-public final class StreetEntranceSystem {
+public final class PolylineProximity {
 
 	private final Multimap<RectangleWithNeighbors, Segment2D> lotsToStreetSegments = HashMultimap.create();
 	// TODO: Try to use IdentityHashMap here (makes ordering non-deterministic?)
@@ -25,7 +25,7 @@ public final class StreetEntranceSystem {
 	private final double streetsWidth;
 	private final Set<Segment2D> allStreetSegments;
 
-	public StreetEntranceSystem(
+	public PolylineProximity(
 		Collection<ImmutableList<Point2D>> streets,
 		Iterable<RectangleWithNeighbors> lots,
 		double streetsWidth
@@ -65,7 +65,7 @@ public final class StreetEntranceSystem {
 	private void addLot(RectangleWithNeighbors lot) {
 		Objects.requireNonNull(lot);
 		lot.allRectangles()
-			.forEach(rectangle -> findSegmentsForRectangle(lot, rectangle));
+			.forEach(rectangle -> findSegmentsForLot(lot, rectangle));
 		Set<List<Point2D>> streetsForLot = collectStreetsForLot(lot);
 		for (List<Point2D> street : streetsForLot) {
 			streetsToLots.get(street).add(lot);
@@ -80,7 +80,7 @@ public final class StreetEntranceSystem {
 	 * 	A lot to map to some segments.
 	 * @param rectangle
 	 */
-	private void findSegmentsForRectangle(RectangleWithNeighbors lot, Rectangle rectangle) {
+	private void findSegmentsForLot(RectangleWithNeighbors lot, Rectangle rectangle) {
 		Rectangle2D extendedRec = Recs2D.stretch(rectangle, streetsWidth + Vectors2D.EPSILON);
 		Rectangle2DWithMaxCoordinates extendedRecWithMaxCoordinates =
 			new Rectangle2DWithMaxCoordinates(extendedRec);
@@ -168,7 +168,7 @@ public final class StreetEntranceSystem {
 
 	/**
 	 * Constructs new immutable collection containing all streets known to this {@link
-	 * StreetEntranceSystem}
+	 * PolylineProximity}
 	 *
 	 * @return
 	 */

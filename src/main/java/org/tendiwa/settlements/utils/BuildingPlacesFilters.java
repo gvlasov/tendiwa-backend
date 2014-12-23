@@ -2,7 +2,7 @@ package org.tendiwa.settlements.utils;
 
 import com.google.common.collect.ImmutableList;
 import org.tendiwa.geometry.Point2D;
-import org.tendiwa.settlements.buildings.StreetEntranceSystem;
+import org.tendiwa.settlements.buildings.PolylineProximity;
 
 import java.util.Set;
 import java.util.function.Predicate;
@@ -24,7 +24,7 @@ public class BuildingPlacesFilters {
 		Iterable<RectangleWithNeighbors> lots,
 		double distance
 	) {
-		StreetEntranceSystem streetEntranceSystem = new StreetEntranceSystem(streets, lots, distance);
-		return streetEntranceSystem::hasStreets;
+		PolylineProximity polylineProximity = new PolylineProximity(streets, lots, distance);
+		return polylineProximity::hasStreets;
 	}
 }

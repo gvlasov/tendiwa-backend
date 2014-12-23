@@ -23,7 +23,7 @@ public final class UrbanPlanner implements BuildingPlacer {
 	private final double streetsWidth;
 	private final LotFacadeAssigner facadeAssigner;
 	private final Random random;
-	private StreetEntranceSystem streetEntranceSystem;
+	private PolylineProximity polylineProximity;
 
 
 	public UrbanPlanner(HorizontalPlane plane, double streetsWidth, LotFacadeAssigner facadeAssigner, Random random) {
@@ -36,14 +36,14 @@ public final class UrbanPlanner implements BuildingPlacer {
 
 	@Override
 	public void placeBuildings(CityBuilder.Info cityInfo) {
-		streetEntranceSystem = new StreetEntranceSystem(
+		polylineProximity = new PolylineProximity(
 			cityInfo.getStreets().stream().map(Street::getPoints).collect(toList()),
 			cityInfo.getBuildingPlaces(),
 			streetsWidth
 		);
 		Map<RectangleWithNeighbors, Architecture> placement = new UrbanPlanningStrategy(
 			architecture,
-			streetEntranceSystem,
+			polylineProximity,
 			cityInfo.getBuildingPlaces(),
 			random
 		).compute();

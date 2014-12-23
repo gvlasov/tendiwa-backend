@@ -16,7 +16,7 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
-import org.tendiwa.settlements.buildings.StreetEntranceSystem;
+import org.tendiwa.settlements.buildings.PolylineProximity;
 import org.tendiwa.settlements.networks.CityGeometryBuilder;
 import org.tendiwa.settlements.utils.RectangleWithNeighbors;
 import org.tendiwa.settlements.networks.RoadsPlanarGraphModel;
@@ -93,9 +93,9 @@ public class BigCityDemo implements Runnable {
 				Color streetColor = streetsColoring.get(street);
 				canvas.draw(street, DrawingChain.withColor(streetColor));
 			}
-			Set<RectangleWithNeighbors> lots = RectangularBuildingLots
+			Collection<RectangleWithNeighbors> lots = RectangularBuildingLots
 				.placeInside(roadsPlanarGraphModel);
-			StreetEntranceSystem streetEntranceSystem = new StreetEntranceSystem(streets, lots, 8);
+			PolylineProximity polylineProximity = new PolylineProximity(streets, lots, 8);
 			Set<RectangleWithNeighbors> recGroups = lots
 				.stream()
 				.filter(BuildingPlacesFilters.closeToRoads(streets, lots, 8))

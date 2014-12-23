@@ -46,6 +46,6 @@ public final class RectangularBuildingLots {
 			.map(rasterized -> MaximalRectanlges.searchUntilSmallEnoughMutatingBitmap(rasterized, 21))
 			.filter(list -> !list.isEmpty())
 			.map(list -> new RectangleWithNeighbors(list.get(0), list.subList(1, list.size())))
-			.collect(Collectors.toSet());
+			.collect(org.tendiwa.collections.Collectors.toImmutableSet());
 	}
 }
