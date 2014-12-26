@@ -149,21 +149,21 @@ class VisibilityChange {
 //		Cell vertex = new Cell(seenCell.x, seenCell.y);
 //		assert graphCurrent.containsVertex(vertex) : "No seen vertex " + vertex + " in " + graphCurrent.vertexSet();
 //		for (DefaultEdge edge : graphCurrent.edgesOf(vertex)) {
-//			Cell anotherPoint = graphCurrent.getEdgeSource(edge).equals(vertex) ? graphCurrent.getEdgeTarget(edge) : graphCurrent.getEdgeSource(edge);
-//			CardinalDirection side = (CardinalDirection) Directions.shiftToDirection(seenCell.x - anotherPoint.x, seenCell.y - anotherPoint.y);
-//			if (side.isHorizontal() && anotherPoint.x == worldPrevVisionSquareStartX + dx + ModifiableCellVisionCache.VISION_CACHE_WIDTH - 1) {
+//			Cell anotherEnd = graphCurrent.getEdgeSource(edge).equals(vertex) ? graphCurrent.getEdgeTarget(edge) : graphCurrent.getEdgeSource(edge);
+//			CardinalDirection side = (CardinalDirection) Directions.shiftToDirection(seenCell.x - anotherEnd.x, seenCell.y - anotherEnd.y);
+//			if (side.isHorizontal() && anotherEnd.x == worldPrevVisionSquareStartX + dx + ModifiableCellVisionCache.VISION_CACHE_WIDTH - 1) {
 //				continue;
-//			} else if (side.isVertical() && anotherPoint.y == worldPrevVisionSquareStartY + dy + ModifiableCellVisionCache.VISION_CACHE_WIDTH - 1) {
+//			} else if (side.isVertical() && anotherEnd.y == worldPrevVisionSquareStartY + dy + ModifiableCellVisionCache.VISION_CACHE_WIDTH - 1) {
 //				continue;
 //			}
-//			if (visionCurrentContent[anotherPoint.x - (worldPrevVisionSquareStartX + dx)][anotherPoint.y - (worldPrevVisionSquareStartY + dy)] == Visibility.VISIBLE
-//				&& plane.hasBorderObject(anotherPoint.x, anotherPoint.y, side)
+//			if (visionCurrentContent[anotherEnd.x - (worldPrevVisionSquareStartX + dx)][anotherEnd.y - (worldPrevVisionSquareStartY + dy)] == Visibility.VISIBLE
+//				&& plane.hasBorderObject(anotherEnd.x, anotherEnd.y, side)
 //				) {
 //				seenBordersBuilder.add(new RenderBorder(
-//					anotherPoint.x,
-//					anotherPoint.y,
+//					anotherEnd.x,
+//					anotherEnd.y,
 //					side,
-//					plane.getBorderObject(anotherPoint.x, anotherPoint.y, side)
+//					plane.getBorderObject(anotherEnd.x, anotherEnd.y, side)
 //				));
 //			}
 //		}
@@ -173,21 +173,21 @@ class VisibilityChange {
 //		Cell vertex = new Cell(coords[0], coords[1]);
 //		assert graphPrevious.containsVertex(vertex) : "No unseen vertex " + vertex + " in " + graphPrevious.vertexSet();
 //		for (DefaultEdge edge : graphPrevious.edgesOf(vertex)) {
-//			Cell anotherPoint = graphPrevious.getEdgeSource(edge).equals(vertex) ? graphPrevious.getEdgeTarget(edge) : graphPrevious.getEdgeSource(edge);
-//			CardinalDirection side = (CardinalDirection) Directions.shiftToDirection(coords[0] - anotherPoint.x, coords[1] - anotherPoint.y);
-//			if (side.isHorizontal() && anotherPoint.x == worldPrevVisionSquareStartX + ModifiableCellVisionCache.VISION_CACHE_WIDTH - 1) {
+//			Cell anotherEnd = graphPrevious.getEdgeSource(edge).equals(vertex) ? graphPrevious.getEdgeTarget(edge) : graphPrevious.getEdgeSource(edge);
+//			CardinalDirection side = (CardinalDirection) Directions.shiftToDirection(coords[0] - anotherEnd.x, coords[1] - anotherEnd.y);
+//			if (side.isHorizontal() && anotherEnd.x == worldPrevVisionSquareStartX + ModifiableCellVisionCache.VISION_CACHE_WIDTH - 1) {
 //				continue;
-//			} else if (side.isVertical() && anotherPoint.y == worldPrevVisionSquareStartY + ModifiableCellVisionCache.VISION_CACHE_WIDTH - 1) {
+//			} else if (side.isVertical() && anotherEnd.y == worldPrevVisionSquareStartY + ModifiableCellVisionCache.VISION_CACHE_WIDTH - 1) {
 //				continue;
 //			}
-//			if (visionPreviousContent[anotherPoint.x - worldPrevVisionSquareStartX][anotherPoint.y - worldPrevVisionSquareStartY] == Visibility.VISIBLE
-//				&& plane.hasBorderObject(anotherPoint.x, anotherPoint.y, side)
+//			if (visionPreviousContent[anotherEnd.x - worldPrevVisionSquareStartX][anotherEnd.y - worldPrevVisionSquareStartY] == Visibility.VISIBLE
+//				&& plane.hasBorderObject(anotherEnd.x, anotherEnd.y, side)
 //				) {
 //				unseenBordersBuilder.add(new RenderBorder(
-//					anotherPoint.x,
-//					anotherPoint.y,
+//					anotherEnd.x,
+//					anotherEnd.y,
 //					side,
-//					plane.getBorderObject(anotherPoint.x, anotherPoint.y, side)
+//					plane.getBorderObject(anotherEnd.x, anotherEnd.y, side)
 //				));
 //			}
 //		}

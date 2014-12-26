@@ -185,17 +185,17 @@ public class Segment2D {
 	}
 
 	/**
-	 * @param point
+	 * @param oneEnd
 	 * 	A point that {@link Object#equals(Object)} to {@code this.start} or {@link this.end}.
 	 * @return {@link #start} if {@code point == this.end}, or {@link #end} if {@code point = this.start}.
 	 * @throws java.lang.IllegalArgumentException
 	 * 	if {@code point} is neither {@code this.start} nor {@code this.end}.
 	 */
-	public Point2D anotherPoint(Point2D point) {
-		if (point.equals(start)) {
+	public Point2D anotherEnd(Point2D oneEnd) {
+		if (oneEnd.equals(start)) {
 			return end;
 		}
-		if (point.equals(end)) {
+		if (oneEnd.equals(end)) {
 			return start;
 		}
 		throw new IllegalArgumentException("Argument must be either start or end point");

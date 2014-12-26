@@ -50,15 +50,25 @@ public class RectangleToSegmentDirectionTest {
 	}
 
 	/**
-	 * Segments that touch rectangle's area in front of sides with only a single endpoint.
+	 * Segments that touch rectangle's area in front of one side with only a single endpoint.
 	 */
 	@Test
 	public void areaBorderSegments() {
 		assertSegmentIsFromSide(create(20, 40, 50, 45), CardinalDirection.N);
-		assertSegmentIsFromSide(create(70, 20, 125, 50), CardinalDirection.E);
+		assertSegmentIsFromSide(create(110, 20, 125, 50), CardinalDirection.E);
 		assertSegmentIsFromSide(create(100, 150, 110, 150), CardinalDirection.S);
 		assertSegmentIsFromSide(create(20, 40, 25, 50), CardinalDirection.W);
 	}
+	/**
+	 * Segments that touch rectangle's area in front of two sides with each endpoint.
+	 */
+	@Test
+	public void area2BorderSegments() {
+		assertSegmentIsFromSide(create(25, 50, 50, 0), CardinalDirection.W);
+		assertSegmentIsFromSide(create(0, 50, 50, 25), CardinalDirection.N);
+		assertSegmentIsFromSide(create(100, 50, 50, 25), CardinalDirection.N);
+	}
+
 
 	/**
 	 * Non axis-parallel segments that cross two borders of the area defined by the same side of a rectangle.
@@ -69,7 +79,7 @@ public class RectangleToSegmentDirectionTest {
 	@Test
 	public void areaTwoBorderCrossingSegments() {
 		assertSegmentIsFromSide(create(30, 30, 120, 45), CardinalDirection.N);
-		assertSegmentIsFromSide(create(101, 51, 500, 101), CardinalDirection.E);
+		assertSegmentIsFromSide(create(101, 51, 500, 101), CardinalDirection.E); // This one doesn't cross two borders
 		assertSegmentIsFromSide(create(60, 110, 120, 140), CardinalDirection.S);
 		assertSegmentIsFromSide(create(30, 30, 45, 120), CardinalDirection.W);
 	}
