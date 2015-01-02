@@ -32,6 +32,9 @@ public class TwakStraightSkeletonDemo implements Runnable {
 			.moveBy(0, 80)
 			.moveBy(50, 0)
 			.points();
-		canvas.draw(TwakStraightSkeleton.create(outline).cap(3), DrawingGraph.basis(Color.gray, Color.red, Color.black));
+//		canvas.drawAll(
+//			TwakStraightSkeleton.create(outline).cap(3),
+//			DrawingGraph.basis(Color.gray, Color.red, Color .black)
+//		);
 	}
 }

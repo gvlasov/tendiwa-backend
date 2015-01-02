@@ -14,6 +14,9 @@ public class Segment2D {
 
 
 	public Segment2D(Point2D start, Point2D end) {
+		if (start.x == end.x && start.y == end.y) {
+			throw new IllegalArgumentException("Start and end of a segment must be different points");
+		}
 		this.start = start;
 		this.end = end;
 	}

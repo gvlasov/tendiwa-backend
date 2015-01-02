@@ -19,6 +19,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -132,7 +133,7 @@ public class TwakStraightSkeleton implements StraightSkeleton {
 	 * 	if depth is negative. May be implemented in future.
 	 */
 	@Override
-	public UndirectedGraph<Point2D, Segment2D> cap(double depth) {
+	public Set<Polygon> cap(double depth) {
 		if (depth < 0) {
 			throw new UnsupportedOperationException("Negative depth in not implemented yet");
 		}
@@ -153,7 +154,14 @@ public class TwakStraightSkeleton implements StraightSkeleton {
 //		}
 //		graph.addEdge(previous, first);
 //		return graph;
-		return new TwakPolygonShrinker(graph(), originalEdges, depth).asGraph();
+
+		throw new UnsupportedOperationException();
+//		return new TwakPolygonShrinker(graph(), originalEdges, depth).asGraph();
+	}
+
+	@Override
+	public Set<Polygon> faces() {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

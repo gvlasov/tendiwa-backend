@@ -8,6 +8,7 @@ import org.tendiwa.drawing.GifBuilderFactory;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingGraph;
 import org.tendiwa.drawing.extensions.DrawingModule;
+import org.tendiwa.drawing.extensions.DrawingPolygon;
 import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
@@ -131,7 +132,7 @@ public class StraightSkeletonDemo implements Runnable {
 				assert canvas != null;
 				canvas.drawString(String.valueOf(i), 40, 15, Color.lightGray);
 				canvas.draw(skeleton.graph(), DrawingGraph.withColor(Color.cyan));
-				canvas.draw(skeleton.cap(shrunkDepth.next()), DrawingGraph.withColor(Color.green));
+				canvas.drawAll(skeleton.cap(shrunkDepth.next()), DrawingPolygon.withColor(Color.green));
 				if (config.saveGif) {
 					gifBuilder.saveFrame();
 				}

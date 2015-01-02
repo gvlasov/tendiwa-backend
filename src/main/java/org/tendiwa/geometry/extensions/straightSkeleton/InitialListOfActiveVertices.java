@@ -17,7 +17,7 @@ import static org.tendiwa.geometry.extensions.straightSkeleton.CycleExtraVertice
  * {@link org.tendiwa.geometry.extensions.straightSkeleton.OriginalEdgeStart}s with each other.
  */
 class InitialListOfActiveVertices {
-	final ArrayList<OriginalEdgeStart> nodes = new ArrayList<>();
+	final List<OriginalEdgeStart> nodes = new ArrayList<>();
 	final List<Segment2D> edges;
 	private final int size;
 

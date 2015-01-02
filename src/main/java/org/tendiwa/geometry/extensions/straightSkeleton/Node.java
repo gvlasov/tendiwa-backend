@@ -70,7 +70,7 @@ abstract class Node implements Iterable<Node> {
 
 	private void growFace(Node newNode, OriginalEdgeStart faceStart) {
 		faceStart.face.addLink(this, newNode);
-		assert faceStart.face.startHalfface.first == faceStart;
+		assert faceStart.face.startHalfface.firstSkeletonNode() == faceStart;
 	}
 
 	protected Node(Point2D vertex) {

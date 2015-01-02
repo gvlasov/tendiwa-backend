@@ -1,5 +1,7 @@
 package org.tendiwa.settlements;
 
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.hash.TObjectDoubleHashMap;
 import org.tendiwa.geometry.GeometryException;

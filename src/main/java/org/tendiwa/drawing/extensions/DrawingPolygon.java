@@ -3,6 +3,7 @@ package org.tendiwa.drawing.extensions;
 import org.tendiwa.core.meta.Utils;
 import org.tendiwa.drawing.DrawingAlgorithm;
 import org.tendiwa.geometry.Point2D;
+import sun.java2d.loops.DrawPolygons;
 
 import java.awt.Color;
 import java.awt.geom.Line2D;

@@ -5,13 +5,11 @@ import com.google.common.collect.Multimap;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Polygon;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.StraightSkeleton;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
+import java.util.*;
 
 // TODO: Split this class into more classes.
 public class SuseikaStraightSkeleton implements StraightSkeleton {
@@ -117,7 +115,14 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 	}
 
 	@Override
-	public UndirectedGraph<Point2D, Segment2D> cap(double depth) {
-		return new PolygonShrinker(arcs, initialLav.edges, depth).asGraph();
+	public Set<Polygon> cap(double depth) {
+		return new PolygonShrinker(faces(), depth).shrink();
+	}
+
+	@Override
+	public Set<Polygon> faces() {
+		Set<Polygon> answer = new LinkedHashSet<>();
+		initialLav.nodes.forEach(node -> answer.add(node.face().toPolygon()));
+		return answer;
 	}
 }

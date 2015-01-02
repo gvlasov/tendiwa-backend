@@ -11,7 +11,7 @@ import java.awt.Color;
 import java.util.stream.Collectors;
 
 final class Debug {
-	private final boolean debug = false;
+	private final boolean debug = true;
 	Debug() {
 	}
 

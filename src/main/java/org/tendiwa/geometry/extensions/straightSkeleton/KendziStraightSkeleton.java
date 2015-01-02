@@ -5,11 +5,13 @@ import kendzi.math.geometry.skeleton.Skeleton;
 import kendzi.math.geometry.skeleton.SkeletonOutput;
 import org.jgrapht.UndirectedGraph;
 import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Polygon;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.StraightSkeleton;
 
 import javax.vecmath.Point2d;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class KendziStraightSkeleton implements StraightSkeleton {
@@ -29,8 +31,14 @@ public class KendziStraightSkeleton implements StraightSkeleton {
 	}
 
 	@Override
-	public UndirectedGraph<Point2D, Segment2D> cap(double depth) {
-		return new KendziPolygonShrinker(faces, edges, depth).asGraph();
+	public Set<Polygon> cap(double depth) {
+		throw new UnsupportedOperationException();
+//		return new KendziPolygonShrinker(faces, edges, depth).asGraph();
+	}
+
+	@Override
+	public Set<Polygon> faces() {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

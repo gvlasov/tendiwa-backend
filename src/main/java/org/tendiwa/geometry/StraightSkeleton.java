@@ -3,11 +3,14 @@ package org.tendiwa.geometry;
 import org.jgrapht.UndirectedGraph;
 
 import java.util.List;
+import java.util.Set;
 
 public interface StraightSkeleton {
-	public UndirectedGraph<Point2D, Segment2D> graph();
+	UndirectedGraph<Point2D, Segment2D> graph();
 
-	public UndirectedGraph<Point2D, Segment2D> cap(double depth);
+	Set<Polygon> cap(double depth);
 
-	public List<Segment2D> originalEdges();
+	Set<Polygon> faces();
+
+	List<Segment2D> originalEdges();
 }

@@ -3,14 +3,14 @@ package org.tendiwa.geometry.extensions.straightSkeleton;
 import com.google.common.collect.*;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
-import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingGraph;
 import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Polygon;
+import org.tendiwa.geometry.RayIntersection;
 import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
 import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.graphs.MinimumCycleBasis;
-import org.tendiwa.geometry.RayIntersection;
 
 import java.awt.Color;
 import java.util.*;
@@ -20,24 +20,73 @@ public class PolygonShrinker {
 	public List<Segment2D> edges;
 	protected List<Segment2D> shrunkPolygonsSegments;
 	static Iterator<Color> colors = Iterators.cycle(Color.green, Color.blue, Color.orange, Color.yellow);
+	private Set<Polygon> polygons;
 
 	protected PolygonShrinker() {
-
 	}
 
+	/**
+	 * @param faces
+	 * 	Clockwise polygons where first element in list is the end of the face's original edge, and the
+	 * 	last element in list is the start of the face's original edge.
+	 * @param depth
+	 * 	How much to intrude the polygon.
+	 */
 	public PolygonShrinker(
-		Multimap<Point2D, Point2D> arcs,
-		List<Segment2D> edges,
+		Set<Polygon> faces,
 		double depth
 	) {
-		UndirectedGraph<Point2D, Segment2D> graph = fillNewGraphWithArcsAndEdges(arcs, edges);
-		Map<Segment2D, Iterable<Segment2D>> edgesToFaces = mapOriginalEdgesToFaces(graph, edges);
-		shrunkPolygonsSegments = findShrunkPolygonsSegments(depth, edgesToFaces);
+		// Minimum possible number of points on a front is faces.size(), so we pick a value twice as big. That should
+		// be enough for most cases and not too much.
+		ShrinkedFront front = new ShrinkedFront(faces.size() * 2);
+		for (Polygon face : faces) {
+			Queue<Point2D> queue = new PriorityQueue<>((Point2D a, Point2D b) -> {
+				int signum = (int) Math.signum(a.x - b.x);
+				if (signum == 0) {
+					return (int) Math.signum(a.y - b.y);
+				}
+				return signum;
+			});
+			BiMap<RayIntersection, Segment2D> intersectionsOnSegments = HashBiMap.create();
+			Segment2D intruded = new Segment2D(
+				face.get(0),
+				face.get(face.size() - 1)
+			).createParallelSegment(depth, false);
+			face.asSegments().forEach(segment -> {
+				if (intersectionsOnSegments.containsValue(segment)) {
+					queue.add(
+						intersectionsOnSegments
+							.inverse()
+							.get(segment)
+							.getLinesIntersectionPoint()
+					);
+				} else {
+					RayIntersection intersection = new RayIntersection(
+						segment,
+						intruded
+					);
+					if (intersection.r > 0 && intersection.r < 1) {
+						intersectionsOnSegments.put(intersection, segment);
+						queue.add(new RayIntersection(intruded, segment).getLinesIntersectionPoint());
+					}
+				}
+			});
+
+			assert queue.size() % 2 == 0 : queue.size();
+			while (!queue.isEmpty()) {
+				front.add(
+					// Get two consecutive intersections
+					queue.poll(),
+					queue.poll()
+				);
+			}
+		}
+		polygons = front.constructPolygons();
 	}
 
 
 	public UndirectedGraph<Point2D, Segment2D> asGraph() {
-		UndirectedGraph<Point2D, Segment2D> graph = new SimpleGraph<>(org.tendiwa.geometry.extensions.PlanarGraphs.getEdgeFactory());
+		UndirectedGraph<Point2D, Segment2D> graph = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
 		for (Segment2D segment : shrunkPolygonsSegments) {
 			graph.addVertex(segment.start);
 			graph.addVertex(segment.end);
@@ -89,21 +138,21 @@ public class PolygonShrinker {
 		Map<Segment2D, Iterable<Segment2D>> edgeToFace = new HashMap<>();
 
 //		TestCanvas.canvas.draw(graph, DrawingGraph.withColorAndAntialiasing(Color.yellow));
-		for (MinimalCycle<Point2D, Segment2D> cycle : basis.minimalCyclesSet()) {
+		for (MinimalCycle<Point2D, Segment2D> face : basis.minimalCyclesSet()) {
 			Segment2D originalFaceEdge = findUnusedEdgeForFace(
 				unusedEdges,
-				ImmutableSet.copyOf(cycle.vertexList())
+				ImmutableSet.copyOf(face.vertexList())
 			);
 			assert !edgeToFace.containsKey(originalFaceEdge) : originalFaceEdge;
 			// None of faces may include more than 1 original edge.
 			// http://twak.blogspot.ru/2011/01/degeneracy-in-weighted-straight.html Ctrl+F parallel consecutive edge
-			boolean allMatch = Lists.newArrayList(cycle).stream().allMatch(p -> !unusedEdges.contains(p));
+			boolean allMatch = Lists.newArrayList(face).stream().allMatch(p -> !unusedEdges.contains(p));
 			if (!allMatch) {
 				assert false : "Not all edges of " +
 					"straight skeleton could be constructed; presumably because at some stage of skeleton construction 2 " +
 					"parallel edges become adjacent; please draw the graph to make sure";
 			}
-			edgeToFace.put(originalFaceEdge, cycle);
+			edgeToFace.put(originalFaceEdge, face);
 		}
 		return edgeToFace;
 	}
@@ -145,4 +194,7 @@ public class PolygonShrinker {
 		return graph;
 	}
 
+	public Set<Polygon> shrink() {
+		return polygons;
+	}
 }
