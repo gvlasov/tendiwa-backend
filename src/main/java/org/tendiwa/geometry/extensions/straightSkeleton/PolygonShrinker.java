@@ -39,6 +39,7 @@ public class PolygonShrinker {
 		// Minimum possible number of points on a front is faces.size(), so we pick a value twice as big. That should
 		// be enough for most cases and not too much.
 		ShrinkedFront front = new ShrinkedFront(faces.size() * 2);
+		BiMap<RayIntersection, Segment2D> intersectionsOnSegments = HashBiMap.create();
 		for (Polygon face : faces) {
 			Queue<Point2D> queue = new PriorityQueue<>((Point2D a, Point2D b) -> {
 				int signum = (int) Math.signum(a.x - b.x);
@@ -47,27 +48,31 @@ public class PolygonShrinker {
 				}
 				return signum;
 			});
-			BiMap<RayIntersection, Segment2D> intersectionsOnSegments = HashBiMap.create();
 			Segment2D intruded = new Segment2D(
 				face.get(0),
 				face.get(face.size() - 1)
-			).createParallelSegment(depth, false);
+			).createParallelSegment(depth, true);
 			face.asSegments().forEach(segment -> {
-				if (intersectionsOnSegments.containsValue(segment)) {
-					queue.add(
-						intersectionsOnSegments
-							.inverse()
-							.get(segment)
-							.getLinesIntersectionPoint()
-					);
+				Segment2D reverse = segment.reverse();
+				if (intersectionsOnSegments.containsValue(reverse)) {
+					Point2D newPoint = intersectionsOnSegments
+						.inverse()
+						.get(reverse)
+						.getLinesIntersectionPoint();
+					queue.add(newPoint);
+					assert Boolean.TRUE;
 				} else {
+					assert !intersectionsOnSegments.containsValue(segment);
 					RayIntersection intersection = new RayIntersection(
 						segment,
 						intruded
 					);
 					if (intersection.r > 0 && intersection.r < 1) {
-						intersectionsOnSegments.put(intersection, segment);
-						queue.add(new RayIntersection(intruded, segment).getLinesIntersectionPoint());
+						RayIntersection anotherIntersection = new RayIntersection(intruded, segment);
+						intersectionsOnSegments.put(anotherIntersection, segment);
+						Point2D newPoint = anotherIntersection.getLinesIntersectionPoint();
+						queue.add(newPoint);
+						assert Boolean.TRUE;
 					}
 				}
 			});
@@ -75,7 +80,7 @@ public class PolygonShrinker {
 			assert queue.size() % 2 == 0 : queue.size();
 			while (!queue.isEmpty()) {
 				front.add(
-					// Get two consecutive intersections
+					// Get two consecutive intersection points
 					queue.poll(),
 					queue.poll()
 				);
@@ -137,7 +142,6 @@ public class PolygonShrinker {
 
 		Map<Segment2D, Iterable<Segment2D>> edgeToFace = new HashMap<>();
 
-//		TestCanvas.canvas.draw(graph, DrawingGraph.withColorAndAntialiasing(Color.yellow));
 		for (MinimalCycle<Point2D, Segment2D> face : basis.minimalCyclesSet()) {
 			Segment2D originalFaceEdge = findUnusedEdgeForFace(
 				unusedEdges,
@@ -168,7 +172,6 @@ public class PolygonShrinker {
 			}
 		}
 		assert originalFaceEdge != null;
-//		TestCanvas.canvas.draw(originalFaceEdge, DrawingSegment2D.withColor(Color.red));
 //		Color next = colors.next();
 //		for (Point2D v : face) {
 //			TestCanvas.canvas.draw(v, DrawingPoint2D.withColorAndSize(next, 4));

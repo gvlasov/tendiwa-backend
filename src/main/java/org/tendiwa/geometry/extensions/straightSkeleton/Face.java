@@ -8,7 +8,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.TreeSet;
 
 final class Face {
@@ -23,7 +22,7 @@ final class Face {
 	private boolean linkAtEnd1First;
 	private boolean linkAtEnd2First;
 	private Chain lastAddedChain;
-	private int size;
+	private int numberOfSkeletonNodes;
 	private TreeSet<Node> sortedLinkEnds = new TreeSet<>(
 		(Node o1, Node o2) -> {
 			if (o1 == o2) {
@@ -50,7 +49,7 @@ final class Face {
 		assert startHalfface.nextChain == endHalfface && endHalfface.previousChain == startHalfface
 			&& startHalfface.previousChain == null && endHalfface.nextChain == null;
 		lastAddedChain = endHalfface;
-		size = 2; // Initially there are two nodes: startHalfface start and endHalfface end.
+		numberOfSkeletonNodes = 2; // Initially there are two skeleton nodes: startHalfface start and endHalfface end.
 	}
 
 	private boolean isEndOfHalfface(Node end) {
@@ -103,7 +102,7 @@ final class Face {
 	 */
 	void addLink(Node end1, Node end2) {
 		assert chainAtEnd1 == null && chainAtEnd2 == null;
-		findLinksAtEnds(end1, end2);
+		findChainsAtEnds(end1, end2);
 		boolean hasLinkAt1 = chainAtEnd1 != null;
 		boolean hasLinkAt2 = chainAtEnd2 != null;
 		if (hasLinkAt1 && hasLinkAt2) {
@@ -124,30 +123,26 @@ final class Face {
 		chainAtEnd1 = chainAtEnd2 = null;
 	}
 
-	private void findLinksAtEnds(Node oneEnd, Node anotherEnd) {
+	private void findChainsAtEnds(Node end1, Node end2) {
 		Chain chain = startHalfface;
 		while (chain != null) {
 			if (chainAtEnd1 == null) {
-				if (chain.firstSkeletonNode() == oneEnd && chain.firstSkeletonNode() != chain.lastSkeletonNode()) {
+				if (chain.firstSkeletonNode() == end1 && chain.firstSkeletonNode() != chain.lastSkeletonNode()) {
 					chainAtEnd1 = chain;
 					linkAtEnd1First = true;
-				} else if (chain.lastSkeletonNode() == oneEnd) {
+				} else if (chain.lastSkeletonNode() == end1) {
 					chainAtEnd1 = chain;
 					linkAtEnd1First = false;
 				}
 			}
-			try {
-				if (chainAtEnd2 == null) {
-					if (chain.firstSkeletonNode() == anotherEnd) {
-						chainAtEnd2 = chain;
-						linkAtEnd2First = true;
-					} else if (chain.lastSkeletonNode() == anotherEnd) {
-						chainAtEnd2 = chain;
-						linkAtEnd2First = false;
-					}
+			if (chainAtEnd2 == null) {
+				if (chain.firstSkeletonNode() == end2) {
+					chainAtEnd2 = chain;
+					linkAtEnd2First = true;
+				} else if (chain.lastSkeletonNode() == end2) {
+					chainAtEnd2 = chain;
+					linkAtEnd2First = false;
 				}
-			} catch (NoSuchElementException e) {
-				assert false;
 			}
 			chain = chain.nextChain;
 		}
@@ -159,7 +154,7 @@ final class Face {
 	}
 
 	private void prolongLink(Node end, Chain chain, boolean isFirst) {
-		size++;
+		numberOfSkeletonNodes++;
 		if (isFirst) {
 			sortedLinkEnds.remove(chain.firstSkeletonNode());
 			DoublyLinkedNode<Node> newFirst = new DoublyLinkedNode<>(end);
@@ -251,6 +246,9 @@ final class Face {
 			chainAtEnd1.moveLastFaceNode(chainAtEnd2.firstFaceNode());
 		}
 		chainAtEnd2.removeFromFace();
+		if (lastAddedChain == chainAtEnd2) {
+			lastAddedChain = chainAtEnd2.previousChain;
+		}
 	}
 
 	private boolean isHalfface(Chain chain) {
@@ -264,11 +262,11 @@ final class Face {
 		lastAddedChain.previousChain.setNextChain(lastAddedChain);
 		sortedLinkEnds.add(oneEnd);
 		sortedLinkEnds.add(anotherEnd);
-		size += 2;
+		numberOfSkeletonNodes += 2;
 	}
 
 	public Polygon toPolygon() {
-		List<Point2D> points = new ArrayList<>(size);
+		List<Point2D> points = new ArrayList<>(numberOfSkeletonNodes);
 		DoublyLinkedNode<Node> doublyLinkedNode = startHalfface.firstFaceNode();
 		assert doublyLinkedNode.getPrevious() == null || doublyLinkedNode.getNext() == null;
 		Point2D previousPayload = null;

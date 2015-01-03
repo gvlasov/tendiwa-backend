@@ -15,8 +15,8 @@ final class ShrinkedFront {
 	}
 
 	void add(Point2D point1, Point2D point2) {
-		DoublyLinkedNode<Point2D> node1 = getNode(point1);
-		DoublyLinkedNode<Point2D> node2 = getNode(point2);
+		DoublyLinkedNode<Point2D> node1 = obtainNode(point1);
+		DoublyLinkedNode<Point2D> node2 = obtainNode(point2);
 		node1.uniteWith(node2);
 	}
 
@@ -28,11 +28,13 @@ final class ShrinkedFront {
 	 * 	A point that is payload for a node.
 	 * @return A node with {@code point} as payload.
 	 */
-	private DoublyLinkedNode<Point2D> getNode(Point2D point) {
+	private DoublyLinkedNode<Point2D> obtainNode(Point2D point) {
 		if (pointsToNodes.containsKey(point)) {
 			return pointsToNodes.get(point);
 		} else {
-			return new DoublyLinkedNode<>(point);
+			DoublyLinkedNode<Point2D> newNode = new DoublyLinkedNode<>(point);
+			pointsToNodes.put(point, newNode);
+			return newNode;
 		}
 	}
 

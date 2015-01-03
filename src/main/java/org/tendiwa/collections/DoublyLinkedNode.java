@@ -33,19 +33,41 @@ public class DoublyLinkedNode<T> implements Iterable<T> {
 	}
 
 	public final void setNext(DoublyLinkedNode<T> node) {
-		assert node.previous == this || node.previous == null;
-		assert node != null;
-		assert next == null;
-		assert node != this;
+		assert settingNextPreservesConnectivity(node);
 		next = node;
 	}
 
+	/**
+	 * @param node
+	 * 	A node to insert.
+	 * @return false if inserting {@code node} with {@link #setNext(DoublyLinkedNode)} will introduce a loop or
+	 * isolate some part of the list.
+	 * @see #settingPreviousPreservesConnectivity(DoublyLinkedNode)
+	 */
+	public final boolean settingNextPreservesConnectivity(DoublyLinkedNode<T> node) {
+		return (node.previous == this || node.previous == null)
+			&& node != null
+			&& next == null
+			&& node != this;
+	}
+
 	public final void setPrevious(DoublyLinkedNode<T> node) {
-		assert node.next == this || node.next == null;
-		assert node != null;
-		assert previous == null;
-		assert node != this;
+		assert settingPreviousPreservesConnectivity(node);
 		previous = node;
+	}
+
+	/**
+	 * @param node
+	 * 	A node to insert.
+	 * @return false if inserting {@code node} with {@link #setPrevious(DoublyLinkedNode)} will introduce a loop or
+	 * isolate some part of the list.
+	 * @see #settingNextPreservesConnectivity(DoublyLinkedNode)
+	 */
+	public boolean settingPreviousPreservesConnectivity(DoublyLinkedNode<T> node) {
+		return (node.next == this || node.next == null)
+			&& node != null
+			&& previous == null
+			&& node != this;
 	}
 
 	/**

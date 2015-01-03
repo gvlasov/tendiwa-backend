@@ -25,7 +25,7 @@ public final class Polygon implements List<Point2D> {
 	public Polygon(List<Point2D> points) {
 		int size = points.size();
 		if (size < 3) {
-			TestCanvas.canvas.draw(points, DrawingPolygon.withColorNonRaster(Color.cyan));
+//			TestCanvas.canvas.draw(points, DrawingPolygon.withColorNonRaster(Color.cyan));
 			throw new IllegalArgumentException(
 				"Polygon must contain at least 3 vertices, but argument's length is " + points.size()
 			);
