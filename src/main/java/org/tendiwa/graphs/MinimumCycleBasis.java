@@ -6,9 +6,7 @@ import org.jgrapht.alg.NeighborIndex;
 import org.jgrapht.graph.ListenableUndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingMinimalCycle;
-import org.tendiwa.drawing.extensions.DrawingPoint2D;
-import org.tendiwa.drawing.extensions.DrawingSegment2D;
+import org.tendiwa.drawing.extensions.*;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Vectors2D;
@@ -108,6 +106,7 @@ public class MinimumCycleBasis<V, E> {
 				default:
 					extractPrimitive(v0);
 			}
+			assert Boolean.TRUE;
 		}
 	}
 
@@ -173,6 +172,7 @@ public class MinimumCycleBasis<V, E> {
 			}
 			filament.insert(v0);
 			if (graph.degreeOf(v0) == 0) {
+				// If end of a filament is not a branch point
 				heap.remove(v0);
 				graph.removeEdge(v0, v1);
 				graph.removeVertex(v0);
@@ -198,40 +198,10 @@ public class MinimumCycleBasis<V, E> {
 		V v1 = getMost(null, v0, true);
 		V vprev = v0;
 		V vcurr = v1;
-		Color color = colors.next();
-//		TestCanvas.canvas.draw(new Point2D(positionAdapter.getX(v0), positionAdapter.getY(v0)),
-//			DrawingPoint2D.withColorAndSize(color, 5));
 		while (vcurr != null && !vcurr.equals(v0) && !visited.contains(vcurr)) {
-//			TestCanvas.canvas.draw(new Segment2D(
-//					new Point2D(
-//						positionAdapter.getX(vprev),
-//						positionAdapter.getY(vprev)
-//					),
-//					new Point2D(
-//						positionAdapter.getX(vcurr),
-//						positionAdapter.getY(vcurr)
-//					)
-//				),
-//				DrawingSegment2D.withColor(color)
-//			);
 			sequence.add(vcurr);
 			visited.add(vcurr);
 			V vnext = getMost(vprev, vcurr, false);
-//			TestCanvas.canvas.draw(new Segment2D(
-//					new Point2D(
-//						positionAdapter.getX(vcurr),
-//						positionAdapter.getY(vcurr)
-//					),
-//					new Point2D(
-//						positionAdapter.getX(vnext),
-//						positionAdapter.getY(vnext)
-//					)
-//				),
-//				DrawingSegment2D.withColor(color)
-//			);
-
-//			TestCanvas.canvas.draw(new Point2D(positionAdapter.getX(vnext), positionAdapter.getY(vnext)),
-//				DrawingPoint2D.withColorAndSize(colors.next(), 5));
 			vprev = vcurr;
 			vcurr = vnext;
 		}
@@ -241,7 +211,6 @@ public class MinimumCycleBasis<V, E> {
 		} else if (vcurr.equals(v0)) {
 			// Minimal cycle found
 			MinimalCycle<V, E> cycle = new MinimalCycle<>(originalGraph, sequence);
-//			TestCanvas.canvas.draw(cycle, DrawingMinimalCycle.withColor(colors.next(), positionAdapter));
 			primitives.add(cycle);
 
 			for (int i = 0, l = sequence.size() - 1; i < l; i++) {
@@ -262,6 +231,9 @@ public class MinimumCycleBasis<V, E> {
 			// cycle. This implies v0 is part of a filament. Locate the
 			// starting point for the filament by traversing from v0 away
 			// from the initial v1.
+			// TODO: ^^ this comment is taken from Eberly's paper, but it is not true. Finding a cycle here does not
+			// imply v0 is part of a filament. A counter-example is a cycle within cycle connected with a filament
+			// whose start is a vertex other than v0.
 			while (graph.degreeOf(v0) == 2) {
 				if (!neighborIndex.neighborListOf(v0).get(0).equals(v1)) {
 					v1 = v0;
@@ -270,10 +242,11 @@ public class MinimumCycleBasis<V, E> {
 					v1 = v0;
 					v0 = neighborIndex.neighborListOf(v0).get(1);
 				}
+				TestCanvas.canvas.draw(new Segment2D((Point2D)v1, (Point2D)v0), DrawingSegment2D.withColorDirected
+					(Color.magenta, 5));
 			}
 			extractFilament(v0, v1);
 		}
-
 	}
 
 	/**
@@ -453,14 +426,20 @@ public class MinimumCycleBasis<V, E> {
 
 		private void add(V isolatedVertex) {
 			isolatedVertices.add(isolatedVertex);
+			TestCanvas.canvas.draw((Point2D) isolatedVertex, DrawingPoint2D.withColorAndSize(Color.blue, 3));
+			assert Boolean.TRUE;
 		}
 
 		private void add(Filament<V, E> filament) {
 			filaments.add(filament);
+			TestCanvas.canvas.draw((List<Point2D>) filament.vertexList(), DrawingPolyline.withColor(Color.green));
+			assert Boolean.TRUE;
 		}
 
 		private void add(MinimalCycle<V, E> cycle) {
 			minimalCycles.add(cycle);
+			TestCanvas.canvas.draw((List<Point2D>) cycle.vertexList(), DrawingPolygon.withColor(Color.red));
+			assert Boolean.TRUE;
 		}
 	}
 }

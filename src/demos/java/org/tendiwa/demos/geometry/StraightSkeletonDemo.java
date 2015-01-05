@@ -13,12 +13,9 @@ import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.StraightSkeleton;
-import org.tendiwa.geometry.extensions.PointTrail;
-import org.tendiwa.geometry.extensions.SameSlopeGraphEdgesPerturbations;
 import org.tendiwa.geometry.extensions.straightSkeleton.SuseikaStraightSkeleton;
 
 import java.awt.Color;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.PrimitiveIterator;
 import java.util.function.IntSupplier;
@@ -37,13 +34,13 @@ public class StraightSkeletonDemo implements Runnable {
 	@Override
 	public void run() {
 		Config config = new Config();
-		config.saveGif = false;
-		config.drawToCanvas = false;
+		config.saveGif = true;
+		config.drawToCanvas = true;
 		config.startIteration = 0;
 		config.numberOfIterations = 180;
 		config.gifPath = System.getProperty("user.home") + "/test.gif";
 		config.drawEdges = false;
-		config.fps = 30;
+		config.fps = 40;
 
 		List<Point2D> points =
 			new ConvexAndReflexAmoeba();

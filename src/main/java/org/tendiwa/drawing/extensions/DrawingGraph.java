@@ -132,12 +132,11 @@ public class DrawingGraph {
 //						.map(constructor::aliasOf)
 //						.collect(Collectors.toSet())
 //				);
-				Color nextColor = cycleColors.next();
 				for (Segment2D edge : cycle) {
 					canvas.draw(new Segment2D(
 						shape.getEdgeSource(edge),
 						shape.getEdgeTarget(edge)
-					), DrawingSegment2D.withColor(nextColor));
+					), DrawingSegment2D.withColor(cycleColor));
 				}
 			}
 //			for (Point2D p : graph.vertexSet()) {

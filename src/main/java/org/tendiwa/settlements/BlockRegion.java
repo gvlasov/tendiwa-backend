@@ -123,6 +123,10 @@ public class BlockRegion extends EnclosedBlock {
 			double splitSize;
 			Node longestEdgeStart;
 			if (firstSplit) {
+				// TODO: I don't remember why the hell did I introduce this branch. It is totally wrong and the
+				// other one must be sufficient. It it does not get apparent what it is supposed to do, I should
+				// remove it, and also refactor the whole class (linked list operations should be done with
+				// DoublyLinkedNode).
 				Segment2D bestSegment = InnerFreeSpaceOfPolygon.compute(toPolygon()).get(0);
 				Node current = startNode;
 				longestEdgeStart = null;

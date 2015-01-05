@@ -8,7 +8,9 @@ import org.tendiwa.drawing.extensions.DrawingGraph;
 import org.tendiwa.drawing.extensions.DrawingModule;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
 import org.tendiwa.graphs.GraphConstructor;
+import org.tendiwa.graphs.MinimumCycleBasis;
 
 import java.awt.Color;
 
@@ -29,6 +31,7 @@ public class EberlyMinimumCycleBasisDemo implements Runnable {
 	 */
 	@Override
 	public void run() {
+		TestCanvas.canvas = canvas;
 		final GraphConstructor<Point2D, Segment2D> constructor =
 			new GraphConstructor<>(Segment2D::new)
 				.vertex(0, new Point2D(20, 20))
@@ -68,9 +71,13 @@ public class EberlyMinimumCycleBasisDemo implements Runnable {
 				.cycle(19, 21, 20)
 				.cycle(20, 24, 23, 22)
 				.cycle(25, 26, 27)
+
+				.edge(23, 27) // This edge screws a cycle up
+
 				.path(14, 15, 16);
-		final SimpleGraph<Point2D, Segment2D> graph = constructor
-			.graph();
-		canvas.draw(graph, DrawingGraph.basis(Color.green, Color.red, Color.blue));
+		final SimpleGraph<Point2D, Segment2D> graph = constructor.graph();
+//		canvas.draw(graph, DrawingGraph.withAliases(constructor, (p -> p.x), (p -> p.y)));
+		MinimumCycleBasis<Point2D, Segment2D> basis = new MinimumCycleBasis<>(graph, Point2DVertexPositionAdapter.get());
+//		canvas.draw(graph, DrawingGraph.basis(Color.green, Color.red, Color.blue));
 	}
 }
