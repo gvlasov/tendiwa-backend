@@ -202,7 +202,7 @@ public final class RoadsPlanarGraphModel {
 		if (networks.isEmpty()) {
 			throw new SettlementGenerationException("A City with 0 city networks was made");
 		}
-		fullRoadGraph = new FullRoadGraph(originalRoadGraph,holderOfSplitCycleEdges, networks);
+		fullRoadGraph = new FullRoadGraph(originalRoadGraph, holderOfSplitCycleEdges, networks);
 	}
 
 	/**
@@ -593,6 +593,14 @@ public final class RoadsPlanarGraphModel {
 		return this.splitEdgesToOriginalEdges;
 	}
 
+	/**
+	 * Returns a graph of roads that form actual cycles. Actual cycles are made of edges and vertices of original
+	 * cycles and also split edges remembered in {@link org.tendiwa.settlements.networks.RoadsPlanarGraphModel#holderOfSplitCycleEdges}.
+	 * Actual cycles don't include cycles that are formed with any of the secondary road network's edges.
+	 *
+	 * @return Actual road cycles graph.
+	 * @see org.tendiwa.settlements.networks.RoadsPlanarGraphModel#originalRoadGraph for original cycles.
+	 */
 	public UndirectedGraph<Point2D, Segment2D> getCyclesRoadGraph() {
 		return fullRoadGraph.getCyclesRoadGraph();
 	}

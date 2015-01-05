@@ -72,7 +72,7 @@ public class EberlyMinimumCycleBasisDemo implements Runnable {
 				.cycle(20, 24, 23, 22)
 				.cycle(25, 26, 27)
 
-				.edge(23, 27) // This edge screws a cycle up
+				.edge(23, 27) // This extra edge screws a cycle up in the original algorithm implementation
 
 				.path(14, 15, 16);
 		final SimpleGraph<Point2D, Segment2D> graph = constructor.graph();

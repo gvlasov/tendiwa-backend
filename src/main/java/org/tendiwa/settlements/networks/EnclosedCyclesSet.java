@@ -10,6 +10,9 @@ import java.util.Iterator;
 /**
  * Finds out which cycles in a {@link org.tendiwa.settlements.networks.RoadsPlanarGraphModel} are enclosed within
  * another cycle.
+ * <p>
+ * An <i>enclosed cycle</i> is the one all of whose points are inside one of {@link org.tendiwa.settlements.networks
+ * .RoadsPlanarGraphModel#getCyclesRoadGraph()}'s cycle.
  */
 // TODO: Move to the method of NetworkWithinCycle
 public final class EnclosedCyclesSet {

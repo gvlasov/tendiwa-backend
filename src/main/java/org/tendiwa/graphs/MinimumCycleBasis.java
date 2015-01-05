@@ -1,20 +1,10 @@
 package org.tendiwa.graphs;
 
-import com.google.common.collect.Iterators;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.alg.NeighborIndex;
 import org.jgrapht.graph.ListenableUndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
-import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.*;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.Vectors2D;
-import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
-import org.tendiwa.geometry.extensions.PolygonSegments;
-import org.tendiwa.geometry.extensions.ShamosHoeyAlgorithm;
 
-import java.awt.Color;
 import java.util.*;
 
 import static org.tendiwa.geometry.Vectors2D.*;
@@ -43,13 +33,12 @@ public class MinimumCycleBasis<V, E> {
 			return v;
 		}
 	};
-	private final PrimitiveContainer<V> primitives;
+	private final PrimitiveContainer primitives;
 	private final Queue<V> heap;
 	private final Collection<E> cycleEdges = new HashSet<>();
 	private final NeighborIndex<V, E> neighborIndex;
 	private UndirectedGraph<V, E> originalGraph;
 	private VertexPositionAdapter<V> positionAdapter;
-	private static final Iterator<Color> colors = Iterators.cycle(Color.red, Color.blue, Color.yellow, Color.green, Color.cyan);
 
 	/**
 	 * @param graph
@@ -63,10 +52,10 @@ public class MinimumCycleBasis<V, E> {
 	public MinimumCycleBasis(UndirectedGraph<V, E> graph, VertexPositionAdapter<V> positionAdapter) {
 		originalGraph = graph;
 		this.positionAdapter = positionAdapter;
-		this.primitives = new PrimitiveContainer<>();
+		this.primitives = new PrimitiveContainer();
 		// Listenable graph is used here because we need to determine neighbor vertices,
 		// and it is better done with a listenable graph.
-		this.graph = new ListenableUndirectedGraph<V, E>(new SimpleGraph<>(graph.getEdgeFactory()));
+		this.graph = new ListenableUndirectedGraph<>(new SimpleGraph<>(graph.getEdgeFactory()));
 		// TODO: Should we add vertices and edges explicitly here?
 		for (V v : graph.vertexSet()) {
 			this.graph.addVertex(v);
@@ -106,7 +95,6 @@ public class MinimumCycleBasis<V, E> {
 				default:
 					extractPrimitive(v0);
 			}
-			assert Boolean.TRUE;
 		}
 	}
 
@@ -133,9 +121,6 @@ public class MinimumCycleBasis<V, E> {
 				boolean edgeRemoved = graph.removeEdge(graph.getEdge(v0, v1));
 				assert edgeRemoved;
 				v0 = v1;
-				if (graph.degreeOf(v0) == 1) {
-					v1 = neighborIndex.neighborListOf(v0).get(0);
-				}
 			}
 			while (graph.degreeOf(v0) == 1) {
 				v1 = neighborIndex.neighborListOf(v0).get(0);
@@ -301,19 +286,11 @@ public class MinimumCycleBasis<V, E> {
 				// When vectors dcurr and dnext are almost parallel, we need a distinct way of finding the next
 				// (counter-)clockwise vertex.
 				double angle = angleBetweenVectors(dcurr, dadj, clockwise);
-				if (
-//					clockwise && positionToCurr < 0 && positionToPrev < 0
-//						|| !clockwise && positionToCurr > 0 && positionToPrev > 0
-					currWasReversed ? angle > Math.PI : angle < Math.PI
-					) {
-//					assert Math.abs(angle - Math.PI) > Vectors2D.EPSILON;
-//					assert !areParallel(dcurr, dadj);
+				if ( currWasReversed ? angle > Math.PI : angle < Math.PI ) {
 					vnext = vadj;
 					dnext = dadj;
 					vcurrIsConvex = perpDotProduct(dnext, dcurr);
 					isNextConsideredParallel = areParallel(dcurr, dnext);
-					currWasReversed = false;
-//					assert !isNextConsideredParallel; // Probably...
 				}
 			} else if (vcurrIsConvex < 0) {
 				boolean equation = clockwise ?
@@ -340,26 +317,6 @@ public class MinimumCycleBasis<V, E> {
 		}
 		return vnext;
 	}
-
-	/**
-	 * @param pointX
-	 * @param pointY
-	 * @param startX
-	 * @param startY
-	 * @param endX
-	 * @param endY
-	 * @return
-	 * @see <a href="http://stackoverflow.com/questions/1560492/how-to-tell-whether-a-point-is-to-the-right-or-left-side-of-a-line">
-	 * Stackoverflow</a>
-	 */
-	public static double pointPositionRelativeToLine(
-		double pointX, double pointY,
-		double startX, double startY,
-		double endX, double endY
-	) {
-		return ((endX - startX) * (pointY - startY) - (endY - startY) * (pointX - startX));
-	}
-
 
 	/**
 	 * [Eberly 2005, function Graph::ExtractPrimitive on p. 33, line e.isCycle = true]
@@ -406,27 +363,21 @@ public class MinimumCycleBasis<V, E> {
 		return primitives.minimalCycles;
 	}
 
-	private class PrimitiveContainer<V> {
+	private class PrimitiveContainer {
 		private final Set<V> isolatedVertices = new LinkedHashSet<>();
 		private final Set<Filament<V, E>> filaments = new LinkedHashSet<>();
 		private final Set<MinimalCycle<V, E>> minimalCycles = new LinkedHashSet<>();
 
 		private void add(V isolatedVertex) {
 			isolatedVertices.add(isolatedVertex);
-//			TestCanvas.canvas.draw((Point2D) isolatedVertex, DrawingPoint2D.withColorAndSize(Color.blue, 3));
-			assert Boolean.TRUE;
 		}
 
 		private void add(Filament<V, E> filament) {
 			filaments.add(filament);
-//			TestCanvas.canvas.draw((List<Point2D>) filament.vertexList(), DrawingPolyline.withColor(Color.green));
-			assert Boolean.TRUE;
 		}
 
 		private void add(MinimalCycle<V, E> cycle) {
 			minimalCycles.add(cycle);
-//			TestCanvas.canvas.draw((List<Point2D>) cycle.vertexList(), DrawingPolygon.withColor(Color.red));
-			assert Boolean.TRUE;
 		}
 	}
 }
