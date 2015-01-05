@@ -77,7 +77,7 @@ public class EberlyMinimumCycleBasisDemo implements Runnable {
 				.path(14, 15, 16);
 		final SimpleGraph<Point2D, Segment2D> graph = constructor.graph();
 //		canvas.draw(graph, DrawingGraph.withAliases(constructor, (p -> p.x), (p -> p.y)));
-		MinimumCycleBasis<Point2D, Segment2D> basis = new MinimumCycleBasis<>(graph, Point2DVertexPositionAdapter.get());
-//		canvas.draw(graph, DrawingGraph.basis(Color.green, Color.red, Color.blue));
+//		MinimumCycleBasis<Point2D, Segment2D> basis = new MinimumCycleBasis<>(graph, Point2DVertexPositionAdapter.get());
+		canvas.draw(graph, DrawingGraph.basis(Color.green, Color.red, Color.blue));
 	}
 }

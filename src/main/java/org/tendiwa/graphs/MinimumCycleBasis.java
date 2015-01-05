@@ -209,43 +209,31 @@ public class MinimumCycleBasis<V, E> {
 			// Filament found, not necessarily rooted at v0
 			extractFilament(vprev, neighborIndex.neighborsOf(vprev).iterator().next());
 		} else if (vcurr.equals(v0)) {
-			// Minimal cycle found
-			MinimalCycle<V, E> cycle = new MinimalCycle<>(originalGraph, sequence);
-			primitives.add(cycle);
-
-			for (int i = 0, l = sequence.size() - 1; i < l; i++) {
-				markCycleEdge(sequence.get(i), sequence.get(i + 1));
-			}
-			markCycleEdge(sequence.get(0), sequence.get(sequence.size() - 1));
-			graph.removeEdge(v0, v1);
-			if (graph.degreeOf(v0) == 1) {
-				// Remove the filament rooted at v0
-				extractFilament(v0, neighborIndex.neighborListOf(v0).get(0));
-			}
-			if (graph.containsVertex(v1) && graph.degreeOf(v1) == 1) {
-				// Remove the filament rooted at v1
-				extractFilament(v1, neighborIndex.neighborListOf(v1).get(0));
-			}
+			extractMinimalCycle(v0, v1, sequence);
 		} else {
 			// A cycle has been found, but it is not guaranteed to be a minimal
-			// cycle. This implies v0 is part of a filament. Locate the
-			// starting point for the filament by traversing from v0 away
-			// from the initial v1.
-			// TODO: ^^ this comment is taken from Eberly's paper, but it is not true. Finding a cycle here does not
-			// imply v0 is part of a filament. A counter-example is a cycle within cycle connected with a filament
-			// whose start is a vertex other than v0.
-			while (graph.degreeOf(v0) == 2) {
-				if (!neighborIndex.neighborListOf(v0).get(0).equals(v1)) {
-					v1 = v0;
-					v0 = neighborIndex.neighborListOf(v0).get(0);
-				} else {
-					v1 = v0;
-					v0 = neighborIndex.neighborListOf(v0).get(1);
-				}
-				TestCanvas.canvas.draw(new Segment2D((Point2D)v1, (Point2D)v0), DrawingSegment2D.withColorDirected
-					(Color.magenta, 5));
-			}
-			extractFilament(v0, v1);
+			// cycle. This implies vcurr (as it occured twice in sequence) is part of a filament.
+			// Next point in the filament is one step back in sequence.
+			extractFilament(vcurr, sequence.get(sequence.indexOf(vcurr) - 1));
+		}
+	}
+
+	private void extractMinimalCycle(V v0, V v1, List<V> sequence) {
+		MinimalCycle<V, E> cycle = new MinimalCycle<>(originalGraph, sequence);
+		primitives.add(cycle);
+
+		for (int i = 0, l = sequence.size() - 1; i < l; i++) {
+			markCycleEdge(sequence.get(i), sequence.get(i + 1));
+		}
+		markCycleEdge(sequence.get(0), sequence.get(sequence.size() - 1));
+		graph.removeEdge(v0, v1);
+		if (graph.degreeOf(v0) == 1) {
+			// Remove the filament rooted at v0
+			extractFilament(v0, neighborIndex.neighborListOf(v0).get(0));
+		}
+		if (graph.containsVertex(v1) && graph.degreeOf(v1) == 1) {
+			// Remove the filament rooted at v1
+			extractFilament(v1, neighborIndex.neighborListOf(v1).get(0));
 		}
 	}
 
@@ -384,8 +372,7 @@ public class MinimumCycleBasis<V, E> {
 	 * 	Edge end. Order doesn't matter since the graph is undirected.
 	 */
 	private void markCycleEdge(V v0, V v1) {
-		boolean add = cycleEdges.add(graph.getEdge(v0, v1));
-//        assert add;
+		cycleEdges.add(graph.getEdge(v0, v1));
 	}
 
 	/**
@@ -426,19 +413,19 @@ public class MinimumCycleBasis<V, E> {
 
 		private void add(V isolatedVertex) {
 			isolatedVertices.add(isolatedVertex);
-			TestCanvas.canvas.draw((Point2D) isolatedVertex, DrawingPoint2D.withColorAndSize(Color.blue, 3));
+//			TestCanvas.canvas.draw((Point2D) isolatedVertex, DrawingPoint2D.withColorAndSize(Color.blue, 3));
 			assert Boolean.TRUE;
 		}
 
 		private void add(Filament<V, E> filament) {
 			filaments.add(filament);
-			TestCanvas.canvas.draw((List<Point2D>) filament.vertexList(), DrawingPolyline.withColor(Color.green));
+//			TestCanvas.canvas.draw((List<Point2D>) filament.vertexList(), DrawingPolyline.withColor(Color.green));
 			assert Boolean.TRUE;
 		}
 
 		private void add(MinimalCycle<V, E> cycle) {
 			minimalCycles.add(cycle);
-			TestCanvas.canvas.draw((List<Point2D>) cycle.vertexList(), DrawingPolygon.withColor(Color.red));
+//			TestCanvas.canvas.draw((List<Point2D>) cycle.vertexList(), DrawingPolygon.withColor(Color.red));
 			assert Boolean.TRUE;
 		}
 	}
