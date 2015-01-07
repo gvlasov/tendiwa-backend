@@ -171,8 +171,11 @@ public final class IntervalsAlongPolygonBorder {
 		currentVertex = nextVertex;
 		nextVertex = polygon.get(nextNextVertexIndex);
 		switchToNewSegmentList(currentVertex, nextVertex);
-		nextNextVertexIndex = Utils.nextIndex(numOfVertices, nextNextVertexIndex);
+		nextNextVertexIndex = Utils.nextIndex(nextNextVertexIndex, numOfVertices);
 		if (nextNextVertexIndex == 2) {
+			if (returnedToEdgeIndex0) {
+				isChainEnclosed = true;
+			}
 			returnedToEdgeIndex0 = true;
 		}
 		if (returnedToEdgeIndex0 && nextNextVertexIndex == 3) {

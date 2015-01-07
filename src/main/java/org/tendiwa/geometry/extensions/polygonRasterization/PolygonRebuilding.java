@@ -43,7 +43,7 @@ final class PolygonRebuilding {
 		int size = polygon.size();
 		int maxListSize = size - 1; // We'll always reject at least 1 vertex
 		answer = new ArrayList<>(maxListSize);
-		previousVertex = polygon.get(Utils.previousIndex(size, startIndex));
+		previousVertex = polygon.get(Utils.previousIndex(startIndex, size));
 //		assert previousVertex.y != polygon.get(startIndex).y;
 		int preStartIndex = startIndex - 1;
 		consecutive = false;

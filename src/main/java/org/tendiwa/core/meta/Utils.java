@@ -124,11 +124,11 @@ public class Utils {
 		return getRandomElement(list);
 	}
 
-	public static int previousIndex(int size, int index) {
+	public static int previousIndex(int index, int size) {
 		return index == 0 ? size - 1 : index - 1;
 	}
 
-	public static int nextIndex(int size, int index) {
+	public static int nextIndex(int index, int size) {
 		return index == size - 1 ? 0 : index + 1;
 	}
 }

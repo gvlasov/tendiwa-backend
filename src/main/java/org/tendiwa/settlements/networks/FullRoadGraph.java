@@ -12,10 +12,12 @@ import org.tendiwa.geometry.extensions.PlanarGraphs;
 
 import java.awt.Color;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 final class FullRoadGraph {
 	private UndirectedGraph<Point2D, Segment2D> fullRoadGraph;
+	// TODO: We don't use this anymore, delete
 	private UndirectedGraph<Point2D, Segment2D> actualCyclesRoadGraph;
 
 	public FullRoadGraph(
@@ -26,15 +28,15 @@ final class FullRoadGraph {
 		compute(originalRoadGraph, holderOfSplitCycleEdges, networks);
 	}
 
-	void compute(
+	private void compute(
 		UndirectedGraph<Point2D, Segment2D> originalRoadGraph,
 		HolderOfSplitCycleEdges holderOfSplitCycleEdges,
 		ImmutableSet<NetworkWithinCycle> networks
 	) {
 		UndirectedGraph<Point2D, Segment2D> union = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
 		originalRoadGraph.vertexSet().forEach(union::addVertex);
-		Set<Point2D> verticesOfCyclesSubgraph = new HashSet<>();
-		Set<Segment2D> edgesOfCyclesSubgraph = new HashSet<>();
+		Set<Point2D> verticesOfCyclesSubgraph = new LinkedHashSet<>();
+		Set<Segment2D> edgesOfCyclesSubgraph = new LinkedHashSet<>();
 		for (Segment2D edge : originalRoadGraph.edgeSet()) {
 			if (holderOfSplitCycleEdges.isEdgeSplit(edge)) {
 				UndirectedGraph<Point2D, Segment2D> graph = holderOfSplitCycleEdges.getGraph(edge);

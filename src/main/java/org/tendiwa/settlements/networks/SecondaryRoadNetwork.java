@@ -3,13 +3,13 @@ package org.tendiwa.settlements.networks;
 import com.google.common.collect.ImmutableSet;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
+import org.tendiwa.core.meta.Utils;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingPoint2D;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.Vectors2D;
+import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.extensions.IntervalsAlongPolygonBorder;
 import org.tendiwa.geometry.extensions.ShamosHoeyAlgorithm;
+import org.tendiwa.geometry.extensions.straightSkeleton.Bisector;
 import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.math.IntegerPermutationGenerator;
 
@@ -44,6 +44,7 @@ final class SecondaryRoadNetwork {
 	ImmutableSet<Point2D> filamentEndPoints;
 	Set<DirectionFromPoint> filamentEnds;
 	private final UndirectedGraph<Point2D, Segment2D> originalRoadGraph;
+	private final Collection<MinimalCycle<Point2D, Segment2D>> enclosedCycles;
 	private final Random random;
 	/**
 	 * A set of point including:
@@ -70,6 +71,7 @@ final class SecondaryRoadNetwork {
 		MinimalCycle<Point2D, Segment2D> originalMinimalCycle,
 		HolderOfSplitCycleEdges holderOfSplitCycleEdges,
 		Collection<Segment2D> filamentEdges,
+		Collection<MinimalCycle<Point2D, Segment2D>> enclosedCycles,
 		Random random
 	) {
 		this.snapSize = snapSize;
@@ -80,6 +82,7 @@ final class SecondaryRoadNetwork {
 		this.holderOfSplitCycleEdges = holderOfSplitCycleEdges;
 		this.filamentEdges = filamentEdges;
 		this.originalRoadGraph = originalRoadGraph;
+		this.enclosedCycles = enclosedCycles;
 		this.random = random;
 		this.roadsFromPoint = roadsFromPoint;
 		this.roadSegmentLength = roadSegmentLength;
@@ -119,89 +122,208 @@ final class SecondaryRoadNetwork {
 	 * 	A MinimalCycle that contains this NetworkWithinCycle's secondary road network inside it.
 	 */
 	private void buildSegment2DNetwork(MinimalCycle<Point2D, Segment2D> cycle) {
-		Map<Segment2D, List<Point2D>> pointsOnPolygonBorder = startingPoints(cycle);
-		List<Point2D> startingPoints = concatListsToOneList(pointsOnPolygonBorder);
-		TestCanvas.canvas.drawAll(startingPoints, DrawingPoint2D.withColorAndSize(Color.red, 5));
-
-		int numberOfStartingPoints = startingPoints.size();
-		int[] randomPointIndices = IntegerPermutationGenerator.generateUsingFisherYates(
-			numberOfStartingPoints,
-			numberOfStartingPoints,
-			random
-		);
-		int lastRandomPointIndexIndex = 0;
-		Set<DirectionFromPoint> filamentEnds = new HashSet<>();
-		Map<Point2D, Segment2D> pointsToOriginalRoads = mapPointsToOriginalRoads(
-			pointsOnPolygonBorder,
-			numberOfStartingPoints
-		);
-
-		// How many starting points have a deviated perpendicular edge of secondary road
-		// network coming out of them.
-		int startingPointsUsed = 0;
-
-		while (lastRandomPointIndexIndex < numberOfStartingPoints) {
-			Deque<DirectionFromPoint> nodeQueue = new ArrayDeque<>();
-//			Collection<Segment2D> startingRoadsSnappedTo = new HashSet<>(startingPoints.size());
-
-			do {
-				Point2D sourceNode = startingPoints.get(randomPointIndices[lastRandomPointIndexIndex]);
-//			if (startingRoadsSnappedTo.contains(road)) {
-//				continue;
-//			}
-
-				Segment2D road = getSplitRoadWherePointIs(sourceNode, pointsToOriginalRoads.get(sourceNode));
-				// Made dead end so two new roads are not inserted to the network.
-				deadEnds.add(sourceNode);
-				insertNode(road, sourceNode);
-				// Made not-dead end so a road can be placed from it.
-				deadEnds.remove(sourceNode);
-				Segment2D originalEdge = holderOfSplitCycleEdges.findOriginalEdge(road);
-				double direction = deviatedBoundaryPerpendicular(originalEdge);
-
-				SnapEvent snapEvent = tryPlacingRoad(sourceNode, direction, true);
-				if (doesNotSnapToDeadEnd(snapEvent)) {
-					nodeQueue.push(new DirectionFromPoint(snapEvent.targetNode, direction));
-					outerPointsBuilder.add(sourceNode);
-				}
-				if (snapEvent != null && snapEvent.eventType == SnapEventType.ROAD_SNAP) {
-//					startingRoadsSnappedTo.add(snapEvent.road);
-					startingPointsUsed--;
-				}
-				deadEnds.add(sourceNode);
-				startingPointsUsed++;
-				lastRandomPointIndexIndex++;
-//			assert !nodeQueue.isEmpty();
-				while (!nodeQueue.isEmpty()) {
-					spanSecondaryNetworkFromStartingSegmentsEnds(filamentEnds, nodeQueue);
-				}
-			} while (startingPointsUsed <= maxNumOfStartPoints);
-		}
-		this.filamentEnds = removeMultidegreeFilamentEnds(filamentEnds);
-		filamentEndPoints = nodes2TheirPoints(filamentEnds);
+		new SegmentFloodFill().fill(cycle);
+		properlyConnectEnclosedCyclesWithRestOfNetwork();
 	}
 
-	private void spanSecondaryNetworkFromStartingSegmentsEnds(Set<DirectionFromPoint> filamentEnds, Deque<DirectionFromPoint> nodeQueue) {
-		DirectionFromPoint node = nodeQueue.removeLast();
-		boolean addedAnySegments = false;
-		for (int i = 1; i < roadsFromPoint; i++) {
-			double newDirection = deviateDirection(node.direction + Math.PI + i * (Math.PI * 2 / roadsFromPoint));
-			SnapEvent snapEvent = tryPlacingRoad(node.node, newDirection, false);
-			if (snapEvent == null) {
-				continue;
-			}
-			Point2D newNode = snapEvent.targetNode;
-			if (newNode != null && !isDeadEnd(newNode)) {
-				nodeQueue.push(new DirectionFromPoint(newNode, newDirection));
-				addedAnySegments = true;
-			}
+	/**
+	 * Flood-fills a {@link org.tendiwa.graphs.MinimalCycle} with the secondary road network's segments.
+	 */
+	private class SegmentFloodFill {
+		private final Deque<DirectionFromPoint> nodeQueue;
+
+		SegmentFloodFill() {
+			nodeQueue = new ArrayDeque<>();
 		}
-		if (!addedAnySegments) {
-			// This does not guarantee that only degree 1 nodes will be added to filament ends,
-			// but it culls most of wrong edges.
-			filamentEnds.add(node);
+
+		void fill(MinimalCycle<Point2D, Segment2D> cycle) {
+			Map<Segment2D, List<Point2D>> pointsOnPolygonBorder = startingPoints(cycle);
+			List<Point2D> startingPoints = concatListsToOneList(pointsOnPolygonBorder);
+			TestCanvas.canvas.drawAll(startingPoints, DrawingPoint2D.withColorAndSize(Color.red, 5));
+
+			int numberOfStartingPoints = startingPoints.size();
+			int[] randomPointIndices = IntegerPermutationGenerator.generateUsingFisherYates(
+				numberOfStartingPoints,
+				numberOfStartingPoints,
+				random
+			);
+			int lastRandomPointIndexIndex = 0;
+			Set<DirectionFromPoint> filamentEnds = new HashSet<>();
+			Map<Point2D, Segment2D> pointsToOriginalRoads = mapPointsToOriginalRoads(
+				pointsOnPolygonBorder,
+				numberOfStartingPoints
+			);
+
+			// How many starting points have a deviated perpendicular edge of secondary road
+			// network coming out of them.
+			int startingPointsUsed = 0;
+
+			while (lastRandomPointIndexIndex < numberOfStartingPoints) {
+				do {
+					SnapEvent snapEvent = startFloodFill(
+						startingPoints.get(randomPointIndices[lastRandomPointIndexIndex]),
+						pointsToOriginalRoads
+					);
+					if (snapEvent != null && snapEvent.eventType == SnapEventType.ROAD_SNAP) {
+						startingPointsUsed--;
+					}
+					startingPointsUsed++;
+					lastRandomPointIndexIndex++;
+					while (!nodeQueue.isEmpty()) {
+						spanSecondaryNetworkFromStartingSegmentsEnds(filamentEnds);
+					}
+				}
+				while (startingPointsUsed <= maxNumOfStartPoints && lastRandomPointIndexIndex < numberOfStartingPoints);
+			}
+			SecondaryRoadNetwork.this.filamentEnds = removeMultidegreeFilamentEnds(filamentEnds);
+			filamentEndPoints = nodes2TheirPoints(filamentEnds);
+		}
+
+		private SnapEvent startFloodFill(
+			Point2D sourceNode,
+			Map<Point2D, Segment2D> pointsToOriginalRoads
+		) {
+			Segment2D road = getSplitRoadWherePointIs(sourceNode, pointsToOriginalRoads.get(sourceNode));
+			// Made dead end so two new roads are not inserted to the network.
+			return floodFill(sourceNode, road);
+		}
+
+		private SnapEvent floodFill(Point2D sourceNode, Segment2D road) {
+			deadEnds.add(sourceNode);
+			insertNode(road, sourceNode);
+			// Made not-dead end so a road can be placed from it.
+			deadEnds.remove(sourceNode);
+			Segment2D originalEdge = holderOfSplitCycleEdges.findOriginalEdge(road);
+			double direction = deviatedBoundaryPerpendicular(originalEdge);
+
+			SnapEvent snapEvent = tryPlacingRoad(sourceNode, direction, true);
+			if (doesNotSnapToDeadEnd(snapEvent)) {
+				nodeQueue.push(new DirectionFromPoint(snapEvent.targetNode, direction));
+				outerPointsBuilder.add(sourceNode);
+			}
+			deadEnds.add(sourceNode);
+			return snapEvent;
+		}
+
+		private void spanSecondaryNetworkFromStartingSegmentsEnds(
+			Set<DirectionFromPoint> filamentEnds
+		) {
+			DirectionFromPoint node = nodeQueue.removeLast();
+			boolean addedAnySegments = false;
+			for (int i = 1; i < roadsFromPoint; i++) {
+				double newDirection = deviateDirection(node.direction + Math.PI + i * (Math.PI * 2 / roadsFromPoint));
+				SnapEvent snapEvent = tryPlacingRoad(node.node, newDirection, false);
+				if (snapEvent == null) {
+					continue;
+				}
+				Point2D newNode = snapEvent.targetNode;
+				if (newNode != null && !isDeadEnd(newNode)) {
+					nodeQueue.push(new DirectionFromPoint(newNode, newDirection));
+					addedAnySegments = true;
+				}
+			}
+			if (!addedAnySegments) {
+				// This does not guarantee that only degree 1 nodes will be added to filament ends,
+				// but it culls most of wrong edges.
+				filamentEnds.add(node);
+			}
 		}
 	}
+
+
+	private void properlyConnectEnclosedCyclesWithRestOfNetwork() {
+		for (MinimalCycle<Point2D, Segment2D> cycle : enclosedCycles) {
+			EnclosedCycleConnections enclosedCycleConnections = new EnclosedCycleConnections(cycle).compute();
+			switch (enclosedCycleConnections.getNumberOfCycleConnections()) {
+				case 1:
+					addMissingConnectionToEnclosedCycle(cycle, enclosedCycleConnections.getConnectionPoint());
+					break;
+				case 0:
+					addTwoMissingConnectionsToEnclosedCycle(cycle);
+			}
+		}
+	}
+
+	private void addTwoMissingConnectionsToEnclosedCycle(MinimalCycle<Point2D, Segment2D> cycle) {
+		List<Point2D> points = cycle.vertexList();
+		int leastPointIndex,
+			greatestPointIndex;
+		boolean reflex = JTSUtils.isYDownCCW(points);
+		leastPointIndex = greatestPointIndex = 0;
+		int size = points.size();
+		if (random.nextBoolean()) {
+			for (int i = 1; i < size; i++) {
+				Point2D point = points.get(i);
+				if (points.get(leastPointIndex).y > point.y) {
+					leastPointIndex = i;
+				} else if (points.get(greatestPointIndex).y < point.y) {
+					greatestPointIndex = i;
+				}
+			}
+		} else {
+			for (int i = 1; i < size; i++) {
+				Point2D point = points.get(i);
+				if (points.get(leastPointIndex).x > point.x) {
+					leastPointIndex = i;
+				} else if (points.get(greatestPointIndex).x < point.x) {
+					greatestPointIndex = i;
+				}
+			}
+		}
+		tryPlacingRoadFromEnclosedCycle(
+			points.get(Utils.previousIndex(leastPointIndex, size)),
+			points.get(leastPointIndex),
+			points.get(Utils.nextIndex(leastPointIndex, size)),
+			reflex
+		);
+		tryPlacingRoadFromEnclosedCycle(
+			points.get(Utils.previousIndex(greatestPointIndex, size)),
+			points.get(greatestPointIndex),
+			points.get(Utils.nextIndex(greatestPointIndex, size)),
+			reflex
+		);
+	}
+
+	private void addMissingConnectionToEnclosedCycle(MinimalCycle<Point2D, Segment2D> cycle, Point2D connectionPoint) {
+		assert connectionPoint != null;
+		List<Point2D> points = cycle.vertexList();
+		boolean reflexDirection = JTSUtils.isYDownCCW(points);
+		Polygon polygon = new Polygon(points);
+		int size = polygon.size();
+		double maxDistanceSquared = 0;
+		int farthestPointIndex = -1;
+		for (int i = 0; i < size; i++) {
+			Point2D vertex = polygon.get(i);
+			double distanceSquared = connectionPoint.squaredDistanceTo(vertex);
+			if (distanceSquared > maxDistanceSquared) {
+				maxDistanceSquared = distanceSquared;
+				farthestPointIndex = i;
+			}
+		}
+		int preFarthestPointIndex = Utils.previousIndex(farthestPointIndex, size);
+		int postFarthestPointIndex = Utils.nextIndex(farthestPointIndex, size);
+		tryPlacingRoadFromEnclosedCycle(
+			polygon.get(preFarthestPointIndex),
+			polygon.get(farthestPointIndex),
+			polygon.get(postFarthestPointIndex),
+			reflexDirection
+		);
+	}
+
+	private void tryPlacingRoadFromEnclosedCycle(Point2D a, Point2D b, Point2D c, boolean reflex) {
+		Bisector bisector = new Bisector(
+			new Segment2D(a, b),
+			new Segment2D(b, c),
+			b,
+			!reflex
+		);
+		Segment2D segment = bisector.asSegment(deviatedLength(roadSegmentLength));
+		assert deadEnds.contains(segment.start);
+		deadEnds.remove(segment.start);
+		tryPlacingRoad(segment.start, segment.start.angleTo(segment.end), false);
+		deadEnds.add(segment.start);
+	}
+
 
 	/**
 	 * [Kelly figure 42]
@@ -539,5 +661,61 @@ final class SecondaryRoadNetwork {
 			: road.start.distanceTo(point) + " " + road.start.distanceTo(road.end);
 		assert road.end.distanceTo(point) > Vectors2D.EPSILON
 			: road.end.distanceTo(point) + " " + road.start.distanceTo(road.end);
+	}
+
+	private class EnclosedCycleConnections {
+		private MinimalCycle<Point2D, Segment2D> cycle;
+		private int numberOfCycleConnections;
+		private Point2D connectionPoint;
+
+		public EnclosedCycleConnections(MinimalCycle<Point2D, Segment2D> cycle) {
+			this.cycle = cycle;
+		}
+
+		public int getNumberOfCycleConnections() {
+			return numberOfCycleConnections;
+		}
+
+		public Point2D getConnectionPoint() {
+			return connectionPoint;
+		}
+
+		/**
+		 * Finds the number of points where an enclosed cycle in connected with other parts of the secondary road
+		 * network, and remembers one of those points.
+		 */
+		public EnclosedCycleConnections compute() {
+			numberOfCycleConnections = 0;
+			connectionPoint = null;
+			int twiceExtraVertices = 0;
+			for (Segment2D segment : cycle) {
+				if (holderOfSplitCycleEdges.isEdgeSplit(segment)) {
+					UndirectedGraph<Point2D, Segment2D> graph = holderOfSplitCycleEdges.getGraph(segment);
+					for (Point2D vertex : graph.vertexSet()) {
+						if (relevantNetwork.degreeOf(vertex) > 2) {
+							numberOfCycleConnections++;
+							if (graph.degreeOf(vertex) == 1) {
+								// Degrees at vertices of split edge graphs that have degree of 1 will be added twice because
+								// those vertices are in two neighbor graphs in holderOfSplitCycleEdges.
+								twiceExtraVertices++;
+							}
+							connectionPoint = vertex;
+						}
+					}
+					numberOfCycleConnections -= twiceExtraVertices;
+				} else {
+					for (Point2D vertex : new Point2D[]{segment.start, segment.end}) {
+						if (relevantNetwork.degreeOf(vertex) > 2) {
+							numberOfCycleConnections ++;
+							twiceExtraVertices ++;
+							connectionPoint = vertex;
+						}
+					}
+				}
+			}
+			assert twiceExtraVertices % 2 == 0;
+			numberOfCycleConnections -= twiceExtraVertices / 2;
+			return this;
+		}
 	}
 }

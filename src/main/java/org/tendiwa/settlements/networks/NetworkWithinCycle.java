@@ -10,7 +10,6 @@ import org.tendiwa.graphs.MinimalCycle;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 /**
  * [Kelly section 4.3.1]
@@ -44,6 +43,8 @@ public final class NetworkWithinCycle {
 	 * @param filamentEdges
 	 * 	A collection of all the edges of a {@link RoadsPlanarGraphModel#originalRoadGraph} that are not
 	 * 	part of any minimal cycles. The same collection is passed to all the CityCells.
+	 * @param enclosedCycles
+	 * 	Cycles enclosed within the {@code originalMinimalCycle}.
 	 * @param roadsFromPoint
 	 * 	[Kelly figure 42, variable ParamDegree]
 	 * 	<p>
@@ -92,6 +93,7 @@ public final class NetworkWithinCycle {
 		MinimalCycle<Point2D, Segment2D> originalMinimalCycle,
 		UndirectedGraph<Point2D, Segment2D> originalRoadGraph,
 		Collection<Segment2D> filamentEdges,
+		Collection<MinimalCycle<Point2D, Segment2D>> enclosedCycles,
 		int roadsFromPoint,
 		double roadSegmentLength,
 		double snapSize,
@@ -121,6 +123,7 @@ public final class NetworkWithinCycle {
 			originalMinimalCycle,
 			holderOfSplitCycleEdges,
 			filamentEdges,
+			enclosedCycles,
 			random
 		);
 		this.blockDivision = new NetworkToBlocks(

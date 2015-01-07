@@ -3,6 +3,7 @@ package org.tendiwa.graphs;
 import com.google.common.collect.ImmutableList;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
+import org.tendiwa.geometry.Polygon;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -86,6 +87,7 @@ public final class MinimalCycle<V, E> implements Primitive<V>, Iterable<E> {
 		}
 		return edgesOfCycle.iterator();
 	}
+
 
 	/**
 	 * Returns all vertices of a cycle. Order is guaranteed to be clockwise.

@@ -97,12 +97,12 @@ public final class PolygonRasterizer {
 						segment[1] = buf;
 					}
 					Point2D westFromFirstPoint = polygon.get(
-						westToEast ? Utils.previousIndex(numberOfVertices, segment[0])
-							: Utils.nextIndex(numberOfVertices, segment[0])
+						westToEast ? Utils.previousIndex(segment[0], numberOfVertices)
+							: Utils.nextIndex(segment[0], numberOfVertices)
 					);
-					int nextIndexAfterEastern = Utils.nextIndex(numberOfVertices, segment[1]);
+					int nextIndexAfterEastern = Utils.nextIndex(segment[1], numberOfVertices);
 					Point2D eastFromLastPoint = polygon.get(
-						westToEast ? nextIndexAfterEastern : Utils.previousIndex(numberOfVertices, segment[1])
+						westToEast ? nextIndexAfterEastern : Utils.previousIndex(segment[1], numberOfVertices)
 					);
 					if (Math.signum(westFromFirstPoint.y - y) == -Math.signum(eastFromLastPoint.y - y)) {
 						if (consecutiveSegments == null) {
@@ -178,8 +178,8 @@ public final class PolygonRasterizer {
 						assert a instanceof int[];
 						int[] aint = (int[]) a;
 						int nextGreaterXIndex = aint[0] > aint[1] ?
-							Utils.previousIndex(numberOfVertices, aint[1])
-							: Utils.nextIndex(numberOfVertices, aint[1]);
+							Utils.previousIndex(aint[1], numberOfVertices)
+							: Utils.nextIndex(aint[1], numberOfVertices);
 						if (nextGreaterXIndex == numberOfVertices) {
 							nextGreaterXIndex = 0;
 						}
@@ -191,8 +191,8 @@ public final class PolygonRasterizer {
 						assert b instanceof int[];
 						int[] bint = (int[]) b;
 						int nextGreaterXIndex = bint[0] > bint[1] ?
-							Utils.previousIndex(numberOfVertices, bint[1])
-							: Utils.nextIndex(numberOfVertices, bint[1]);
+							Utils.previousIndex(bint[1], numberOfVertices)
+							: Utils.nextIndex(bint[1], numberOfVertices);
 						if (nextGreaterXIndex == numberOfVertices) {
 							nextGreaterXIndex = 0;
 						}
@@ -229,7 +229,7 @@ public final class PolygonRasterizer {
 		int polygonSize = polygon.size();
 		Point2D vertex = polygon.get(0);
 		for (int i = 0; i < polygonSize; i++) {
-			Point2D nextVertex = polygon.get(Utils.nextIndex(polygonSize, i));
+			Point2D nextVertex = polygon.get(Utils.nextIndex(i, polygonSize));
 			Cell[] cells = CellSegment.cells(
 				(int) Math.round(vertex.x),
 				(int) Math.round(vertex.y),

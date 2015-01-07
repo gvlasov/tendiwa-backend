@@ -67,7 +67,7 @@ class InitialListOfActiveVertices {
 			edges.add(
 				new Segment2D(
 					vertices.get(i),
-					vertices.get(Utils.nextIndex(l, i))
+					vertices.get(Utils.nextIndex(i, l))
 				)
 			);
 		}

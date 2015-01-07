@@ -19,14 +19,12 @@ import org.tendiwa.geometry.extensions.ShamosHoeyAlgorithm;
 import org.tendiwa.graphs.Filament;
 import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.graphs.MinimumCycleBasis;
-import org.tendiwa.settlements.EnclosedCycleFilter;
+import org.tendiwa.settlements.EnclosedCycleDetector;
 import org.tendiwa.settlements.SettlementGenerationException;
 
 import java.awt.Color;
 import java.util.*;
-import java.util.function.Predicate;
 
-import static java.util.stream.Collectors.reducing;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -81,6 +79,7 @@ public final class RoadsPlanarGraphModel {
 	private final HolderOfSplitCycleEdges holderOfSplitCycleEdges = new HolderOfSplitCycleEdges();
 	private ImmutableMap<Point2D, Segment2D> splitEdgesToOriginalEdges;
 	private final FullRoadGraph fullRoadGraph;
+	private EnclosedCycleDetector enclosedCycleDetector;
 
 	/**
 	 * @param highLevelRoadGraph
@@ -248,6 +247,7 @@ public final class RoadsPlanarGraphModel {
 				cycle,
 				originalRoadGraph,
 				filamentEdges,
+				enclosedCycleDetector.cyclesEnclosedIn(cycle),
 				roadsFromPoint,
 				roadSegmentLength,
 				snapSize,
@@ -270,41 +270,34 @@ public final class RoadsPlanarGraphModel {
 	 * 	A MinimumCycleBasis of this City's {@link #originalRoadGraph}.
 	 * @return A map from MinimalCycles to CityCells residing in those cycles.
 	 */
-	private static Map<MinimalCycle<Point2D, Segment2D>, UndirectedGraph<Point2D, Segment2D>> constructNetworkGraphs(
+	private Map<MinimalCycle<Point2D, Segment2D>, UndirectedGraph<Point2D, Segment2D>> constructNetworkGraphs(
 		MinimumCycleBasis<Point2D, Segment2D> primitives
 	) {
 		Set<Filament<Point2D, Segment2D>> filaments = primitives.filamentsSet();
 		Map<MinimalCycle<Point2D, Segment2D>, UndirectedGraph<Point2D, Segment2D>> answer = new LinkedHashMap<>();
-		Predicate<MinimalCycle<Point2D, Segment2D>> enclosedCycleFilter =
-			new EnclosedCycleFilter(
-				primitives
-					.minimalCyclesSet()
-					.stream()
-						// TODO: Do we really need this sorting here?
-					.sorted((a, b) ->
-							Point2DRowComparator.getInstance().compare(
-								a.iterator().next().start,
-								b.iterator().next().start
-							)
-					)
-					.collect(toList())
-			);
-		Collection<MinimalCycle<Point2D, Segment2D>> enclosingCycles = primitives
+		enclosedCycleDetector = new EnclosedCycleDetector(
+			primitives
+				.minimalCyclesSet()
+				.stream()
+					// TODO: Do we really need this sorting here?
+				.sorted((a, b) ->
+						Point2DRowComparator.getInstance().compare(
+							a.iterator().next().start,
+							b.iterator().next().start
+						)
+				)
+				.collect(toList())
+		);
+		primitives
 			.minimalCyclesSet()
 			.stream()
-			.filter(enclosedCycleFilter)
-			.collect(toList());
-		Collection<MinimalCycle<Point2D, Segment2D>> enclosedCycles = primitives
-			.minimalCyclesSet()
-			.stream()
-			.filter(a -> !enclosedCycleFilter.test(a))
-			.collect(toList());
-		for (MinimalCycle<Point2D, Segment2D> enclosingCycle : enclosingCycles) {
-			answer.put(
-				enclosingCycle,
-				constructNetworkOriginalGraph(enclosingCycle, filaments, enclosedCycles)
-			);
-		}
+			.filter(c -> !enclosedCycleDetector.isEnclosed(c))
+			.forEach(enclosingCycle -> {
+				answer.put(
+					enclosingCycle,
+					constructNetworkOriginalGraph(enclosingCycle, filaments, enclosedCycleDetector.cyclesEnclosedIn(enclosingCycle))
+				);
+			});
 		return answer;
 	}
 

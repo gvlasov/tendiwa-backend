@@ -60,7 +60,6 @@ public class PolygonShrinker {
 						.get(reverse)
 						.getLinesIntersectionPoint();
 					queue.add(newPoint);
-					assert Boolean.TRUE;
 				} else {
 					assert !intersectionsOnSegments.containsValue(segment);
 					RayIntersection intersection = new RayIntersection(
@@ -72,7 +71,6 @@ public class PolygonShrinker {
 						intersectionsOnSegments.put(anotherIntersection, segment);
 						Point2D newPoint = anotherIntersection.getLinesIntersectionPoint();
 						queue.add(newPoint);
-						assert Boolean.TRUE;
 					}
 				}
 			});

@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * Holds chains of edges that are result of splitting edges of {@link RoadsPlanarGraphModel#originalRoadGraph}.
  * <p>
- * We can't mutate {@link NetworkWithinCycle#originalRoadGraph}
+ * We can't mutate {@link org.tendiwa.settlements.networks.RoadsPlanarGraphModel#originalRoadGraph}
  * itself because that breaks {@link org.tendiwa.graphs.MinimalCycle#iterator()}.
  * <p>
  * This class exists so {@link RoadsPlanarGraphModel#getFullRoadGraph()} can return a graph with edges on cycle edges
@@ -26,7 +26,6 @@ import java.util.Map;
  * One of the reasons why we need this class is that when we split a road of
  * {@link NetworkWithinCycle}, that road may be shared with another
  * {@link NetworkWithinCycle} of the same {@link RoadsPlanarGraphModel}.
- * <p>
  * <p>
  * <b>Original edge</b> is an edge that hasn't been split from another edge.
  */

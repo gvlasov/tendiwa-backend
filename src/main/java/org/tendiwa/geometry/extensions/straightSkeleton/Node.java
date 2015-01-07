@@ -347,7 +347,7 @@ abstract class Node implements Iterable<Node> {
 			new Segment2D(
 				bisectorStart,
 				new RayIntersection(
-					bisector.segment,
+					bisector.asSegment(40),
 					oppositeEdge
 				).getLinesIntersectionPoint()
 			),
@@ -389,7 +389,7 @@ abstract class Node implements Iterable<Node> {
 
 	private boolean intersectionIsBehindReflexNode(Node anotherRay) {
 		return new RayIntersection(
-			bisector.segment,
+			bisector.asSegment(40),
 			anotherRay.currentEdge
 		).r <= Vectors2D.EPSILON;
 	}
@@ -409,10 +409,10 @@ abstract class Node implements Iterable<Node> {
 	private static boolean isPointInAreaBetweenEdgeAndItsBisectors(Point2D point, Node currentNode) {
 		Bisector currentBisector = currentNode.bisector;
 		Bisector nextBisector = currentNode.next().bisector;
-		Point2D a = currentBisector.segment.end;
+		Point2D a = currentBisector.asSegment(40).end;
 		Point2D b = currentNode.currentEdge.start;
 		Point2D c = currentNode.currentEdge.end;
-		Point2D d = nextBisector.segment.end;
+		Point2D d = nextBisector.asSegment(40).end;
 		return isPointNonConvex(a, point, b) && isPointNonConvex(b, point, c) && isPointNonConvex(c, point, d);
 	}
 

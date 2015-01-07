@@ -115,6 +115,8 @@ class BaseTestCanvas implements DrawableInto {
 		});
 		setLayer(DEFAULT_LAYER);
 		singleWidthStroke = new BasicStroke(1f / scale);
+		((Graphics2D)graphics).setTransform(defaultTransform);
+		((Graphics2D)graphics).setStroke(singleWidthStroke);
 	}
 
 	/**

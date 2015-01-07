@@ -63,7 +63,7 @@ public class Vectors2D {
 	 * @param a
 	 * @param b
 	 * @param clockwise
-	 * @return 0<=angle<Math.PI*2
+	 * @return {@code 0<=angle<Math.PI*2}
      */
 	public static double angleBetweenVectors(double[] a, double[] b, boolean clockwise) {
 		double angleA = Math.atan2(b[1], b[0]);
@@ -77,5 +77,4 @@ public class Vectors2D {
 		}
 		return angle;
 	}
-
 }

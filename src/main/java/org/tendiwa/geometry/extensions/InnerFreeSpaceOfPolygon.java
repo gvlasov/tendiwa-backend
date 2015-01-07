@@ -37,7 +37,7 @@ public final class InnerFreeSpaceOfPolygon {
 		double[] distancesToOtherEdges = new double[polygonSize];
 		for (int i = 0; i < polygonSize; i++) {
 			Segment2D edge = edges.get(i);
-			Vector2D perpendicular = Vector2D.fromStartToEnd(edge.start, edge.end).cross();
+			Vector2D perpendicular = Vector2D.fromStartToEnd(edge.start, edge.end).rotateQuarterCounterClockwise();
 			if (counterClockWise) {
 				perpendicular.multiply(-1);
 			}

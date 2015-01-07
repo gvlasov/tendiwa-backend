@@ -12,10 +12,10 @@ public class DrawingSegment2D {
 		return (shape, canvas) ->
 			canvas.drawShape(
 				new Line2D.Double(
-					shape.start.x+0.5,
-					shape.start.y+0.5,
-					shape.end.x+0.5,
-					shape.end.y+0.5
+					shape.start.x + 0.5,
+					shape.start.y + 0.5,
+					shape.end.x + 0.5,
+					shape.end.y + 0.5
 				),
 				color
 			);
@@ -29,13 +29,13 @@ public class DrawingSegment2D {
 				shape.end,
 				shape.end
 					.add(vector.multiply(-arrowheadLength / vector.magnitude()))
-					.add(vector.cross().multiply(arrowheadLength / vector.magnitude()))
+					.add(vector.rotateQuarterCounterClockwise().multiply(arrowheadLength / vector.magnitude()))
 			);
 			Segment2D rightHalfarrow = new Segment2D(
 				shape.end,
 				shape.end
 					.add(vector.multiply(-arrowheadLength / vector.magnitude()))
-					.add(vector.cross().multiply(-arrowheadLength / vector.magnitude()))
+					.add(vector.rotateQuarterCounterClockwise().multiply(-arrowheadLength / vector.magnitude()))
 			);
 			canvas.draw(leftHalfarrow, DrawingSegment2D.withColorThin(color));
 			canvas.draw(rightHalfarrow, DrawingSegment2D.withColorThin(color));

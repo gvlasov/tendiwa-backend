@@ -7,18 +7,16 @@ import org.tendiwa.geometry.RayIntersection;
 
 import javax.annotation.Nonnull;
 
-class Bisector {
-	final Segment2D segment;
+public class Bisector {
+	private static final int DEFAULT_SEGMENT_LENGTH = 40;
+	private final Segment2D segment;
 
-	Bisector(Segment2D previousEdge, Segment2D currentEdge, Point2D vertex, boolean isReflex) {
-		assert !previousEdge.start.equals(previousEdge.end);
-		assert !currentEdge.start.equals(currentEdge.end);
+	public Bisector(Segment2D previousEdge, Segment2D currentEdge, Point2D vertex, boolean isReflex) {
 		assert !previousEdge.equals(currentEdge);
 		// TODO: Do we compute parallel edges?
 		if (previousEdge.isParallel(currentEdge)) {
 			this.segment = computeParallelSegment(previousEdge, currentEdge);
 		} else {
-//			Point2D edgeIntersection = new RayIntersection(previousEdge, currentEdge).getLinesIntersectionPoint();
 			this.segment = computeNonParallelSegment(previousEdge, currentEdge, vertex, isReflex);
 		}
 		assert !segment.start.equals(segment.end);
@@ -58,13 +56,12 @@ class Bisector {
 		Vector2D vPrevious = Vector2D.fromStartToEnd(previousEdge.end, previousEdge.start);
 		Vector2D vCurrent = Vector2D.fromStartToEnd(currentEdge.start, currentEdge.end);
 		Vector2D sum = vCurrent.normalize().add(vPrevious.normalize());
-		sum = sum.normalize().multiply(40); // Normalized bisector direction
+		sum = sum.normalize().multiply(DEFAULT_SEGMENT_LENGTH); // Normalized bisector direction
 		boolean belongsToBothEdges = previousEdge.end.equals(start) && currentEdge.start.equals(start);
 		boolean additionSign;
 		if (belongsToBothEdges) {
 			additionSign = !isReflex;
 		} else {
-//			additionSign = isIntersectionInFrontOfBisectorStart(previousEdge, currentEdge);
 			additionSign = true;
 		}
 		if (additionSign) {
@@ -74,15 +71,7 @@ class Bisector {
 		}
 	}
 
-	private boolean isIntersectionInFrontOfBisectorStart(Segment2D previousEdge, Segment2D currentEdge) {
-		Segment2D reversePrevious = previousEdge.reverse();
-		return new RayIntersection(
-			reversePrevious,
-			currentEdge
-		).r < 0 || new RayIntersection(currentEdge, reversePrevious).r < 0;
-	}
-
-	RayIntersection intersectionWith(@Nonnull Bisector bisector) {
+	public RayIntersection intersectionWith(@Nonnull Bisector bisector) {
 		try {
 			return new RayIntersection(
 				segment.start,
@@ -94,4 +83,29 @@ class Bisector {
 		}
 	}
 
+	public Segment2D asSegment(double length) {
+		if (length == DEFAULT_SEGMENT_LENGTH) {
+			return segment;
+		}
+		double sdx = segment.dx();
+		double sdy = segment.dy();
+		double dy;
+		double dx;
+		if (sdy == 0) {
+			dy = 0;
+			dx = length * Math.signum(sdx);
+		} else {
+			dy = length / Math.sqrt(sdx * sdx / (sdy * sdy) + 1);
+			dx = Math.abs(sdx) * dy / Math.abs(sdy);
+			if (sdx < 0) {
+				dx = -dx;
+			}
+			if (sdy < 0) {
+				dy = -dy;
+			}
+		}
+		System.out.println(dx + " " + dy + " " + sdx + " " + sdy);
+		System.out.println(segment);
+		return new Segment2D(segment.start, new Point2D(segment.start.x + dx, segment.start.y + dy));
+	}
 }

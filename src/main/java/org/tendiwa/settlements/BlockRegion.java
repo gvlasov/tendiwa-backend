@@ -1,7 +1,5 @@
 package org.tendiwa.settlements;
 
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.hash.TObjectDoubleHashMap;
 import org.tendiwa.geometry.GeometryException;
@@ -167,7 +165,7 @@ public class BlockRegion extends EnclosedBlock {
 			Point2D splitEnd = splitStart.add(
 				Vector2D.fromStartToEnd(
 					longestEdgeStart.point, longestEdgeStart.next.point
-				).cross()
+				).rotateQuarterCounterClockwise()
 			);
 			Set<BlockRegion> newRegions = splitRegion(region, splitStart, splitEnd);
 

@@ -155,8 +155,7 @@ public class Segment2D {
 	}
 
 	public boolean isParallel(Segment2D segment) {
-		return Math.abs((segment.end.y - segment.start.y) / (segment.end.x - segment.start.x))
-			== Math.abs((end.y - start.y) / (end.x - start.x));
+		return dx() * segment.dy() - dy() * segment.dx() == 0;
 	}
 
 	public Vector2D asVector() {

@@ -69,7 +69,7 @@ public interface Vector2D extends Position2D {
 		return end.subtract(start);
 	}
 
-	public default Vector2D cross() {
+	public default Vector2D rotateQuarterCounterClockwise() {
 		return new Point2D(-getY(), getX());
 	}
 }

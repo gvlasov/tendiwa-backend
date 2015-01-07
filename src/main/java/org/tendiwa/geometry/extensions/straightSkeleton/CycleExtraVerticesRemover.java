@@ -35,9 +35,9 @@ public class CycleExtraVerticesRemover {
 		for (int i = 0; i < l; i++) {
 			if (
 				isOnLineBetweenPreviousAndNextNodes(
-					vertices.get(Utils.previousIndex(l, i)),
+					vertices.get(Utils.previousIndex(i, l)),
 					vertices.get(i),
-					vertices.get(Utils.nextIndex(l, i))
+					vertices.get(Utils.nextIndex(i, l))
 				)
 				) {
 				nonRemovedVertices.remove(i);

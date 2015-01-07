@@ -14,7 +14,7 @@ import java.util.Iterator;
  * An <i>enclosed cycle</i> is the one all of whose points are inside one of {@link org.tendiwa.settlements.networks
  * .RoadsPlanarGraphModel#getCyclesRoadGraph()}'s cycle.
  */
-// TODO: Move to the method of NetworkWithinCycle
+// TODO: Move to a method of NetworkWithinCycle
 public final class EnclosedCyclesSet {
 
 	private final UndirectedGraph<Point2D, Segment2D> cyclesRoadGraph;
@@ -28,11 +28,14 @@ public final class EnclosedCyclesSet {
 	}
 
 	public boolean contains(EnclosedBlock block) {
+		/**
+		 * A block is considered to be in the enclosed cycles set iff its edges are all contained among split
+		 * original edges.
+		 */
 		Iterator<Point2D> iter = block.iterator();
 		if (!iter.hasNext()) {
 			return false;
 		}
-//		TestCanvas.canvas.draw(cyclesRoadGraph, DrawingGraph.withColorAndAntialiasing(Color.white));
 
 		Point2D first = iter.next();
 		Point2D previous = first;

@@ -28,7 +28,7 @@ public class DrawingPolygon {
 			int size = polygon.size();
 			for (int i = 0; i < size; i++) {
 				Point2D point1 = polygon.get(i);
-				Point2D point2 = polygon.get(Utils.nextIndex(size, i));
+				Point2D point2 = polygon.get(Utils.nextIndex(i, size));
 				// TODO: draw line
 				canvas.drawShape(
 					new Line2D.Double(point1.x, point1.y, point2.x, point2.y),
