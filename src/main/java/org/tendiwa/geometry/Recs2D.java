@@ -15,4 +15,12 @@ public final class Recs2D {
 			rectangle.height + amount * 2
 		);
 	}
+	public static Rectangle2D boundingBox(Segment2D splitSegment) {
+		return new Rectangle2D(
+			Math.min(splitSegment.start.x, splitSegment.end.x),
+			Math.min(splitSegment.start.y, splitSegment.end.y),
+			Math.abs(splitSegment.dx()),
+			Math.abs(splitSegment.dy())
+		);
+	}
 }

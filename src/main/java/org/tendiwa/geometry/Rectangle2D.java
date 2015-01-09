@@ -98,4 +98,9 @@ public final class Rectangle2D {
 			+ (segment.start.x - segment.end.x) * y
 			+ (segment.end.x * segment.start.y - segment.start.x * segment.end.y);
 	}
+
+	public boolean contains(Point2D startingPoint) {
+		return startingPoint.x >= x && startingPoint.x <= getMaxX()
+			&& startingPoint.y >= y && startingPoint.y <= getMaxY();
+	}
 }

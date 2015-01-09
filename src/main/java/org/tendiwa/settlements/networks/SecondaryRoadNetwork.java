@@ -32,7 +32,7 @@ final class SecondaryRoadNetwork {
 	private final Set<Point2D> deadEnds = new HashSet<>();
 	private final UndirectedGraph<Point2D, Segment2D> relevantNetwork;
 	/**
-	 * Nodes that form the enclosing cycle of this {@link NetworkWithinCycle}.
+	 * Nodes that form the actual edges of the enclosing cycle of this {@link NetworkWithinCycle}.
 	 */
 	private final Set<Point2D> cycleNodes;
 	final SimpleGraph<Point2D, Segment2D> secRoadNetwork;
@@ -89,7 +89,7 @@ final class SecondaryRoadNetwork {
 		this.favourAxisAlignedSegments = favourAxisAlignedSegments;
 		this.relevantNetwork = relevantNetwork;
 
-		this.cycleNodes = new HashSet<>(originalMinimalCycle.vertexList());
+		this.cycleNodes = new LinkedHashSet<>(originalMinimalCycle.vertexList());
 		updateRelevantNetworkWithNeighborCyclesSplitEdges();
 		relevantNetwork.vertexSet().forEach(deadEnds::add);
 		secRoadNetwork = new SimpleGraph<>(relevantNetwork.getEdgeFactory());
@@ -164,17 +164,36 @@ final class SecondaryRoadNetwork {
 						startingPoints.get(randomPointIndices[lastRandomPointIndexIndex]),
 						pointsToOriginalRoads
 					);
+					startingPointsUsed++;
+					lastRandomPointIndexIndex++;
 					if (snapEvent != null && snapEvent.eventType == SnapEventType.ROAD_SNAP) {
 						startingPointsUsed--;
 					}
-					startingPointsUsed++;
-					lastRandomPointIndexIndex++;
 					while (!nodeQueue.isEmpty()) {
 						spanSecondaryNetworkFromStartingSegmentsEnds(filamentEnds);
 					}
-				}
-				while (startingPointsUsed <= maxNumOfStartPoints && lastRandomPointIndexIndex < numberOfStartingPoints);
+				} while (
+					startingPointsUsed <= maxNumOfStartPoints
+						&& lastRandomPointIndexIndex < numberOfStartingPoints
+					);
 			}
+			UnfilledBlocksDetector unfilledBlocksDetector = new UnfilledBlocksDetector(
+				pointsOnPolygonBorder,
+				holderOfSplitCycleEdges,
+				relevantNetwork,
+				cycleNodes
+			);
+			do {
+				if (unfilledBlocksDetector.getStartingPoint() != null) {
+					startFloodFill(unfilledBlocksDetector.getStartingPoint(), pointsToOriginalRoads);
+					unfilledBlocksDetector = new UnfilledBlocksDetector(
+						pointsOnPolygonBorder,
+						holderOfSplitCycleEdges,
+						relevantNetwork,
+						cycleNodes
+					);
+				}
+			} while (unfilledBlocksDetector.getStartingPoint() != null);
 			SecondaryRoadNetwork.this.filamentEnds = removeMultidegreeFilamentEnds(filamentEnds);
 			filamentEndPoints = nodes2TheirPoints(filamentEnds);
 		}
@@ -185,10 +204,6 @@ final class SecondaryRoadNetwork {
 		) {
 			Segment2D road = getSplitRoadWherePointIs(sourceNode, pointsToOriginalRoads.get(sourceNode));
 			// Made dead end so two new roads are not inserted to the network.
-			return floodFill(sourceNode, road);
-		}
-
-		private SnapEvent floodFill(Point2D sourceNode, Segment2D road) {
 			deadEnds.add(sourceNode);
 			insertNode(road, sourceNode);
 			// Made not-dead end so a road can be placed from it.
@@ -519,11 +534,11 @@ final class SecondaryRoadNetwork {
 					return splitEdgePart;
 				}
 			}
+			throw new RuntimeException("Split road not found");
 		} else {
 			assert isPointInBoundingRectangle(point, originalRoad, dx);
 			return originalRoad;
 		}
-		throw new RuntimeException("Split road not found");
 	}
 
 	private boolean isPointInBoundingRectangle(Point2D point, Segment2D segment, boolean dx) {
@@ -706,8 +721,8 @@ final class SecondaryRoadNetwork {
 				} else {
 					for (Point2D vertex : new Point2D[]{segment.start, segment.end}) {
 						if (relevantNetwork.degreeOf(vertex) > 2) {
-							numberOfCycleConnections ++;
-							twiceExtraVertices ++;
+							numberOfCycleConnections++;
+							twiceExtraVertices++;
 							connectionPoint = vertex;
 						}
 					}

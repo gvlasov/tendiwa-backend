@@ -334,6 +334,8 @@ public final class RoadsPlanarGraphModel {
 			// If a cycle is enclosed, all the networks know about that cycle,
 			// whether a network encloses that cycle or not. The cycle just won't affect building a network
 			// if it is not within that network.
+			// TODO: ^^ probably outdated, I rewrote enclosed cycle detection so only a relevant network knows about
+			// its enclosed cycles.
 			for (Segment2D edge : enclosedCycle) {
 				graph.addEdge(edge.start, edge.end, edge);
 			}

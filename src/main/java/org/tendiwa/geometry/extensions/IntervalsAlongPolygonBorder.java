@@ -5,6 +5,7 @@ import org.tendiwa.core.meta.Utils;
 import org.tendiwa.geometry.LineCircleIntersection;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.Vectors2D;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -55,7 +56,7 @@ public final class IntervalsAlongPolygonBorder {
 		this.interval = interval;
 		this.deviation = deviation;
 		this.numOfVertices = polygon.size();
-		this.answer = new HashMap<>();
+		this.answer = new LinkedHashMap<>();
 	}
 
 	public Map<Segment2D, List<Point2D>> compute() {
@@ -82,10 +83,36 @@ public final class IntervalsAlongPolygonBorder {
 		double maxX = Math.max(currentVertex.x, nextVertex.x);
 		double minY = Math.min(currentVertex.y, nextVertex.y);
 		double maxY = Math.max(currentVertex.y, nextVertex.y);
-		assert minX != maxX && minY != maxY; // I just don't know what to do in this case, though it is legit.
+//		assert minX != maxX && minY != maxY; // I just don't know what to do in this case, though it is legit.
 		intersections.removeIf(p -> !Range.contains(minX, maxX, p.x) || !Range.contains(minY, maxY, p.y));
 		assert intersections.stream().allMatch(p -> !p.equals(nextVertex)); // I just don't knot what to do in this case, though it is legit.
+		snapIntersectionPointsToSegmentEndsByEpsilon(intersections);
 		return intersections;
+	}
+
+	/**
+	 * Snaps intersection points that are closer than {@link org.tendiwa.geometry.Vectors2D#EPSILON} distance units
+	 * to current segment's ends.
+	 *
+	 * @param intersections
+	 * 	Result of {@link org.tendiwa.geometry.LineCircleIntersection#findIntersections(org.tendiwa.geometry.Point2D,
+	 *    org.tendiwa.geometry.Point2D, org.tendiwa.geometry.Point2D, double)}.
+	 */
+	private void snapIntersectionPointsToSegmentEndsByEpsilon(List<Point2D> intersections) {
+		if (intersections.size() > 0) {
+			useSegmentPointIfTooClose(intersections, 0, currentVertex);
+			useSegmentPointIfTooClose(intersections, 0, nextVertex);
+		}
+		if (intersections.size() > 1) {
+			useSegmentPointIfTooClose(intersections, 1, currentVertex);
+			useSegmentPointIfTooClose(intersections, 1, nextVertex);
+		}
+	}
+
+	void useSegmentPointIfTooClose(List<Point2D> intersections, int index, Point2D segmentPoint) {
+		if (intersections.get(index).chebyshovDistanceTo(segmentPoint) < Vectors2D.EPSILON) {
+			intersections.set(index, segmentPoint);
+		}
 	}
 
 	/**
