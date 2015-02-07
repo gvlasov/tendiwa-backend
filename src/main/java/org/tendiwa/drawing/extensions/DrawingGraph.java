@@ -53,15 +53,13 @@ public class DrawingGraph {
 	) {
 		return (shape, canvas) -> {
 			DrawingAlgorithm<Point2D> pointDrawing = DrawingPoint2D.withColorAndSize(color, size);
+			DrawingAlgorithm<Segment2D> segmentDrawing = DrawingSegment2D.withColorThin(color);
 			for (Segment2D e : shape.edgeSet()) {
 				Point2D source = shape.getEdgeSource(e);
 				Point2D target = shape.getEdgeTarget(e);
-				canvas.drawLine(
-					source.x,
-					source.y,
-					target.x,
-					target.y,
-					color
+				canvas.draw(
+					Segment2D.create(source.x, source.y, target.x, target.y),
+					segmentDrawing
 				);
 			}
 			for (Point2D v : shape.vertexSet()) {

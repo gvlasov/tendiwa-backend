@@ -8,12 +8,12 @@ import java.util.List;
 
 public final class DrawingPolyline {
 	public static DrawingAlgorithm<List<Point2D>> withColor(Color color) {
-		return (polygon, canvas) -> {
-			int prelastIndex = polygon.size()-1;
+		return (polyline, canvas) -> {
+			int prelastIndex = polyline.size()-1;
 			for (int i = 0; i < prelastIndex; i++) {
 				canvas.drawRasterLine(
-					polygon.get(i).toCell(),
-					polygon.get(i + 1).toCell(),
+					polyline.get(i).toCell(),
+					polyline.get(i + 1).toCell(),
 					color
 				);
 			}

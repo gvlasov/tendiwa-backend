@@ -29,7 +29,7 @@ public class GraphExplorer {
 
 	public GraphExplorer(UndirectedGraph<Point2D, Segment2D> graph, int width, int height, int vertexSize) {
 		this.vertexSize = vertexSize;
-		graph = PlanarGraphs.copyRelevantNetwork(graph);
+		graph = PlanarGraphs.copyGraph(graph);
 		adapter = new JGraphModelAdapter<>(graph);
 		JGraph jgraph = new JGraph(adapter);
 		for (Point2D vertex : graph.vertexSet()) {

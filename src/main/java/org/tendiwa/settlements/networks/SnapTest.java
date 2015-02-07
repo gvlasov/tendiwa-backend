@@ -2,11 +2,14 @@ package org.tendiwa.settlements.networks;
 
 import org.jgrapht.UndirectedGraph;
 import org.tendiwa.core.meta.Range;
+import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.RayIntersection;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Vectors2D;
 
+import java.awt.Color;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -23,15 +26,21 @@ final class SnapTest {
 	 * Start of the unsnapped segment.
 	 */
 	private final Point2D sourceNode;
+	private final UndirectedGraph<Point2D, Segment2D> relevantRoadNetwork;
+	private final HolderOfSplitCycleEdges holderOfSplitCycleEdges;
+	private final Set<Point2D> cycleVertices;
+	private Point2D targetNode;
+	private double minR;
+
 	/**
 	 * End of the unsnapped segment.
 	 */
-	private Point2D targetNode;
-	private final UndirectedGraph<Point2D, Segment2D> relevantRoadNetwork;
-	private final HolderOfSplitCycleEdges holderOfSplitCycleEdges;
-	private double minR;
+
 	private SnapEvent result;
-	private NodePosition bestPosition;
+	/**
+	 * Which roads can hold the point to snap to.
+	 */
+	private final Collection<Segment2D> roadsToTest;
 
 	/**
 	 * Checks if a 2d segment defined by a start and an end points snaps to any vertex or edge of a planar
@@ -55,14 +64,17 @@ final class SnapTest {
 		Point2D sourceNode,
 		Point2D targetNode,
 		UndirectedGraph<Point2D, Segment2D> relevantRoadNetwork,
-		HolderOfSplitCycleEdges holderOfSplitCycleEdges
+		HolderOfSplitCycleEdges holderOfSplitCycleEdges,
+		Set<Point2D> cycleVertices
 	) {
+		this.cycleVertices = cycleVertices;
 		this.snapSize = Math.max(snapSize, Vectors2D.EPSILON);
 		this.sourceNode = sourceNode;
 		this.targetNode = targetNode;
 		this.relevantRoadNetwork = relevantRoadNetwork;
 		this.holderOfSplitCycleEdges = holderOfSplitCycleEdges;
 		this.minR = 1 + snapSize / sourceNode.distanceTo(targetNode);
+		this.roadsToTest = findNearbySegments(sourceNode, targetNode, snapSize);
 	}
 
 	/**
@@ -72,14 +84,12 @@ final class SnapTest {
 	 * @return A description of how {@link #targetNode} snaps to a node, a road, or nothing.
 	 */
 	SnapEvent snap() {
-		Point2D originalTargetNode = targetNode;
 		if (relevantRoadNetwork.containsVertex(targetNode)) {
 			return new SnapEvent(targetNode, SnapEventType.NODE_SNAP, null);
 		}
-		Collection<Segment2D> roadsToTest = findNearbySegments(sourceNode, targetNode, snapSize);
-		// These three lines try various snappings and set #result to the best possible snap event.
+		// Next lines try various snappings and set #result to the best possible snap event.
 		snapToNothing();
-		findSnapNode(roadsToTest);
+		findSnapNode();
 		if (result.eventType == SnapEventType.NODE_SNAP) {
 			targetNode = result.targetNode;
 			minR = 1;
@@ -106,22 +116,26 @@ final class SnapTest {
 		if (road.start == sourceNode || road.end == sourceNode) {
 			return;
 		}
-		NodePosition nodePosition = new NodePosition(
+		if (result.eventType != SnapEventType.NO_SNAP) {
+			return;
+		}
+		PointPosition pointPosition = new PointPosition(
 			road.start,
 			road.end,
 			targetNode
 		);
-		if (nodePosition.r < 0 || nodePosition.r > 1) {
+		if (pointPosition.r < Vectors2D.EPSILON || pointPosition.r > 1 - Vectors2D.EPSILON) {
 			return;
 		}
-		if (Math.abs(nodePosition.distance - snapSize) > Vectors2D.EPSILON) {
+		if (pointPosition.distance > snapSize - Vectors2D.EPSILON) {
 			return;
 		}
 		Point2D targetPoint = new Point2D(
-			road.start.x + nodePosition.r * (road.end.x - road.start.x),
-			road.start.y + nodePosition.r * (road.end.y - road.start.y)
+			road.start.x + pointPosition.r * (road.end.x - road.start.x),
+			road.start.y + pointPosition.r * (road.end.y - road.start.y)
 		);
 		assert !targetPoint.equals(sourceNode);
+		assert !relevantRoadNetwork.containsVertex(targetPoint);
 		result = new SnapEvent(
 			targetPoint,
 			SnapEventType.ROAD_SNAP,
@@ -160,21 +174,32 @@ final class SnapTest {
 	 * Sets {@link #result} to snap to the best (closest) node, or to be unsnapped (snap to nothing) if there is no
 	 * appropriate node to snap to.
 	 *
-	 * @param roadsToTest
-	 * 	In which roads to search for the desired node.
 	 * @return The node to snap to.
 	 */
-	private void findSnapNode(Collection<Segment2D> roadsToTest) {
+	private void findSnapNode() {
+		boolean isCycleVertex = cycleVertices.contains(sourceNode);
 		Set<Point2D> verticesToTest = findEndpointsToTestForNodeSnap(roadsToTest);
-		bestPosition = null;
 		for (Point2D vertex : verticesToTest) {
-			NodePosition nodePosition = new NodePosition(sourceNode, targetNode, vertex);
-			if (isCloserSnapVertex(nodePosition)) {
-				minR = nodePosition.r;
+			PointPosition pointPosition = new PointPosition(sourceNode, targetNode, vertex);
+			if (isVertexBetterThanCurrentBestVertex(vertex, pointPosition)) {
+				minR = pointPosition.r;
 				result = new SnapEvent(vertex, SnapEventType.NODE_SNAP, null);
-				bestPosition = nodePosition;
 			}
 		}
+	}
+
+	private boolean isVertexBetterThanCurrentBestVertex(Point2D vertex, PointPosition pointPosition) {
+		return isCloserSnapVertex(pointPosition) && connectingVertexIntroducesNoIntersectingSegments(vertex, roadsToTest);
+	}
+
+	private boolean connectingVertexIntroducesNoIntersectingSegments(Point2D vertex, Collection<Segment2D> roadsToTest) {
+		if (relevantRoadNetwork.containsEdge(sourceNode, vertex)) {
+			Segment2D segment = new Segment2D(sourceNode, vertex);
+			if (roadsToTest.stream().anyMatch(road -> road.intersects(segment))) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private boolean isIntersectionInsideUnsnappedSegment(RayIntersection intersection) {
@@ -227,12 +252,12 @@ final class SnapTest {
 	 * <p>
 	 * If there was no previous found closest vertex, returns true.
 	 *
-	 * @param nodePosition
+	 * @param pointPosition
 	 * 	A position of a vertex relative to a segment [sourceNode;targetNode].
 	 * @return true if vertex defined by nodePosition is closer that the previous one, false otherwise.
 	 */
-	private boolean isCloserSnapVertex(NodePosition nodePosition) {
-		return nodePosition.r < minR && nodePosition.r >= 0 && nodePosition.distance <= snapSize;
+	private boolean isCloserSnapVertex(PointPosition pointPosition) {
+		return pointPosition.r < minR && pointPosition.r >= 0 && pointPosition.distance <= snapSize;
 	}
 
 	/**
@@ -253,9 +278,9 @@ final class SnapTest {
 	 * @return true if it is possible
 	 */
 	private boolean isSegmentIntersectionProbable(Point2D abStart, Point2D abEnd, Point2D cdStart, Point2D cdEnd) {
-		NodePosition nodePosition = new NodePosition(abStart, abEnd, cdStart);
-		NodePosition nodePosition2 = new NodePosition(abStart, abEnd, cdEnd);
-		if (Math.signum(nodePosition.s) == Math.signum(nodePosition2.s)) {
+		PointPosition pointPosition = new PointPosition(abStart, abEnd, cdStart);
+		PointPosition pointPosition2 = new PointPosition(abStart, abEnd, cdEnd);
+		if (Math.signum(pointPosition.s) == Math.signum(pointPosition2.s)) {
 			return false;
 		}
 		/*
@@ -266,8 +291,8 @@ final class SnapTest {
          * The difference is that in my version (and in real cases) a line CD with C on an extension
          * and 0<D.r<1 should be tested for an intersection too.
          */
-		return Range.contains(0, 1, nodePosition.r) && Range.contains(0, 1, nodePosition2.r)
-			|| !(nodePosition.r > 1 && nodePosition2.r > 1 || nodePosition.r < 0 && nodePosition2.r < 0);
+		return Range.contains(0, 1, pointPosition.r) && Range.contains(0, 1, pointPosition2.r)
+			|| !(pointPosition.r > 1 && pointPosition2.r > 1 || pointPosition.r < 0 && pointPosition2.r < 0);
 	}
 
 	/**
@@ -303,16 +328,7 @@ final class SnapTest {
 	}
 
 	private Stream<Segment2D> constructRoadsStream() {
-		Set<Set<Segment2D>> splitEdges = new LinkedHashSet<>();
-		for (Segment2D edge : relevantRoadNetwork.edgeSet()) {
-			if (holderOfSplitCycleEdges.isEdgeSplit(edge)) {
-				splitEdges.add(holderOfSplitCycleEdges.getGraph(edge).edgeSet());
-			}
-		}
-		Stream<Segment2D> originalRoadsStream = relevantRoadNetwork.edgeSet().stream()
-			.filter(road -> !holderOfSplitCycleEdges.isEdgeSplit(road));
-		Stream<Segment2D> splitRoadsStream = splitEdges.stream()
-			.flatMap(a -> a.stream());
-		return Stream.concat(originalRoadsStream, splitRoadsStream);
+		assert relevantRoadNetwork.edgeSet().stream().allMatch(road->!holderOfSplitCycleEdges.isEdgeSplit(road));
+		return relevantRoadNetwork.edgeSet().stream();
 	}
 }

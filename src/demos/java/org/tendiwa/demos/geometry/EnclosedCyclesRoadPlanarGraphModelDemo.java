@@ -2,6 +2,8 @@ package org.tendiwa.demos.geometry;
 
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.demos.Demos;
+import org.tendiwa.drawing.DrawableInto;
+import org.tendiwa.drawing.MagnifierCanvas;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingGraph;
 import org.tendiwa.geometry.Point2D;
@@ -21,7 +23,8 @@ public class EnclosedCyclesRoadPlanarGraphModelDemo implements Runnable {
 
 	@Override
 	public void run() {
-		TestCanvas canvas = new TestCanvas(1, 800, 600);
+		DrawableInto canvas = new TestCanvas(1, 800, 600);
+//		DrawableInto canvas = new MagnifierCanvas(10, 219, 21, 600, 600);
 		TestCanvas.canvas = canvas;
 		SimpleGraph<Point2D, Segment2D> graph = new GraphConstructor<>(PlanarGraphs.getEdgeFactory())
 			.cycleOfVertices(
@@ -63,13 +66,13 @@ public class EnclosedCyclesRoadPlanarGraphModelDemo implements Runnable {
 
 		RoadsPlanarGraphModel city = new CityGeometryBuilder(graph)
 			.withDefaults()
-			.withRoadSegmentLength(40)
+			.withRoadSegmentLength(47)
 			.withSnapSize(20)
 			.withMaxStartPointsPerCycle(1)
 			.build();
-		canvas.draw(
-			city.getFullRoadGraph(),
-			DrawingGraph.withColorAndAntialiasing(Color.red)
-		);
+//		canvas.draw(
+//			city.getFullRoadGraph(),
+//			DrawingGraph.withColorAndAntialiasing(Color.red)
+//		);
 	}
 }

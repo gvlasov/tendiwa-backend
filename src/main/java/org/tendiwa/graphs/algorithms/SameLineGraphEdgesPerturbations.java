@@ -1,7 +1,9 @@
-package org.tendiwa.geometry;
+package org.tendiwa.graphs.algorithms;
 
 import com.google.common.collect.ImmutableSet;
 import org.jgrapht.UndirectedGraph;
+import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Segment2D;
 
 import java.util.ArrayList;
 import java.util.Comparator;

@@ -1,4 +1,4 @@
-package org.tendiwa.geometry.extensions;
+package org.tendiwa.graphs.algorithms;
 
 import gnu.trove.map.TDoubleObjectMap;
 import gnu.trove.map.hash.TDoubleObjectHashMap;
@@ -11,11 +11,11 @@ import org.tendiwa.geometry.Segment2D;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public final class SameSlopeGraphEdgesPerturbations {
+public final class SameOrPerpendicularSlopeGraphEdgesPerturbations {
 
 	public static final int MAX_ITERATIONS = 10;
 
-	private SameSlopeGraphEdgesPerturbations() {
+	private SameOrPerpendicularSlopeGraphEdgesPerturbations() {
 		throw new UnsupportedOperationException();
 	}
 
@@ -56,11 +56,19 @@ public final class SameSlopeGraphEdgesPerturbations {
 	) {
 		TDoubleObjectMap<Collection<Segment2D>> slopeToEdge = new TDoubleObjectHashMap<>(verticesNumber);
 		for (Segment2D edge : edges) {
+			// To perturb parallel edges.
 			double slope = computeSlope(edge);
 			if (!slopeToEdge.containsKey(slope)) {
 				slopeToEdge.put(slope, new LinkedHashSet<>());
 			}
 			slopeToEdge.get(slope).add(edge);
+
+			// To perturb perpendicular edges.
+			double reverseSlope = 1 / slope;
+			if (!slopeToEdge.containsKey(reverseSlope)) {
+				slopeToEdge.put(reverseSlope, new LinkedHashSet<>());
+			}
+			slopeToEdge.get(reverseSlope).add(edge);
 		}
 		return slopeToEdge;
 	}
@@ -122,16 +130,11 @@ public final class SameSlopeGraphEdgesPerturbations {
 		}
 
 		void addEdge(Segment2D edge) {
-			if (shitpoint.distanceTo(edge.start) < 1.5 || shitpoint.distanceTo(edge.end) < 1.5) {
-				System.out.println(edge + " " + computeSlope(edge));
-			}
 			graph.addEdge(
 				getPerturbed(edge.start),
 				getPerturbed(edge.end)
 			);
 		}
-
-		private static Point2D shitpoint = new Point2D(1441, 344);
 
 		boolean hasBeenApplied() {
 			return applied;

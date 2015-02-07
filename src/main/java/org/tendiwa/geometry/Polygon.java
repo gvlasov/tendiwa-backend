@@ -25,7 +25,7 @@ public final class Polygon implements List<Point2D> {
 	public Polygon(List<Point2D> points) {
 		int size = points.size();
 		if (size < 3) {
-//			TestCanvas.canvas.draw(points, DrawingPolygon.withColorNonRaster(Color.cyan));
+//			TestCanvas.canvas.draw(points, DrawingPolygon.withColorNonRaster(Color.green));
 			throw new IllegalArgumentException(
 				"Polygon must contain at least 3 vertices, but argument's length is " + points.size()
 			);
@@ -34,6 +34,23 @@ public final class Polygon implements List<Point2D> {
 		for (int i = 0; i < size; i++) {
 			this.points[i] = points.get(i);
 		}
+	}
+
+	/**
+	 * Checks if the polygon is clockwise in terms of a y-down coordinate system.
+	 * <p>
+	 * <a href="http://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in
+	 * -clockwise-order">Stackoverflow: how to determine if a list of polygon points are in clockwise order.</a>
+	 *
+	 * @return true if polygon is clockwise, false if polygon is counter-clockwise.
+	 */
+	public boolean isClockwise() {
+		double sum = 0;
+		int preLast = points.length - 1;
+		for (int i = 0; i < preLast; i++) {
+			sum += (points[i + 1].x - points[i].x) * (points[i + 1].y + points[i].y);
+		}
+		return sum < 0;
 	}
 
 	@Override

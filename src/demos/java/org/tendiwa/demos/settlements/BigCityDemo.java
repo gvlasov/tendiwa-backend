@@ -2,12 +2,13 @@ package org.tendiwa.demos.settlements;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
-import com.google.inject.Inject;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.collections.Collectors;
 import org.tendiwa.data.FourCyclePenisGraph;
 import org.tendiwa.demos.Demos;
+import org.tendiwa.drawing.DrawableInto;
+import org.tendiwa.drawing.MagnifierCanvas;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingChain;
 import org.tendiwa.drawing.extensions.DrawingModule;
@@ -19,12 +20,8 @@ import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.settlements.buildings.PolylineProximity;
 import org.tendiwa.settlements.networks.CityGeometryBuilder;
-import org.tendiwa.settlements.utils.RectangleWithNeighbors;
 import org.tendiwa.settlements.networks.RoadsPlanarGraphModel;
-import org.tendiwa.settlements.utils.BuildingPlacesFilters;
-import org.tendiwa.settlements.utils.RectangularBuildingLots;
-import org.tendiwa.settlements.utils.RoadRejector;
-import org.tendiwa.settlements.utils.StreetsDetector;
+import org.tendiwa.settlements.utils.*;
 
 import java.awt.Color;
 import java.util.*;
@@ -32,8 +29,7 @@ import java.util.stream.IntStream;
 
 public class BigCityDemo implements Runnable {
 
-	@Inject
-	TestCanvas canvas;
+	DrawableInto canvas;
 
 	public static void main(String[] args) {
 		Demos.run(BigCityDemo.class, new DrawingModule());
@@ -50,6 +46,9 @@ public class BigCityDemo implements Runnable {
 //			.vertex(3, new Point2D(50, 350))
 //			.cycle(0, 1, 2, 3)
 //			.graph();
+//		canvas = new MagnifierCanvas(5, 63, 86, 600, 600);
+		canvas = new TestCanvas(3, 600, 600);
+		canvas.fillBackground(Color.black);
 		TestCanvas.canvas = canvas;
 		IntStream.range(0, 1).forEach(seed -> {
 			RoadsPlanarGraphModel roadsPlanarGraphModel = new CityGeometryBuilder(graph)
@@ -101,18 +100,8 @@ public class BigCityDemo implements Runnable {
 				.filter(BuildingPlacesFilters.closeToRoads(streets, lots, 8))
 				.collect(Collectors.toImmutableSet());
 
-			for (RectangleWithNeighbors rectangleWithNeighbors : recGroups) {
-				canvas.draw(
-					rectangleWithNeighbors.rectangle,
-					DrawingRectangle.withColorAndBorder(Color.blue, Color.gray)
-				);
-				for (Rectangle neighbor : rectangleWithNeighbors.neighbors) {
-					canvas.draw(
-						neighbor,
-						DrawingRectangle.withColorAndBorder(Color.magenta, Color.magenta.darker())
-					);
-				}
-			}
+			drawLots(recGroups);
+
 //			Set<EnclosedBlock> blocks = roadsPlanarGraphModel.getBlocks()
 //				.stream()
 //				.flatMap(b -> b.shrinkToRegions(3, 0).stream())
@@ -121,5 +110,20 @@ public class BigCityDemo implements Runnable {
 //				canvas.draw(block, DrawingEnclosedBlock.withColor(Color.lightGray));
 //			}
 		});
+	}
+
+	private void drawLots(Set<RectangleWithNeighbors> recGroups) {
+		for (RectangleWithNeighbors rectangleWithNeighbors : recGroups) {
+			canvas.draw(
+				rectangleWithNeighbors.rectangle,
+				DrawingRectangle.withColorAndBorder(Color.blue, Color.gray)
+			);
+			for (Rectangle neighbor : rectangleWithNeighbors.neighbors) {
+				canvas.draw(
+					neighbor,
+					DrawingRectangle.withColorAndBorder(Color.magenta, Color.magenta.darker())
+				);
+			}
+		}
 	}
 }

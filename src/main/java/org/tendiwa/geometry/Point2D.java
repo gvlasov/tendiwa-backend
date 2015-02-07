@@ -158,4 +158,5 @@ public class Point2D implements Vector2D {
 	public Point2D multiply(double magnitude) {
 		return new Point2D(x * magnitude, y * magnitude);
 	}
+
 }

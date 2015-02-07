@@ -7,7 +7,7 @@ import org.tendiwa.geometry.Point2D;
  * <p>
  * Relative position of a point on a 2d segment.
  */
-final class NodePosition {
+final class PointPosition {
 	/**
 	 * Position of a projection of point {@code point} to a line.
 	 * <p>
@@ -29,7 +29,8 @@ final class NodePosition {
 	/**
 	 * Computes distance from a point to a line.
 	 * <p>
-	 * Algorithm is described by O'Rourke at http://www.faqs.org/faqs/graphics/algorithms-faq/ in subject 1.02
+	 * Algorithm is <a href="http://www.faqs.org/faqs/graphics/algorithms-faq/">described by O'Rourke</a> in subject
+	 * 1.02
 	 *
 	 * @param segmentStart
 	 * 	Start of a segment.
@@ -38,7 +39,7 @@ final class NodePosition {
 	 * @param point
 	 * 	A point whose relative location of a segment is to be found.
 	 */
-	NodePosition(Point2D segmentStart, Point2D segmentEnd, Point2D point) {
+	PointPosition(Point2D segmentStart, Point2D segmentEnd, Point2D point) {
 		double l = segmentStart.distanceTo(segmentEnd);
 		r = ((point.x - segmentStart.x) * (segmentEnd.x - segmentStart.x)
 			+ (point.y - segmentStart.y) * (segmentEnd.y - segmentStart.y))

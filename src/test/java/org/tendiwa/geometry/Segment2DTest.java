@@ -70,4 +70,27 @@ public class Segment2DTest {
 		parallel = Segment2D.create(0, 0, 0, 40).isParallel(Segment2D.create(40, 40, 40, 0));
 		assertTrue(parallel);
 	}
+
+	@Test
+	public void leftOfRay() {
+		Segment2D segment = Segment2D.create(20, 20, 70, 60);
+		Point2D[] leftPoints = new Point2D[]{
+			new Point2D(40, 20),
+			new Point2D(10, 0),
+			new Point2D(140, 60)
+		};
+		Point2D[] nonLeftPoints = new Point2D[]{
+			segment.start,
+			segment.end,
+			new Point2D(20, 30),
+			new Point2D(0, 10),
+			new Point2D(100, 200)
+		};
+		for (Point2D leftPoint : leftPoints) {
+			assertTrue(segment.isLeftOfRay(leftPoint));
+		}
+		for (Point2D nonLeftPoint : nonLeftPoints) {
+			assertFalse(segment.isLeftOfRay(nonLeftPoint));
+		}
+	}
 }

@@ -165,7 +165,7 @@ public class BlockRegion extends EnclosedBlock {
 			Point2D splitEnd = splitStart.add(
 				Vector2D.fromStartToEnd(
 					longestEdgeStart.point, longestEdgeStart.next.point
-				).rotateQuarterCounterClockwise()
+				).rotateQuarterClockwise()
 			);
 			Set<BlockRegion> newRegions = splitRegion(region, splitStart, splitEnd);
 

@@ -1,10 +1,5 @@
 package org.tendiwa.geometry;
 
-import org.tendiwa.geometry.GeometryException;
-import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Vectors2D;
-
 /**
  * Finds intersection of two <i>rays</i>, both defined by the start of a ray and some other point on that ray.
  * <p>

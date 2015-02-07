@@ -11,6 +11,7 @@ import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.extensions.*;
 import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.graphs.MinimumCycleBasis;
+import org.tendiwa.graphs.algorithms.SameOrPerpendicularSlopeGraphEdgesPerturbations;
 import org.tendiwa.pathfinding.dijkstra.PathTable;
 import org.tendiwa.terrain.WorldGenerationException;
 
@@ -186,7 +187,7 @@ public final class CityBounds {
 		}
 		EdgeReducer.reduceEdges(graph, cell2PointMap);
 		LadderyEdgesOptimizer.optimize(graph, cellsInsideBufferBorder.or(bufferBorder), 2);
-		SameSlopeGraphEdgesPerturbations.perturb(graph, 1e-4);
+		SameOrPerpendicularSlopeGraphEdgesPerturbations.perturb(graph, 1e-4);
 		return graph;
 	}
 

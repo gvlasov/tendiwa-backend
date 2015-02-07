@@ -1,14 +1,10 @@
 package org.tendiwa.settlements.networks;
 
 import com.google.common.collect.ImmutableMap;
-import javafx.geometry.Point3D;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.core.meta.Range;
-import org.tendiwa.geometry.GeometryException;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.Vectors2D;
+import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
 
 import java.util.HashMap;
@@ -158,5 +154,30 @@ final class HolderOfSplitCycleEdges {
 		// Asserting that if an edge is said to be split, then it should be contained in the graph stored under that
 		// edge.
 		return subedgesToGraphs.containsKey(edge);
+	}
+
+	/**
+	 * Finds the actual edge that is result of splitting {@code originalEdge}, or {@code originalEdge} itself, that
+	 * holds {@code point}.
+	 *
+	 * @param originalEdge
+	 * 	Original edge containing an actual edge.
+	 * @param point
+	 * 	A point on the actual edge.
+	 */
+	public Segment2D findActualEdge(Segment2D originalEdge, Point2D point) {
+		assert Recs2D.boundingBox(originalEdge).contains(point);
+		if (isEdgeSplit(originalEdge)) {
+			for (Segment2D splitEdge : getGraph(originalEdge).edgeSet()) {
+				assert !splitEdge.start.equals(point);
+				assert !splitEdge.end.equals(point);
+				if (Recs2D.boundingBox(splitEdge).contains(point)) {
+					return splitEdge;
+				}
+			}
+			throw new RuntimeException("Could not find actual edge");
+		} else {
+			return originalEdge;
+		}
 	}
 }

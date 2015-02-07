@@ -111,7 +111,6 @@ public final class NetworkWithinCycle {
 		);
 		this.secondaryRoadNetwork = new SecondaryRoadNetwork(
 			roadsFromPoint,
-			maxNumOfStartPoints,
 			roadSegmentLength,
 			snapSize,
 			connectivity,
@@ -136,12 +135,12 @@ public final class NetworkWithinCycle {
 
 
 	/**
-	 * Creates an unmodifiable view of {@link org.tendiwa.settlements.networks.SecondaryRoadNetwork#secRoadNetwork}.
+	 * Creates an unmodifiable view of {@link org.tendiwa.settlements.networks.RoadInserter#secRoadNetwork}.
 	 *
 	 * @return An unmodifiable graph containing this NetworkWithinCycle's secondary road network.
 	 */
 	public UndirectedGraph<Point2D, Segment2D> network() {
-		return new UnmodifiableUndirectedGraph<>(secondaryRoadNetwork.secRoadNetwork);
+		return new UnmodifiableUndirectedGraph<>(secondaryRoadNetwork.getSecondaryRoadGraph());
 	}
 
 	public UndirectedGraph<Point2D, Segment2D> cycle() {

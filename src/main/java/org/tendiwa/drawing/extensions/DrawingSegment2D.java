@@ -29,13 +29,13 @@ public class DrawingSegment2D {
 				shape.end,
 				shape.end
 					.add(vector.multiply(-arrowheadLength / vector.magnitude()))
-					.add(vector.rotateQuarterCounterClockwise().multiply(arrowheadLength / vector.magnitude()))
+					.add(vector.rotateQuarterClockwise().multiply(arrowheadLength / vector.magnitude()))
 			);
 			Segment2D rightHalfarrow = new Segment2D(
 				shape.end,
 				shape.end
 					.add(vector.multiply(-arrowheadLength / vector.magnitude()))
-					.add(vector.rotateQuarterCounterClockwise().multiply(-arrowheadLength / vector.magnitude()))
+					.add(vector.rotateQuarterClockwise().multiply(-arrowheadLength / vector.magnitude()))
 			);
 			canvas.draw(leftHalfarrow, DrawingSegment2D.withColorThin(color));
 			canvas.draw(rightHalfarrow, DrawingSegment2D.withColorThin(color));

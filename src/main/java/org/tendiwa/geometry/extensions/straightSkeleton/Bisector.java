@@ -1,9 +1,6 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.Vector2D;
-import org.tendiwa.geometry.RayIntersection;
+import org.tendiwa.geometry.*;
 
 import javax.annotation.Nonnull;
 
@@ -11,13 +8,27 @@ public class Bisector {
 	private static final int DEFAULT_SEGMENT_LENGTH = 40;
 	private final Segment2D segment;
 
-	public Bisector(Segment2D previousEdge, Segment2D currentEdge, Point2D vertex, boolean isReflex) {
-		assert !previousEdge.equals(currentEdge);
-		// TODO: Do we compute parallel edges?
-		if (previousEdge.isParallel(currentEdge)) {
-			this.segment = computeParallelSegment(previousEdge, currentEdge);
+	/**
+	 * Computes a bisector coming from an intersection of two lines.
+	 *
+	 * @param previousRay
+	 * 	A segment. A ray coming from its start towards its end must intersect a ray coming from
+	 * 	{@code currentRay}'s end towards {@code currentRay}'s start.
+	 * @param currentRay
+	 * 	A segment A ray coming from its end towards its start must intersect a ray coming from
+	 * 	{@code previousRay}'s start towards {@code previousRay}'s end.
+	 * @param vertex
+	 * 	A vertex where {@code previousRay} and reverse {@code currentRay} intersect.
+	 * @param toLeft
+	 * 	Which one of two possible bisectors we want to compute: the one that is in the left half-plane
+	 * 	defined by {@code previousRay}, or the one in the right.
+	 */
+	public Bisector(Segment2D previousRay, Segment2D currentRay, Point2D vertex, boolean toLeft) {
+		assert !previousRay.equals(currentRay);
+		if (previousRay.isParallel(currentRay)) {
+			this.segment = computeParallelSegment(previousRay, currentRay, vertex, toLeft);
 		} else {
-			this.segment = computeNonParallelSegment(previousEdge, currentEdge, vertex, isReflex);
+			this.segment = computeNonParallelSegment(previousRay, currentRay, vertex, toLeft);
 		}
 		assert !segment.start.equals(segment.end);
 	}
@@ -34,16 +45,14 @@ public class Bisector {
 		);
 	}
 
-	private Segment2D computeParallelSegment(Segment2D previousEdge, Segment2D currentEdge) {
+	private Segment2D computeParallelSegment(Segment2D previousEdge, Segment2D currentEdge, Point2D vertex, boolean toLeft) {
+		Vector2D direction = currentEdge.asVector().rotateQuarterClockwise();
+		if (toLeft) {
+			direction = direction.multiply(-1);
+		}
 		return new Segment2D(
-			new Point2D(
-				(previousEdge.start.x + currentEdge.end.x) / 2,
-				(previousEdge.start.y + currentEdge.end.y) / 2
-			),
-			new Point2D(
-				(previousEdge.end.x + currentEdge.start.x) / 2,
-				(previousEdge.end.y + currentEdge.start.y) / 2
-			)
+			vertex,
+			vertex.add(direction)
 		);
 	}
 
@@ -51,19 +60,16 @@ public class Bisector {
 		Segment2D previousEdge,
 		Segment2D currentEdge,
 		Point2D start,
-		boolean isReflex
+		boolean toLeft
 	) {
-		Vector2D vPrevious = Vector2D.fromStartToEnd(previousEdge.end, previousEdge.start);
+		Vector2D vPreviousReverse = Vector2D.fromStartToEnd(previousEdge.end, previousEdge.start);
 		Vector2D vCurrent = Vector2D.fromStartToEnd(currentEdge.start, currentEdge.end);
-		Vector2D sum = vCurrent.normalize().add(vPrevious.normalize());
-		sum = sum.normalize().multiply(DEFAULT_SEGMENT_LENGTH); // Normalized bisector direction
-		boolean belongsToBothEdges = previousEdge.end.equals(start) && currentEdge.start.equals(start);
-		boolean additionSign;
-		if (belongsToBothEdges) {
-			additionSign = !isReflex;
-		} else {
-			additionSign = true;
-		}
+		Vector2D sum = vCurrent
+			.normalize()
+			.add(vPreviousReverse.normalize())
+			.normalize()
+			.multiply(DEFAULT_SEGMENT_LENGTH);
+		boolean additionSign = previousEdge.isLeftOfRay(start.add(sum)) ^ !toLeft;
 		if (additionSign) {
 			return start.add(sum);
 		} else {

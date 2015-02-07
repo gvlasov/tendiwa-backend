@@ -312,7 +312,6 @@ public final class RoadsPlanarGraphModel {
 	 * 	All the cycles of {@link #originalRoadGraph}'s MinimalCycleBasis that reside inside other cycles.
 	 * @return A graph containing the {@code cycle} and all the {@code filaments}.
 	 */
-
 	private static UndirectedGraph<Point2D, Segment2D> constructNetworkOriginalGraph(
 		MinimalCycle<Point2D, Segment2D> cycle,
 		Set<Filament<Point2D, Segment2D>> filaments,

@@ -32,15 +32,9 @@ public final class RectangularBuildingLots {
 				// TODO: toImmutableSet
 			.collect(Collectors.toImmutableSet());
 
-		Iterator<Color> colors = Iterators.cycle(Color.magenta, Color.cyan, Color.orange);
-		encBlocks
-			.forEach(block -> TestCanvas.canvas.draw(block, DrawingEnclosedBlock.withColor(colors.next())));
+		drawBlocks(encBlocks);
 
-		roadsPlanarGraphModel.getNetworks()
-			.stream()
-			.flatMap(n -> n.enclosedBlocks().stream().filter(enclosedCycles::contains))
-			.flatMap(b -> b.shrinkToRegions(3.3, 0).stream())
-			.forEach(b -> TestCanvas.canvas.draw(b, DrawingEnclosedBlock.withColor(Color.black)));
+		drawEnclosedBlocks(roadsPlanarGraphModel, enclosedCycles);
 
 		return encBlocks.stream()
 			.map(lot -> PolygonRasterizer.rasterizeToMutable(lot.toPolygon()))
@@ -48,5 +42,19 @@ public final class RectangularBuildingLots {
 			.filter(list -> !list.isEmpty())
 			.map(list -> new RectangleWithNeighbors(list.get(0), list.subList(1, list.size())))
 			.collect(Collectors.toImmutableSet());
+	}
+
+	private static void drawEnclosedBlocks(RoadsPlanarGraphModel roadsPlanarGraphModel, EnclosedCyclesSet enclosedCycles) {
+		roadsPlanarGraphModel.getNetworks()
+			.stream()
+			.flatMap(n -> n.enclosedBlocks().stream().filter(enclosedCycles::contains))
+			.flatMap(b -> b.shrinkToRegions(3.3, 0).stream())
+			.forEach(b -> TestCanvas.canvas.draw(b, DrawingEnclosedBlock.withColor(Color.black)));
+	}
+
+	private static void drawBlocks(Set<EnclosedBlock> encBlocks) {
+		Iterator<Color> colors = Iterators.cycle(Color.magenta, Color.cyan, Color.orange);
+		encBlocks
+			.forEach(block -> TestCanvas.canvas.draw(block, DrawingEnclosedBlock.withColor(colors.next())));
 	}
 }

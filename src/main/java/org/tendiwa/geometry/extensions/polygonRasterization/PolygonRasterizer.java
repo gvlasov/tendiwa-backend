@@ -209,7 +209,7 @@ public final class PolygonRasterizer {
 				}
 			}
 		}
-		drawPolygonEdgesToBitmap(polygon, bitmap, minX, minY);
+//		drawPolygonEdgesToBitmap(polygon, bitmap, minX, minY);
 
 		if (!anythingWasRasterized || bitmap[0].length == 0) {
 			bitmap = new boolean[0][0];

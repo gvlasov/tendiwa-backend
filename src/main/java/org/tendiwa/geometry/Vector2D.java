@@ -69,7 +69,12 @@ public interface Vector2D extends Position2D {
 		return end.subtract(start);
 	}
 
-	public default Vector2D rotateQuarterCounterClockwise() {
+	/**
+	 * Rotates a vector by 90 degrees clockwise. Clockwise is defined by y-down axis.
+	 *
+	 * @return A new vector, rotated 90 degrees clockwise from this one.
+	 */
+	public default Vector2D rotateQuarterClockwise() {
 		return new Point2D(-getY(), getX());
 	}
 }

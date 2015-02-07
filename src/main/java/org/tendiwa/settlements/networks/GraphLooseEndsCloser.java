@@ -1,8 +1,10 @@
 package org.tendiwa.settlements.networks;
 
+import com.google.common.collect.ImmutableSet;
 import org.jgrapht.UndirectedGraph;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.extensions.ShamosHoeyAlgorithm;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -88,7 +90,8 @@ final class GraphLooseEndsCloser {
 				Math.sin(end.direction) * snapSize
 			),
 			sourceGraph,
-			new HolderOfSplitCycleEdges()
+			new HolderOfSplitCycleEdges(),
+			ImmutableSet.of()
 		).snap();
 		switch (test.eventType) {
 			case NO_SNAP:
@@ -112,6 +115,7 @@ final class GraphLooseEndsCloser {
 			default:
 				assert false;
 		}
+		assert !ShamosHoeyAlgorithm.areIntersected(sourceGraph.edgeSet());
 	}
 
 

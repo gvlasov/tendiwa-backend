@@ -13,13 +13,12 @@ public final class PlanarGraphs {
 		throw new UnsupportedOperationException();
 	}
 
-	public static UndirectedGraph<Point2D, Segment2D> copyRelevantNetwork(UndirectedGraph<Point2D,
-		Segment2D> relevantNetwork) {
-		UndirectedGraph<Point2D, Segment2D> blockBoundsNetwork = new SimpleGraph<>(relevantNetwork.getEdgeFactory());
-		for (Point2D vertex : relevantNetwork.vertexSet()) {
-			blockBoundsNetwork.addVertex(vertex);
-		}
-		for (Segment2D edge : relevantNetwork.edgeSet()) {
+	public static UndirectedGraph<Point2D, Segment2D> copyGraph(
+		UndirectedGraph<Point2D, Segment2D> graph
+	) {
+		UndirectedGraph<Point2D, Segment2D> blockBoundsNetwork = new SimpleGraph<>(graph.getEdgeFactory());
+		graph.vertexSet().forEach(blockBoundsNetwork::addVertex);
+		for (Segment2D edge : graph.edgeSet()) {
 			blockBoundsNetwork.addEdge(edge.start, edge.end, edge);
 		}
 		return blockBoundsNetwork;

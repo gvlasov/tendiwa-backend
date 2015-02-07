@@ -121,7 +121,7 @@ abstract class Node implements Iterable<Node> {
 			vertex,
 			next.vertex
 		);
-		bisector = new Bisector(previousEdgeStart.currentEdge, currentEdgeStart.currentEdge, vertex, isReflex);
+		bisector = new Bisector(previousEdgeStart.currentEdge, currentEdgeStart.currentEdge, vertex, true);
 	}
 
 	/*
@@ -352,7 +352,7 @@ abstract class Node implements Iterable<Node> {
 				).getLinesIntersectionPoint()
 			),
 			bisectorStart,
-			false
+			true
 		);
 		return anotherBisector.intersectionWith(bisector).getLinesIntersectionPoint();
 	}

@@ -126,8 +126,7 @@ public class Segment2D {
 
 	/**
 	 * Checks if this segment intersects another segment. This is less expensive than finding the intersection point
-	 * with
-	 * {@link #intersection(Segment2D)}.
+	 * with {@link #intersection(Segment2D)}.
 	 * <p>
 	 * An intersection at ends of lines doesn't count for an intersection.
 	 *
@@ -137,8 +136,7 @@ public class Segment2D {
 	 * @see #intersection(Segment2D)
 	 */
 	public boolean intersects(Segment2D segment) {
-		RayIntersection intersection = new RayIntersection(start, end, segment);
-		return intersection.segmentsIntersect();
+		return new RayIntersection(start, end, segment).segmentsIntersect();
 	}
 
 	@Override
@@ -184,6 +182,20 @@ public class Segment2D {
 			new Point2D(start.x + transitionX, start.y + transitionY),
 			new Point2D(end.x + transitionX, end.y + transitionY)
 		);
+	}
+
+	/**
+	 * Checks if a point is in the left half-plane defined by this segment, or in right half-plane/on the line.
+	 * <p>
+	 * Left and right are defined in terms of y-down coordinate system.
+	 *
+	 * @param point
+	 * 	A point to find relative position of.
+	 * @return true if the point is in the left half-plane, false otherwise (if it is in the right half-plane or right
+	 * on the line).
+	 */
+	public boolean isLeftOfRay(Point2D point) {
+		return ((end.x - start.x) * (point.y - start.y) - (end.y - start.y) * (point.x - start.x)) < 0;
 	}
 
 	/**
