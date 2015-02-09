@@ -8,7 +8,7 @@ import org.tendiwa.geometry.extensions.daveedvMaxRec.MaximalRectanlges;
 import org.tendiwa.geometry.extensions.polygonRasterization.PolygonRasterizer;
 import org.tendiwa.settlements.EnclosedBlock;
 import org.tendiwa.settlements.networks.EnclosedCyclesSet;
-import org.tendiwa.settlements.networks.RoadsPlanarGraphModel;
+import org.tendiwa.settlements.networks.SegmentNetwork;
 
 import java.awt.Color;
 import java.util.Iterator;
@@ -20,11 +20,11 @@ public final class RectangularBuildingLots {
 	}
 
 	public static Set<RectangleWithNeighbors> placeInside(
-		RoadsPlanarGraphModel roadsPlanarGraphModel
+		SegmentNetwork segmentNetwork
 	) {
-		EnclosedCyclesSet enclosedCycles = new EnclosedCyclesSet(roadsPlanarGraphModel);
+		EnclosedCyclesSet enclosedCycles = new EnclosedCyclesSet(segmentNetwork);
 
-		Set<EnclosedBlock> encBlocks = roadsPlanarGraphModel.getNetworks()
+		Set<EnclosedBlock> encBlocks = segmentNetwork.getNetworks()
 			.stream()
 			.flatMap(n -> n.enclosedBlocks().stream().filter(b -> !enclosedCycles.contains(b)))
 			.flatMap(b -> b.shrinkToRegions(3.3, 0).stream())
@@ -34,7 +34,7 @@ public final class RectangularBuildingLots {
 
 		drawBlocks(encBlocks);
 
-		drawEnclosedBlocks(roadsPlanarGraphModel, enclosedCycles);
+		drawEnclosedBlocks(segmentNetwork, enclosedCycles);
 
 		return encBlocks.stream()
 			.map(lot -> PolygonRasterizer.rasterizeToMutable(lot.toPolygon()))
@@ -44,8 +44,8 @@ public final class RectangularBuildingLots {
 			.collect(Collectors.toImmutableSet());
 	}
 
-	private static void drawEnclosedBlocks(RoadsPlanarGraphModel roadsPlanarGraphModel, EnclosedCyclesSet enclosedCycles) {
-		roadsPlanarGraphModel.getNetworks()
+	private static void drawEnclosedBlocks(SegmentNetwork segmentNetwork, EnclosedCyclesSet enclosedCycles) {
+		segmentNetwork.getNetworks()
 			.stream()
 			.flatMap(n -> n.enclosedBlocks().stream().filter(enclosedCycles::contains))
 			.flatMap(b -> b.shrinkToRegions(3.3, 0).stream())

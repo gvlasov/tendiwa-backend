@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Coordinates of {@link org.tendiwa.settlements.networks.RoadsPlanarGraphModel#originalRoadGraph}'s
+ * Coordinates of {@link org.tendiwa.settlements.networks.NetworksProducer#originalGraph}'s
  * {@link org.tendiwa.graphs.MinimalCycle} vertices sorted in a clockwise or counter-clockwise
  * order.
  */
@@ -25,6 +25,19 @@ final class CycleRing {
 	 * @return true if {@code edge.start} appears earlier than {@code edge.end}, false otherwise.
 	 */
 	private final Coordinate[] ring;
+
+	CycleRing(MinimalCycle<Point2D, Segment2D> originalMinimalCycle) {
+		Coordinate[] coordinates = pointListToCoordinateArray(originalMinimalCycle.vertexList());
+		// TODO: Are all cycles counter-clockwise? (because of the MCB algorithm)
+		if (!CGAlgorithms.isCCW(coordinates)) {
+			List<Coordinate> list = Arrays.asList(coordinates);
+			Collections.reverse(list);
+			ring = list.toArray(new Coordinate[list.size()]);
+		} else {
+			ring = coordinates;
+		}
+		isCycleClockwise = false;
+	}
 
 	boolean isStartBeforeEndInRing(Segment2D edge) {
 		Coordinate start = new Coordinate(edge.start.x, edge.start.y);
@@ -41,19 +54,6 @@ final class CycleRing {
 			}
 		}
 		throw new RuntimeException(start + " is not before or after " + end);
-	}
-
-	CycleRing(MinimalCycle<Point2D, Segment2D> originalMinimalCycle) {
-		Coordinate[] coordinates = pointListToCoordinateArray(originalMinimalCycle.vertexList());
-		// TODO: Are all cycles counter-clockwise? (because of the MCB algorithm)
-		if (!CGAlgorithms.isCCW(coordinates)) {
-			List<Coordinate> list = Arrays.asList(coordinates);
-			Collections.reverse(list);
-			ring = list.toArray(new Coordinate[list.size()]);
-		} else {
-			ring = coordinates;
-		}
-		isCycleClockwise = false;
 	}
 
 	/**
@@ -80,7 +80,7 @@ final class CycleRing {
 	 * 	{@link org.tendiwa.settlements.networks.CycleRing}.
 	 * @return -1 or 1
 	 */
-	public double getDirection(Segment2D edge) {
+	double getDirection(Segment2D edge) {
 		// TODO: Is this cycle always counter-clockwise because isCycleClockwise is always false?
 		return (isCycleClockwise ? -1 : 1)
 			* (isStartBeforeEndInRing(edge) ? 1 : -1);

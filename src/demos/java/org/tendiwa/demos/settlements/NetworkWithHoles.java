@@ -7,8 +7,8 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PointTrail;
 import org.tendiwa.graphs.GraphConstructor;
-import org.tendiwa.settlements.networks.CityGeometryBuilder;
-import org.tendiwa.settlements.networks.RoadsPlanarGraphModel;
+import org.tendiwa.settlements.networks.SegmentNetworkBuilder;
+import org.tendiwa.settlements.networks.SegmentNetwork;
 
 public class NetworkWithHoles implements Runnable {
 	public static void main(String[] args) {
@@ -23,11 +23,11 @@ public class NetworkWithHoles implements Runnable {
 			.cycleOfVertices(new PointTrail(20, 20).moveBy(0, 30).moveBy(30, 0).moveBy(0, -30).points())
 			.cycleOfVertices(new PointTrail(10, 10).moveBy(0, 100).moveBy(100, 0).moveBy(0, -100).points())
 			.graph();
-		RoadsPlanarGraphModel roadsPlanarGraphModel = new CityGeometryBuilder(graph)
+		SegmentNetwork segmentNetwork = new SegmentNetworkBuilder(graph)
 			.withDefaults()
 			.withMaxStartPointsPerCycle(1)
 			.build();
-		canvas.draw(roadsPlanarGraphModel, new CityDrawer());
+		canvas.draw(segmentNetwork, new CityDrawer());
 
 	}
 }

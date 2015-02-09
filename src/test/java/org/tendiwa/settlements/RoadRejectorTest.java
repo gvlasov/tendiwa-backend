@@ -6,8 +6,8 @@ import org.junit.Test;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
-import org.tendiwa.settlements.networks.CityGeometryBuilder;
-import org.tendiwa.settlements.networks.RoadsPlanarGraphModel;
+import org.tendiwa.settlements.networks.SegmentNetworkBuilder;
+import org.tendiwa.settlements.networks.SegmentNetwork;
 import org.tendiwa.settlements.utils.RoadRejector;
 
 import java.util.Random;
@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
 
 public class RoadRejectorTest {
 
-	private RoadsPlanarGraphModel geometry;
+	private SegmentNetwork geometry;
 	private UndirectedGraph<Point2D, Segment2D> fullRoadGraph;
 
 	@Before
@@ -28,7 +28,7 @@ public class RoadRejectorTest {
 			.vertex(3, new Point2D(50, 150))
 			.cycle(0, 1, 2, 3)
 			.graph();
-		geometry = new CityGeometryBuilder(topology)
+		geometry = new SegmentNetworkBuilder(topology)
 			.withDefaults()
 			.build();
 		fullRoadGraph = geometry.getFullRoadGraph();

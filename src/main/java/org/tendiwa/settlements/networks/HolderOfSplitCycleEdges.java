@@ -11,23 +11,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Holds chains of edges that are result of splitting edges of {@link RoadsPlanarGraphModel#originalRoadGraph}.
+ * Holds chains of edges that are result of splitting edges of {@link SegmentNetwork#originalRoadGraph}.
  * <p>
- * We can't mutate {@link org.tendiwa.settlements.networks.RoadsPlanarGraphModel#originalRoadGraph}
+ * We can't mutate {@link SegmentNetwork#originalRoadGraph}
  * itself because that breaks {@link org.tendiwa.graphs.MinimalCycle#iterator()}.
  * <p>
- * This class exists so {@link RoadsPlanarGraphModel#getFullRoadGraph()} can return a graph with edges on cycle edges
- * that are not part of the initial {@link RoadsPlanarGraphModel#originalRoadGraph}.
+ * This class exists so {@link SegmentNetwork#getFullRoadGraph()} can return a graph with edges on cycle edges
+ * that are not part of the initial {@link SegmentNetwork#originalRoadGraph}.
  * <p>
  * One of the reasons why we need this class is that when we split a road of
  * {@link NetworkWithinCycle}, that road may be shared with another
- * {@link NetworkWithinCycle} of the same {@link RoadsPlanarGraphModel}.
+ * {@link NetworkWithinCycle} of the same {@link SegmentNetwork}.
  * <p>
  * <b>Original edge</b> is an edge that hasn't been split from another edge.
  */
 final class HolderOfSplitCycleEdges {
 	/**
-	 * After edges has been split with {@link #splitEdge(org.tendiwa.geometry.Segment2D,
+	 * After edges have been split with {@link #splitEdge(org.tendiwa.geometry.Segment2D,
 	 * org.tendiwa.geometry.Point2D)},
 	 * this map may end up containing non-existing edges as keys, because we can split and edge and then split it
 	 * again. Those edges should not be removed, because they are needed by
@@ -43,7 +43,7 @@ final class HolderOfSplitCycleEdges {
 	 * Remembers that {@code edgeToSplit} is split into a graph of sub-edges.
 	 *
 	 * @param edgeToSplit
-	 * 	An edge of {@link RoadsPlanarGraphModel#originalRoadGraph} (those are called "original edges" within this
+	 * 	An edge of {@link SegmentNetwork#originalRoadGraph} (those are called "original edges" within this
 	 * 	class, or a sub-edge.
 	 * @param point
 	 * 	A point to split the edge with.
@@ -62,7 +62,10 @@ final class HolderOfSplitCycleEdges {
 			return;
 		}
 		Segment2D parentEdge = findSubEdgeThatContainsPoint(graph, point);
-		graph.removeEdge(parentEdge);
+		assert parentEdge.equals(edgeToSplit);
+		if (!graph.removeEdge(parentEdge)) {
+			throw new RuntimeException("Trying to remove edge that is not in graph");
+		}
 		graph.addVertex(point);
 		Segment2D originalEdge = findOriginalEdge(edgeToSplit);
 		addOneOfSplitEdges(parentEdge.start, point, graph);

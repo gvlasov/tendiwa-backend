@@ -8,7 +8,7 @@ import org.tendiwa.settlements.EnclosedBlock;
 import java.util.Iterator;
 
 /**
- * Finds out which cycles in a {@link org.tendiwa.settlements.networks.RoadsPlanarGraphModel} are enclosed within
+ * Finds out which cycles in a {@link SegmentNetwork} are enclosed within
  * another cycle.
  * <p>
  * An <i>enclosed cycle</i> is the one all of whose points are inside one of {@link org.tendiwa.settlements.networks
@@ -20,11 +20,11 @@ public final class EnclosedCyclesSet {
 	private final UndirectedGraph<Point2D, Segment2D> cyclesRoadGraph;
 
 	/**
-	 * @param roadsPlanarGraphModel
+	 * @param segmentNetwork
 	 * 	A graph model for which enclosed cycles set is to be found.
 	 */
-	public EnclosedCyclesSet(RoadsPlanarGraphModel roadsPlanarGraphModel) {
-		cyclesRoadGraph = roadsPlanarGraphModel.getCyclesRoadGraph();
+	public EnclosedCyclesSet(SegmentNetwork segmentNetwork) {
+		cyclesRoadGraph = segmentNetwork.getCyclesRoadGraph();
 	}
 
 	public boolean contains(EnclosedBlock block) {

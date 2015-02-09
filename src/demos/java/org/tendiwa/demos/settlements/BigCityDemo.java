@@ -8,7 +8,6 @@ import org.tendiwa.collections.Collectors;
 import org.tendiwa.data.FourCyclePenisGraph;
 import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.DrawableInto;
-import org.tendiwa.drawing.MagnifierCanvas;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingChain;
 import org.tendiwa.drawing.extensions.DrawingModule;
@@ -19,8 +18,8 @@ import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.settlements.buildings.PolylineProximity;
-import org.tendiwa.settlements.networks.CityGeometryBuilder;
-import org.tendiwa.settlements.networks.RoadsPlanarGraphModel;
+import org.tendiwa.settlements.networks.SegmentNetworkBuilder;
+import org.tendiwa.settlements.networks.SegmentNetwork;
 import org.tendiwa.settlements.utils.*;
 
 import java.awt.Color;
@@ -47,17 +46,17 @@ public class BigCityDemo implements Runnable {
 //			.cycle(0, 1, 2, 3)
 //			.graph();
 //		canvas = new MagnifierCanvas(5, 63, 86, 600, 600);
-		canvas = new TestCanvas(3, 600, 600);
+		canvas = new TestCanvas(1, 600, 600);
 		canvas.fillBackground(Color.black);
 		TestCanvas.canvas = canvas;
 		IntStream.range(0, 1).forEach(seed -> {
-			RoadsPlanarGraphModel roadsPlanarGraphModel = new CityGeometryBuilder(graph)
+			SegmentNetwork segmentNetwork = new SegmentNetworkBuilder(graph)
 				.withDefaults()
 				.withMaxStartPointsPerCycle(5)
 				.withRoadsFromPoint(2)
 				.withSecondaryRoadNetworkDeviationAngle(0.5)
-				.withConnectivity(0.0)
-				.withRoadSegmentLength(10)
+				.withConnectivity(1.0)
+				.withRoadSegmentLength(20)
 				.withSnapSize(5)
 				.withSeed(seed)
 				.withAxisAlignedSegments(false)
@@ -77,8 +76,8 @@ public class BigCityDemo implements Runnable {
 				Color.getHSBColor((float) 0.62, 1, (float) 0.8)
 			);
 			UndirectedGraph<Point2D, Segment2D> allRoads = RoadRejector.rejectPartOfNetworksBorders(
-				roadsPlanarGraphModel.getFullRoadGraph(),
-				roadsPlanarGraphModel,
+				segmentNetwork.getFullRoadGraph(),
+				segmentNetwork,
 				1.0,
 				new Random(1)
 			);
@@ -93,7 +92,7 @@ public class BigCityDemo implements Runnable {
 				canvas.draw(street, DrawingChain.withColor(streetColor));
 			}
 			Collection<RectangleWithNeighbors> lots = RectangularBuildingLots
-				.placeInside(roadsPlanarGraphModel);
+				.placeInside(segmentNetwork);
 			PolylineProximity polylineProximity = new PolylineProximity(streets, lots, 8);
 			Set<RectangleWithNeighbors> recGroups = lots
 				.stream()

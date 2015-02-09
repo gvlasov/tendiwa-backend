@@ -1,7 +1,8 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
-import org.jetbrains.annotations.Nullable;
 import org.tendiwa.collections.DoublyLinkedNode;
+
+import javax.annotation.Nullable;
 
 /**
  * Holds start and end of a subchain of a {@link Face}

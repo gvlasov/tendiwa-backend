@@ -28,6 +28,10 @@ public final class PlanarGraphs {
 		return EDGE_FACTORY;
 	}
 
+	public static UndirectedGraph<Point2D, Segment2D> createGraph() {
+		return new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
+	}
+
 	/**
 	 * Removes an edge from graph, and also removes any vertices that are orphaned (left with degree == 0) as a result
 	 * of removing the edge.

@@ -2,7 +2,7 @@ package org.tendiwa.geometry;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
-import org.jetbrains.annotations.NotNull;
+import com.sun.istack.internal.NotNull;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingPolygon;
 

@@ -10,14 +10,14 @@ import org.tendiwa.drawing.extensions.DrawingModule;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
-import org.tendiwa.settlements.networks.CityGeometryBuilder;
+import org.tendiwa.settlements.networks.SegmentNetworkBuilder;
 
 import java.util.Arrays;
 import java.util.Collection;
 
 @RunWith(Parameterized.class)
 @UseModules(DrawingModule.class)
-public class RoadsPlanarGraphModelTest {
+public class SegmentNetworkTest {
 
 	private final int pointsPerCycle;
 	private final int roadsFromPoint;
@@ -26,7 +26,7 @@ public class RoadsPlanarGraphModelTest {
 	private final double[] segmentLength;
 	private final double snapSize;
 
-	public RoadsPlanarGraphModelTest(
+	public SegmentNetworkTest(
 		int pointsPerCycle,
 		int roadsFromPoint,
 		double dAngle,
@@ -68,7 +68,7 @@ public class RoadsPlanarGraphModelTest {
 		GraphConstructor<Point2D, Segment2D> gc = FourCyclePenisGraph.create();
 		SimpleGraph<Point2D, Segment2D> graph = gc.graph();
 		for (int i = 0; i < 1; i++) {
-			new CityGeometryBuilder(graph)
+			new SegmentNetworkBuilder(graph)
 				.withDefaults()
 				.withMaxStartPointsPerCycle(pointsPerCycle)
 				.withRoadsFromPoint(roadsFromPoint)

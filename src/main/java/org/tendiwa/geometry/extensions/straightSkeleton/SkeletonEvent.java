@@ -1,6 +1,6 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
-import org.jetbrains.annotations.NotNull;
+import com.sun.istack.internal.NotNull;
 import org.tendiwa.geometry.Point2D;
 
 abstract class SkeletonEvent implements Comparable<SkeletonEvent> {

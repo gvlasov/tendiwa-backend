@@ -22,43 +22,31 @@ import java.util.Set;
 public class RoadInserter {
 	private final UndirectedGraph<Point2D, Segment2D> relevantNetwork;
 	final SimpleGraph<Point2D, Segment2D> secRoadNetwork;
-	private final UndirectedGraph<Point2D, Segment2D> originalRoadGraph;
-	private final Set<Point2D> cycleVertices;
+	private final UndirectedGraph<Point2D, Segment2D> cycleGraph;
 	private final ImmutableSet.Builder<Point2D> outerPointsBuilder;
 	private final Set<Point2D> deadEnds;
 	private final HolderOfSplitCycleEdges holderOfSplitCycleEdges;
 	private final Collection<Segment2D> filamentEdges;
-	private final double roadSegmentLength;
-	private final double snapSize;
-	private final double connectivity;
-	private final double secondaryRoadNetworkRoadLengthDeviation;
+	private final NetworkGenerationParameters networkGenerationParameters;
 	private final Random random;
 
 	public RoadInserter(
 		UndirectedGraph<Point2D, Segment2D> relevantNetwork,
-		UndirectedGraph<Point2D, Segment2D> originalRoadGraph,
-		Set<Point2D> cycleVertices,
+		UndirectedGraph<Point2D, Segment2D> cycleGraph,
 		ImmutableSet.Builder<Point2D> outerPointsBuilder,
 		Set<Point2D> deadEnds,
 		HolderOfSplitCycleEdges holderOfSplitCycleEdges,
 		Collection<Segment2D> filamentEdges,
-		double roadSegmentLength,
-		double snapSize,
-		double connectivity,
-		double secondaryRoadNetworkRoadLengthDeviation,
+		NetworkGenerationParameters networkGenerationParameters,
 		Random random
 	) {
 		this.relevantNetwork = relevantNetwork;
-		this.originalRoadGraph = originalRoadGraph;
-		this.cycleVertices = cycleVertices;
+		this.cycleGraph = cycleGraph;
 		this.outerPointsBuilder = outerPointsBuilder;
 		this.deadEnds = deadEnds;
 		this.holderOfSplitCycleEdges = holderOfSplitCycleEdges;
 		this.filamentEdges = filamentEdges;
-		this.roadSegmentLength = roadSegmentLength;
-		this.snapSize = snapSize;
-		this.connectivity = connectivity;
-		this.secondaryRoadNetworkRoadLengthDeviation = secondaryRoadNetworkRoadLengthDeviation;
+		this.networkGenerationParameters = networkGenerationParameters;
 		this.random = random;
 
 		this.secRoadNetwork = new SimpleGraph<>(relevantNetwork.getEdgeFactory());
@@ -78,6 +66,10 @@ public class RoadInserter {
 			&& relevantNetwork.containsVertex(target);
 		relevantNetwork.addEdge(source, target);
 		assert !ShamosHoeyAlgorithm.areIntersected(relevantNetwork.edgeSet());
+		TestCanvas.canvas.draw(
+			new Segment2D(source, target),
+			DrawingSegment2D.withColorThin(Color.blue)
+		);
 		return !isOriginalRoadBeingSplit(source, target);
 	}
 
@@ -86,7 +78,7 @@ public class RoadInserter {
 		secRoadNetwork.addVertex(source);
 		secRoadNetwork.addVertex(target);
 		secRoadNetwork.addEdge(source, target);
-		if (cycleVertices.contains(target)) {
+		if (cycleGraph.containsVertex(target)) {
 			// outerPointsBuilder may contain the target point, but then it just won't be added.
 			outerPointsBuilder.add(target);
 		}
@@ -105,27 +97,37 @@ public class RoadInserter {
 	 */
 	void insertNode(Segment2D road, Point2D point) {
 		if (road.end.equals(point)) {
-			return;
+			throw new RuntimeException("Inserting a point at the endpoint of exsting edge");
+			// return; // This used to work
 		}
 		assert relevantNetwork.containsEdge(road);
-		boolean isCycleEdge = isCycleEdge(road);
 		minimumDistanceAssert(road, point);
 		relevantNetwork.removeEdge(road);
 		relevantNetwork.addVertex(point);
-		if (isCycleEdge) {
-			holderOfSplitCycleEdges.splitEdge(road, point);
-			addRoad(road.start, point);
-			addRoad(point, road.end);
+		if (cycleGraph.containsEdge(road)) {
+			insertNodeToPrimaryNetwork(road, point);
 		} else {
-			secRoadNetwork.removeEdge(road);
-			secRoadNetwork.addVertex(point);
-			addRoadToSecondaryNetwork(road.start, point);
-			addRoadToSecondaryNetwork(point, road.end);
+			insertNodeToSecondaryNetwork(road, point);
 		}
-		if (cycleVertices.contains(road.start) && cycleVertices.contains(road.end)) {
-			cycleVertices.add(point);
+		if (cycleGraph.containsEdge(road)) {
+			cycleGraph.addVertex(point);
+			cycleGraph.removeEdge(road);
+			cycleGraph.addEdge(road.start, point, relevantNetwork.getEdge(road.start, point));
+			cycleGraph.addEdge(point, road.end, relevantNetwork.getEdge(point, road.end));
 			outerPointsBuilder.add(point);
 		}
+	}
+
+	private void insertNodeToSecondaryNetwork(Segment2D road, Point2D point) {
+		secRoadNetwork.removeEdge(road);
+		addRoadToSecondaryNetwork(road.start, point);
+		addRoadToSecondaryNetwork(point, road.end);
+	}
+
+	private void insertNodeToPrimaryNetwork(Segment2D road, Point2D point) {
+		holderOfSplitCycleEdges.splitEdge(road, point);
+		addRoad(road.start, point);
+		addRoad(point, road.end);
 	}
 
 	/**
@@ -141,17 +143,16 @@ public class RoadInserter {
 	 */
 	SnapEvent tryPlacingRoad(Point2D source, double direction, boolean prohibitSnappingRightAway) {
 		assert !isDeadEnd(source);
-		double roadLength = deviatedLength(roadSegmentLength);
+		double roadLength = deviatedLength(networkGenerationParameters.roadSegmentLength);
 		double dx = roadLength * Math.cos(direction);
 		double dy = roadLength * Math.sin(direction);
 		Point2D unsnappedTargetNode = new Point2D(source.x + dx, source.y + dy);
 		SnapEvent snapEvent = new SnapTest(
-			snapSize,
+			networkGenerationParameters.snapSize,
 			source,
 			unsnappedTargetNode,
 			relevantNetwork,
-			holderOfSplitCycleEdges,
-			cycleVertices
+			holderOfSplitCycleEdges
 		).snap();
 		assert !source.equals(snapEvent.targetNode);
 		switch (snapEvent.eventType) {
@@ -161,11 +162,9 @@ public class RoadInserter {
 				addRoadToSecondaryNetwork(source, unsnappedTargetNode);
 				return snapEvent;
 			case ROAD_SNAP:
-				if (random.nextDouble() < connectivity) {
+				if (random.nextDouble() < networkGenerationParameters.connectivity) {
 					if (isDeadEnd(snapEvent.road.start) && isDeadEnd(snapEvent.road.end)) {
 						if (prohibitSnappingRightAway) {
-							TestCanvas.canvas.draw(new Segment2D(source, snapEvent.targetNode), DrawingSegment2D
-								.withColorThin(Color.blue));
 							return null;
 						}
 						deadEnds.add(snapEvent.targetNode);
@@ -184,7 +183,7 @@ public class RoadInserter {
 					return null;
 				}
 			case NODE_SNAP:
-				if (random.nextDouble() < connectivity) {
+				if (random.nextDouble() < networkGenerationParameters.connectivity) {
 					if (prohibitSnappingRightAway) {
 						TestCanvas.canvas.draw(new Segment2D(source, snapEvent.targetNode), DrawingSegment2D
 							.withColorThin(Color.green));
@@ -212,15 +211,11 @@ public class RoadInserter {
 			b,
 			!toLeft
 		);
-		Segment2D segment = bisector.asSegment(deviatedLength(roadSegmentLength));
+		Segment2D segment = bisector.asSegment(deviatedLength(networkGenerationParameters.roadSegmentLength));
 		assert deadEnds.contains(segment.start);
 		deadEnds.remove(segment.start);
 		tryPlacingRoad(segment.start, segment.start.angleTo(segment.end), false);
 		deadEnds.add(segment.start);
-	}
-
-	private boolean isCycleEdge(Segment2D road) {
-		return originalRoadGraph.containsEdge(road) || holderOfSplitCycleEdges.isEdgeSplit(road);
 	}
 
 	private void minimumDistanceAssert(Segment2D road, Point2D point) {
@@ -241,8 +236,8 @@ public class RoadInserter {
 	}
 
 	private double deviatedLength(double roadSegmentLength) {
-		return roadSegmentLength - secondaryRoadNetworkRoadLengthDeviation / 2 + random.nextDouble() *
-			secondaryRoadNetworkRoadLengthDeviation;
+		return roadSegmentLength - networkGenerationParameters.secondaryRoadNetworkRoadLengthDeviation / 2 + random.nextDouble() *
+			networkGenerationParameters.secondaryRoadNetworkRoadLengthDeviation;
 	}
 
 	void insertStartingPoint(Segment2D actualEdge, Point2D startingPoint) {

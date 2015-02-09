@@ -3,18 +3,14 @@ package org.tendiwa.demos.geometry;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.DrawableInto;
-import org.tendiwa.drawing.MagnifierCanvas;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingGraph;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.geometry.extensions.PointTrail;
 import org.tendiwa.graphs.GraphConstructor;
-import org.tendiwa.settlements.networks.CityGeometryBuilder;
-import org.tendiwa.settlements.networks.RoadsPlanarGraphModel;
-
-import java.awt.Color;
+import org.tendiwa.settlements.networks.SegmentNetworkBuilder;
+import org.tendiwa.settlements.networks.SegmentNetwork;
 
 public class EnclosedCyclesRoadPlanarGraphModelDemo implements Runnable {
 	public static void main(String[] args) {
@@ -64,7 +60,7 @@ public class EnclosedCyclesRoadPlanarGraphModelDemo implements Runnable {
 			)
 			.graph();
 
-		RoadsPlanarGraphModel city = new CityGeometryBuilder(graph)
+		SegmentNetwork city = new SegmentNetworkBuilder(graph)
 			.withDefaults()
 			.withRoadSegmentLength(47)
 			.withSnapSize(20)

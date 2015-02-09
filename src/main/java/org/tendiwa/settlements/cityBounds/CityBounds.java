@@ -19,7 +19,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * From {@link CellSet}, creates a graph used as a base for a {@link org.tendiwa.settlements.networks.RoadsPlanarGraphModel}.
+ * From {@link CellSet}, creates a graph used as a base for a {@link org.tendiwa.settlements.networks.SegmentNetwork}.
  */
 public final class CityBounds {
 
@@ -27,14 +27,14 @@ public final class CityBounds {
 	}
 
 	/**
-	 * Creates a new graph that can be used as a base for {@link org.tendiwa.settlements.networks.RoadsPlanarGraphModel}.
+	 * Creates a new graph that can be used as a base for {@link org.tendiwa.settlements.networks.SegmentNetwork}.
 	 *
 	 * @param startCell
 	 * 	A cell from which a City originates. Roughly denotes its final position.
 	 * @param maxCityRadius
 	 * 	A maximum radius of a Rectangle containing resulting City.
-	 * @return A new graph that can be used as a base for {@link org.tendiwa.settlements.networks.RoadsPlanarGraphModel}.
-	 * @see org.tendiwa.settlements.networks.CityGeometryBuilder
+	 * @return A new graph that can be used as a base for {@link org.tendiwa.settlements.networks.SegmentNetwork}.
+	 * @see org.tendiwa.settlements.networks.SegmentNetworkBuilder
 	 */
 	public static UndirectedGraph<Point2D, Segment2D> create(
 		BoundedCellSet cityShape,

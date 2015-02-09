@@ -12,7 +12,6 @@ import org.tendiwa.geometry.Vectors2D;
 import java.awt.Color;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,7 +27,6 @@ final class SnapTest {
 	private final Point2D sourceNode;
 	private final UndirectedGraph<Point2D, Segment2D> relevantRoadNetwork;
 	private final HolderOfSplitCycleEdges holderOfSplitCycleEdges;
-	private final Set<Point2D> cycleVertices;
 	private Point2D targetNode;
 	private double minR;
 
@@ -64,10 +62,8 @@ final class SnapTest {
 		Point2D sourceNode,
 		Point2D targetNode,
 		UndirectedGraph<Point2D, Segment2D> relevantRoadNetwork,
-		HolderOfSplitCycleEdges holderOfSplitCycleEdges,
-		Set<Point2D> cycleVertices
+		HolderOfSplitCycleEdges holderOfSplitCycleEdges
 	) {
-		this.cycleVertices = cycleVertices;
 		this.snapSize = Math.max(snapSize, Vectors2D.EPSILON);
 		this.sourceNode = sourceNode;
 		this.targetNode = targetNode;
@@ -177,7 +173,6 @@ final class SnapTest {
 	 * @return The node to snap to.
 	 */
 	private void findSnapNode() {
-		boolean isCycleVertex = cycleVertices.contains(sourceNode);
 		Set<Point2D> verticesToTest = findEndpointsToTestForNodeSnap(roadsToTest);
 		for (Point2D vertex : verticesToTest) {
 			PointPosition pointPosition = new PointPosition(sourceNode, targetNode, vertex);
@@ -313,8 +308,7 @@ final class SnapTest {
 		double minY = Math.min(source.y, target.y) - snapSize;
 		double maxX = Math.max(source.x, target.x) + snapSize;
 		double maxY = Math.max(source.y, target.y) + snapSize;
-		Stream<Segment2D> roadStream = constructRoadsStream();
-//		Stream<Segment2D> roadStream = relevantRoadNetwork.edgeSet().stream();
+		Stream<Segment2D> roadStream = relevantRoadNetwork.edgeSet().stream();
 		return roadStream
 			.filter(road -> {
 				double roadMinX = Math.min(road.start.x, road.end.x);
@@ -328,7 +322,38 @@ final class SnapTest {
 	}
 
 	private Stream<Segment2D> constructRoadsStream() {
-		assert relevantRoadNetwork.edgeSet().stream().allMatch(road->!holderOfSplitCycleEdges.isEdgeSplit(road));
-		return relevantRoadNetwork.edgeSet().stream();
+		Stream<Segment2D> originalRoadsStream = relevantRoadNetwork.edgeSet().stream()
+			.filter(road -> !holderOfSplitCycleEdges.isEdgeSplit(road));
+//		Stream<Segment2D> splitRoadsStream = constructSplitRoadsStream();
+//		long count = splitRoadsStream.count();
+//		if (count > 1) {
+//			Set<Segment2D> addedSegments = new HashSet<>();
+//			relevantRoadNetwork.edgeSet().forEach(edge -> {
+//				if (holderOfSplitCycleEdges.isEdgeSplit(edge)) {
+//					TestCanvas.canvas.draw(edge, DrawingSegment2D.withColorDirected(Color.red, 3));
+//					UndirectedGraph<Point2D, Segment2D> graph = holderOfSplitCycleEdges.getGraph(edge);
+//					graph.edgeSet().forEach((e) -> {
+//						TestCanvas.canvas.draw(e, DrawingSegment2D.withColorDirected(Color.orange, 3));
+//						if (addedSegments.contains(e)) {
+//							TestCanvas.canvas.draw(e, DrawingSegment2D.withColorDirected(Color.blue, 3));
+//							throw new RuntimeException("Contains edge");
+//						}
+//						addedSegments.add(e);
+//					});
+//					TestCanvas.canvas.fillBackground(Color.black);
+//				}
+//			});
+//			assert Boolean.TRUE;
+//		}
+
+//		return Stream.concat(originalRoadsStream, splitRoadsStream);
+		return originalRoadsStream;
+
+	}
+
+	private Stream<Segment2D> constructSplitRoadsStream() {
+		return relevantRoadNetwork.edgeSet().stream()
+			.filter(holderOfSplitCycleEdges::isEdgeSplit)
+			.flatMap(edge -> holderOfSplitCycleEdges.getGraph(edge).edgeSet().stream());
 	}
 }

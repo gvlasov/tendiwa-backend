@@ -1,4 +1,4 @@
-package org.tendiwa.settlements;
+package org.tendiwa.settlements.networks;
 
 import com.google.common.collect.ImmutableSet;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 /**
  * Finds which cycles are enclosed within which ones.
  */
-public final class EnclosedCycleDetector {
+final class EnclosedCycleDetector {
 	private final Map<MinimalCycle<Point2D, Segment2D>, Geometry> geometries;
 	private final GeometryFactory factory = new GeometryFactory();
 	private final Collection<MinimalCycle<Point2D, Segment2D>> cycles;
