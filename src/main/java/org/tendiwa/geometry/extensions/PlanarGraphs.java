@@ -5,6 +5,7 @@ import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.graphs.MinimumCycleBasis;
 
 public final class PlanarGraphs {
 	private static final EdgeFactory<Point2D, Segment2D> EDGE_FACTORY = Segment2D::new;
@@ -22,6 +23,10 @@ public final class PlanarGraphs {
 			blockBoundsNetwork.addEdge(edge.start, edge.end, edge);
 		}
 		return blockBoundsNetwork;
+	}
+
+	public static MinimumCycleBasis<Point2D, Segment2D> minimumCycleBasis(UndirectedGraph<Point2D, Segment2D> graph) {
+		return new MinimumCycleBasis<>(graph, Point2DVertexPositionAdapter.get());
 	}
 
 	public static EdgeFactory<Point2D, Segment2D> getEdgeFactory() {

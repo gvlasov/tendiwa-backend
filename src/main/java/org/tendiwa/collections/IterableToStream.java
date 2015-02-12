@@ -1,5 +1,6 @@
 package org.tendiwa.collections;
 
+import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.Stream;
@@ -10,6 +11,15 @@ public class IterableToStream {
 		return StreamSupport.stream(
 			Spliterators.spliteratorUnknownSize(
 				iterable.iterator(),
+				Spliterator.ORDERED
+			),
+			false
+		);
+	}
+	public static <T> Stream<T> stream(Iterator<T> iterator) {
+		return StreamSupport.stream(
+			Spliterators.spliteratorUnknownSize(
+				iterator,
 				Spliterator.ORDERED
 			),
 			false

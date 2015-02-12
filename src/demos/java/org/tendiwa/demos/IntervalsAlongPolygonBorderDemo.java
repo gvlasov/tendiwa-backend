@@ -9,6 +9,7 @@ import org.tendiwa.drawing.extensions.DrawingPolygon;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.IntervalsAlongPolygonBorder;
+import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
 import org.tendiwa.geometry.extensions.PointTrail;
 import org.tendiwa.graphs.MinimalCycle;
@@ -31,9 +32,8 @@ public class IntervalsAlongPolygonBorderDemo implements Runnable {
 	@Override
 	public void run() {
 		TestCanvas.canvas = canvas;
-		Iterator<MinimalCycle<Point2D, Segment2D>> iterator = new MinimumCycleBasis<>(
-			FourCyclePenisGraph.create().graph(),
-			Point2DVertexPositionAdapter.get()
+		Iterator<MinimalCycle<Point2D, Segment2D>> iterator = PlanarGraphs.minimumCycleBasis(
+			FourCyclePenisGraph.create().graph()
 		).minimalCyclesSet().iterator();
 		List<Point2D> polygon = iterator.next().vertexList();
 		Map<Segment2D, List<Point2D>> points = IntervalsAlongPolygonBorder.compute(
@@ -48,6 +48,5 @@ public class IntervalsAlongPolygonBorderDemo implements Runnable {
 		for (List<Point2D> pointes : points.values()) {
 			canvas.drawAll(pointes, DrawingPoint2D.withColorAndSize(colors.next(), 5));
 		}
-
 	}
 }

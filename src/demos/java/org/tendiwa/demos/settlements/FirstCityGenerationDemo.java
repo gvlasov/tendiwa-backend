@@ -6,7 +6,7 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.settlements.networks.SegmentNetworkBuilder;
-import org.tendiwa.settlements.networks.SegmentNetwork;
+import org.tendiwa.settlements.networks.Segment2DSmartMesh;
 
 public class FirstCityGenerationDemo {
 	public static void main(String[] args) {
@@ -24,9 +24,9 @@ public class FirstCityGenerationDemo {
 			.vertex(9, new Point2D(184, 187))
 			.cycle(0, 1, 2, 3, 4)
 			.cycle(3, 5, 9, 8, 7, 6, 1, 2);
-		SegmentNetwork segmentNetwork = new SegmentNetworkBuilder(gc.graph())
+		Segment2DSmartMesh segment2DSmartMesh = new SegmentNetworkBuilder(gc.graph())
 			.withDefaults()
 			.build();
-		canvas.draw(segmentNetwork, new CityDrawer());
+		canvas.draw(segment2DSmartMesh, new CityDrawer());
 	}
 }

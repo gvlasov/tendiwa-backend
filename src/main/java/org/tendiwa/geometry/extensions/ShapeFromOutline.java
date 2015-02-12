@@ -7,7 +7,7 @@ import org.jgrapht.UndirectedGraph;
 import org.jgrapht.alg.ConnectivityInspector;
 import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.extensions.polygonRasterization.PolygonRasterizer;
-import org.tendiwa.graphs.GraphCycleTraverser;
+import org.tendiwa.graphs.GraphCycleTraversal;
 import org.tendiwa.graphs.MinimalCycle;
 
 import java.util.ArrayList;
@@ -21,14 +21,16 @@ public final class ShapeFromOutline {
 	}
 
 	public static BoundedCellSet from(UndirectedGraph<Point2D, Segment2D> outline) {
-		List<Set<Point2D>> sets = new ConnectivityInspector<>(outline).connectedSets();
-		List<List<Point2D>> polygons = new ArrayList<>(sets.size());
-		for (Set<Point2D> component : sets) {
+		List<Set<Point2D>> components = new ConnectivityInspector<>(outline).connectedSets();
+		List<List<Point2D>> polygons = new ArrayList<>(components.size());
+		for (Set<Point2D> component : components) {
 			List<Point2D> polygon = new ArrayList<>(component.size());
-			GraphCycleTraverser
+			GraphCycleTraversal
 				.traverse(outline)
 				.startingWith(component.iterator().next())
-				.forEachPair((current, next) -> polygon.add(next));
+				.stream()
+				.map(GraphCycleTraversal.NeighborsTriplet::current)
+				.forEach(polygon::add);
 			polygons.add(polygon);
 		}
 		Rectangle bounds = computeBounds(outline);

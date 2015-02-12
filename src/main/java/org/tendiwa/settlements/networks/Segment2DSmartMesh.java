@@ -36,11 +36,7 @@ import static org.tendiwa.collections.Collectors.toImmutableSet;
  * and then to find housing quarters between those roads. More generally speaking, this class can build randomized
  * networks inside arbitrary polygonal areas defined by minimal cycles of some planar non-self-intersecting graph.
  */
-public final class SegmentNetwork {
-	/**
-	 * [Kelly beginning of chapter 4.2]
-	 */
-	private final UndirectedGraph<Point2D, Segment2D> originalGraph;
+public final class Segment2DSmartMesh {
 	/**
 	 * [Kelly section 4.2.2]
 	 */
@@ -57,7 +53,7 @@ public final class SegmentNetwork {
 	 * 	If {@code numberOfSamples <= 0} or if {@code deviationAngle == 0 && numberOfSamples >= 1}, or if
 	 * 	#originalGraph produced from #originalGraph intersects itself.
 	 */
-	SegmentNetwork(
+	Segment2DSmartMesh(
 		UndirectedGraph<Point2D, Segment2D> originalGraph,
 		NetworkGenerationParameters parameters,
 		Random random
@@ -66,7 +62,6 @@ public final class SegmentNetwork {
 			TestCanvas.canvas.draw(originalGraph, DrawingGraph.withColorAndAntialiasing(Color.cyan));
 			throw new IllegalArgumentException("Graph intersects itself");
 		}
-		this.originalGraph = originalGraph;
 
 		this.networks = new NetworksProducer(
 			originalGraph,

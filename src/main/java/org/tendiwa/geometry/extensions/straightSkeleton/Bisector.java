@@ -5,7 +5,7 @@ import org.tendiwa.geometry.*;
 import javax.annotation.Nonnull;
 
 public class Bisector {
-	private static final int DEFAULT_SEGMENT_LENGTH = 40;
+	public static final int DEFAULT_SEGMENT_LENGTH = 40;
 	private final Segment2D segment;
 
 	/**

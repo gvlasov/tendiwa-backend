@@ -7,10 +7,13 @@ import org.tendiwa.drawing.DrawingAlgorithm;
 import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.graphs.*;
+import org.tendiwa.geometry.extensions.PlanarGraphs;
+import org.tendiwa.graphs.Filament;
+import org.tendiwa.graphs.GraphConstructor;
+import org.tendiwa.graphs.MinimalCycle;
+import org.tendiwa.graphs.MinimumCycleBasis;
 
 import java.awt.Color;
-import java.awt.geom.Line2D;
 import java.util.Iterator;
 import java.util.function.Function;
 
@@ -91,18 +94,7 @@ public class DrawingGraph {
 		Color vertexColor
 	) {
 		return (shape, canvas) -> {
-			MinimumCycleBasis<Point2D, Segment2D> mcb =
-				new MinimumCycleBasis<>(shape, new VertexPositionAdapter<Point2D>() {
-					@Override
-					public double getX(Point2D vertex) {
-						return vertex.x;
-					}
-
-					@Override
-					public double getY(Point2D vertex) {
-						return vertex.y;
-					}
-				});
+			MinimumCycleBasis<Point2D, Segment2D> mcb = PlanarGraphs.minimumCycleBasis(shape);
 			for (Point2D p : mcb.isolatedVertexSet()) {
 				canvas.draw(new Cell(
 					(int) p.x,
@@ -110,12 +102,6 @@ public class DrawingGraph {
 				), DrawingCell.withColorAndSize(vertexColor, 3));
 			}
 			for (Filament<Point2D, Segment2D> filament : mcb.filamentsSet()) {
-//				System.out.println("filament " +
-//					filament.vertexList()
-//						.stream()
-//						.map(constructor::aliasOf)
-//						.collect(Collectors.toSet())
-//				);
 				for (Segment2D edge : filament) {
 					canvas.draw(new Segment2D(
 						shape.getEdgeSource(edge),
@@ -124,13 +110,7 @@ public class DrawingGraph {
 				}
 			}
 			for (MinimalCycle<Point2D, Segment2D> cycle : mcb.minimalCyclesSet()) {
-//				System.out.println("min cycle " +
-//					cycle.vertexList()
-//						.stream()
-//						.map(constructor::aliasOf)
-//						.collect(Collectors.toSet())
-//				);
-				for (Segment2D edge : cycle) {
+				for (Segment2D edge : cycle.asEdges()) {
 					canvas.draw(new Segment2D(
 						shape.getEdgeSource(edge),
 						shape.getEdgeTarget(edge)

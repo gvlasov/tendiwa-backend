@@ -3,7 +3,6 @@ package org.tendiwa.graphs;
 import com.google.common.collect.ImmutableList;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
-import org.tendiwa.geometry.Polygon;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -17,7 +16,7 @@ import java.util.List;
  * @param <E>
  * 	Type of edges.
  */
-public final class MinimalCycle<V, E> implements Primitive<V>, Iterable<E> {
+public final class MinimalCycle<V, E> implements Primitive<V> {
 	private final List<V> cycle = new ArrayList<>();
 	private UndirectedGraph<V, E> graph;
 
@@ -40,7 +39,6 @@ public final class MinimalCycle<V, E> implements Primitive<V>, Iterable<E> {
 		answer.addVertex(previous);
 		while (iterator.hasNext()) {
 			V next = iterator.next();
-			System.out.println(previous + " " + next);
 			answer.addVertex(next);
 			answer.addEdge(previous, next, graph.getEdge(previous, next));
 			previous = next;
@@ -68,24 +66,49 @@ public final class MinimalCycle<V, E> implements Primitive<V>, Iterable<E> {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
-	/**
-	 * Iterates over all edges of this minimal cycle.
-	 */
-	public Iterator<E> iterator() {
-		int numberOfEdges = cycle.size();
-		List<E> edgesOfCycle = new ArrayList<>(numberOfEdges);
-		for (int i = 0; i < numberOfEdges; i++) {
-			boolean isLastEdge = i == numberOfEdges - 1;
-			E edge = graph.getEdge(cycle.get(i), cycle.get(isLastEdge ? 0 : i + 1));
-			if (edge == null) {
-				edge = graph.getEdge(cycle.get(isLastEdge ? 0 : i + 1), cycle.get(i));
+	public Iterable<E> asEdges() {
+		return () -> {
+			int numberOfEdges = cycle.size();
+			List<E> edgesOfCycle = new ArrayList<>(numberOfEdges);
+			for (int i = 0; i < numberOfEdges; i++) {
+				boolean isLastEdge = i == numberOfEdges - 1;
+				E edge = graph.getEdge(cycle.get(i), cycle.get(isLastEdge ? 0 : i + 1));
+				if (edge == null) {
+					edge = graph.getEdge(cycle.get(isLastEdge ? 0 : i + 1), cycle.get(i));
+				}
+				assert edge != null;
+				assert graph.edgeSet().contains(edge);
+				edgesOfCycle.add(edge);
 			}
-			assert edge != null;
-			assert graph.edgeSet().contains(edge);
-			edgesOfCycle.add(edge);
-		}
-		return edgesOfCycle.iterator();
+			return edgesOfCycle.iterator();
+		};
+	}
+
+	public Iterable<V> asVertices() {
+		return new Iterable<V>() {
+			@Override
+			public Iterator<V> iterator() {
+				Iterator<V> iterator = cycle.iterator();
+				return new Iterator<V>() {
+					@Override
+					public boolean hasNext() {
+						return iterator.hasNext();
+					}
+
+					@Override
+					public V next() {
+						return iterator.next();
+					}
+
+					@Override
+					public void remove() {
+						throw new UnsupportedOperationException(
+							"Can't remove vertices from " + this.getClass().getName()
+						);
+					}
+				};
+			}
+		};
 	}
 
 

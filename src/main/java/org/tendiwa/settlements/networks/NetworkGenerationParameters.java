@@ -7,7 +7,7 @@ final class NetworkGenerationParameters {
 	final double snapSize;
 	final int maxStartPointsPerCell;
 	final double secondaryRoadNetworkDeviationAngle;
-	final double secondaryRoadNetworkRoadLengthDeviation;
+	final double secondaryNetworkSegmentLengthDeviation;
 	final boolean favourAxisAlignedSegments;
 
 	/**
@@ -52,14 +52,14 @@ final class NetworkGenerationParameters {
 		double snapSize,
 		int maxStartPointsPerCell,
 		double secondaryRoadNetworkDeviationAngle,
-		double secondaryRoadNetworkRoadLengthDeviation,
+		double secondaryNetworkSegmentLengthDeviation,
 		boolean favourAxisAlignedSegments
 	) {
 		if (Math.abs(secondaryRoadNetworkDeviationAngle) >= Math.PI * 2) {
 			throw new IllegalArgumentException("secondaryRoadNetworkDeviationAngle must be in [0; Math.PI*2)");
 		}
-		if (Math.abs(secondaryRoadNetworkRoadLengthDeviation) >= roadSegmentLength) {
-			throw new IllegalArgumentException("secondaryRoadNetworkRoadLengthDeviation can't be greater than " +
+		if (Math.abs(secondaryNetworkSegmentLengthDeviation) >= roadSegmentLength) {
+			throw new IllegalArgumentException("secondaryNetworkSegmentLengthDeviation can't be greater than " +
 				"roadSegmentLength (the former is " + secondaryRoadNetworkDeviationAngle + ", " +
 				"the latter is " + roadSegmentLength + ")");
 		}
@@ -75,7 +75,7 @@ final class NetworkGenerationParameters {
 		this.snapSize = snapSize;
 		this.maxStartPointsPerCell = maxStartPointsPerCell;
 		this.secondaryRoadNetworkDeviationAngle = secondaryRoadNetworkDeviationAngle;
-		this.secondaryRoadNetworkRoadLengthDeviation = secondaryRoadNetworkRoadLengthDeviation;
+		this.secondaryNetworkSegmentLengthDeviation = secondaryNetworkSegmentLengthDeviation;
 		this.favourAxisAlignedSegments = favourAxisAlignedSegments;
 	}
 }

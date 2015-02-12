@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 
 public final class CycleTraverser<V, E> {
+	// TODO: Is this a duplicate of GraphCycleTraverser?
 
 
 	private final UndirectedGraph<V, E> graph;

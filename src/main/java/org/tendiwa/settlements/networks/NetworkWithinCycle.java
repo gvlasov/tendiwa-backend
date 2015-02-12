@@ -2,110 +2,79 @@ package org.tendiwa.settlements.networks;
 
 import com.google.common.collect.ImmutableSet;
 import org.jgrapht.UndirectedGraph;
-import org.jgrapht.graph.UndirectedSubgraph;
 import org.jgrapht.graph.UnmodifiableUndirectedGraph;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.CommonEdgeSplitter;
 import org.tendiwa.graphs.MinimalCycle;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * [Kelly section 4.3.1]
  * <p>
- * A part of {@link SegmentNetwork} bounded by a fundamental basis cycle
+ * A part of {@link Segment2DSmartMesh} bounded by a fundamental basis cycle
  * (one of those in <i>minimal cycle basis</i> from [Kelly section 4.3.1, figure 41]).
  */
 public final class NetworkWithinCycle {
 	private final NetworkToBlocks blockDivision;
 	private final SecondaryRoadNetwork secondaryRoadNetwork;
-	private UndirectedGraph<Point2D, Segment2D> cycleGraph;
+	private final OrientedCycle enclosingCycle;
+	private final Collection<OrientedCycle> enclosedCycles;
 
 	/**
-	 * Returns a set points where secondary road network is connected with the cycle.
-	 *
-	 * @return A set points where secondary road network is connected with the cycle.
-	 */
-	public ImmutableSet<Point2D> exitsOnCycles() {
-		return secondaryRoadNetwork.exitsOnCycles;
-	}
-
-	/**
-	 * @param relevantNetwork
-	 * 	A preconstructed graph of low level roads, constructed by
-	 * 	{@link org.tendiwa.settlements.networks.NetworksProducer#constructNetworkOriginalGraph(org.tendiwa.graphs.MinimalCycle,
-	 *    java.util.Set, java.util.Collection)}
+	 * @param fullGraph
+	 * 	Current full graph of a {@link Segment2DSmartMesh}.
 	 * @param originalMinimalCycle
 	 * 	A MinimalCycle that contains this NetworkWithinCycle's secondary road network inside it.
-	 * @param originalRoadGraph
-	 * 	Graph that is bounding all cells.
-	 * @param filamentEdges
-	 * 	A collection of all the edges of a {@link org.tendiwa.settlements.networks.SegmentNetworkBuilder#graph}
-	 * 	that are not part of any minimal cycles. The same collection is passed to all the CityCells.
 	 * @param enclosedCycles
 	 * 	Cycles enclosed within the {@code originalMinimalCycle}.
 	 * @param random
-	 * 	A seeded {@link java.util.Random} used to generate the parent {@link SegmentNetwork}.
-	 * @param holderOfSplitCycleEdges
+	 * 	A seeded {@link java.util.Random} used to generate the parent {@link Segment2DSmartMesh}.
 	 */
 
 	NetworkWithinCycle(
-		UndirectedGraph<Point2D, Segment2D> relevantNetwork,
+		UndirectedGraph<Point2D, Segment2D> fullGraph,
+		UndirectedGraph<Point2D, Segment2D> splitOriginalGraph,
 		MinimalCycle<Point2D, Segment2D> originalMinimalCycle,
-		UndirectedGraph<Point2D, Segment2D> originalRoadGraph,
-		Collection<Segment2D> filamentEdges,
 		Collection<MinimalCycle<Point2D, Segment2D>> enclosedCycles,
-		HolderOfSplitCycleEdges holderOfSplitCycleEdges,
 		CommonEdgeSplitter<Point2D, Segment2D> commonEdgeSplitter,
-		NetworkGenerationParameters networkGeneratoinParameters,
+		NetworkGenerationParameters networkGenerationParameters,
 		Random random
 	) {
-		this.cycleGraph = initCycleGraph(relevantNetwork);
 
+		this.enclosingCycle = new OrientedCycle(originalMinimalCycle, splitOriginalGraph);
+		this.enclosedCycles = enclosedCycles.stream()
+			.map(cycle -> new OrientedCycle(cycle, splitOriginalGraph))
+			.collect(Collectors.toCollection(LinkedHashSet::new));
 		this.secondaryRoadNetwork = new SecondaryRoadNetwork(
-			relevantNetwork,
-			originalRoadGraph,
-			cycleGraph,
-			originalMinimalCycle,
-			holderOfSplitCycleEdges,
-			filamentEdges,
-			enclosedCycles,
-			networkGeneratoinParameters,
+			fullGraph,
+			enclosingCycle,
+			this.enclosedCycles,
+			commonEdgeSplitter,
+			networkGenerationParameters,
 			random
 		);
 		this.blockDivision = new NetworkToBlocks(
-			relevantNetwork,
+			fullGraph,
 			secondaryRoadNetwork.filamentEnds,
-			networkGeneratoinParameters,
-			holderOfSplitCycleEdges
-		);
-	}
-
-	private UndirectedGraph<Point2D, Segment2D> initCycleGraph(UndirectedGraph<Point2D, Segment2D> relevantNetwork) {
-		// Initially relevant network consists only of the cycle
-		return new UndirectedSubgraph<>(
-			relevantNetwork,
-			new LinkedHashSet<>(relevantNetwork.vertexSet()),
-			new LinkedHashSet<>(relevantNetwork.edgeSet())
+			networkGenerationParameters
 		);
 	}
 
 
 	/**
-	 * Creates an unmodifiable view of {@link org.tendiwa.settlements.networks.RoadInserter#secRoadNetwork}.
+	 * Creates an unmodifiable view of {@link SecondaryRoadNetwork#graph}.
 	 *
 	 * @return An unmodifiable graph containing this NetworkWithinCycle's secondary road network.
 	 */
 	public UndirectedGraph<Point2D, Segment2D> network() {
-		return new UnmodifiableUndirectedGraph<>(secondaryRoadNetwork.getSecondaryRoadGraph());
+		return new UnmodifiableUndirectedGraph<>(secondaryRoadNetwork.getGraph());
 	}
 
 	public UndirectedGraph<Point2D, Segment2D> cycle() {
-		return cycleGraph;
+		return enclosingCycle.graph();
 	}
 
 

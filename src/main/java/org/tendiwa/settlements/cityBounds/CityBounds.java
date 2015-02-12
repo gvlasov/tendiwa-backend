@@ -10,7 +10,6 @@ import org.tendiwa.core.Directions;
 import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.extensions.*;
 import org.tendiwa.graphs.MinimalCycle;
-import org.tendiwa.graphs.MinimumCycleBasis;
 import org.tendiwa.graphs.algorithms.SameOrPerpendicularSlopeGraphEdgesPerturbations;
 import org.tendiwa.pathfinding.dijkstra.PathTable;
 import org.tendiwa.terrain.WorldGenerationException;
@@ -19,7 +18,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * From {@link CellSet}, creates a graph used as a base for a {@link org.tendiwa.settlements.networks.SegmentNetwork}.
+ * From {@link CellSet}, creates a graph used as a base for a {@link org.tendiwa.settlements.networks.Segment2DSmartMesh}.
  */
 public final class CityBounds {
 
@@ -27,13 +26,13 @@ public final class CityBounds {
 	}
 
 	/**
-	 * Creates a new graph that can be used as a base for {@link org.tendiwa.settlements.networks.SegmentNetwork}.
+	 * Creates a new graph that can be used as a base for {@link org.tendiwa.settlements.networks.Segment2DSmartMesh}.
 	 *
 	 * @param startCell
 	 * 	A cell from which a City originates. Roughly denotes its final position.
 	 * @param maxCityRadius
 	 * 	A maximum radius of a Rectangle containing resulting City.
-	 * @return A new graph that can be used as a base for {@link org.tendiwa.settlements.networks.SegmentNetwork}.
+	 * @return A new graph that can be used as a base for {@link org.tendiwa.settlements.networks.Segment2DSmartMesh}.
 	 * @see org.tendiwa.settlements.networks.SegmentNetworkBuilder
 	 */
 	public static UndirectedGraph<Point2D, Segment2D> create(
@@ -80,8 +79,7 @@ public final class CityBounds {
 	 * @return true if there is such vertex, false otherwise.
 	 */
 	private static boolean minimalCyclesOfGraphHaveCommonVertices(UndirectedGraph<Point2D, Segment2D> graph) {
-		Set<MinimalCycle<Point2D, Segment2D>> minimalCycles = new MinimumCycleBasis<>(graph,
-			Point2DVertexPositionAdapter.get())
+		Set<MinimalCycle<Point2D, Segment2D>> minimalCycles = PlanarGraphs.minimumCycleBasis(graph)
 			.minimalCyclesSet();
 		Set<Point2D> usedVertices = new HashSet<>();
 		for (MinimalCycle<Point2D, Segment2D> cycle : minimalCycles) {

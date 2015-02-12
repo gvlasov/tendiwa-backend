@@ -26,7 +26,6 @@ final class SnapTest {
 	 */
 	private final Point2D sourceNode;
 	private final UndirectedGraph<Point2D, Segment2D> relevantRoadNetwork;
-	private final HolderOfSplitCycleEdges holderOfSplitCycleEdges;
 	private Point2D targetNode;
 	private double minR;
 
@@ -55,20 +54,17 @@ final class SnapTest {
 	 * @param relevantRoadNetwork
 	 * 	A planar graph whose edges and vertices are tested for proximity to a 2d segment from {@code sourceNode} to
 	 * 	{@code targetNode}.
-	 * @param holderOfSplitCycleEdges
 	 */
 	SnapTest(
 		double snapSize,
 		Point2D sourceNode,
 		Point2D targetNode,
-		UndirectedGraph<Point2D, Segment2D> relevantRoadNetwork,
-		HolderOfSplitCycleEdges holderOfSplitCycleEdges
+		UndirectedGraph<Point2D, Segment2D> relevantRoadNetwork
 	) {
 		this.snapSize = Math.max(snapSize, Vectors2D.EPSILON);
 		this.sourceNode = sourceNode;
 		this.targetNode = targetNode;
 		this.relevantRoadNetwork = relevantRoadNetwork;
-		this.holderOfSplitCycleEdges = holderOfSplitCycleEdges;
 		this.minR = 1 + snapSize / sourceNode.distanceTo(targetNode);
 		this.roadsToTest = findNearbySegments(sourceNode, targetNode, snapSize);
 	}

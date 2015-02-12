@@ -19,7 +19,7 @@ import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.settlements.buildings.PolylineProximity;
 import org.tendiwa.settlements.networks.SegmentNetworkBuilder;
-import org.tendiwa.settlements.networks.SegmentNetwork;
+import org.tendiwa.settlements.networks.Segment2DSmartMesh;
 import org.tendiwa.settlements.utils.*;
 
 import java.awt.Color;
@@ -50,7 +50,7 @@ public class BigCityDemo implements Runnable {
 		canvas.fillBackground(Color.black);
 		TestCanvas.canvas = canvas;
 		IntStream.range(0, 1).forEach(seed -> {
-			SegmentNetwork segmentNetwork = new SegmentNetworkBuilder(graph)
+			Segment2DSmartMesh segment2DSmartMesh = new SegmentNetworkBuilder(graph)
 				.withDefaults()
 				.withMaxStartPointsPerCycle(5)
 				.withRoadsFromPoint(2)
@@ -76,8 +76,8 @@ public class BigCityDemo implements Runnable {
 				Color.getHSBColor((float) 0.62, 1, (float) 0.8)
 			);
 			UndirectedGraph<Point2D, Segment2D> allRoads = RoadRejector.rejectPartOfNetworksBorders(
-				segmentNetwork.getFullRoadGraph(),
-				segmentNetwork,
+				segment2DSmartMesh.getFullRoadGraph(),
+				segment2DSmartMesh,
 				1.0,
 				new Random(1)
 			);
@@ -92,7 +92,7 @@ public class BigCityDemo implements Runnable {
 				canvas.draw(street, DrawingChain.withColor(streetColor));
 			}
 			Collection<RectangleWithNeighbors> lots = RectangularBuildingLots
-				.placeInside(segmentNetwork);
+				.placeInside(segment2DSmartMesh);
 			PolylineProximity polylineProximity = new PolylineProximity(streets, lots, 8);
 			Set<RectangleWithNeighbors> recGroups = lots
 				.stream()

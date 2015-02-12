@@ -10,7 +10,7 @@ import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.geometry.extensions.PointTrail;
 import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.settlements.networks.SegmentNetworkBuilder;
-import org.tendiwa.settlements.networks.SegmentNetwork;
+import org.tendiwa.settlements.networks.Segment2DSmartMesh;
 
 public class EnclosedCyclesRoadPlanarGraphModelDemo implements Runnable {
 	public static void main(String[] args) {
@@ -60,7 +60,7 @@ public class EnclosedCyclesRoadPlanarGraphModelDemo implements Runnable {
 			)
 			.graph();
 
-		SegmentNetwork city = new SegmentNetworkBuilder(graph)
+		Segment2DSmartMesh city = new SegmentNetworkBuilder(graph)
 			.withDefaults()
 			.withRoadSegmentLength(47)
 			.withSnapSize(20)

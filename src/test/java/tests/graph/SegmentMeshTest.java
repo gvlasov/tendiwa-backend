@@ -17,7 +17,7 @@ import java.util.Collection;
 
 @RunWith(Parameterized.class)
 @UseModules(DrawingModule.class)
-public class SegmentNetworkTest {
+public class SegmentMeshTest {
 
 	private final int pointsPerCycle;
 	private final int roadsFromPoint;
@@ -26,7 +26,7 @@ public class SegmentNetworkTest {
 	private final double[] segmentLength;
 	private final double snapSize;
 
-	public SegmentNetworkTest(
+	public SegmentMeshTest(
 		int pointsPerCycle,
 		int roadsFromPoint,
 		double dAngle,

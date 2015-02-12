@@ -11,17 +11,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Holds chains of edges that are result of splitting edges of {@link SegmentNetwork#originalRoadGraph}.
+ * Holds chains of edges that are result of splitting edges of {@link Segment2DSmartMesh#originalRoadGraph}.
  * <p>
- * We can't mutate {@link SegmentNetwork#originalRoadGraph}
+ * We can't mutate {@link Segment2DSmartMesh#originalRoadGraph}
  * itself because that breaks {@link org.tendiwa.graphs.MinimalCycle#iterator()}.
  * <p>
- * This class exists so {@link SegmentNetwork#getFullRoadGraph()} can return a graph with edges on cycle edges
- * that are not part of the initial {@link SegmentNetwork#originalRoadGraph}.
+ * This class exists so {@link Segment2DSmartMesh#getFullRoadGraph()} can return a graph with edges on cycle edges
+ * that are not part of the initial {@link Segment2DSmartMesh#originalRoadGraph}.
  * <p>
  * One of the reasons why we need this class is that when we split a road of
  * {@link NetworkWithinCycle}, that road may be shared with another
- * {@link NetworkWithinCycle} of the same {@link SegmentNetwork}.
+ * {@link NetworkWithinCycle} of the same {@link Segment2DSmartMesh}.
  * <p>
  * <b>Original edge</b> is an edge that hasn't been split from another edge.
  */
@@ -43,7 +43,7 @@ final class HolderOfSplitCycleEdges {
 	 * Remembers that {@code edgeToSplit} is split into a graph of sub-edges.
 	 *
 	 * @param edgeToSplit
-	 * 	An edge of {@link SegmentNetwork#originalRoadGraph} (those are called "original edges" within this
+	 * 	An edge of {@link Segment2DSmartMesh#originalRoadGraph} (those are called "original edges" within this
 	 * 	class, or a sub-edge.
 	 * @param point
 	 * 	A point to split the edge with.
