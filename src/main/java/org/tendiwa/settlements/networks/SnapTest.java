@@ -2,14 +2,11 @@ package org.tendiwa.settlements.networks;
 
 import org.jgrapht.UndirectedGraph;
 import org.tendiwa.core.meta.Range;
-import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.RayIntersection;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Vectors2D;
 
-import java.awt.Color;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -315,41 +312,5 @@ final class SnapTest {
 				return minX < roadMaxX && maxX > roadMinX && minY < roadMaxY && maxY > roadMinY;
 			})
 			.collect(Collectors.toList());
-	}
-
-	private Stream<Segment2D> constructRoadsStream() {
-		Stream<Segment2D> originalRoadsStream = relevantRoadNetwork.edgeSet().stream()
-			.filter(road -> !holderOfSplitCycleEdges.isEdgeSplit(road));
-//		Stream<Segment2D> splitRoadsStream = constructSplitRoadsStream();
-//		long count = splitRoadsStream.count();
-//		if (count > 1) {
-//			Set<Segment2D> addedSegments = new HashSet<>();
-//			relevantRoadNetwork.edgeSet().forEach(edge -> {
-//				if (holderOfSplitCycleEdges.isEdgeSplit(edge)) {
-//					TestCanvas.canvas.draw(edge, DrawingSegment2D.withColorDirected(Color.red, 3));
-//					UndirectedGraph<Point2D, Segment2D> graph = holderOfSplitCycleEdges.getGraph(edge);
-//					graph.edgeSet().forEach((e) -> {
-//						TestCanvas.canvas.draw(e, DrawingSegment2D.withColorDirected(Color.orange, 3));
-//						if (addedSegments.contains(e)) {
-//							TestCanvas.canvas.draw(e, DrawingSegment2D.withColorDirected(Color.blue, 3));
-//							throw new RuntimeException("Contains edge");
-//						}
-//						addedSegments.add(e);
-//					});
-//					TestCanvas.canvas.fillBackground(Color.black);
-//				}
-//			});
-//			assert Boolean.TRUE;
-//		}
-
-//		return Stream.concat(originalRoadsStream, splitRoadsStream);
-		return originalRoadsStream;
-
-	}
-
-	private Stream<Segment2D> constructSplitRoadsStream() {
-		return relevantRoadNetwork.edgeSet().stream()
-			.filter(holderOfSplitCycleEdges::isEdgeSplit)
-			.flatMap(edge -> holderOfSplitCycleEdges.getGraph(edge).edgeSet().stream());
 	}
 }

@@ -1,13 +1,12 @@
 package org.tendiwa.settlements.networks;
 
+import org.jgrapht.Graphs;
 import org.jgrapht.UndirectedGraph;
 import org.tendiwa.collections.IterableToStream;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.geometry.extensions.Point2DRowComparator;
-import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
-import org.tendiwa.graphs.CommonEdgeSplitter;
 import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.graphs.MinimumCycleBasis;
 import org.tendiwa.settlements.SettlementGenerationException;
@@ -23,8 +22,7 @@ final class NetworksProducer {
 	private final Random random;
 	private final EnclosedCycleDetector enclosedCycleDetector;
 	private final MinimumCycleBasis<Point2D, Segment2D> basis;
-	private final CommonEdgeSplitter<Point2D, Segment2D> commonEdgeSplitter;
-	private final UndirectedGraph<Point2D, Segment2D> fullGraph;
+	private final FullNetwork fullGraph;
 	private final UndirectedGraph<Point2D, Segment2D> splitOriginalGraph;
 
 	NetworksProducer(
@@ -39,11 +37,11 @@ final class NetworksProducer {
 			throw new SettlementGenerationException("A City with 0 city networks was made");
 		}
 		this.enclosedCycleDetector = constructCycleDetector(basis.minimalCyclesSet());
-		this.commonEdgeSplitter = new CommonEdgeSplitter<>(
-			PlanarGraphs.getEdgeFactory()
-		);
-		this.fullGraph = PlanarGraphs.copyGraph(originalGraph);
+		this.fullGraph = new FullNetwork();
+		Graphs.addGraph(fullGraph, originalGraph);
 		this.splitOriginalGraph = PlanarGraphs.copyGraph(originalGraph);
+
+
 	}
 
 	/**
@@ -74,7 +72,6 @@ final class NetworksProducer {
 				splitOriginalGraph,
 				cycle,
 				enclosedCycleDetector.cyclesEnclosedIn(cycle),
-				commonEdgeSplitter,
 				parameters,
 				random
 			));

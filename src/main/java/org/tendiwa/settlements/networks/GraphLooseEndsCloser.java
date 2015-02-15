@@ -1,6 +1,5 @@
 package org.tendiwa.settlements.networks;
 
-import com.google.common.collect.ImmutableSet;
 import org.jgrapht.UndirectedGraph;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
@@ -40,9 +39,9 @@ final class GraphLooseEndsCloser {
 		this.filamentEnds = filamentEnds == null ? createFilamentEnds(sourceGraph) : filamentEnds;
 	}
 
-	@SuppressWarnings("unused")
-	public static StepWithFilamentEnds withSnapSize(double snapSize) {
-		return new StepWithFilamentEnds(snapSize);
+
+	public static Step1 withSnapSize(double snapSize) {
+		return new Step1(snapSize);
 	}
 
 	private static Set<DirectionFromPoint> createFilamentEnds(UndirectedGraph<Point2D, Segment2D> graph) {
@@ -89,39 +88,29 @@ final class GraphLooseEndsCloser {
 				Math.cos(end.direction) * snapSize,
 				Math.sin(end.direction) * snapSize
 			),
-			sourceGraph,
-			new HolderOfSplitCycleEdges()
+			sourceGraph
 		).snap();
-		switch (test.eventType) {
-			case NO_SNAP:
-				assert false;
-				break;
-			case NODE_SNAP:
-				sourceGraph.addEdge(end.node, test.targetNode);
-				used.add(test.targetNode);
-				break;
-			case ROAD_SNAP:
-				sourceGraph.removeEdge(test.road);
-				sourceGraph.addVertex(test.targetNode);
-				sourceGraph.addEdge(end.node, test.targetNode);
-				sourceGraph.addEdge(test.road.start, test.targetNode);
-				assert !test.road.end.equals(test.targetNode) : test.road.end;
-				sourceGraph.addEdge(test.road.end, test.targetNode);
-				break;
-			case NO_NODE:
-				assert false;
-				break;
-			default:
-				assert false;
+		if (test.eventType == SnapEventType.NODE_SNAP) {
+			sourceGraph.addEdge(end.node, test.targetNode);
+			used.add(test.targetNode);
+		} else if (test.eventType == SnapEventType.ROAD_SNAP) {
+			sourceGraph.removeEdge(test.road);
+			sourceGraph.addVertex(test.targetNode);
+			sourceGraph.addEdge(end.node, test.targetNode);
+			sourceGraph.addEdge(test.road.start, test.targetNode);
+			assert !test.road.end.equals(test.targetNode) : test.road.end;
+			sourceGraph.addEdge(test.road.end, test.targetNode);
+		} else {
+			assert false;
 		}
 		assert !ShamosHoeyAlgorithm.areIntersected(sourceGraph.edgeSet());
 	}
 
 
-	public static class StepWithFilamentEnds {
+	public static class Step1 {
 		private final double snapSize;
 
-		private StepWithFilamentEnds(double snapSize) {
+		private Step1(double snapSize) {
 			this.snapSize = snapSize;
 		}
 
@@ -134,9 +123,9 @@ final class GraphLooseEndsCloser {
 		 * @return The next step where you can select the graph to mutate.
 		 */
 		@SuppressWarnings("unused")
-		public StepGraph withFilamentEnds(Set<DirectionFromPoint> filamentEnds) {
+		public Step2 withFilamentEnds(Set<DirectionFromPoint> filamentEnds) {
 			Objects.requireNonNull(filamentEnds);
-			return new StepGraph(snapSize, filamentEnds);
+			return new Step2(snapSize, filamentEnds);
 		}
 
 		/**
@@ -152,11 +141,11 @@ final class GraphLooseEndsCloser {
 		}
 	}
 
-	public static class StepGraph {
+	public static class Step2 {
 		private final double snapSize;
 		private final Set<DirectionFromPoint> filamentEnds;
 
-		public StepGraph(double snapSize, Set<DirectionFromPoint> filamentEnds) {
+		public Step2(double snapSize, Set<DirectionFromPoint> filamentEnds) {
 			this.snapSize = snapSize;
 			this.filamentEnds = filamentEnds;
 		}

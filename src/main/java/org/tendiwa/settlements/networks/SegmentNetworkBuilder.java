@@ -97,7 +97,7 @@ public class SegmentNetworkBuilder {
 	public SegmentNetworkBuilder withRoadSegmentLength(double length) {
 		if (length <= 0) {
 			throw new IllegalArgumentException(
-				"roadSegmentLength must be > 0 (" + length + " provided)"
+				"segmentLength must be > 0 (" + length + " provided)"
 			);
 		}
 		this.roadSegmentLength = length;
@@ -156,7 +156,7 @@ public class SegmentNetworkBuilder {
 		if (Math.abs(dLength) >= roadSegmentLength) {
 			throw new IllegalArgumentException(
 				"secondaryNetworkSegmentLengthDeviation can't be greater than " +
-					"roadSegmentLength (the former is " + secondaryRoadNetworkDeviationAngle + ", " +
+					"segmentLength (the former is " + secondaryRoadNetworkDeviationAngle + ", " +
 					"the latter is " + roadSegmentLength + ")"
 			);
 		}
@@ -236,7 +236,7 @@ public class SegmentNetworkBuilder {
 			throw new IllegalStateException("connectivity not set");
 		}
 		if (roadSegmentLength == null) {
-			throw new IllegalStateException("roadSegmentLength not set");
+			throw new IllegalStateException("segmentLength not set");
 		}
 		if (snapSize == null) {
 			throw new IllegalStateException("snapSize not set");

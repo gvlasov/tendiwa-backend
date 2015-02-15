@@ -24,7 +24,7 @@ public final class EnclosedCyclesSet {
 	 * 	A graph model for which enclosed cycles set is to be found.
 	 */
 	public EnclosedCyclesSet(Segment2DSmartMesh segment2DSmartMesh) {
-		cyclesRoadGraph = segment2DSmartMesh.getCyclesRoadGraph();
+		cyclesRoadGraph = segment2DSmartMesh.getFullCycleGraph();
 	}
 
 	public boolean contains(EnclosedBlock block) {

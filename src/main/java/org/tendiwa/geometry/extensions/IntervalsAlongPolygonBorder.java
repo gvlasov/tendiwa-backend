@@ -1,11 +1,10 @@
 package org.tendiwa.geometry.extensions;
 
+import com.google.common.collect.ImmutableCollection;
+import org.tendiwa.collections.Collectors;
 import org.tendiwa.core.meta.Range;
 import org.tendiwa.core.meta.Utils;
-import org.tendiwa.geometry.LineCircleIntersection;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.Vectors2D;
+import org.tendiwa.geometry.*;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -38,12 +37,20 @@ public final class IntervalsAlongPolygonBorder {
 	private boolean isChainEnclosed = false;
 	private List<Point2D> currentAnswerList;
 
-	private IntervalsAlongPolygonBorder(List<Point2D> polygon, double interval, double deviation, BiFunction<Point2D, Point2D, Segment2D> endpointsToSegments, Random random) {
+	private IntervalsAlongPolygonBorder(
+		List<Point2D> polygon,
+		double interval,
+		double deviation,
+		BiFunction<Point2D, Point2D, Segment2D> endpointsToSegments,
+		Random random
+	) {
 		if (interval <= 0) {
 			throw new IllegalArgumentException("Interval must be >= 0, now it is " + interval);
 		}
 		if (deviation >= interval) {
-			throw new IllegalArgumentException("Variance must be less than interval (now " + deviation + ">=" + interval + ")");
+			throw new IllegalArgumentException(
+				"Variance must be less than interval (now " + deviation + ">=" + interval + ")"
+			);
 		}
 		if (polygon.size() < 4) {
 			throw new IllegalArgumentException(
@@ -109,7 +116,11 @@ public final class IntervalsAlongPolygonBorder {
 		}
 	}
 
-	void useSegmentPointIfTooClose(List<Point2D> intersections, int index, Point2D segmentPoint) {
+	void useSegmentPointIfTooClose(
+		List<Point2D> intersections,
+		int index,
+		Point2D segmentPoint
+	) {
 		if (intersections.get(index).chebyshovDistanceTo(segmentPoint) < Vectors2D.EPSILON) {
 			intersections.set(index, segmentPoint);
 		}
@@ -180,7 +191,10 @@ public final class IntervalsAlongPolygonBorder {
 		generateNextDistance();
 	}
 
-	private void switchToNewSegmentList(Point2D currentPoint, Point2D nextPoint) {
+	private void switchToNewSegmentList(
+		Point2D currentPoint,
+		Point2D nextPoint
+	) {
 		Segment2D segment = endpointsToSegments.apply(currentPoint, nextPoint);
 		if (answer.containsKey(segment)) {
 			currentAnswerList = answer.get(segment);
@@ -257,7 +271,10 @@ public final class IntervalsAlongPolygonBorder {
 	 * 	{@link org.tendiwa.geometry.Segment2D#end}. May be between 0.0 and 1.0
 	 * @return The middle point of an edge.
 	 */
-	private Point2D findFirstPointPosition(Point2D start, Point2D end) {
+	private Point2D findFirstPointPosition(
+		Point2D start,
+		Point2D end
+	) {
 		double position = random.nextDouble() * Math.min(1, interval / start.distanceTo(end));
 		return new Point2D(start.x + (end.x - start.x) * position, start.y + (end.y - start.y) * position);
 	}

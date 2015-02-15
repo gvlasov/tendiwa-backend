@@ -29,7 +29,6 @@ public final class RectangularBuildingLots {
 			.flatMap(n -> n.enclosedBlocks().stream().filter(b -> !enclosedCycles.contains(b)))
 			.flatMap(b -> b.shrinkToRegions(3.3, 0).stream())
 			.flatMap(b -> b.subdivideLots(16, 16, 0.5).stream())
-				// TODO: toImmutableSet
 			.collect(Collectors.toImmutableSet());
 
 		drawBlocks(encBlocks);

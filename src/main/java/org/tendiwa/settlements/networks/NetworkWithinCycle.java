@@ -1,15 +1,19 @@
 package org.tendiwa.settlements.networks;
 
 import com.google.common.collect.ImmutableSet;
+import org.jgrapht.Graphs;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.UnmodifiableUndirectedGraph;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.graphs.CommonEdgeSplitter;
+import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.graphs.MinimalCycle;
+import org.tendiwa.graphs.algorithms.SameOrPerpendicularSlopeGraphEdgesPerturbations;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * [Kelly section 4.3.1]
@@ -18,48 +22,44 @@ import java.util.stream.Collectors;
  * (one of those in <i>minimal cycle basis</i> from [Kelly section 4.3.1, figure 41]).
  */
 public final class NetworkWithinCycle {
-	private final NetworkToBlocks blockDivision;
 	private final SecondaryRoadNetwork secondaryRoadNetwork;
 	private final OrientedCycle enclosingCycle;
-	private final Collection<OrientedCycle> enclosedCycles;
+	private final NetworkGenerationParameters networkGenerationParameters;
 
 	/**
 	 * @param fullGraph
 	 * 	Current full graph of a {@link Segment2DSmartMesh}.
 	 * @param originalMinimalCycle
 	 * 	A MinimalCycle that contains this NetworkWithinCycle's secondary road network inside it.
-	 * @param enclosedCycles
+	 * @param enclosedMinimalCycles
 	 * 	Cycles enclosed within the {@code originalMinimalCycle}.
 	 * @param random
 	 * 	A seeded {@link java.util.Random} used to generate the parent {@link Segment2DSmartMesh}.
 	 */
 
 	NetworkWithinCycle(
-		UndirectedGraph<Point2D, Segment2D> fullGraph,
+		FullNetwork fullGraph,
 		UndirectedGraph<Point2D, Segment2D> splitOriginalGraph,
 		MinimalCycle<Point2D, Segment2D> originalMinimalCycle,
-		Collection<MinimalCycle<Point2D, Segment2D>> enclosedCycles,
-		CommonEdgeSplitter<Point2D, Segment2D> commonEdgeSplitter,
+		Collection<MinimalCycle<Point2D, Segment2D>> enclosedMinimalCycles,
 		NetworkGenerationParameters networkGenerationParameters,
 		Random random
 	) {
+		this.networkGenerationParameters = networkGenerationParameters;
 
 		this.enclosingCycle = new OrientedCycle(originalMinimalCycle, splitOriginalGraph);
-		this.enclosedCycles = enclosedCycles.stream()
+
+		Set<OrientedCycle> enclosedCycles = enclosedMinimalCycles.stream()
 			.map(cycle -> new OrientedCycle(cycle, splitOriginalGraph))
 			.collect(Collectors.toCollection(LinkedHashSet::new));
+		enclosedCycles.forEach(fullGraph::addOrientedCycle);
+
 		this.secondaryRoadNetwork = new SecondaryRoadNetwork(
 			fullGraph,
 			enclosingCycle,
-			this.enclosedCycles,
-			commonEdgeSplitter,
+			enclosedCycles,
 			networkGenerationParameters,
 			random
-		);
-		this.blockDivision = new NetworkToBlocks(
-			fullGraph,
-			secondaryRoadNetwork.filamentEnds,
-			networkGenerationParameters
 		);
 	}
 
@@ -70,7 +70,7 @@ public final class NetworkWithinCycle {
 	 * @return An unmodifiable graph containing this NetworkWithinCycle's secondary road network.
 	 */
 	public UndirectedGraph<Point2D, Segment2D> network() {
-		return new UnmodifiableUndirectedGraph<>(secondaryRoadNetwork.getGraph());
+		return new UnmodifiableUndirectedGraph<>(secondaryRoadNetwork.graph());
 	}
 
 	public UndirectedGraph<Point2D, Segment2D> cycle() {
@@ -79,7 +79,28 @@ public final class NetworkWithinCycle {
 
 
 	public List<SecondaryRoadNetworkBlock> enclosedBlocks() {
-		return blockDivision.getEnclosedBlocks();
+
+		UndirectedGraph<Point2D, Segment2D> graphWithLooseEnds = PlanarGraphs.copyGraph(secondaryRoadNetwork.graph());
+		Graphs.addGraph(graphWithLooseEnds, cycle());
+		if (!secondaryRoadNetwork.filamentEnds.isEmpty()) {
+			assert secondaryRoadNetwork.filamentEnds.stream().allMatch(end -> graphWithLooseEnds.degreeOf(end.node)
+				== 1);
+			GraphLooseEndsCloser
+				.withSnapSize(
+					networkGenerationParameters.segmentLength
+						+ networkGenerationParameters.secondaryNetworkSegmentLengthDeviation
+				)
+				.withFilamentEnds(secondaryRoadNetwork.filamentEnds)
+				.mutateGraph(graphWithLooseEnds);
+		}
+		SameOrPerpendicularSlopeGraphEdgesPerturbations.perturb(graphWithLooseEnds, 1e-4);
+
+		return PlanarGraphs
+			.minimumCycleBasis(graphWithLooseEnds)
+			.minimalCyclesSet()
+			.stream()
+			.map(cycle -> new SecondaryRoadNetworkBlock(cycle.vertexList()))
+			.collect(toList());
 	}
 
 	public ImmutableSet<Point2D> filamentEnds() {

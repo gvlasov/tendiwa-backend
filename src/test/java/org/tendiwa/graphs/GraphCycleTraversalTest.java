@@ -21,9 +21,10 @@ public class GraphCycleTraversalTest {
 		GraphCycleTraversal
 			.traverse(graph)
 			.startingWith(4)
-			.forEachPair((current, next) -> {
-				currents.add(current.toString());
-				nexts.add(next.toString());
+			.stream()
+			.forEach(triplet -> {
+				currents.add(triplet.current().toString());
+				nexts.add(triplet.next().toString());
 			});
 		boolean variant1 = "4, 5, 6, 7, 8, 0, 1, 2, 3".equals(currents.toString())
 			&& "5, 6, 7, 8, 0, 1, 2, 3, 4".equals(nexts.toString());

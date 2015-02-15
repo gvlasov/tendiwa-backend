@@ -1,14 +1,12 @@
 package org.tendiwa.settlements.networks;
 
-import org.jgrapht.UndirectedGraph;
+import org.jgrapht.Graph;
 import org.tendiwa.collections.SuccessiveTuples;
-import org.tendiwa.geometry.JTSUtils;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.extensions.PlanarGraphs;
+import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.extensions.straightSkeleton.Bisector;
 import org.tendiwa.graphs.GraphCycleTraversal;
 import org.tendiwa.graphs.MinimalCycle;
+import org.tendiwa.graphs.graphs2d.Graph2D;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -19,34 +17,35 @@ import java.util.Set;
  * and for each edge remembers whether that edge goes clockwise or counter-clockwise. That effectively means that
  * OrientedCycle can tell if its innards are to the right or to the left from its certain edge.
  */
-final class OrientedCycle {
+final class OrientedCycle implements NetworkPart {
 	private final boolean isCycleClockwise;
-	private final UndirectedGraph<Point2D, Segment2D> splitOriginalGraph;
-	private final UndirectedGraph<Point2D, Segment2D> cycleGraph;
+	private final Graph2D splitOriginalGraph;
+	private final Graph2D cycleGraph;
 	private final Set<Segment2D> reverseEdges = new HashSet<>();
 
 	OrientedCycle(
 		MinimalCycle<Point2D, Segment2D> originalMinimalCycle,
-		UndirectedGraph<Point2D, Segment2D> splitOriginalGraph
+		Graph2D splitOriginalGraph
 	) {
 		this.splitOriginalGraph = splitOriginalGraph;
 		this.cycleGraph = createCycleGraph(originalMinimalCycle);
 		this.isCycleClockwise = JTSUtils.isYDownCCW(originalMinimalCycle.vertexList());
 	}
 
-	public UndirectedGraph<Point2D, Segment2D> graph() {
+	@Override
+	public Graph2D graph() {
 		return cycleGraph;
 	}
 
-	private UndirectedGraph<Point2D, Segment2D> createCycleGraph(
+	private Graph2D createCycleGraph(
 		MinimalCycle<Point2D, Segment2D> originalMinimalCycle
 	) {
-		UndirectedGraph<Point2D, Segment2D> cycleGraph = PlanarGraphs.createGraph();
+		Graph2D cycleGraph = new Graph2D();
 		SuccessiveTuples.forEach(
 			originalMinimalCycle.asVertices(),
 			(previous, current, next) -> {
 				if (splitOriginalGraph.containsEdge(current, next)) {
-					addAutoDirectedEdge(current, next);
+					addAutoDirectedEdge(cycleGraph, current, next);
 				} else {
 					GraphCycleTraversal
 						.traverse(splitOriginalGraph)
@@ -56,6 +55,7 @@ final class OrientedCycle {
 						.stream()
 						.forEach(
 							triplet -> addAutoDirectedEdge(
+								cycleGraph,
 								triplet.current(),
 								triplet.next()
 							)
@@ -66,7 +66,7 @@ final class OrientedCycle {
 		return cycleGraph;
 	}
 
-	private void addAutoDirectedEdge(Point2D current, Point2D next) {
+	private void addAutoDirectedEdge(Graph<Point2D, Segment2D> cycleGraph, Point2D current, Point2D next) {
 		assert splitOriginalGraph.containsEdge(current, next);
 		cycleGraph.addVertex(current);
 		cycleGraph.addVertex(next);
@@ -103,31 +103,19 @@ final class OrientedCycle {
 	 * For each of two new parts of a spilt edge, calculates if that part goes clockwise or counter-clockwise and
 	 * remembers that information.
 	 * <p>
-	 * This method should be calles each time an edge of this OrientedCycle is split with
-	 * {@link org.tendiwa.graphs.CommonEdgeSplitter#splitEdge(Object, Object, Object, Object)}.
-	 *
-	 * @param splitEdge
-	 * 	An edge that has been split in two.
-	 * @param splittingPoint
-	 * 	A point within {@code splitEdge} where that edge has been split.
+	 * This method should be called each time an edge of this OrientedCycle is split with
 	 */
-	public void updateDirectionInformation(Segment2D splitEdge, Point2D splittingPoint) {
-		boolean isSplitEdgeAgainst = isAgainstCycleDirection(splitEdge);
-
-		Segment2D oneEdge = cycleGraph.getEdge(splitEdge.start, splittingPoint);
-		boolean isOneEdgeAgainst = oneEdge.start != splitEdge.start;
-		if (isSplitEdgeAgainst ^ isOneEdgeAgainst) {
-			setReverse(oneEdge);
-		}
-
-		Segment2D anotherEdge = cycleGraph.getEdge(splittingPoint, splitEdge.end);
-		boolean isAnotherEdgeAgainst = anotherEdge.start != splittingPoint;
-		if (isSplitEdgeAgainst ^ isAnotherEdgeAgainst) {
-			setReverse(anotherEdge);
-		}
-
-		boolean removed = reverseEdges.remove(splitEdge);
-		assert removed;
+	@Override
+	public void notify(CutSegment2D cutSegment) {
+		Segment2D originalSegment = cutSegment.originalSegment();
+		Vector2D originalVector = originalSegment.asVector();
+		boolean isSplitEdgeAgainst = isAgainstCycleDirection(originalSegment);
+		cutSegment.stream()
+			.filter(segment -> isSplitEdgeAgainst ^ originalVector.dotProduct(segment.asVector()) < 0)
+			.forEach(this::setReverse);
+		reverseEdges.remove(originalSegment);
+		cycleGraph.removeEdge(cutSegment.originalSegment());
+		cycleGraph.integrateCutSegment(cutSegment);
 	}
 
 	private void setReverse(Segment2D edge) {

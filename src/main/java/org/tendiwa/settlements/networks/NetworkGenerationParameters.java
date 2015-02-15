@@ -3,7 +3,7 @@ package org.tendiwa.settlements.networks;
 final class NetworkGenerationParameters {
 	final int roadsFromPoint;
 	final double connectivity;
-	final double roadSegmentLength;
+	final double segmentLength;
 	final double snapSize;
 	final int maxStartPointsPerCell;
 	final double secondaryRoadNetworkDeviationAngle;
@@ -20,7 +20,7 @@ final class NetworkGenerationParameters {
 	 * 	<p>
 	 * 	How likely it is to snap to node or road when possible. When connectivity == 1.0, algorithm will always
 	 * 	snap when possible. When connectivity == 0.0, algorithm will never snap.
-	 * @param roadSegmentLength
+	 * @param segmentLength
 	 * 	[Kelly figure 42, variable ParamSegmentLength]
 	 * 	<p>
 	 * 	Mean length of secondary network roads.
@@ -48,7 +48,7 @@ final class NetworkGenerationParameters {
 
 		int roadsFromPoint,
 		double connectivity,
-		double roadSegmentLength,
+		double segmentLength,
 		double snapSize,
 		int maxStartPointsPerCell,
 		double secondaryRoadNetworkDeviationAngle,
@@ -58,10 +58,10 @@ final class NetworkGenerationParameters {
 		if (Math.abs(secondaryRoadNetworkDeviationAngle) >= Math.PI * 2) {
 			throw new IllegalArgumentException("secondaryRoadNetworkDeviationAngle must be in [0; Math.PI*2)");
 		}
-		if (Math.abs(secondaryNetworkSegmentLengthDeviation) >= roadSegmentLength) {
+		if (Math.abs(secondaryNetworkSegmentLengthDeviation) >= segmentLength) {
 			throw new IllegalArgumentException("secondaryNetworkSegmentLengthDeviation can't be greater than " +
-				"roadSegmentLength (the former is " + secondaryRoadNetworkDeviationAngle + ", " +
-				"the latter is " + roadSegmentLength + ")");
+				"segmentLength (the former is " + secondaryRoadNetworkDeviationAngle + ", " +
+				"the latter is " + segmentLength + ")");
 		}
 		if (connectivity < 0 || connectivity > 1) {
 			throw new IllegalArgumentException("Connectivity must be in range [0.0; 1.0]");
@@ -71,7 +71,7 @@ final class NetworkGenerationParameters {
 		}
 		this.roadsFromPoint = roadsFromPoint;
 		this.connectivity = connectivity;
-		this.roadSegmentLength = roadSegmentLength;
+		this.segmentLength = segmentLength;
 		this.snapSize = snapSize;
 		this.maxStartPointsPerCell = maxStartPointsPerCell;
 		this.secondaryRoadNetworkDeviationAngle = secondaryRoadNetworkDeviationAngle;
