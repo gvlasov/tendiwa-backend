@@ -1,4 +1,4 @@
-package org.tendiwa.settlements.networks;
+package org.tendiwa.geometry.smartMesh;
 
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingSegment2D;
@@ -7,6 +7,7 @@ import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Vectors2D;
 
 import java.awt.Color;
+import java.util.Optional;
 
 final class SnapEventRoad implements SnapEvent {
 	private final Point2D source;
@@ -38,5 +39,10 @@ final class SnapEventRoad implements SnapEvent {
 	@Override
 	public Point2D target() {
 		return target;
+	}
+
+	@Override
+	public Optional<Point2D> nextNewNodePoint() {
+		return Optional.empty();
 	}
 }

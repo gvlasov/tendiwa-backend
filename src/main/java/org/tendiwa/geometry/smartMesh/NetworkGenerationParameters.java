@@ -1,4 +1,4 @@
-package org.tendiwa.settlements.networks;
+package org.tendiwa.geometry.smartMesh;
 
 final class NetworkGenerationParameters {
 	final int roadsFromPoint;
@@ -29,7 +29,7 @@ final class NetworkGenerationParameters {
 	 * 	<p>
 	 * 	A radius around secondary roads' end points inside which new end points would snap to existing ones.
 	 * @param maxStartPointsPerCell
-	 * 	Number of starting points for road generation in each {@link org.tendiwa.settlements.networks.NetworkWithinCycle}.
+	 * 	Number of starting points for road generation in each {@link NetworkWithinCycle}.
 	 * 	Must be 0 or greater.
 	 * 	<p>
 	 * 	In [Kelly figure 43] there are 2 starting points.

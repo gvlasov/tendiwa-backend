@@ -5,8 +5,8 @@ import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
-import org.tendiwa.settlements.networks.SegmentNetworkBuilder;
-import org.tendiwa.settlements.networks.Segment2DSmartMesh;
+import org.tendiwa.geometry.smartMesh.SegmentNetworkBuilder;
+import org.tendiwa.geometry.smartMesh.Segment2DSmartMesh;
 
 public class InnerFilamentCityDemo implements Runnable {
 	public static void main(String[] args) {

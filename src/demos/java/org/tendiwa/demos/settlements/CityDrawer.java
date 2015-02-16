@@ -2,8 +2,8 @@ package org.tendiwa.demos.settlements;
 
 import org.tendiwa.drawing.DrawableInto;
 import org.tendiwa.drawing.DrawingAlgorithm;
-import org.tendiwa.settlements.networks.Segment2DSmartMesh;
-import org.tendiwa.settlements.networks.algorithms.SegmentNetworkAlgorithms;
+import org.tendiwa.geometry.smartMesh.Segment2DSmartMesh;
+import org.tendiwa.geometry.smartMesh.algorithms.SegmentNetworkAlgorithms;
 
 import java.awt.Color;
 

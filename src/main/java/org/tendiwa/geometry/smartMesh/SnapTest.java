@@ -1,4 +1,4 @@
-package org.tendiwa.settlements.networks;
+package org.tendiwa.geometry.smartMesh;
 
 import org.jgrapht.UndirectedGraph;
 import org.tendiwa.core.meta.Range;
@@ -9,6 +9,7 @@ import org.tendiwa.geometry.Vectors2D;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -22,7 +23,7 @@ final class SnapTest {
 	 * Start of the unsnapped segment.
 	 */
 	private final Point2D sourceNode;
-	private final UndirectedGraph<Point2D, Segment2D> relevantRoadNetwork;
+	private final UndirectedGraph<Point2D, Segment2D> fullNetworkGraph;
 	private Point2D targetNode;
 	private double minR;
 
@@ -48,7 +49,7 @@ final class SnapTest {
 	 * 	Start point of the unsnapped segment.
 	 * @param targetNode
 	 * 	End point of the unsnapped segment.
-	 * @param relevantRoadNetwork
+	 * @param fullNetworkGraph
 	 * 	A planar graph whose edges and vertices are tested for proximity to a 2d segment from {@code sourceNode} to
 	 * 	{@code targetNode}.
 	 */
@@ -56,12 +57,12 @@ final class SnapTest {
 		double snapSize,
 		Point2D sourceNode,
 		Point2D targetNode,
-		UndirectedGraph<Point2D, Segment2D> relevantRoadNetwork
+		UndirectedGraph<Point2D, Segment2D> fullNetworkGraph
 	) {
 		this.snapSize = Math.max(snapSize, Vectors2D.EPSILON);
 		this.sourceNode = sourceNode;
 		this.targetNode = targetNode;
-		this.relevantRoadNetwork = relevantRoadNetwork;
+		this.fullNetworkGraph = fullNetworkGraph;
 		this.minR = 1 + snapSize / sourceNode.distanceTo(targetNode);
 		this.roadsToTest = findNearbySegments(sourceNode, targetNode, snapSize);
 	}
@@ -73,14 +74,14 @@ final class SnapTest {
 	 * @return A description of how {@link #targetNode} snaps to a node, a road, or nothing.
 	 */
 	SnapEvent snap() {
-		if (relevantRoadNetwork.containsVertex(targetNode)) {
-			return new SnapEvent(targetNode, SnapEventType.NODE_SNAP, null);
+		if (fullNetworkGraph.containsVertex(targetNode)) {
+			return new SnapEventNode(sourceNode, targetNode);
 		}
 		// Next lines try various snappings and set #result to the best possible snap event.
 		snapToNothing();
 		findSnapNode();
-		if (result.eventType == SnapEventType.NODE_SNAP) {
-			targetNode = result.targetNode;
+		if (result instanceof SnapEventNode) {
+			targetNode = result.target();
 			minR = 1;
 		}
 		roadsToTest.forEach(this::tryIntersectingRoad);
@@ -89,7 +90,7 @@ final class SnapTest {
 	}
 
 	private void snapToNothing() {
-		result = new SnapEvent(targetNode, SnapEventType.NO_SNAP, null);
+		result = new NowhereToSnap(sourceNode, targetNode);
 	}
 
 	/**
@@ -102,34 +103,46 @@ final class SnapTest {
 	 * 	A road to project {@link #targetNode} to.
 	 */
 	private void trySnappingToRoad(Segment2D road) {
-		if (road.start == sourceNode || road.end == sourceNode) {
+		Optional<PointPosition> whereToSnap = segmentSnapPosition(road);
+		if (!whereToSnap.isPresent()) {
 			return;
 		}
-		if (result.eventType != SnapEventType.NO_SNAP) {
-			return;
+		Point2D targetPoint = placePointOnLine(road, whereToSnap.get());
+		assert !targetPoint.equals(sourceNode);
+		assert !fullNetworkGraph.containsVertex(targetPoint);
+		result = new SnapEventRoad(
+			sourceNode,
+			targetPoint,
+			road
+		);
+	}
+
+	private Point2D placePointOnLine(Segment2D segment, PointPosition whereToSnap) {
+		return new Point2D(
+			segment.start.x + whereToSnap.r * (segment.end.x - segment.start.x),
+			segment.start.y + whereToSnap.r * (segment.end.y - segment.start.y)
+		);
+	}
+
+	private Optional<PointPosition> segmentSnapPosition(Segment2D segment) {
+		if (segment.start == sourceNode || segment.end == sourceNode) {
+			return Optional.empty();
+		}
+		if (result instanceof NowhereToSnap) {
+			return Optional.empty();
 		}
 		PointPosition pointPosition = new PointPosition(
-			road.start,
-			road.end,
+			segment.start,
+			segment.end,
 			targetNode
 		);
 		if (pointPosition.r < Vectors2D.EPSILON || pointPosition.r > 1 - Vectors2D.EPSILON) {
-			return;
+			return Optional.empty();
 		}
 		if (pointPosition.distance > snapSize - Vectors2D.EPSILON) {
-			return;
+			return Optional.empty();
 		}
-		Point2D targetPoint = new Point2D(
-			road.start.x + pointPosition.r * (road.end.x - road.start.x),
-			road.start.y + pointPosition.r * (road.end.y - road.start.y)
-		);
-		assert !targetPoint.equals(sourceNode);
-		assert !relevantRoadNetwork.containsVertex(targetPoint);
-		result = new SnapEvent(
-			targetPoint,
-			SnapEventType.ROAD_SNAP,
-			road
-		);
+		return Optional.of(pointPosition);
 	}
 
 	/**
@@ -148,12 +161,12 @@ final class SnapTest {
 //					if (intersectionPoint.equals(sourceNode)) {
 //						return new SnapEvent(null, SnapEventType.NO_NODE, null);
 //					}
-				if (result != null && intersectionPoint.equals(result.targetNode)) {
+				if (result != null && intersectionPoint.equals(result.target())) {
 					return;
 				}
 				assert !iDontRememberWhatItAsserts(road, intersectionPoint);
 				assert !intersectionPoint.equals(road.end) : road.end.hashCode() + " it should have been a point snap";
-				result = new SnapEvent(intersectionPoint, SnapEventType.ROAD_SNAP, road);
+				result = new SnapEventRoad(sourceNode, intersectionPoint, road);
 				minR = intersection.r;
 			}
 		}
@@ -171,7 +184,7 @@ final class SnapTest {
 			PointPosition pointPosition = new PointPosition(sourceNode, targetNode, vertex);
 			if (isVertexBetterThanCurrentBestVertex(vertex, pointPosition)) {
 				minR = pointPosition.r;
-				result = new SnapEvent(vertex, SnapEventType.NODE_SNAP, null);
+				result = new SnapEventNode(sourceNode, vertex);
 			}
 		}
 	}
@@ -180,8 +193,11 @@ final class SnapTest {
 		return isCloserSnapVertex(pointPosition) && connectingVertexIntroducesNoIntersectingSegments(vertex, roadsToTest);
 	}
 
-	private boolean connectingVertexIntroducesNoIntersectingSegments(Point2D vertex, Collection<Segment2D> roadsToTest) {
-		if (relevantRoadNetwork.containsEdge(sourceNode, vertex)) {
+	private boolean connectingVertexIntroducesNoIntersectingSegments(
+		Point2D vertex,
+		Collection<Segment2D> roadsToTest
+	) {
+		if (fullNetworkGraph.containsEdge(sourceNode, vertex)) {
 			Segment2D segment = new Segment2D(sourceNode, vertex);
 			if (roadsToTest.stream().anyMatch(road -> road.intersects(segment))) {
 				return false;
@@ -301,7 +317,7 @@ final class SnapTest {
 		double minY = Math.min(source.y, target.y) - snapSize;
 		double maxX = Math.max(source.x, target.x) + snapSize;
 		double maxY = Math.max(source.y, target.y) + snapSize;
-		Stream<Segment2D> roadStream = relevantRoadNetwork.edgeSet().stream();
+		Stream<Segment2D> roadStream = fullNetworkGraph.edgeSet().stream();
 		return roadStream
 			.filter(road -> {
 				double roadMinX = Math.min(road.start.x, road.end.x);

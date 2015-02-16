@@ -1,4 +1,4 @@
-package org.tendiwa.settlements.networks;
+package org.tendiwa.geometry.smartMesh;
 
 import org.jgrapht.Graph;
 import org.tendiwa.collections.SuccessiveTuples;
@@ -13,7 +13,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 /**
- * Holds a graph of a cycle within which {@link org.tendiwa.settlements.networks.SecondaryRoadNetwork} is constructed,
+ * Holds a graph of a cycle within which {@link SecondaryRoadNetwork} is constructed,
  * and for each edge remembers whether that edge goes clockwise or counter-clockwise. That effectively means that
  * OrientedCycle can tell if its innards are to the right or to the left from its certain edge.
  */
@@ -106,7 +106,7 @@ final class OrientedCycle implements NetworkPart {
 	 * This method should be called each time an edge of this OrientedCycle is split with
 	 */
 	@Override
-	public void notify(CutSegment2D cutSegment) {
+	public void integrate(CutSegment2D cutSegment) {
 		Segment2D originalSegment = cutSegment.originalSegment();
 		Vector2D originalVector = originalSegment.asVector();
 		boolean isSplitEdgeAgainst = isAgainstCycleDirection(originalSegment);
@@ -114,8 +114,7 @@ final class OrientedCycle implements NetworkPart {
 			.filter(segment -> isSplitEdgeAgainst ^ originalVector.dotProduct(segment.asVector()) < 0)
 			.forEach(this::setReverse);
 		reverseEdges.remove(originalSegment);
-		cycleGraph.removeEdge(cutSegment.originalSegment());
-		cycleGraph.integrateCutSegment(cutSegment);
+		NetworkPart.super.integrate(cutSegment);
 	}
 
 	private void setReverse(Segment2D edge) {
@@ -128,7 +127,7 @@ final class OrientedCycle implements NetworkPart {
 	 *
 	 * @return An angle in radians.
 	 */
-	public double deviatedAngleBisector(Point2D bisectorStart, boolean inward) {
+	public DirectionFromPoint deviatedAngleBisector(Point2D bisectorStart, boolean inward) {
 		Set<Segment2D> adjacentEdges = cycleGraph.edgesOf(bisectorStart);
 		assert adjacentEdges.size() == 2;
 		Iterator<Segment2D> iterator = adjacentEdges.iterator();
@@ -148,7 +147,10 @@ final class OrientedCycle implements NetworkPart {
 			bisectorStart,
 			inward
 		).asSegment(Bisector.DEFAULT_SEGMENT_LENGTH);
-		return bisectorSegment.start.angleTo(bisectorSegment.end);
+		return new DirectionFromPoint(
+			bisectorStart,
+			bisectorSegment.start.angleTo(bisectorSegment.end)
+		);
 	}
 
 	/**

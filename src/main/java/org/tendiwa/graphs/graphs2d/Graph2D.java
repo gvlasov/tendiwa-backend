@@ -7,7 +7,6 @@ import org.tendiwa.geometry.CutSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
-import org.tendiwa.settlements.networks.SplitSegment2D;
 
 import java.util.Collection;
 import java.util.Set;

@@ -1,4 +1,4 @@
-package org.tendiwa.settlements.networks;
+package org.tendiwa.geometry.smartMesh;
 
 import com.google.common.collect.ImmutableSet;
 import org.jgrapht.UndirectedGraph;
@@ -8,7 +8,7 @@ import org.tendiwa.geometry.GeometryException;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.ShamosHoeyAlgorithm;
-import org.tendiwa.settlements.networks.algorithms.SegmentNetworkAlgorithms;
+import org.tendiwa.geometry.smartMesh.algorithms.SegmentNetworkAlgorithms;
 
 import java.awt.Color;
 import java.util.Map;

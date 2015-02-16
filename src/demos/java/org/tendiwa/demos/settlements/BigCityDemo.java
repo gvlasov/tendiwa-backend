@@ -18,8 +18,8 @@ import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.settlements.buildings.PolylineProximity;
-import org.tendiwa.settlements.networks.SegmentNetworkBuilder;
-import org.tendiwa.settlements.networks.Segment2DSmartMesh;
+import org.tendiwa.geometry.smartMesh.SegmentNetworkBuilder;
+import org.tendiwa.geometry.smartMesh.Segment2DSmartMesh;
 import org.tendiwa.settlements.utils.*;
 
 import java.awt.Color;

@@ -1,6 +1,8 @@
-package org.tendiwa.settlements.networks;
+package org.tendiwa.geometry.smartMesh;
 
 import org.tendiwa.geometry.Point2D;
+
+import java.util.Optional;
 
 public class SnapEventNode implements SnapEvent {
 	private final Point2D source;
@@ -25,5 +27,10 @@ public class SnapEventNode implements SnapEvent {
 	@Override
 	public Point2D target() {
 		return target;
+	}
+
+	@Override
+	public Optional<Point2D> nextNewNodePoint() {
+		return Optional.of(target);
 	}
 }

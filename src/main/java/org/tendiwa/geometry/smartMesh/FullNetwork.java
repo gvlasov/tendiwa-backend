@@ -1,6 +1,8 @@
-package org.tendiwa.settlements.networks;
+package org.tendiwa.geometry.smartMesh;
 
 import org.jgrapht.Graph;
+import org.jgrapht.Graphs;
+import org.jgrapht.UndirectedGraph;
 import org.tendiwa.geometry.CutSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
@@ -9,26 +11,26 @@ import org.tendiwa.graphs.graphs2d.Graph2D;
 import java.util.*;
 import java.util.stream.Stream;
 
+/**
+ * This is a Mediator that notifies other {@link NetworkPart}s of splits in the full
+ * graph if
+ * that NetworkPart shares an edge being split.
+ */
 final class FullNetwork implements NetworkPart {
 
 	private final Map<Segment2D, Collection<NetworkPart>> edgesToUsers = new LinkedHashMap<>();
 	private final Graph2D graph;
 
-	FullNetwork() {
+	FullNetwork(UndirectedGraph<Point2D, Segment2D> originalGraph) {
 		this.graph = new Graph2D();
+		Graphs.addGraph(graph, originalGraph);
 	}
 
-	void addEdgeUser(NetworkPart networkPart) {
+	void addNetworkPart(NetworkPart networkPart) {
 		Graph2D graph = networkPart.graph();
 		for (Segment2D edge : graph.edgeSet()) {
 			addNetworkPart(edge, networkPart);
 		}
-	}
-
-	@Override
-	public void notify(CutSegment2D cutSegment) {
-		graph.removeEdge(cutSegment.originalSegment());
-		graph.integrateCutSegment(cutSegment);
 	}
 
 	@Override
@@ -71,7 +73,7 @@ final class FullNetwork implements NetworkPart {
 		Stream<Collection<NetworkPart>> graphHolders = cutSegment.stream()
 			.map(this::obtainCollectionFor);
 		for (NetworkPart user : edgesToUsers.get(originalSegment)) {
-			user.notify(cutSegment);
+			user.integrate(cutSegment);
 			graphHolders = graphHolders.peek(gh -> gh.add(user));
 		}
 	}

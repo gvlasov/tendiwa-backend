@@ -7,15 +7,15 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.math.StonesInBasketsSolver;
-import org.tendiwa.settlements.networks.NetworkWithinCycle;
-import org.tendiwa.settlements.networks.Segment2DSmartMesh;
+import org.tendiwa.geometry.smartMesh.NetworkWithinCycle;
+import org.tendiwa.geometry.smartMesh.Segment2DSmartMesh;
 
 import java.util.*;
 
 /**
  * Static methods of this class create a view of a city's road network graph that rejects some of its edges so cities
  * don't have to be enclosed in a road around them (enclosing cities in a road around them is the core mechanics of
- * constructing a {@link org.tendiwa.settlements.networks.Segment2DSmartMesh}.
+ * constructing a {@link org.tendiwa.geometry.smartMesh.Segment2DSmartMesh}.
  */
 public final class RoadRejector {
 	private static final Comparator<Point2D> ANY_NEIGHBOR_COMPARATOR = (p1, p2) -> {
@@ -45,7 +45,7 @@ public final class RoadRejector {
 	 * {@code cityGeometry}.
 	 *
 	 * @param graph
-	 * 	A full road graph ({@link org.tendiwa.settlements.networks.Segment2DSmartMesh#getFullRoadGraph()}) of {@code
+	 * 	A full road graph ({@link org.tendiwa.geometry.smartMesh.Segment2DSmartMesh#getFullRoadGraph()}) of {@code
 	 * 	cityGeometry}.
 	 * @param segment2DSmartMesh
 	 * 	A geometry of a city.
@@ -293,7 +293,7 @@ public final class RoadRejector {
 	 * Walks along chains of edges in a subgraph of {@link #fullGraph} ({@code outerCycleEdges}),
 	 * extracting the sub-chains that start and end with vertices having degree > 2 in {@link #fullGraph}.
 	 *
-	 * @see org.tendiwa.settlements.networks.Segment2DSmartMesh#outerCycleEdges() for what kind of subgraph is walked along.
+	 * @see org.tendiwa.geometry.smartMesh.Segment2DSmartMesh#outerCycleEdges() for what kind of subgraph is walked along.
 	 */
 	private class NonCycleChainWalker {
 		private final UndirectedGraph<Point2D, Segment2D> outerCycleEdges;

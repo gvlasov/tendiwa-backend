@@ -1,4 +1,4 @@
-package org.tendiwa.settlements.networks.algorithms;
+package org.tendiwa.geometry.smartMesh.algorithms;
 
 import com.google.common.collect.ImmutableSet;
 import gnu.trove.map.TObjectIntMap;
@@ -9,8 +9,8 @@ import org.jgrapht.graph.UndirectedSubgraph;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
-import org.tendiwa.settlements.networks.NetworkWithinCycle;
-import org.tendiwa.settlements.networks.Segment2DSmartMesh;
+import org.tendiwa.geometry.smartMesh.NetworkWithinCycle;
+import org.tendiwa.geometry.smartMesh.Segment2DSmartMesh;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -23,7 +23,7 @@ public final class SegmentNetworkAlgorithms {
 	 * Actual cycles don't include cycles that are formed with any of the secondary road network's edges.
 	 *
 	 * @return Actual road cycles graph.
-	 * @see org.tendiwa.settlements.networks.Segment2DSmartMesh#originalGraph for original cycles.
+	 * @see org.tendiwa.geometry.smartMesh.Segment2DSmartMesh#originalGraph for original cycles.
 	 */
 	public static UndirectedGraph<Point2D, Segment2D> createFullCycleGraph(Segment2DSmartMesh model) {
 		UndirectedGraph<Point2D, Segment2D> answer = PlanarGraphs.createGraph();
@@ -45,7 +45,7 @@ public final class SegmentNetworkAlgorithms {
 
 	/**
 	 * In each {@link NetworkWithinCycle} that this {@link
-	 * org.tendiwa.settlements.networks.Segment2DSmartMesh} consists of, finds such edges that are part of only one
+	 * org.tendiwa.geometry.smartMesh.Segment2DSmartMesh} consists of, finds such edges that are part of only one
 	 * {@link NetworkWithinCycle#cycle()}.
 	 *
 	 * @return Map from {@link NetworkWithinCycle} to subgraphs of {@link

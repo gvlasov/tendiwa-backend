@@ -1,4 +1,4 @@
-package org.tendiwa.settlements.networks;
+package org.tendiwa.geometry.smartMesh;
 
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;

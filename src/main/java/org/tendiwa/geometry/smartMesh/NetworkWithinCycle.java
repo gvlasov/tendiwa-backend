@@ -1,4 +1,4 @@
-package org.tendiwa.settlements.networks;
+package org.tendiwa.geometry.smartMesh;
 
 import com.google.common.collect.ImmutableSet;
 import org.jgrapht.Graphs;
@@ -27,7 +27,7 @@ public final class NetworkWithinCycle {
 	private final NetworkGenerationParameters networkGenerationParameters;
 
 	/**
-	 * @param fullGraph
+	 * @param fullNetwork
 	 * 	Current full graph of a {@link Segment2DSmartMesh}.
 	 * @param originalMinimalCycle
 	 * 	A MinimalCycle that contains this NetworkWithinCycle's secondary road network inside it.
@@ -38,8 +38,8 @@ public final class NetworkWithinCycle {
 	 */
 
 	NetworkWithinCycle(
-		FullNetwork fullGraph,
-		UndirectedGraph<Point2D, Segment2D> splitOriginalGraph,
+		FullNetwork fullNetwork,
+		SplitOriginalMesh splitOriginalMesh,
 		MinimalCycle<Point2D, Segment2D> originalMinimalCycle,
 		Collection<MinimalCycle<Point2D, Segment2D>> enclosedMinimalCycles,
 		NetworkGenerationParameters networkGenerationParameters,
@@ -47,15 +47,17 @@ public final class NetworkWithinCycle {
 	) {
 		this.networkGenerationParameters = networkGenerationParameters;
 
-		this.enclosingCycle = new OrientedCycle(originalMinimalCycle, splitOriginalGraph);
+		this.enclosingCycle = splitOriginalMesh.createCycleNetworkPart(originalMinimalCycle);
+		fullNetwork.addNetworkPart(enclosingCycle);
 
 		Set<OrientedCycle> enclosedCycles = enclosedMinimalCycles.stream()
-			.map(cycle -> new OrientedCycle(cycle, splitOriginalGraph))
+			.map(splitOriginalMesh::createCycleNetworkPart)
 			.collect(Collectors.toCollection(LinkedHashSet::new));
-		enclosedCycles.forEach(fullGraph::addOrientedCycle);
+		enclosedCycles.forEach(fullNetwork::addNetworkPart);
 
 		this.secondaryRoadNetwork = new SecondaryRoadNetwork(
-			fullGraph,
+			fullNetwork,
+			splitOriginalMesh,
 			enclosingCycle,
 			enclosedCycles,
 			networkGenerationParameters,
@@ -83,7 +85,7 @@ public final class NetworkWithinCycle {
 		UndirectedGraph<Point2D, Segment2D> graphWithLooseEnds = PlanarGraphs.copyGraph(secondaryRoadNetwork.graph());
 		Graphs.addGraph(graphWithLooseEnds, cycle());
 		if (!secondaryRoadNetwork.filamentEnds.isEmpty()) {
-			assert secondaryRoadNetwork.filamentEnds.stream().allMatch(end -> graphWithLooseEnds.degreeOf(end.node)
+			assert secondaryRoadNetwork.filamentEnds.stream().allMatch(end -> graphWithLooseEnds.degreeOf(end.point)
 				== 1);
 			GraphLooseEndsCloser
 				.withSnapSize(
@@ -102,9 +104,4 @@ public final class NetworkWithinCycle {
 			.map(cycle -> new SecondaryRoadNetworkBlock(cycle.vertexList()))
 			.collect(toList());
 	}
-
-	public ImmutableSet<Point2D> filamentEnds() {
-		return secondaryRoadNetwork.filamentEndPoints;
-	}
-
 }

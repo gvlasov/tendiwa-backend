@@ -1,4 +1,4 @@
-package org.tendiwa.settlements.networks;
+package org.tendiwa.geometry.smartMesh;
 
 import org.jgrapht.UndirectedGraph;
 import org.tendiwa.geometry.Point2D;
@@ -134,7 +134,7 @@ public class UnfilledBlocksDetector {
 
 
 	/**
-	 * @return A point from which next flood fill by {@link org.tendiwa.settlements.networks.SecondaryRoadNetwork}
+	 * @return A point from which next flood fill by {@link SecondaryRoadNetwork}
 	 * should be started, or null if there is no such point (all blocks are small enough).
 	 */
 	Point2D getStartingPoint() {

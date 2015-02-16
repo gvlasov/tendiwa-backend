@@ -1,6 +1,5 @@
-package org.tendiwa.settlements.networks;
+package org.tendiwa.geometry.smartMesh;
 
-import org.jgrapht.Graphs;
 import org.jgrapht.UndirectedGraph;
 import org.tendiwa.collections.IterableToStream;
 import org.tendiwa.geometry.Point2D;
@@ -22,8 +21,8 @@ final class NetworksProducer {
 	private final Random random;
 	private final EnclosedCycleDetector enclosedCycleDetector;
 	private final MinimumCycleBasis<Point2D, Segment2D> basis;
-	private final FullNetwork fullGraph;
-	private final UndirectedGraph<Point2D, Segment2D> splitOriginalGraph;
+	private final FullNetwork fullNetwork;
+	private final SplitOriginalMesh splitOriginalMesh;
 
 	NetworksProducer(
 		UndirectedGraph<Point2D, Segment2D> originalGraph,
@@ -37,11 +36,13 @@ final class NetworksProducer {
 			throw new SettlementGenerationException("A City with 0 city networks was made");
 		}
 		this.enclosedCycleDetector = constructCycleDetector(basis.minimalCyclesSet());
-		this.fullGraph = new FullNetwork();
-		Graphs.addGraph(fullGraph, originalGraph);
-		this.splitOriginalGraph = PlanarGraphs.copyGraph(originalGraph);
 
+		this.fullNetwork = new FullNetwork(originalGraph);
 
+		this.completeMesh = new CompleteMesh(originalGraph);
+
+		this.splitOriginalMesh = new SplitOriginalMesh(originalGraph);
+		fullNetwork.addNetworkPart(splitOriginalMesh);
 	}
 
 	/**
@@ -68,8 +69,8 @@ final class NetworksProducer {
 				}
 			})
 			.map(cycle -> new NetworkWithinCycle(
-				fullGraph,
-				splitOriginalGraph,
+				fullNetwork,
+				splitOriginalMesh,
 				cycle,
 				enclosedCycleDetector.cyclesEnclosedIn(cycle),
 				parameters,

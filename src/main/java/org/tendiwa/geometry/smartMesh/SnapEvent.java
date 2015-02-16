@@ -1,9 +1,11 @@
-package org.tendiwa.settlements.networks;
+package org.tendiwa.geometry.smartMesh;
 
 import org.tendiwa.geometry.Point2D;
 
+import java.util.Optional;
+
 /**
- * Describes how a line snaps to a vertex or an edge of {@link org.tendiwa.settlements.networks.NetworkWithinCycle}.
+ * Describes how a line snaps to a vertex or an edge of {@link NetworkWithinCycle}.
  */
 interface SnapEvent {
 	SnapEvent CHANCE_FAILED = new SnapEvent() {
@@ -16,9 +18,17 @@ interface SnapEvent {
 		public Point2D target() {
 			return null;
 		}
+
+		@Override
+		public Optional<Point2D> nextNewNodePoint() {
+			return Optional.empty();
+		}
+
 	};
 
 	SnapEvent integrateInto(FullNetwork fullNetwork, SegmentInserter segmentInserter);
 
 	Point2D target();
+
+	Optional<Point2D> nextNewNodePoint();
 }

@@ -1,4 +1,4 @@
-package org.tendiwa.settlements.networks;
+package org.tendiwa.geometry.smartMesh;
 
 import com.google.common.collect.ImmutableList;
 import org.tendiwa.geometry.CutSegment2D;

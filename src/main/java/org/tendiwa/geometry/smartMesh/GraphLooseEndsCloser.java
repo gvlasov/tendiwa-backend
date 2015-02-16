@@ -1,4 +1,4 @@
-package org.tendiwa.settlements.networks;
+package org.tendiwa.geometry.smartMesh;
 
 import org.jgrapht.UndirectedGraph;
 import org.tendiwa.geometry.Point2D;
@@ -51,13 +51,12 @@ final class GraphLooseEndsCloser {
 	/**
 	 * Adds new edges and vertices to {@link #sourceGraph}.
 	 */
-	void closeLooseEnds(
-	) {
+	void closeLooseEnds() {
 		for (DirectionFromPoint end : filamentEnds) {
-			if (isUsed(end.node)) {
+			if (isUsed(end.point)) {
 				continue;
 			}
-			assert sourceGraph.degreeOf(end.node) == 1;
+			assert sourceGraph.degreeOf(end.point) == 1;
 			edgeToClosestSnap(end);
 		}
 	}
@@ -83,20 +82,18 @@ final class GraphLooseEndsCloser {
 	private void edgeToClosestSnap(DirectionFromPoint end) {
 		SnapEvent test = new SnapTest(
 			snapSize,
-			end.node,
-			end.node.moveBy(
-				Math.cos(end.direction) * snapSize,
-				Math.sin(end.direction) * snapSize
-			),
+			end.point,
+			end.placeNextPoint(snapSize),
 			sourceGraph
 		).snap();
+		test.integrateInto()
 		if (test.eventType == SnapEventType.NODE_SNAP) {
-			sourceGraph.addEdge(end.node, test.targetNode);
+			sourceGraph.addEdge(end.point, test.targetNode);
 			used.add(test.targetNode);
 		} else if (test.eventType == SnapEventType.ROAD_SNAP) {
 			sourceGraph.removeEdge(test.road);
 			sourceGraph.addVertex(test.targetNode);
-			sourceGraph.addEdge(end.node, test.targetNode);
+			sourceGraph.addEdge(end.point, test.targetNode);
 			sourceGraph.addEdge(test.road.start, test.targetNode);
 			assert !test.road.end.equals(test.targetNode) : test.road.end;
 			sourceGraph.addEdge(test.road.end, test.targetNode);

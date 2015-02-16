@@ -7,8 +7,8 @@ import org.tendiwa.drawing.extensions.DrawingEnclosedBlock;
 import org.tendiwa.geometry.extensions.daveedvMaxRec.MaximalRectanlges;
 import org.tendiwa.geometry.extensions.polygonRasterization.PolygonRasterizer;
 import org.tendiwa.settlements.EnclosedBlock;
-import org.tendiwa.settlements.networks.EnclosedCyclesSet;
-import org.tendiwa.settlements.networks.Segment2DSmartMesh;
+import org.tendiwa.geometry.smartMesh.EnclosedCyclesSet;
+import org.tendiwa.geometry.smartMesh.Segment2DSmartMesh;
 
 import java.awt.Color;
 import java.util.Iterator;

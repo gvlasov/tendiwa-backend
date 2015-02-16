@@ -18,7 +18,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * From {@link CellSet}, creates a graph used as a base for a {@link org.tendiwa.settlements.networks.Segment2DSmartMesh}.
+ * From {@link CellSet}, creates a graph used as a base for a {@link org.tendiwa.geometry.smartMesh.Segment2DSmartMesh}.
  */
 public final class CityBounds {
 
@@ -26,14 +26,14 @@ public final class CityBounds {
 	}
 
 	/**
-	 * Creates a new graph that can be used as a base for {@link org.tendiwa.settlements.networks.Segment2DSmartMesh}.
+	 * Creates a new graph that can be used as a base for {@link org.tendiwa.geometry.smartMesh.Segment2DSmartMesh}.
 	 *
 	 * @param startCell
 	 * 	A cell from which a City originates. Roughly denotes its final position.
 	 * @param maxCityRadius
 	 * 	A maximum radius of a Rectangle containing resulting City.
-	 * @return A new graph that can be used as a base for {@link org.tendiwa.settlements.networks.Segment2DSmartMesh}.
-	 * @see org.tendiwa.settlements.networks.SegmentNetworkBuilder
+	 * @return A new graph that can be used as a base for {@link org.tendiwa.geometry.smartMesh.Segment2DSmartMesh}.
+	 * @see org.tendiwa.geometry.smartMesh.SegmentNetworkBuilder
 	 */
 	public static UndirectedGraph<Point2D, Segment2D> create(
 		BoundedCellSet cityShape,
