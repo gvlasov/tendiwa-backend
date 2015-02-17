@@ -4,7 +4,7 @@ import org.jgrapht.Graph;
 import org.tendiwa.collections.SuccessiveTuples;
 import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.extensions.straightSkeleton.Bisector;
-import org.tendiwa.graphs.GraphCycleTraversal;
+import org.tendiwa.graphs.GraphChainTraversal;
 import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.graphs.graphs2d.Graph2D;
 
@@ -47,10 +47,11 @@ final class OrientedCycle implements NetworkPart {
 				if (splitOriginalGraph.containsEdge(current, next)) {
 					addAutoDirectedEdge(cycleGraph, current, next);
 				} else {
-					GraphCycleTraversal
+					GraphChainTraversal
 						.traverse(splitOriginalGraph)
 						.startingWith(current)
-						.awayFrom(previous)
+						.awayFrom(splitOriginalGraph.findNeighborOnSegment(current, new Segment2D(current, previous)))
+						.past(splitOriginalGraph.findNeighborOnSegment(current, new Segment2D(current, next)))
 						.until(triplet -> triplet.next() == next)
 						.stream()
 						.forEach(
@@ -127,7 +128,7 @@ final class OrientedCycle implements NetworkPart {
 	 *
 	 * @return An angle in radians.
 	 */
-	public DirectionFromPoint deviatedAngleBisector(Point2D bisectorStart, boolean inward) {
+	public Ray deviatedAngleBisector(Point2D bisectorStart, boolean inward) {
 		Set<Segment2D> adjacentEdges = cycleGraph.edgesOf(bisectorStart);
 		assert adjacentEdges.size() == 2;
 		Iterator<Segment2D> iterator = adjacentEdges.iterator();
@@ -147,7 +148,7 @@ final class OrientedCycle implements NetworkPart {
 			bisectorStart,
 			inward
 		).asSegment(Bisector.DEFAULT_SEGMENT_LENGTH);
-		return new DirectionFromPoint(
+		return new Ray(
 			bisectorStart,
 			bisectorSegment.start.angleTo(bisectorSegment.end)
 		);

@@ -1,51 +1,107 @@
 package org.tendiwa.geometry.smartMesh;
 
+import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.graphs.graphs2d.Graph2D;
+
+import javax.annotation.Nullable;
 import java.util.*;
 
 final class FloodNetworkTree {
+	private final Canopy canopy;
+	private final Graph2D fullGraph;
 	private final SegmentInserter segmentInserter;
 	private final NetworkGenerationParameters parameters;
 	private final Random random;
-	private final Deque<DirectionFromPoint> nodeQueue;
+	private final Deque<Ray> leafRays;
+	private Set<Segment2D> ends;
 
 	FloodNetworkTree(
-		DirectionFromPoint start,
+		Ray start,
+		Canopy canopy,
+		Graph2D fullGraph,
 		SegmentInserter segmentInserter,
 		NetworkGenerationParameters parameters,
 		Random random
 	) {
+		this.canopy = canopy;
+		this.fullGraph = fullGraph;
 		this.segmentInserter = segmentInserter;
 		this.parameters = parameters;
 		this.random = random;
 
-		this.nodeQueue = new ArrayDeque<>();
-		Optional<DirectionFromPoint> nextHub = segmentInserter.tryPlacingRoad(start);
-		if (nextHub.isPresent() && !segmentInserter.isDeadEnd(nextHub.get().point)) {
-			nodeQueue.push(nextHub.get());
+		this.ends = new LinkedHashSet<>();
+		this.leafRays = new ArrayDeque<>();
+
+		propagateFromRoot(start);
+	}
+
+	private void propagateFromRoot(Ray start) {
+		Ray ray = getNextLeafRay();
+		if (ray == null) {
+			return;
 		}
+		propagateFromRay(start);
 	}
 
 
 	boolean isDepleted() {
-		return nodeQueue.isEmpty();
+		return leafRays.isEmpty();
 	}
 
 	void propagate() {
-		DirectionFromPoint node = nodeQueue.removeLast();
+		Ray ray = getNextLeafRay();
+		if (ray == null) {
+			return;
+		}
 		for (int i = 1; i < parameters.roadsFromPoint; i++) {
-			double newDirection = deviateDirection(directionOfIthSpoke(node, i));
-			Optional<DirectionFromPoint> nextHubMaybe = segmentInserter.tryPlacingRoad(
-				node.changeDirection(newDirection)
+			propagateFromRay(
+				ray.changeDirection(
+					deviateDirection(directionOfIthSpoke(ray, i))
+				)
 			);
-			if (nextHubMaybe.isPresent()) {
-				DirectionFromPoint nextHub = nextHubMaybe.get();
-				assert !segmentInserter.isDeadEnd(nextHub.point);
-				nodeQueue.push(nextHub);
-			}
 		}
 	}
 
-	private double directionOfIthSpoke(DirectionFromPoint node, int i) {
+	@Nullable
+	private Ray getNextLeafRay() {
+		Ray ray = null;
+		while (!leafRays.isEmpty()) {
+			ray = leafRays.removeLast();
+			if (!canopy.containsLeaf(ray.start)) {
+				break;
+			}
+		}
+		return ray;
+	}
+
+	private void propagateFromRay(Ray ray) {
+		canopy.removeLeaf(ray.start);
+		PropagationStep nextStep = segmentInserter.tryPlacingRoad(ray);
+		if (nextStep.isTerminal()) {
+			saveLeaf(ray.start, nextStep.ray().start);
+		} else {
+			Ray newRay = nextStep.ray();
+			assert !segmentInserter.isDeadEnd(newRay.start);
+			leafRays.push(newRay);
+			canopy.addLeaf(newRay.start);
+		}
+	}
+
+	private void saveLeaf(Point2D start, Point2D end) {
+		ends.add(fullGraph.getEdge(start, end));
+	}
+
+	/**
+	 * Start of a segment is a petiole, end of a segment is a leaf.
+	 *
+	 * @return A set that contains a petiole-leaf segment for each leaf of this tree that can't be grown any further.
+	 */
+	Set<Segment2D> leavesWithPetioles() {
+		return ends;
+	}
+
+	private double directionOfIthSpoke(Ray node, int i) {
 		return node.direction + Math.PI + i * (Math.PI * 2 / parameters.roadsFromPoint);
 	}
 
@@ -79,17 +135,4 @@ final class FloodNetworkTree {
 		}
 	}
 
-	final class Node {
-		final List<Node> descendants;
-		final DirectionFromPoint payload;
-
-		Node(DirectionFromPoint payload) {
-			this.payload = payload;
-			this.descendants = new ArrayList<>(parameters.roadsFromPoint - 1);
-		}
-
-		void addDescendant(DirectionFromPoint payload) {
-			descendants.add(new Node(payload));
-		}
-	}
 }

@@ -62,6 +62,11 @@ public final class SplitSegment2D implements CutSegment2D {
 	}
 
 	@Override
+	public boolean hasBeenCut() {
+		return true;
+	}
+
+	@Override
 	public Iterator<Segment2D> iterator() {
 		return ImmutableList.of(firstHalf, secondHalf).iterator();
 	}

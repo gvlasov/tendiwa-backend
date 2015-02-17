@@ -39,8 +39,6 @@ final class NetworksProducer {
 
 		this.fullNetwork = new FullNetwork(originalGraph);
 
-		this.completeMesh = new CompleteMesh(originalGraph);
-
 		this.splitOriginalMesh = new SplitOriginalMesh(originalGraph);
 		fullNetwork.addNetworkPart(splitOriginalMesh);
 	}

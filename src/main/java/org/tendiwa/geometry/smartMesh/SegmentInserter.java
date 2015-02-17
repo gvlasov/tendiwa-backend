@@ -10,12 +10,11 @@ import org.tendiwa.graphs.graphs2d.Graph2D;
 
 import java.awt.Color;
 import java.util.Comparator;
-import java.util.Optional;
 import java.util.Random;
 import java.util.function.Function;
 
 /**
- * Inserts new roads into {@link NetworksProducer#fullGraph} and its subgraphs.
+ * Inserts new segments into {@link org.tendiwa.geometry.smartMesh.FullNetwork} and its subnetworks.
  */
 public class SegmentInserter {
 	private final FullNetwork fullNetwork;
@@ -43,24 +42,31 @@ public class SegmentInserter {
 	 * [Kelly figure 42, function placeSegment]
 	 * <p>
 	 * Tries adding a new road to the secondary road network graph.
-	 *
-	 * @return Next hub point from which new segments may be placed, or {@link java.util.Optional#empty()} if the
-	 * point to which placed road is snapped can't be used as a hub point.
 	 */
-	Optional<DirectionFromPoint> tryPlacingRoad(DirectionFromPoint directionFromPoint) {
+	PropagationStep tryPlacingRoad(Ray beginning) {
 		double segmentLength = deviatedLength(networkGenerationParameters.segmentLength);
 		SnapEvent snapEvent = new SnapTest(
 			networkGenerationParameters.snapSize,
-			directionFromPoint.point,
-			directionFromPoint.placeNextPoint(segmentLength),
+			beginning.start,
+			beginning.placeEnd(segmentLength),
 			fullNetwork.graph()
-		).snap().integrateInto(fullNetwork, this);
-		Optional<Point2D> nextNewHub = snapEvent.nextNewNodePoint();
-		if (nextNewHub.isPresent()) {
-			return Optional.of(new DirectionFromPoint(nextNewHub.get(), directionFromPoint.direction));
-		} else {
-			return Optional.empty();
-		}
+		).snap();
+		snapEvent.integrateInto(fullNetwork, this);
+		return createPropagationStep(beginning, snapEvent);
+	}
+
+	private PropagationStep createPropagationStep(final Ray beginning, final SnapEvent snapEvent) {
+		return new PropagationStep() {
+			@Override
+			public Ray ray() {
+				return new Ray(snapEvent.target(), beginning.direction);
+			}
+
+			@Override
+			public boolean isTerminal() {
+				return snapEvent.isTerminal();
+			}
+		};
 	}
 
 	/**
@@ -76,10 +82,10 @@ public class SegmentInserter {
 	 * 	End of segment.
 	 */
 	void addSecondaryNetworkEdge(Point2D source, Point2D target) {
-		Segment2D edge = new Segment2D(source, target);
-		assert !fullNetwork.graph().containsEdge(edge)
-			&& !secondaryNetwork.graph().containsEdge(edge);
+		assert !fullNetwork.graph().containsEdge(source, target)
+			&& !secondaryNetwork.graph().containsEdge(source, target);
 		assert !ShamosHoeyAlgorithm.areIntersected(fullNetwork.graph().edgeSet());
+		Segment2D edge = new Segment2D(source, target);
 		TestCanvas.canvas.draw(
 			edge,
 			DrawingSegment2D.withColorThin(Color.blue)
@@ -102,9 +108,8 @@ public class SegmentInserter {
 	 * <ul>
 	 * <li>{@link #fullNetwork}</li>
 	 * <li>{@link NetworksProducer#splitOriginalMesh}</li>
-	 * <li>{@link SecondaryRoadNetwork#enclosingCycle} or one of {@link
-	 * org.tendiwa.settlements.networks
-	 * .SecondaryRoadNetwork#enclosedCycles}</li>
+	 * <li>{@link Forest#enclosingCycle}
+	 * or one of {@link org.tendiwa.geometry.smartMesh.SecondaryRoadNetwork#enclosedCycles}</li>
 	 * </ul>
 	 *
 	 * @param segment
@@ -117,10 +122,6 @@ public class SegmentInserter {
 		assert fullNetwork.graph().containsEdge(segment);
 		minimumDistanceAssert(segment, splitPoint);
 		fullNetwork.splitEdge(new SplitSegment2D(segment, splitPoint));
-	}
-
-	boolean chanceToConnect() {
-		return random.nextDouble() < networkGenerationParameters.connectivity;
 	}
 
 	private void minimumDistanceAssert(Segment2D road, Point2D point) {
@@ -140,6 +141,7 @@ public class SegmentInserter {
 		return roadSegmentLength - networkGenerationParameters.secondaryNetworkSegmentLengthDeviation / 2 + random.nextDouble() *
 			networkGenerationParameters.secondaryNetworkSegmentLengthDeviation;
 	}
+
 	void addTwoMissingConnectionsToEnclosedCycle(OrientedCycle cycle) {
 		Function<Point2D, Double> getCoordinate = random.nextBoolean() ? Point2D::getX : Point2D::getY;
 		Comparator<Point2D> coordinateComparator = (

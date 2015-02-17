@@ -65,14 +65,8 @@ public class SuccessiveTuples {
 		consumer.accept(previous, first, second);
 	}
 
+	@FunctionalInterface
 	public interface TriConsumer<T> {
 		public void accept(T a, T b, T c);
-	}
-
-	public static void main(String[] args) {
-		forEach(
-			Arrays.asList(1, 2, 3),
-			(a, b, c) -> System.out.println(a + " " + b + " " + c)
-		);
 	}
 }

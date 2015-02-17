@@ -7,7 +7,7 @@ import org.jgrapht.UndirectedGraph;
 import org.jgrapht.alg.ConnectivityInspector;
 import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.extensions.polygonRasterization.PolygonRasterizer;
-import org.tendiwa.graphs.GraphCycleTraversal;
+import org.tendiwa.graphs.GraphChainTraversal;
 import org.tendiwa.graphs.MinimalCycle;
 
 import java.util.ArrayList;
@@ -25,11 +25,11 @@ public final class ShapeFromOutline {
 		List<List<Point2D>> polygons = new ArrayList<>(components.size());
 		for (Set<Point2D> component : components) {
 			List<Point2D> polygon = new ArrayList<>(component.size());
-			GraphCycleTraversal
+			GraphChainTraversal
 				.traverse(outline)
 				.startingWith(component.iterator().next())
 				.stream()
-				.map(GraphCycleTraversal.NeighborsTriplet::current)
+				.map(GraphChainTraversal.NeighborsTriplet::current)
 				.forEach(polygon::add);
 			polygons.add(polygon);
 		}

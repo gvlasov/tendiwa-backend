@@ -150,7 +150,7 @@ final class SnapTest {
 	 * {@link #result} if it is found.
 	 */
 	private void tryIntersectingRoad(Segment2D road) {
-		if (roadSticksToUnsnappedSegment(road)) {
+		if (roadSticksToCurrentResult(road)) {
 			return;
 		}
 		if (isSegmentIntersectionProbable(sourceNode, targetNode, road.start, road.end)) {
@@ -244,7 +244,7 @@ final class SnapTest {
 	 * 	A road.
 	 * @return true if a road has {@link #sourceNode} or {@link #targetNode} as one of its ends, false otherwise.
 	 */
-	private boolean roadSticksToUnsnappedSegment(Segment2D road) {
+	private boolean roadSticksToCurrentResult(Segment2D road) {
 		return road.start == sourceNode
 			|| road.end == sourceNode
 			|| road.start == targetNode
@@ -281,7 +281,12 @@ final class SnapTest {
 	 * 	End of line cd. Interchanging arguments for ab and cd should yield the same result.
 	 * @return true if it is possible
 	 */
-	private boolean isSegmentIntersectionProbable(Point2D abStart, Point2D abEnd, Point2D cdStart, Point2D cdEnd) {
+	private boolean isSegmentIntersectionProbable(
+		Point2D abStart,
+		Point2D abEnd,
+		Point2D cdStart,
+		Point2D cdEnd
+	) {
 		PointPosition pointPosition = new PointPosition(abStart, abEnd, cdStart);
 		PointPosition pointPosition2 = new PointPosition(abStart, abEnd, cdEnd);
 		if (Math.signum(pointPosition.s) == Math.signum(pointPosition2.s)) {

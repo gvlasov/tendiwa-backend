@@ -17,11 +17,6 @@ public class SplitOriginalMesh implements NetworkPart {
 	}
 
 	@Override
-	public void integrate(CutSegment2D cutSegment) {
-
-	}
-
-	@Override
 	public Graph2D graph() {
 		return graph;
 	}

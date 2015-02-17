@@ -9,7 +9,7 @@ import java.util.StringJoiner;
 
 import static org.junit.Assert.*;
 
-public class GraphCycleTraversalTest {
+public class GraphChainTraversalTest {
 	@Test
 	public void correctTraversionOrder() {
 		UndirectedGraph<Integer, DefaultEdge> graph =
@@ -18,7 +18,7 @@ public class GraphCycleTraversalTest {
 				.graph();
 		StringJoiner currents = new StringJoiner(", ");
 		StringJoiner nexts = new StringJoiner(", ");
-		GraphCycleTraversal
+		GraphChainTraversal
 			.traverse(graph)
 			.startingWith(4)
 			.stream()

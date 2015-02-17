@@ -22,8 +22,10 @@ public final class ShreddedSegment2D implements CutSegment2D {
 	}
 
 	public ShreddedSegment2D(Segment2D originalSegment, List<Point2D> splitPoints) {
-		this(originalSegment, splitPoints.size() - 1);
-		splitPoints.forEach(this::splitAt);
+		this(originalSegment, splitPoints.size() + 1);
+		splitPoints.stream()
+			.filter(point -> !originalSegment.start.equals(point) && !originalSegment.end.equals(point))
+			.forEach(this::splitAt);
 	}
 
 	private void splitAt(Point2D point) {
@@ -57,7 +59,7 @@ public final class ShreddedSegment2D implements CutSegment2D {
 		Segment2D answer = segments.stream()
 			.filter(s -> isPointInBoundingRectangle(startingPoint, s))
 			.findAny()
-			.get();
+			.orElseThrow(() -> new GeometryException("Can't find split part"));
 		assert !answer.start.equals(startingPoint)
 			&& !answer.end.equals(startingPoint);
 		return answer;
@@ -88,6 +90,11 @@ public final class ShreddedSegment2D implements CutSegment2D {
 	@Override
 	public Stream<Segment2D> stream() {
 		return segments.stream();
+	}
+
+	@Override
+	public boolean hasBeenCut() {
+		return segments.size() > 1;
 	}
 
 	@Override

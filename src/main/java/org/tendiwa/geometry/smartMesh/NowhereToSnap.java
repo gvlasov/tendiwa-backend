@@ -14,10 +14,9 @@ public class NowhereToSnap implements SnapEvent {
 	}
 
 	@Override
-	public SnapEvent integrateInto(FullNetwork fullNetwork, SegmentInserter segmentInserter) {
+	public void integrateInto(FullNetwork fullNetwork, SegmentInserter segmentInserter) {
 		fullNetwork.graph().addVertex(target);
 		segmentInserter.addSecondaryNetworkEdge(source, target);
-		return this;
 	}
 
 	@Override
@@ -26,7 +25,8 @@ public class NowhereToSnap implements SnapEvent {
 	}
 
 	@Override
-	public Optional<Point2D> nextNewNodePoint() {
-		return Optional.of(target);
+	public boolean isTerminal() {
+		return false;
 	}
+
 }

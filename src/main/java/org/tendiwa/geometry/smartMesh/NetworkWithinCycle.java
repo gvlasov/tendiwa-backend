@@ -1,6 +1,5 @@
 package org.tendiwa.geometry.smartMesh;
 
-import com.google.common.collect.ImmutableSet;
 import org.jgrapht.Graphs;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.UnmodifiableUndirectedGraph;
@@ -81,24 +80,12 @@ public final class NetworkWithinCycle {
 
 
 	public List<SecondaryRoadNetworkBlock> enclosedBlocks() {
-
-		UndirectedGraph<Point2D, Segment2D> graphWithLooseEnds = PlanarGraphs.copyGraph(secondaryRoadNetwork.graph());
-		Graphs.addGraph(graphWithLooseEnds, cycle());
-		if (!secondaryRoadNetwork.filamentEnds.isEmpty()) {
-			assert secondaryRoadNetwork.filamentEnds.stream().allMatch(end -> graphWithLooseEnds.degreeOf(end.point)
-				== 1);
-			GraphLooseEndsCloser
-				.withSnapSize(
-					networkGenerationParameters.segmentLength
-						+ networkGenerationParameters.secondaryNetworkSegmentLengthDeviation
-				)
-				.withFilamentEnds(secondaryRoadNetwork.filamentEnds)
-				.mutateGraph(graphWithLooseEnds);
-		}
-		SameOrPerpendicularSlopeGraphEdgesPerturbations.perturb(graphWithLooseEnds, 1e-4);
+		UndirectedGraph<Point2D, Segment2D> networkPartGraph = PlanarGraphs.copyGraph(secondaryRoadNetwork.graph());
+		Graphs.addGraph(networkPartGraph, cycle());
+		SameOrPerpendicularSlopeGraphEdgesPerturbations.perturb(networkPartGraph, 1e-4);
 
 		return PlanarGraphs
-			.minimumCycleBasis(graphWithLooseEnds)
+			.minimumCycleBasis(networkPartGraph)
 			.minimalCyclesSet()
 			.stream()
 			.map(cycle -> new SecondaryRoadNetworkBlock(cycle.vertexList()))

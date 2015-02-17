@@ -214,4 +214,18 @@ public class Segment2D {
 		}
 		throw new IllegalArgumentException("Argument must be either start or end point");
 	}
+
+	public boolean isOneOfEnds(Point2D point) {
+		return start.equals(point) || end.equals(point);
+	}
+
+	public boolean contains(Point2D point) {
+		double minX = Math.min(start.x, end.x);
+		double maxX = Math.max(start.x, end.x);
+		double minY = Math.min(start.y, end.y);
+		double maxY = Math.max(start.y, end.y);
+		return point.x >= minX && point.x <= maxX
+			&& point.y >= minY && point.y <= maxY
+			&& point.distanceToLine(this) < Vectors2D.EPSILON;
+	}
 }

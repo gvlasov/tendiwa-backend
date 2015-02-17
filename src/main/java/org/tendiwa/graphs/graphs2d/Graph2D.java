@@ -3,9 +3,7 @@ package org.tendiwa.graphs.graphs2d;
 import org.jgrapht.EdgeFactory;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
-import org.tendiwa.geometry.CutSegment2D;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
 
 import java.util.Collection;
@@ -36,6 +34,28 @@ public class Graph2D implements UndirectedGraph<Point2D, Segment2D> {
 			.map(s -> s.end)
 			.forEach(graph::addVertex);
 		shreddedSegment.forEach(this::addSegmentAsEdge);
+		assert !shreddedSegment.hasBeenCut() || !graph.containsEdge(shreddedSegment.originalSegment());
+	}
+
+	public boolean hasOnlyEdge(Segment2D edge) {
+		return graph.containsEdge(edge) && graph.edgeSet().size() == 1;
+	}
+
+	public Point2D findNeighborOnSegment(Point2D hub, Segment2D segment) {
+		if (!segment.isOneOfEnds(hub)) {
+			throw new IllegalArgumentException("Hub point should be one of the segment's ends");
+		}
+		Point2D answer = null;
+		for (Segment2D edge : graph.edgesOf(hub)) {
+			Point2D anotherEnd = edge.anotherEnd(hub);
+			if (segment.contains(anotherEnd)) {
+				if (answer != null) {
+					throw new GeometryException("2 neighbors of hub point are on segment");
+				}
+				answer = anotherEnd;
+			}
+		}
+		return answer;
 	}
 
 	@Override

@@ -7,7 +7,7 @@ import org.tendiwa.geometry.ShreddedSegment2D;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class CycleWithStartingPoints {
+final class CycleWithStartingPoints {
 
 	private final FullNetwork fullNetwork;
 	private final NetworkGenerationParameters networkGenerationParameters;
@@ -34,7 +34,7 @@ public class CycleWithStartingPoints {
 			.collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
-	void snapStartingPoints(Map<Segment2D, List<Point2D>> pointsOnPolygonBorder) {
+	private void snapStartingPoints(Map<Segment2D, List<Point2D>> pointsOnPolygonBorder) {
 		for (Map.Entry<Segment2D, List<Point2D>> entry : pointsOnPolygonBorder.entrySet()) {
 			for (int i = 0; i < entry.getValue().size(); i++) {
 				Point2D originalPoint = entry.getValue().get(i);
@@ -57,7 +57,7 @@ public class CycleWithStartingPoints {
 	 * @return Closest snappable end of {@code edge} or {@code startingPoint} if it is not close enough to either of
 	 * edges.
 	 */
-	Point2D snapToSegmentEnd(Point2D startingPoint, Segment2D edge) {
+	private Point2D snapToSegmentEnd(Point2D startingPoint, Segment2D edge) {
 		double toStart = startingPoint.squaredDistanceTo(edge.start);
 		double toEnd = startingPoint.squaredDistanceTo(edge.end);
 		// TODO: snapSize should be squared here?

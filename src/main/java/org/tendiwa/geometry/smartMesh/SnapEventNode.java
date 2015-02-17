@@ -2,8 +2,6 @@ package org.tendiwa.geometry.smartMesh;
 
 import org.tendiwa.geometry.Point2D;
 
-import java.util.Optional;
-
 public class SnapEventNode implements SnapEvent {
 	private final Point2D source;
 	private final Point2D target;
@@ -14,14 +12,9 @@ public class SnapEventNode implements SnapEvent {
 	}
 
 	@Override
-	public SnapEvent integrateInto(FullNetwork fullNetwork, SegmentInserter segmentInserter) {
-		if (segmentInserter.chanceToConnect()) {
-			assert fullNetwork.graph().containsVertex(target);
-			segmentInserter.addSecondaryNetworkEdge(source, target);
-			return this;
-		} else {
-			return SnapEvent.CHANCE_FAILED;
-		}
+	public void integrateInto(FullNetwork fullNetwork, SegmentInserter segmentInserter) {
+		assert fullNetwork.graph().containsVertex(target);
+		segmentInserter.addSecondaryNetworkEdge(source, target);
 	}
 
 	@Override
@@ -30,7 +23,8 @@ public class SnapEventNode implements SnapEvent {
 	}
 
 	@Override
-	public Optional<Point2D> nextNewNodePoint() {
-		return Optional.of(target);
+	public boolean isTerminal() {
+		return true;
 	}
+
 }
