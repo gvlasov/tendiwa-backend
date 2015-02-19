@@ -75,14 +75,17 @@ final class SnapTest {
 	 */
 	SnapEvent snap() {
 		if (fullNetworkGraph.containsVertex(targetNode)) {
-			return new SnapEventNode(sourceNode, targetNode);
+			return new SnapToNode(sourceNode, targetNode);
 		}
 		// Next lines try various snappings and set #result to the best possible snap event.
 		snapToNothing();
 		findSnapNode();
-		if (result instanceof SnapEventNode) {
+		if (result instanceof SnapToNode) {
 			targetNode = result.target();
 			minR = 1;
+		}
+		if (fullNetworkGraph.containsEdge(sourceNode, targetNode)) {
+			return new SnapToNeighbor();
 		}
 		roadsToTest.forEach(this::tryIntersectingRoad);
 		roadsToTest.forEach(this::trySnappingToRoad);
@@ -125,7 +128,7 @@ final class SnapTest {
 	}
 
 	private Optional<PointPosition> segmentSnapPosition(Segment2D segment) {
-		if (segment.start == sourceNode || segment.end == sourceNode) {
+		if (segment.isOneOfEnds(sourceNode)) {
 			return Optional.empty();
 		}
 		if (result instanceof NowhereToSnap) {
@@ -136,6 +139,9 @@ final class SnapTest {
 			segment.end,
 			targetNode
 		);
+		if (pointPosition.r >= minR) {
+			return Optional.empty();
+		}
 		if (pointPosition.r < Vectors2D.EPSILON || pointPosition.r > 1 - Vectors2D.EPSILON) {
 			return Optional.empty();
 		}
@@ -184,7 +190,7 @@ final class SnapTest {
 			PointPosition pointPosition = new PointPosition(sourceNode, targetNode, vertex);
 			if (isVertexBetterThanCurrentBestVertex(vertex, pointPosition)) {
 				minR = pointPosition.r;
-				result = new SnapEventNode(sourceNode, vertex);
+				result = new SnapToNode(sourceNode, vertex);
 			}
 		}
 	}

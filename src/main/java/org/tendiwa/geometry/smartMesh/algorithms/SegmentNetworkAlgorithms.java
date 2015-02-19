@@ -27,7 +27,7 @@ public final class SegmentNetworkAlgorithms {
 	 */
 	public static UndirectedGraph<Point2D, Segment2D> createFullCycleGraph(Segment2DSmartMesh model) {
 		UndirectedGraph<Point2D, Segment2D> answer = PlanarGraphs.createGraph();
-		model.getNetworks().forEach(network -> Graphs.addGraph(answer, network.cycle()));
+		model.networks().forEach(network -> Graphs.addGraph(answer, network.cycle()));
 		return answer;
 	}
 
@@ -36,7 +36,7 @@ public final class SegmentNetworkAlgorithms {
 	 */
 	public static UndirectedGraph<Point2D, Segment2D> createFullGraph(Segment2DSmartMesh model) {
 		UndirectedGraph<Point2D, Segment2D> answer = PlanarGraphs.createGraph();
-		model.getNetworks().forEach(network -> {
+		model.networks().forEach(network -> {
 			Graphs.addGraph(answer, network.cycle());
 			Graphs.addGraph(answer, network.network());
 		});
@@ -56,7 +56,7 @@ public final class SegmentNetworkAlgorithms {
 	) {
 		Map<NetworkWithinCycle, UndirectedGraph<Point2D, Segment2D>> answer = new LinkedHashMap<>();
 		TObjectIntMap<Segment2D> usedEdges = new TObjectIntHashMap<>();
-		for (NetworkWithinCycle network : model.getNetworks()) {
+		for (NetworkWithinCycle network : model.networks()) {
 			UndirectedGraph<Point2D, Segment2D> subgraph = new UndirectedSubgraph<>(
 				network.cycle(),
 				network.cycle().vertexSet(),
@@ -71,7 +71,7 @@ public final class SegmentNetworkAlgorithms {
 				}
 			}
 		}
-		assert model.getNetworks().stream()
+		assert model.networks().stream()
 			.flatMap(network -> network.cycle().edgeSet().stream())
 			.allMatch(usedEdges::containsKey);
 		for (UndirectedGraph<Point2D, Segment2D> subgraph : answer.values()) {

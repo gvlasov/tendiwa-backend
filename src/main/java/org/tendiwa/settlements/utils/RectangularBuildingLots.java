@@ -24,7 +24,7 @@ public final class RectangularBuildingLots {
 	) {
 		EnclosedCyclesSet enclosedCycles = new EnclosedCyclesSet(segment2DSmartMesh);
 
-		Set<EnclosedBlock> encBlocks = segment2DSmartMesh.getNetworks()
+		Set<EnclosedBlock> encBlocks = segment2DSmartMesh.networks()
 			.stream()
 			.flatMap(n -> n.enclosedBlocks().stream().filter(b -> !enclosedCycles.contains(b)))
 			.flatMap(b -> b.shrinkToRegions(3.3, 0).stream())
@@ -44,7 +44,7 @@ public final class RectangularBuildingLots {
 	}
 
 	private static void drawEnclosedBlocks(Segment2DSmartMesh segment2DSmartMesh, EnclosedCyclesSet enclosedCycles) {
-		segment2DSmartMesh.getNetworks()
+		segment2DSmartMesh.networks()
 			.stream()
 			.flatMap(n -> n.enclosedBlocks().stream().filter(enclosedCycles::contains))
 			.flatMap(b -> b.shrinkToRegions(3.3, 0).stream())

@@ -1,18 +1,18 @@
 package org.tendiwa.demos.settlements;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
+import org.apache.log4j.Logger;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.collections.Collectors;
 import org.tendiwa.data.FourCyclePenisGraph;
 import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.DrawableInto;
+import org.tendiwa.drawing.GifBuilder;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingChain;
-import org.tendiwa.drawing.extensions.DrawingModule;
-import org.tendiwa.drawing.extensions.DrawingRectangle;
-import org.tendiwa.drawing.extensions.StreetsColoring;
+import org.tendiwa.drawing.extensions.*;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.Segment2D;
@@ -78,7 +78,7 @@ public class BigCityDemo implements Runnable {
 			UndirectedGraph<Point2D, Segment2D> allRoads = RoadRejector.rejectPartOfNetworksBorders(
 				segment2DSmartMesh.getFullRoadGraph(),
 				segment2DSmartMesh,
-				1.0,
+				0.0,
 				new Random(1)
 			);
 //			UndirectedGraph<Point2D, Segment2D> allRoads = pathGeometry.getFullRoadGraph();
@@ -101,6 +101,8 @@ public class BigCityDemo implements Runnable {
 
 			drawLots(recGroups);
 
+			leavesAnimation(segment2DSmartMesh);
+
 //			Set<EnclosedBlock> blocks = roadsPlanarGraphModel.getBlocks()
 //				.stream()
 //				.flatMap(b -> b.shrinkToRegions(3, 0).stream())
@@ -109,6 +111,22 @@ public class BigCityDemo implements Runnable {
 //				canvas.draw(block, DrawingEnclosedBlock.withColor(Color.lightGray));
 //			}
 		});
+	}
+
+	private void leavesAnimation(Segment2DSmartMesh segment2DSmartMesh) {
+		TestCanvas canvasB = new TestCanvas(1, 800, 600);
+		GifBuilder gif = new GifBuilder(canvasB, 1, Logger.getRootLogger());
+		canvasB.fillBackground(Color.black);
+		canvasB.draw(segment2DSmartMesh.getFullRoadGraph(), DrawingGraph.withColorAndVertexSize(Color.red, 3));
+		ImmutableSet<Segment2D> whats = segment2DSmartMesh.innerTreeSegmentsEnds();
+		gif.saveFrame();
+		canvasB.drawAll(whats, DrawingSegment2D.withColorThin(Color.black));
+		canvasB.drawAll(whats, DrawingSegment2D.withColorThin(Color.black));
+		canvasB.drawAll(whats, DrawingSegment2D.withColorThin(Color.black));
+		canvasB.drawAll(segment2DSmartMesh.getFullRoadGraph().vertexSet(), DrawingPoint2D.withColorAndSize(Color
+			.red, 3));
+		gif.saveFrame();
+		gif.saveAnimation("/home/suseika/test.gif");
 	}
 
 	private void drawLots(Set<RectangleWithNeighbors> recGroups) {

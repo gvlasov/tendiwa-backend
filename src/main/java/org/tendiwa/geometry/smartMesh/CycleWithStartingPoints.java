@@ -60,13 +60,13 @@ final class CycleWithStartingPoints {
 	private Point2D snapToSegmentEnd(Point2D startingPoint, Segment2D edge) {
 		double toStart = startingPoint.squaredDistanceTo(edge.start);
 		double toEnd = startingPoint.squaredDistanceTo(edge.end);
-		// TODO: snapSize should be squared here?
+		double snapSizeSquared = networkGenerationParameters.snapSize*networkGenerationParameters.snapSize;
 		if (toStart < toEnd) {
-			if (toStart < networkGenerationParameters.snapSize) {
+			if (toStart < snapSizeSquared) {
 				return edge.start;
 			}
 		} else {
-			if (toEnd < networkGenerationParameters.snapSize) {
+			if (toEnd < snapSizeSquared) {
 				return edge.end;
 			}
 		}

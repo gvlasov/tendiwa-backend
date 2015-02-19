@@ -27,6 +27,11 @@ final class SnapEventRoad implements SnapEvent {
 	}
 
 	@Override
+	public boolean createsNewSegment() {
+		return true;
+	}
+
+	@Override
 	public Point2D target() {
 		return target;
 	}

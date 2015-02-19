@@ -9,6 +9,7 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.ShamosHoeyAlgorithm;
 import org.tendiwa.geometry.smartMesh.algorithms.SegmentNetworkAlgorithms;
+import org.tendiwa.graphs.graphs2d.Graph2D;
 
 import java.awt.Color;
 import java.util.Map;
@@ -41,6 +42,8 @@ public final class Segment2DSmartMesh {
 	 * [Kelly section 4.2.2]
 	 */
 	private final ImmutableSet<NetworkWithinCycle> networks;
+	private final Graph2D fullGraph;
+	private final Graph2D fullCycleGraph;
 
 	/**
 	 * @param originalGraph
@@ -63,12 +66,15 @@ public final class Segment2DSmartMesh {
 			throw new IllegalArgumentException("Graph intersects itself");
 		}
 
-		this.networks = new NetworksProducer(
+		NetworksProducer networksProducer = new NetworksProducer(
 			originalGraph,
 			parameters,
 			random
-		).stream()
+		);
+		this.networks = networksProducer.stream()
 			.collect(toImmutableSet());
+		this.fullGraph = networksProducer.fullGraph();
+		this.fullCycleGraph = networksProducer.fullCycleGraph();
 		if (networks.isEmpty()) {
 			throw new GeometryException("A RoadPlanarGraphModel with 0 city networks was made");
 		}
@@ -79,20 +85,26 @@ public final class Segment2DSmartMesh {
 	 *
 	 * @return All CityCells of this City.
 	 */
-	public ImmutableSet<NetworkWithinCycle> getNetworks() {
+	public ImmutableSet<NetworkWithinCycle> networks() {
 		return networks;
 	}
 
 	public UndirectedGraph<Point2D, Segment2D> getFullRoadGraph() {
-		return SegmentNetworkAlgorithms.createFullGraph(this);
+		return fullGraph;
 	}
 
 	public UndirectedGraph<Point2D, Segment2D> getFullCycleGraph() {
-		return SegmentNetworkAlgorithms.createFullCycleGraph(this);
+		return fullCycleGraph;
 	}
 
 	public Map<NetworkWithinCycle, UndirectedGraph<Point2D, Segment2D>> outerCycleEdges(
 	) {
 		return SegmentNetworkAlgorithms.outerCycleEdges(this);
+	}
+
+	public ImmutableSet<Segment2D> innerTreeSegmentsEnds() {
+		return networks.stream()
+			.flatMap(network -> network.innerTreesEndSegments().stream())
+			.collect(toImmutableSet());
 	}
 }

@@ -5,7 +5,10 @@ import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.graphs2d.Graph2D;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Random;
+import java.util.Set;
 
 final class FloodNetworkTree {
 	private final Canopy canopy;
@@ -13,8 +16,7 @@ final class FloodNetworkTree {
 	private final SegmentInserter segmentInserter;
 	private final NetworkGenerationParameters parameters;
 	private final Random random;
-	private final Deque<Ray> leafRays;
-	private Set<Segment2D> ends;
+	private final Deque<Ray> branchEnds;
 
 	FloodNetworkTree(
 		Ray start,
@@ -30,13 +32,12 @@ final class FloodNetworkTree {
 		this.parameters = parameters;
 		this.random = random;
 
-		this.ends = new LinkedHashSet<>();
-		this.leafRays = new ArrayDeque<>();
-
+		this.branchEnds = new ArrayDeque<>();
 		propagateFromRoot(start);
 	}
 
 	private void propagateFromRoot(Ray start) {
+		branchEnds.add(start);
 		Ray ray = getNextLeafRay();
 		if (ray == null) {
 			return;
@@ -46,7 +47,7 @@ final class FloodNetworkTree {
 
 
 	boolean isDepleted() {
-		return leafRays.isEmpty();
+		return branchEnds.isEmpty();
 	}
 
 	void propagate() {
@@ -65,40 +66,35 @@ final class FloodNetworkTree {
 
 	@Nullable
 	private Ray getNextLeafRay() {
-		Ray ray = null;
-		while (!leafRays.isEmpty()) {
-			ray = leafRays.removeLast();
-			if (!canopy.containsLeaf(ray.start)) {
-				break;
-			}
-		}
-		return ray;
+		//		while (!branchEnds.isEmpty()) {
+		//			if (!canopy.containsLeaf(ray.start)) {
+//				nextLeafRay = ray;
+//				break;
+//			}
+//		}
+		return branchEnds.removeLast();
 	}
 
 	private void propagateFromRay(Ray ray) {
-		canopy.removeLeaf(ray.start);
-		PropagationStep nextStep = segmentInserter.tryPlacingRoad(ray);
-		if (nextStep.isTerminal()) {
-			saveLeaf(ray.start, nextStep.ray().start);
-		} else {
-			Ray newRay = nextStep.ray();
-			assert !segmentInserter.isDeadEnd(newRay.start);
-			leafRays.push(newRay);
-			canopy.addLeaf(newRay.start);
+		SnapEvent nextStep = segmentInserter.tryPlacingRoad(ray);
+		if (nextStep.createsNewSegment()) {
+			if (nextStep.isTerminal()) {
+				Point2D leaf = nextStep.target();
+				saveLeaf(ray.start, leaf);
+				canopy.addLeaf(leaf);
+			} else {
+				Ray newRay = new Ray(
+					nextStep.target(),
+					ray.start.angleTo(nextStep.target())
+				);
+				assert !segmentInserter.isDeadEnd(newRay.start);
+				branchEnds.push(newRay);
+			}
 		}
 	}
 
 	private void saveLeaf(Point2D start, Point2D end) {
-		ends.add(fullGraph.getEdge(start, end));
-	}
-
-	/**
-	 * Start of a segment is a petiole, end of a segment is a leaf.
-	 *
-	 * @return A set that contains a petiole-leaf segment for each leaf of this tree that can't be grown any further.
-	 */
-	Set<Segment2D> leavesWithPetioles() {
-		return ends;
+		canopy.addLeafWithPetiole(fullGraph.getEdge(start, end));
 	}
 
 	private double directionOfIthSpoke(Ray node, int i) {
@@ -135,4 +131,7 @@ final class FloodNetworkTree {
 		}
 	}
 
+	Set<Segment2D> leavesWithPetioles() {
+		return canopy.leavesWithPetioles();
+	}
 }

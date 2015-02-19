@@ -12,7 +12,7 @@ public class CityDrawer implements DrawingAlgorithm<Segment2DSmartMesh> {
 	@Override
 	public void draw(Segment2DSmartMesh segment2DSmartMesh, DrawableInto canvas) {
 //		Iterator<Color> colors = Iterators.cycle(Color.red, Color.blue, Color.green, Color.orange, Color.cyan, Color.black);
-		segment2DSmartMesh.getNetworks().stream()
+		segment2DSmartMesh.networks().stream()
 			.forEach(c -> c.network().edgeSet().stream()
 					.forEach(line -> {
 //							canvas.drawRasterLine(line.start.toCell(), line.end.toCell(), colors.next());

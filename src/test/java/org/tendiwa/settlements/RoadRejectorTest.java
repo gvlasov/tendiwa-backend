@@ -60,7 +60,7 @@ public class RoadRejectorTest {
 		UndirectedGraph<Point2D, Segment2D> graphWithoutCycleEdges = RoadRejector.rejectPartOfNetworksBorders(fullRoadGraph, geometry, 1.0, new Random(1));
 		assertTrue(
 			geometry
-				.getNetworks()
+				.networks()
 				.stream()
 				.flatMap(network -> network.cycle().edgeSet().stream())
 				.allMatch(e -> !graphWithoutCycleEdges.containsEdge(e))

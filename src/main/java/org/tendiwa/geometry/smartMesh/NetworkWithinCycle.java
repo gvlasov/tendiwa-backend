@@ -1,5 +1,6 @@
 package org.tendiwa.geometry.smartMesh;
 
+import com.google.common.collect.ImmutableSet;
 import org.jgrapht.Graphs;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.UnmodifiableUndirectedGraph;
@@ -21,9 +22,8 @@ import static java.util.stream.Collectors.toList;
  * (one of those in <i>minimal cycle basis</i> from [Kelly section 4.3.1, figure 41]).
  */
 public final class NetworkWithinCycle {
-	private final SecondaryRoadNetwork secondaryRoadNetwork;
+	private final InnerForest innerForest;
 	private final OrientedCycle enclosingCycle;
-	private final NetworkGenerationParameters networkGenerationParameters;
 
 	/**
 	 * @param fullNetwork
@@ -44,7 +44,6 @@ public final class NetworkWithinCycle {
 		NetworkGenerationParameters networkGenerationParameters,
 		Random random
 	) {
-		this.networkGenerationParameters = networkGenerationParameters;
 
 		this.enclosingCycle = splitOriginalMesh.createCycleNetworkPart(originalMinimalCycle);
 		fullNetwork.addNetworkPart(enclosingCycle);
@@ -54,7 +53,7 @@ public final class NetworkWithinCycle {
 			.collect(Collectors.toCollection(LinkedHashSet::new));
 		enclosedCycles.forEach(fullNetwork::addNetworkPart);
 
-		this.secondaryRoadNetwork = new SecondaryRoadNetwork(
+		this.innerForest = new InnerForest(
 			fullNetwork,
 			splitOriginalMesh,
 			enclosingCycle,
@@ -71,7 +70,7 @@ public final class NetworkWithinCycle {
 	 * @return An unmodifiable graph containing this NetworkWithinCycle's secondary road network.
 	 */
 	public UndirectedGraph<Point2D, Segment2D> network() {
-		return new UnmodifiableUndirectedGraph<>(secondaryRoadNetwork.graph());
+		return new UnmodifiableUndirectedGraph<>(innerForest.graph());
 	}
 
 	public UndirectedGraph<Point2D, Segment2D> cycle() {
@@ -80,7 +79,7 @@ public final class NetworkWithinCycle {
 
 
 	public List<SecondaryRoadNetworkBlock> enclosedBlocks() {
-		UndirectedGraph<Point2D, Segment2D> networkPartGraph = PlanarGraphs.copyGraph(secondaryRoadNetwork.graph());
+		UndirectedGraph<Point2D, Segment2D> networkPartGraph = PlanarGraphs.copyGraph(innerForest.graph());
 		Graphs.addGraph(networkPartGraph, cycle());
 		SameOrPerpendicularSlopeGraphEdgesPerturbations.perturb(networkPartGraph, 1e-4);
 
@@ -90,5 +89,9 @@ public final class NetworkWithinCycle {
 			.stream()
 			.map(cycle -> new SecondaryRoadNetworkBlock(cycle.vertexList()))
 			.collect(toList());
+	}
+
+	ImmutableSet<Segment2D> innerTreesEndSegments() {
+		return innerForest.leavesWithPetioles();
 	}
 }

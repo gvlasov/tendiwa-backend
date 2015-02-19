@@ -56,7 +56,7 @@ public final class RoadRejector {
 		Segment2DSmartMesh segment2DSmartMesh // TODO: Maybe extract an interface with cycle() method so graph and cityGeometry won't seem coupled
 	) {
 		UndirectedSubgraph<Point2D, Segment2D> modifiedGraph = new UndirectedSubgraph<>(graph, graph.vertexSet(), graph.edgeSet());
-		for (NetworkWithinCycle networkWithinCycle : segment2DSmartMesh.getNetworks()) {
+		for (NetworkWithinCycle networkWithinCycle : segment2DSmartMesh.networks()) {
 			for (Segment2D edge : networkWithinCycle.cycle().edgeSet()) {
 				if (modifiedGraph.containsEdge(edge)) {
 					modifiedGraph.removeEdge(edge);

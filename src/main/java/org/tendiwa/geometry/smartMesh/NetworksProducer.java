@@ -8,6 +8,7 @@ import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.geometry.extensions.Point2DRowComparator;
 import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.graphs.MinimumCycleBasis;
+import org.tendiwa.graphs.graphs2d.Graph2D;
 import org.tendiwa.settlements.SettlementGenerationException;
 
 import java.util.LinkedHashSet;
@@ -89,5 +90,13 @@ final class NetworksProducer {
 				)
 				.collect(Collectors.toList())
 		);
+	}
+
+	Graph2D fullGraph() {
+		return fullNetwork.graph();
+	}
+
+	Graph2D fullCycleGraph() {
+		return splitOriginalMesh.graph();
 	}
 }

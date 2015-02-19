@@ -43,7 +43,7 @@ public class SegmentInserter {
 	 * <p>
 	 * Tries adding a new road to the secondary road network graph.
 	 */
-	PropagationStep tryPlacingRoad(Ray beginning) {
+	SnapEvent tryPlacingRoad(Ray beginning) {
 		double segmentLength = deviatedLength(networkGenerationParameters.segmentLength);
 		SnapEvent snapEvent = new SnapTest(
 			networkGenerationParameters.snapSize,
@@ -51,22 +51,10 @@ public class SegmentInserter {
 			beginning.placeEnd(segmentLength),
 			fullNetwork.graph()
 		).snap();
-		snapEvent.integrateInto(fullNetwork, this);
-		return createPropagationStep(beginning, snapEvent);
-	}
-
-	private PropagationStep createPropagationStep(final Ray beginning, final SnapEvent snapEvent) {
-		return new PropagationStep() {
-			@Override
-			public Ray ray() {
-				return new Ray(snapEvent.target(), beginning.direction);
-			}
-
-			@Override
-			public boolean isTerminal() {
-				return snapEvent.isTerminal();
-			}
-		};
+		if (snapEvent.createsNewSegment()) {
+			snapEvent.integrateInto(fullNetwork, this);
+		}
+		return snapEvent;
 	}
 
 	/**
@@ -84,7 +72,6 @@ public class SegmentInserter {
 	void addSecondaryNetworkEdge(Point2D source, Point2D target) {
 		assert !fullNetwork.graph().containsEdge(source, target)
 			&& !secondaryNetwork.graph().containsEdge(source, target);
-		assert !ShamosHoeyAlgorithm.areIntersected(fullNetwork.graph().edgeSet());
 		Segment2D edge = new Segment2D(source, target);
 		TestCanvas.canvas.draw(
 			edge,
@@ -96,6 +83,7 @@ public class SegmentInserter {
 		fullNetwork.graph().addSegmentAsEdge(edge);
 		fullNetwork.addNetworkPart(edge, fullNetwork);
 		fullNetwork.addNetworkPart(edge, secondaryNetwork);
+		assert !ShamosHoeyAlgorithm.areIntersected(fullNetwork.graph().edgeSet());
 	}
 
 	/**
@@ -108,7 +96,7 @@ public class SegmentInserter {
 	 * <ul>
 	 * <li>{@link #fullNetwork}</li>
 	 * <li>{@link NetworksProducer#splitOriginalMesh}</li>
-	 * <li>{@link Forest#enclosingCycle}
+	 * <li>{@link InnerForest#enclosingCycle}
 	 * or one of {@link org.tendiwa.geometry.smartMesh.SecondaryRoadNetwork#enclosedCycles}</li>
 	 * </ul>
 	 *

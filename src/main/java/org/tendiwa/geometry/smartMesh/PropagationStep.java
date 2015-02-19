@@ -1,6 +1,16 @@
 package org.tendiwa.geometry.smartMesh;
 
+import org.tendiwa.geometry.Point2D;
+
 interface PropagationStep {
-	Ray ray();
+	/**
+	 * @return
+	 * @throws java.lang.UnsupportedOperationException
+	 * 	if {@link #createsNewSegment()} is false.
+	 */
+	Point2D target();
+
 	boolean isTerminal();
+
+	boolean createsNewSegment();
 }

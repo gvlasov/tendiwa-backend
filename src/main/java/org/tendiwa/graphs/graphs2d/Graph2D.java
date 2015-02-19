@@ -19,10 +19,10 @@ public class Graph2D implements UndirectedGraph<Point2D, Segment2D> {
 		}
 	}
 
-	public void integrateCutSegment(CutSegment2D shreddedSegment) {
-		Segment2D originalSegment = shreddedSegment.originalSegment();
+	public void integrateCutSegment(CutSegment2D cutSegment) {
+		Segment2D originalSegment = cutSegment.originalSegment();
 		boolean removed = graph.removeEdge(
-			originalSegment
+			cutSegment.originalSegment()
 		);
 		if (!removed) {
 			throw new IllegalArgumentException(
@@ -30,11 +30,11 @@ public class Graph2D implements UndirectedGraph<Point2D, Segment2D> {
 					originalSegment + " in the graph"
 			);
 		}
-		shreddedSegment.stream()
+		cutSegment.stream()
 			.map(s -> s.end)
 			.forEach(graph::addVertex);
-		shreddedSegment.forEach(this::addSegmentAsEdge);
-		assert !shreddedSegment.hasBeenCut() || !graph.containsEdge(shreddedSegment.originalSegment());
+		cutSegment.forEach(this::addSegmentAsEdge);
+		assert !cutSegment.hasBeenCut() || !graph.containsEdge(originalSegment);
 	}
 
 	public boolean hasOnlyEdge(Segment2D edge) {
