@@ -23,7 +23,7 @@ final class InnerForest implements NetworkPart {
 	private final NetworkGenerationParameters parameters;
 	private final Random random;
 	private final Canopy canopy;
-	private final Set<FloodNetworkTree> floodTrees;
+	private final Set<InnerTree> floodTrees;
 	private final Graph2D graph;
 
 	InnerForest(
@@ -66,12 +66,12 @@ final class InnerForest implements NetworkPart {
 	}
 
 
-	private void growTrees(Collection<FloodNetworkTree> floodTrees) {
+	private void growTrees(Collection<InnerTree> floodTrees) {
 		floodTrees = new ArrayList<>(floodTrees);
 		while (!floodTrees.isEmpty()) {
-			Iterator<FloodNetworkTree> iterator = floodTrees.iterator();
+			Iterator<InnerTree> iterator = floodTrees.iterator();
 			while (iterator.hasNext()) {
-				FloodNetworkTree tree = iterator.next();
+				InnerTree tree = iterator.next();
 				if (tree.isDepleted()) {
 					iterator.remove();
 				} else {
@@ -86,8 +86,8 @@ final class InnerForest implements NetworkPart {
 		return enclosingCycle.deviatedAngleBisector(point, true);
 	}
 
-	private FloodNetworkTree createFloodTree(Ray ray) {
-		return new FloodNetworkTree(
+	private InnerTree createFloodTree(Ray ray) {
+		return new InnerTree(
 			ray,
 			canopy,
 			fullNetwork.graph(),
@@ -100,7 +100,7 @@ final class InnerForest implements NetworkPart {
 	/**
 	 * Starts flood-filling innards of the cycle from no greater than {@code maxNumOfStartPoints} points.
 	 */
-	private Set<FloodNetworkTree> grow() {
+	private Set<InnerTree> grow() {
 		Collection<Point2D> startingPoints = new CycleWithStartingPoints(
 			fullNetwork,
 			parameters
@@ -108,7 +108,7 @@ final class InnerForest implements NetworkPart {
 			computeRootsOnSegments()
 		);
 		TestCanvas.canvas.drawAll(startingPoints, DrawingPoint2D.withColorAndSize(Color.red, 5));
-		Set<FloodNetworkTree> floodTrees = startingPoints.stream()
+		Set<InnerTree> floodTrees = startingPoints.stream()
 			.map(this::createFloodStart)
 			.map(this::createFloodTree)
 			.collect(Collectors.toCollection(LinkedHashSet::new));

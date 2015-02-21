@@ -7,10 +7,7 @@ import org.tendiwa.geometry.RayIntersection;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Vectors2D;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -88,7 +85,9 @@ final class SnapTest {
 			return new SnapToNeighbor();
 		}
 		roadsToTest.forEach(this::tryIntersectingRoad);
-		roadsToTest.forEach(this::trySnappingToRoad);
+		if (result instanceof NowhereToSnap) {
+			roadsToTest.forEach(this::trySnappingToRoad);
+		}
 		return result;
 	}
 

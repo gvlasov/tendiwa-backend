@@ -2,7 +2,6 @@ package org.tendiwa.geometry.smartMesh;
 
 final class NetworkGenerationParameters {
 	final int roadsFromPoint;
-	final double connectivity;
 	final double segmentLength;
 	final double snapSize;
 	final int maxStartPointsPerCell;
@@ -15,11 +14,6 @@ final class NetworkGenerationParameters {
 	 * 	[Kelly figure 42, variable ParamDegree]
 	 * 	<p>
 	 * 	How many lines would normally go from one point of secondary road network.
-	 * @param connectivity
-	 * 	[Kelly figure 42, variable ParamConnectivity]
-	 * 	<p>
-	 * 	How likely it is to snap to node or road when possible. When connectivity == 1.0, algorithm will always
-	 * 	snap when possible. When connectivity == 0.0, algorithm will never snap.
 	 * @param segmentLength
 	 * 	[Kelly figure 42, variable ParamSegmentLength]
 	 * 	<p>
@@ -45,9 +39,7 @@ final class NetworkGenerationParameters {
 	 * 	and "calculate deviated boundaryRoad perpendicular".
 	 */
 	NetworkGenerationParameters(
-
 		int roadsFromPoint,
-		double connectivity,
 		double segmentLength,
 		double snapSize,
 		int maxStartPointsPerCell,
@@ -63,14 +55,10 @@ final class NetworkGenerationParameters {
 				"segmentLength (the former is " + secondaryRoadNetworkDeviationAngle + ", " +
 				"the latter is " + segmentLength + ")");
 		}
-		if (connectivity < 0 || connectivity > 1) {
-			throw new IllegalArgumentException("Connectivity must be in range [0.0; 1.0]");
-		}
 		if (maxStartPointsPerCell < 0) {
 			throw new IllegalArgumentException("NumOfStartPoints must be at least 0");
 		}
 		this.roadsFromPoint = roadsFromPoint;
-		this.connectivity = connectivity;
 		this.segmentLength = segmentLength;
 		this.snapSize = snapSize;
 		this.maxStartPointsPerCell = maxStartPointsPerCell;

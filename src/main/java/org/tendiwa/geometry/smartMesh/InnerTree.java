@@ -10,7 +10,7 @@ import java.util.Deque;
 import java.util.Random;
 import java.util.Set;
 
-final class FloodNetworkTree {
+final class InnerTree {
 	private final Canopy canopy;
 	private final Graph2D fullGraph;
 	private final SegmentInserter segmentInserter;
@@ -18,7 +18,7 @@ final class FloodNetworkTree {
 	private final Random random;
 	private final Deque<Ray> branchEnds;
 
-	FloodNetworkTree(
+	InnerTree(
 		Ray start,
 		Canopy canopy,
 		Graph2D fullGraph,

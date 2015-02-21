@@ -64,13 +64,11 @@ final class FullNetwork implements NetworkPart {
 			return;
 		}
 		Segment2D originalSegment = cutSegment.originalSegment();
-		Stream<Collection<NetworkPart>> graphHolders = cutSegment.stream()
-			.map(this::obtainCollectionFor);
-		for (NetworkPart part : edgesToNetworkParts.get(originalSegment)) {
-			part.integrate(cutSegment);
-			graphHolders = graphHolders.peek(gh -> gh.add(part));
-		}
-		graphHolders.forEach(Consumers::doNothing);
+		Collection<NetworkPart> partsOwningEdge = edgesToNetworkParts.get(originalSegment);
+		partsOwningEdge.forEach(part -> part.integrate(cutSegment));
+		cutSegment.stream()
+			.map(this::obtainCollectionFor)
+			.forEach(gh -> gh.addAll(partsOwningEdge));
 	}
 
 	private Collection<NetworkPart> obtainCollectionFor(Segment2D segment) {

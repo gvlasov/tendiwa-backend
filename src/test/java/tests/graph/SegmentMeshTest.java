@@ -73,7 +73,6 @@ public class SegmentMeshTest {
 				.withMaxStartPointsPerCycle(pointsPerCycle)
 				.withRoadsFromPoint(roadsFromPoint)
 				.withSecondaryRoadNetworkDeviationAngle(dAngle)
-				.withConnectivity(connectivity)
 				.withRoadSegmentLength(segmentLength[0], segmentLength[1])
 				.withSnapSize(snapSize)
 				.withSeed(i)

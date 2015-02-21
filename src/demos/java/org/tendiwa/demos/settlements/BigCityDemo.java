@@ -53,9 +53,8 @@ public class BigCityDemo implements Runnable {
 			Segment2DSmartMesh segment2DSmartMesh = new SegmentNetworkBuilder(graph)
 				.withDefaults()
 				.withMaxStartPointsPerCycle(5)
-				.withRoadsFromPoint(2)
+				.withRoadsFromPoint(3)
 				.withSecondaryRoadNetworkDeviationAngle(0.5)
-				.withConnectivity(1.0)
 				.withRoadSegmentLength(20)
 				.withSnapSize(5)
 				.withSeed(seed)
@@ -101,7 +100,7 @@ public class BigCityDemo implements Runnable {
 
 			drawLots(recGroups);
 
-			leavesAnimation(segment2DSmartMesh);
+//			leavesAnimation(segment2DSmartMesh);
 
 //			Set<EnclosedBlock> blocks = roadsPlanarGraphModel.getBlocks()
 //				.stream()

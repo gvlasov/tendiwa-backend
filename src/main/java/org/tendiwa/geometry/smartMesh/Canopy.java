@@ -8,7 +8,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- * Aggregate of leaves of depleted branches of {@link org.tendiwa.geometry.smartMesh.FloodNetworkTree}s.
+ * Aggregate of leaves of depleted branches of {@link InnerTree}s.
  * <p>
  * This is a <a href="http://en.wikipedia.org/wiki/Mediator_pattern">Mediator</a> that helps FloodNetworkTrees remove
  * leaves already terminated by another FloodNetworkTree.

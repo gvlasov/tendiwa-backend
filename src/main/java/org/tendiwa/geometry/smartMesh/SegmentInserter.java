@@ -96,8 +96,8 @@ public class SegmentInserter {
 	 * <ul>
 	 * <li>{@link #fullNetwork}</li>
 	 * <li>{@link NetworksProducer#splitOriginalMesh}</li>
-	 * <li>{@link InnerForest#enclosingCycle}
-	 * or one of {@link org.tendiwa.geometry.smartMesh.SecondaryRoadNetwork#enclosedCycles}</li>
+	 * <li>{@link InnerForest#enclosingCycle}</li>
+	 * <li>or one of {@link InnerForest#enclosedCycles}</li>
 	 * </ul>
 	 *
 	 * @param segment

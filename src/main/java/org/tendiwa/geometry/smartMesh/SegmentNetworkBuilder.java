@@ -58,7 +58,6 @@ public class SegmentNetworkBuilder {
 	private Integer samplesPerStep;
 	private Double deviationAngle;
 	private Integer roadsFromPoint;
-	private Double connectivity;
 	private Double roadSegmentLength;
 	private Double snapSize;
 	private Integer maxNumOfStartPoints;
@@ -164,16 +163,6 @@ public class SegmentNetworkBuilder {
 		return this;
 	}
 
-	public SegmentNetworkBuilder withConnectivity(double connectivity) {
-		if (connectivity < 0 || connectivity > 1) {
-			throw new IllegalArgumentException(
-				"Connectivity must be < 0 and > 1 (" + connectivity + " provided)"
-			);
-		}
-		this.connectivity = connectivity;
-		return this;
-	}
-
 	public SegmentNetworkBuilder withRoadsFromPoint(int amount) {
 		if (amount < 2) {
 			throw new IllegalArgumentException("roadsFromPoint must be >= 2");
@@ -205,7 +194,6 @@ public class SegmentNetworkBuilder {
 		sampleRadius = DEFAULT_SAMPLE_RADIUS;
 		samplesPerStep = DEFAULT_SAMPLES_PER_STEP;
 		roadsFromPoint = DEFAULT_ROADS_FROM_POINT;
-		connectivity = DEFAULT_CONNECTIVITY;
 		roadSegmentLength = DEFAULT_ROAD_SEGMENT_LENGTH;
 		snapSize = DEFAULT_SNAP_SIZE;
 		deviationAngle = DEFAULT_DEVIATION_ANGLE;
@@ -232,9 +220,6 @@ public class SegmentNetworkBuilder {
 		if (roadsFromPoint == null) {
 			throw new IllegalStateException("roadsFromPoint not set");
 		}
-		if (connectivity == null) {
-			throw new IllegalStateException("connectivity not set");
-		}
 		if (roadSegmentLength == null) {
 			throw new IllegalStateException("segmentLength not set");
 		}
@@ -255,7 +240,6 @@ public class SegmentNetworkBuilder {
 		}
 		NetworkGenerationParameters parameters = new NetworkGenerationParameters(
 			roadsFromPoint,
-			connectivity,
 			roadSegmentLength,
 			snapSize,
 			maxNumOfStartPoints,
