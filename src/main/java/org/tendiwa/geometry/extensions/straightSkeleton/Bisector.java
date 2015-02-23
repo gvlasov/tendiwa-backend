@@ -110,8 +110,6 @@ public class Bisector {
 				dy = -dy;
 			}
 		}
-		System.out.println(dx + " " + dy + " " + sdx + " " + sdy);
-		System.out.println(segment);
 		return new Segment2D(segment.start, new Point2D(segment.start.x + dx, segment.start.y + dy));
 	}
 }

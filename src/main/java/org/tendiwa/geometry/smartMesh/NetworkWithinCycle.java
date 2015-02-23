@@ -63,12 +63,6 @@ public final class NetworkWithinCycle {
 		);
 	}
 
-
-	/**
-	 * Creates an unmodifiable view of {@link SecondaryRoadNetwork#graph}.
-	 *
-	 * @return An unmodifiable graph containing this NetworkWithinCycle's secondary road network.
-	 */
 	public UndirectedGraph<Point2D, Segment2D> network() {
 		return new UnmodifiableUndirectedGraph<>(innerForest.graph());
 	}
@@ -93,5 +87,9 @@ public final class NetworkWithinCycle {
 
 	ImmutableSet<Segment2D> innerTreesEndSegments() {
 		return innerForest.leavesWithPetioles();
+	}
+
+	public Set<Point2D> exitsOnCycles() {
+		return innerForest.treeRoots();
 	}
 }

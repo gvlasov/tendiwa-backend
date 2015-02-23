@@ -4,7 +4,6 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.graphs2d.Graph2D;
 
-import javax.annotation.Nullable;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Random;
@@ -17,6 +16,8 @@ final class InnerTree {
 	private final NetworkGenerationParameters parameters;
 	private final Random random;
 	private final Deque<Ray> branchEnds;
+	final boolean grown;
+	final Point2D root;
 
 	InnerTree(
 		Ray start,
@@ -34,11 +35,13 @@ final class InnerTree {
 
 		this.branchEnds = new ArrayDeque<>();
 		propagateFromRoot(start);
+		this.grown = !branchEnds.isEmpty();
+		this.root = start.start;
 	}
 
 	private void propagateFromRoot(Ray start) {
 		branchEnds.add(start);
-		Ray ray = getNextLeafRay();
+		Ray ray = branchEnds.removeLast();
 		if (ray == null) {
 			return;
 		}
@@ -51,7 +54,7 @@ final class InnerTree {
 	}
 
 	void propagate() {
-		Ray ray = getNextLeafRay();
+		Ray ray = branchEnds.removeLast();
 		if (ray == null) {
 			return;
 		}
@@ -64,23 +67,12 @@ final class InnerTree {
 		}
 	}
 
-	@Nullable
-	private Ray getNextLeafRay() {
-		//		while (!branchEnds.isEmpty()) {
-		//			if (!canopy.containsLeaf(ray.start)) {
-//				nextLeafRay = ray;
-//				break;
-//			}
-//		}
-		return branchEnds.removeLast();
-	}
-
 	private void propagateFromRay(Ray ray) {
 		SnapEvent nextStep = segmentInserter.tryPlacingRoad(ray);
 		if (nextStep.createsNewSegment()) {
 			if (nextStep.isTerminal()) {
 				Point2D leaf = nextStep.target();
-				saveLeaf(ray.start, leaf);
+				saveLeafWithPetiole(ray.start, leaf);
 				canopy.addLeaf(leaf);
 			} else {
 				Ray newRay = new Ray(
@@ -93,7 +85,7 @@ final class InnerTree {
 		}
 	}
 
-	private void saveLeaf(Point2D start, Point2D end) {
+	private void saveLeafWithPetiole(Point2D start, Point2D end) {
 		canopy.addLeafWithPetiole(fullGraph.getEdge(start, end));
 	}
 
@@ -133,5 +125,12 @@ final class InnerTree {
 
 	Set<Segment2D> leavesWithPetioles() {
 		return canopy.leavesWithPetioles();
+	}
+
+	boolean isGrown() {
+		return grown;
+	}
+	Point2D root() {
+		return root;
 	}
 }

@@ -1,7 +1,9 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
 import com.google.common.collect.Iterators;
+import org.tendiwa.collections.SuccessiveTuples;
 import org.tendiwa.drawing.DrawableInto;
+import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingPoint2D;
 import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
@@ -34,7 +36,6 @@ abstract class Node implements Iterable<Node> {
 	protected OriginalEdgeStart previousEdgeStart;
 	protected Segment2D currentEdge;
 	final Point2D vertex;
-	static DrawableInto canvas;
 
 	Node(Point2D point, OriginalEdgeStart previousEdgeStart, OriginalEdgeStart currentEdgeStart) {
 		this(point);
@@ -75,6 +76,14 @@ abstract class Node implements Iterable<Node> {
 
 	protected Node(Point2D vertex) {
 		this.vertex = vertex;
+	}
+
+	public void drawLav() {
+		SuccessiveTuples.forEach(this, (a, b) -> {
+			TestCanvas.canvas.draw(
+				new Segment2D(a.vertex, b.vertex), DrawingSegment2D.withColorDirected(Color.cyan, 1)
+			);
+		});
 	}
 
 	abstract boolean hasPair();
@@ -122,9 +131,10 @@ abstract class Node implements Iterable<Node> {
 			next.vertex
 		);
 		bisector = new Bisector(previousEdgeStart.currentEdge, currentEdgeStart.currentEdge, vertex, true);
+//		TestCanvas.canvas.draw(bisector.asSegment(10), DrawingSegment2D.withColorDirected(Color.green, 1));
 	}
 
-	/*
+	/**
 	 * Finds if two edges going counter-clockwise make a convex or a reflex angle.
 	 *
 	 * @param a1
@@ -179,17 +189,22 @@ abstract class Node implements Iterable<Node> {
 			public Node next() {
 				node = node.next;
 				if (node.isProcessed()) {
-					Node current = start;
-					do {
-						canvas.draw(new Segment2D(current.vertex, current.next.vertex), DrawingSegment2D
-							.withColorDirected(Color.cyan, 0.5));
-						current = current.next;
-					} while (current != node);
+//					showCurrentLav();
 					throw new RuntimeException("Node not in lav");
 				}
 				checkLavCorrectness();
 				points.add(node.vertex);
 				return node;
+			}
+
+			private void showCurrentLav() {
+				Node current = start;
+				do {
+					TestCanvas.canvas.draw(new Segment2D(current.vertex, current.next.vertex), DrawingSegment2D
+						.withColorDirected(Color.cyan, 0.5));
+					current = current.next;
+				} while (current != node);
+				assert Boolean.TRUE;
 			}
 
 			private void checkLavCorrectness() {
@@ -202,9 +217,11 @@ abstract class Node implements Iterable<Node> {
 			private void drawLav() {
 				Iterator<Color> colors = Iterators.cycle(Color.darkGray, Color.gray, Color.lightGray, Color.white);
 				for (int i = 0; i < points.size() - 1; i++) {
-					canvas.draw(new Segment2D(points.get(i), points.get(i + 1)), DrawingSegment2D.withColorThin(colors.next()));
+					TestCanvas.canvas.draw(new Segment2D(points.get(i), points.get(i + 1)), DrawingSegment2D.withColorThin
+						(colors
+							.next()));
 				}
-				canvas.draw(start.vertex, DrawingPoint2D.withColorAndSize(Color.yellow, 2));
+				TestCanvas.canvas.draw(start.vertex, DrawingPoint2D.withColorAndSize(Color.yellow, 2));
 			}
 		};
 	}

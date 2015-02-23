@@ -43,7 +43,7 @@ public class SplitEvent extends SkeletonEvent implements Comparable<SkeletonEven
 			skeleton.eliminate2NodeLav(parent(), parent().next().next());
 			return;
 		}
-		// Non-convex 2D
+		// Non-convex 2d
 		skeleton.outputArc(parent().vertex, point);
 		skeleton.debug.drawSplitEventArc(this);
 		// Non-convex 2e

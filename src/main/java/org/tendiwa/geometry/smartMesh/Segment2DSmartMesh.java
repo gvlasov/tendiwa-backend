@@ -78,6 +78,7 @@ public final class Segment2DSmartMesh {
 		if (networks.isEmpty()) {
 			throw new GeometryException("A RoadPlanarGraphModel with 0 city networks was made");
 		}
+		TestCanvas.canvas.draw(getFullCycleGraph(), DrawingGraph.withColorAndAntialiasing(Color.red));
 	}
 
 	/**

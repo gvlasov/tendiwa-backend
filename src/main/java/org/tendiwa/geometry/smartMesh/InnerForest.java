@@ -23,7 +23,7 @@ final class InnerForest implements NetworkPart {
 	private final NetworkGenerationParameters parameters;
 	private final Random random;
 	private final Canopy canopy;
-	private final Set<InnerTree> floodTrees;
+	private final Set<InnerTree> trees;
 	private final Graph2D graph;
 
 	InnerForest(
@@ -51,7 +51,7 @@ final class InnerForest implements NetworkPart {
 
 		this.canopy = new Canopy();
 
-		this.floodTrees = grow();
+		this.trees = grow();
 		addMissingConnectionsWithEnclosedCycles();
 	}
 
@@ -107,7 +107,7 @@ final class InnerForest implements NetworkPart {
 		).snapAndInsertStartingPoints(
 			computeRootsOnSegments()
 		);
-		TestCanvas.canvas.drawAll(startingPoints, DrawingPoint2D.withColorAndSize(Color.red, 5));
+//		TestCanvas.canvas.drawAll(startingPoints, DrawingPoint2D.withColorAndSize(Color.red, 5));
 		Set<InnerTree> floodTrees = startingPoints.stream()
 			.map(this::createFloodStart)
 			.map(this::createFloodTree)
@@ -132,8 +132,15 @@ final class InnerForest implements NetworkPart {
 		);
 	}
 
+	Set<Point2D> treeRoots() {
+		return trees.stream()
+			.filter(InnerTree::isGrown)
+			.map(InnerTree::root)
+			.collect(Collectors.toCollection(LinkedHashSet::new));
+	}
+
 	ImmutableSet<Segment2D> leavesWithPetioles() {
-		return floodTrees.stream()
+		return trees.stream()
 			.flatMap(tree -> tree.leavesWithPetioles().stream())
 			.collect(org.tendiwa.collections.Collectors.toImmutableSet());
 	}
