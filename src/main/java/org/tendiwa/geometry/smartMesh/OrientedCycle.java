@@ -4,6 +4,7 @@ import org.jgrapht.Graph;
 import org.tendiwa.collections.SuccessiveTuples;
 import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.extensions.straightSkeleton.Bisector;
+import org.tendiwa.geometry.extensions.straightSkeleton.WrongBisector;
 import org.tendiwa.graphs.GraphChainTraversal;
 import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.graphs.graphs2d.Graph2D;
@@ -13,7 +14,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 /**
- * Holds a graph of a cycle within which {@link SecondaryRoadNetwork} is constructed,
+ * Holds a graph of a cycle within which {@link org.tendiwa.geometry.smartMesh.InnerTree} is constructed,
  * and for each edge remembers whether that edge goes clockwise or counter-clockwise. That effectively means that
  * OrientedCycle can tell if its innards are to the right or to the left from its certain edge.
  */
@@ -142,12 +143,28 @@ final class OrientedCycle implements NetworkPart {
 			next = next.reverse();
 		}
 
-		Segment2D bisectorSegment = new Bisector(
-			previous,
-			next,
-			bisectorStart,
-			inward
-		).asSegment(Bisector.DEFAULT_SEGMENT_LENGTH);
+		if (next.end.equals(previous.start)) {
+			Segment2D buf = previous;
+			previous = next;
+			next = buf;
+		}
+		Segment2D bisectorSegment =
+			new Segment2D(
+				bisectorStart,
+				bisectorStart.add(
+					new Bisector(
+						next.asVector(),
+						previous.asVector().reverse()
+					).asVector()
+				)
+			);
+//		Segment2D wrongSegment = new WrongBisector(
+//			previous,
+//			next,
+//			bisectorStart,
+//			inward
+//		).asSegment(WrongBisector.DEFAULT_SEGMENT_LENGTH);
+//		assert bisectorSegment.asVector().dotProduct(wrongSegment.asVector()) > 0;
 		return new Ray(
 			bisectorStart,
 			bisectorSegment.start.angleTo(bisectorSegment.end)

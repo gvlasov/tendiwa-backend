@@ -49,6 +49,9 @@ public class BigCityDemo implements Runnable {
 		canvas = new TestCanvas(1, 600, 600);
 		canvas.fillBackground(Color.black);
 		TestCanvas.canvas = canvas;
+
+		TestCanvas.canvas.draw(graph, DrawingGraph.withColorAndVertexSize(Color.red, 2));
+
 		IntStream.range(0, 1).forEach(seed -> {
 			Segment2DSmartMesh segment2DSmartMesh = new SegmentNetworkBuilder(graph)
 				.withDefaults()

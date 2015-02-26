@@ -16,6 +16,11 @@ public class Point2D implements Vector2D {
 		this.y = y;
 	}
 
+	public static Point2D of(Vector2D vector) {
+		return new Point2D(vector.getX(), vector.getY());
+	}
+
+
 	@Override
 	public double getX() {
 		return x;

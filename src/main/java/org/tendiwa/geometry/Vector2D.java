@@ -77,4 +77,18 @@ public interface Vector2D extends Position2D {
 	public default Vector2D rotateQuarterClockwise() {
 		return new Point2D(-getY(), getX());
 	}
+
+	public default Vector2D reverse() {
+		return new Point2D(-getX(), -getY());
+	}
+
+	public default Vector2D rotate(double radians) {
+		double ca = Math.cos(radians);
+		double sa = Math.sin(radians);
+		return new Point2D(ca * getX() - sa * getY(), sa * getX() + ca * getY());
+	}
+
+	public default boolean isZero() {
+		return getX() == 0 && getY() == 0;
+	}
 }

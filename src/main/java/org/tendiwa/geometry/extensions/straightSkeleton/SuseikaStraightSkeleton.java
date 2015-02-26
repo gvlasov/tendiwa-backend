@@ -73,11 +73,14 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		assert event.leftParent().previous() == event.rightParent().next();
 	}
 
+	/**
+	 * Such lavs can form after a split event
+	 */
 	void eliminate2NodeLav(Node node1, Node node2) {
-		// TODO: This branch doesn't seem to occur
 		assert node1.next() == node2 && node2.next() == node1;
 		outputArc(node1.vertex, node2.vertex);
 		debug.draw2NodeLavArc(node1, node2);
+		node1.growAdjacentFaces(node2);
 		node1.setProcessed();
 		node2.setProcessed();
 		if (node1.hasPair()) {
@@ -86,7 +89,6 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		if (node2.hasPair()) {
 			node2 = node2.getPair();
 		}
-		node1.growAdjacentFaces(node2);
 	}
 
 	void outputArc(Point2D start, Point2D end) {

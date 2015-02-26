@@ -3,6 +3,8 @@ package org.tendiwa.geometry.extensions.straightSkeleton;
 import com.google.common.collect.*;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
+import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Polygon;
 import org.tendiwa.geometry.RayIntersection;
@@ -47,18 +49,13 @@ public class PolygonShrinker {
 				}
 				return signum;
 			});
-			Segment2D intruded = new Segment2D(
-				face.get(0),
-				face.get(face.size() - 1)
-			).createParallelSegment(depth, true);
+			Segment2D intruded = intrudeFaceFront(face, depth);
 			face.asSegments().forEach(segment -> {
 				Segment2D reverse = segment.reverse();
 				if (intersectionsOnSegments.containsValue(reverse)) {
-					Point2D newPoint = intersectionsOnSegments
-						.inverse()
-						.get(reverse)
-						.getLinesIntersectionPoint();
-					queue.add(newPoint);
+					queue.add(
+						getExistingIntersectionPoint(intersectionsOnSegments, reverse)
+					);
 				} else {
 					assert !intersectionsOnSegments.containsValue(segment);
 					RayIntersection intersection = new RayIntersection(
@@ -84,6 +81,25 @@ public class PolygonShrinker {
 			}
 		}
 		polygons = front.constructPolygons();
+	}
+
+	private Point2D getExistingIntersectionPoint(
+		BiMap<RayIntersection, Segment2D> intersectionsOnSegments,
+		Segment2D reverse
+	) {
+		return intersectionsOnSegments
+			.inverse()
+			.get(reverse)
+			.getLinesIntersectionPoint();
+	}
+
+	private Segment2D intrudeFaceFront(Polygon face, double depth) {
+//		TestCanvas.canvas.draw(new Segment2D(face.get(0), face.get(face.size() - 1)), DrawingSegment2D.withColorThin(Color
+//			.magenta));
+		return new Segment2D(
+			face.get(0),
+			face.get(face.size() - 1)
+		).createParallelSegment(depth, true);
 	}
 
 

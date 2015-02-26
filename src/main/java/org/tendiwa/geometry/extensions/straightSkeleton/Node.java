@@ -2,7 +2,6 @@ package org.tendiwa.geometry.extensions.straightSkeleton;
 
 import com.google.common.collect.Iterators;
 import org.tendiwa.collections.SuccessiveTuples;
-import org.tendiwa.drawing.DrawableInto;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingPoint2D;
 import org.tendiwa.drawing.extensions.DrawingSegment2D;
@@ -23,7 +22,7 @@ import static org.tendiwa.geometry.Vectors2D.perpDotProduct;
  * A node in a circular list of active vertices.
  */
 abstract class Node implements Iterable<Node> {
-	Bisector bisector;
+	WrongBisector bisector;
 	private boolean isProcessed = false; // As said in 1a in [Obdrzalek 1998, paragraph 2.1]
 	boolean isReflex;
 	protected Node next;
@@ -130,8 +129,13 @@ abstract class Node implements Iterable<Node> {
 			vertex,
 			next.vertex
 		);
-		bisector = new Bisector(previousEdgeStart.currentEdge, currentEdgeStart.currentEdge, vertex, true);
-//		TestCanvas.canvas.draw(bisector.asSegment(10), DrawingSegment2D.withColorDirected(Color.green, 1));
+		bisector = new WrongBisector(
+			previousEdgeStart.currentEdge,
+			currentEdgeStart.currentEdge,
+			vertex,
+			true
+		);
+		TestCanvas.canvas.draw(bisector.asSegment(10), DrawingSegment2D.withColorDirected(Color.green, 1));
 	}
 
 	/**
@@ -208,7 +212,7 @@ abstract class Node implements Iterable<Node> {
 			}
 
 			private void checkLavCorrectness() {
-				if (++i > 1000) {
+				if (++i > 100) {
 					drawLav();
 					throw new RuntimeException("Too many iterations");
 				}
@@ -356,7 +360,7 @@ abstract class Node implements Iterable<Node> {
 		} else {
 			bisectorStart = new RayIntersection(previousEdge(), oppositeEdge).getLinesIntersectionPoint();
 		}
-		Bisector anotherBisector = new Bisector(
+		WrongBisector anotherBisector = new WrongBisector(
 			new Segment2D(
 				vertex,
 				bisectorStart
@@ -377,8 +381,9 @@ abstract class Node implements Iterable<Node> {
 	private boolean nodeIsAppropriate(Node node) {
 		return !(nodeIsNeighbor(node)
 			|| intersectionIsBehindReflexNode(node)
-			|| previousEdgeIntersectsInFrontOfOppositeEdge(node)
-			|| currentEdgeIntersectsInFrontOfOppositeEdge(node));
+//			|| previousEdgeIntersectsInFrontOfOppositeEdge(node)
+			|| currentEdgeIntersectsInFrontOfOppositeEdge(node)
+		);
 	}
 
 	private boolean newSplitPointIsBetter(Point2D oldSplitPoint, Point2D newSplitPoint) {
@@ -424,8 +429,8 @@ abstract class Node implements Iterable<Node> {
 	 * @return true if the point is located within the area marked by an edge and edge's bisectors, false otherwise.
 	 */
 	private static boolean isPointInAreaBetweenEdgeAndItsBisectors(Point2D point, Node currentNode) {
-		Bisector currentBisector = currentNode.bisector;
-		Bisector nextBisector = currentNode.next().bisector;
+		WrongBisector currentBisector = currentNode.bisector;
+		WrongBisector nextBisector = currentNode.next().bisector;
 		Point2D a = currentBisector.asSegment(40).end;
 		Point2D b = currentNode.currentEdge.start;
 		Point2D c = currentNode.currentEdge.end;
@@ -445,6 +450,7 @@ abstract class Node implements Iterable<Node> {
 	 * @return true if {@code point} is non-convex, false if it is convex.
 	 */
 	private static boolean isPointNonConvex(Point2D previous, Point2D point, Point2D next) {
+		//  TODO: There is similar method isReflex; remove this method.
 		return perpDotProduct(
 			new double[]{point.x - previous.x, point.y - previous.y},
 			new double[]{next.x - point.x, next.y - point.y}

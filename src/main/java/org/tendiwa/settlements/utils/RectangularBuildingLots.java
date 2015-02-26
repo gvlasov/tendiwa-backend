@@ -31,9 +31,9 @@ public final class RectangularBuildingLots {
 			.flatMap(b -> b.subdivideLots(16, 16, 0.5).stream())
 			.collect(Collectors.toImmutableSet());
 
-		drawBlocks(encBlocks);
+//		drawBlocks(encBlocks);
 
-		drawEnclosedBlocks(segment2DSmartMesh, enclosedCycles);
+//		drawEnclosedBlocks(segment2DSmartMesh, enclosedCycles);
 
 		return encBlocks.stream()
 			.map(lot -> PolygonRasterizer.rasterizeToMutable(lot.toPolygon()))
