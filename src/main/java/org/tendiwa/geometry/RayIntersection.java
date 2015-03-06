@@ -52,11 +52,12 @@ public class RayIntersection {
 		intersects = (denom != 0) && !(r == 0 && s == 0);
 	}
 
+	// TODO: Move to the Segment2D class
 	public RayIntersection(Segment2D a, Segment2D b) {
 		this(a.start, a.end, b);
 	}
 
-	public Point2D getLinesIntersectionPoint() {
+	public Point2D commonPoint() {
 		if (!intersects) {
 			throw new GeometryException("Trying to find intersection point of two parallel lines");
 		}

@@ -11,6 +11,6 @@ final class VectorsAndBisector {
 	VectorsAndBisector(Vector2D cw, Vector2D ccw) {
 		this.cw = cw;
 		this.ccw = ccw;
-		this.bisector = new Bisector(cw, ccw).asVector();
+		this.bisector = new Bisector(cw, ccw).asInbetweenVector();
 	}
 }

@@ -77,31 +77,7 @@ public class BigCityDemo implements Runnable {
 				Color.getHSBColor((float) 0.37, 1, 1),
 				Color.getHSBColor((float) 0.62, 1, (float) 0.8)
 			);
-			UndirectedGraph<Point2D, Segment2D> allRoads = RoadRejector.rejectPartOfNetworksBorders(
-				segment2DSmartMesh.getFullRoadGraph(),
-				segment2DSmartMesh,
-				0.0,
-				new Random(1)
-			);
-//			UndirectedGraph<Point2D, Segment2D> allRoads = pathGeometry.getFullRoadGraph();
-			Set<ImmutableList<Point2D>> streets = StreetsDetector.detectStreets(allRoads);
-			Map<ImmutableList<Point2D>, Color> streetsColoring = StreetsColoring.compute(
-				streets, Color.red, Color.blue,
-				Color.green, Color.cyan, Color.magenta, Color.orange, Color.black, Color.lightGray, Color.gray
-			);
-			for (List<Point2D> street : streets) {
-				Color streetColor = streetsColoring.get(street);
-				canvas.draw(street, DrawingChain.withColor(streetColor));
-			}
-			Collection<RectangleWithNeighbors> lots = RectangularBuildingLots
-				.placeInside(segment2DSmartMesh);
-			PolylineProximity polylineProximity = new PolylineProximity(streets, lots, 8);
-			Set<RectangleWithNeighbors> recGroups = lots
-				.stream()
-				.filter(BuildingPlacesFilters.closeToRoads(streets, lots, 8))
-				.collect(Collectors.toImmutableSet());
-
-			drawLots(recGroups);
+			buildAndDrawLots(segment2DSmartMesh);
 
 //			leavesAnimation(segment2DSmartMesh);
 
@@ -113,6 +89,34 @@ public class BigCityDemo implements Runnable {
 //				canvas.draw(block, DrawingEnclosedBlock.withColor(Color.lightGray));
 //			}
 		});
+	}
+
+	private void buildAndDrawLots(Segment2DSmartMesh segment2DSmartMesh) {
+		UndirectedGraph<Point2D, Segment2D> allRoads = RoadRejector.rejectPartOfNetworksBorders(
+			segment2DSmartMesh.getFullRoadGraph(),
+			segment2DSmartMesh,
+			0.0,
+			new Random(1)
+		);
+//			UndirectedGraph<Point2D, Segment2D> allRoads = pathGeometry.getFullRoadGraph();
+		Set<ImmutableList<Point2D>> streets = StreetsDetector.detectStreets(allRoads);
+		Map<ImmutableList<Point2D>, Color> streetsColoring = StreetsColoring.compute(
+			streets, Color.red, Color.blue,
+			Color.green, Color.cyan, Color.magenta, Color.orange, Color.black, Color.lightGray, Color.gray
+		);
+		for (List<Point2D> street : streets) {
+			Color streetColor = streetsColoring.get(street);
+			canvas.draw(street, DrawingChain.withColor(streetColor));
+		}
+		Collection<RectangleWithNeighbors> lots = RectangularBuildingLots
+			.placeInside(segment2DSmartMesh);
+		PolylineProximity polylineProximity = new PolylineProximity(streets, lots, 8);
+		Set<RectangleWithNeighbors> recGroups = lots
+			.stream()
+			.filter(BuildingPlacesFilters.closeToRoads(streets, lots, 8))
+			.collect(Collectors.toImmutableSet());
+
+		drawLots(recGroups);
 	}
 
 	private void leavesAnimation(Segment2DSmartMesh segment2DSmartMesh) {

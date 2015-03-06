@@ -91,4 +91,20 @@ public interface Vector2D extends Position2D {
 	public default boolean isZero() {
 		return getX() == 0 && getY() == 0;
 	}
+
+	/**
+	 * Checks if clockwise angle between this vector and another vector is {@code >Math.PI}. Relative to angle's
+	 * bisector, this vector is considered counter-clockwise, and another is considered clockwise.
+	 *
+	 * @param cw
+	 * 	Another vector.
+	 * @return true if the angle between vectors going clockwise from this vector to {@code another} is reflex,
+	 * false otherwise.
+	 */
+	public default boolean makesReflexAngle(Vector2D cw) {
+		return cw.perpDotProduct(this) > 0;
+	}
+	public default double perpDotProduct(Vector2D vector) {
+		return getX() * vector.getY() - getY() * vector.getX();
+	}
 }

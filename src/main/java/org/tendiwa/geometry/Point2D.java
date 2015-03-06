@@ -164,4 +164,11 @@ public class Point2D implements Vector2D {
 		return new Point2D(x * magnitude, y * magnitude);
 	}
 
+	public static int compareCoordinatesLinewise(Point2D a, Point2D b) {
+		int signum = (int) Math.signum(a.x - b.x);
+		if (signum == 0) {
+			return (int) Math.signum(a.y - b.y);
+		}
+		return signum;
+	}
 }

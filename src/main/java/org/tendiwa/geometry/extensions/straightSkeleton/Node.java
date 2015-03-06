@@ -5,10 +5,7 @@ import org.tendiwa.collections.SuccessiveTuples;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingPoint2D;
 import org.tendiwa.drawing.extensions.DrawingSegment2D;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.RayIntersection;
-import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.Vectors2D;
+import org.tendiwa.geometry.*;
 
 import javax.annotation.Nullable;
 import java.awt.Color;
@@ -22,7 +19,7 @@ import static org.tendiwa.geometry.Vectors2D.perpDotProduct;
  * A node in a circular list of active vertices.
  */
 abstract class Node implements Iterable<Node> {
-	WrongBisector bisector;
+	Segment2D bisector;
 	private boolean isProcessed = false; // As said in 1a in [Obdrzalek 1998, paragraph 2.1]
 	boolean isReflex;
 	protected Node next;
@@ -70,7 +67,16 @@ abstract class Node implements Iterable<Node> {
 
 	private void growFace(Node newNode, OriginalEdgeStart faceStart) {
 		faceStart.face.addLink(this, newNode);
-		assert faceStart.face.startHalfface.firstSkeletonNode() == faceStart;
+//		if (faceStart.face.startHalfface.firstSkeletonNode() != faceStart) {
+//			TestCanvas.canvas.draw(
+//				new Segment2D(
+//					this.vertex,
+//					newNode.vertex
+//				),
+//				DrawingSegment2D.withColorDirected(Color.orange, 1)
+//			);
+//			assert false;
+//		}
 	}
 
 	protected Node(Point2D vertex) {
@@ -78,11 +84,14 @@ abstract class Node implements Iterable<Node> {
 	}
 
 	public void drawLav() {
-		SuccessiveTuples.forEach(this, (a, b) -> {
-			TestCanvas.canvas.draw(
-				new Segment2D(a.vertex, b.vertex), DrawingSegment2D.withColorDirected(Color.cyan, 1)
-			);
-		});
+		SuccessiveTuples.forEach(
+			this,
+			(a, b) -> {
+				TestCanvas.canvas.draw(
+					new Segment2D(a.vertex, b.vertex), DrawingSegment2D.withColorDirected(Color.cyan, 1)
+				);
+			}
+		);
 	}
 
 	abstract boolean hasPair();
@@ -123,19 +132,34 @@ abstract class Node implements Iterable<Node> {
 
 	public void computeReflexAndBisector() {
 		assert bisector == null;
-		isReflex = isReflex(
+		isReflex = this instanceof OriginalEdgeStart && isReflex(
 			previous.vertex,
 			vertex,
 			vertex,
 			next.vertex
 		);
-		bisector = new WrongBisector(
-			previousEdgeStart.currentEdge,
-			currentEdgeStart.currentEdge,
-			vertex,
-			true
+		Bisector bisector1 = new Bisector(
+			currentEdgeStart.currentEdge.asVector(),
+			previousEdgeStart.currentEdge.asVector().reverse()
 		);
-		TestCanvas.canvas.draw(bisector.asSegment(10), DrawingSegment2D.withColorDirected(Color.green, 1));
+		Vector2D bisectorVector = isReflex
+			? bisector1.asInbetweenVector()
+			: bisector1.asSumVector();
+		bisector = new Segment2D(
+			vertex,
+			vertex.add(bisectorVector)
+		);
+//		bisector = new WrongBisector(
+//			previousEdgeStart.currentEdge,
+//			currentEdgeStart.currentEdge,
+//			vertex,
+//			true
+//		);
+//		TestCanvas.canvas.draw(
+//			bisector,
+//			DrawingSegment2D.withColorDirected(Color.green, 1)
+//		);
+		assert Boolean.TRUE;
 	}
 
 	/**
@@ -193,7 +217,7 @@ abstract class Node implements Iterable<Node> {
 			public Node next() {
 				node = node.next;
 				if (node.isProcessed()) {
-//					showCurrentLav();
+					showCurrentLav();
 					throw new RuntimeException("Node not in lav");
 				}
 				checkLavCorrectness();
@@ -246,13 +270,13 @@ abstract class Node implements Iterable<Node> {
 	@Nullable
 	protected SkeletonEvent computeNearerBisectorsIntersection() {
 		// Non-convex 1c
-		RayIntersection nextIntersection = bisector.intersectionWith(next().bisector);
+		RayIntersection nextIntersection = bisectorsIntersection(next());
 		EdgeEvent sameLineIntersection = trySameLineIntersection(nextIntersection, this, next());
 		if (sameLineIntersection != null) {
 			return sameLineIntersection;
 		}
 
-		RayIntersection previousIntersection = bisector.intersectionWith(previous().bisector);
+		RayIntersection previousIntersection = bisectorsIntersection(previous());
 		sameLineIntersection = trySameLineIntersection(previousIntersection, this, previous());
 		if (sameLineIntersection != null) {
 			return sameLineIntersection;
@@ -263,14 +287,14 @@ abstract class Node implements Iterable<Node> {
 		Node vb = null;
 		if (nextIntersection.r > 0 || previousIntersection.r > 0) {
 			if (previousIntersection.r < 0 && nextIntersection.r > 0 || nextIntersection.r > 0 && nextIntersection.r <= previousIntersection.r) {
-				if (next().bisector.intersectionWith(bisector).r > 0 && nextIntersection.r > 0) {
-					nearer = nextIntersection.getLinesIntersectionPoint();
+				if (next().bisectorsIntersection(this).r > 0 && nextIntersection.r > 0) {
+					nearer = nextIntersection.commonPoint();
 					va = this;
 					vb = next();
 				}
 			} else if (nextIntersection.r < 0 && previousIntersection.r > 0 || previousIntersection.r > 0 && previousIntersection.r <= nextIntersection.r) {
-				if (previous().bisector.intersectionWith(bisector).r > 0 && previousIntersection.r > 0) {
-					nearer = previousIntersection.getLinesIntersectionPoint();
+				if (previous().bisectorsIntersection(this).r > 0 && previousIntersection.r > 0) {
+					nearer = previousIntersection.commonPoint();
 					va = previous();
 					vb = this;
 				}
@@ -292,6 +316,10 @@ abstract class Node implements Iterable<Node> {
 			return null;
 		}
 		return new EdgeEvent(nearer, va, vb);
+	}
+
+	private RayIntersection bisectorsIntersection(Node node) {
+		return new RayIntersection(bisector, node.bisector);
 	}
 
 	@Nullable
@@ -324,7 +352,7 @@ abstract class Node implements Iterable<Node> {
 		for (Node node : this) {
 			if (nodeIsAppropriate(node)) {
 				Point2D point = computeSplitPoint(node.currentEdge());
-				if (isPointInAreaBetweenEdgeAndItsBisectors(point, node)) {
+				if (node.isPointInAreaBetweenEdgeAndItsBisectors(point)) {
 					if (newSplitPointIsBetter(splitPoint, point)) {
 						splitPoint = point;
 						originalEdgeStart = node;
@@ -354,34 +382,42 @@ abstract class Node implements Iterable<Node> {
 	 */
 	private Point2D computeSplitPoint(Segment2D oppositeEdge) {
 		assert isReflex;
-		Point2D bisectorStart;
-		if (previousEdge().isParallel(oppositeEdge)) {
-			bisectorStart = new RayIntersection(currentEdge, oppositeEdge).getLinesIntersectionPoint();
-		} else {
-			bisectorStart = new RayIntersection(previousEdge(), oppositeEdge).getLinesIntersectionPoint();
-		}
-		WrongBisector anotherBisector = new WrongBisector(
-			new Segment2D(
-				vertex,
-				bisectorStart
-			),
-			new Segment2D(
-				bisectorStart,
-				new RayIntersection(
-					bisector.asSegment(40),
-					oppositeEdge
-				).getLinesIntersectionPoint()
-			),
-			bisectorStart,
-			true
+		Point2D bisectorStart = new RayIntersection(
+			previousEdge().isParallel(oppositeEdge)
+				? currentEdge()
+				: previousEdge(),
+			oppositeEdge
+		).commonPoint();
+		Vector2D cw =
+			new RayIntersection(
+				bisector,
+				oppositeEdge
+			).commonPoint()
+				.subtract(bisectorStart);
+		Vector2D ccw = vertex.subtract(bisectorStart);
+		Bisector anotherBisector = new Bisector(cw, ccw);
+		RayIntersection intersection = new RayIntersection(
+			new Segment2D(bisectorStart, bisectorStart.add(anotherBisector.asSumVector())),
+			bisector
 		);
-		return anotherBisector.intersectionWith(bisector).getLinesIntersectionPoint();
+//		if (vertex.chebyshovDistanceTo(new Point2D(1432, 1168)) < 1.5) {
+//			TestCanvas.canvas.draw(
+//				oppositeEdge.middle(),
+//				DrawingPoint2D.withTextMarker(
+//					String.format("%1.6s", vertex.distanceTo(intersection.commonPoint())),
+//					Color.black,
+//					Color.white
+//				)
+//			);
+//		}
+		return intersection.commonPoint();
 	}
 
 	private boolean nodeIsAppropriate(Node node) {
 		return !(nodeIsNeighbor(node)
 			|| intersectionIsBehindReflexNode(node)
 //			|| previousEdgeIntersectsInFrontOfOppositeEdge(node)
+			// TODO: If the previous condition is unnecessary, then this condition is unnecessary too.
 			|| currentEdgeIntersectsInFrontOfOppositeEdge(node)
 		);
 	}
@@ -411,7 +447,7 @@ abstract class Node implements Iterable<Node> {
 
 	private boolean intersectionIsBehindReflexNode(Node anotherRay) {
 		return new RayIntersection(
-			bisector.asSegment(40),
+			bisector,
 			anotherRay.currentEdge
 		).r <= Vectors2D.EPSILON;
 	}
@@ -424,17 +460,13 @@ abstract class Node implements Iterable<Node> {
 	 *
 	 * @param point
 	 * 	The point to test.
-	 * @param currentNode
-	 * 	A node at which starts the area-forming edge.
 	 * @return true if the point is located within the area marked by an edge and edge's bisectors, false otherwise.
 	 */
-	private static boolean isPointInAreaBetweenEdgeAndItsBisectors(Point2D point, Node currentNode) {
-		WrongBisector currentBisector = currentNode.bisector;
-		WrongBisector nextBisector = currentNode.next().bisector;
-		Point2D a = currentBisector.asSegment(40).end;
-		Point2D b = currentNode.currentEdge.start;
-		Point2D c = currentNode.currentEdge.end;
-		Point2D d = nextBisector.asSegment(40).end;
+	private boolean isPointInAreaBetweenEdgeAndItsBisectors(Point2D point) {
+		Point2D a = bisector.end;
+		Point2D b = this.currentEdge.start;
+		Point2D c = this.currentEdge.end;
+		Point2D d = next().bisector.end;
 		return isPointNonConvex(a, point, b) && isPointNonConvex(b, point, c) && isPointNonConvex(c, point, d);
 	}
 

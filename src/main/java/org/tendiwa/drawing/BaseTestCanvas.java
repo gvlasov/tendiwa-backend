@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.CellSegment;
 import org.tendiwa.geometry.Rectangle;
+import org.tendiwa.geometry.Rectangle2D;
 
 import javax.swing.*;
 import java.awt.*;
@@ -115,8 +116,13 @@ class BaseTestCanvas implements DrawableInto {
 		});
 		setLayer(DEFAULT_LAYER);
 		singleWidthStroke = new BasicStroke(1f / scale);
-		((Graphics2D)graphics).setTransform(defaultTransform);
-		((Graphics2D)graphics).setStroke(singleWidthStroke);
+		((Graphics2D) graphics).setTransform(defaultTransform);
+		((Graphics2D) graphics).setStroke(singleWidthStroke);
+		setFont();
+	}
+
+	private void setFont() {
+		graphics.setFont(new Font("Verdana", Font.PLAIN, 9));
 	}
 
 	/**
@@ -299,13 +305,38 @@ class BaseTestCanvas implements DrawableInto {
 //		transform.setToScale(scale, scale);
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.setTransform(transform);
-		g2d.fill(new java.awt.Rectangle(r.x * scale - pixelBounds.x, r.y * scale - pixelBounds.y, r.width * scale, r.height * scale));
+		g2d.fill(
+			new java.awt.Rectangle(
+				r.x * scale - pixelBounds.x,
+				r.y * scale - pixelBounds.y,
+				r.width * scale,
+				r.height * scale
+			)
+		);
 		g2d.setTransform(defaultTransform);
-//	canvas.graphics.fillRect(
-//		r.getX() * canvas.scale,
-//		r.getY() * canvas.scale,
-//		r.getWidth() * canvas.scale,
-//		r.getHeight() * canvas.scale);
+	}
+
+	@Override
+	public void drawRectangle2D(Rectangle2D r, Color color) {
+		graphics.setColor(color);
+		Graphics2D g2d = (Graphics2D) graphics;
+		AffineTransform transform = new AffineTransform();
+//		transform.setToScale(scale, scale)
+		g2d.setRenderingHint(
+			RenderingHints.KEY_ANTIALIASING,
+			RenderingHints.VALUE_ANTIALIAS_ON
+		);
+//		g2d.setTransform(transform);
+		g2d.setTransform(defaultTransform);
+		g2d.fill(
+			new java.awt.Rectangle(
+				(int) Math.round((r.x + 0.5) * scale - pixelBounds.x),
+				(int) Math.round((r.y + 0.5) * scale - pixelBounds.y),
+				(int) Math.round(r.width * scale),
+				(int) Math.round(r.height * scale)
+			)
+		);
+		g2d.setTransform(defaultTransform);
 	}
 
 	@Override
@@ -359,6 +390,18 @@ class BaseTestCanvas implements DrawableInto {
 	@Override
 	public void drawString(String text, double x, double y, Color color) {
 		graphics.setColor(color);
-		graphics.drawString(text, (int) x, (int) y);
+		int translatedX = (int) ((x+0.5 - ((double)pixelBounds.x)/scale) * scale);
+		int translatedY = (int) ((y+0.5 - ((double)pixelBounds.y)/scale) * scale);
+		graphics.drawString(text, translatedX, translatedY);
+	}
+
+	@Override
+	public int textWidth(String string) {
+		return graphics.getFontMetrics().stringWidth(string);
+	}
+
+	@Override
+	public int textLineHeight() {
+		return graphics.getFontMetrics().getHeight();
 	}
 }

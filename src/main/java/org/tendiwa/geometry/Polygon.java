@@ -1,5 +1,6 @@
 package org.tendiwa.geometry;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
 import com.sun.istack.internal.NotNull;
@@ -234,12 +235,14 @@ public final class Polygon implements List<Point2D> {
 		};
 	}
 
-	public ImmutableSet<Segment2D> toSegments() {
-		ImmutableSet.Builder<Segment2D> builder = ImmutableSet.builder();
+	public List<Segment2D> toSegments() {
+		List<Segment2D> segments = new ArrayList<>(size());
 		int last = size() - 1;
 		for (int i = 0; i < last; i++) {
-			builder.add(new Segment2D(points[i], points[i + 1]));
+			segments.add(new Segment2D(points[i], points[i + 1]));
 		}
-		return builder.build();
+		segments.add(new Segment2D(points[last], points[0]));
+		return segments;
 	}
+
 }

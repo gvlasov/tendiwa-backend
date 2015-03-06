@@ -1,10 +1,12 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
-import org.tendiwa.core.meta.Utils;
+import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawingPoint2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Polygon;
 import org.tendiwa.geometry.Segment2D;
@@ -25,6 +27,8 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 	}
 
 	private SuseikaStraightSkeleton(List<Point2D> vertices, boolean trustCounterClockwise) {
+//		Utils.printListOfPoints(vertices);
+
 		this.initialLav = new InitialListOfActiveVertices(vertices, trustCounterClockwise);
 		this.queue = new PriorityQueue<>(initialLav.size());
 
@@ -54,7 +58,6 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		}
 	}
 
-
 	void connectLast3SegmentsOfLav(EdgeEvent event) {
 		Node centerNode = new CenterNode(event.point);
 		outputArc(event.leftParent().vertex, event.point);
@@ -77,6 +80,7 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 	 * Such lavs can form after a split event
 	 */
 	void eliminate2NodeLav(Node node1, Node node2) {
+		// TODO: Move this method to the Node class
 		assert node1.next() == node2 && node2.next() == node1;
 		outputArc(node1.vertex, node2.vertex);
 		debug.draw2NodeLavArc(node1, node2);
@@ -118,14 +122,21 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 	}
 
 	@Override
-	public Set<Polygon> cap(double depth) {
-		return new PolygonShrinker(faces(), depth).shrink();
+	public ImmutableSet<Polygon> cap(double depth) {
+		return new ShrinkedFront(faces(), depth).polygons();
 	}
 
 	@Override
 	public Set<Polygon> faces() {
 		Set<Polygon> answer = new LinkedHashSet<>();
-		initialLav.nodes.forEach(node -> answer.add(node.face().toPolygon()));
+		initialLav.nodes.stream()
+			.map(node -> node.face().toPolygon())
+			.forEach(answer::add);
 		return answer;
+	}
+
+	void queueEvent(SplitEvent splitEvent) {
+		assert splitEvent != null;
+		queue.add(splitEvent);
 	}
 }

@@ -23,9 +23,6 @@ public class Vectors2D {
 		return a[0] * b[1] - a[1] * b[0];
 	}
 
-	public static double perpDotProduct(Vector2D cw, Vector2D ccw) {
-		return cw.getX() * ccw.getY() - cw.getY() * ccw.getX();
-	}
 
 	public static double[] subtract(double[] a, double[] b) {
 		return new double[]{a[0] - b[0], a[1] - b[1]};
@@ -82,8 +79,5 @@ public class Vectors2D {
 		return angle;
 	}
 
-	public static void bisector(Vector2D a, Vector2D b) {
-		return;
-	}
 
 }

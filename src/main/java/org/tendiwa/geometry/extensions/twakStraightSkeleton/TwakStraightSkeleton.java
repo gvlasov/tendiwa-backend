@@ -1,18 +1,16 @@
 package org.tendiwa.geometry.extensions.twakStraightSkeleton;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingSegment;
 import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.*;
-import org.tendiwa.geometry.extensions.ShamosHoeyAlgorithm;
 import org.tendiwa.geometry.extensions.straightSkeleton.CycleExtraVerticesRemover;
 import org.tendiwa.geometry.extensions.twakStraightSkeleton.ui.Bar;
 import org.tendiwa.geometry.extensions.twakStraightSkeleton.utils.*;
 
-import javax.swing.text.html.HTMLDocument;
 import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
 import java.awt.Color;
@@ -133,7 +131,7 @@ public class TwakStraightSkeleton implements StraightSkeleton {
 	 * 	if depth is negative. May be implemented in future.
 	 */
 	@Override
-	public Set<Polygon> cap(double depth) {
+	public ImmutableSet<Polygon> cap(double depth) {
 		if (depth < 0) {
 			throw new UnsupportedOperationException("Negative depth in not implemented yet");
 		}

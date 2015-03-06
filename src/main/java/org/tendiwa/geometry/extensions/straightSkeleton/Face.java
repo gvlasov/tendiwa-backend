@@ -1,17 +1,20 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
 import org.tendiwa.collections.DoublyLinkedNode;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Polygon;
+import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawingSegment2D;
+import org.tendiwa.geometry.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.stream.Stream;
 
-final class Face {
-	@Nonnull
+final class Face implements Iterable<Node> {
 	final Chain startHalfface;
 	@Nonnull
 	final Chain endHalfface;
@@ -43,6 +46,7 @@ final class Face {
 	);
 
 	Face(OriginalEdgeStart edgeStart, OriginalEdgeStart edgeEnd) {
+		assert edgeStart.next() == edgeEnd;
 		startHalfface = new Chain(edgeStart, edgeStart, null);
 		endHalfface = new Chain(edgeEnd, edgeEnd, startHalfface);
 		startHalfface.setNextChain(endHalfface);
@@ -56,31 +60,25 @@ final class Face {
 		return end == startHalfface.lastSkeletonNode() || end == endHalfface.lastSkeletonNode();
 	}
 
-	Node getNodeFromLeft(LeftSplitNode leftNode) {
+	private Node getNodeFromLeft(LeftSplitNode leftNode) {
 		Node higher = sortedLinkEnds.higher(leftNode);
 		if (higher == null) {
-			assert !endHalfface.lastSkeletonNode().isProcessed();
+//			if (endHalfface.lastSkeletonNode().isProcessed()) {
+//				assert false;
+//			}
 			higher = endHalfface.lastSkeletonNode();
 		}
-		boolean b = !higher.isProcessed();
-		if (!b) {
-			assert false;
-		}
-		assert b;
+//		assert !higher.isProcessed();
 		return higher;
 	}
 
-	Node getNodeFromRight(RightSplitNode rightNode) {
+	private Node getNodeFromRight(RightSplitNode rightNode) {
 		Node lower = sortedLinkEnds.lower(rightNode);
 		if (lower == null) {
-			assert !startHalfface.lastSkeletonNode().isProcessed();
+//			assert !startHalfface.lastSkeletonNode().isProcessed();
 			lower = startHalfface.lastSkeletonNode();
 		}
-		boolean b = !lower.isProcessed();
-		if (!b) {
-			assert false;
-		}
-		assert b;
+//		assert !lower.isProcessed();
 		return lower;
 	}
 
@@ -106,7 +104,11 @@ final class Face {
 		boolean hasLinkAt1 = chainAtEnd1 != null;
 		boolean hasLinkAt2 = chainAtEnd2 != null;
 		if (hasLinkAt1 && hasLinkAt2) {
+			boolean toBeClosed = isHalfface(chainAtEnd1) && isHalfface(chainAtEnd2);
 			uniteChainsWithAddedEdge();
+			if (toBeClosed) {
+//				closeFace();
+			}
 		} else if (hasLinkAt1) {
 			prolongChainAtEnd1(end2);
 		} else if (hasLinkAt2) {
@@ -115,13 +117,15 @@ final class Face {
 			// TODO: This branch only runs when it is a split event, maybe extract it to a separate method?
 			createNewLink(end1, end2);
 		}
-		if (!(startHalfface.firstFaceNode().getNext() == null || startHalfface.firstFaceNode().getPrevious() == null)) {
+		if ((!(hasLinkAt1 && hasLinkAt2)) && !(startHalfface.firstFaceNode().getNext() == null || startHalfface
+			.firstFaceNode().getPrevious() == null)) {
 			assert false;
 		}
 		// We don't have to reset chainAtEnd[12]First
 		// because they make sense and are changed only when chainAtEnd[12] is set.
 		chainAtEnd1 = chainAtEnd2 = null;
 	}
+
 
 	private void findChainsAtEnds(Node end1, Node end2) {
 		Chain chain = startHalfface;
@@ -136,7 +140,7 @@ final class Face {
 				}
 			}
 			if (chainAtEnd2 == null) {
-				if (chain.firstSkeletonNode() == end2) {
+				if (chain.firstSkeletonNode() == end2 && chain.firstSkeletonNode() != chain.lastSkeletonNode()) {
 					chainAtEnd2 = chain;
 					linkAtEnd2First = true;
 				} else if (chain.lastSkeletonNode() == end2) {
@@ -156,14 +160,14 @@ final class Face {
 	private void prolongLink(Node end, Chain chain, boolean isFirst) {
 		numberOfSkeletonNodes++;
 		if (isFirst) {
-			sortedLinkEnds.remove(chain.firstSkeletonNode());
+			forgetNodeProjection(chain.firstSkeletonNode());
 			DoublyLinkedNode<Node> newFirst = new DoublyLinkedNode<>(end);
 			DoublyLinkedNode<Node> first = chain.firstFaceNode();
 			first.setPrevious(newFirst);
 			newFirst.setNext(first);
 			chain.moveFirstFaceNode(newFirst);
 		} else {
-			sortedLinkEnds.remove(chain.lastSkeletonNode());
+			forgetNodeProjection(chain.lastSkeletonNode());
 			DoublyLinkedNode<Node> newLast = new DoublyLinkedNode<>(end);
 			DoublyLinkedNode<Node> last = chain.lastFaceNode();
 			last.setNext(newLast);
@@ -175,14 +179,14 @@ final class Face {
 		}
 	}
 
+	private void forgetNodeProjection(Node node) {
+		sortedLinkEnds.remove(node);
+	}
+
 	private void addNewSortedEnd(Node end) {
 		sortedLinkEnds.add(end);
-		boolean b = !end.vertex.equals(startHalfface.firstSkeletonNode().vertex)
+		assert !end.vertex.equals(startHalfface.firstSkeletonNode().vertex)
 			&& !end.vertex.equals(endHalfface.firstSkeletonNode().vertex);
-		if (!b) {
-			assert false;
-		}
-		assert b;
 	}
 
 	private void prolongChainAtEnd2(Node end1) {
@@ -209,10 +213,10 @@ final class Face {
 		}
 
 		if (isHalfface(chainAtEnd1)) {
-			sortedLinkEnds.remove(linkAtEnd2First ? chainAtEnd2.lastSkeletonNode() : chainAtEnd2.firstSkeletonNode());
+			forgetNodeProjection(linkAtEnd2First ? chainAtEnd2.lastSkeletonNode() : chainAtEnd2.firstSkeletonNode());
 		}
-		sortedLinkEnds.remove(linkAtEnd1First ? chainAtEnd1.firstSkeletonNode() : chainAtEnd1.lastSkeletonNode());
-		sortedLinkEnds.remove(linkAtEnd2First ? chainAtEnd2.firstSkeletonNode() : chainAtEnd2.lastSkeletonNode());
+		forgetNodeProjection(linkAtEnd1First ? chainAtEnd1.firstSkeletonNode() : chainAtEnd1.lastSkeletonNode());
+		forgetNodeProjection(linkAtEnd2First ? chainAtEnd2.firstSkeletonNode() : chainAtEnd2.lastSkeletonNode());
 
 		assert chainAtEnd1 != null && chainAtEnd2 != null;
 		if (linkAtEnd1First && linkAtEnd2First) {
@@ -260,18 +264,21 @@ final class Face {
 		lastAddedChain = new Chain(oneEnd, anotherEnd, lastAddedChain);
 		assert lastAddedChain.previousChain != null;
 		lastAddedChain.previousChain.setNextChain(lastAddedChain);
-		sortedLinkEnds.add(oneEnd);
-		sortedLinkEnds.add(anotherEnd);
+		addNewSortedEnd(oneEnd);
+//		sortedLinkEnds.add(oneEnd);
+		addNewSortedEnd(anotherEnd);
+//		sortedLinkEnds.add(anotherEnd);
 		numberOfSkeletonNodes += 2;
 	}
 
 	public Polygon toPolygon() {
 		List<Point2D> points = new ArrayList<>(numberOfSkeletonNodes);
-		DoublyLinkedNode<Node> doublyLinkedNode = startHalfface.firstFaceNode();
-		assert doublyLinkedNode.getPrevious() == null || doublyLinkedNode.getNext() == null;
+		DoublyLinkedNode<Node> chain = startHalfface.firstFaceNode();
+		assert chain.isTerminal();
 		Point2D previousPayload = null;
-		for (Node node : doublyLinkedNode) {
+		for (Node node : chain) {
 			if (node.vertex == previousPayload) {
+				// This happens at split event points and at starts of half-faces
 				continue;
 			}
 			if (!(points.size() == 0 || !node.vertex.equals(points.get(points.size() - 1)))) {
@@ -281,9 +288,94 @@ final class Face {
 			previousPayload = node.vertex;
 		}
 
-		if (points.get(0).equals(points.get(points.size() - 1))) {
+		assert !points.get(0).equals(points.get(points.size() - 1));
+		// TODO: Remove this check
+		if (JTSUtils.isYDownCCW(points)) {
+			TestCanvas.canvas.drawAll(
+				new Polygon(points).toSegments(),
+				DrawingSegment2D.withColorDirected(Color.white, 1)
+			);
 			assert false;
 		}
 		return new Polygon(points);
+	}
+
+	boolean isClosed() {
+		return startHalfface.lastFaceNode() == endHalfface.firstFaceNode()
+			|| endHalfface.lastFaceNode() == startHalfface.firstFaceNode();
+	}
+
+	Segment2D findClosestIntersectedSegment(Segment2D ray) {
+		assert isClosed();
+		return Stream.concat(startHalfface.asSegmentStream(), endHalfface.asSegmentStream())
+			.filter(s -> {
+				double r = new RayIntersection(s, ray).r;
+				return r < 1. && r > 0.;
+			})
+			.min((a, b) -> (int) Math.signum(new RayIntersection(ray, a).r - new RayIntersection(ray, b).r))
+			.get();
+	}
+
+	void integrateSplitNodes(Node parent, LeftSplitNode leftNode, RightSplitNode rightNode) {
+		Node leftLavNextNode, rightLavPreviousNode;
+		assert !isClosed();
+		leftLavNextNode = getNodeFromLeft(leftNode);
+		rightLavPreviousNode = getNodeFromRight(rightNode);
+
+		leftNode.setPreviousInLav(parent.previous());
+		leftLavNextNode.setPreviousInLav(leftNode);
+
+		rightNode.setPreviousInLav(rightLavPreviousNode);
+		parent.next().setPreviousInLav(rightNode);
+
+		parent.setProcessed();
+
+		parent.growRightFace(rightNode);
+		parent.growLeftFace(leftNode);
+		addLink(leftNode, rightNode);
+	}
+
+	@Override
+	public Iterator<Node> iterator() {
+		assert isClosed();
+		return startHalfface.firstFaceNode() == startHalfface.lastFaceNode() ?
+			startHalfface.firstFaceNode().iterator()
+			: endHalfface.firstFaceNode().iterator();
+	}
+
+	OriginalEdgeStart findAnotherOppositeEdgeStart(Node parent) {
+		Node leftLavNextNode, rightLavPreviousNode;
+		Segment2D oppositeInClosed = findClosestIntersectedSegment(parent.bisector);
+		Node oneNode = null, anotherNode = null;
+		for (Node node : this) {
+			System.out.println(node.vertex);
+			if (node.vertex.equals(oppositeInClosed.start)
+				|| node.vertex.equals(oppositeInClosed.end)) {
+				if (oneNode == null) {
+					oneNode = node;
+				} else {
+					assert anotherNode == null;
+					anotherNode = node;
+				}
+			}
+		}
+		assert oneNode != null && anotherNode != null;
+		if (parent.bisector.isLeftOfRay(oneNode.vertex)) {
+			leftLavNextNode = oneNode;
+			rightLavPreviousNode = anotherNode;
+		} else {
+			leftLavNextNode = anotherNode;
+			rightLavPreviousNode = oneNode;
+		}
+		while (leftLavNextNode.isProcessed()) {
+			leftLavNextNode = leftLavNextNode.next();
+		}
+		while (rightLavPreviousNode.isProcessed()) {
+			rightLavPreviousNode = rightLavPreviousNode.previous();
+		}
+		return leftLavNextNode.previousEdgeStart;
+//			TestCanvas.canvas.draw(rightLavPreviousNode.vertex, DrawingPoint2D.withColorAndSize(Color.orange, 1));
+//		TestCanvas.canvas.draw(leftLavNextNode.currentEdge, DrawingSegment2D.withColorDirected(Color.blue, 1));
+//			TestCanvas.canvas.draw(rightLavPreviousNode.previousEdge(), DrawingSegment2D.withColorDirected(Color.cyan,  1));
 	}
 }

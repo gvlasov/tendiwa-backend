@@ -121,7 +121,7 @@ public class Segment2D {
 		if (!lineIntersection.segmentsIntersect()) {
 			return null;
 		}
-		return lineIntersection.getLinesIntersectionPoint();
+		return lineIntersection.commonPoint();
 	}
 
 	/**
@@ -227,5 +227,16 @@ public class Segment2D {
 		return point.x >= minX && point.x <= maxX
 			&& point.y >= minY && point.y <= maxY
 			&& point.distanceToLine(this) < Vectors2D.EPSILON;
+	}
+
+	public boolean hasEndsNear(Point2D oneEnd, Point2D anotherEnd, double snapChebyshovRadius) {
+		return start.chebyshovDistanceTo(oneEnd) < snapChebyshovRadius
+			&& end.chebyshovDistanceTo(anotherEnd) < snapChebyshovRadius
+			|| end.chebyshovDistanceTo(oneEnd) < snapChebyshovRadius
+			&& start.chebyshovDistanceTo(anotherEnd) < snapChebyshovRadius;
+	}
+
+	public Point2D middle() {
+		return new Point2D(start.x / 2 + end.x / 2, start.y / 2 + end.y / 2);
 	}
 }

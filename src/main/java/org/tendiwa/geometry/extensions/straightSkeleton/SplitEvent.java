@@ -1,6 +1,7 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
 import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Segment2D;
 
 /**
  * Note: this class has natural ordering that is inconsistent with {@link Object#equals(Object)}.
@@ -29,7 +30,7 @@ public class SplitEvent extends SkeletonEvent implements Comparable<SkeletonEven
 
 	@Override
 	void handle(SuseikaStraightSkeleton skeleton) {
-		assert parent() instanceof OriginalEdgeStart;
+//		assert parent() instanceof OriginalEdgeStart;
 		if (parent().isProcessed()) {
 			return;
 		}
@@ -41,6 +42,16 @@ public class SplitEvent extends SkeletonEvent implements Comparable<SkeletonEven
 		}
 		if (parent().next().next() == parent()) {
 			skeleton.eliminate2NodeLav(parent(), parent().next().next());
+			return;
+		}
+		if (oppositeEdgeStart.face.isClosed()) {
+			skeleton.queueEvent(
+				new SplitEvent(
+					point,
+					parent,
+					oppositeEdgeStart.face.findAnotherOppositeEdgeStart(parent)
+				)
+			);
 			return;
 		}
 		// Non-convex 2d
@@ -62,25 +73,16 @@ public class SplitEvent extends SkeletonEvent implements Comparable<SkeletonEven
 		leftNode.setPair(rightNode);
 		rightNode.setPair(leftNode);
 
-		Node leftLavNextNode = oppositeEdgeStart().face().getNodeFromLeft(leftNode);
-		Node rightLavPreviousNode = oppositeEdgeStart().face().getNodeFromRight(rightNode);
-
-		leftNode.setPreviousInLav(parent().previous());
-		leftLavNextNode.setPreviousInLav(leftNode);
-
-		rightNode.setPreviousInLav(rightLavPreviousNode);
-		parent().next().setPreviousInLav(rightNode);
-
-		parent().setProcessed();
-
-
-		parent().growRightFace(rightNode);
-		parent().growLeftFace(leftNode);
-		oppositeEdgeStart().face().addLink(leftNode, rightNode);
+		oppositeEdgeStart().face().integrateSplitNodes(parent(), leftNode, rightNode);
 
 		// Non-convex 2
 		integrateNewSplitNode(leftNode, skeleton);
 		integrateNewSplitNode(rightNode, skeleton);
+	}
+
+	private boolean oppositeGoesLeftToRight(Segment2D oppositeInClosed) {
+		return parent().bisector.asVector().rotateQuarterClockwise()
+			.dotProduct(oppositeInClosed.asVector()) > 0;
 	}
 
 	private void integrateNewSplitNode(Node node, SuseikaStraightSkeleton skeleton) {

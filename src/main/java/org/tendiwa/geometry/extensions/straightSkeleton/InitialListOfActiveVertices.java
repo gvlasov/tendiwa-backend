@@ -2,10 +2,13 @@ package org.tendiwa.geometry.extensions.straightSkeleton;
 
 import com.google.common.collect.Lists;
 import org.tendiwa.core.meta.Utils;
+import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawingPoint2D;
 import org.tendiwa.geometry.JTSUtils;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -3,6 +3,7 @@ package org.tendiwa.drawing.extensions;
 import org.tendiwa.core.meta.Utils;
 import org.tendiwa.drawing.DrawingAlgorithm;
 import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Segment2D;
 import sun.java2d.loops.DrawPolygons;
 
 import java.awt.Color;
@@ -25,14 +26,15 @@ public class DrawingPolygon {
 
 	public static DrawingAlgorithm<List<Point2D>> withColorNonRaster(Color color) {
 		return (polygon, canvas) -> {
+			DrawingAlgorithm<Segment2D> drawingSegment = DrawingSegment2D.withColorThin(color);
 			int size = polygon.size();
 			for (int i = 0; i < size; i++) {
 				Point2D point1 = polygon.get(i);
 				Point2D point2 = polygon.get(Utils.nextIndex(i, size));
 				// TODO: draw line
-				canvas.drawShape(
-					new Line2D.Double(point1.x, point1.y, point2.x, point2.y),
-					color
+				canvas.draw(
+					new Segment2D(point1, point2),
+					drawingSegment
 				);
 			}
 		};

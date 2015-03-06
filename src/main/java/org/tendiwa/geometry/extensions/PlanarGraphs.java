@@ -56,4 +56,14 @@ public final class PlanarGraphs {
 			graph.removeVertex(edge.end);
 		}
 	}
+
+	public UndirectedGraph<Point2D, Segment2D> graphOfSegments(Iterable<Segment2D> segments) {
+		UndirectedGraph<Point2D, Segment2D> graph = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
+		for (Segment2D segment : segments) {
+			graph.addVertex(segment.start);
+			graph.addVertex(segment.end);
+			graph.addEdge(segment.start, segment.end, segment);
+		}
+		return graph;
+	}
 }

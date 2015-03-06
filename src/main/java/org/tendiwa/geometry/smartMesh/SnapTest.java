@@ -161,7 +161,7 @@ final class SnapTest {
 		if (isSegmentIntersectionProbable(sourceNode, targetNode, road.start, road.end)) {
 			RayIntersection intersection = new RayIntersection(sourceNode, targetNode, road);
 			if (isIntersectionInsideUnsnappedSegment(intersection)) {
-				Point2D intersectionPoint = intersection.getLinesIntersectionPoint();
+				Point2D intersectionPoint = intersection.commonPoint();
 				assert !intersectionPoint.equals(sourceNode) : "Commented code below should be used";
 //					if (intersectionPoint.equals(sourceNode)) {
 //						return new SnapEvent(null, SnapEventType.NO_NODE, null);

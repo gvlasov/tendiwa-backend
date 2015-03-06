@@ -9,7 +9,7 @@ import java.util.function.Consumer;
  * @param <T>
  * 	Type of payload.
  */
-public class DoublyLinkedNode<T> implements Iterable<T> {
+public final class DoublyLinkedNode<T> implements Iterable<T> {
 	private final T payload;
 
 
@@ -28,7 +28,7 @@ public class DoublyLinkedNode<T> implements Iterable<T> {
 		return next;
 	}
 
-	public final DoublyLinkedNode getPrevious() {
+	public final DoublyLinkedNode<T> getPrevious() {
 		return previous;
 	}
 
@@ -72,9 +72,9 @@ public class DoublyLinkedNode<T> implements Iterable<T> {
 
 	/**
 	 * <a href="http://www.geeksforgeeks.org/reverse-a-doubly-linked-list/">Reverts a doubly linked list</a>
+	 * <p>
 	 * Swaps {@link #next} and {@link #previous} of each payload in the chain of this node. This node must be either
-	 * the
-	 * first in the chain or the last.
+	 * the first in the chain or the last.
 	 */
 	public final void revertChain() {
 		assert next == null || previous == null;
@@ -185,6 +185,11 @@ public class DoublyLinkedNode<T> implements Iterable<T> {
 			} while (current != this);
 		}
 	}
+
+	public boolean isTerminal() {
+		return previous == null || next == null;
+	}
+
 
 	private class ForwardIterator implements Iterator<T> {
 		private DoublyLinkedNode<T> current = DoublyLinkedNode.this;

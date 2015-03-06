@@ -12,9 +12,14 @@ public class EdgeEvent extends SkeletonEvent {
 	private final Node leftParent;
 
 	EdgeEvent(Point2D point, Node leftParent, Node rightParent) {
-		super(point, leftParent);
+		super(point, leftIsCloserThanRight(point, leftParent, rightParent) ?
+			leftParent : rightParent);
 		this.leftParent = leftParent;
 		this.rightParent = rightParent;
+	}
+
+	private static boolean leftIsCloserThanRight(Point2D point, Node leftParent, Node rightParent) {
+		return point.distanceToLine(leftParent.currentEdge) < point.distanceToLine(rightParent.currentEdge);
 	}
 
 	public Node rightParent() {
@@ -25,6 +30,7 @@ public class EdgeEvent extends SkeletonEvent {
 	Node leftParent() {
 		return leftParent;
 	}
+
 	@Override
 	void handle(SuseikaStraightSkeleton skeleton) {
 		// Convex 2b

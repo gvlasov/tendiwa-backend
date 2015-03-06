@@ -4,7 +4,6 @@ import org.jgrapht.Graph;
 import org.tendiwa.collections.SuccessiveTuples;
 import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.extensions.straightSkeleton.Bisector;
-import org.tendiwa.geometry.extensions.straightSkeleton.WrongBisector;
 import org.tendiwa.graphs.GraphChainTraversal;
 import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.graphs.graphs2d.Graph2D;
@@ -155,7 +154,7 @@ final class OrientedCycle implements NetworkPart {
 					new Bisector(
 						next.asVector(),
 						previous.asVector().reverse()
-					).asVector()
+					).asInbetweenVector()
 				)
 			);
 //		Segment2D wrongSegment = new WrongBisector(
