@@ -5,8 +5,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
-import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingPoint2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Polygon;
 import org.tendiwa.geometry.Segment2D;
@@ -55,43 +53,6 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 		SkeletonEvent e = node.computeNearerBisectorsIntersection();
 		if (e != null) {
 			queue.add(e);
-		}
-	}
-
-	void connectLast3SegmentsOfLav(EdgeEvent event) {
-		Node centerNode = new CenterNode(event.point);
-		outputArc(event.leftParent().vertex, event.point);
-		outputArc(event.rightParent().vertex, event.point);
-		outputArc(event.leftParent().previous().vertex, event.point);
-		debug.draw3NodeLavArcs(event);
-
-		event.leftParent().growAdjacentFaces(centerNode);
-		event.rightParent().growAdjacentFaces(centerNode);
-		event.leftParent().previous().growAdjacentFaces(centerNode);
-
-		event.leftParent().setProcessed();
-		event.rightParent().setProcessed();
-		event.leftParent().previous().setProcessed();
-
-		assert event.leftParent().previous() == event.rightParent().next();
-	}
-
-	/**
-	 * Such lavs can form after a split event
-	 */
-	void eliminate2NodeLav(Node node1, Node node2) {
-		// TODO: Move this method to the Node class
-		assert node1.next() == node2 && node2.next() == node1;
-		outputArc(node1.vertex, node2.vertex);
-		debug.draw2NodeLavArc(node1, node2);
-		node1.growAdjacentFaces(node2);
-		node1.setProcessed();
-		node2.setProcessed();
-		if (node1.hasPair()) {
-			node1 = node1.getPair();
-		}
-		if (node2.hasPair()) {
-			node2 = node2.getPair();
 		}
 	}
 

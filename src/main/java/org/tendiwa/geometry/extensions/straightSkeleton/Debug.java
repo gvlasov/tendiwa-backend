@@ -23,14 +23,14 @@ final class Debug {
 		);
 	}
 
-	void drawEdgeEventArcs(EdgeEvent event) {
+	void drawEdgeEventArcs(Node leftParent, Node rightParent, Point2D point) {
 		if (!debug) return;
 		TestCanvas.canvas.draw(
-			new Segment2D(event.leftParent().vertex, event.point),
+			new Segment2D(leftParent.vertex, point),
 			DrawingSegment2D.withColorThin(Color.yellow)
 		);
 		TestCanvas.canvas.draw(
-			new Segment2D(event.rightParent().vertex, event.point),
+			new Segment2D(rightParent.vertex, point),
 			DrawingSegment2D.withColorThin(Color.yellow)
 		);
 	}

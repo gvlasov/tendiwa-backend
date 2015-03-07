@@ -1,12 +1,11 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
 import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Segment2D;
 
 /**
  * Note: this class has natural ordering that is inconsistent with {@link Object#equals(Object)}.
  */
-public class SplitEvent extends SkeletonEvent implements Comparable<SkeletonEvent> {
+public class SplitEvent extends SkeletonEvent {
 	private final OriginalEdgeStart oppositeEdgeStart;
 	private final Node parent;
 
@@ -24,36 +23,35 @@ public class SplitEvent extends SkeletonEvent implements Comparable<SkeletonEven
 		return parent;
 	}
 
-	OriginalEdgeStart oppositeEdgeStart() {
-		return oppositeEdgeStart;
-	}
-
 	@Override
 	void handle(SuseikaStraightSkeleton skeleton) {
-//		assert parent() instanceof OriginalEdgeStart;
 		if (parent().isProcessed()) {
 			return;
 		}
-		// Non-convex 2c
 		if (parent().previous().previous().previous() == parent()) {
-//			connectLast3SegmentsOfLav(point);
+			// Non-convex 2c
+//				connectLast3SegmentsOfLav(point);
 			assert false;
-			return;
+		} else if (parent().isInLavOf2Nodes()) {
+			eliminate2NodeLav(parent(), skeleton);
+		} else if (oppositeEdgeStart.face().isClosed()) {
+			replaceWithEventOverClosedFace(skeleton);
+		} else {
+			splitEdge(skeleton);
 		}
-		if (parent().next().next() == parent()) {
-			skeleton.eliminate2NodeLav(parent(), parent().next().next());
-			return;
-		}
-		if (oppositeEdgeStart.face.isClosed()) {
-			skeleton.queueEvent(
-				new SplitEvent(
-					point,
-					parent,
-					oppositeEdgeStart.face.findAnotherOppositeEdgeStart(parent)
-				)
-			);
-			return;
-		}
+	}
+
+	private void replaceWithEventOverClosedFace(SuseikaStraightSkeleton skeleton) {
+		skeleton.queueEvent(
+			new SplitEvent(
+				point,
+				parent,
+				oppositeEdgeStart.findAnotherOppositeEdgeStart(parent)
+			)
+		);
+	}
+
+	private void splitEdge(SuseikaStraightSkeleton skeleton) {
 		// Non-convex 2d
 		skeleton.outputArc(parent().vertex, point);
 		skeleton.debug.drawSplitEventArc(this);
@@ -63,32 +61,27 @@ public class SplitEvent extends SkeletonEvent implements Comparable<SkeletonEven
 		LeftSplitNode leftNode = new LeftSplitNode(
 			point,
 			parent().previousEdgeStart,
-			oppositeEdgeStart()
+			oppositeEdgeStart
 		);
 		RightSplitNode rightNode = new RightSplitNode(
 			point,
-			oppositeEdgeStart(),
+			oppositeEdgeStart,
 			parent().currentEdgeStart
 		);
 		leftNode.setPair(rightNode);
 		rightNode.setPair(leftNode);
 
-		oppositeEdgeStart().face().integrateSplitNodes(parent(), leftNode, rightNode);
+		oppositeEdgeStart.integrateSplitNodes(parent(), leftNode, rightNode);
 
 		// Non-convex 2
 		integrateNewSplitNode(leftNode, skeleton);
 		integrateNewSplitNode(rightNode, skeleton);
 	}
 
-	private boolean oppositeGoesLeftToRight(Segment2D oppositeInClosed) {
-		return parent().bisector.asVector().rotateQuarterClockwise()
-			.dotProduct(oppositeInClosed.asVector()) > 0;
-	}
-
 	private void integrateNewSplitNode(Node node, SuseikaStraightSkeleton skeleton) {
 		if (node.isInLavOf2Nodes()) {
 			// Such lavs can form after a split event
-			skeleton.eliminate2NodeLav(node, node.next());
+			eliminate2NodeLav(node, skeleton);
 		} else {
 			node.computeReflexAndBisector();
 			skeleton.queueEventFromNode(node);

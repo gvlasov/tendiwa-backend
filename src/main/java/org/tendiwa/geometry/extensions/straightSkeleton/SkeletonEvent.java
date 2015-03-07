@@ -1,12 +1,7 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
 import com.sun.istack.internal.NotNull;
-import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingPoint2D;
-import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
-
-import java.awt.Color;
 
 abstract class SkeletonEvent implements Comparable<SkeletonEvent> {
 	final double distanceToOriginalEdge;
@@ -16,30 +11,9 @@ abstract class SkeletonEvent implements Comparable<SkeletonEvent> {
 	 * <i>v<sub>a</sub></i> in [Obdrzalek 1998]
 	 */
 
-	SkeletonEvent(Point2D point, Node parent) {
+	protected SkeletonEvent(Point2D point, Node parent) {
 		this.point = point;
 		this.distanceToOriginalEdge = point.distanceToLine(parent.currentEdge);
-		if (point.hashCode() == -2140443334) {
-			TestCanvas.canvas.draw(parent.currentEdge, DrawingSegment2D.withColorDirected(Color.cyan, 1));
-			TestCanvas.canvas.draw(
-				point,
-				DrawingPoint2D.withTextMarker(
-					String.format("%1.6s", distanceToOriginalEdge),
-					Color.black,
-					Color.cyan
-				)
-			);
-		} else if (point.hashCode() == -795039487) {
-			TestCanvas.canvas.draw(parent.currentEdge, DrawingSegment2D.withColorDirected(Color.magenta, 1));
-			TestCanvas.canvas.draw(
-				point,
-				DrawingPoint2D.withTextMarker(
-					String.format("%1.6s", distanceToOriginalEdge),
-					Color.white,
-					Color.magenta
-				)
-			);
-		}
 	}
 
 	@Override
@@ -54,4 +28,12 @@ abstract class SkeletonEvent implements Comparable<SkeletonEvent> {
 
 	abstract void handle(SuseikaStraightSkeleton skeleton);
 
+	protected void eliminate2NodeLav(Node node1, SuseikaStraightSkeleton skeleton) {
+//		assert node1.next() == node2 && node2.next() == node1;
+		skeleton.outputArc(node1.vertex, node1.next().vertex);
+		skeleton.debug.draw2NodeLavArc(node1, node1.next());
+		node1.growAdjacentFaces(node1.next());
+		node1.setProcessed();
+		node1.next().setProcessed();
+	}
 }

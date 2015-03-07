@@ -11,10 +11,9 @@ import java.util.Collection;
 import java.util.stream.Stream;
 
 /**
- * Holds start and end of a subchain of a {@link Face}
+ * Holds start and end of a subchain of a {@link IncompleteFace}
  */
 final class Chain {
-	private boolean start;
 	private DoublyLinkedNode<Node> first;
 	private DoublyLinkedNode<Node> last;
 	/**
@@ -26,9 +25,6 @@ final class Chain {
 	Chain previousChain;
 
 	Chain(Node oneEnd, Node last, @Nullable Chain previousChain) {
-		if (previousChain == null) {
-			this.start = true;
-		}
 		if (oneEnd == last) {
 			this.first = new DoublyLinkedNode<>(oneEnd);
 			this.last = this.first;
@@ -63,10 +59,6 @@ final class Chain {
 	}
 
 	void moveFirstFaceNode(DoublyLinkedNode<Node> newFirst) {
-		if (start) {
-			// TODO: Remove this field
-			assert false;
-		}
 		first = newFirst;
 	}
 
@@ -83,15 +75,6 @@ final class Chain {
 		}
 	}
 
-	Stream<Segment2D> asSegmentStream() {
-		Collection<Segment2D> segments = new ArrayList<>();
-		SuccessiveTuples.forEach(first, (a, b) -> {
-			if (a.vertex != b.vertex) {
-				segments.add(new Segment2D(a.vertex, b.vertex));
-			}
-		});
-		return segments.stream();
-	}
 
 	void skipFirst() {
 		this.first = first.getNext();

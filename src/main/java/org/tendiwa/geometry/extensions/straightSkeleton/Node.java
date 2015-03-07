@@ -66,17 +66,7 @@ abstract class Node implements Iterable<Node> {
 	}
 
 	private void growFace(Node newNode, OriginalEdgeStart faceStart) {
-		faceStart.face.addLink(this, newNode);
-//		if (faceStart.face.startHalfface.firstSkeletonNode() != faceStart) {
-//			TestCanvas.canvas.draw(
-//				new Segment2D(
-//					this.vertex,
-//					newNode.vertex
-//				),
-//				DrawingSegment2D.withColorDirected(Color.orange, 1)
-//			);
-//			assert false;
-//		}
+		faceStart.face().addLink(this, newNode);
 	}
 
 	protected Node(Point2D vertex) {
@@ -149,17 +139,6 @@ abstract class Node implements Iterable<Node> {
 			vertex,
 			vertex.add(bisectorVector)
 		);
-//		bisector = new WrongBisector(
-//			previousEdgeStart.currentEdge,
-//			currentEdgeStart.currentEdge,
-//			vertex,
-//			true
-//		);
-//		TestCanvas.canvas.draw(
-//			bisector,
-//			DrawingSegment2D.withColorDirected(Color.green, 1)
-//		);
-		assert Boolean.TRUE;
 	}
 
 	/**
@@ -487,5 +466,10 @@ abstract class Node implements Iterable<Node> {
 			new double[]{point.x - previous.x, point.y - previous.y},
 			new double[]{next.x - point.x, next.y - point.y}
 		) >= 0;
+	}
+
+	void eliminate2NodeLav(Node neighbor) {
+		// TODO: Move this method to the Node class
+		assert next() == neighbor && neighbor.next() == this;
 	}
 }
