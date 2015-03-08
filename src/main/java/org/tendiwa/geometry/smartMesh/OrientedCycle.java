@@ -3,7 +3,7 @@ package org.tendiwa.geometry.smartMesh;
 import org.jgrapht.Graph;
 import org.tendiwa.collections.SuccessiveTuples;
 import org.tendiwa.geometry.*;
-import org.tendiwa.geometry.extensions.straightSkeleton.Bisector;
+import org.tendiwa.geometry.Bisector;
 import org.tendiwa.graphs.GraphChainTraversal;
 import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.graphs.graphs2d.Graph2D;

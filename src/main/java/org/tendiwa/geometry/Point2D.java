@@ -111,14 +111,13 @@ public class Point2D implements Vector2D {
 
 
 	public double distanceToLine(Segment2D line) {
-		double normalLength = Math.sqrt(
-			(line.end.x - line.start.x)
-				* (line.end.x - line.start.x) + (line.end.y - line.start.y) * (line.end.y - line.start.y)
-		);
+		double dx = line.end.x - line.start.x;
+		double dy = line.end.y - line.start.y;
+		// TODO: Replace with line.length()
+		double normalLength = Math.sqrt(dx * dx + dy * dy);
 		return Math.abs(
-			(x - line.start.x)
-				* (line.end.y - line.start.y) - (y - line.start.y)
-				* (line.end.x - line.start.x)
+			(x - line.start.x) * dy
+				- (y - line.start.y) * dx
 		) / normalLength;
 	}
 

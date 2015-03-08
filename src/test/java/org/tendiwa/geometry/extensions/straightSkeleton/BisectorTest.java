@@ -1,6 +1,7 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
 import org.junit.Test;
+import org.tendiwa.geometry.Bisector;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Vector2D;
 

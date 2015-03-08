@@ -139,6 +139,9 @@ abstract class Node implements Iterable<Node> {
 			vertex,
 			vertex.add(bisectorVector)
 		);
+//		if (bisector.start.distanceTo(new Point2D(416, 384)) < 12) {
+//			TestCanvas.canvas.draw(bisector, DrawingSegment2D.withColorDirected(Color.green, 1));
+//		}
 	}
 
 	/**
@@ -261,40 +264,48 @@ abstract class Node implements Iterable<Node> {
 			return sameLineIntersection;
 		}
 
-		Point2D nearer = null;
+		Point2D shrinkPoint = null;
 		Node va = null;
 		Node vb = null;
 		if (nextIntersection.r > 0 || previousIntersection.r > 0) {
 			if (previousIntersection.r < 0 && nextIntersection.r > 0 || nextIntersection.r > 0 && nextIntersection.r <= previousIntersection.r) {
 				if (next().bisectorsIntersection(this).r > 0 && nextIntersection.r > 0) {
-					nearer = nextIntersection.commonPoint();
+					shrinkPoint = nextIntersection.commonPoint();
 					va = this;
 					vb = next();
 				}
 			} else if (nextIntersection.r < 0 && previousIntersection.r > 0 || previousIntersection.r > 0 && previousIntersection.r <= nextIntersection.r) {
 				if (previous().bisectorsIntersection(this).r > 0 && previousIntersection.r > 0) {
-					nearer = previousIntersection.commonPoint();
+					shrinkPoint = previousIntersection.commonPoint();
 					va = previous();
 					vb = this;
 				}
 			}
 		}
 		if (isReflex) {
-			SkeletonEvent splitPoint = findSplitEvent();
-			if (
-				nearer == null
-					|| splitPoint != null
-					&& vertex.distanceTo(splitPoint.point) < vertex.distanceTo(nearer)
-				) {
-				return splitPoint;
+			SkeletonEvent splitEvent = findSplitEvent();
+			if (splitPointIsBetterThanShrinkPoint(splitEvent, shrinkPoint)) {
+				return splitEvent;
 			}
 		}
-		assert nearer == null || va != null && vb != null;
+		assert shrinkPoint == null || va != null && vb != null;
 		assert va == null && vb == null || va.next() == vb;
-		if (nearer == null) {
+		if (shrinkPoint == null) {
 			return null;
 		}
-		return new EdgeEvent(nearer, va, vb);
+		return new EdgeEvent(shrinkPoint, va, vb);
+	}
+
+	private boolean splitPointIsBetterThanShrinkPoint(
+		@Nullable SkeletonEvent splitEvent,
+		@Nullable Point2D shrinkPoint
+	) {
+		if (splitEvent == null) {
+			return false;
+		} else if (shrinkPoint == null) {
+			return true;
+		}
+		return vertex.distanceTo(splitEvent.point) < vertex.distanceTo(shrinkPoint);
 	}
 
 	private RayIntersection bisectorsIntersection(Node node) {
@@ -379,23 +390,13 @@ abstract class Node implements Iterable<Node> {
 			new Segment2D(bisectorStart, bisectorStart.add(anotherBisector.asSumVector())),
 			bisector
 		);
-//		if (vertex.chebyshovDistanceTo(new Point2D(1432, 1168)) < 1.5) {
-//			TestCanvas.canvas.draw(
-//				oppositeEdge.middle(),
-//				DrawingPoint2D.withTextMarker(
-//					String.format("%1.6s", vertex.distanceTo(intersection.commonPoint())),
-//					Color.black,
-//					Color.white
-//				)
-//			);
-//		}
 		return intersection.commonPoint();
 	}
 
 	private boolean nodeIsAppropriate(Node node) {
 		return !(nodeIsNeighbor(node)
 			|| intersectionIsBehindReflexNode(node)
-//			|| previousEdgeIntersectsInFrontOfOppositeEdge(node)
+			|| previousEdgeIntersectsInFrontOfOppositeEdge(node)
 			// TODO: If the previous condition is unnecessary, then this condition is unnecessary too.
 			|| currentEdgeIntersectsInFrontOfOppositeEdge(node)
 		);

@@ -2,7 +2,7 @@ package org.tendiwa.geometry.extensions.straightSkeleton;
 
 import org.tendiwa.geometry.Point2D;
 
-public class RightSplitNode extends SplitNode {
+final class RightSplitNode extends SplitNode {
 	RightSplitNode(Point2D point, OriginalEdgeStart previousEdgeStart, OriginalEdgeStart currentEdgeStart) {
 		super(point, previousEdgeStart, currentEdgeStart);
 	}

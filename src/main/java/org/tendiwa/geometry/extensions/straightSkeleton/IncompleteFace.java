@@ -16,31 +16,20 @@ final class IncompleteFace implements Face, UnderlyingFace {
 	final Chain startHalfface;
 	@Nonnull
 	final Chain endHalfface;
+	private final OriginalEdgeStart edgeStart;
+	private final OriginalEdgeStart edgeEnd;
 	Chain lastAddedChain;
 	private int numberOfSkeletonNodes;
-	private TreeSet<Node> sortedLinkEnds = new TreeSet<>(
-		(Node o1, Node o2) -> {
-			if (o1 == o2) {
-				return 0;
-			}
-			if (o1.isPair(o2)) {
-				SplitNode o1s = (SplitNode) o1;
-				SplitNode o2s = (SplitNode) o2;
-				assert o1s.isLeft() != o2s.isLeft();
-				return o1s.isLeft() ? 1 : -1;
-			} else {
-				double projection1 = projectionOnEdge(o1);
-				double projection2 = projectionOnEdge(o2);
-				assert projection1 != projection2;
-				return (int) Math.signum(projection1 - projection2);
-			}
-		}
-	);
+	private final TreeSet<Node> sortedLinkEnds;
 
 	IncompleteFace(OriginalEdgeStart edgeStart, OriginalEdgeStart edgeEnd) {
+		this.edgeStart = edgeStart;
+		this.edgeEnd = edgeEnd;
 		assert edgeStart.next() == edgeEnd;
+		sortedLinkEnds = new FaceNodesSorter(edgeStart.vertex, edgeEnd.vertex);
 		startHalfface = new Chain(edgeStart, edgeStart, null);
 		endHalfface = new Chain(edgeEnd, edgeEnd, startHalfface);
+
 		startHalfface.setNextChain(endHalfface);
 		assert startHalfface.nextChain == endHalfface && endHalfface.previousChain == startHalfface
 			&& startHalfface.previousChain == null && endHalfface.nextChain == null;
@@ -52,8 +41,8 @@ final class IncompleteFace implements Face, UnderlyingFace {
 	public Node getNodeFromLeft(LeftSplitNode leftNode) {
 		Node higher = sortedLinkEnds.higher(leftNode);
 		if (higher == null) {
-			assert !endHalfface.lastSkeletonNode().isProcessed();
-			higher = endHalfface.lastSkeletonNode();
+			assert !endHalfface.lastFaceNode().getPayload().isProcessed();
+			higher = endHalfface.lastFaceNode().getPayload();
 		}
 		assert !higher.isProcessed();
 		return higher;
@@ -63,27 +52,12 @@ final class IncompleteFace implements Face, UnderlyingFace {
 	public Node getNodeFromRight(RightSplitNode rightNode) {
 		Node lower = sortedLinkEnds.lower(rightNode);
 		if (lower == null) {
-			assert !startHalfface.lastSkeletonNode().isProcessed();
-			lower = startHalfface.lastSkeletonNode();
+			assert !startHalfface.lastFaceNode().getPayload().isProcessed();
+			lower = startHalfface.lastFaceNode().getPayload();
 		}
 		assert !lower.isProcessed();
 		return lower;
 	}
-
-	private double projectionOnEdge(Node node) {
-//		return Vector2D
-//			.fromStartToEnd(edge.start, vertex)
-//			.dotProduct(edgeVector)
-//			/ edgeVector.magnitude()
-//			/ edgeVector.magnitude();
-		double edx = endHalfface.firstSkeletonNode().vertex.x - startHalfface.firstSkeletonNode().vertex.x;
-		double edy = endHalfface.firstSkeletonNode().vertex.y - startHalfface.firstSkeletonNode().vertex.y;
-		return (
-			(node.vertex.x - startHalfface.firstSkeletonNode().vertex.x) * edx
-				+ (node.vertex.y - startHalfface.firstSkeletonNode().vertex.y) * edy
-		) / (edx * edx + edy * edy);
-	}
-
 
 	/**
 	 * @param end1
@@ -104,8 +78,8 @@ final class IncompleteFace implements Face, UnderlyingFace {
 	@Override
 	public void addNewSortedEnd(Node end) {
 		sortedLinkEnds.add(end);
-		assert !end.vertex.equals(startHalfface.firstSkeletonNode().vertex)
-			&& !end.vertex.equals(endHalfface.firstSkeletonNode().vertex);
+		assert !end.vertex.equals(startHalfface.firstFaceNode().getPayload().vertex)
+			&& !end.vertex.equals(endHalfface.firstFaceNode().getPayload().vertex);
 	}
 
 	@Override
@@ -129,7 +103,7 @@ final class IncompleteFace implements Face, UnderlyingFace {
 		numberOfSkeletonNodes += d;
 	}
 
-
+	@Override
 	public Polygon toPolygon() {
 		List<Point2D> points = new ArrayList<>(numberOfSkeletonNodes);
 		DoublyLinkedNode<Node> chain = startHalfface.firstFaceNode();
@@ -169,7 +143,6 @@ final class IncompleteFace implements Face, UnderlyingFace {
 			|| endHalfface.lastFaceNode() == startHalfface.firstFaceNode();
 	}
 
-
 	@Override
 	public Iterator<Node> iterator() {
 		assert isClosed();
@@ -177,7 +150,6 @@ final class IncompleteFace implements Face, UnderlyingFace {
 			startHalfface.firstFaceNode().iterator()
 			: endHalfface.firstFaceNode().iterator();
 	}
-
 
 	@Override
 	public Chain startHalfface() {

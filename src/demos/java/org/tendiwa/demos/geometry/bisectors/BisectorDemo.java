@@ -6,7 +6,6 @@ import org.tendiwa.drawing.GifBuilder;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Vector2D;
-import org.tendiwa.geometry.extensions.straightSkeleton.Bisector;
 
 import java.awt.Color;
 import java.util.stream.IntStream;

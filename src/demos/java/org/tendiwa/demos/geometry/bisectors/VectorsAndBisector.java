@@ -1,7 +1,7 @@
 package org.tendiwa.demos.geometry.bisectors;
 
 import org.tendiwa.geometry.Vector2D;
-import org.tendiwa.geometry.extensions.straightSkeleton.Bisector;
+import org.tendiwa.geometry.Bisector;
 
 final class VectorsAndBisector {
 	final Vector2D cw;

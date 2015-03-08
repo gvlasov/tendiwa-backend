@@ -51,7 +51,7 @@ final class ShrinkedFront implements Penetrable {
 
 	@Override
 	public void add(Point2D point1, Point2D point2) {
-		TestCanvas.canvas.draw(new Segment2D(point1, point2), DrawingSegment2D.withColorThin(Color.orange));
+//		TestCanvas.canvas.draw(new Segment2D(point1, point2), DrawingSegment2D.withColorThin(Color.orange));
 		DoublyLinkedNode<Point2D> node1 = obtainNode(point1);
 		DoublyLinkedNode<Point2D> node2 = obtainNode(point2);
 		node1.uniteWith(node2);

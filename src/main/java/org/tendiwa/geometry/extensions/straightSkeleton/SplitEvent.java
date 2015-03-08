@@ -1,11 +1,12 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
 import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.RayIntersection;
 
 /**
  * Note: this class has natural ordering that is inconsistent with {@link Object#equals(Object)}.
  */
-public class SplitEvent extends SkeletonEvent {
+final class SplitEvent extends SkeletonEvent {
 	private final OriginalEdgeStart oppositeEdgeStart;
 	private final Node parent;
 
@@ -41,6 +42,20 @@ public class SplitEvent extends SkeletonEvent {
 		}
 	}
 
+	private boolean wedgesIntoOppositeFace(LeftSplitNode left, RightSplitNode right) {
+		boolean leftBisectorFromLeft =
+			new RayIntersection(
+				left.bisector,
+				oppositeEdgeStart.face().getNodeFromLeft(left).bisector
+			).r > 0;
+		boolean rightBisectorFromRight =
+			new RayIntersection(
+				right.bisector,
+				oppositeEdgeStart.face().getNodeFromRight(right).bisector
+			).r > 0;
+		return rightBisectorFromRight && leftBisectorFromLeft;
+	}
+
 	private void replaceWithEventOverClosedFace(SuseikaStraightSkeleton skeleton) {
 		skeleton.queueEvent(
 			new SplitEvent(
@@ -70,6 +85,11 @@ public class SplitEvent extends SkeletonEvent {
 		);
 		leftNode.setPair(rightNode);
 		rightNode.setPair(leftNode);
+		leftNode.computeReflexAndBisector();
+		rightNode.computeReflexAndBisector();
+		if (!wedgesIntoOppositeFace(leftNode, rightNode)) {
+			return;
+		}
 
 		oppositeEdgeStart.integrateSplitNodes(parent(), leftNode, rightNode);
 
@@ -83,7 +103,7 @@ public class SplitEvent extends SkeletonEvent {
 			// Such lavs can form after a split event
 			eliminate2NodeLav(node, skeleton);
 		} else {
-			node.computeReflexAndBisector();
+//			node.computeReflexAndBisector();
 			skeleton.queueEventFromNode(node);
 		}
 	}

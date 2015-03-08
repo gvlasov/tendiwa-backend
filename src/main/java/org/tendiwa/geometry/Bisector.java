@@ -1,7 +1,4 @@
-package org.tendiwa.geometry.extensions.straightSkeleton;
-
-import org.tendiwa.geometry.Vector2D;
-import org.tendiwa.geometry.Vectors2D;
+package org.tendiwa.geometry;
 
 public final class Bisector {
 	private final Vector2D vector;
@@ -29,7 +26,7 @@ public final class Bisector {
 
 	/**
 	 * @return A vector of magnitude between |cw| and |ccw|.
-	 * @see org.tendiwa.geometry.extensions.straightSkeleton.Bisector#Bisector(org.tendiwa.geometry.Vector2D,
+	 * @see Bisector#Bisector(org.tendiwa.geometry.Vector2D,
 	 * org.tendiwa.geometry.Vector2D)
 	 */
 	public Vector2D asSumVector() {

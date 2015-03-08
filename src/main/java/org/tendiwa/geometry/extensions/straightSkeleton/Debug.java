@@ -2,6 +2,7 @@ package org.tendiwa.geometry.extensions.straightSkeleton;
 
 import com.google.common.collect.Multimap;
 import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawingPoint2D;
 import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
@@ -43,6 +44,16 @@ final class Debug {
 			drawIntersectingArc(start, end);
 			assert false;
 		}
+	}
+	void drawEventHeight(SkeletonEvent event) {
+		TestCanvas.canvas.draw(
+			event.point,
+			DrawingPoint2D.withTextMarker(
+				String.format("%1.6s", event.distanceToOriginalEdge),
+				Color.black,
+				Color.white
+			)
+		);
 	}
 	void drawIntersectingArc(Point2D start, Point2D end) {
 		if (!debug) return;

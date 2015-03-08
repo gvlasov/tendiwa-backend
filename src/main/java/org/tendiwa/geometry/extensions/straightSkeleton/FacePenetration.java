@@ -18,7 +18,7 @@ final class FacePenetration implements Iterator<Point2D> {
 	private final Queue<Point2D> queue;
 
 	public FacePenetration(Polygon face, Penetrable front) {
-		TestCanvas.canvas.draw(faceFront(face), DrawingSegment2D.withColorDirected(Color.cyan, 1));
+//		TestCanvas.canvas.draw(faceFront(face), DrawingSegment2D.withColorDirected(Color.cyan, 1));
 		queue = new PriorityQueue<>(Point2D::compareCoordinatesLinewise);
 		Segment2D intruded = intrudeFaceFront(face, front.depth());
 		face.toSegments().stream()

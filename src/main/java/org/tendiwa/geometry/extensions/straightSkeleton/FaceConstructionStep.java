@@ -25,19 +25,19 @@ final class FaceConstructionStep {
 			linkAtEnd2First = false;
 		while (chain != null) {
 			if (chainAtEnd1 == null) {
-				if (chain.firstSkeletonNode() == end1 && chain.firstSkeletonNode() != chain.lastSkeletonNode()) {
+				if (chain.firstFaceNode().getPayload() == end1 && !chain.isZeroLength()) {
 					chainAtEnd1 = chain;
 					linkAtEnd1First = true;
-				} else if (chain.lastSkeletonNode() == end1) {
+				} else if (chain.lastFaceNode().getPayload() == end1) {
 					chainAtEnd1 = chain;
 					linkAtEnd1First = false;
 				}
 			}
 			if (chainAtEnd2 == null) {
-				if (chain.firstSkeletonNode() == end2 && chain.firstSkeletonNode() != chain.lastSkeletonNode()) {
+				if (chain.firstFaceNode().getPayload() == end2 && !chain.isZeroLength()) {
 					chainAtEnd2 = chain;
 					linkAtEnd2First = true;
-				} else if (chain.lastSkeletonNode() == end2) {
+				} else if (chain.lastFaceNode().getPayload() == end2) {
 					chainAtEnd2 = chain;
 					linkAtEnd2First = false;
 				}
@@ -73,6 +73,7 @@ final class FaceConstructionStep {
 
 	private void createNewLink(Node oneEnd, Node anotherEnd) {
 		assert face.lastAddedChain() != null;
+		assert oneEnd.vertex == anotherEnd.vertex;
 		face.setLastAddedChain(new Chain(oneEnd, anotherEnd, face.lastAddedChain()));
 		assert face.lastAddedChain().previousChain != null;
 		face.lastAddedChain().previousChain.setNextChain(face.lastAddedChain());
@@ -116,11 +117,11 @@ final class FaceConstructionStep {
 		}
 
 		if (face.isHalfface(chainAtEnd1)) {
-			face.forgetNodeProjection(linkAtEnd2First ? chainAtEnd2.lastSkeletonNode() : chainAtEnd2.firstSkeletonNode
+			face.forgetNodeProjection(linkAtEnd2First ? chainAtEnd2.lastFaceNode().getPayload() : chainAtEnd2.firstFaceNode().getPayload
 				());
 		}
-		face.forgetNodeProjection(linkAtEnd1First ? chainAtEnd1.firstSkeletonNode() : chainAtEnd1.lastSkeletonNode());
-		face.forgetNodeProjection(linkAtEnd2First ? chainAtEnd2.firstSkeletonNode() : chainAtEnd2.lastSkeletonNode());
+		face.forgetNodeProjection(linkAtEnd1First ? chainAtEnd1.firstFaceNode().getPayload() : chainAtEnd1.lastFaceNode().getPayload());
+		face.forgetNodeProjection(linkAtEnd2First ? chainAtEnd2.firstFaceNode().getPayload() : chainAtEnd2.lastFaceNode().getPayload());
 
 		assert chainAtEnd1 != null && chainAtEnd2 != null;
 		if (linkAtEnd1First && linkAtEnd2First) {
@@ -162,14 +163,14 @@ final class FaceConstructionStep {
 	private void prolongLink(Node end, Chain chain, boolean isFirst) {
 		face.increaseNumberOfSkeletonNodes(1);
 		if (isFirst) {
-			face.forgetNodeProjection(chain.firstSkeletonNode());
+			face.forgetNodeProjection(chain.firstFaceNode().getPayload());
 			DoublyLinkedNode<Node> newFirst = new DoublyLinkedNode<>(end);
 			DoublyLinkedNode<Node> first = chain.firstFaceNode();
 			first.setPrevious(newFirst);
 			newFirst.setNext(first);
 			chain.moveFirstFaceNode(newFirst);
 		} else {
-			face.forgetNodeProjection(chain.lastSkeletonNode());
+			face.forgetNodeProjection(chain.lastFaceNode().getPayload());
 			DoublyLinkedNode<Node> newLast = new DoublyLinkedNode<>(end);
 			DoublyLinkedNode<Node> last = chain.lastFaceNode();
 			last.setNext(newLast);

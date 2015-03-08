@@ -1,14 +1,8 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
-import com.google.common.collect.Lists;
 import org.tendiwa.collections.DoublyLinkedNode;
-import org.tendiwa.collections.SuccessiveTuples;
-import org.tendiwa.geometry.Segment2D;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.stream.Stream;
 
 /**
  * Holds start and end of a subchain of a {@link IncompleteFace}
@@ -16,9 +10,6 @@ import java.util.stream.Stream;
 final class Chain {
 	private DoublyLinkedNode<Node> first;
 	private DoublyLinkedNode<Node> last;
-	/**
-	 * To iterate over all Links of this Face.
-	 */
 	@Nullable
 	Chain nextChain;
 	@Nullable
@@ -36,14 +27,6 @@ final class Chain {
 		}
 
 		this.previousChain = previousChain;
-	}
-
-	Node firstSkeletonNode() {
-		return first.getPayload();
-	}
-
-	Node lastSkeletonNode() {
-		return last.getPayload();
 	}
 
 	DoublyLinkedNode<Node> firstFaceNode() {
@@ -75,16 +58,7 @@ final class Chain {
 		}
 	}
 
-
-	void skipFirst() {
-		this.first = first.getNext();
-	}
-
-	void skipLast() {
-		this.last = last.getPrevious();
-	}
-
-	int size() {
-		return Lists.newArrayList(first.iterator()).size();
+	boolean isZeroLength() {
+		return firstFaceNode().getPayload() == lastFaceNode().getPayload();
 	}
 }

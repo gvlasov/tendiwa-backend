@@ -11,7 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CycleExtraVerticesRemover {
+public final class CycleExtraVerticesRemover {
 	/**
 	 * For a list of vertices, returns a new list of the same vertices but without those that lie on the same line
 	 * with their neighbors.

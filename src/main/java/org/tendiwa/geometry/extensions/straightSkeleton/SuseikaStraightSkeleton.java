@@ -5,23 +5,32 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
+import org.tendiwa.core.meta.Utils;
+import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawingPoint2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Polygon;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.StraightSkeleton;
 
+import java.awt.Color;
 import java.util.*;
 
-// TODO: Split this class into more classes.
-public class SuseikaStraightSkeleton implements StraightSkeleton {
-
+public final class SuseikaStraightSkeleton implements StraightSkeleton {
 	private final InitialListOfActiveVertices initialLav;
 	private final PriorityQueue<SkeletonEvent> queue;
 	private final Multimap<Point2D, Point2D> arcs = HashMultimap.create();
 	final Debug debug = new Debug();
+	private static int skeletonNumber = 0;
+	private int hash = skeletonNumber++;
 
 	public SuseikaStraightSkeleton(List<Point2D> vertices) {
 		this(vertices, false);
+	}
+
+	@Override
+	public int hashCode() {
+		return hash;
 	}
 
 	private SuseikaStraightSkeleton(List<Point2D> vertices, boolean trustCounterClockwise) {
@@ -36,7 +45,10 @@ public class SuseikaStraightSkeleton implements StraightSkeleton {
 
 		while (!queue.isEmpty()) {
 			// Convex 2a
-			queue.poll().handle(this);
+			SkeletonEvent event = queue.poll();
+			event.handle(this);
+//			debug.drawEventHeight(event);
+			assert Boolean.TRUE;
 		}
 		assert !arcs.isEmpty();
 	}
