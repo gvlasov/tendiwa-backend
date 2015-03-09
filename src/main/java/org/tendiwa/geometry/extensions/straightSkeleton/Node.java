@@ -218,7 +218,7 @@ abstract class Node implements Iterable<Node> {
 			}
 
 			private void checkLavCorrectness() {
-				if (++i > 100) {
+				if (++i > 1000) {
 					drawLav();
 					throw new RuntimeException("Too many iterations");
 				}

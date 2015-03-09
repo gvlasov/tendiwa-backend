@@ -102,7 +102,6 @@ final class OriginalEdgeStart extends Node {
 
 	private Segment2D findClosestIntersectedSegment(Segment2D ray) {
 		assert face.isClosed();
-		System.out.println(ray);
 		return asSegmentStream(face)
 			.filter(s -> {
 				double r = new RayIntersection(s, ray).r;

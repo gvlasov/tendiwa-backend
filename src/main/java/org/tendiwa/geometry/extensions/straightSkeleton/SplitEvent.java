@@ -67,9 +67,6 @@ final class SplitEvent extends SkeletonEvent {
 	}
 
 	private void splitEdge(SuseikaStraightSkeleton skeleton) {
-		// Non-convex 2d
-		skeleton.outputArc(parent().vertex, point);
-		skeleton.debug.drawSplitEventArc(this);
 		// Non-convex 2e
 
 		// Split event produces two nodes at the same point, and those two nodes have distinct LAVs.
@@ -90,6 +87,9 @@ final class SplitEvent extends SkeletonEvent {
 		if (!wedgesIntoOppositeFace(leftNode, rightNode)) {
 			return;
 		}
+		// Non-convex 2d
+		skeleton.outputArc(parent().vertex, point);
+		skeleton.debug.drawSplitEventArc(this);
 
 		oppositeEdgeStart.integrateSplitNodes(parent(), leftNode, rightNode);
 

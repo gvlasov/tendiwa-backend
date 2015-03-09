@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 final class Debug {
 	private final boolean debug = true;
+
 	Debug() {
 	}
 
@@ -35,16 +36,21 @@ final class Debug {
 			DrawingSegment2D.withColorThin(Color.yellow)
 		);
 	}
+
 	void testForNoIntersection(Multimap<Point2D, Point2D> arcs, Point2D start, Point2D end) {
 		if (!debug) return;
 		if (
 			ShamosHoeyAlgorithm.areIntersected(
-				arcs.entries().stream().map(e -> new Segment2D(e.getKey(), e.getValue())).collect(Collectors.toList()))
+				arcs.entries().stream()
+					.map(e -> new Segment2D(e.getKey(), e.getValue()))
+					.collect(Collectors.toList()))
 			) {
 			drawIntersectingArc(start, end);
+			System.out.println(start);
 			assert false;
 		}
 	}
+
 	void drawEventHeight(SkeletonEvent event) {
 		TestCanvas.canvas.draw(
 			event.point,
@@ -55,6 +61,7 @@ final class Debug {
 			)
 		);
 	}
+
 	void drawIntersectingArc(Point2D start, Point2D end) {
 		if (!debug) return;
 		TestCanvas.canvas.draw(

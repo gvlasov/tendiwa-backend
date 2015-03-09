@@ -155,6 +155,7 @@ final class OrientedCycle implements NetworkPart {
 						next.asVector(),
 						previous.asVector().reverse()
 					).asInbetweenVector()
+						.multiply(inward ? 1 : -1)
 				)
 			);
 //		Segment2D wrongSegment = new WrongBisector(
