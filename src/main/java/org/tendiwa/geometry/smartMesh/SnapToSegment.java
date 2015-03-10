@@ -6,12 +6,12 @@ import org.tendiwa.geometry.Vectors2D;
 
 import java.util.Optional;
 
-final class SnapEventRoad implements SnapEvent {
+final class SnapToSegment implements SnapEvent {
 	private final Point2D source;
 	private final Point2D target;
 	private final Segment2D road;
 
-	public SnapEventRoad(Point2D source, Point2D target, Segment2D road) {
+	public SnapToSegment(Point2D source, Point2D target, Segment2D road) {
 		this.source = source;
 		this.target = target;
 		this.road = road;

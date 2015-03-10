@@ -68,7 +68,7 @@ final class InnerTree {
 	}
 
 	private void propagateFromRay(Ray ray) {
-		SnapEvent nextStep = segmentInserter.tryPlacingRoad(ray);
+		SnapEvent nextStep = segmentInserter.tryPlacingSegment(ray);
 		if (nextStep.createsNewSegment()) {
 			if (nextStep.isTerminal()) {
 				Point2D leaf = nextStep.target();

@@ -1,6 +1,6 @@
 package org.tendiwa.geometry;
 
-public final class Rectangle2D {
+public final class Rectangle2D implements RectangularHull {
 	public final double x;
 	public final double y;
 	public final double width;
@@ -102,5 +102,25 @@ public final class Rectangle2D {
 	public boolean contains(Point2D point) {
 		return point.x >= x && point.x <= getMaxX()
 			&& point.y >= y && point.y <= getMaxY();
+	}
+
+	@Override
+	public double minX() {
+		return x;
+	}
+
+	@Override
+	public double maxX() {
+		return x + width;
+	}
+
+	@Override
+	public double minY() {
+		return y;
+	}
+
+	@Override
+	public double maxY() {
+		return y + height;
 	}
 }

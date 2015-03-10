@@ -3,7 +3,7 @@ package org.tendiwa.geometry.smartMesh;
 import org.tendiwa.geometry.CutSegment2D;
 import org.tendiwa.graphs.graphs2d.Graph2D;
 
-public interface NetworkPart {
+interface NetworkPart {
 	public default void integrate(CutSegment2D cutSegment) {
 		graph().integrateCutSegment(cutSegment);
 	}

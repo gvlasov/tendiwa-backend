@@ -104,7 +104,16 @@ public interface Vector2D extends Position2D {
 	public default boolean makesReflexAngle(Vector2D cw) {
 		return cw.perpDotProduct(this) > 0;
 	}
+
 	public default double perpDotProduct(Vector2D vector) {
 		return getX() * vector.getY() - getY() * vector.getX();
+	}
+
+	public default boolean isBetweenVectors(Vector2D cw, Vector2D ccw) {
+		if (cw.makesReflexAngle(ccw)) {
+			return ccw.perpDotProduct(this) < 0 || this.perpDotProduct(cw) < 0;
+		} else {
+			return cw.perpDotProduct(this) > 0 && this.perpDotProduct(ccw) > 0;
+		}
 	}
 }

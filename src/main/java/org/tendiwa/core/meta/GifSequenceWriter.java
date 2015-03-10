@@ -39,7 +39,12 @@ public class GifSequenceWriter {
 	 * 	if no gif ImageWriters are found
 	 * @author Elliot Kroo (elliot[at]kroo[dot]net)
 	 */
-	public GifSequenceWriter(ImageOutputStream outputStream, int imageType, int timeBetweenFramesMS, boolean loopContinuously) throws IIOException, IOException {
+	public GifSequenceWriter(
+		ImageOutputStream outputStream,
+		int imageType,
+		int timeBetweenFramesMS,
+		boolean loopContinuously
+	) throws IIOException, IOException {
 		// my method to create a writer
 		gifWriter = getWriter();
 		imageWriteParam = gifWriter.getDefaultWriteParam();
@@ -57,19 +62,29 @@ public class GifSequenceWriter {
 
 		IIOMetadataNode graphicsControlExtensionNode = getNode(
 			root,
-			"GraphicControlExtension");
+			"GraphicControlExtension"
+		);
 
 		graphicsControlExtensionNode.setAttribute(
 			"disposalMethod",
-			"restoreToBackgroundColor");
-		graphicsControlExtensionNode.setAttribute("userInputFlag", "FALSE");
+			"restoreToBackgroundColor"
+		);
+		graphicsControlExtensionNode.setAttribute(
+			"userInputFlag",
+			"FALSE"
+		);
 		graphicsControlExtensionNode.setAttribute(
 			"transparentColorFlag",
-			"FALSE");
+			"FALSE"
+		);
 		graphicsControlExtensionNode.setAttribute(
 			"delayTime",
-			Integer.toString(timeBetweenFramesMS / 10));
-		graphicsControlExtensionNode.setAttribute("transparentColorIndex", "0");
+			Integer.toString(timeBetweenFramesMS / 10)
+		);
+		graphicsControlExtensionNode.setAttribute(
+			"transparentColorIndex",
+			"0"
+		);
 
 		IIOMetadataNode commentsNode = getNode(root, "CommentExtensions");
 		commentsNode.setAttribute("CommentExtension", "Created by MAH");
@@ -100,7 +115,8 @@ public class GifSequenceWriter {
 	public void writeToSequence(RenderedImage img) throws IOException {
 		gifWriter.writeToSequence(
 			new IIOImage(img, null, imageMetaData),
-			imageWriteParam);
+			imageWriteParam
+		);
 	}
 
 	/**

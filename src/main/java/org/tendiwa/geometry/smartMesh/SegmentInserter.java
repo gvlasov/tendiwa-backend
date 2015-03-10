@@ -41,9 +41,9 @@ public class SegmentInserter {
 	/**
 	 * [Kelly figure 42, function placeSegment]
 	 * <p>
-	 * Tries adding a new road to the secondary road network graph.
+	 * Tries adding a new segment to the secondary network.
 	 */
-	SnapEvent tryPlacingRoad(Ray beginning) {
+	SnapEvent tryPlacingSegment(Ray beginning) {
 		double segmentLength = deviatedLength(networkGenerationParameters.segmentLength);
 		SnapEvent snapEvent = new SnapTest(
 			networkGenerationParameters.snapSize,
@@ -89,7 +89,8 @@ public class SegmentInserter {
 	/**
 	 * [Kelly figure 42]
 	 * <p>
-	 * Adds new node between two existing nodes, removing an existing segment between them and placing 2 new roads to
+	 * Adds new node between two existing nodes, removing an existing segment between them and placing 2 new segments
+	 * to
 	 * segment network.
 	 * <p>
 	 * Edges are split in the following graphs:
@@ -112,30 +113,28 @@ public class SegmentInserter {
 		fullNetwork.splitEdge(new SplitSegment2D(segment, splitPoint));
 	}
 
-	private void minimumDistanceAssert(Segment2D road, Point2D point) {
-		assert !road.start.equals(point) : "point is start";
-		assert !road.end.equals(point) : "point is end";
-		assert road.start.distanceTo(point) > Vectors2D.EPSILON
-			: road.start.distanceTo(point) + " " + road.start.distanceTo(road.end);
-		assert road.end.distanceTo(point) > Vectors2D.EPSILON
-			: road.end.distanceTo(point) + " " + road.start.distanceTo(road.end);
+	private void minimumDistanceAssert(Segment2D segment, Point2D point) {
+		assert !segment.start.equals(point) : "point is start";
+		assert !segment.end.equals(point) : "point is end";
+		assert segment.start.distanceTo(point) > Vectors2D.EPSILON
+			: segment.start.distanceTo(point) + " " + segment.start.distanceTo(segment.end);
+		assert segment.end.distanceTo(point) > Vectors2D.EPSILON
+			: segment.end.distanceTo(point) + " " + segment.start.distanceTo(segment.end);
 	}
 
 	boolean isDeadEnd(Point2D node) {
 		return splitOriginalMesh.containsVertex(node);
 	}
 
-	private double deviatedLength(double roadSegmentLength) {
-		return roadSegmentLength - networkGenerationParameters.secondaryNetworkSegmentLengthDeviation / 2 + random.nextDouble() *
+	private double deviatedLength(double segmentLength) {
+		return segmentLength - networkGenerationParameters.secondaryNetworkSegmentLengthDeviation / 2 + random.nextDouble() *
 			networkGenerationParameters.secondaryNetworkSegmentLengthDeviation;
 	}
 
 	void addTwoMissingConnectionsToEnclosedCycle(OrientedCycle cycle) {
 		Function<Point2D, Double> getCoordinate = random.nextBoolean() ? Point2D::getX : Point2D::getY;
-		Comparator<Point2D> coordinateComparator = (
-			a,
-			b
-		) -> (int) Math.signum(getCoordinate.apply(a) - getCoordinate.apply(b));
+		Comparator<Point2D> coordinateComparator = (a, b) ->
+			(int) Math.signum(getCoordinate.apply(a) - getCoordinate.apply(b));
 		Point2D leastPoint = cycle.graph()
 			.vertexSet()
 			.stream()
@@ -146,10 +145,10 @@ public class SegmentInserter {
 			.stream()
 			.min(coordinateComparator)
 			.get();
-		tryPlacingRoad(
+		tryPlacingSegment(
 			cycle.deviatedAngleBisector(leastPoint, false)
 		);
-		tryPlacingRoad(
+		tryPlacingSegment(
 			cycle.deviatedAngleBisector(greatestPoint, false)
 		);
 	}
@@ -165,7 +164,7 @@ public class SegmentInserter {
 				double distanceSquaredB = connectionPoint.squaredDistanceTo(b);
 				return (int) Math.signum(distanceSquaredA - distanceSquaredB);
 			}).get();
-		tryPlacingRoad(
+		tryPlacingSegment(
 			cycle.deviatedAngleBisector(farthestPoint, false)
 		);
 	}

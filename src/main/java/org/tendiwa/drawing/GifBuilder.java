@@ -9,13 +9,17 @@ import org.tendiwa.core.meta.GifSequenceWriter;
 
 import javax.imageio.stream.FileImageOutputStream;
 import javax.imageio.stream.ImageOutputStream;
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 
 public class GifBuilder {
 
+	private final BufferedImage rgbImage;
 	private GifSequenceWriter gifSequenceWriter;
-	private TestCanvas canvas;
+	private final TestCanvas canvas;
 	private final int fps;
 	private final Logger logger;
 	private File tempFile;
@@ -30,15 +34,28 @@ public class GifBuilder {
 		this.canvas = canvas;
 		this.fps = fps;
 		this.logger = logger;
+		this.rgbImage = initRGBImage(canvas.image.getWidth(), canvas.image.getHeight());
 		initGifWriter();
+	}
+
+	private BufferedImage initRGBImage(int width, int height) {
+		BufferedImage image = new BufferedImage(
+			width,
+			height,
+			BufferedImage.TYPE_INT_RGB
+		);
+		image.getGraphics().setColor(Color.white);
+		return image;
 	}
 
 	private void initGifWriter() {
 		imageOutput = null;
 
 		try {
-			tempFile = File
-				.createTempFile("tendiwa_animation", String.valueOf(hashCode()));
+			tempFile = File.createTempFile(
+				"tendiwa_animation",
+				String.valueOf(hashCode())
+			);
 			imageOutput = new FileImageOutputStream(tempFile);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -53,10 +70,21 @@ public class GifBuilder {
 
 	public void saveFrame() {
 		try {
-			gifSequenceWriter.writeToSequence(canvas.image);
+			gifSequenceWriter.writeToSequence(convertARGBToRGB(canvas.image));
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private RenderedImage convertARGBToRGB(BufferedImage argbImage) {
+		rgbImage.getGraphics().fillRect(
+			0,
+			0,
+			rgbImage.getWidth(),
+			rgbImage.getHeight()
+		);
+		rgbImage.getGraphics().drawImage(argbImage, 0, 0, null);
+		return rgbImage;
 	}
 
 	/**

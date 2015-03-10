@@ -170,4 +170,8 @@ public class Point2D implements Vector2D {
 		}
 		return signum;
 	}
+
+	public Segment2D segmentTo(Point2D anotherEnd) {
+		return new Segment2D(this, anotherEnd);
+	}
 }

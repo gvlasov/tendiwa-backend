@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
- * An immutable line
+ * An immutable line segment.
  */
-public class Segment2D {
+public final class Segment2D implements RectangularHull {
 	public final Point2D start;
 	public final Point2D end;
 
@@ -238,5 +238,25 @@ public class Segment2D {
 
 	public Point2D middle() {
 		return new Point2D(start.x / 2 + end.x / 2, start.y / 2 + end.y / 2);
+	}
+
+	@Override
+	public double minX() {
+		return Math.min(start.x, end.x);
+	}
+
+	@Override
+	public double maxX() {
+		return Math.max(start.x, end.x);
+	}
+
+	@Override
+	public double minY() {
+		return Math.min(start.y, end.y);
+	}
+
+	@Override
+	public double maxY() {
+		return Math.max(start.y, end.y);
 	}
 }

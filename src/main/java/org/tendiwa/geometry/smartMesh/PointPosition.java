@@ -1,6 +1,7 @@
 package org.tendiwa.geometry.smartMesh;
 
 import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Segment2D;
 
 /**
  * [Kelly 4.3.3.3]
@@ -48,5 +49,11 @@ final class PointPosition {
 			- (segmentStart.x - point.x) * (segmentEnd.y - segmentStart.y))
 			/ (l * l);
 		distance = Math.abs(s) * l;
+	}
+	Point2D pointOnSegment(Segment2D segment) {
+		return new Point2D(
+			segment.start.x + r * (segment.end.x - segment.start.x),
+			segment.start.y + r * (segment.end.y - segment.start.y)
+		);
 	}
 }

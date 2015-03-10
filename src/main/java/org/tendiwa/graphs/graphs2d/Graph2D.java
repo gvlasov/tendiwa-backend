@@ -3,7 +3,10 @@ package org.tendiwa.graphs.graphs2d;
 import org.jgrapht.EdgeFactory;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
-import org.tendiwa.geometry.*;
+import org.tendiwa.geometry.CutSegment2D;
+import org.tendiwa.geometry.GeometryException;
+import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
 
 import java.util.Collection;
@@ -11,6 +14,10 @@ import java.util.Set;
 
 public class Graph2D implements UndirectedGraph<Point2D, Segment2D> {
 	private final UndirectedGraph<Point2D, Segment2D> graph;
+
+	public Graph2D() {
+		this.graph = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
+	}
 
 	public void addSegmentAsEdge(Segment2D segment) {
 		boolean added = addEdge(segment.start, segment.end, segment);
@@ -170,8 +177,5 @@ public class Graph2D implements UndirectedGraph<Point2D, Segment2D> {
 		return graph.getEdgeWeight(segment2D);
 	}
 
-	public Graph2D() {
-		this.graph = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
-	}
 
 }

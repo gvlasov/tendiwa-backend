@@ -28,6 +28,11 @@ public class Utils {
 		}
 	}
 
+
+	public static String homeDirectory() {
+		return System.getProperty("user.home");
+	}
+
 	public static <T> String join(Collection<T> s, String delimiter) {
 		StringBuffer buffer = new StringBuffer();
 		Iterator<T> iter = s.iterator();

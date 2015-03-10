@@ -88,19 +88,6 @@ final class OrientedCycle implements NetworkPart {
 	}
 
 	/**
-	 * Multiplier that describes which way the ring goes along one of its edges.
-	 *
-	 * @param edge
-	 * 	An edge with its endpoints being two consecutive nodes of this
-	 * 	{@link OrientedCycle}.
-	 * @return -1 or 1
-	 */
-	double getDirection(Segment2D edge) {
-		// TODO: Is this cycle always counter-clockwise because isCycleClockwise is always false?
-		return (isCycleClockwise ? -1 : 1) * (reverseEdges.contains(edge) ? 1 : -1);
-	}
-
-	/**
 	 * For each of two new parts of a spilt edge, calculates if that part goes clockwise or counter-clockwise and
 	 * remembers that information.
 	 * <p>
@@ -158,13 +145,6 @@ final class OrientedCycle implements NetworkPart {
 						.multiply(inward ? 1 : -1)
 				)
 			);
-//		Segment2D wrongSegment = new WrongBisector(
-//			previous,
-//			next,
-//			bisectorStart,
-//			inward
-//		).asSegment(WrongBisector.DEFAULT_SEGMENT_LENGTH);
-//		assert bisectorSegment.asVector().dotProduct(wrongSegment.asVector()) > 0;
 		return new Ray(
 			bisectorStart,
 			bisectorSegment.start.angleTo(bisectorSegment.end)
