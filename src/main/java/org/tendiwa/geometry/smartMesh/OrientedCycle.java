@@ -162,4 +162,38 @@ final class OrientedCycle implements NetworkPart {
 	private boolean isClockwise(Segment2D edge) {
 		return isCycleClockwise ^ isAgainstCycleDirection(edge);
 	}
+
+	/**
+	 * Creates a sector from a vertex of {@link #graph()} between two its neighboring vertices.
+	 *
+	 * @param source
+	 * 	A vertex of {@link #graph()}
+	 * @return A sector from {@code source} between two its neighbors.
+	 */
+	Sector createInnerSector(Point2D source) {
+		assert cycleGraph.containsVertex(source);
+		Set<Segment2D> edges = cycleGraph.edgesOf(source);
+		assert edges.size() == 2;
+		Vector2D cw, ccw;
+		Iterator<Segment2D> iterator = edges.iterator();
+		Segment2D oneEdge = toCounterClockwise(iterator.next());
+		Segment2D anotherEdge = toCounterClockwise(iterator.next());
+		if (oneEdge.start == source) {
+			cw = oneEdge.asVector();
+			ccw = anotherEdge.reverse().asVector();
+		} else {
+			assert anotherEdge.start == source;
+			cw = anotherEdge.asVector();
+			ccw = oneEdge.reverse().asVector();
+		}
+		return (vector) -> vector.isBetweenVectors(cw, ccw);
+	}
+
+	private Segment2D toCounterClockwise(Segment2D oneEdge) {
+		assert cycleGraph.containsEdge(oneEdge);
+		if (isClockwise(oneEdge)) {
+			oneEdge = oneEdge.reverse();
+		}
+		return oneEdge;
+	}
 }

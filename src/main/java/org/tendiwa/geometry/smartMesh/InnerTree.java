@@ -21,6 +21,7 @@ final class InnerTree {
 
 	InnerTree(
 		Ray start,
+		Sector rootNeighborsSector,
 		Canopy canopy,
 		Graph2D fullGraph,
 		SegmentInserter segmentInserter,
@@ -34,18 +35,18 @@ final class InnerTree {
 		this.random = random;
 
 		this.branchEnds = new ArrayDeque<>();
-		propagateFromRoot(start);
+		propagateFromRoot(start, rootNeighborsSector);
 		this.grown = !branchEnds.isEmpty();
 		this.root = start.start;
 	}
 
-	private void propagateFromRoot(Ray start) {
+	private void propagateFromRoot(Ray start, Sector rootNeighborsSector) {
 		branchEnds.add(start);
 		Ray ray = branchEnds.removeLast();
 		if (ray == null) {
 			return;
 		}
-		propagateFromRay(start);
+		propagateFromRay(start, rootNeighborsSector);
 	}
 
 
@@ -62,13 +63,17 @@ final class InnerTree {
 			propagateFromRay(
 				ray.changeDirection(
 					deviateDirection(directionOfIthSpoke(ray, i))
-				)
+				),
+				Sector.FULL_CIRCLE
 			);
 		}
 	}
 
-	private void propagateFromRay(Ray ray) {
-		SnapEvent nextStep = segmentInserter.tryPlacingSegment(ray);
+	private void propagateFromRay(Ray ray, Sector allowedSector) {
+		SnapEvent nextStep = segmentInserter.tryPlacingSegment(
+			ray,
+			allowedSector
+		);
 		if (nextStep.createsNewSegment()) {
 			if (nextStep.isTerminal()) {
 				Point2D leaf = nextStep.target();
@@ -130,6 +135,7 @@ final class InnerTree {
 	boolean isGrown() {
 		return grown;
 	}
+
 	Point2D root() {
 		return root;
 	}

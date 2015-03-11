@@ -37,19 +37,19 @@ public class SegmentInserter {
 		this.random = random;
 	}
 
-
 	/**
 	 * [Kelly figure 42, function placeSegment]
 	 * <p>
 	 * Tries adding a new segment to the secondary network.
 	 */
-	SnapEvent tryPlacingSegment(Ray beginning) {
+	SnapEvent tryPlacingSegment(Ray beginning, Sector allowedSector) {
 		double segmentLength = deviatedLength(networkGenerationParameters.segmentLength);
 		SnapEvent snapEvent = new SnapTest(
 			networkGenerationParameters.snapSize,
 			beginning.start,
 			beginning.placeEnd(segmentLength),
-			fullNetwork.graph()
+			fullNetwork.graph(),
+			allowedSector
 		).snap();
 		if (snapEvent.createsNewSegment()) {
 			snapEvent.integrateInto(fullNetwork, this);
@@ -72,18 +72,35 @@ public class SegmentInserter {
 	void addSecondaryNetworkEdge(Point2D source, Point2D target) {
 		assert !fullNetwork.graph().containsEdge(source, target)
 			&& !secondaryNetwork.graph().containsEdge(source, target);
-		Segment2D edge = new Segment2D(source, target);
+		Segment2D newEdge = new Segment2D(source, target);
 		TestCanvas.canvas.draw(
-			edge,
+			newEdge,
 			DrawingSegment2D.withColorThin(Color.blue)
 		);
 		secondaryNetwork.graph().addVertex(source);
 		secondaryNetwork.graph().addVertex(target);
-		secondaryNetwork.graph().addSegmentAsEdge(edge);
-		fullNetwork.graph().addSegmentAsEdge(edge);
-		fullNetwork.addNetworkPart(edge, fullNetwork);
-		fullNetwork.addNetworkPart(edge, secondaryNetwork);
-		assert !ShamosHoeyAlgorithm.areIntersected(fullNetwork.graph().edgeSet());
+		secondaryNetwork.graph().addSegmentAsEdge(newEdge);
+		fullNetwork.graph().addSegmentAsEdge(newEdge);
+		fullNetwork.addNetworkPart(newEdge, fullNetwork);
+		fullNetwork.addNetworkPart(newEdge, secondaryNetwork);
+		boolean b = !ShamosHoeyAlgorithm.areIntersected(fullNetwork.graph().edgeSet());
+		if (!b) {
+			TestCanvas.canvas.draw(
+				source.segmentTo(target),
+				DrawingSegment2D.withColorDirected(Color.yellow, 0.5)
+			);
+			for (Segment2D existingEdge : fullNetwork.graph().edgeSet()) {
+				if (ShamosHoeyAlgorithm.linesIntersect(newEdge, existingEdge)) {
+					TestCanvas.canvas.draw(
+						existingEdge,
+						DrawingSegment2D.withColorDirected(Color.blue, 1)
+					);
+					System.out.println(existingEdge.intersection(newEdge)+" "+existingEdge.end);
+					break;
+				}
+			}
+		}
+		assert b;
 	}
 
 	/**
@@ -146,10 +163,12 @@ public class SegmentInserter {
 			.min(coordinateComparator)
 			.get();
 		tryPlacingSegment(
-			cycle.deviatedAngleBisector(leastPoint, false)
+			cycle.deviatedAngleBisector(leastPoint, false),
+			Sector.FULL_CIRCLE
 		);
 		tryPlacingSegment(
-			cycle.deviatedAngleBisector(greatestPoint, false)
+			cycle.deviatedAngleBisector(greatestPoint, false),
+			Sector.FULL_CIRCLE
 		);
 	}
 
@@ -165,7 +184,8 @@ public class SegmentInserter {
 				return (int) Math.signum(distanceSquaredA - distanceSquaredB);
 			}).get();
 		tryPlacingSegment(
-			cycle.deviatedAngleBisector(farthestPoint, false)
+			cycle.deviatedAngleBisector(farthestPoint, false),
+			Sector.FULL_CIRCLE
 		);
 	}
 }

@@ -90,6 +90,7 @@ final class InnerForest implements NetworkPart {
 	private InnerTree createFloodTree(Ray ray) {
 		return new InnerTree(
 			ray,
+			enclosingCycle.createInnerSector(ray.start),
 			canopy,
 			fullNetwork.graph(),
 			segmentInserter,

@@ -10,30 +10,33 @@ import java.util.Optional;
 import java.util.Set;
 
 final class NodeSnapSearch implements EventSearch {
-	private final Point2D sourceNode;
-	private final Point2D targetNode;
+	private final Point2D source;
+	private final Point2D target;
 	private final Graph<Point2D, Segment2D> fullNetworkGraph;
 	private final Collection<Segment2D> segmentsToTest;
 	private final double snapSize;
-	private double minR;
+	protected double minR;
+	private Sector allowedSector;
 
 	NodeSnapSearch(
-		Point2D sourceNode,
-		Point2D targetNode,
+		Point2D source,
+		Point2D target,
 		Graph<Point2D, Segment2D> fullNetworkGraph,
 		Collection<Segment2D> segmentsToTest,
+		Sector allowedSector,
 		double snapSize
 	) {
-		this.sourceNode = sourceNode;
-		this.targetNode = targetNode;
+		this.source = source;
+		this.target = target;
 		this.fullNetworkGraph = fullNetworkGraph;
 		this.segmentsToTest = segmentsToTest;
+		this.allowedSector = allowedSector;
 		this.snapSize = snapSize;
-		this.minR = 1 + snapSize / sourceNode.distanceTo(targetNode);
+		this.minR = 1 + snapSize / source.distanceTo(target);
 	}
 
 	private boolean isNeighbor(Point2D vertex) {
-		return fullNetworkGraph.containsEdge(sourceNode, vertex);
+		return fullNetworkGraph.containsEdge(source, vertex);
 	}
 
 	/**
@@ -43,19 +46,27 @@ final class NodeSnapSearch implements EventSearch {
 	 */
 	@Override
 	public Optional<SnapEvent> find() {
-		Set<Point2D> verticesToTest = findEndpointsToTestForNodeSnap(segmentsToTest);
-		SnapEvent result = null;
-		for (Point2D vertex : verticesToTest) {
-			PointPosition pointPosition = new PointPosition(sourceNode, targetNode, vertex);
-			if (isVertexBetterThanCurrentBestVertex(vertex, pointPosition)) {
-				minR = pointPosition.r;
-				result = new SnapToNode(sourceNode, vertex);
-			}
-		}
-		return Optional.ofNullable(result).filter(r->!isNeighbor(r.target()));
+		Set<Point2D> pointsToTest = findEndpointsToTestForNodeSnap(segmentsToTest);
+		return Optional.ofNullable(findClosestSnap(pointsToTest))
+			.filter(r -> !isNeighbor(r.target()));
 	}
 
-	private boolean isVertexBetterThanCurrentBestVertex(Point2D vertex, PointPosition pointPosition) {
+	private SnapEvent findClosestSnap(Set<Point2D> pointsToTest) {
+		SnapEvent result = null;
+		for (Point2D point : pointsToTest) {
+			if (!allowedSector.contains(point.subtract(source))) {
+				continue;
+			}
+			PointPosition pointPosition = new PointPosition(source, target, point);
+			if (isVertexBetterThanCurrentBestVertex(point, pointPosition)) {
+				minR = pointPosition.r;
+				result = new SnapToNode(source, point);
+			}
+		}
+		return result;
+	}
+
+	protected final boolean isVertexBetterThanCurrentBestVertex(Point2D vertex, PointPosition pointPosition) {
 		return isCloserSnapVertex(pointPosition)
 			&& connectingVertexIntroducesNoIntersectingSegments(vertex, segmentsToTest);
 	}
@@ -66,7 +77,7 @@ final class NodeSnapSearch implements EventSearch {
 	 * If there was no previous found closest vertex, returns true.
 	 *
 	 * @param pointPosition
-	 * 	A position of a vertex relative to a segment [sourceNode;targetNode].
+	 * 	A position of a vertex relative to a segment [source;target].
 	 * @return true if vertex defined by nodePosition is closer that the previous one, false otherwise.
 	 */
 	private boolean isCloserSnapVertex(PointPosition pointPosition) {
@@ -77,9 +88,9 @@ final class NodeSnapSearch implements EventSearch {
 		Point2D vertex,
 		Collection<Segment2D> roadsToTest
 	) {
-		if (fullNetworkGraph.containsEdge(sourceNode, vertex)) {
+		if (fullNetworkGraph.containsEdge(source, vertex)) {
 			// TODO: Use an edge of the graph
-			Segment2D segment = sourceNode.segmentTo(vertex);
+			Segment2D segment = source.segmentTo(vertex);
 			if (roadsToTest.stream().anyMatch(road -> road.intersects(segment))) {
 				return false;
 			}
@@ -95,8 +106,8 @@ final class NodeSnapSearch implements EventSearch {
 		Set<Point2D> answer = new HashSet<>();
 		for (Segment2D segment : segments) {
 			// Individual vertices will be added only once
-			if (!segment.start.equals(sourceNode) && !segment.end.equals(sourceNode)) {
-				assert !segment.isOneOfEnds(sourceNode);
+			if (!segment.start.equals(source) && !segment.end.equals(source)) {
+				assert !segment.isOneOfEnds(source);
 				answer.add(segment.start);
 				answer.add(segment.end);
 			}

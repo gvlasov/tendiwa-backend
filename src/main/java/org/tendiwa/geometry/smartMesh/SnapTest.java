@@ -11,56 +11,59 @@ import java.util.stream.Collectors;
  */
 final class SnapTest {
 	private final double snapSize;
-	private final Point2D sourceNode;
+	private final Point2D source;
 	private final UndirectedGraph<Point2D, Segment2D> fullNetworkGraph;
-	private final Point2D targetNode;
+	private final Point2D unsnappedTarget;
 	/**
 	 * Which roads can hold the point to snap to.
 	 */
 	private final Collection<Segment2D> segmentsToTest;
+	private final Sector allowedSector;
 
 	/**
 	 * Checks if a 2d segment defined by a start and an end points snaps to any vertex or edge of a planar
 	 * graph.
 	 *
 	 * @param snapSize
-	 * 	Radius of snapping. If {@code targetNode} has any vertices or edges in this radius,
+	 * 	Radius of snapping. If {@code target} has any vertices or edges in this radius,
 	 * 	it will be snapped to the closest of such vertices and edges. If this is less than {@link
 	 * 	org.tendiwa.geometry.Vectors2D#EPSILON}, then it is set to that constant.
-	 * @param sourceNode
+	 * @param source
 	 * 	Start point of the unsnapped segment.
-	 * @param targetNode
+	 * @param target
 	 * 	End point of the unsnapped segment.
 	 * @param fullNetworkGraph
-	 * 	A planar graph whose edges and vertices are tested for proximity to a 2d segment from {@code sourceNode} to
-	 * 	{@code targetNode}.
+	 * 	A planar graph whose edges and vertices are tested for proximity to a 2d segment from {@code source} to
+	 * 	{@code target}.
 	 */
 	SnapTest(
 		double snapSize,
-		Point2D sourceNode,
-		Point2D targetNode,
-		UndirectedGraph<Point2D, Segment2D> fullNetworkGraph
+		Point2D source,
+		Point2D target,
+		UndirectedGraph<Point2D, Segment2D> fullNetworkGraph,
+		Sector allowedSector
 	) {
+		this.allowedSector = allowedSector;
 		this.snapSize = Math.max(snapSize, Vectors2D.EPSILON);
-		this.sourceNode = sourceNode;
-		this.targetNode = targetNode;
+		this.source = source;
+		this.unsnappedTarget = target;
 		this.fullNetworkGraph = fullNetworkGraph;
-		this.segmentsToTest = findNearbySegments(sourceNode, targetNode, snapSize);
+		this.segmentsToTest = findNearbySegments(source, target, snapSize);
 	}
 
 	/**
 	 * Does all the node/road snapping computations and tells how the unsnapped segment should be
 	 * snapped to something or even not snapped to anything at all.
 	 *
-	 * @return A description of how {@link #targetNode} snaps to a node, a road, or nothing.
+	 * @return A description of how {@link #unsnappedTarget} snaps to a node, a road, or nothing.
 	 */
 	SnapEvent snap() {
 		if (canSnapRightAway()) {
-			return new SnapToNode(sourceNode, targetNode);
+			return new SnapToNode(source, unsnappedTarget);
 		}
 		SnapEvent result = createUnsnappedResult();
 		result = nodeSnapSearch().find().orElse(result);
-		result = segmentIntersectionSearch().find().orElse(result);
+		result = segmentIntersectionSearch(result).find().orElse(result);
 		if (result instanceof NowhereToSnap) {
 			result = segmentSnapSearch().find().orElse(result);
 		}
@@ -68,37 +71,38 @@ final class SnapTest {
 	}
 
 	private boolean canSnapRightAway() {
-		return fullNetworkGraph.containsVertex(targetNode);
+		return fullNetworkGraph.containsVertex(unsnappedTarget);
 	}
 
 	private NowhereToSnap createUnsnappedResult() {
-		return new NowhereToSnap(sourceNode, targetNode);
+		return new NowhereToSnap(source, unsnappedTarget);
 	}
 
 	private EventSearch nodeSnapSearch() {
 		return new NodeSnapSearch(
-			sourceNode,
-			targetNode,
+			source,
+			unsnappedTarget,
 			fullNetworkGraph,
 			segmentsToTest,
+			allowedSector,
 			snapSize
 		);
 	}
 
 	private EventSearch segmentSnapSearch() {
 		return new SegmentSnapSearch(
-			sourceNode,
-			targetNode,
+			source,
+			unsnappedTarget,
 			fullNetworkGraph,
 			segmentsToTest,
 			snapSize
 		);
 	}
 
-	private EventSearch segmentIntersectionSearch() {
+	private EventSearch segmentIntersectionSearch(SnapEvent previousResult) {
 		return new SegmentIntersectionSearch(
-			sourceNode,
-			targetNode,
+			source,
+			previousResult.target(),
 			segmentsToTest
 		);
 	}
