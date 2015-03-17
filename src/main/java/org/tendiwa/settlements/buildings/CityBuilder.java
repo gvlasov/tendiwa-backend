@@ -2,17 +2,17 @@ package org.tendiwa.settlements.buildings;
 
 import com.google.common.collect.ImmutableSet;
 import org.tendiwa.geometry.Placeable;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.settlements.utils.RectangleWithNeighbors;
 import org.tendiwa.settlements.streets.LotStreetAssigner;
 import org.tendiwa.settlements.streets.Street;
+import org.tendiwa.settlements.utils.RectangleWithNeighbors;
+import org.tendiwa.geometry.Chain2D;
 
 import java.util.*;
 
 public class CityBuilder {
 	private final Map<RectangleWithNeighbors, Building> buildings = new LinkedHashMap<>();
 	// TODO: Keys are lists, linked hash map has O(n) hashing!
-	private final Map<List<Point2D>, Street> streets = new LinkedHashMap<>();
+	private final Map<Chain2D, Street> streets = new LinkedHashMap<>();
 	private final Set<Placeable> districts = new LinkedHashSet<>();
 	private final Info info = new Info();
 	private String localizationId;
@@ -39,7 +39,7 @@ public class CityBuilder {
 
 	public void mapLotsToStreets(LotStreetAssigner mapper) {
 		for (RectangleWithNeighbors lot : buildings.keySet()) {
-			List<Point2D> street = mapper.getStreet(lot);
+			Chain2D street = mapper.getStreet(lot);
 			if (street == null) {
 				throw new NullPointerException("Lot can't be mapped to null Street");
 			}

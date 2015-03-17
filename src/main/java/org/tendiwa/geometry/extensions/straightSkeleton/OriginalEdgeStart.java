@@ -92,7 +92,7 @@ final class OriginalEdgeStart extends Node {
 
 	private Stream<Segment2D> asSegmentStream(Face face) {
 		Collection<Segment2D> segments = new ArrayList<>();
-		SuccessiveTuples.forEach(face, (a, b) -> {
+		SuccessiveTuples.forEachLooped(face, (a, b) -> {
 			if (a.vertex != b.vertex) {
 				segments.add(new Segment2D(a.vertex, b.vertex));
 			}

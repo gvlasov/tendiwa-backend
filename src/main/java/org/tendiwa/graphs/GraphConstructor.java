@@ -3,12 +3,13 @@ package org.tendiwa.graphs;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Lists;
 import org.jgrapht.EdgeFactory;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
+import org.tendiwa.collections.SuccessiveTuples;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.IntStream;
 
 /**
@@ -110,14 +111,22 @@ public class GraphConstructor<V, E> {
 	}
 
 	public GraphConstructor<V, E> cycleOfVertices(List<V> vertices) {
-		int firstAlias = lastVertexAlias == Integer.MIN_VALUE ? 0 : lastVertexAlias + 1;
-		int i = 0;
+		// TODO: Are edges added as well?
+		int firstAlias = peekNextAlias();
 		for (V v : vertices) {
-			vertex(firstAlias + i, v);
-			i++;
+			vertex(getNextAlias(), v);
 		}
-		cycle(IntStream.range(firstAlias, firstAlias + i).toArray());
+		cycle(IntStream.range(firstAlias, peekNextAlias()).toArray());
 		return this;
+	}
+
+	private int getNextAlias() {
+		lastVertexAlias = peekNextAlias();
+		return lastVertexAlias;
+	}
+
+	private int peekNextAlias() {
+		return lastVertexAlias == Integer.MIN_VALUE ? 0 : lastVertexAlias + 1;
 	}
 
 	/**
@@ -201,5 +210,16 @@ public class GraphConstructor<V, E> {
 	 */
 	public int aliasOf(V vertex) {
 		return vertices.inverse().get(vertex);
+	}
+
+	public GraphConstructor<V, E> chain(List<V> points) {
+		vertex(getNextAlias(), points.get(0));
+		SuccessiveTuples.forEach(points, (a, b) -> {
+			int currentAlias = lastVertexAlias;
+			int nextAlias = getNextAlias();
+			vertex(nextAlias, b);
+			edge(currentAlias, nextAlias);
+		});
+		return this;
 	}
 }

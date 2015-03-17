@@ -5,12 +5,12 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.Multimap;
 import org.tendiwa.core.CardinalDirection;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingPointTrail;
-import org.tendiwa.geometry.Point2D;
+import org.tendiwa.drawing.extensions.DrawingChain;
 import org.tendiwa.geometry.Recs;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.settlements.utils.RectangleWithNeighbors;
 import org.tendiwa.settlements.streets.LotStreetAssigner;
+import org.tendiwa.geometry.Chain2D;
 
 import java.awt.Color;
 import java.util.*;
@@ -30,11 +30,11 @@ import java.util.*;
 public final class FairLotFacadeAndStreetAssigner implements LotFacadeAssigner, LotStreetAssigner {
 	private final PolylineProximity lotsAndStreets;
 	private final Map<RectangleWithNeighbors, CardinalDirection> facades;
-	private final Map<RectangleWithNeighbors, List<Point2D>> lotToStreet;
-	private final Multimap<List<Point2D>, RectangleWithNeighbors> streetToLots;
-	private final IdentityHashMap<List<Point2D>, Double> streetLengths;
-	private final IdentityHashMap<List<Point2D>, Double> streetThirstsForLot;
-	private final ImmutableCollection<List<Point2D>> streets;
+	private final Map<RectangleWithNeighbors, Chain2D> lotToStreet;
+	private final Multimap<Chain2D, RectangleWithNeighbors> streetToLots;
+	private final IdentityHashMap<Chain2D, Double> streetLengths;
+	private final IdentityHashMap<Chain2D, Double> streetThirstsForLot;
+	private final ImmutableCollection<Chain2D> streets;
 	private final ImmutableCollection<RectangleWithNeighbors> lots;
 
 	private FairLotFacadeAndStreetAssigner(PolylineProximity polylineProximity) {
@@ -50,21 +50,18 @@ public final class FairLotFacadeAndStreetAssigner implements LotFacadeAssigner, 
 		streetToLots = HashMultimap.create(streetsSize, lotsSize / streetsSize);
 		facades = new HashMap<>(lotsSize);
 		lotToStreet = new LinkedHashMap<>(lotsSize);
-		for (List<Point2D> street : streets) {
-			TestCanvas.canvas.draw(street, DrawingPointTrail.withColorThin(Color.red));
+		for (Chain2D street : streets) {
+			TestCanvas.canvas.draw(street, DrawingChain.withColorThin(Color.red));
 		}
 
 		assignSingleStreetBuildings();
 		fairlyAssignTheRestOfBuildings();
 	}
 
-	private static double computeStreetLength(List<Point2D> street) {
-		int size = street.size();
-		double sum = 0;
-		for (int i = 1; i < size; i++) {
-			sum += street.get(i).distanceTo(street.get(i - 1));
-		}
-		return sum;
+	private static double computeStreetLength(Chain2D street) {
+		return street.asSegmentStream()
+			.mapToDouble(Segment2D::length)
+			.sum();
 	}
 
 	/**
@@ -108,10 +105,10 @@ public final class FairLotFacadeAndStreetAssigner implements LotFacadeAssigner, 
 
 	private Thirstiest searchForThirstiestSegmentAndStreet(RectangleWithNeighbors lot) {
 		double maxThirst = -1;
-		List<Point2D> thirstiestStreet = null;
+		Chain2D thirstiestStreet = null;
 		Segment2D thirstiestSegment = null;
 		for (Segment2D segment : lotsAndStreets.getSegmentsForLot(lot)) {
-			List<Point2D> street = lotsAndStreets.getStreetForSegment(segment);
+			Chain2D street = lotsAndStreets.getStreetForSegment(segment);
 			double thirst = streetThirstsForLot.get(street);
 			if (thirst > maxThirst) {
 				thirstiestStreet = street;
@@ -126,17 +123,17 @@ public final class FairLotFacadeAndStreetAssigner implements LotFacadeAssigner, 
 
 	private final class Thirstiest {
 
-		private final List<Point2D> street;
+		private final Chain2D street;
 		private final Segment2D segment;
 
-		private Thirstiest(List<Point2D> street, Segment2D segment) {
+		private Thirstiest(Chain2D street, Segment2D segment) {
 			this.street = street;
 			this.segment = segment;
 		}
 	}
 
 	private void initStreetsLengthsAndThirsts() {
-		for (List<Point2D> street : streets) {
+		for (Chain2D street : streets) {
 			streetLengths.put(street, computeStreetLength(street));
 			// Initially all streets have effectively infinite thirst (because they h
 			if (!streetThirstsForLot.containsKey(street)) {
@@ -145,7 +142,7 @@ public final class FairLotFacadeAndStreetAssigner implements LotFacadeAssigner, 
 		}
 	}
 
-	private void updateThirst(List<Point2D> street) {
+	private void updateThirst(Chain2D street) {
 		streetThirstsForLot.put(street, streetLengths.get(street) / streetToLots.get(street).size());
 	}
 
@@ -155,12 +152,12 @@ public final class FairLotFacadeAndStreetAssigner implements LotFacadeAssigner, 
 	 */
 	private void assignSingleStreetBuildings() {
 		for (RectangleWithNeighbors lot : lotsAndStreets.getLots()) {
-			Set<List<Point2D>> streetsForLot = lotsAndStreets.getStreetsForLot(lot);
+			Set<Chain2D> streetsForLot = lotsAndStreets.getStreetsForLot(lot);
 			if (streetsForLot.size() == 1) {
 				Collection<Segment2D> segmentsForLot = lotsAndStreets.getSegmentsForLot(lot);
 				for (Segment2D segment : segmentsForLot) {
 					facades.put(lot, RectangleToSegmentDirection.getDirectionToSegment(segment, lot.rectangle));
-					List<Point2D> street = streetsForLot.iterator().next();
+					Chain2D street = streetsForLot.iterator().next();
 					lotToStreet.put(lot, street);
 					streetToLots.put(street, lot);
 //					updateThirst(street);
@@ -180,7 +177,7 @@ public final class FairLotFacadeAndStreetAssigner implements LotFacadeAssigner, 
 	}
 
 	@Override
-	public List<Point2D> getStreet(RectangleWithNeighbors lot) {
+	public Chain2D getStreet(RectangleWithNeighbors lot) {
 		assert lotToStreet.containsKey(lot);
 		return lotToStreet.get(lot);
 	}

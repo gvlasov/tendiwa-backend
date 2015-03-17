@@ -1,10 +1,8 @@
 package org.tendiwa.graphs;
 
-import com.sun.istack.internal.NotNull;
 import org.jgrapht.UndirectedGraph;
 import org.tendiwa.collections.IterableToStream;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.Objects;
@@ -78,18 +76,35 @@ public final class GraphChainTraversal {
 			return new Step3<>(graph, startVertex, preStartVertex);
 		}
 
+		public Step4<V, E> past(V nextVertex) {
+			vertexMustBeInGraph(nextVertex, graph);
+			verticesMustBeNeighbors(nextVertex, startVertex, graph);
+			return new Step4<>(graph, startVertex, null, nextVertex);
+		}
+
 		public Step5<V, E> until(Predicate<NeighborsTriplet<V>> endPostCondition) {
-			if (graph.degreeOf(startVertex) != 2) {
+			if (graph.degreeOf(startVertex) > 2) {
 				throw new IllegalStateException(
 					"Can't decide which way to go from start vertex without knowing previous and next vertices " +
-						"because start vertex has degree > 2 (it is " + graph.degreeOf(startVertex)
+						"because start vertex has degree > 2 (it is " + graph.degreeOf(startVertex) + ")"
 				);
 			}
-			return new Step5<>(graph, startVertex, null, null, endPostCondition);
+			return new Step5<>(graph, startVertex, null, autoChooseVertexToGoPast(), endPostCondition);
+		}
+
+		private V autoChooseVertexToGoPast() {
+			E startEdge = graph.edgesOf(startVertex).iterator().next();
+			if (graph.getEdgeTarget(startEdge).equals(startVertex)) {
+				return graph.getEdgeSource(startEdge);
+			} else {
+				assert graph.getEdgeSource(startEdge).equals(startVertex);
+				return graph.getEdgeTarget(startEdge);
+			}
+
 		}
 
 		public Stream<NeighborsTriplet<V>> stream() {
-			return traverse(graph, startVertex, null, null, x -> false);
+			return traverse(graph, startVertex, null, autoChooseVertexToGoPast(), x -> false);
 		}
 
 	}
@@ -138,6 +153,10 @@ public final class GraphChainTraversal {
 		public Step5<V, E> until(Predicate<NeighborsTriplet<V>> endPostCondition) {
 			return new Step5<>(graph, startVertex, preStartVertex, nextVertex, endPostCondition);
 		}
+
+		public Stream<NeighborsTriplet<V>> stream() {
+			return traverse(graph, startVertex, preStartVertex, nextVertex, x -> false);
+		}
 	}
 
 	public static final class Step5<V, E> {
@@ -173,62 +192,94 @@ public final class GraphChainTraversal {
 		@Nullable V vertexToGoPast,
 		Predicate<NeighborsTriplet<V>> endPostCondition
 	) {
-		Iterator<NeighborsTriplet<V>> iterator = new Iterator<NeighborsTriplet<V>>() {
-			V currentVertex = startVertex;
-			V nextVertex = vertexToGoPast;
-			V previousVertex = preStartVertex;
+		return IterableToStream.stream(new GraphChainIterator<>(
+			graph,
+			startVertex,
+			preStartVertex,
+			vertexToGoPast,
+			endPostCondition
+		));
+	}
 
-			@Override
-			public boolean hasNext() {
-				return nextVertex != startVertex;
+	private final static class GraphChainIterator<V, E> implements Iterator<NeighborsTriplet<V>> {
+		private final UndirectedGraph<V, E> graph;
+		private V currentVertex;
+		private V nextVertex;
+		private V previousVertex;
+		private final V startVertex;
+		private final Predicate<NeighborsTriplet<V>> endPostCondition;
+
+		GraphChainIterator(
+			UndirectedGraph<V, E> graph,
+			V startVertex,
+			V preStartVertex,
+			V vertexToGoPast,
+			Predicate<NeighborsTriplet<V>> endPostCondition
+		) {
+			this.graph = graph;
+			this.currentVertex = startVertex;
+			this.nextVertex = vertexToGoPast;
+			this.previousVertex = preStartVertex;
+			this.startVertex = startVertex;
+			this.endPostCondition = endPostCondition;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return nextVertex != startVertex;
+		}
+
+		@Override
+		public NeighborsTriplet<V> next() {
+			if (currentVertex != startVertex || nextVertex == null) {
+				chooseNextVertex();
+				assert nextVertex != currentVertex;
+				assert nextVertex != previousVertex;
+				assert nextVertex == null || graph.containsEdge(currentVertex, nextVertex);
 			}
-
-			@Override
-			public NeighborsTriplet<V> next() {
-				if (currentVertex != startVertex || nextVertex == null) {
-					chooseNextNertex();
-					assert nextVertex != currentVertex;
-					assert nextVertex != previousVertex;
-					assert graph.containsEdge(currentVertex, nextVertex);
-				}
-				NeighborsTriplet<V> triplet = new NeighborsTriplet<>(previousVertex, currentVertex, nextVertex);
-				previousVertex = currentVertex;
-				currentVertex = nextVertex;
-				if (endPostCondition.test(triplet)) {
-					nextVertex = startVertex;
-				}
-				return triplet;
+			NeighborsTriplet<V> triplet = new NeighborsTriplet<>(previousVertex, currentVertex, nextVertex);
+			previousVertex = currentVertex;
+			currentVertex = nextVertex;
+			if (endPostCondition.test(triplet) || nextVertex == null) {
+				nextVertex = startVertex;
 			}
+			return triplet;
+		}
 
-			private void chooseNextNertex() {
-				Set<E> edges = graph.edgesOf(currentVertex);
-				if (edges.size() != 2) {
-					throw new IllegalStateException(
-						"Came to a vertex that has " + edges.size() + " edges; vertices " +
-							"during traversal must have 2 edges"
-					);
-				}
+		private void chooseNextVertex() {
+			Set<E> edges = graph.edgesOf(currentVertex);
+			if (edges.size() > 2) {
+//					throw new IllegalStateException(
+//						"Came to a vertex that has " + edges.size() + " edges; " +
+//							"vertices during traversal must have 2 or 1 edges"
+//					);
+				nextVertex = null;
+			} else {
 				Iterator<E> iter = edges.iterator();
 				E anyNeighborEdge = iter.next();
 				nextVertex = graph.getEdgeSource(anyNeighborEdge);
-				if (nextVertex == currentVertex) {
+				if (nextVertex.equals(currentVertex)) {
 					nextVertex = graph.getEdgeTarget(anyNeighborEdge);
 				}
-				if (nextVertex == previousVertex) {
-					anyNeighborEdge = iter.next();
-					nextVertex = graph.getEdgeSource(anyNeighborEdge);
-					if (nextVertex == currentVertex) {
-						nextVertex = graph.getEdgeTarget(anyNeighborEdge);
+				if (nextVertex.equals(previousVertex)) {
+					if (iter.hasNext()) {
+						anyNeighborEdge = iter.next();
+						nextVertex = graph.getEdgeSource(anyNeighborEdge);
+						if (nextVertex.equals(currentVertex)) {
+							nextVertex = graph.getEdgeTarget(anyNeighborEdge);
+						}
+						assert nextVertex != previousVertex;
+					} else {
+						nextVertex = null;
 					}
-					assert nextVertex != previousVertex;
 				}
+				assert nextVertex == null || !nextVertex.equals(previousVertex)
+					: nextVertex + " " + previousVertex + " " + (nextVertex == previousVertex);
 			}
-		};
-
-		return IterableToStream.stream(iterator);
+		}
 	}
 
-	public static class NeighborsTriplet<V> {
+	public static final class NeighborsTriplet<V> {
 		private final V previousVertex;
 		private final V currentVertex;
 		private final V nextVertex;
@@ -249,6 +300,15 @@ public final class GraphChainTraversal {
 
 		public V next() {
 			return nextVertex;
+		}
+
+		@Override
+		public String toString() {
+			return "NeighborsTriplet{" +
+				"previousVertex=" + previousVertex +
+				", currentVertex=" + currentVertex +
+				", nextVertex=" + nextVertex +
+				'}';
 		}
 	}
 }

@@ -1,8 +1,6 @@
 package org.tendiwa.demos.settlements;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterators;
+import com.google.common.collect.*;
 import org.apache.log4j.Logger;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
@@ -11,6 +9,7 @@ import org.tendiwa.data.FourCyclePenisGraph;
 import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.DrawableInto;
 import org.tendiwa.drawing.GifBuilder;
+import org.tendiwa.drawing.MagnifierCanvas;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.*;
 import org.tendiwa.geometry.Point2D;
@@ -21,6 +20,8 @@ import org.tendiwa.settlements.buildings.PolylineProximity;
 import org.tendiwa.geometry.smartMesh.SegmentNetworkBuilder;
 import org.tendiwa.geometry.smartMesh.Segment2DSmartMesh;
 import org.tendiwa.settlements.utils.*;
+import org.tendiwa.geometry.Chain2D;
+import org.tendiwa.settlements.utils.streetsDetector.DetectedStreets;
 
 import java.awt.Color;
 import java.util.*;
@@ -45,8 +46,8 @@ public class BigCityDemo implements Runnable {
 //			.vertex(3, new Point2D(50, 350))
 //			.cycle(0, 1, 2, 3)
 //			.graph();
-//		canvas = new MagnifierCanvas(5, 63, 86, 600, 600);
-		canvas = new TestCanvas(1, 600, 600);
+		canvas = new MagnifierCanvas(5, 162, 215, 600, 600);
+//		canvas = new TestCanvas(1, 600, 600);
 		canvas.fillBackground(Color.black);
 		TestCanvas.canvas = canvas;
 
@@ -56,7 +57,7 @@ public class BigCityDemo implements Runnable {
 			Segment2DSmartMesh segment2DSmartMesh = new SegmentNetworkBuilder(graph)
 				.withDefaults()
 				.withMaxStartPointsPerCycle(5)
-				.withRoadsFromPoint(3)
+				.withRoadsFromPoint(2)
 				.withSecondaryRoadNetworkDeviationAngle(0.5)
 				.withRoadSegmentLength(20)
 				.withSnapSize(5)
@@ -99,14 +100,19 @@ public class BigCityDemo implements Runnable {
 			new Random(1)
 		);
 //			UndirectedGraph<Point2D, Segment2D> allRoads = pathGeometry.getFullRoadGraph();
-		Set<ImmutableList<Point2D>> streets = StreetsDetector.detectStreets(allRoads);
-		Map<ImmutableList<Point2D>, Color> streetsColoring = StreetsColoring.compute(
-			streets, Color.red, Color.blue,
-			Color.green, Color.cyan, Color.magenta, Color.orange, Color.black, Color.lightGray, Color.gray
+		Set<Chain2D> streets = DetectedStreets
+			.toChain2DStream(allRoads)
+			.collect(Collectors.toImmutableSet());
+		Map<Chain2D, Color> streetsColoring = Chain2DColoring.compute(
+			streets,
+			Lists.newArrayList(
+				Color.red, Color.yellow, Color.green, Color.cyan, Color.magenta,
+				Color.orange, Color.black, Color.lightGray, Color.gray
+			)
 		);
-		for (List<Point2D> street : streets) {
+		for (Chain2D street : streets) {
 			Color streetColor = streetsColoring.get(street);
-			canvas.draw(street, DrawingChain.withColor(streetColor));
+			canvas.draw(street, DrawingChain.withColorThin(streetColor));
 		}
 		Collection<RectangleWithNeighbors> lots = RectangularBuildingLots
 			.placeInside(segment2DSmartMesh);

@@ -74,7 +74,7 @@ abstract class Node implements Iterable<Node> {
 	}
 
 	public void drawLav() {
-		SuccessiveTuples.forEach(
+		SuccessiveTuples.forEachLooped(
 			this,
 			(a, b) -> {
 				TestCanvas.canvas.draw(

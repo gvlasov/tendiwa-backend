@@ -1,5 +1,7 @@
 package org.tendiwa.collections;
 
+import org.tendiwa.geometry.Segment2D;
+
 import java.util.Iterator;
 import java.util.function.Consumer;
 
@@ -32,6 +34,7 @@ public final class DoublyLinkedNode<T> implements Iterable<T> {
 		return previous;
 	}
 
+	// TODO: Make setNext and setPrevious set previous and next for another node as well
 	public final void setNext(DoublyLinkedNode<T> node) {
 		assert settingNextPreservesConnectivity(node);
 		next = node;
@@ -44,7 +47,7 @@ public final class DoublyLinkedNode<T> implements Iterable<T> {
 	 * isolate some part of the list.
 	 * @see #settingPreviousPreservesConnectivity(DoublyLinkedNode)
 	 */
-	public final boolean settingNextPreservesConnectivity(DoublyLinkedNode<T> node) {
+	private final boolean settingNextPreservesConnectivity(DoublyLinkedNode<T> node) {
 		return (node.previous == this || node.previous == null)
 			&& node != null
 			&& next == null
@@ -63,7 +66,7 @@ public final class DoublyLinkedNode<T> implements Iterable<T> {
 	 * isolate some part of the list.
 	 * @see #settingNextPreservesConnectivity(DoublyLinkedNode)
 	 */
-	public boolean settingPreviousPreservesConnectivity(DoublyLinkedNode<T> node) {
+	private boolean settingPreviousPreservesConnectivity(DoublyLinkedNode<T> node) {
 		return (node.next == this || node.next == null)
 			&& node != null
 			&& previous == null
@@ -76,6 +79,7 @@ public final class DoublyLinkedNode<T> implements Iterable<T> {
 	 * Swaps {@link #next} and {@link #previous} of each payload in the chain of this node. This node must be either
 	 * the first in the chain or the last.
 	 */
+	// TODO: Do we really need this method anywhere?
 	public final void revertChain() {
 		assert next == null || previous == null;
 		DoublyLinkedNode<T> temp;
@@ -149,6 +153,7 @@ public final class DoublyLinkedNode<T> implements Iterable<T> {
 		}
 	}
 
+	// TODO: Split into chain iterator and cycle iterator
 	@Override
 	public final Iterator<T> iterator() {
 		return next == null ? new BackwardIterator() : new ForwardIterator();
@@ -186,10 +191,23 @@ public final class DoublyLinkedNode<T> implements Iterable<T> {
 		}
 	}
 
-	public boolean isTerminal() {
-		return previous == null || next == null;
+	public boolean hasBothNeighbors() {
+		// TODO: Maybe here should be XOR?
+		return previous != null && next != null;
 	}
 
+	// TODO: Find if getNext is used instead of this method anywhere
+	public boolean hasNext() {
+		return next != null;
+	}
+
+	public boolean hasPrevious() {
+		return previous != null;
+	}
+
+	public boolean isStartOfAChain() {
+		return hasNext() && !hasPrevious();
+	}
 
 	private class ForwardIterator implements Iterator<T> {
 		private DoublyLinkedNode<T> current = DoublyLinkedNode.this;
@@ -221,5 +239,16 @@ public final class DoublyLinkedNode<T> implements Iterable<T> {
 			next = next.previous;
 			return answer;
 		}
+	}
+
+	public boolean isDisconnected() {
+		return next == null && previous == null;
+	}
+
+	@Override
+	public String toString() {
+		return "DoublyLinkedNode{" +
+			"payload=" + payload +
+			'}';
 	}
 }

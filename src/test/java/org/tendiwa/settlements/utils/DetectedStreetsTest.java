@@ -1,18 +1,16 @@
 package org.tendiwa.settlements.utils;
 
-import com.google.common.collect.ImmutableList;
 import org.jgrapht.UndirectedGraph;
 import org.junit.Test;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PointTrail;
 import org.tendiwa.graphs.GraphConstructor;
-
-import java.util.Set;
+import org.tendiwa.settlements.utils.streetsDetector.DetectedStreets;
 
 import static org.junit.Assert.*;
 
-public class StreetsDetectorTest {
+public class DetectedStreetsTest {
 
 	private UndirectedGraph<Point2D, Segment2D> graphWithTwoConnectivityComponents =
 		new GraphConstructor<>(Segment2D::new)
@@ -26,9 +24,13 @@ public class StreetsDetectorTest {
 	 * Finds streets in a road graph with two connectivity components.
 	 */
 	@Test
-	public void twoConnectivityComponents() {
-		Set<ImmutableList<Point2D>> streets = StreetsDetector.detectStreets(graphWithTwoConnectivityComponents);
-		assertEquals(2, streets.size());
+	public void twoCicrularConnectivityComponents() {
+		assertEquals(
+			2,
+			DetectedStreets
+				.toChain2DStream(graphWithTwoConnectivityComponents)
+				.count()
+		);
 	}
 
 }

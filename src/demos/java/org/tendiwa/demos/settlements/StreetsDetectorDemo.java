@@ -1,6 +1,5 @@
 package org.tendiwa.demos.settlements;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.google.inject.Inject;
 import org.jgrapht.graph.SimpleGraph;
@@ -10,12 +9,11 @@ import org.tendiwa.drawing.extensions.DrawingChain;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
-import org.tendiwa.settlements.utils.StreetsDetector;
+import org.tendiwa.geometry.Chain2D;
+import org.tendiwa.settlements.utils.streetsDetector.DetectedStreets;
 
 import java.awt.Color;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 
 public class StreetsDetectorDemo implements Runnable {
 	@Inject
@@ -48,10 +46,15 @@ public class StreetsDetectorDemo implements Runnable {
 			.edge(11, 12)
 			.edge(11, 20)
 			.graph();
-		Set<ImmutableList<Point2D>> streets = StreetsDetector.detectStreets(graph);
-		Iterator<Color> colors = Iterators.cycle(Color.red, Color.blue, Color.green, Color.cyan, Color.magenta, Color.orange);
-		for (List<Point2D> street : streets) {
-			canvas.draw(street, DrawingChain.withColor(colors.next()));
-		}
+		Iterator<Color> colors = Iterators.cycle(
+			Color.red, Color.blue, Color.green,
+			Color.cyan, Color.magenta, Color.orange
+		);
+		DetectedStreets.toChain2DStream(graph)
+			.forEach(street -> drawStreet(street, colors.next()));
+	}
+
+	private void drawStreet(Chain2D street, Color color) {
+		canvas.draw(street, DrawingChain.withColorThin(color));
 	}
 }

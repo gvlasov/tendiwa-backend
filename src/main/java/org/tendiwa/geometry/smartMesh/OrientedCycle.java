@@ -41,7 +41,7 @@ final class OrientedCycle implements NetworkPart {
 		MinimalCycle<Point2D, Segment2D> originalMinimalCycle
 	) {
 		Graph2D cycleGraph = new Graph2D();
-		SuccessiveTuples.forEach(
+		SuccessiveTuples.forEachLooped(
 			originalMinimalCycle.asVertices(),
 			(previous, current, next) -> {
 				if (splitOriginalGraph.containsEdge(current, next)) {
@@ -54,6 +54,7 @@ final class OrientedCycle implements NetworkPart {
 						.past(splitOriginalGraph.findNeighborOnSegment(current, new Segment2D(current, next)))
 						.until(triplet -> triplet.next() == next)
 						.stream()
+						.filter(triplet -> triplet.next() != null)
 						.forEach(
 							triplet -> addAutoDirectedEdge(
 								cycleGraph,

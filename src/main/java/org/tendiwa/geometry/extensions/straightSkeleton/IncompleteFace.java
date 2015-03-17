@@ -106,10 +106,10 @@ final class IncompleteFace implements Face, UnderlyingFace {
 	@Override
 	public Polygon toPolygon() {
 		List<Point2D> points = new ArrayList<>(numberOfSkeletonNodes);
-		DoublyLinkedNode<Node> chain = startHalfface.firstFaceNode();
-		assert chain.isTerminal();
+		DoublyLinkedNode<Node> seed = startHalfface.firstFaceNode();
+		assert !seed.hasBothNeighbors();
 		Point2D previousPayload = null;
-		for (Node node : chain) {
+		for (Node node : seed) {
 			if (node.vertex == previousPayload) {
 				// This happens at split event points and at starts of half-faces
 				continue;

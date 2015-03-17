@@ -44,6 +44,6 @@ public class RectanglesUnionDemo implements Runnable {
 			Color.GRAY,
 			Color.LIGHT_GRAY
 		));
-//	canvas.draw(path, (graph, canvas)->graph.edgeSet().stream().forEach(edge->canvas.dra));
+//	canvas.draw(path, (graph, canvas)->graph.edgeSet().stream().forEachLooped(edge->canvas.dra));
 	}
 }

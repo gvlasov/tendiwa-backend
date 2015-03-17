@@ -49,7 +49,7 @@ public class Graph2D implements UndirectedGraph<Point2D, Segment2D> {
 	}
 
 	public Point2D findNeighborOnSegment(Point2D hub, Segment2D segment) {
-		if (!segment.isOneOfEnds(hub)) {
+		if (!segment.oneOfEndsIs(hub)) {
 			throw new IllegalArgumentException("Hub point should be one of the segment's ends");
 		}
 		Point2D answer = null;

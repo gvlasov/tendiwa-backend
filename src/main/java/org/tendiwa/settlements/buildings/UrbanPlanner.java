@@ -38,7 +38,7 @@ public final class UrbanPlanner implements BuildingPlacer {
 	@Override
 	public void placeBuildings(CityBuilder.Info cityInfo) {
 		polylineProximity = new PolylineProximity(
-			cityInfo.getStreets().stream().map(Street::getPoints).collect(Collectors.toImmutableSet()),
+			cityInfo.getStreets().stream().map(Street::chain).collect(Collectors.toImmutableSet()),
 			cityInfo.getBuildingPlaces(),
 			streetsWidth
 		);

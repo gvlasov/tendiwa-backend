@@ -1,19 +1,19 @@
 package org.tendiwa.settlements.streets;
 
-import com.google.common.collect.ImmutableList;
-import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Chain2D;
 
-public class Street {
+public final class Street {
 
-	final ImmutableList<Point2D> points;
-	private String localizationId;
+	private final Chain2D chain;
+	private final String localizationId;
 
-	public Street(ImmutableList<Point2D> points, String localizationId) {
-		this.points = points;
+	public Street(Chain2D chain, String localizationId) {
+		this.chain = chain;
 		this.localizationId = localizationId;
 	}
 
-	public ImmutableList<Point2D> getPoints() {
-		return points;
+	public Chain2D chain() {
+		return chain;
 	}
+
 }

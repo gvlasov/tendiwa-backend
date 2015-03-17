@@ -1,8 +1,7 @@
 package org.tendiwa.settlements.utils;
 
-import com.google.common.collect.ImmutableList;
-import org.tendiwa.geometry.Point2D;
 import org.tendiwa.settlements.buildings.PolylineProximity;
+import org.tendiwa.geometry.Chain2D;
 
 import java.util.Set;
 import java.util.function.Predicate;
@@ -20,7 +19,7 @@ public class BuildingPlacesFilters {
 	 * @return A {@link java.util.function.Predicate} that checks if a building has access to any streets.
 	 */
 	public static Predicate<RectangleWithNeighbors> closeToRoads(
-		Set<ImmutableList<Point2D>> streets,
+		Set<Chain2D> streets,
 		Iterable<RectangleWithNeighbors> lots,
 		double distance
 	) {

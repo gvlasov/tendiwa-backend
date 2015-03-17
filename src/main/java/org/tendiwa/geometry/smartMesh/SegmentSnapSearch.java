@@ -60,7 +60,7 @@ final class SegmentSnapSearch implements EventSearch {
 	}
 
 	private Optional<PointPosition> segmentSnapPosition(Segment2D segment) {
-		if (segment.isOneOfEnds(sourceNode)) {
+		if (segment.oneOfEndsIs(sourceNode)) {
 			return Optional.empty();
 		}
 		PointPosition pointPosition = new PointPosition(

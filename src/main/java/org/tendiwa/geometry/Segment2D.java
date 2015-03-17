@@ -215,7 +215,7 @@ public final class Segment2D implements RectangularHull {
 		throw new IllegalArgumentException("Argument must be either start or end point");
 	}
 
-	public boolean isOneOfEnds(Point2D point) {
+	public boolean oneOfEndsIs(Point2D point) {
 		return start.equals(point) || end.equals(point);
 	}
 

@@ -1,9 +1,11 @@
 package org.tendiwa.settlements.buildings;
 
 import com.google.common.collect.*;
+import org.tendiwa.collections.StreamIterable;
 import org.tendiwa.geometry.*;
 import org.tendiwa.settlements.utils.RectangleWithNeighbors;
 import org.tendiwa.settlements.streets.Street;
+import org.tendiwa.geometry.Chain2D;
 
 import java.util.*;
 
@@ -19,14 +21,14 @@ public final class PolylineProximity {
 
 	private final Multimap<RectangleWithNeighbors, Segment2D> lotsToStreetSegments = LinkedHashMultimap.create();
 	// TODO: Try to use IdentityHashMap here (makes ordering non-deterministic?)
-	private final Map<Segment2D, List<Point2D>> segmentsToStreets = new LinkedHashMap<>();
-	private final Map<List<Point2D>, Set<RectangleWithNeighbors>> streetsToLots = new LinkedHashMap<>();
-	private final Map<RectangleWithNeighbors, Set<List<Point2D>>> lotsToStreets = new LinkedHashMap<>();
+	private final Map<Segment2D, Chain2D> segmentsToStreets = new LinkedHashMap<>();
+	private final Map<Chain2D, Set<RectangleWithNeighbors>> streetsToLots = new LinkedHashMap<>();
+	private final Map<RectangleWithNeighbors, Set<Chain2D>> lotsToStreets = new LinkedHashMap<>();
 	private final double streetsWidth;
 	private final Set<Segment2D> allStreetSegments;
 
 	public PolylineProximity(
-		Set<ImmutableList<Point2D>> streets,
+		Set<Chain2D> streets,
 		Iterable<RectangleWithNeighbors> lots,
 		double streetsWidth
 	) {
@@ -36,16 +38,10 @@ public final class PolylineProximity {
 		}
 		this.streetsWidth = streetsWidth;
 		allStreetSegments = segmentsToStreets.keySet();
-		for (List<Point2D> street : streets) {
-			int lastButOne = street.size() - 1;
-			for (int i = 0; i < lastButOne; i++) {
-				segmentsToStreets.put(
-					new Segment2D(
-						street.get(i),
-						street.get(i + 1)
-					),
-					street
-				);
+
+		for (Chain2D street : streets) {
+			for (Segment2D segment : new StreamIterable<>(street.asSegmentStream())) {
+				segmentsToStreets.put(segment, street);
 			}
 			streetsToLots.put(street, new LinkedHashSet<>());
 		}
@@ -66,8 +62,8 @@ public final class PolylineProximity {
 		Objects.requireNonNull(lot);
 		lot.allRectangles()
 			.forEach(rectangle -> findSegmentsForLot(lot, rectangle));
-		Set<List<Point2D>> streetsForLot = collectStreetsForLot(lot);
-		for (List<Point2D> street : streetsForLot) {
+		Set<Chain2D> streetsForLot = collectStreetsForLot(lot);
+		for (Chain2D street : streetsForLot) {
 			streetsToLots.get(street).add(lot);
 		}
 		lotsToStreets.put(lot, streetsForLot);
@@ -90,10 +86,10 @@ public final class PolylineProximity {
 			.forEach(segment -> lotsToStreetSegments.put(lot, segment));
 	}
 
-	private Set<List<Point2D>> collectStreetsForLot(RectangleWithNeighbors lot) {
-		Set<List<Point2D>> answer = new LinkedHashSet<>();
+	private Set<Chain2D> collectStreetsForLot(RectangleWithNeighbors lot) {
+		Set<Chain2D> answer = new LinkedHashSet<>();
 		for (Segment2D segment : lotsToStreetSegments.get(lot)) {
-			List<Point2D> street = segmentsToStreets.get(segment);
+			Chain2D street = segmentsToStreets.get(segment);
 			answer.add(street);
 		}
 		return answer;
@@ -134,10 +130,10 @@ public final class PolylineProximity {
 
 	Set<RectangleWithNeighbors> getLotsOnStreet(Street street) {
 		Objects.requireNonNull(street);
-		return Collections.unmodifiableSet(streetsToLots.get(street.getPoints()));
+		return Collections.unmodifiableSet(streetsToLots.get(street.chain()));
 	}
 
-	public Set<List<Point2D>> getStreetsForLot(RectangleWithNeighbors where) {
+	public Set<Chain2D> getStreetsForLot(RectangleWithNeighbors where) {
 		Objects.requireNonNull(where);
 		return lotsToStreets.get(where);
 	}
@@ -172,7 +168,7 @@ public final class PolylineProximity {
 	 *
 	 * @return
 	 */
-	public ImmutableCollection<List<Point2D>> getStreets() {
+	public ImmutableCollection<Chain2D> getStreets() {
 		return ImmutableSet.copyOf(streetsToLots.keySet());
 	}
 
@@ -182,7 +178,7 @@ public final class PolylineProximity {
 	 * @param segment
 	 * @return A street, or null if not street contains that segment.
 	 */
-	public List<Point2D> getStreetForSegment(Segment2D segment) {
+	public Chain2D getStreetForSegment(Segment2D segment) {
 		Objects.requireNonNull(segment);
 		return segmentsToStreets.get(segment);
 	}
