@@ -45,14 +45,14 @@ final class NodeSnapSearch implements EventSearch {
 	 * @return The node to snap to, or empty.
 	 */
 	@Override
-	public Optional<SnapEvent> find() {
+	public Optional<PropagationEvent> find() {
 		Set<Point2D> pointsToTest = findEndpointsToTestForNodeSnap(segmentsToTest);
 		return Optional.ofNullable(findClosestSnap(pointsToTest))
 			.filter(r -> !isNeighbor(r.target()));
 	}
 
-	private SnapEvent findClosestSnap(Set<Point2D> pointsToTest) {
-		SnapEvent result = null;
+	private PropagationEvent findClosestSnap(Set<Point2D> pointsToTest) {
+		PropagationEvent result = null;
 		for (Point2D point : pointsToTest) {
 			if (!allowedSector.contains(point.subtract(source))) {
 				continue;

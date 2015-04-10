@@ -70,28 +70,32 @@ final class InnerTree {
 	}
 
 	private void propagateFromRay(Ray ray, Sector allowedSector) {
-		SnapEvent nextStep = segmentInserter.tryPlacingSegment(
+		PropagationEvent nextStep = segmentInserter.tryPlacingSegment(
 			ray,
 			allowedSector
 		);
 		if (nextStep.createsNewSegment()) {
 			if (nextStep.isTerminal()) {
-				Point2D leaf = nextStep.target();
-				saveLeafWithPetiole(ray.start, leaf);
-				canopy.addLeaf(leaf);
+				addLeaf(ray.start, nextStep.target());
 			} else {
-				Ray newRay = new Ray(
-					nextStep.target(),
-					ray.start.angleTo(nextStep.target())
-				);
-				assert !segmentInserter.isDeadEnd(newRay.start);
-				branchEnds.push(newRay);
+				pushStepToBranch(ray, nextStep);
 			}
 		}
 	}
 
-	private void saveLeafWithPetiole(Point2D start, Point2D end) {
-		canopy.addLeafWithPetiole(fullGraph.getEdge(start, end));
+	private void addLeaf(Point2D petiole, Point2D leaf) {
+		// TODO: The fuck with similar methods?
+		canopy.addLeafWithPetiole(fullGraph.getEdge(petiole, leaf));
+		canopy.addLeaf(leaf);
+	}
+
+	private void pushStepToBranch(Ray ray, PropagationEvent nextStep) {
+		Ray newRay = new Ray(
+			nextStep.target(),
+			ray.start.angleTo(nextStep.target())
+		);
+		assert !segmentInserter.isDeadEnd(newRay.start);
+		branchEnds.push(newRay);
 	}
 
 	private double directionOfIthSpoke(Ray node, int i) {

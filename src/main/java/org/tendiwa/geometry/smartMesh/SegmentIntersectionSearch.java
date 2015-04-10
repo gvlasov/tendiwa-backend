@@ -27,7 +27,7 @@ final class SegmentIntersectionSearch implements EventSearch {
 	}
 
 	@Override
-	public Optional<SnapEvent> find() {
+	public Optional<PropagationEvent> find() {
 		segmentsToTest.forEach(this::tryIntersecting);
 		return Optional.ofNullable(result);
 	}

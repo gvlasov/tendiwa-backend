@@ -3,8 +3,6 @@ package org.tendiwa.geometry.smartMesh;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import org.jgrapht.Graphs;
-import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingGraph;
 import org.tendiwa.geometry.CutSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
@@ -13,7 +11,6 @@ import org.tendiwa.graphs.GraphChainTraversal;
 import org.tendiwa.graphs.GraphChainTraversal.NeighborsTriplet;
 import org.tendiwa.graphs.graphs2d.Graph2D;
 
-import java.awt.Color;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -56,7 +53,7 @@ final class InnerForest implements NetworkPart {
 		this.trees = grow();
 		addMissingConnectionsWithEnclosedCycles();
 		enclosedCycles.forEach(
-			cycle -> Graphs.addGraph(this.graph, cycle.graph())
+			cycle -> Graphs.addGraph(graph, cycle.graph())
 		);
 	}
 
@@ -69,7 +66,6 @@ final class InnerForest implements NetworkPart {
 			canopy.replaceLeafWithPetiole(original, replacement);
 		}
 	}
-
 
 	private void growTrees(Collection<InnerTree> floodTrees) {
 		floodTrees = new ArrayList<>(floodTrees);

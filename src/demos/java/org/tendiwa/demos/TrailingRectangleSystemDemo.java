@@ -3,6 +3,7 @@ package org.tendiwa.demos;
 import com.google.inject.Inject;
 import org.tendiwa.core.FuckingTrailRectangleSystem;
 import org.tendiwa.core.meta.Range;
+import org.tendiwa.drawing.DrawableInto;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingRectangleSystem;
 
@@ -11,7 +12,7 @@ import java.awt.Point;
 
 public class TrailingRectangleSystemDemo implements Runnable {
 	@Inject
-	TestCanvas canvas;
+	DrawableInto canvas;
 
 	public static void main(String[] args) {
 		Demos.run(TrailingRectangleSystemDemo.class);

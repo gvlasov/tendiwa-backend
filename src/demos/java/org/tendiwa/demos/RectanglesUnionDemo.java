@@ -2,6 +2,7 @@ package org.tendiwa.demos;
 
 import com.google.inject.Inject;
 import org.jgrapht.graph.SimpleGraph;
+import org.tendiwa.drawing.DrawableInto;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingRectangle;
 import org.tendiwa.drawing.extensions.DrawingRectangleSystem;
@@ -15,7 +16,7 @@ import static org.tendiwa.geometry.DSL.*;
 
 public class RectanglesUnionDemo implements Runnable {
 	@Inject
-	TestCanvas canvas;
+	DrawableInto canvas;
 
 	public static void main(String[] args) {
 		Demos.run(RectanglesUnionDemo.class);

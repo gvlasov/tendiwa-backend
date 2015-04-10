@@ -1,9 +1,7 @@
 package org.tendiwa.demos.settlements;
 
-import org.apache.log4j.Logger;
 import org.jgrapht.UndirectedGraph;
 import org.tendiwa.demos.Demos;
-import org.tendiwa.drawing.GifBuilder;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingCellSet;
 import org.tendiwa.drawing.extensions.DrawingGraph;
@@ -57,8 +55,7 @@ class CityBoundsWithHoles implements Runnable {
 
 	private UndirectedGraph<Point2D, Segment2D> buildCityBoundsGraph(CellSet water) {
 		BoundedCellSet cityShape = new PathTable(
-			startCell.x,
-			startCell.y,
+			startCell,
 			(x, y) -> !water.contains(x, y),
 			cityRadius
 		).computeFull();

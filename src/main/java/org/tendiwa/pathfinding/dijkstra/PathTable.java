@@ -1,9 +1,6 @@
 package org.tendiwa.pathfinding.dijkstra;
 
-import org.tendiwa.geometry.BoundedCellSet;
-import org.tendiwa.geometry.Cell;
-import org.tendiwa.geometry.Cells;
-import org.tendiwa.geometry.Rectangle;
+import org.tendiwa.geometry.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,7 +11,7 @@ public class PathTable implements BoundedCellSet {
 	static final int NOT_COMPUTED_CELL = -1;
 	private final int startX;
 	private final int startY;
-	final PathWalker walker;
+	final CellSet availableCells;
 	private final int maxDepth;
 	private final int width;
 	int[][] pathTable;
@@ -22,10 +19,10 @@ public class PathTable implements BoundedCellSet {
 	int step;
 	private final Rectangle bounds;
 
-	public PathTable(int startX, int startY, PathWalker walker, int maxDepth) {
-		this.startX = startX;
-		this.startY = startY;
-		this.walker = walker;
+	public PathTable(Cell start, CellSet availableCells, int maxDepth) {
+		this.startX = start.x;
+		this.startY = start.y;
+		this.availableCells = availableCells;
 		this.maxDepth = maxDepth;
 		this.width = maxDepth * 2 + 1;
 		//noinspection SuspiciousNameCombination
@@ -144,8 +141,7 @@ public class PathTable implements BoundedCellSet {
 	 * 	Y coordinate of a cell in table coordinates.
 	 */
 	protected void computeCell(int thisNumX, int thisNumY, int tableX, int tableY) {
-		if (bounds.contains(thisNumX, thisNumY) && pathTable[tableX][tableY] == NOT_COMPUTED_CELL && walker.canStepOn
-			(thisNumX, thisNumY)) {
+		if (bounds.contains(thisNumX, thisNumY) && pathTable[tableX][tableY] == NOT_COMPUTED_CELL && availableCells.contains(thisNumX, thisNumY)) {
 			// Step to cell if character can see it and it is free
 			// or character cannot se it and it is not PASSABILITY_NO
 			pathTable[tableX][tableY] = step + 1;
@@ -156,33 +152,32 @@ public class PathTable implements BoundedCellSet {
 	/**
 	 * Returns steps of path to a destination cell computed on this path table.
 	 *
-	 * @param x
-	 * 	Destination x coordinate.
-	 * @param y
+	 * @param target
+	 * 	Target coordinates.
 	 * 	Destination y coordinate.
 	 * @return null if path can't be found.
 	 */
-	public final LinkedList<Cell> getPath(int x, int y) {
-		if (Math.abs(x - startX) > maxDepth || Math.abs(y - startY) > maxDepth) {
-			throw new IllegalArgumentException("Trying to get path to " + x + ":" + y + ". That point is too far from start point " + startX + ":" + startY + ", maxDepth is " + maxDepth);
+	public final LinkedList<Cell> getPath(Cell target) {
+		if (Math.abs(target.x - startX) > maxDepth || Math.abs(target.y - startY) > maxDepth) {
+			throw new IllegalArgumentException("Trying to get path to " + target.x + ":" + target.y + ". That point is too far from start point " + startX + ":" + startY + ", maxDepth is " + maxDepth);
 		}
-		while (pathTable[maxDepth + x - startX][maxDepth + y - startY] == NOT_COMPUTED_CELL) {
+		while (pathTable[maxDepth + target.x - startX][maxDepth + target.y - startY] == NOT_COMPUTED_CELL) {
 			// There will be 0 iterations if that cell is already computed
 			boolean waveAddedNewCells = nextWave();
 			if (!waveAddedNewCells) {
 				return null;
 			}
 		}
-		if (x == startX && y == startY) {
+		if (target.x == startX && target.y == startY) {
 			throw new RuntimeException("Getting path to itself");
 		}
 		LinkedList<Cell> path = new LinkedList<>();
-		if (Cells.isNear(startX, startY, x, y)) {
-			path.add(new Cell(x, y));
+		if (Cells.isNear(startX, startY, target.x, target.y)) {
+			path.add(new Cell(target.x, target.y));
 			return path;
 		}
-		int currentNumX = x;
-		int currentNumY = y;
+		int currentNumX = target.x;
+		int currentNumY = target.y;
 		int cX = currentNumX;
 		int cY = currentNumY;
 		for (

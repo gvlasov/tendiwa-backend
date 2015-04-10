@@ -109,8 +109,7 @@ public final class CityBounds {
 		int radius
 	) {
 		return new PathTable(
-			start.x,
-			start.y,
+			start,
 			(x, y) -> boundingRec.contains(x, y) && !bufferBorder.contains(x, y),
 			radius
 		).computeFull();

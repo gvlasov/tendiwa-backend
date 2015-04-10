@@ -1,34 +1,24 @@
 package org.tendiwa.core;
 
 import org.tendiwa.core.meta.Chance;
-import org.tendiwa.core.settlements.BuildingPlace;
 import org.tendiwa.geometry.*;
 
 import java.util.*;
 
 /**
- * Location is a rectangle of cells lying over several {@link Chunk}s. API users write cell contents to Location
- * calling
- * its methods, and that fills up the {@link HorizontalPlane} (by filling up Chunks) this Location is on.
+ * A modifiable view of a portion of a {@link org.tendiwa.core.HorizontalPlane}.
  */
 public class Location {
-	protected final int width;
-	protected final int height;
-	final int y;
-	final int x;
+	private final Rectangle rectangle;
 	/**
 	 * A HorizontalPlane where entities are placed.
 	 */
 	private HorizontalPlane activePlane;
 
-	public Location(HorizontalPlane activePlane, int x, int y, int width, int height) {
-		this.x = x;
-		this.y = y;
+	public Location(HorizontalPlane activePlane, Rectangle rectangle) {
+		this.rectangle = rectangle;
 		this.activePlane = activePlane;
-		this.width = width;
-		this.height = height;
 	}
-
 
 	public HorizontalPlane getActivePlane() {
 		return activePlane;
@@ -50,7 +40,7 @@ public class Location {
 
 	public void line(int startX, int startY, int endX, int endY, TypePlaceableInCell placeable) {
 		if (startX == endX && startY == endY) {
-			EntityPlacer.place(activePlane, placeable, x + startX, y + startY);
+			EntityPlacer.place(activePlane, placeable, rectangle.x + startX, rectangle.y + startY);
 			return;
 		}
 		Cell[] cells = CellSegment.cells(startX, startY, endX, endY);
@@ -61,13 +51,13 @@ public class Location {
 			int x2 = cells[i + 1].getX();
 			int y2 = cells[i + 1].getY();
 
-			EntityPlacer.place(activePlane, placeable, this.x + x, this.y + y);
+			EntityPlacer.place(activePlane, placeable, rectangle.x + x, rectangle.y + y);
 			if (i < cells.length - 1 && x != x2 && y != y2) {
 				int cx = x + ((x2 > x) ? 1 : -1);
-				EntityPlacer.place(activePlane, placeable, this.x + cx, this.y + y);
+				EntityPlacer.place(activePlane, placeable, rectangle.x + cx, rectangle.y + y);
 			}
 			if (i == size - 2) {
-				EntityPlacer.place(activePlane, placeable, this.x + x2, this.y + y2);
+				EntityPlacer.place(activePlane, placeable, rectangle.x + x2, rectangle.y + y2);
 			}
 		}
 	}
@@ -81,8 +71,8 @@ public class Location {
 	}
 
 	public void square(int startX, int startY, int w, int h, TypePlaceableInCell placeable, boolean fill) {
-		if (startX + w > getWidth() || startY + h > getHeight()) {
-			throw new LocationException("Square " + startX + "," + startY + "," + w + "," + h + " goes out of borders of a " + getWidth() + "*" + getHeight() + " location");
+		if (startX + w > rectangle.width || startY + h > rectangle.height) {
+			throw new LocationException("Square " + startX + "," + startY + "," + w + "," + h + " goes out of borders of a " + rectangle.width + "*" + rectangle.height + " location");
 		}
 		if (w == 1) {
 			line(startX, startY, startX, startY + h - 1, placeable);
@@ -178,10 +168,10 @@ public class Location {
 		} while (yCoord > 0);
 		int size = x.size();
 		for (int i = 0; i < size; i++) {
-			placeable.place(activePlane, this.x + cX + x.get(i), this.y + cY + y.get(i));
-			placeable.place(activePlane, this.x + cX - x.get(i), this.y + cY + y.get(i));
-			placeable.place(activePlane, this.x + cX + x.get(i), this.y + cY - y.get(i));
-			placeable.place(activePlane, this.x + cX - x.get(i), this.y + cY - y.get(i));
+			placeable.place(activePlane, rectangle.x + cX + x.get(i), rectangle.y + cY + y.get(i));
+			placeable.place(activePlane, rectangle.x + cX - x.get(i), rectangle.y + cY + y.get(i));
+			placeable.place(activePlane, rectangle.x + cX + x.get(i), rectangle.y + cY - y.get(i));
+			placeable.place(activePlane, rectangle.x + cX - x.get(i), rectangle.y + cY - y.get(i));
 		}
 	}
 
@@ -191,17 +181,6 @@ public class Location {
 
 	public CellCollection getCellCollection(ArrayList<Cell> cls) {
 		return new CellCollection(cls, this);
-	}
-
-	public <T extends BuildingOld> void placeBuilding(T building) {
-		/**
-		 * Places building when current location is not Settlement.
-		 *
-		 * @param side
-		 *            What side a building is rotated to.
-		 */
-		BuildingPlace place = new BuildingPlace(x, y, width, height);
-		building.draw();
 	}
 
 	// From TerrainGenerator
@@ -230,8 +209,8 @@ public class Location {
 			HashSet<Cell> oldFront = new HashSet<>();
 			HashSet<Cell> newFront = new HashSet<>();
 			newFront.add(new Cell(startX, startY));
-			int[][] pathTable = new int[getWidth()][getHeight()];
-			for (int i = 0; i < getWidth(); i++) {
+			int[][] pathTable = new int[rectangle.width][rectangle.height];
+			for (int i = 0; i < rectangle.width; i++) {
 				Arrays.fill(pathTable[i], 0);
 			}
 			Iterator<Cell> it = answer.iterator();
@@ -257,7 +236,7 @@ public class Location {
 						if (pathTable[thisNumX][thisNumY] != 0 && pathTable[thisNumX][thisNumY] != 2) {
 							continue;
 						}
-						if (thisNumX < 0 || thisNumX >= getWidth() || thisNumY < 0 || thisNumY >= getHeight()) {
+						if (thisNumX < 0 || thisNumX >= rectangle.width || thisNumY < 0 || thisNumY >= rectangle.height) {
 							continue;
 						}
 						// if (thisNumX<=0 || thisNumX>=w-1 || thisNumY<=0 ||
@@ -279,9 +258,9 @@ public class Location {
 	}
 
 	public void fillWithCells(FloorType floor) {
-		for (int i = 0; i < width; i++) {
-			for (int j = 0; j < height; j++) {
-				activePlane.placeFloor(floor, x + i, y + j);
+		for (int i = 0; i < rectangle.width; i++) {
+			for (int j = 0; j < rectangle.height; j++) {
+				activePlane.placeFloor(floor, rectangle.x + i, rectangle.y + j);
 			}
 		}
 	}
@@ -292,8 +271,8 @@ public class Location {
 		ArrayList<Cell> answer = new ArrayList<>();
 		answer.add(new Cell(startX, startY));
 		newFront.add(new Cell(startX, startY));
-		int[][] pathTable = new int[width][height];
-		for (int i = 0; i < width; i++) {
+		int[][] pathTable = new int[rectangle.width][rectangle.height];
+		for (int i = 0; i < rectangle.width; i++) {
 			Arrays.fill(pathTable[i], 0);
 		}
 		int numOfSides = noDiagonal ? 4 : 8;
@@ -319,7 +298,7 @@ public class Location {
 				for (int j = 0; j < numOfSides; j++) {
 					int thisNumX = x + adjactentX[j];
 					int thisNumY = y + adjactentY[j];
-					if (thisNumX <= 0 || thisNumX >= getWidth() - 1 || thisNumY <= 0 || thisNumY >= getHeight() - 1) {
+					if (thisNumX <= 0 || thisNumX >= rectangle.width - 1 || thisNumY <= 0 || thisNumY >= rectangle.height - 1) {
 						// ��������, ����� ��� ��������� �������� ������ ��
 						// �������� �� �������
 						continue;
@@ -349,19 +328,25 @@ public class Location {
 		return answer;
 	}
 
-	public ArrayList<Cell> getElementsAreaBorder(int startX, int startY, PlaceableInCell placeable, int depth, boolean noDiagonal) {
+	public ArrayList<Cell> getElementsAreaBorder(
+		int startX,
+		int startY,
+		PlaceableInCell placeable,
+		int depth,
+		boolean noDiagonal
+	) {
 		// �������� ������� ������� � ���������� ���� %ammunitionType% ���� %val%, �������
 		// �� ����� ��� � %depth% ������� �� ��������� ������
 		// noDiagonal - �������� ������� ���������� ������ �� ������ �������,
 		// ��� �� ��� ������ ������.
-		int[][] pathTable = new int[getWidth()][getHeight()];
+		int[][] pathTable = new int[rectangle.width][rectangle.height];
 		ArrayList<Cell> cells = new ArrayList<>();
 		ArrayList<Cell> oldFront = new ArrayList<>();
 		ArrayList<Cell> newFront = new ArrayList<>();
 		// �� ����� ������ �������� ������
 		newFront.add(new Cell(startX, startY));
-		for (int i = 0; i < getWidth(); i++) {
-			for (int j = 0; j < getHeight(); j++) {
+		for (int i = 0; i < rectangle.width; i++) {
+			for (int j = 0; j < rectangle.height; j++) {
 				pathTable[i][j] = 0;
 			}
 		}
@@ -386,7 +371,7 @@ public class Location {
 				for (int j = 0; j < numOfSides; j++) {
 					int thisNumX = x + adjactentX[j];
 					int thisNumY = y + adjactentY[j];
-					if (thisNumX < 0 || thisNumX >= getWidth() || thisNumY < 0 || thisNumY >= getHeight() || pathTable[thisNumX][thisNumY] != 0 || Cells.distanceInt(startX, startY, thisNumX, thisNumY) > depth) {
+					if (thisNumX < 0 || thisNumX >= rectangle.width || thisNumY < 0 || thisNumY >= rectangle.height || pathTable[thisNumX][thisNumY] != 0 || Cells.distanceInt(startX, startY, thisNumX, thisNumY) > depth) {
 						continue;
 					}
 					if (placeable.containedIn(activePlane, thisNumX, thisNumY) && !(thisNumX == startX && thisNumY == startY)) {
@@ -405,9 +390,9 @@ public class Location {
 	public void waveStructure(int startX, int startY, PlaceableInCell placeable, int maxSize) {
 		Hashtable<Integer, Cell> newFront = new Hashtable<>();
 		newFront.put(0, new Cell(startX, startY));
-		int[][] canceled = new int[getWidth()][getHeight()];
-		int[][] pathTable = new int[getWidth()][getHeight()];
-		for (int i = 0; i < getWidth(); i++) {
+		int[][] canceled = new int[rectangle.width][rectangle.height];
+		int[][] pathTable = new int[rectangle.width][rectangle.height];
+		for (int i = 0; i < rectangle.width; i++) {
 			Arrays.fill(pathTable[i], 0);
 			Arrays.fill(canceled[i], 0);
 		}
@@ -424,10 +409,10 @@ public class Location {
 				for (int j = 0; j < 4; j++) {
 					int thisNumX = adjactentX[j];
 					int thisNumY = adjactentY[j];
-					if (thisNumX < 0 || thisNumX >= getWidth() || thisNumY < 0 || thisNumY >= getHeight() || canceled[thisNumX][thisNumY] != 0) {
+					if (thisNumX < 0 || thisNumX >= rectangle.width || thisNumY < 0 || thisNumY >= rectangle.height || canceled[thisNumX][thisNumY] != 0) {
 						continue;
 					}
-					if (thisNumX <= 0 || thisNumX >= getWidth() - 1 || thisNumY <= 0 || thisNumY >= getHeight() - 1) {
+					if (thisNumX <= 0 || thisNumX >= rectangle.width - 1 || thisNumY <= 0 || thisNumY >= rectangle.height - 1) {
 						continue;
 					}
 					// TODO: This has been making compile time errors so I commented it out : (
@@ -452,13 +437,13 @@ public class Location {
 	}
 
 	public int[][] getPathTable(int startX, int startY, int endX, int endY, boolean noDiagonal) {
-		int[][] pathTable = new int[getWidth()][getHeight()];
+		int[][] pathTable = new int[rectangle.width][rectangle.height];
 		boolean isPathFound = false;
 		ArrayList<Cell> oldFront = new ArrayList<>();
 		ArrayList<Cell> newFront = new ArrayList<>();
 		newFront.add(new Cell(startX, startY));
-		for (int i = 0; i < getWidth(); i++) {
-			for (int j = 0; j < getHeight(); j++) {
+		for (int i = 0; i < rectangle.width; i++) {
+			for (int j = 0; j < rectangle.height; j++) {
 				pathTable[i][j] = 0;
 			}
 		}
@@ -483,7 +468,7 @@ public class Location {
 				for (int j = 0; j < numOfSides; j++) {
 					int thisNumX = x + adjactentX[j];
 					int thisNumY = y + adjactentY[j];
-					if (thisNumX < 0 || thisNumX >= getWidth() || thisNumY < 0 || thisNumY >= getHeight() || pathTable[thisNumX][thisNumY] != 0) {
+					if (thisNumX < 0 || thisNumX >= rectangle.width || thisNumY < 0 || thisNumY >= rectangle.height || pathTable[thisNumX][thisNumY] != 0) {
 						continue;
 					}
 					if (thisNumX == endX && thisNumY == endY) {
@@ -536,11 +521,11 @@ public class Location {
 			for (int i = 0; i < numOfSides; i++) {
 				// ��� ������ �� ��������� ������ (�, �, �, �)
 				int thisNumX = x + adjactentX[i];
-				if (thisNumX < 0 || thisNumX >= getWidth()) {
+				if (thisNumX < 0 || thisNumX >= rectangle.width) {
 					continue;
 				}
 				int thisNumY = y + adjactentY[i];
-				if (thisNumY < 0 || thisNumY >= getHeight()) {
+				if (thisNumY < 0 || thisNumY >= rectangle.height) {
 					continue;
 				}
 				if (pathTable[thisNumX][thisNumY] == j - 1 && (currentNumX == -1 || Cells.distanceInt(thisNumX, thisNumY, destinationX, destinationY) < Cells.distanceInt(currentNumX, currentNumY, destinationX, destinationY))) {
@@ -644,23 +629,23 @@ public class Location {
 		endY -= dy * coeff;
 		if (startX < 0) {
 			startX = 0;
-		} else if (startX >= getWidth()) {
-			startX = getWidth() - 1;
+		} else if (startX >= rectangle.width) {
+			startX = rectangle.width - 1;
 		}
 		if (startY < 0) {
 			startY = 0;
-		} else if (startY >= getHeight()) {
-			startY = getHeight() - 1;
+		} else if (startY >= rectangle.height) {
+			startY = rectangle.height - 1;
 		}
 		if (endX < 0) {
 			endX = 0;
-		} else if (endX >= getWidth()) {
-			endX = getWidth();
+		} else if (endX >= rectangle.width) {
+			endX = rectangle.width;
 		}
 		if (endY < 0) {
 			endY = 0;
-		} else if (endY >= getHeight()) {
-			endY = getHeight() - 1;
+		} else if (endY >= rectangle.height) {
+			endY = rectangle.height - 1;
 		}
 		for (int i = 0; i < w; i++) {
 //		line(startX, startY, endX, endY, placeable);
@@ -681,13 +666,13 @@ public class Location {
 	}
 
 	protected CellCollection getCoast(int startX, int startY) {
-		int[][] pathTable = new int[getWidth()][getHeight()];
+		int[][] pathTable = new int[rectangle.width][rectangle.height];
 		ArrayList<Cell> cells = new ArrayList<>();
 		ArrayList<Cell> oldFront = new ArrayList<>();
 		ArrayList<Cell> newFront = new ArrayList<>();
 		newFront.add(new Cell(startX, startY));
-		for (int i = 0; i < getWidth(); i++) {
-			for (int j = 0; j < getHeight(); j++) {
+		for (int i = 0; i < rectangle.width; i++) {
+			for (int j = 0; j < rectangle.height; j++) {
 				pathTable[i][j] = 0;
 			}
 		}
@@ -704,7 +689,7 @@ public class Location {
 				for (int j = 0; j < 4; j++) {
 					int thisNumX = adjactentX[j];
 					int thisNumY = adjactentY[j];
-					if (thisNumX < 0 || thisNumX >= getWidth() || thisNumY < 0 || thisNumY >= getHeight() || pathTable[thisNumX][thisNumY] != 0) {
+					if (thisNumX < 0 || thisNumX >= rectangle.width || thisNumY < 0 || thisNumY >= rectangle.height || pathTable[thisNumX][thisNumY] != 0) {
 						continue;
 					}
 					if (activePlane.getPassability(thisNumX, thisNumY) == Passability.NO && !(thisNumX == startX && thisNumY == startY)) {
@@ -732,7 +717,13 @@ public class Location {
 		return answer;
 	}
 
-	public void lineToRectangleBorder(int startX, int startY, CardinalDirection side, java.awt.Rectangle r, TypePlaceableInCell placeable) {
+	public void lineToRectangleBorder(
+		int startX,
+		int startY,
+		CardinalDirection side,
+		java.awt.Rectangle r,
+		TypePlaceableInCell placeable
+	) {
 		if (!r.contains(startX, startY)) {
 			throw new Error("Rectangle " + r + " contains no point " + startX + ":" + startY);
 		}
@@ -812,25 +803,13 @@ public class Location {
 		try {
 			for (x = r.x; x < r.x + r.width; x++) {
 				for (y = r.y; y < r.y + r.height; y++) {
-					EntityPlacer.place(activePlane, placeable, this.x + x, this.y + y);
+					EntityPlacer.place(activePlane, placeable, rectangle.x + x, rectangle.y + y);
 				}
 			}
 		} catch (IndexOutOfBoundsException e) {
 			throw new LocationException("Trying to place entity " + placeable + " outside of location at absolute " +
 				"cell " + x + ":" + y + " (relative " + (x - r.x) + ":" + (y - r.y) + ")");
 		}
-	}
-
-	public int getWidth() {
-		return width;
-	}
-
-	public int getHeight() {
-		return height;
-	}
-
-	public TerrainTransition.TerrainTransitionBuilder transitionBuilder() {
-		return new TerrainTransition.TerrainTransitionBuilder().setLocation(this);
 	}
 
 	/**
@@ -845,7 +824,7 @@ public class Location {
 	 */
 	public void place(TypePlaceableInCell placeable, int x, int y) {
 		assert placeable != null;
-		EntityPlacer.place(activePlane, placeable, this.x + x, this.y + y);
+		EntityPlacer.place(activePlane, placeable, rectangle.x + x, rectangle.y + y);
 	}
 
 	/**
@@ -859,7 +838,7 @@ public class Location {
 	public void place(TypePlaceableInCell placeable, Cell point) {
 		assert placeable != null : "Trying to place a null object";
 		assert point != null;
-		EntityPlacer.place(activePlane, placeable, x + point.getX(), y + point.getY());
+		EntityPlacer.place(activePlane, placeable, rectangle.x + point.getX(), rectangle.y + point.getY());
 	}
 
 	public void lineOfThin(RectangleSidePiece line, BorderObjectType type) {
@@ -882,7 +861,7 @@ public class Location {
 	public void drawCellSet(FiniteCellSet cellSet, TypePlaceableInCell placeable) {
 		Objects.requireNonNull(placeable);
 		for (Cell cell : cellSet) {
-			activePlane.place(placeable, this.x + cell.x, this.y + cell.y);
+			activePlane.place(placeable, rectangle.x + cell.x, rectangle.y + cell.y);
 		}
 	}
 
@@ -901,6 +880,6 @@ public class Location {
 	 * @return A new Rectangle.
 	 */
 	public Rectangle getRelativeBounds() {
-		return new Rectangle(0, 0, width, height);
+		return new Rectangle(0, 0, rectangle.width, rectangle.height);
 	}
 }

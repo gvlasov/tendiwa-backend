@@ -2,6 +2,7 @@ package org.tendiwa.demos;
 
 import com.google.common.base.Stopwatch;
 import com.google.inject.Inject;
+import org.tendiwa.drawing.DrawableInto;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingCell;
 import org.tendiwa.drawing.extensions.DrawingRectangle;
@@ -22,7 +23,7 @@ import static java.awt.Color.*;
 public class NoiseDemo implements Runnable {
 
 	@Inject
-	TestCanvas canvas;
+	DrawableInto canvas;
 
 	public static void main(String[] args) {
 		Demos.run(NoiseDemo.class);
@@ -38,7 +39,6 @@ public class NoiseDemo implements Runnable {
 	}
 
 	private void terrain(int width, int height) {
-		canvas = Demos.createCanvas();
 		Stopwatch time = Stopwatch.createStarted();
 
 		for (int y = 0; y < height; y++) {
@@ -87,8 +87,7 @@ public class NoiseDemo implements Runnable {
 		BlobArea<TestParams> blob = new BlobArea<>(
 			maxBound,
 			new PathTable(
-				140,
-				105,
+				new Cell(140, 105),
 				(x, y) -> {
 					if (!maxBound.contains(x, y)) {
 						return false;

@@ -11,7 +11,7 @@ public class CachedCellSetTest {
 	public void iterations() {
 		Rectangle shape = new Rectangle(5, 5, 5, 5);
 		CachedCellSet cells = new CachedCellSet(
-			new ChebyshevDistanceBuffer(
+			new ChebyshovDistanceBuffer(
 				3,
 				shape::contains
 			),
@@ -24,7 +24,7 @@ public class CachedCellSetTest {
 	public void iterations2() {
 		Rectangle shape = new Rectangle(5, 5, 5, 5);
 		CachedCellSet cells = new CachedCellSet(
-			new ChebyshevDistanceBuffer(
+			new ChebyshovDistanceBuffer(
 				5,
 				shape::contains
 			),

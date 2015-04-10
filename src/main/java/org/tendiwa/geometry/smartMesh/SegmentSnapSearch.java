@@ -39,7 +39,7 @@ final class SegmentSnapSearch implements EventSearch {
 	}
 
 	@Override
-	public Optional<SnapEvent> find() {
+	public Optional<PropagationEvent> find() {
 		segmentsToTest.forEach(this::trySnapping);
 		return Optional.ofNullable(result);
 	}

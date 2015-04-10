@@ -2,6 +2,7 @@ package org.tendiwa.demos;
 
 import com.google.inject.Inject;
 import org.tendiwa.core.GrowingRectangleSystem;
+import org.tendiwa.drawing.DrawableInto;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingRectangleSystem;
 import org.tendiwa.geometry.Rectangle;
@@ -11,7 +12,7 @@ import static java.awt.Color.*;
 
 public class TrailDrawDemo implements Runnable {
 	@Inject
-	TestCanvas canvas;
+	DrawableInto canvas;
 
 	public static void main(String[] args) {
 		Demos.run(TrailDrawDemo.class);

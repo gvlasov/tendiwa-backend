@@ -1,9 +1,11 @@
 package org.tendiwa.geometry;
 
 import com.google.common.collect.ImmutableSet;
+import org.tendiwa.collections.IterableToStream;
 
 import java.util.Iterator;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * A finite set of cells. All the cells reside within certain rectangle.
@@ -70,6 +72,10 @@ public interface BoundedCellSet extends FiniteCellSet {
 		};
 	}
 
+	public default Stream<Cell> stream() {
+		return IterableToStream.stream(iterator());
+	}
+
 	/**
 	 * Creates a new ImmutableSet containing all of cells within {@link #getBounds()} that are buffer border cells.
 	 *
@@ -93,8 +99,8 @@ public interface BoundedCellSet extends FiniteCellSet {
 	public default void forEach(Consumer<? super Cell> action) {
 		int startX = getBounds().x;
 		int startY = getBounds().y;
-		int maxX = getBounds().getMaxX()+1;
-		int maxY = getBounds().getMaxY()+1;
+		int maxX = getBounds().getMaxX() + 1;
+		int maxY = getBounds().getMaxY() + 1;
 		for (int x = startX; x < maxX; x++) {
 			for (int y = startY; y < maxY; y++) {
 				if (contains(x, y)) {
@@ -108,8 +114,8 @@ public interface BoundedCellSet extends FiniteCellSet {
 	public default void forEach(CellConsumer action) {
 		int startX = getBounds().x;
 		int startY = getBounds().y;
-		int maxX = getBounds().getMaxX()+1;
-		int maxY = getBounds().getMaxY()+1;
+		int maxX = getBounds().getMaxX() + 1;
+		int maxY = getBounds().getMaxY() + 1;
 		for (int x = startX; x < maxX; x++) {
 			for (int y = startY; y < maxY; y++) {
 				if (contains(x, y)) {
@@ -117,5 +123,20 @@ public interface BoundedCellSet extends FiniteCellSet {
 				}
 			}
 		}
+	}
+
+	@Override
+	public default BoundedCellSet without(CellSet set) {
+		return new BoundedCellSet() {
+			@Override
+			public Rectangle getBounds() {
+				return getBounds();
+			}
+
+			@Override
+			public boolean contains(int x, int y) {
+				return BoundedCellSet.this.contains(x, y) && !set.contains(x, y);
+			}
+		};
 	}
 }

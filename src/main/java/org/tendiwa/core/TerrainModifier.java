@@ -26,25 +26,6 @@ public class TerrainModifier {
 		return rs;
 	}
 
-	/**
-	 * Excludes rectangles that contain a particular entity inside them.
-	 *
-	 * @param placeable
-	 * 	Type of entity.
-	 */
-	public void excludeRectanglesHaving(PlaceableInCell placeable) {
-		keyLoop:
-		for (Rectangle r : rs.getRectangles()) {
-			for (int x = r.getX(); x < r.getX() + r.getWidth(); x++) {
-				for (int y = r.getY(); y < r.getY() + r.getHeight(); y++) {
-					if (placeable.containedIn(location.getActivePlane(), location.x + x, location.y + y)) {
-						rs.excludeRectangle(r);
-						continue keyLoop;
-					}
-				}
-			}
-		}
-	}
 
 	/**
 	 * Draws borders between neighbor rectangles. Note that sets of cells of which inner and outer borders consist

@@ -57,11 +57,11 @@ final class SnapTest {
 	 *
 	 * @return A description of how {@link #unsnappedTarget} snaps to a node, a road, or nothing.
 	 */
-	SnapEvent snap() {
+	PropagationEvent snap() {
 		if (canSnapRightAway()) {
 			return new SnapToNode(source, unsnappedTarget);
 		}
-		SnapEvent result = createUnsnappedResult();
+		PropagationEvent result = createUnsnappedResult();
 		result = nodeSnapSearch().find().orElse(result);
 		result = segmentIntersectionSearch(result).find().orElse(result);
 		if (result instanceof NowhereToSnap) {
@@ -99,7 +99,7 @@ final class SnapTest {
 		);
 	}
 
-	private EventSearch segmentIntersectionSearch(SnapEvent previousResult) {
+	private EventSearch segmentIntersectionSearch(PropagationEvent previousResult) {
 		return new SegmentIntersectionSearch(
 			source,
 			previousResult.target(),

@@ -4,9 +4,7 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Vectors2D;
 
-import java.util.Optional;
-
-final class SnapToSegment implements SnapEvent {
+final class SnapToSegment implements PropagationEvent {
 	private final Point2D source;
 	private final Point2D target;
 	private final Segment2D road;

@@ -7,5 +7,5 @@ import java.util.Optional;
  * Searches for the best point to snap to based on a particular condition.
  */
 interface EventSearch {
-	Optional<SnapEvent> find();
+	Optional<PropagationEvent> find();
 }

@@ -42,19 +42,28 @@ public class SegmentInserter {
 	 * <p>
 	 * Tries adding a new segment to the secondary network.
 	 */
-	SnapEvent tryPlacingSegment(Ray beginning, Sector allowedSector) {
+	PropagationEvent tryPlacingSegment(Ray beginning, Sector allowedSector) {
 		double segmentLength = deviatedLength(networkGenerationParameters.segmentLength);
-		SnapEvent snapEvent = new SnapTest(
+		PropagationEvent event = new SnapTest(
 			networkGenerationParameters.snapSize,
 			beginning.start,
 			beginning.placeEnd(segmentLength),
 			fullNetwork.graph(),
 			allowedSector
 		).snap();
-		if (snapEvent.createsNewSegment()) {
-			snapEvent.integrateInto(fullNetwork, this);
+		if (event.createsNewSegment()) {
+			event.integrateInto(fullNetwork, this);
 		}
-		return snapEvent;
+		Point2D branchPreEnd = beginning.start;
+		Point2D branchEnd = event.target();
+		if (event.isTerminal() && circuitMakesTightRectangle(branchPreEnd, branchEnd)) {
+			removeBranch(branchEnd, branchPreEnd);
+		}
+		return event;
+	}
+
+	private boolean circuitMakesTightRectangle(Point2D start, Point2D target) {
+
 	}
 
 	/**

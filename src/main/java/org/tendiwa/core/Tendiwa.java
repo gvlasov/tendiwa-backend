@@ -5,15 +5,14 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import org.tendiwa.core.events.*;
-import org.tendiwa.core.factories.CharacterFactory;
-import org.tendiwa.core.factories.NpcFactory;
-import org.tendiwa.core.factories.WorldFactory;
 import org.tendiwa.core.observation.Observable;
 import org.tendiwa.core.player.PlayerModule;
 import org.tendiwa.core.volition.RequestsModule;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import static org.tendiwa.geometry.DSL.rectangle;
 
 @Singleton
 public class Tendiwa extends Observable {
@@ -114,36 +113,10 @@ public class Tendiwa extends Observable {
 	}
 
 	public void start() {
-		// Loading modules
-		List<Class<? extends Module>> modulesCreatingWorlds = loadModules();
-		WorldProvidingModule worldProvidingModule = (WorldProvidingModule) getInjector()
-			.getInstance(modulesCreatingWorlds.get(0));
-		World world = worldProvidingModule.createWorld(
-			injector.getInstance(WorldFactory.class),
-			injector.getInstance(CharacterFactory.class),
-			injector.getInstance(NpcFactory.class)
-		);
+		World world = new World(rectangle(100, 100));
 		timeStreamManager.populate(world);
 
 		// Starting server
 		server.start();
-	}
-
-	/**
-	 * Creates an inanimate world
-	 *
-	 * @param worldProvidingModuleClass
-	 * 	How to draw the world.
-	 * @return A new populated World.
-	 */
-	public static World createWorld(Class<? extends WorldProvidingModule> worldProvidingModuleClass) {
-		List<Class<? extends Module>> modulesCreatingWorlds = loadModules();
-		WorldProvidingModule worldProvidingModule = getInjector()
-			.getInstance(worldProvidingModuleClass);
-		return worldProvidingModule.createWorld(
-			injector.getInstance(WorldFactory.class),
-			injector.getInstance(CharacterFactory.class),
-			injector.getInstance(NpcFactory.class)
-		);
 	}
 }

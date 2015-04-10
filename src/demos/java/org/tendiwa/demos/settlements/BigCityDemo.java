@@ -1,6 +1,7 @@
 package org.tendiwa.demos.settlements;
 
-import com.google.common.collect.*;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import org.apache.log4j.Logger;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
@@ -12,19 +13,23 @@ import org.tendiwa.drawing.GifBuilder;
 import org.tendiwa.drawing.MagnifierCanvas;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.*;
+import org.tendiwa.geometry.Chain2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.graphs.GraphConstructor;
-import org.tendiwa.settlements.buildings.PolylineProximity;
-import org.tendiwa.geometry.smartMesh.SegmentNetworkBuilder;
 import org.tendiwa.geometry.smartMesh.Segment2DSmartMesh;
-import org.tendiwa.settlements.utils.*;
-import org.tendiwa.geometry.Chain2D;
+import org.tendiwa.geometry.smartMesh.SegmentNetworkBuilder;
+import org.tendiwa.settlements.utils.BuildingPlacesFilters;
+import org.tendiwa.settlements.utils.RectangleWithNeighbors;
+import org.tendiwa.settlements.utils.RectangularBuildingLots;
+import org.tendiwa.settlements.utils.RoadRejector;
 import org.tendiwa.settlements.utils.streetsDetector.DetectedStreets;
 
 import java.awt.Color;
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 public class BigCityDemo implements Runnable {
@@ -37,59 +42,56 @@ public class BigCityDemo implements Runnable {
 
 	@Override
 	public void run() {
-		GraphConstructor<Point2D, Segment2D> gc = FourCyclePenisGraph.create();
-		SimpleGraph<Point2D, Segment2D> graph = gc.graph();
-//		SimpleGraph<Point2D, Segment2D> graph = new GraphConstructor<>(Segment2D::new)
-//			.vertex(0, new Point2D(50, 50))
-//			.vertex(1, new Point2D(350, 50))
-//			.vertex(2, new Point2D(350, 350))
-//			.vertex(3, new Point2D(50, 350))
-//			.cycle(0, 1, 2, 3)
-//			.graph();
+		SimpleGraph<Point2D, Segment2D> graph = createGraph();
+		createCanvas();
+
+		drawGraph(graph);
+
+		IntStream.range(0, 1).forEach(seed -> {
+			Segment2DSmartMesh segment2DSmartMesh = createMesh(graph, seed);
+			buildAndDrawLots(segment2DSmartMesh);
+//			leavesAnimation(segment2DSmartMesh);
+			drawBlocks(segment2DSmartMesh);
+		});
+	}
+
+	private void drawGraph(SimpleGraph<Point2D, Segment2D> graph) {
+		TestCanvas.canvas.draw(graph, DrawingGraph.withColorAndVertexSize(Color.red, 2));
+	}
+
+	private Segment2DSmartMesh createMesh(SimpleGraph<Point2D, Segment2D> graph, int seed) {
+		return new SegmentNetworkBuilder(graph)
+			.withDefaults()
+			.withMaxStartPointsPerCycle(5)
+			.withRoadsFromPoint(2)
+			.withSecondaryRoadNetworkDeviationAngle(0.5)
+			.withRoadSegmentLength(20)
+			.withSnapSize(5)
+			.withSeed(seed)
+			.withAxisAlignedSegments(false)
+			.build();
+	}
+
+	private void drawBlocks(Segment2DSmartMesh segment2DSmartMesh) {
+		segment2DSmartMesh.networks()
+			.stream()
+			.flatMap(n -> n.enclosedBlocks().stream())
+			.flatMap(b -> b.shrinkToRegions(3, 0).stream())
+			.forEach(
+				block ->
+					canvas.draw(block, DrawingEnclosedBlock.withColor(Color.lightGray))
+			);
+	}
+
+	private SimpleGraph<Point2D, Segment2D> createGraph() {
+		return FourCyclePenisGraph.create().graph();
+	}
+
+	private void createCanvas() {
 		canvas = new MagnifierCanvas(5, 162, 215, 600, 600);
 //		canvas = new TestCanvas(1, 600, 600);
 		canvas.fillBackground(Color.black);
 		TestCanvas.canvas = canvas;
-
-		TestCanvas.canvas.draw(graph, DrawingGraph.withColorAndVertexSize(Color.red, 2));
-
-		IntStream.range(0, 1).forEach(seed -> {
-			Segment2DSmartMesh segment2DSmartMesh = new SegmentNetworkBuilder(graph)
-				.withDefaults()
-				.withMaxStartPointsPerCycle(5)
-				.withRoadsFromPoint(2)
-				.withSecondaryRoadNetworkDeviationAngle(0.5)
-				.withRoadSegmentLength(20)
-				.withSnapSize(5)
-				.withSeed(seed)
-				.withAxisAlignedSegments(false)
-				.build();
-
-//			canvas.draw(cityGeometry, new CityDrawer());
-			Iterator<Color> colors = Iterators.cycle(
-				Color.getHSBColor(0, (float) 0.5, 1),
-				Color.getHSBColor((float) 0.37, 1, (float) 0.0),
-				Color.getHSBColor((float) 0.5, 1, (float) 0.8),
-				Color.getHSBColor((float) 0.25, 1, (float) 0.8),
-				Color.getHSBColor(0, 1, 1),
-				Color.getHSBColor((float) 0.5, 1, 1),
-				Color.getHSBColor((float) 0.25, 1, 1),
-				Color.getHSBColor((float) 0.80, 1, 1),
-				Color.getHSBColor((float) 0.37, 1, 1),
-				Color.getHSBColor((float) 0.62, 1, (float) 0.8)
-			);
-			buildAndDrawLots(segment2DSmartMesh);
-
-//			leavesAnimation(segment2DSmartMesh);
-
-//			Set<EnclosedBlock> blocks = roadsPlanarGraphModel.getBlocks()
-//				.stream()
-//				.flatMap(b -> b.shrinkToRegions(3, 0).stream())
-//				.collect(Collectors.toSet());
-//			for (EnclosedBlock block : blocks) {
-//				canvas.draw(block, DrawingEnclosedBlock.withColor(Color.lightGray));
-//			}
-		});
 	}
 
 	private void buildAndDrawLots(Segment2DSmartMesh segment2DSmartMesh) {
@@ -116,7 +118,6 @@ public class BigCityDemo implements Runnable {
 		}
 		Collection<RectangleWithNeighbors> lots = RectangularBuildingLots
 			.placeInside(segment2DSmartMesh);
-		PolylineProximity polylineProximity = new PolylineProximity(streets, lots, 8);
 		Set<RectangleWithNeighbors> recGroups = lots
 			.stream()
 			.filter(BuildingPlacesFilters.closeToRoads(streets, lots, 8))

@@ -2,9 +2,7 @@ package org.tendiwa.geometry.smartMesh;
 
 import org.tendiwa.geometry.Point2D;
 
-import java.util.Optional;
-
-public class NowhereToSnap implements SnapEvent {
+public class NowhereToSnap implements PropagationEvent {
 	private final Point2D source;
 	private final Point2D target;
 

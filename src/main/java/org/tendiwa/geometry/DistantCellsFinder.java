@@ -1,10 +1,12 @@
 package org.tendiwa.geometry;
 
 import com.google.common.collect.ImmutableSet;
+import org.tendiwa.collections.IterableToStream;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.stream.Stream;
 
 /**
  * In a {@link FiniteCellSet}, greedily finds a set of cells where there is at least certain Chebyshov distance between
@@ -38,6 +40,9 @@ public class DistantCellsFinder implements Iterable<Cell> {
 	{
 		this.cells = cells.toSet();
 		this.minDistance = minDistance;
+	}
+	public Stream<Cell> stream() {
+		return IterableToStream.stream(iterator());
 	}
 
 	@Override

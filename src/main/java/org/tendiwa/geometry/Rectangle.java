@@ -15,7 +15,7 @@ import java.util.Optional;
  * height.
  */
 // TODO: Make Rectangle immutable
-public class Rectangle implements Placeable, BoundedCellSet {
+public class Rectangle implements Placeable, BoundedCellSet, Dimension {
 	public final int x;
 	public final int y;
 	public final int width;
@@ -742,6 +742,7 @@ public class Rectangle implements Placeable, BoundedCellSet {
 	 * @see #containsDoubleNonStrict(double, double) Not to mix up with this method!
 	 * @see #containsDoubleStrict(double, double) Not to mix up with this method too!
 	 */
+	@Override
 	public boolean contains(int x, int y) {
 		return x >= this.x && x < this.x + this.width && y >= this.y && y < this.y + this.height;
 	}

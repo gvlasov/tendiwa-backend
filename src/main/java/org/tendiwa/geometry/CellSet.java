@@ -74,6 +74,10 @@ public interface CellSet {
 		return (x, y) -> contains(x, y) ^ set.contains(x, y);
 	}
 
+	public default CellSet without(CellSet set) {
+		return (x, y) -> contains(x, y) && !set.contains(x, y);
+	}
+
 	public static Collector<Cell, ?, FiniteCellSet> toCellSet() {
 		return new Collector<Cell, ScatteredMutableCellSet, FiniteCellSet>() {
 			@Override
@@ -153,5 +157,4 @@ public interface CellSet {
 			}
 		};
 	}
-
 }

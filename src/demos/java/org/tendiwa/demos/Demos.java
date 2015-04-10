@@ -7,7 +7,7 @@ import org.codehaus.groovy.control.CompilerConfiguration;
 import org.tendiwa.core.ScriptShell;
 import org.tendiwa.core.Tendiwa;
 import org.tendiwa.core.World;
-import org.tendiwa.core.WorldProvidingModule;
+import org.tendiwa.core.worlds.Genesis;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingModule;
 import org.tendiwa.drawing.extensions.DrawingWorld;
@@ -40,13 +40,7 @@ public final class Demos {
 		Guice.createInjector(modules).getInstance(demoClass).run();
 	}
 
-	public static void drawWorld(Class<? extends WorldProvidingModule> worldProvidingModuleClass) {
-		CompilerConfiguration compilerConfiguration = new CompilerConfiguration();
-		GroovyShell shell = new ScriptShell(Tendiwa.MODULES_CONF_FILE);
-		Tendiwa.loadModules();
-		org.tendiwa.core.Module mainModule = Tendiwa.getMainModule();
-		World world = Tendiwa.createWorld(worldProvidingModuleClass);
-		TestCanvas canvas = new TestCanvas(1, world.getWidth(), world.getHeight());
-		canvas.draw(world, DrawingWorld.defaultAlgorithm());
+	public static void genesis(Class<? extends Genesis> genesisClass, Module... modules) {
+		Guice.createInjector(modules).getInstance(genesisClass).world();
 	}
 }

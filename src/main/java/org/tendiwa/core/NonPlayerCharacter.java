@@ -294,7 +294,8 @@ public class NonPlayerCharacter extends Character {
 				if (destX == x && destY == y) {
 					idle();
 				} else {
-					LinkedList<Cell> dest = Paths.getPath(x, y, destX, destY, this, MAX_PATH_TABLE_DEPTH);
+					LinkedList<Cell> dest = Paths.getPath(new Cell(x,y), new Cell(destX, destY), getPathWalkerOverCharacters(),
+						MAX_PATH_TABLE_DEPTH);
 					if (dest.getFirst().getX() != x || dest.getFirst().getY() != y) {
 						step(dest.getFirst().getX(), dest.getFirst().getY());
 					} else {
@@ -306,12 +307,13 @@ public class NonPlayerCharacter extends Character {
 				/* */// Maybe this part should be main, and main part should be
 				// deleted?!
 				// If we always use imaginary table.
-				PathTable imaginaryPathTable = Paths.getPathTable(x, y, this, MAX_PATH_TABLE_DEPTH);
-				imaginaryPathTable.getPath(activeEnemy.x, activeEnemy.y);
+				PathTable imaginaryPathTable = Paths.getPathTable(new Cell(x, y), getPathWalkerOverCharacters(), MAX_PATH_TABLE_DEPTH);
+				imaginaryPathTable.getPath(new Cell(activeEnemy.x, activeEnemy.y));
 				if (!imaginaryPathTable.isCellComputed(activeEnemy.x, activeEnemy.y)) {
 					// If path is blocked by characters
-					imaginaryPathTable = Paths.getPathTable(x, y, getPathWalkerOverCharacters(), MAX_PATH_TABLE_DEPTH);
-					LinkedList<Cell> imaginaryPath = imaginaryPathTable.getPath(activeEnemy.x, activeEnemy.y);
+					imaginaryPathTable = Paths.getPathTable(new Cell(x, y), getPathWalkerOverCharacters(),
+						MAX_PATH_TABLE_DEPTH);
+					LinkedList<Cell> imaginaryPath = imaginaryPathTable.getPath(new Cell(activeEnemy.x, activeEnemy.y));
 					Cell firstStep = imaginaryPath.get(0);
 					if (plane.getCharacter(firstStep.getX(), firstStep.getY()) == null) {
 						// If there is no character on first cell of imaginary
@@ -326,11 +328,13 @@ public class NonPlayerCharacter extends Character {
 			}
 		} else if (getUnseenEnemyToChase()) {
 			Coordinate lastSeenCoord = lastSeenEnemyCoord.get(enemyToChase);
-			PathTable pathTable = Paths.getPathTable(x, y, this, MAX_PATH_TABLE_DEPTH);
+			PathTable pathTable = Paths.getPathTable(new Cell(x, y), getPathWalkerOverCharacters(),
+				MAX_PATH_TABLE_DEPTH);
 
 			if (!pathTable.isCellComputed(lastSeenCoord.x, lastSeenCoord.y)) {
 				// If path is blocked by characters
-				LinkedList<Cell> path = Paths.getPath(x, y, lastSeenCoord.x, lastSeenCoord.y, getPathWalkerOverCharacters(), MAX_PATH_TABLE_DEPTH);
+				LinkedList<Cell> path = Paths.getPath(new Cell(x, y), new Cell(lastSeenCoord.x, lastSeenCoord.y),
+					getPathWalkerOverCharacters(), MAX_PATH_TABLE_DEPTH);
 				assert path != null : lastSeenCoord;
 				Cell firstStep = path.getFirst();
 				if (plane.getCharacter(firstStep.getX(), firstStep.getY()) == null) {

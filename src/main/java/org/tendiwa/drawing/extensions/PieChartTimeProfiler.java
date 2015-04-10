@@ -6,7 +6,7 @@ import org.tendiwa.drawing.PieChartTest;
 
 import java.util.concurrent.TimeUnit;
 
-public class PieChartTimeProfiler {
+public final class PieChartTimeProfiler implements TimeProfiler {
 	private PieChartTest chart;
 	private Stopwatch watch;
 	private TimeUnit timeUnit;
@@ -28,6 +28,7 @@ public class PieChartTimeProfiler {
 	 * @param name
 	 * 	Name of a pie chart's slice.
 	 */
+	@Override
 	public void saveTime(String name) {
 		chart.add(name, (int) watch.elapsed(timeUnit));
 		watch.reset().start();

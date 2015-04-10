@@ -12,13 +12,13 @@ import org.tendiwa.core.vision.Seer;
 import org.tendiwa.core.vision.SightPassabilityCriteria;
 import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.CellSegment;
-import org.tendiwa.pathfinding.dijkstra.PathWalker;
+import org.tendiwa.geometry.CellSet;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class Character implements CellPosition, PlaceableInCell, PathWalker, DamageSource {
+public class Character implements CellPosition, PlaceableInCell, DamageSource {
 	public final int id = new UniqueObject().id;
 	public final ItemCollection inventory = new ItemCollection();
 	public final Equipment equipment = new Equipment(2, ApparelSlot.values());
@@ -544,7 +544,6 @@ public class Character implements CellPosition, PlaceableInCell, PathWalker, Dam
 		return this.plane == plane && this.x == x && this.y == y;
 	}
 
-	@Override
 	public boolean canStepOn(int x, int y) {
 		return x >= 0
 			&& y >= 0
@@ -760,10 +759,10 @@ public class Character implements CellPosition, PlaceableInCell, PathWalker, Dam
 		}
 	}
 
-	class PathWalkerOverCharacters implements PathWalker {
+	class PathWalkerOverCharacters implements CellSet {
 
 		@Override
-		public boolean canStepOn(int x, int y) {
+		public boolean contains(int x, int y) {
 			return x >= 0
 				&& y >= 0
 				&& x < world.width

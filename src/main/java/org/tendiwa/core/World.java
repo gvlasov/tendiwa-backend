@@ -1,5 +1,6 @@
 package org.tendiwa.core;
 
+import org.tendiwa.geometry.Dimension;
 import org.tendiwa.geometry.Rectangle;
 
 import java.util.Collection;
@@ -17,12 +18,16 @@ public class World {
 	private HashMap<Integer, HorizontalPlane> planes = new HashMap<>();
 
 	public World(
-		int width,
-		int height
+		Dimension dimension
 	) {
-		this.rectangle = new Rectangle(0, 0, width, height);
-		this.width = width;
-		this.height = height;
+		this.rectangle = new Rectangle(
+			0,
+			0,
+			dimension.getWidth(),
+			dimension.getHeight()
+		);
+		this.width = dimension.getWidth();
+		this.height = dimension.getHeight();
 		defaultPlane = initPlane(0);
 		planes.put(0, defaultPlane);
 	}

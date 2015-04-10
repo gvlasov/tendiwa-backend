@@ -76,7 +76,7 @@ public final class UrbanPlanner implements BuildingPlacer {
 		what.draw(
 			features,
 			facadeDirection,
-			new Location(plane, where.rectangle.x, where.rectangle.y, where.rectangle.width, where.rectangle.height)
+			new Location(plane, where.rectangle)
 		);
 		info.addBuilding(features.build());
 	}
