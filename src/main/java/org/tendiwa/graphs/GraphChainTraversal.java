@@ -147,8 +147,8 @@ public final class GraphChainTraversal {
 
 		/**
 		 * This method exists because of this: <a href="http://stackoverflow
-		 * .com/questions/20746429/java-8-limit-infinite-stream-by-a-predicate">(StackOverflow) Java 8: Limit infinite
-		 * stream by a predicate</a>
+		 * .com/questions/20746429/java-8-limit-infinite-segmentStream-by-a-predicate">(StackOverflow) Java 8: Limit infinite
+		 * segmentStream by a predicate</a>
 		 */
 		public Step5<V, E> until(Predicate<NeighborsTriplet<V>> endPostCondition) {
 			return new Step5<>(graph, startVertex, preStartVertex, nextVertex, endPostCondition);

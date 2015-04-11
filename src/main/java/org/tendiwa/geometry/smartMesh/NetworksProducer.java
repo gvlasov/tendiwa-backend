@@ -8,7 +8,7 @@ import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.geometry.extensions.Point2DRowComparator;
 import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.graphs.MinimumCycleBasis;
-import org.tendiwa.graphs.graphs2d.Graph2D;
+import org.tendiwa.graphs.graphs2d.MutableGraph2D;
 import org.tendiwa.settlements.SettlementGenerationException;
 
 import java.util.LinkedHashSet;
@@ -45,9 +45,9 @@ final class NetworksProducer {
 	}
 
 	/**
-	 * Creates a stream that generates {@link NetworkWithinCycle}s for each enclosing cycle of the original graph.
+	 * Creates a segmentStream that generates {@link OriginalMeshCell}s for each enclosing cycle of the original graph.
 	 */
-	Stream<NetworkWithinCycle> stream() {
+	Stream<OriginalMeshCell> stream() {
 		LinkedHashSet<Segment2D> filamentEdges = basis.filamentsSet().stream()
 			.flatMap(IterableToStream::stream)
 			.collect(Collectors.toCollection(LinkedHashSet::new));
@@ -67,7 +67,7 @@ final class NetworksProducer {
 					return compare;
 				}
 			})
-			.map(cycle -> new NetworkWithinCycle(
+			.map(cycle -> new OriginalMeshCell(
 				fullNetwork,
 				splitOriginalMesh,
 				cycle,
@@ -92,11 +92,11 @@ final class NetworksProducer {
 		);
 	}
 
-	Graph2D fullGraph() {
+	MutableGraph2D fullGraph() {
 		return fullNetwork.graph();
 	}
 
-	Graph2D fullCycleGraph() {
+	MutableGraph2D fullCycleGraph() {
 		return splitOriginalMesh.graph();
 	}
 }

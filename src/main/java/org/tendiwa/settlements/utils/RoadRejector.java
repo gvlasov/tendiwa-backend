@@ -7,7 +7,7 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.math.StonesInBasketsSolver;
-import org.tendiwa.geometry.smartMesh.NetworkWithinCycle;
+import org.tendiwa.geometry.smartMesh.OriginalMeshCell;
 import org.tendiwa.geometry.smartMesh.Segment2DSmartMesh;
 
 import java.util.*;
@@ -56,8 +56,8 @@ public final class RoadRejector {
 		Segment2DSmartMesh segment2DSmartMesh // TODO: Maybe extract an interface with cycle() method so graph and cityGeometry won't seem coupled
 	) {
 		UndirectedSubgraph<Point2D, Segment2D> modifiedGraph = new UndirectedSubgraph<>(graph, graph.vertexSet(), graph.edgeSet());
-		for (NetworkWithinCycle networkWithinCycle : segment2DSmartMesh.networks()) {
-			for (Segment2D edge : networkWithinCycle.cycle().edgeSet()) {
+		for (OriginalMeshCell originalMeshCell : segment2DSmartMesh.networks()) {
+			for (Segment2D edge : originalMeshCell.cycle().edgeSet()) {
 				if (modifiedGraph.containsEdge(edge)) {
 					modifiedGraph.removeEdge(edge);
 					if (modifiedGraph.degreeOf(edge.start) == 0) {

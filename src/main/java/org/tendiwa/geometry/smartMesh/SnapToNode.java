@@ -1,6 +1,7 @@
 package org.tendiwa.geometry.smartMesh;
 
 import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Segment2D;
 
 public class SnapToNode implements PropagationEvent {
 	private final Point2D source;
@@ -12,9 +13,10 @@ public class SnapToNode implements PropagationEvent {
 	}
 
 	@Override
-	public void integrateInto(FullNetwork fullNetwork, SegmentInserter segmentInserter) {
+	public void integrateInto(AppendableNetworkPart networkPart) {
 		assert fullNetwork.graph().containsVertex(target);
 		segmentInserter.addSecondaryNetworkEdge(source, target);
+		networkPart.appendSegment(source.segmentTo(target ));
 	}
 
 	@Override

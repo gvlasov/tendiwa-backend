@@ -551,7 +551,7 @@ public class RectangleSystem extends RectangleSequence {
 				addEdgeBetween(r, e.getKey(), e.getValue(), Neighborship.NeighborshipType.UNION);
 			}
 			// Final value of ammunitionType is 2
-//		System.out.println("Neighbours of "+shortDef(r)+" "+orientation+" are "+neighbors.keySet().stream().map(e -> shortDef(e)).collect(Collectors.toList()));
+//		System.out.println("Neighbours of "+shortDef(r)+" "+orientation+" are "+neighbors.keySet().segmentStream().map(e -> shortDef(e)).collect(Collectors.toList()));
 			treeSet.add(r);
 		}
 	}

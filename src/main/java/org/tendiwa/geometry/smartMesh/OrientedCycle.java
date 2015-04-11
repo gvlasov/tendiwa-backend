@@ -5,12 +5,15 @@ import org.tendiwa.collections.SuccessiveTuples;
 import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.Bisector;
 import org.tendiwa.graphs.GraphChainTraversal;
+import org.tendiwa.graphs.GraphChainTraversal.NeighborsTriplet;
 import org.tendiwa.graphs.MinimalCycle;
-import org.tendiwa.graphs.graphs2d.Graph2D;
+import org.tendiwa.graphs.graphs2d.MutableGraph2D;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Holds a graph of a cycle within which {@link org.tendiwa.geometry.smartMesh.InnerTree} is constructed,
@@ -19,13 +22,13 @@ import java.util.Set;
  */
 final class OrientedCycle implements NetworkPart {
 	private final boolean isCycleClockwise;
-	private final Graph2D splitOriginalGraph;
-	private final Graph2D cycleGraph;
+	private final MutableGraph2D splitOriginalGraph;
+	private final MutableGraph2D cycleGraph;
 	private final Set<Segment2D> reverseEdges = new HashSet<>();
 
 	OrientedCycle(
 		MinimalCycle<Point2D, Segment2D> originalMinimalCycle,
-		Graph2D splitOriginalGraph
+		MutableGraph2D splitOriginalGraph
 	) {
 		this.splitOriginalGraph = splitOriginalGraph;
 		this.cycleGraph = createCycleGraph(originalMinimalCycle);
@@ -33,14 +36,14 @@ final class OrientedCycle implements NetworkPart {
 	}
 
 	@Override
-	public Graph2D graph() {
+	public MutableGraph2D graph() {
 		return cycleGraph;
 	}
 
-	private Graph2D createCycleGraph(
+	private MutableGraph2D createCycleGraph(
 		MinimalCycle<Point2D, Segment2D> originalMinimalCycle
 	) {
-		Graph2D cycleGraph = new Graph2D();
+		MutableGraph2D cycleGraph = new MutableGraph2D();
 		SuccessiveTuples.forEachLooped(
 			originalMinimalCycle.asVertices(),
 			(previous, current, next) -> {
@@ -95,15 +98,15 @@ final class OrientedCycle implements NetworkPart {
 	 * This method should be called each time an edge of this OrientedCycle is split with
 	 */
 	@Override
-	public void integrate(CutSegment2D cutSegment) {
+	public void integrateSplitEdge(CutSegment2D cutSegment) {
 		Segment2D originalSegment = cutSegment.originalSegment();
 		Vector2D originalVector = originalSegment.asVector();
 		boolean isSplitEdgeAgainst = isAgainstCycleDirection(originalSegment);
-		cutSegment.stream()
+		cutSegment.segmentStream()
 			.filter(segment -> isSplitEdgeAgainst ^ originalVector.dotProduct(segment.asVector()) < 0)
 			.forEach(this::setReverse);
 		reverseEdges.remove(originalSegment);
-		NetworkPart.super.integrate(cutSegment);
+		NetworkPart.super.integrateSplitEdge(cutSegment);
 	}
 
 	private void setReverse(Segment2D edge) {
@@ -111,11 +114,6 @@ final class OrientedCycle implements NetworkPart {
 		reverseEdges.add(edge);
 	}
 
-	/**
-	 * [Kelly figure 42]
-	 *
-	 * @return An angle in radians.
-	 */
 	public Ray deviatedAngleBisector(Point2D bisectorStart, boolean inward) {
 		Set<Segment2D> adjacentEdges = cycleGraph.edgesOf(bisectorStart);
 		assert adjacentEdges.size() == 2;
@@ -152,49 +150,16 @@ final class OrientedCycle implements NetworkPart {
 		);
 	}
 
-	/**
-	 * Checks if going from {@link org.tendiwa.geometry.Segment2D#start} to {@link org.tendiwa.geometry
-	 * .Segment2D#end} would be going clockwise in the ring.
-	 *
-	 * @param edge
-	 * 	A segment of ring.
-	 * @return true if it is clockwise, false if it is counter-clockwise.
-	 */
-	private boolean isClockwise(Segment2D edge) {
+	boolean isClockwise(Segment2D edge) {
 		return isCycleClockwise ^ isAgainstCycleDirection(edge);
 	}
 
-	/**
-	 * Creates a sector from a vertex of {@link #graph()} between two its neighboring vertices.
-	 *
-	 * @param source
-	 * 	A vertex of {@link #graph()}
-	 * @return A sector from {@code source} between two its neighbors.
-	 */
-	Sector createInnerSector(Point2D source) {
-		assert cycleGraph.containsVertex(source);
-		Set<Segment2D> edges = cycleGraph.edgesOf(source);
-		assert edges.size() == 2;
-		Vector2D cw, ccw;
-		Iterator<Segment2D> iterator = edges.iterator();
-		Segment2D oneEdge = toCounterClockwise(iterator.next());
-		Segment2D anotherEdge = toCounterClockwise(iterator.next());
-		if (oneEdge.start == source) {
-			cw = oneEdge.asVector();
-			ccw = anotherEdge.reverse().asVector();
-		} else {
-			assert anotherEdge.start == source;
-			cw = anotherEdge.asVector();
-			ccw = oneEdge.reverse().asVector();
-		}
-		return (vector) -> vector.isBetweenVectors(cw, ccw);
-	}
-
-	private Segment2D toCounterClockwise(Segment2D oneEdge) {
-		assert cycleGraph.containsEdge(oneEdge);
-		if (isClockwise(oneEdge)) {
-			oneEdge = oneEdge.reverse();
-		}
-		return oneEdge;
+	List<Point2D> vertexList() {
+		return GraphChainTraversal
+			.traverse(graph())
+			.startingWith(graph().vertexSet().stream().findFirst().get())
+			.stream()
+			.map(NeighborsTriplet::current)
+			.collect(Collectors.toList());
 	}
 }

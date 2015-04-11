@@ -1,9 +1,6 @@
 package org.tendiwa.geometry;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -17,7 +14,7 @@ public final class ShreddedSegment2D implements CutSegment2D {
 
 	public ShreddedSegment2D(Segment2D originalSegment, int expectedNumberOfShreds) {
 		this.originalSegment = originalSegment;
-		segments = new HashSet<>(expectedNumberOfShreds);
+		segments = new ArrayList<>(expectedNumberOfShreds);
 		segments.add(originalSegment);
 	}
 
@@ -88,8 +85,21 @@ public final class ShreddedSegment2D implements CutSegment2D {
 	}
 
 	@Override
-	public Stream<Segment2D> stream() {
+	public Stream<Segment2D> segmentStream() {
 		return segments.stream();
+	}
+
+	@Override
+	public Stream<Point2D> pointStream() {
+		return Stream.concat(
+			segments.stream()
+				.map(segment -> segment.start),
+			getStreamOfLastElement()
+		);
+	}
+
+	private Stream<Point2D> getStreamOfLastElement() {
+		return Stream.of(segments.stream().reduce((a, b) -> b).get().start);
 	}
 
 	@Override

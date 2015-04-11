@@ -121,7 +121,7 @@ public class GifSequenceWriter {
 
 	/**
 	 * Close this GifSequenceWriter object. This does not close the underlying
-	 * stream, just finishes off the GIF.
+	 * segmentStream, just finishes off the GIF.
 	 */
 	public void close() throws IOException {
 		gifWriter.endWriteSequence();

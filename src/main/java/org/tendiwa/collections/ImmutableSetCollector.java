@@ -18,7 +18,7 @@ final class ImmutableSetCollector<T> implements Collector<T, ImmutableSet.Builde
 
 	@Override
 	public BiConsumer<ImmutableSet.Builder<T>, T> accumulator() {
-		return (builder, element) -> builder.add(element);
+		return ImmutableSet.Builder::add;
 	}
 
 	@Override

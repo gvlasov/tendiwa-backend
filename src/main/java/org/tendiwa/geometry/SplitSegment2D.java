@@ -1,4 +1,4 @@
-package org.tendiwa.geometry.smartMesh;
+package org.tendiwa.geometry;
 
 import com.google.common.collect.ImmutableList;
 import org.tendiwa.geometry.CutSegment2D;
@@ -57,8 +57,13 @@ public final class SplitSegment2D implements CutSegment2D {
 	}
 
 	@Override
-	public Stream<Segment2D> stream() {
+	public Stream<Segment2D> segmentStream() {
 		return Stream.of(firstHalf, secondHalf);
+	}
+
+	@Override
+	public Stream<Point2D> pointStream() {
+		return Stream.of(firstHalf.start, firstHalf.end, secondHalf.end);
 	}
 
 	@Override

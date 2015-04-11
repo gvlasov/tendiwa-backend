@@ -12,10 +12,10 @@ import org.tendiwa.geometry.extensions.PlanarGraphs;
 import java.util.Collection;
 import java.util.Set;
 
-public class Graph2D implements UndirectedGraph<Point2D, Segment2D> {
+public class MutableGraph2D implements UndirectedGraph<Point2D, Segment2D> {
 	private final UndirectedGraph<Point2D, Segment2D> graph;
 
-	public Graph2D() {
+	public MutableGraph2D() {
 		this.graph = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
 	}
 
@@ -24,6 +24,18 @@ public class Graph2D implements UndirectedGraph<Point2D, Segment2D> {
 		if (!added) {
 			throw new IllegalArgumentException("Segment " + segment + " is already contained in this graph");
 		}
+	}
+
+	public MutableGraph2D without(UndirectedGraph<Point2D, Segment2D> graph) {
+		MutableGraph2D answer = new MutableGraph2D();
+		vertexSet().forEach(answer::addVertex);
+		edgeSet().forEach(answer::addSegmentAsEdge);
+		graph.edgeSet().forEach(answer::removeEdge);
+		vertexSet().stream()
+			.filter(v -> degreeOf(v) != 0)
+			.filter(v -> answer.degreeOf(v) == 0)
+			.forEach(answer::removeVertex);
+		return answer;
 	}
 
 	public void integrateCutSegment(CutSegment2D cutSegment) {
@@ -37,7 +49,7 @@ public class Graph2D implements UndirectedGraph<Point2D, Segment2D> {
 					originalSegment + " in the graph"
 			);
 		}
-		cutSegment.stream()
+		cutSegment.segmentStream()
 			.map(s -> s.end)
 			.forEach(graph::addVertex);
 		cutSegment.forEach(this::addSegmentAsEdge);

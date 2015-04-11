@@ -1,8 +1,8 @@
 package org.tendiwa.geometry.smartMesh;
 
 /**
- * Describes how a line snaps to a vertex or an edge of {@link NetworkWithinCycle}.
+ * Describes how a line snaps to a vertex or an edge of {@link OriginalMeshCell}.
  */
 interface PropagationEvent extends PropagationStep {
-	void integrateInto(FullNetwork fullNetwork, SegmentInserter segmentInserter);
+	void integrateInto(AppendableNetworkPart networkPart);
 }

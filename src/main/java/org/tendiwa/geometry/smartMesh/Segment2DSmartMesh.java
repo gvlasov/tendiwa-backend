@@ -9,7 +9,7 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.ShamosHoeyAlgorithm;
 import org.tendiwa.geometry.smartMesh.algorithms.SegmentNetworkAlgorithms;
-import org.tendiwa.graphs.graphs2d.Graph2D;
+import org.tendiwa.graphs.graphs2d.MutableGraph2D;
 
 import java.awt.Color;
 import java.util.Map;
@@ -41,9 +41,9 @@ public final class Segment2DSmartMesh {
 	/**
 	 * [Kelly section 4.2.2]
 	 */
-	private final ImmutableSet<NetworkWithinCycle> networks;
-	private final Graph2D fullGraph;
-	private final Graph2D fullCycleGraph;
+	private final ImmutableSet<OriginalMeshCell> networks;
+	private final MutableGraph2D fullGraph;
+	private final MutableGraph2D fullCycleGraph;
 
 	/**
 	 * @param originalGraph
@@ -86,7 +86,7 @@ public final class Segment2DSmartMesh {
 	 *
 	 * @return All CityCells of this City.
 	 */
-	public ImmutableSet<NetworkWithinCycle> networks() {
+	public ImmutableSet<OriginalMeshCell> networks() {
 		return networks;
 	}
 
@@ -98,7 +98,7 @@ public final class Segment2DSmartMesh {
 		return fullCycleGraph;
 	}
 
-	public Map<NetworkWithinCycle, UndirectedGraph<Point2D, Segment2D>> outerCycleEdges(
+	public Map<OriginalMeshCell, UndirectedGraph<Point2D, Segment2D>> outerCycleEdges(
 	) {
 		return SegmentNetworkAlgorithms.outerCycleEdges(this);
 	}

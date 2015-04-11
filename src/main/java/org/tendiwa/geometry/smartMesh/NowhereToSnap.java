@@ -12,7 +12,7 @@ public class NowhereToSnap implements PropagationEvent {
 	}
 
 	@Override
-	public void integrateInto(FullNetwork fullNetwork, SegmentInserter segmentInserter) {
+	public void integrateInto(AppendableNetworkPart networkPart) {
 		fullNetwork.graph().addVertex(target);
 		segmentInserter.addSecondaryNetworkEdge(source, target);
 	}

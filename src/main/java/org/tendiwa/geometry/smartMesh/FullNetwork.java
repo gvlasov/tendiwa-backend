@@ -6,7 +6,7 @@ import org.jgrapht.UndirectedGraph;
 import org.tendiwa.geometry.CutSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.graphs.graphs2d.Graph2D;
+import org.tendiwa.graphs.graphs2d.MutableGraph2D;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,27 +20,27 @@ import java.util.Map;
 final class FullNetwork implements NetworkPart {
 
 	private final Map<Segment2D, Collection<NetworkPart>> edgesToNetworkParts = new LinkedHashMap<>();
-	private final Graph2D graph;
+	private final MutableGraph2D graph;
 
 	FullNetwork(UndirectedGraph<Point2D, Segment2D> originalGraph) {
-		this.graph = new Graph2D();
+		this.graph = new MutableGraph2D();
 		Graphs.addGraph(graph, originalGraph);
 		addNetworkPart(this);
 	}
 
 	void addNetworkPart(NetworkPart networkPart) {
-		Graph2D graph = networkPart.graph();
+		MutableGraph2D graph = networkPart.graph();
 		for (Segment2D edge : graph.edgeSet()) {
-			addNetworkPart(edge, networkPart);
+			shareEdgeWithNetworkPart(edge, networkPart);
 		}
 	}
 
 	@Override
-	public Graph2D graph() {
+	public MutableGraph2D graph() {
 		return graph;
 	}
 
-	void addNetworkPart(Segment2D edge, NetworkPart networkPart) {
+	void shareEdgeWithNetworkPart(Segment2D edge, NetworkPart networkPart) {
 		assert networkPart.graph().hasOnlyEdge(edge)
 			|| anotherEdgeOfGraphIsInFullGraph(networkPart.graph(), edge);
 		if (!networkPart.graph().containsEdge(edge)) {
@@ -64,10 +64,10 @@ final class FullNetwork implements NetworkPart {
 		}
 		Segment2D originalSegment = cutSegment.originalSegment();
 		Collection<NetworkPart> partsOwningEdge = edgesToNetworkParts.get(originalSegment);
-		partsOwningEdge.forEach(part -> part.integrate(cutSegment));
-		cutSegment.stream()
+		partsOwningEdge.forEach(part -> part.integrateSplitEdge(cutSegment));
+		cutSegment.segmentStream()
 			.map(this::obtainCollectionFor)
-			.forEach(gh -> gh.addAll(partsOwningEdge));
+			.forEach(collection -> collection.addAll(partsOwningEdge));
 	}
 
 	private Collection<NetworkPart> obtainCollectionFor(Segment2D segment) {
@@ -75,5 +75,9 @@ final class FullNetwork implements NetworkPart {
 		Collection<NetworkPart> collection = new ArrayList<>();
 		edgesToNetworkParts.put(segment, collection);
 		return collection;
+	}
+
+	void integrateForest(Forest forest) {
+		forest.whereBranchesStuckIntoCycles()
 	}
 }

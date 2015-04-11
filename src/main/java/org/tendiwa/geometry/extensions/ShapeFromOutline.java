@@ -43,16 +43,16 @@ public final class ShapeFromOutline {
 
 //		FiniteCellSet edgeCells = requireNonNull(outline)
 //			.edgeSet()
-//			.stream()
+//			.segmentStream()
 //			.map(Segment2D.toCellList())
-//			.flatMap(a -> a.stream())
+//			.flatMap(a -> a.segmentStream())
 //			.distinct()
 //			.collect(CellSet.toCellSet());
 //		Rectangle graphBounds = Recs.boundsOfCells(edgeCells);
 //		return new CachedCellSet(
 //			new MinimumCycleBasis<>(outline, Point2DVertexPositionAdapter.get())
 //				.minimalCyclesSet()
-//				.stream()
+//				.segmentStream()
 //				.map(ShapeFromOutline::polygonCells)
 //				.reduce(edgeCells, (a, b) -> a.or(b)),
 //			graphBounds

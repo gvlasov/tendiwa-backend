@@ -4,134 +4,64 @@ import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.SplitSegment2D;
 import org.tendiwa.geometry.Vectors2D;
 import org.tendiwa.geometry.extensions.ShamosHoeyAlgorithm;
-import org.tendiwa.graphs.graphs2d.Graph2D;
 
 import java.awt.Color;
-import java.util.Comparator;
-import java.util.Random;
-import java.util.function.Function;
 
 /**
  * Inserts new segments into {@link org.tendiwa.geometry.smartMesh.FullNetwork} and its subnetworks.
  */
 public class SegmentInserter {
 	private final FullNetwork fullNetwork;
-	private final NetworkPart secondaryNetwork;
-	private final Graph2D splitOriginalMesh;
-	private final NetworkGenerationParameters networkGenerationParameters;
-	private final Random random;
+	private final NetworkPart forest;
 
 	public SegmentInserter(
 		FullNetwork fullNetwork,
-		Graph2D splitOriginalGraph,
-		NetworkPart secondaryNetwork,
-		NetworkGenerationParameters networkGenerationParameters,
-		Random random
 	) {
 		this.fullNetwork = fullNetwork;
-		this.splitOriginalMesh = splitOriginalGraph;
-		this.networkGenerationParameters = networkGenerationParameters;
-		this.secondaryNetwork = secondaryNetwork;
-		this.random = random;
 	}
 
-	/**
-	 * [Kelly figure 42, function placeSegment]
-	 * <p>
-	 * Tries adding a new segment to the secondary network.
-	 */
-	PropagationEvent tryPlacingSegment(Ray beginning, Sector allowedSector) {
-		double segmentLength = deviatedLength(networkGenerationParameters.segmentLength);
-		PropagationEvent event = new SnapTest(
-			networkGenerationParameters.snapSize,
-			beginning.start,
-			beginning.placeEnd(segmentLength),
-			fullNetwork.graph(),
-			allowedSector
-		).snap();
-		if (event.createsNewSegment()) {
-			event.integrateInto(fullNetwork, this);
-		}
-		Point2D branchPreEnd = beginning.start;
-		Point2D branchEnd = event.target();
-		if (event.isTerminal() && circuitMakesTightRectangle(branchPreEnd, branchEnd)) {
-			removeBranch(branchEnd, branchPreEnd);
-		}
-		return event;
-	}
-
-	private boolean circuitMakesTightRectangle(Point2D start, Point2D target) {
-
-	}
-
-	/**
-	 * Creates an edge between two vertices and adds that edge to relevant network parts:
-	 * <ul>
-	 * <li>{@link #fullNetwork}</li>
-	 * <li>{@link #secondaryNetwork}</li>
-	 * </ul>
-	 *
-	 * @param source
-	 * 	Start of segment.
-	 * @param target
-	 * 	End of segment.
-	 */
 	void addSecondaryNetworkEdge(Point2D source, Point2D target) {
-		assert !fullNetwork.graph().containsEdge(source, target)
-			&& !secondaryNetwork.graph().containsEdge(source, target);
 		Segment2D newEdge = new Segment2D(source, target);
 		TestCanvas.canvas.draw(
 			newEdge,
 			DrawingSegment2D.withColorThin(Color.blue)
 		);
-		secondaryNetwork.graph().addVertex(source);
-		secondaryNetwork.graph().addVertex(target);
-		secondaryNetwork.graph().addSegmentAsEdge(newEdge);
+		forest.graph().addVertex(source);
+		forest.graph().addVertex(target);
+		forest.graph().addSegmentAsEdge(newEdge);
 		fullNetwork.graph().addSegmentAsEdge(newEdge);
-		fullNetwork.addNetworkPart(newEdge, fullNetwork);
-		fullNetwork.addNetworkPart(newEdge, secondaryNetwork);
-		boolean b = !ShamosHoeyAlgorithm.areIntersected(fullNetwork.graph().edgeSet());
-		if (!b) {
-			TestCanvas.canvas.draw(
-				source.segmentTo(target),
-				DrawingSegment2D.withColorDirected(Color.yellow, 0.5)
-			);
-			for (Segment2D existingEdge : fullNetwork.graph().edgeSet()) {
-				if (ShamosHoeyAlgorithm.linesIntersect(newEdge, existingEdge)) {
-					TestCanvas.canvas.draw(
-						existingEdge,
-						DrawingSegment2D.withColorDirected(Color.blue, 1)
-					);
-					System.out.println(existingEdge.intersection(newEdge)+" "+existingEdge.end);
-					break;
-				}
-			}
-		}
-		assert b;
+		fullNetwork.shareEdgeWithNetworkPart(newEdge, fullNetwork);
+		fullNetwork.shareEdgeWithNetworkPart(newEdge, forest);
+		assertNonIntersection(newEdge);
 	}
 
-	/**
-	 * [Kelly figure 42]
-	 * <p>
-	 * Adds new node between two existing nodes, removing an existing segment between them and placing 2 new segments
-	 * to
-	 * segment network.
-	 * <p>
-	 * Edges are split in the following graphs:
-	 * <ul>
-	 * <li>{@link #fullNetwork}</li>
-	 * <li>{@link NetworksProducer#splitOriginalMesh}</li>
-	 * <li>{@link InnerForest#enclosingCycle}</li>
-	 * <li>or one of {@link InnerForest#enclosedCycles}</li>
-	 * </ul>
-	 *
-	 * @param segment
-	 * 	A segment from {@link #fullNetwork} on which a node is being inserted.
-	 * @param splitPoint
-	 * 	A node on that segment where the node resides at which the segment is to be split in two.
-	 */
+	private void assertNonIntersection(Segment2D newEdge) {
+		if (ShamosHoeyAlgorithm.areIntersected(fullNetwork.graph().edgeSet())) {
+			showIntersectedSegment(newEdge);
+			assert false;
+		}
+	}
+
+	private void showIntersectedSegment(Segment2D newEdge) {
+		TestCanvas.canvas.draw(
+			newEdge,
+			DrawingSegment2D.withColorDirected(Color.yellow, 0.5)
+		);
+		for (Segment2D existingEdge : fullNetwork.graph().edgeSet()) {
+			if (ShamosHoeyAlgorithm.linesIntersect(newEdge, existingEdge)) {
+				TestCanvas.canvas.draw(
+					existingEdge,
+					DrawingSegment2D.withColorDirected(Color.blue, 1)
+				);
+				System.out.println(existingEdge.intersection(newEdge) + " " + existingEdge.end);
+				break;
+			}
+		}
+	}
+
 	void splitEdge(Segment2D segment, Point2D splitPoint) {
 		assert !segment.end.equals(splitPoint) && !segment.start.equals(splitPoint);
 		assert fullNetwork.graph().containsEdge(segment);
@@ -146,55 +76,5 @@ public class SegmentInserter {
 			: segment.start.distanceTo(point) + " " + segment.start.distanceTo(segment.end);
 		assert segment.end.distanceTo(point) > Vectors2D.EPSILON
 			: segment.end.distanceTo(point) + " " + segment.start.distanceTo(segment.end);
-	}
-
-	boolean isDeadEnd(Point2D node) {
-		return splitOriginalMesh.containsVertex(node);
-	}
-
-	private double deviatedLength(double segmentLength) {
-		return segmentLength - networkGenerationParameters.secondaryNetworkSegmentLengthDeviation / 2 + random.nextDouble() *
-			networkGenerationParameters.secondaryNetworkSegmentLengthDeviation;
-	}
-
-	void addTwoMissingConnectionsToEnclosedCycle(OrientedCycle cycle) {
-		Function<Point2D, Double> getCoordinate = random.nextBoolean() ? Point2D::getX : Point2D::getY;
-		Comparator<Point2D> coordinateComparator = (a, b) ->
-			(int) Math.signum(getCoordinate.apply(a) - getCoordinate.apply(b));
-		Point2D leastPoint = cycle.graph()
-			.vertexSet()
-			.stream()
-			.max(coordinateComparator)
-			.get();
-		Point2D greatestPoint = cycle.graph()
-			.vertexSet()
-			.stream()
-			.min(coordinateComparator)
-			.get();
-		tryPlacingSegment(
-			cycle.deviatedAngleBisector(leastPoint, false),
-			Sector.FULL_CIRCLE
-		);
-		tryPlacingSegment(
-			cycle.deviatedAngleBisector(greatestPoint, false),
-			Sector.FULL_CIRCLE
-		);
-	}
-
-	void addMissingConnectionToEnclosedCycle(OrientedCycle cycle, Point2D connectionPoint) {
-		assert connectionPoint != null;
-		assert cycle.graph().vertexSet().contains(connectionPoint);
-		Point2D farthestPoint = cycle.graph()
-			.vertexSet()
-			.stream()
-			.max((a, b) -> {
-				double distanceSquaredA = connectionPoint.squaredDistanceTo(a);
-				double distanceSquaredB = connectionPoint.squaredDistanceTo(b);
-				return (int) Math.signum(distanceSquaredA - distanceSquaredB);
-			}).get();
-		tryPlacingSegment(
-			cycle.deviatedAngleBisector(farthestPoint, false),
-			Sector.FULL_CIRCLE
-		);
 	}
 }

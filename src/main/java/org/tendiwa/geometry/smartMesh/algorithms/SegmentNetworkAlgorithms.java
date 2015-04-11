@@ -9,7 +9,7 @@ import org.jgrapht.graph.UndirectedSubgraph;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
-import org.tendiwa.geometry.smartMesh.NetworkWithinCycle;
+import org.tendiwa.geometry.smartMesh.OriginalMeshCell;
 import org.tendiwa.geometry.smartMesh.Segment2DSmartMesh;
 
 import java.util.LinkedHashMap;
@@ -44,19 +44,19 @@ public final class SegmentNetworkAlgorithms {
 	}
 
 	/**
-	 * In each {@link NetworkWithinCycle} that this {@link
+	 * In each {@link org.tendiwa.geometry.smartMesh.OriginalMeshCell} that this {@link
 	 * org.tendiwa.geometry.smartMesh.Segment2DSmartMesh} consists of, finds such edges that are part of only one
-	 * {@link NetworkWithinCycle#cycle()}.
+	 * {@link org.tendiwa.geometry.smartMesh.OriginalMeshCell#cycle()}.
 	 *
-	 * @return Map from {@link NetworkWithinCycle} to subgraphs of {@link
-	 * NetworkWithinCycle#network()} described in this method's description.
+	 * @return Map from {@link org.tendiwa.geometry.smartMesh.OriginalMeshCell} to subgraphs of {@link
+	 * org.tendiwa.geometry.smartMesh.OriginalMeshCell#network()} described in this method's description.
 	 */
-	public static Map<NetworkWithinCycle, UndirectedGraph<Point2D, Segment2D>> outerCycleEdges(
+	public static Map<OriginalMeshCell, UndirectedGraph<Point2D, Segment2D>> outerCycleEdges(
 		Segment2DSmartMesh model
 	) {
-		Map<NetworkWithinCycle, UndirectedGraph<Point2D, Segment2D>> answer = new LinkedHashMap<>();
+		Map<OriginalMeshCell, UndirectedGraph<Point2D, Segment2D>> answer = new LinkedHashMap<>();
 		TObjectIntMap<Segment2D> usedEdges = new TObjectIntHashMap<>();
-		for (NetworkWithinCycle network : model.networks()) {
+		for (OriginalMeshCell network : model.networks()) {
 			UndirectedGraph<Point2D, Segment2D> subgraph = new UndirectedSubgraph<>(
 				network.cycle(),
 				network.cycle().vertexSet(),

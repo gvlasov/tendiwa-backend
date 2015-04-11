@@ -17,7 +17,7 @@ final class SnapToSegment implements PropagationEvent {
 	}
 
 	@Override
-	public void integrateInto(FullNetwork fullNetwork, SegmentInserter segmentInserter) {
+	public void integrateInto(AppendableNetworkPart networkPart) {
 		assert fullNetwork.graph().containsVertex(road.start);
 		assert fullNetwork.graph().containsVertex(road.end);
 		segmentInserter.splitEdge(road, target);

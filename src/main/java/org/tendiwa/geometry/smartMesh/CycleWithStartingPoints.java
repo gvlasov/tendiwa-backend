@@ -4,46 +4,39 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.ShreddedSegment2D;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.tendiwa.collections.Collectors.toImmutableList;
+import static org.tendiwa.collections.Collectors.toImmutableSet;
 
 final class CycleWithStartingPoints {
 
-	private final FullNetwork fullNetwork;
-	private final NetworkGenerationParameters networkGenerationParameters;
+	private final NetworkGenerationParameters config;
 
 	public CycleWithStartingPoints(
-		FullNetwork fullNetwork,
-		NetworkGenerationParameters networkGenerationParameters
+		NetworkGenerationParameters config
 	) {
-		this.fullNetwork = fullNetwork;
-		this.networkGenerationParameters = networkGenerationParameters;
+		this.config = config;
 	}
 
-	Set<Point2D> snapAndInsertStartingPoints(Map<Segment2D, List<Point2D>> pointsOnPolygonBorder) {
-		snapStartingPoints(pointsOnPolygonBorder);
-
-		pointsOnPolygonBorder.entrySet()
+	Set<ShreddedSegment2D> snapStartingPoints(Map<Segment2D, List<Point2D>> pointsOnPolygonBorder) {
+		return pointsOnPolygonBorder.entrySet()
 			.stream()
 			.map(e -> new ShreddedSegment2D(e.getKey(), e.getValue()))
-			.forEach(fullNetwork::splitEdge);
-
-		return pointsOnPolygonBorder.values()
-			.stream()
-			.flatMap(Collection::stream)
-			.collect(Collectors.toCollection(LinkedHashSet::new));
+			.map(this::snapPointsToOriginalSegmentEnds)
+			.collect(toImmutableSet());
 	}
 
-	private void snapStartingPoints(Map<Segment2D, List<Point2D>> pointsOnPolygonBorder) {
-		for (Map.Entry<Segment2D, List<Point2D>> entry : pointsOnPolygonBorder.entrySet()) {
-			for (int i = 0; i < entry.getValue().size(); i++) {
-				Point2D originalPoint = entry.getValue().get(i);
-				Point2D snappedPoint = snapToSegmentEnd(originalPoint, entry.getKey());
-				if (snappedPoint != originalPoint) {
-					entry.getValue().set(i, snappedPoint);
-				}
-			}
-		}
+	private ShreddedSegment2D snapPointsToOriginalSegmentEnds(ShreddedSegment2D shreddedSegment) {
+		List<Point2D> points = shreddedSegment.pointStream()
+			.map(point -> snapToSegmentEnd(point, shreddedSegment.originalSegment()))
+			.collect(toImmutableList());
+		return new ShreddedSegment2D(
+			shreddedSegment.originalSegment(),
+			points
+		);
 	}
 
 	/**
@@ -60,7 +53,7 @@ final class CycleWithStartingPoints {
 	private Point2D snapToSegmentEnd(Point2D startingPoint, Segment2D edge) {
 		double toStart = startingPoint.squaredDistanceTo(edge.start);
 		double toEnd = startingPoint.squaredDistanceTo(edge.end);
-		double snapSizeSquared = networkGenerationParameters.snapSize*networkGenerationParameters.snapSize;
+		double snapSizeSquared = config.snapSize * config.snapSize;
 		if (toStart < toEnd) {
 			if (toStart < snapSizeSquared) {
 				return edge.start;
