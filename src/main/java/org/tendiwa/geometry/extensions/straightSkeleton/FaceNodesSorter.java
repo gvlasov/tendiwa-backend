@@ -32,11 +32,11 @@ final class FaceNodesSorter extends TreeSet<Node> {
 //			.dotProduct(edgeVector)
 //			/ edgeVector.magnitude()
 //			/ edgeVector.magnitude();
-		double edx = edgeEnd.x - edgeStart.x;
-		double edy = edgeEnd.y - edgeStart.y;
+		double edx = edgeEnd.x() - edgeStart.x();
+		double edy = edgeEnd.y() - edgeStart.y();
 		return (
-			(node.vertex.x - edgeStart.x) * edx
-				+ (node.vertex.y - edgeStart.y) * edy
+			(node.vertex.x() - edgeStart.x()) * edx
+				+ (node.vertex.y() - edgeStart.y()) * edy
 		) / (edx * edx + edy * edy);
 	}
 }

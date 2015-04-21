@@ -1,14 +1,12 @@
 package org.tendiwa.core.vision;
 
 import org.tendiwa.core.CardinalDirection;
-import org.tendiwa.core.meta.CellPosition;
-
-import java.util.Arrays;
+import org.tendiwa.core.meta.Cell;
 
 public class ModifiableBorderVisionCache extends BorderVisionCache {
-	private CellPosition lastCenterCoordinates;
+	private Cell lastCenterCoordinates;
 
-	ModifiableBorderVisionCache(CellPosition character) {
+	ModifiableBorderVisionCache(Cell character) {
 		super(character);
 	}
 
@@ -37,18 +35,18 @@ public class ModifiableBorderVisionCache extends BorderVisionCache {
 		borderVision[index] = vision;
 	}
 
-	public void saveCurrentCenterCoordinates(CellPosition character) {
-		final int x = character.getX();
-		final int y = character.getY();
-		this.lastCenterCoordinates = new CellPosition() {
+	public void saveCurrentCenterCoordinates(Cell character) {
+		final int x = character.x();
+		final int y = character.y();
+		this.lastCenterCoordinates = new Cell() {
 
 			@Override
-			public int getX() {
+			public int x() {
 				return x;
 			}
 
 			@Override
-			public int getY() {
+			public int y() {
 				return y;
 			}
 		};

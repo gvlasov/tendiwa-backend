@@ -1,12 +1,11 @@
 package org.tendiwa.geometry;
 
 import com.google.common.collect.ImmutableList;
-import org.tendiwa.geometry.CutSegment2D;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Segment2D;
 
 import java.util.Iterator;
 import java.util.stream.Stream;
+
+import static org.tendiwa.geometry.GeometryPrimitives.segment2D;
 
 /**
  * Represents a Segment2D split into two Segment2Ds.
@@ -16,10 +15,10 @@ public final class SplitSegment2D implements CutSegment2D {
 	private final Segment2D secondHalf;
 	private final Segment2D originalSegment;
 
-	SplitSegment2D(Segment2D originalSegment, Point2D splitPoint) {
+	public SplitSegment2D(Segment2D originalSegment, Point2D splitPoint) {
 		this.originalSegment = originalSegment;
-		this.firstHalf = new Segment2D(originalSegment.start, splitPoint);
-		this.secondHalf = new Segment2D(splitPoint, originalSegment.end);
+		this.firstHalf = segment2D(originalSegment.start(), splitPoint);
+		this.secondHalf = segment2D(splitPoint, originalSegment.end());
 	}
 
 	public Segment2D firstHalf() {
@@ -31,29 +30,25 @@ public final class SplitSegment2D implements CutSegment2D {
 	}
 
 	public Point2D middlePoint() {
-		return firstHalf.end;
+		return firstHalf.end();
 	}
 
 	public Point2D originalStart() {
-		return firstHalf.start;
+		return firstHalf.start();
 	}
 
 	public Point2D originalEnd() {
-		return secondHalf.end;
-	}
-
-	/**
-	 * Constructs a new Segment2D equal to the original segment this SplitSegment2D was constructed from.
-	 *
-	 * @return A new Segment2D equal to the original segment this SplitSegment2D was constructed from.
-	 */
-	public Segment2D recallOriginalSegment() {
-		return new Segment2D(originalStart(), originalEnd());
+		return secondHalf.end();
 	}
 
 	@Override
 	public Segment2D originalSegment() {
 		return originalSegment;
+	}
+
+	@Override
+	public Segment2D getSplitPartWithPoint(Point2D startingPoint) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -63,7 +58,7 @@ public final class SplitSegment2D implements CutSegment2D {
 
 	@Override
 	public Stream<Point2D> pointStream() {
-		return Stream.of(firstHalf.start, firstHalf.end, secondHalf.end);
+		return Stream.of(firstHalf.end());
 	}
 
 	@Override

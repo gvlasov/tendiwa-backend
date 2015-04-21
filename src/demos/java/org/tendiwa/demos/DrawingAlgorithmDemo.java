@@ -7,8 +7,8 @@ import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingModule;
 import org.tendiwa.drawing.extensions.DrawingRectangle;
 import org.tendiwa.drawing.extensions.DrawingRectangleSystem;
-import org.tendiwa.geometry.Placeable;
-import org.tendiwa.geometry.Recs;
+import org.tendiwa.geometry.RectSet;
+import org.tendiwa.geometry.StupidPriceduralRecs;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.RectangleSystem;
 import org.tendiwa.geometry.extensions.RecursivelySplitRectangleSystemFactory;
@@ -32,11 +32,11 @@ public class DrawingAlgorithmDemo implements Runnable {
 		canvas.draw(r, DrawingRectangle.chequerwise(Color.ORANGE, Color.GREEN));
 
 		Collection<Rectangle> recs = Lists.newArrayList(
-			Recs.rectangleMovedFromOriginal(r, 5, 20),
-			Recs.rectangleMovedFromOriginal(r, 5, 30),
-			Recs.rectangleMovedFromOriginal(r, 5, 40),
-			Recs.rectangleMovedFromOriginal(r, 5, 50));
-		DrawingAlgorithm<Placeable> algorithm = DrawingRectangle.withColorLoop(
+			StupidPriceduralRecs.rectangleMovedFromOriginal(r, 5, 20),
+			StupidPriceduralRecs.rectangleMovedFromOriginal(r, 5, 30),
+			StupidPriceduralRecs.rectangleMovedFromOriginal(r, 5, 40),
+			StupidPriceduralRecs.rectangleMovedFromOriginal(r, 5, 50));
+		DrawingAlgorithm<RectSet> algorithm = DrawingRectangle.withColorLoop(
 			Color.RED,
 			Color.GREEN);
 		for (Rectangle rec : recs) {

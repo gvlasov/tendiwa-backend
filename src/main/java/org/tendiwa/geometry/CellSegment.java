@@ -1,6 +1,7 @@
 package org.tendiwa.geometry;
 
 import com.google.common.collect.Iterators;
+import org.tendiwa.core.meta.Cell;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -9,7 +10,7 @@ import java.util.List;
 /**
  * A segment defined by a start and end {@link Cells}. Doesn't store anything other than start and end cells.
  */
-public class CellSegment implements Iterable<Cell> {
+public final class CellSegment implements Iterable<Cell> {
 
 	public final Cell start;
 	public final Cell end;
@@ -20,8 +21,12 @@ public class CellSegment implements Iterable<Cell> {
 	}
 
 	public CellSegment(Segment2D segment) {
-		this.start = new Cell((int) Math.round(segment.start.x), (int) Math.round(segment.start.y));
-		this.end = new Cell((int) Math.round(segment.end.x), (int) Math.round(segment.end.y));
+		this.start = segment.start().toCell();
+		this.end = segment.end().toCell();
+	}
+
+	public static Cell[] cells(Cell start, Cell end) {
+		return cells(start.x(), start.y(), end.x(), end.y());
 	}
 
 	public static Cell[] cells(int startX, int startY, int endX, int endY) {
@@ -36,7 +41,7 @@ public class CellSegment implements Iterable<Cell> {
 
 		if (startX == endX && startY == endY) {
 			result = new Cell[1];
-			result[0] = new Cell(startX, startY);
+			result[0] = new BasicCell(startX, startY);
 			return result;
 		}
 		float dx = (endX - startX) / (float) l;
@@ -49,13 +54,13 @@ public class CellSegment implements Iterable<Cell> {
 		y[l + 1] = endY;
 
 		for (int i = 0; i <= l; i++) {
-			result[i] = new Cell(Math.round(x[i]), Math.round(y[i]));
+			result[i] = new BasicCell(Math.round(x[i]), Math.round(y[i]));
 		}
 		return result;
 	}
 
 	public static Cell[] vector(Cell start, Cell end) {
-		return cells(start.x, start.y, end.x, end.y);
+		return cells(start.x(), start.y(), end.x(), end.y());
 	}
 
 	/**
@@ -75,7 +80,10 @@ public class CellSegment implements Iterable<Cell> {
 	 * @return Distance from {@link #start} to {@link #end}.
 	 */
 	public double length() {
-		return Math.sqrt((end.x - start.x) * (end.x - start.x) + (end.y - start.y) * (end.y - start.y));
+		return Math.sqrt(
+			(end.x() - start.x()) * (end.x() - start.x())
+				+ (end.y() - start.y()) * (end.y() - start.y())
+		);
 	}
 
 	public List<Cell> asList() {

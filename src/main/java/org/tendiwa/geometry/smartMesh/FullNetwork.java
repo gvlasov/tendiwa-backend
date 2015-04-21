@@ -77,7 +77,7 @@ final class FullNetwork implements NetworkPart {
 		return collection;
 	}
 
-	void integrateForest(Forest forest) {
-		forest.whereBranchesStuckIntoCycles()
+	void integrateForest(InnerNetwork innerNetwork) {
+		innerNetwork.whereBranchesStuckIntoCycles().forEach(this::splitEdge);
 	}
 }

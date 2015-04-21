@@ -1,9 +1,11 @@
 package org.tendiwa.geometry;
 
+import org.tendiwa.core.meta.Cell;
+
 import java.util.function.Consumer;
 
 /**
- * An editable CellSet that holds a finite number of {@link org.tendiwa.geometry.Cell}s.
+ * An editable CellSet that holds a finite number of {@link Cell}s.
  * <p>
  * It is preferable to {@link ScatteredMutableCellSet} when cells in this set cover a significant part of their
  * bounding rectangle. Uses {@code O(bounds.width*bound.height)} memory.
@@ -19,7 +21,7 @@ public class Mutable2DCellSet implements MutableCellSet, BoundedCellSet {
 	 */
 	public Mutable2DCellSet(Rectangle bounds) {
 		this.bounds = bounds;
-		cells = new boolean[bounds.width][bounds.height];
+		cells = new boolean[bounds.width()][bounds.height()];
 	}
 
 	@Override
@@ -41,13 +43,13 @@ public class Mutable2DCellSet implements MutableCellSet, BoundedCellSet {
 	 */
 	@Override
 	public void add(int x, int y) {
-		boolean present = cells[x - bounds.x][y - bounds.y];
+		boolean present = cells[x - bounds.x()][y - bounds.y()];
 		if (present) {
 			throw new IllegalArgumentException(
 				"Can't add cell " + x + " " + y + " because it is already present in this set"
 			);
 		}
-		cells[x - bounds.x][y - bounds.y] = true;
+		cells[x - bounds.x()][y - bounds.y()] = true;
 	}
 
 	/**
@@ -63,12 +65,12 @@ public class Mutable2DCellSet implements MutableCellSet, BoundedCellSet {
 	 * 	Y coordinate of a cell.
 	 */
 	public void addAnyway(int x, int y) {
-		cells[x - bounds.x][y - bounds.y] = true;
+		cells[x - bounds.x()][y - bounds.y()] = true;
 	}
 
 	@Override
 	public void add(Cell cell) {
-		add(cell.x, cell.y);
+		add(cell.x(), cell.y());
 	}
 
 	/**
@@ -83,7 +85,7 @@ public class Mutable2DCellSet implements MutableCellSet, BoundedCellSet {
 	 */
 	@Override
 	public void remove(Cell cell) {
-		remove(cell.x, cell.y);
+		remove(cell.x(), cell.y());
 	}
 
 	/**
@@ -98,13 +100,13 @@ public class Mutable2DCellSet implements MutableCellSet, BoundedCellSet {
 	 */
 	@Override
 	public void remove(int x, int y) {
-		boolean present = cells[x - bounds.x][y - bounds.y];
+		boolean present = cells[x - bounds.x()][y - bounds.y()];
 		if (present) {
 			throw new IllegalArgumentException(
 				"Can't remove cell " + x + " " + y + " because it is not present in this set"
 			);
 		}
-		cells[x - bounds.x][y - bounds.y] = false;
+		cells[x - bounds.x()][y - bounds.y()] = false;
 	}
 
 	/**
@@ -118,7 +120,7 @@ public class Mutable2DCellSet implements MutableCellSet, BoundedCellSet {
 	 * 	If cell is not within {@link #getBounds()}.
 	 */
 	public void toggle(int x, int y) {
-		cells[x - bounds.x][y - bounds.y] = !cells[x - bounds.x][y - bounds.y];
+		cells[x - bounds.x()][y - bounds.y()] = !cells[x - bounds.x()][y - bounds.y()];
 	}
 
 	/**
@@ -132,15 +134,15 @@ public class Mutable2DCellSet implements MutableCellSet, BoundedCellSet {
 	 */
 	@Override
 	public boolean contains(int x, int y) {
-		return bounds.contains(x, y) && cells[x - bounds.x][y - bounds.y];
+		return bounds.contains(x, y) && cells[x - bounds.x()][y - bounds.y()];
 	}
 
 	@Override
 	public void forEach(CellConsumer action) {
-		for (int x = 0; x < bounds.width; x++) {
-			for (int y = 0; y < bounds.height; y++) {
+		for (int x = 0; x < bounds.width(); x++) {
+			for (int y = 0; y < bounds.height(); y++) {
 				if (cells[x][y]) {
-					action.consume(x + bounds.x, y + bounds.y);
+					action.consume(x + bounds.x(), y + bounds.y());
 				}
 			}
 		}
@@ -148,10 +150,10 @@ public class Mutable2DCellSet implements MutableCellSet, BoundedCellSet {
 
 	@Override
 	public void forEach(Consumer<? super Cell> action) {
-		for (int x = 0; x < bounds.width; x++) {
-			for (int y = 0; y < bounds.height; y++) {
+		for (int x = 0; x < bounds.width(); x++) {
+			for (int y = 0; y < bounds.height(); y++) {
 				if (cells[x][y]) {
-					action.accept(new Cell(x + bounds.x, y + bounds.y));
+					action.accept(new BasicCell(x + bounds.x(), y + bounds.y()));
 				}
 			}
 		}

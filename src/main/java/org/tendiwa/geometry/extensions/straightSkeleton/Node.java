@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static org.tendiwa.geometry.GeometryPrimitives.point2D;
+import static org.tendiwa.geometry.GeometryPrimitives.segment2D;
 import static org.tendiwa.geometry.Vectors2D.perpDotProduct;
 
 /**
@@ -78,7 +80,7 @@ abstract class Node implements Iterable<Node> {
 			this,
 			(a, b) -> {
 				TestCanvas.canvas.draw(
-					new Segment2D(a.vertex, b.vertex), DrawingSegment2D.withColorDirected(Color.cyan, 1)
+					segment2D(a.vertex, b.vertex), DrawingSegment2D.withColorDirected(Color.cyan, 1)
 				);
 			}
 		);
@@ -135,7 +137,7 @@ abstract class Node implements Iterable<Node> {
 		Vector2D bisectorVector = isReflex
 			? bisector1.asInbetweenVector()
 			: bisector1.asSumVector();
-		bisector = new Segment2D(
+		bisector = segment2D(
 			vertex,
 			vertex.add(bisectorVector)
 		);
@@ -159,8 +161,8 @@ abstract class Node implements Iterable<Node> {
 	 */
 	private boolean isReflex(Point2D a1, Point2D a2, Point2D b1, Point2D b2) {
 		return perpDotProduct(
-			new double[]{a2.x - a1.x, a2.y - a1.y},
-			new double[]{b2.x - b1.x, b2.y - b1.y}
+			new double[]{a2.x() - a1.x(), a2.y() - a1.y()},
+			new double[]{b2.x() - b1.x(), b2.y() - b1.y()}
 		) > 0;
 	}
 
@@ -210,8 +212,10 @@ abstract class Node implements Iterable<Node> {
 			private void showCurrentLav() {
 				Node current = start;
 				do {
-					TestCanvas.canvas.draw(new Segment2D(current.vertex, current.next.vertex), DrawingSegment2D
-						.withColorDirected(Color.cyan, 0.5));
+					TestCanvas.canvas.draw(
+						segment2D(current.vertex, current.next.vertex),
+						DrawingSegment2D.withColorDirected(Color.cyan, 0.5)
+					);
 					current = current.next;
 				} while (current != node);
 				assert Boolean.TRUE;
@@ -227,9 +231,10 @@ abstract class Node implements Iterable<Node> {
 			private void drawLav() {
 				Iterator<Color> colors = Iterators.cycle(Color.darkGray, Color.gray, Color.lightGray, Color.white);
 				for (int i = 0; i < points.size() - 1; i++) {
-					TestCanvas.canvas.draw(new Segment2D(points.get(i), points.get(i + 1)), DrawingSegment2D.withColorThin
-						(colors
-							.next()));
+					TestCanvas.canvas.draw(
+						segment2D(points.get(i), points.get(i + 1)),
+						DrawingSegment2D.withColorThin(colors.next())
+					);
 				}
 				TestCanvas.canvas.draw(start.vertex, DrawingPoint2D.withColorAndSize(Color.yellow, 2));
 			}
@@ -316,9 +321,9 @@ abstract class Node implements Iterable<Node> {
 	private static EdgeEvent trySameLineIntersection(RayIntersection intersection, Node current, Node target) {
 		if (Double.isInfinite(intersection.r)) {
 			return new EdgeEvent(
-				new Point2D(
-					(target.vertex.x + current.vertex.x) / 2,
-					(target.next().vertex.y + current.vertex.y) / 2
+				point2D(
+					(target.vertex.x() + current.vertex.x()) / 2,
+					(target.next().vertex.y() + current.vertex.y()) / 2
 				),
 				current,
 				target
@@ -387,7 +392,10 @@ abstract class Node implements Iterable<Node> {
 		Vector2D ccw = vertex.subtract(bisectorStart);
 		Bisector anotherBisector = new Bisector(cw, ccw);
 		RayIntersection intersection = new RayIntersection(
-			new Segment2D(bisectorStart, bisectorStart.add(anotherBisector.asSumVector())),
+			segment2D(
+				bisectorStart,
+				bisectorStart.add(anotherBisector.asSumVector())
+			),
 			bisector
 		);
 		return intersection.commonPoint();
@@ -443,10 +451,10 @@ abstract class Node implements Iterable<Node> {
 	 * @return true if the point is located within the area marked by an edge and edge's bisectors, false otherwise.
 	 */
 	private boolean isPointInAreaBetweenEdgeAndItsBisectors(Point2D point) {
-		Point2D a = bisector.end;
-		Point2D b = this.currentEdge.start;
-		Point2D c = this.currentEdge.end;
-		Point2D d = next().bisector.end;
+		Point2D a = bisector.end();
+		Point2D b = this.currentEdge.start();
+		Point2D c = this.currentEdge.end();
+		Point2D d = next().bisector.end();
 		return isPointNonConvex(a, point, b) && isPointNonConvex(b, point, c) && isPointNonConvex(c, point, d);
 	}
 
@@ -464,8 +472,8 @@ abstract class Node implements Iterable<Node> {
 	private static boolean isPointNonConvex(Point2D previous, Point2D point, Point2D next) {
 		//  TODO: There is similar method isReflex; remove this method.
 		return perpDotProduct(
-			new double[]{point.x - previous.x, point.y - previous.y},
-			new double[]{next.x - point.x, next.y - point.y}
+			new double[]{point.x() - previous.x(), point.y() - previous.y()},
+			new double[]{next.x() - point.x(), next.y() - point.y()}
 		) >= 0;
 	}
 

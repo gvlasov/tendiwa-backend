@@ -19,28 +19,28 @@ import java.util.Set;
  */
 final class KnotResolvingCells implements CellSet {
 	private final CellSet cellsInsideBorder;
-	private Set<Cell> prohibitedCells;
+	private Set<BasicCell> prohibitedCells;
 
 	public KnotResolvingCells(CachedCellSet border, CellSet cellsInsideBorder) {
 		this.cellsInsideBorder = cellsInsideBorder;
 		this.prohibitedCells = new HashSet<>();
 		// Cells with 3 neighbors
-		Set<Cell> knots3 = new HashSet<>();
+		Set<BasicCell> knots3 = new HashSet<>();
 		// Cells with 4 neighbors
-		Set<Cell> knots4 = new HashSet<>();
+		Set<BasicCell> knots4 = new HashSet<>();
 		border.forEach((x, y) -> {
 			int neighbors = howManyNeighborsCellHas(x, y, border);
 			if (neighbors == 3) {
-				knots3.add(new Cell(x, y));
+				knots3.add(new BasicCell(x, y));
 			} else if (neighbors == 4) {
-				Cell cell = new Cell(x, y);
+				BasicCell cell = new BasicCell(x, y);
 				knots4.add(cell);
 				// A cell with 4 neighbors may also form a prohibited area
 				// in combination with 3-knots.
 				knots3.add(cell);
 			}
 		});
-		for (Cell cell : knots3) {
+		for (BasicCell cell : knots3) {
 			// Because here we only check two of four cardinal sides (east and north),
 			// none of the cells will be operated upon twice
 			// (which would be the case if we checked all four sides).
@@ -74,13 +74,13 @@ final class KnotResolvingCells implements CellSet {
 	 * @param cell
 	 * 	A cell with a 4-knot.
 	 */
-	private void fixKnot4(Cell cell) {
+	private void fixKnot4(BasicCell cell) {
 		if (
 			cellsInsideBorder.contains(cell.x - 1, cell.y - 1)
 				&& cellsInsideBorder.contains(cell.x + 1, cell.y + 1)
 			) {
-			Cell cornerCell = cell.newRelativeCell(-1, -1);
-			Cell anotherCornerCell = cell.newRelativeCell(1, 1);
+			BasicCell cornerCell = cell.newRelativeCell(-1, -1);
+			BasicCell anotherCornerCell = cell.newRelativeCell(1, 1);
 			assert !cellsInsideBorder.contains(cell.x + 1, cell.y - 1);
 			assert !cellsInsideBorder.contains(cell.x - 1, cell.y + 1);
 			prohibitedCells.add(cornerCell);
@@ -91,8 +91,8 @@ final class KnotResolvingCells implements CellSet {
 			) {
 			assert !cellsInsideBorder.contains(cell.x + 1, cell.y + 1);
 			assert !cellsInsideBorder.contains(cell.x - 1, cell.y - 1);
-			Cell cornerCell = cell.newRelativeCell(1, -1);
-			Cell anotherCornerCell = cell.newRelativeCell(-1, 1);
+			BasicCell cornerCell = cell.newRelativeCell(1, -1);
+			BasicCell anotherCornerCell = cell.newRelativeCell(-1, 1);
 			prohibitedCells.add(cornerCell);
 			prohibitedCells.add(anotherCornerCell);
 		}
@@ -107,12 +107,12 @@ final class KnotResolvingCells implements CellSet {
 	 * @param cell
 	 * 	A cell with a 3-knot.
 	 * @param vertical
-	 * 	See {@link #hasNeighborKnot(java.util.Set, org.tendiwa.geometry.Cell, boolean)}.
+	 * 	See {@link #hasNeighborKnot(java.util.Set, org.tendiwa.geometry.BasicCell, boolean)}.
 	 */
-	private void tryFixingKnot3(Set<Cell> knots, Cell cell, boolean vertical) {
+	private void tryFixingKnot3(Set<BasicCell> knots, BasicCell cell, boolean vertical) {
 		if (hasNeighborKnot(knots, cell, vertical)) {
 			BoundedCellSet knotSurroundings = findInnerCellsAround2BorderNeighbors(cell, vertical);
-			Cell anySurroundingCell = knotSurroundings.iterator().next();
+			BasicCell anySurroundingCell = knotSurroundings.iterator().next();
 			if (anySurroundingCell == null) {
 				return;
 			}
@@ -144,7 +144,7 @@ final class KnotResolvingCells implements CellSet {
 	 * 	Whether we're checking a cell from south (true) or east (false).
 	 * @return true if there is a knot in the specified neighbor cell, false othewise.
 	 */
-	private boolean hasNeighborKnot(Set<Cell> knots, Cell knot, boolean vertical) {
+	private boolean hasNeighborKnot(Set<BasicCell> knots, BasicCell knot, boolean vertical) {
 		return knots.contains(knot.newRelativeCell(vertical ? 0 : 1, vertical ? 1 : 0));
 	}
 
@@ -175,7 +175,7 @@ final class KnotResolvingCells implements CellSet {
 	 * 	if true, a neighbor from south will be picked; else a neighbor from east will be picked.
 	 * @return A set of all cells that are arount
 	 */
-	private BoundedCellSet findInnerCellsAround2BorderNeighbors(Cell cell, boolean vertical) {
+	private BoundedCellSet findInnerCellsAround2BorderNeighbors(BasicCell cell, boolean vertical) {
 		Mutable2DCellSet markedCells;
 		if (vertical) {
 			markedCells = new Mutable2DCellSet(new Rectangle(cell.x - 1, cell.y - 1, 3, 4));
@@ -213,11 +213,11 @@ final class KnotResolvingCells implements CellSet {
 
 	@Override
 	public boolean contains(int x, int y) {
-		return prohibitedCells.contains(new Cell(x, y));
+		return prohibitedCells.contains(new BasicCell(x, y));
 	}
 
 	@Override
-	public boolean contains(Cell cell) {
+	public boolean contains(BasicCell cell) {
 		return prohibitedCells.contains(cell);
 	}
 }

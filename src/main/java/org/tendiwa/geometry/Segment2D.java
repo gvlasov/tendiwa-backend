@@ -1,6 +1,7 @@
 package org.tendiwa.geometry;
 
 import com.google.common.collect.Lists;
+import org.tendiwa.core.meta.Cell;
 
 import java.util.List;
 import java.util.function.Function;
@@ -8,43 +9,15 @@ import java.util.function.Function;
 /**
  * An immutable line segment.
  */
-public final class Segment2D implements RectangularHull {
-	public final Point2D start;
-	public final Point2D end;
+public interface Segment2D extends RectangularHull {
 
 
-	public Segment2D(Point2D start, Point2D end) {
-		if (start.x == end.x && start.y == end.y) {
-			throw new IllegalArgumentException("Start and end of a segment must be different points");
-		}
-		this.start = start;
-		this.end = end;
-	}
+	Point2D start();
 
-	/**
-	 * Creates a reverse segment.
-	 *
-	 * @return A new segment starting at {@code #end} and ending at {@code #start}.
-	 */
-	public Segment2D reverse() {
-		return new Segment2D(end, start);
-	}
+	Point2D end();
 
-	/**
-	 * A convenience factory method to create Segment2D from 4 numbers.
-	 *
-	 * @param x1
-	 * 	X coordinate of start point.
-	 * @param y1
-	 * 	Y coordinate of start point.
-	 * @param x2
-	 * 	X coordinate of end point.
-	 * @param y2
-	 * 	Y coordinate of end point.
-	 * @return A new Segment2D
-	 */
-	public static Segment2D create(double x1, double y1, double x2, double y2) {
-		return new Segment2D(new Point2D(x1, y1), new Point2D(x2, y2));
+	default Segment2D reverse() {
+		return new BasicSegment2D(end(), start());
 	}
 
 	/**
@@ -52,8 +25,8 @@ public final class Segment2D implements RectangularHull {
 	 *
 	 * @return {@code end.x-start.x}.
 	 */
-	public double dx() {
-		return end.x - start.x;
+	public default double dx() {
+		return end().x() - start().x();
 	}
 
 	/**
@@ -61,15 +34,8 @@ public final class Segment2D implements RectangularHull {
 	 *
 	 * @return {@code end.y-start.y}.
 	 */
-	public double dy() {
-		return end.y - start.y;
-	}
-
-	@Override
-	public String toString() {
-		return
-			start +
-				"," + end;
+	public default double dy() {
+		return end().y() - start().y();
 	}
 
 	/**
@@ -77,8 +43,8 @@ public final class Segment2D implements RectangularHull {
 	 *
 	 * @return Distance from {@link #start} to {@link #end}.
 	 */
-	public double length() {
-		return start.distanceTo(end);
+	public default double length() {
+		return start().distanceTo(end());
 	}
 
 	/**
@@ -89,100 +55,38 @@ public final class Segment2D implements RectangularHull {
 	 *
 	 * @return {@code this.length()*this.length()}
 	 */
-	public double squaredLength() {
-		return (end.x - start.x) * (end.x - start.x) + (end.y - start.y) * (end.y - start.y);
+	public default double squaredLength() {
+		return (end().x() - start().x()) * (end().x() - start().x())
+			+ (end().y() - start().y()) * (end().y() - start().y());
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		Segment2D segment2D = (Segment2D) o;
-
-		if (end != null ? !end.equals(segment2D.end) : segment2D.end != null) return false;
-		if (start != null ? !start.equals(segment2D.start) : segment2D.start != null) return false;
-
-		return true;
-	}
-
-	/**
-	 * Finds a point of intersection between this line and another line.
-	 * <p>
-	 * An intersection at ends of lines doesn't count for an intersection.
-	 *
-	 * @param line
-	 * 	Another line.
-	 * @return A Point2D where these two lines intersect, or null if lines don't intersect.
-	 * @see #intersects(Segment2D)
-	 */
-	public Point2D intersection(Segment2D line) {
-		RayIntersection lineIntersection = new RayIntersection(start, end, line);
-		if (!lineIntersection.segmentsIntersect()) {
-			return null;
-		}
-		return lineIntersection.commonPoint();
-	}
-
-	/**
-	 * Checks if this segment intersects another segment. This is less expensive than finding the intersection point
-	 * with {@link #intersection(Segment2D)}.
-	 * <p>
-	 * An intersection at ends of lines doesn't count for an intersection.
-	 *
-	 * @param segment
-	 * 	Another segment.
-	 * @return true if lines intersect, false otherwise.
-	 * @see #intersection(Segment2D)
-	 */
-	public boolean intersects(Segment2D segment) {
-		return new RayIntersection(start, end, segment).segmentsIntersect();
-	}
-
-	@Override
-	public int hashCode() {
-		int result = start != null ? start.hashCode() : 0;
-		result = 31 * result + (end != null ? end.hashCode() : 0);
-		return result;
-	}
 
 	public static Function<Segment2D, List<Cell>> toCellList() {
 		return e -> Lists.newArrayList(
-			CellSegment.vector(e.start.toCell(), e.end.toCell())
+			CellSegment.vector(e.start().toCell(), e.end().toCell())
 		);
 	}
 
-	public boolean isParallel(Segment2D segment) {
+	public default boolean isParallel(Segment2D segment) {
 		return dx() * segment.dy() - dy() * segment.dx() == 0;
 	}
 
-	public Vector2D asVector() {
-		return new Point2D(end.x - start.x, end.y - start.y);
-	}
-
-	public Line2D toLine() {
-		return new Line2D(start.x, start.y, end.x, end.y);
-	}
-
-	/**
-	 * Creates a new segment that is parallel to this one.
-	 *
-	 * @param perpendicularDistance
-	 * 	Perpendicular distance from this segment to the new one.
-	 * @param fromLeft
-	 * 	Whether the new segment should lay in the left half-plane from this segment or the right one
-	 * 	(if we look from {@link #start} to {@link #end}).
-	 * @return A new line parallel to this segment.
-	 */
-	public Segment2D createParallelSegment(double perpendicularDistance, boolean fromLeft) {
-		double magnitude = Math.sqrt((end.x - start.x) * (end.x - start.x) + (end.y - start.y) * (end.y - start.y));
-		double transitionX = -(end.y - start.y) / magnitude * (fromLeft ? -perpendicularDistance : perpendicularDistance);
-		double transitionY = (end.x - start.x) / magnitude * (fromLeft ? -perpendicularDistance : perpendicularDistance);
-		return new Segment2D(
-			new Point2D(start.x + transitionX, start.y + transitionY),
-			new Point2D(end.x + transitionX, end.y + transitionY)
+	default Vector2D asVector() {
+		return new BasicPoint2D(
+			end().x() - start().x(),
+			end().y() - start().y()
 		);
 	}
+
+	default Line2D toLine() {
+		return new Line2D(
+			start().x(),
+			start().y(),
+			end().x(),
+			end().y()
+		);
+	}
+
 
 	/**
 	 * Checks if a point is in the left half-plane defined by this segment, or in right half-plane/on the line.
@@ -194,8 +98,10 @@ public final class Segment2D implements RectangularHull {
 	 * @return true if the point is in the left half-plane, false otherwise (if it is in the right half-plane or right
 	 * on the line).
 	 */
-	public boolean isLeftOfRay(Point2D point) {
-		return ((end.x - start.x) * (point.y - start.y) - (end.y - start.y) * (point.x - start.x)) < 0;
+	// TODO: Extract this method
+	public default boolean isLeftOfRay(Point2D point) {
+		return ((end().x() - start().x()) * (point.y() - start().y()) - (end().y() - start().y()) * (point.x() - start().x()))
+			< 0;
 	}
 
 	/**
@@ -205,58 +111,69 @@ public final class Segment2D implements RectangularHull {
 	 * @throws java.lang.IllegalArgumentException
 	 * 	if {@code point} is neither {@code this.start} nor {@code this.end}.
 	 */
-	public Point2D anotherEnd(Point2D oneEnd) {
-		if (oneEnd.equals(start)) {
-			return end;
+	public default Point2D anotherEnd(Point2D oneEnd) {
+		if (oneEnd.equals(start())) {
+			return end();
 		}
-		if (oneEnd.equals(end)) {
-			return start;
+		if (oneEnd.equals(end())) {
+			return start();
 		}
 		throw new IllegalArgumentException("Argument must be either start or end point");
 	}
 
-	public boolean oneOfEndsIs(Point2D point) {
-		return start.equals(point) || end.equals(point);
+	default boolean oneOfEndsIs(Point2D point) {
+		return start().equals(point) || end().equals(point);
 	}
 
-	public boolean contains(Point2D point) {
-		double minX = Math.min(start.x, end.x);
-		double maxX = Math.max(start.x, end.x);
-		double minY = Math.min(start.y, end.y);
-		double maxY = Math.max(start.y, end.y);
-		return point.x >= minX && point.x <= maxX
-			&& point.y >= minY && point.y <= maxY
+	public default boolean contains(Point2D point) {
+		double minX = Math.min(start().x(), end().x());
+		double maxX = Math.max(start().x(), end().x());
+		double minY = Math.min(start().y(), end().y());
+		double maxY = Math.max(start().y(), end().y());
+		return point.x() >= minX && point.x() <= maxX
+			&& point.y() >= minY && point.y() <= maxY
 			&& point.distanceToLine(this) < Vectors2D.EPSILON;
 	}
 
-	public boolean hasEndsNear(Point2D oneEnd, Point2D anotherEnd, double snapChebyshovRadius) {
-		return start.chebyshovDistanceTo(oneEnd) < snapChebyshovRadius
-			&& end.chebyshovDistanceTo(anotherEnd) < snapChebyshovRadius
-			|| end.chebyshovDistanceTo(oneEnd) < snapChebyshovRadius
-			&& start.chebyshovDistanceTo(anotherEnd) < snapChebyshovRadius;
+	default boolean hasEndsNear(Point2D oneEnd, Point2D anotherEnd, double snapChebyshovRadius) {
+		return start().chebyshovDistanceTo(oneEnd) < snapChebyshovRadius
+			&& end().chebyshovDistanceTo(anotherEnd) < snapChebyshovRadius
+			|| end().chebyshovDistanceTo(oneEnd) < snapChebyshovRadius
+			&& start().chebyshovDistanceTo(anotherEnd) < snapChebyshovRadius;
 	}
 
-	public Point2D middle() {
-		return new Point2D(start.x / 2 + end.x / 2, start.y / 2 + end.y / 2);
+	default Point2D middle() {
+		return new BasicPoint2D(
+			start().x() / 2 + end().x() / 2,
+			start().y() / 2 + end().y() / 2
+		);
 	}
 
-	@Override
-	public double minX() {
-		return Math.min(start.x, end.x);
+	default StraightLineIntersection intersectionWith(Segment2D anotherSegment) {
+		return new BasicSegment2DIntersection(this, anotherSegment);
 	}
 
-	@Override
-	public double maxX() {
-		return Math.max(start.x, end.x);
+	public default double minX() {
+		return Math.min(start().x(), end().x());
 	}
 
-	@Override
-	public double minY() {
-		return Math.min(start.y, end.y);
+	default double maxX() {
+		return Math.max(start().x(), end().x());
 	}
 
-	@Override
-	public double maxY() {
-		return Math.max(start.y, end.y);
+	default double minY() {
+		return Math.min(start().y(), end().y());
+	}
+
+	default double maxY() {
+		return Math.max(start().y(), end().y());
+	}
+
+	default boolean intersects(Segment2D segment) {
+		return new BasicSegment2DIntersection(this, segment).intersect();
+	}
+
+	default boolean intersects(Rectangle rectangle) {
+		return new RectangleSegmentIntersection(rectangle, this).intersect();
 	}
 }

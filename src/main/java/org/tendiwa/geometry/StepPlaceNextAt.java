@@ -3,26 +3,26 @@ package org.tendiwa.geometry;
 import static org.tendiwa.geometry.DSL.builder;
 import static org.tendiwa.geometry.DSL.somewhere;
 
-public class StepPlaceNextAt {
+public final class StepPlaceNextAt {
 	private final int count;
-	private final Placeable placeable;
+	private final RectSet rectSet;
 
-	StepPlaceNextAt(int count, Placeable placeable) {
+	StepPlaceNextAt(int count, RectSet rectSet) {
 		this.count = count;
-		this.placeable = placeable;
+		this.rectSet = rectSet;
 	}
 
-	public Placeable placingNextAt(final Placement where) {
-		return new Placeable() {
+	public RectSet placingNextAt(final Placement where) {
+		return new RectSet() {
 			private RectangleSequence rs;
 			public RectangleSystemBuilder prebuiltBuilder;
 
 			@Override
-			public Rectangle getBounds() {
+			public Rectangle bounds() {
 				if (rs == null) {
 					throw new IllegalStateException();
 				}
-				return rs.getBounds();
+				return rs.bounds();
 			}
 
 			@Override
@@ -38,16 +38,16 @@ public class StepPlaceNextAt {
 			@Override
 			public void prebuild(RectangleSystemBuilder builder) {
 				RectangleSystemBuilder newBuilder = builder(builder.rs.getBorderWidth());
-				newBuilder.place(placeable, somewhere());
+				newBuilder.place(rectSet, somewhere());
 				for (int i = 1; i < count; i++) {
-					newBuilder.place(placeable, where);
+					newBuilder.place(rectSet, where);
 				}
 				prebuiltBuilder = newBuilder;
 				rs = newBuilder.done();
 			}
 
 			@Override
-			public Placeable rotate(Rotation rotation) {
+			public RectSet rotate(Rotation rotation) {
 				return rs.rotate(rotation);
 			}
 

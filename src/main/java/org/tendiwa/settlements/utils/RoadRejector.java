@@ -6,25 +6,25 @@ import org.jgrapht.graph.UndirectedSubgraph;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
-import org.tendiwa.math.StonesInBasketsSolver;
+import org.tendiwa.math.StonesInBasketsProblem;
 import org.tendiwa.geometry.smartMesh.OriginalMeshCell;
-import org.tendiwa.geometry.smartMesh.Segment2DSmartMesh;
+import org.tendiwa.geometry.smartMesh.SmartMesh2D;
 
 import java.util.*;
 
 /**
  * Static methods of this class create a view of a city's road network graph that rejects some of its edges so cities
  * don't have to be enclosed in a road around them (enclosing cities in a road around them is the core mechanics of
- * constructing a {@link org.tendiwa.geometry.smartMesh.Segment2DSmartMesh}.
+ * constructing a {@link org.tendiwa.geometry.smartMesh.SmartMesh2D}.
  */
 public final class RoadRejector {
 	private static final Comparator<Point2D> ANY_NEIGHBOR_COMPARATOR = (p1, p2) -> {
 		if (p1 == p2) {
 			return 0;
 		}
-		int compare = Double.compare(p1.x, p2.x);
+		int compare = Double.compare(p1.x(), p2.x());
 		if (compare == 0) {
-			int compare1 = Double.compare(p1.y, p2.y);
+			int compare1 = Double.compare(p1.y(), p2.y());
 			assert compare1 != 0 : p1 + " " + p2;
 			return compare1;
 		} else {
@@ -45,7 +45,7 @@ public final class RoadRejector {
 	 * {@code cityGeometry}.
 	 *
 	 * @param graph
-	 * 	A full road graph ({@link org.tendiwa.geometry.smartMesh.Segment2DSmartMesh#getFullRoadGraph()}) of {@code
+	 * 	A full road graph ({@link org.tendiwa.geometry.smartMesh.SmartMesh2D#graph()}) of {@code
 	 * 	cityGeometry}.
 	 * @param segment2DSmartMesh
 	 * 	A geometry of a city.
@@ -53,18 +53,18 @@ public final class RoadRejector {
 	 */
 	public static UndirectedGraph<Point2D, Segment2D> rejectAllCellsBorders(
 		UndirectedGraph<Point2D, Segment2D> graph,
-		Segment2DSmartMesh segment2DSmartMesh // TODO: Maybe extract an interface with cycle() method so graph and cityGeometry won't seem coupled
+		SmartMesh2D segment2DSmartMesh // TODO: Maybe extract an interface with cycle() method so graph and cityGeometry won't seem coupled
 	) {
 		UndirectedSubgraph<Point2D, Segment2D> modifiedGraph = new UndirectedSubgraph<>(graph, graph.vertexSet(), graph.edgeSet());
 		for (OriginalMeshCell originalMeshCell : segment2DSmartMesh.networks()) {
 			for (Segment2D edge : originalMeshCell.cycle().edgeSet()) {
 				if (modifiedGraph.containsEdge(edge)) {
 					modifiedGraph.removeEdge(edge);
-					if (modifiedGraph.degreeOf(edge.start) == 0) {
-						modifiedGraph.removeVertex(edge.start);
+					if (modifiedGraph.degreeOf(edge.start()) == 0) {
+						modifiedGraph.removeVertex(edge.start());
 					}
-					if (modifiedGraph.degreeOf(edge.end) == 0) {
-						modifiedGraph.removeVertex(edge.end);
+					if (modifiedGraph.degreeOf(edge.end()) == 0) {
+						modifiedGraph.removeVertex(edge.end());
 					}
 				}
 			}
@@ -74,7 +74,7 @@ public final class RoadRejector {
 
 	public static UndirectedGraph<Point2D, Segment2D> rejectPartOfNetworksBorders(
 		UndirectedGraph<Point2D, Segment2D> graph,
-		Segment2DSmartMesh segment2DSmartMesh,
+		SmartMesh2D segment2DSmartMesh,
 		double probability,
 		Random random
 	) {
@@ -92,7 +92,7 @@ public final class RoadRejector {
 	 * @return
 	 */
 	private UndirectedGraph<Point2D, Segment2D> rejectRoads(
-		Segment2DSmartMesh segment2DSmartMesh,
+		SmartMesh2D segment2DSmartMesh,
 		double probability
 	) {
 		UndirectedSubgraph<Point2D, Segment2D> modifiedGraph = new UndirectedSubgraph<>(
@@ -133,7 +133,7 @@ public final class RoadRejector {
 		assert numberOfEdgesToRemove <= numberOfEdgesInChains;
 		assert numberOfEdgesToRemove >= 0;
 		int[] baskets = createBasketsArray(chains);
-		int[] partition = StonesInBasketsSolver.solve(baskets, numberOfEdgesToRemove, random);
+		int[] partition = new StonesInBasketsProblem(baskets, numberOfEdgesToRemove, random).solve();
 		int[][] answer = new int[chains.size()][2];
 		for (int i = 0; i < chains.size(); i++) {
 			// Offset
@@ -168,7 +168,7 @@ public final class RoadRejector {
 		return numberOfEdgesInAllChains;
 	}
 
-	private List<List<Segment2D>> findChainsBetween3DegreeCycleVertices(Segment2DSmartMesh segment2DSmartMesh) {
+	private List<List<Segment2D>> findChainsBetween3DegreeCycleVertices(SmartMesh2D segment2DSmartMesh) {
 		List<List<Segment2D>> answer = new ArrayList<>();
 		for (UndirectedGraph<Point2D, Segment2D> outerCycleEdges : segment2DSmartMesh.outerCycleEdges().values()) {
 			// Outer cycle edges of a network may be either a continuous cycle (if a network doesn't adjoin other
@@ -206,11 +206,11 @@ public final class RoadRejector {
 		// Sorted collection is used here so ordering will remain constant between application start-ups.
 		SortedSet<Point2D> possibleAnyNeighbor = new TreeSet<>(ANY_NEIGHBOR_COMPARATOR);
 		for (Segment2D edge : edges) {
-			if (!possibleAnyNeighbor.contains(edge.start)) {
-				possibleAnyNeighbor.add(edge.start);
+			if (!possibleAnyNeighbor.contains(edge.start())) {
+				possibleAnyNeighbor.add(edge.start());
 			}
-			if (!possibleAnyNeighbor.contains(edge.end)) {
-				possibleAnyNeighbor.add(edge.end);
+			if (!possibleAnyNeighbor.contains(edge.end())) {
+				possibleAnyNeighbor.add(edge.end());
 			}
 		}
 		possibleAnyNeighbor.remove(vertex);
@@ -238,10 +238,10 @@ public final class RoadRejector {
 				assert cycleEdge != null;
 				chain.add(cycleEdge);
 				if (fullGraph.degreeOf(currentVertex) > 2) {
-					assert fullGraph.degreeOf(chain.get(0).start) > 2
-						|| fullGraph.degreeOf(chain.get(0).end) > 2;
-					assert fullGraph.degreeOf(chain.get(chain.size() - 1).start) > 2
-						|| fullGraph.degreeOf(chain.get(chain.size() - 1).end) > 2;
+					assert fullGraph.degreeOf(chain.get(0).start()) > 2
+						|| fullGraph.degreeOf(chain.get(0).end()) > 2;
+					assert fullGraph.degreeOf(chain.get(chain.size() - 1).start()) > 2
+						|| fullGraph.degreeOf(chain.get(chain.size() - 1).end()) > 2;
 					answer.add(chain);
 					chain = new LinkedList<>();
 				}
@@ -273,17 +273,17 @@ public final class RoadRejector {
 			assert !previousVertex.equals(currentVertex);
 			assert outerCycleEdges.edgesOf(currentVertex).size() == 2;
 			for (Segment2D edge : outerCycleEdges.edgesOf(currentVertex)) {
-				if (edge.start == previousVertex) {
+				if (edge.start() == previousVertex) {
 					continue;
 				}
-				if (edge.end == previousVertex) {
+				if (edge.end() == previousVertex) {
 					continue;
 				}
-				if (edge.start == currentVertex) {
-					return edge.end;
+				if (edge.start() == currentVertex) {
+					return edge.end();
 				}
-				assert edge.end == currentVertex;
-				return edge.start;
+				assert edge.end() == currentVertex;
+				return edge.start();
 			}
 			throw new RuntimeException("Next vertex not found");
 		}
@@ -293,7 +293,7 @@ public final class RoadRejector {
 	 * Walks along chains of edges in a subgraph of {@link #fullGraph} ({@code outerCycleEdges}),
 	 * extracting the sub-chains that start and end with vertices having degree > 2 in {@link #fullGraph}.
 	 *
-	 * @see org.tendiwa.geometry.smartMesh.Segment2DSmartMesh#outerCycleEdges() for what kind of subgraph is walked along.
+	 * @see org.tendiwa.geometry.smartMesh.SmartMesh2D#outerCycleEdges() for what kind of subgraph is walked along.
 	 */
 	private class NonCycleChainWalker {
 		private final UndirectedGraph<Point2D, Segment2D> outerCycleEdges;
@@ -308,7 +308,7 @@ public final class RoadRejector {
 			Set<Segment2D> edgesOfVertex = outerCycleEdges.edgesOf(startVertex);
 			assert edgesOfVertex.size() == 1;
 			this.currentEdge = edgesOfVertex.iterator().next();
-			this.currentVertex = currentEdge.start == previousVertex ? currentEdge.end : currentEdge.start;
+			this.currentVertex = currentEdge.start() == previousVertex ? currentEdge.end() : currentEdge.start();
 			assert outerCycleEdges.getEdge(previousVertex, currentVertex) == currentEdge;
 		}
 
@@ -344,15 +344,15 @@ public final class RoadRejector {
 			Set<Segment2D> edgesOfNextVertex = outerCycleEdges.edgesOf(currentVertex);
 			assert edgesOfNextVertex.size() == 2;
 			for (Segment2D edge : edgesOfNextVertex) {
-				if (edge.start == currentVertex && edge.end != previousVertex) {
+				if (edge.start() == currentVertex && edge.end() != previousVertex) {
 					currentEdge = edge;
 					previousVertex = currentVertex;
-					currentVertex = edge.end;
+					currentVertex = edge.end();
 					break;
-				} else if (edge.end == currentVertex && edge.start != previousVertex) {
+				} else if (edge.end() == currentVertex && edge.start() != previousVertex) {
 					currentEdge = edge;
 					previousVertex = currentVertex;
-					currentVertex = edge.start;
+					currentVertex = edge.start();
 					break;
 				}
 			}

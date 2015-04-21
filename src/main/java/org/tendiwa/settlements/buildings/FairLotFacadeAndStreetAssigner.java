@@ -6,7 +6,7 @@ import com.google.common.collect.Multimap;
 import org.tendiwa.core.CardinalDirection;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingChain;
-import org.tendiwa.geometry.Recs;
+import org.tendiwa.geometry.StupidPriceduralRecs;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.settlements.utils.RectangleWithNeighbors;
 import org.tendiwa.settlements.streets.LotStreetAssigner;
@@ -89,7 +89,7 @@ public final class FairLotFacadeAndStreetAssigner implements LotFacadeAssigner, 
 			}
 			Thirstiest thirstiest = searchForThirstiestSegmentAndStreet(lot);
 			lotToStreet.put(lot, thirstiest.street);
-			if (Recs.rectangleIntersectsSegment(lot.rectangle, thirstiest.segment)) {
+			if (StupidPriceduralRecs.rectangleIntersectsSegment(lot.rectangle, thirstiest.segment)) {
 				// TODO: This should not happen!
 				continue;
 			}

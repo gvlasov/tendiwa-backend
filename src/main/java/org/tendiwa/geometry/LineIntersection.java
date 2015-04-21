@@ -3,8 +3,6 @@ package org.tendiwa.geometry;
 import org.tendiwa.core.Intersection;
 import org.tendiwa.core.OrdinalDirection;
 
-import java.awt.*;
-
 public class LineIntersection extends Intersection {
 	int x;
 	int y;
@@ -20,20 +18,20 @@ public class LineIntersection extends Intersection {
 	}
 
 	@Override
-	public Cell getCornerPointOfQuarter(OrdinalDirection side) {
+	public BasicCell getCornerPointOfQuarter(OrdinalDirection side) {
 		if (side == null) {
 			throw new NullPointerException();
 		}
 		switch (side) {
 			case NE:
-				return new Cell(x, y);
+				return new BasicCell(x, y);
 			case SE:
-				return new Cell(x, y + 1);
+				return new BasicCell(x, y + 1);
 			case SW:
-				return new Cell(x - 1, y + 1);
+				return new BasicCell(x - 1, y + 1);
 			case NW:
 			default:
-				return new Cell(x - 1, y);
+				return new BasicCell(x - 1, y);
 		}
 	}
 

@@ -1,11 +1,11 @@
 package org.tendiwa.geometry.extensions.polygonRasterization;
 
-import org.tendiwa.geometry.BoundedCellSet;
-import org.tendiwa.geometry.Cell;
-import org.tendiwa.geometry.CellConsumer;
-import org.tendiwa.geometry.Rectangle;
+import org.tendiwa.core.meta.Cell;
+import org.tendiwa.geometry.*;
 
 import java.util.function.Consumer;
+
+import static org.tendiwa.geometry.GeometryPrimitives.rectangle;
 
 /**
  * Represents the result of polygon rasterization: a grid within a rectangular area with cells that either belong
@@ -36,7 +36,7 @@ public class RasterizationResult implements BoundedCellSet {
 	 * 	{@link java.util.Arrays#fill(boolean[], boolean)}
 	 */
 	RasterizationResult(int x, int y, boolean[][] bitmap) {
-		this.bounds = new Rectangle(
+		this.bounds = rectangle(
 			x,
 			y,
 			(bitmap.length == 0) ? 0 : bitmap[0].length,
@@ -52,17 +52,17 @@ public class RasterizationResult implements BoundedCellSet {
 
 	@Override
 	public boolean contains(int x, int y) {
-		return bounds.contains(x, y) && bitmap[y - bounds.y][x - bounds.x];
+		return bounds.contains(x, y) && bitmap[y - bounds.y()][x - bounds.x()];
 	}
 
 	@Override
 	public void forEach(Consumer<? super Cell> action) {
-		int maxX = bounds.getMaxX();
-		int maxY = bounds.getMaxY();
-		for (int i = bounds.x; i < maxX; i++) {
-			for (int j = bounds.y; j < maxY; j++) {
-				if (bitmap[j - bounds.y][i - bounds.x]) {
-					action.accept(new Cell(i, j));
+		int maxX = bounds.maxX();
+		int maxY = bounds.maxY();
+		for (int i = bounds.x(); i < maxX; i++) {
+			for (int j = bounds.y(); j < maxY; j++) {
+				if (bitmap[j - bounds.y()][i - bounds.x()]) {
+					action.accept(new BasicCell(i, j));
 				}
 			}
 		}
@@ -70,11 +70,11 @@ public class RasterizationResult implements BoundedCellSet {
 
 	@Override
 	public void forEach(CellConsumer action) {
-		int maxX = bounds.getMaxX();
-		int maxY = bounds.getMaxY();
-		for (int i = bounds.x; i < maxX; i++) {
-			for (int j = bounds.y; j < maxY; j++) {
-				if (bitmap[j - bounds.y][i - bounds.x]) {
+		int maxX = bounds.maxX();
+		int maxY = bounds.maxY();
+		for (int i = bounds.x(); i < maxX; i++) {
+			for (int j = bounds.y(); j < maxY; j++) {
+				if (bitmap[j - bounds.y()][i - bounds.x()]) {
 					action.consume(i, j);
 				}
 			}

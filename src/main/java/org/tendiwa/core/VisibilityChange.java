@@ -54,8 +54,8 @@ class VisibilityChange {
 		this.borderVisionPrevious = borderPrevious;
 		plane = character.getPlane();
 		player = character;
-		dx = player.getX() - xPrev;
-		dy = player.getY() - yPrev;
+		dx = player.x() - xPrev;
+		dy = player.y() - yPrev;
 		compute();
 	}
 
@@ -107,10 +107,10 @@ class VisibilityChange {
 			}
 		}
 		// Loop over points in the new cache that are _not_ in the previous cache
-		int startPlayerX = Seer.getStartIndexOfRelativeTable(player.getX(), Seer.VISION_RANGE);
-		int startPlayerY = Seer.getStartIndexOfRelativeTable(player.getY(), Seer.VISION_RANGE);
-		int endPlayerX = seer.getEndIndexOfRelativeTableX(player.getX(), Seer.VISION_RANGE);
-		int endPlayerY = seer.getEndIndexOfRelativeTableY(player.getY(), Seer.VISION_RANGE);
+		int startPlayerX = Seer.getStartIndexOfRelativeTable(player.x(), Seer.VISION_RANGE);
+		int startPlayerY = Seer.getStartIndexOfRelativeTable(player.y(), Seer.VISION_RANGE);
+		int endPlayerX = seer.getEndIndexOfRelativeTableX(player.x(), Seer.VISION_RANGE);
+		int endPlayerY = seer.getEndIndexOfRelativeTableY(player.y(), Seer.VISION_RANGE);
 		for (int i = startPlayerX; i < endPlayerX; i++) {
 			for (int j = startPlayerY; j < endPlayerY; j++) {
 				// Condition from previous loop with reversed dx

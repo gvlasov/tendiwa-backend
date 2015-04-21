@@ -41,6 +41,7 @@ public final class Demos {
 	}
 
 	public static void genesis(Class<? extends Genesis> genesisClass, Module... modules) {
+		Tendiwa.loadModules();
 		Guice.createInjector(modules).getInstance(genesisClass).world();
 	}
 }

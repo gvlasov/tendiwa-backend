@@ -32,16 +32,18 @@ public class StepAwayFromFromSideMargin {
 	public Placement inMiddle() {
 		return new Placement() {
 			@Override
-			public Rectangle placeIn(Placeable placeable, RectangleSystemBuilder builder) {
-				Rectangle placeableBounds = placeable.getBounds();
-				Rectangle existingRec = builder.getRectangleByPointer(pointer).getBounds();
-				int staticCoord = existingRec.getStaticCoordOfSide(side) + (builder.rs.getBorderWidth() + 1 + margin) * side.getGrowing();
+			public RectSet placeIn(RectSet rectSet, RectangleSystemBuilder builder) {
+				Rectangle placeableBounds = rectSet.bounds();
+				Rectangle existingRec = pointer.find(builder).bounds();
+				int staticCoord = existingRec.side(side).getStaticCoord()
+					+ (builder.borderWidth() + 1 + margin) * side.getGrowing();
 				if (side == Directions.N) {
-					staticCoord -= placeableBounds.getHeight();
+					staticCoord -= placeableBounds.height();
 				} else if (side == Directions.W) {
-					staticCoord -= placeableBounds.getWidth();
+					staticCoord -= placeableBounds.width();
 				}
-				int dynamicCoord = (side.isVertical() ? existingRec.getX() : existingRec.getY()) + (existingRec.getDimensionBySide(side) - placeableBounds.getDimensionBySide(side)) / 2;
+				int dynamicCoord = (side.isVertical() ? existingRec.x() : existingRec.y())
+					+ (existingRec.side(side).length() - placeableBounds.side(side).length()) / 2;
 				int x, y;
 				if (side.isVertical()) {
 					x = dynamicCoord;
@@ -50,7 +52,13 @@ public class StepAwayFromFromSideMargin {
 					x = staticCoord;
 					y = dynamicCoord;
 				}
-				return placeable.place(builder, x, y);
+				int dx = x - placeableBounds.x();
+				int dy = y - placeableBounds.y();
+
+				return new RectSetWithPrecomputedBounds(
+					rectSet.translate(dx, dy),
+					placeableBounds.translate(dx, dy)
+				);
 			}
 		};
 	}

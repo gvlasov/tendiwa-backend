@@ -6,7 +6,7 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.geometry.smartMesh.SegmentNetworkBuilder;
-import org.tendiwa.geometry.smartMesh.Segment2DSmartMesh;
+import org.tendiwa.geometry.smartMesh.SmartMesh2D;
 
 public class InnerFilamentCityDemo implements Runnable {
 	public static void main(String[] args) {
@@ -30,7 +30,7 @@ public class InnerFilamentCityDemo implements Runnable {
 			.edge(0, 8)
 			.edge(6, 9);
 		TestCanvas canvas = Demos.createCanvas();
-		Segment2DSmartMesh segment2DSmartMesh = new SegmentNetworkBuilder(gc.graph())
+		SmartMesh2D segment2DSmartMesh = new SegmentNetworkBuilder(gc.graph())
 			.withDefaults()
 			.withRoadSegmentLength(50)
 			.build();

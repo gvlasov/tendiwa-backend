@@ -57,7 +57,7 @@ public class MaximalCellRectangleFinderDemo implements Runnable {
 			DrawingCellSet.withColor(Color.red)
 		);
 		canvas.draw(
-			Recs.rectangleMovedFromOriginal(largestRectangle, rasterizedPolygon.x, rasterizedPolygon.y),
+			StupidPriceduralRecs.rectangleMovedFromOriginal(largestRectangle, rasterizedPolygon.x, rasterizedPolygon.y),
 			DrawingRectangle.withColor(Color.blue)
 		);
 		chart.draw();

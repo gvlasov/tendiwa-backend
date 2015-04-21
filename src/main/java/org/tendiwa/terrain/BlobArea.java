@@ -1,31 +1,31 @@
 package org.tendiwa.terrain;
 
 import com.google.common.collect.ImmutableList;
-import org.tendiwa.geometry.Cell;
+import org.tendiwa.geometry.BasicCell;
 import org.tendiwa.geometry.Rectangle;
 
 import java.util.Iterator;
 
-public class BlobArea<T extends CellParams> implements Iterable<Cell> {
-	private final Iterable<Cell> cells;
+public class BlobArea<T extends CellParams> implements Iterable<BasicCell> {
+	private final Iterable<BasicCell> cells;
 	private Chunk<T>[][] chunks;
 	private final Rectangle maxBound;
 
-	public BlobArea(Rectangle maxBound, Iterable<Cell> cells, CellParamsFactory<T> factory) {
+	public BlobArea(Rectangle maxBound, Iterable<BasicCell> cells, CellParamsFactory<T> factory) {
 		this.maxBound = maxBound;
 		this.cells = ImmutableList.copyOf(cells);
 		createChunks(maxBound);
-		for (Cell cell : cells) {
-			int startX = cell.getX() - cell.getX() % getChunkSize();
-			int startY = cell.getY() - cell.getY() % getChunkSize();
-			touchChunk(startX, startY).put(cell.getX(), cell.getY(), factory);
+		for (BasicCell cell : cells) {
+			int startX = cell.x() - cell.x() % getChunkSize();
+			int startY = cell.y() - cell.y() % getChunkSize();
+			touchChunk(startX, startY).put(cell.x(), cell.y(), factory);
 		}
 	}
 
 	private void createChunks(Rectangle maxBound) {
 		chunks = (Chunk<T>[][]) new Chunk
-			[numberOfChunks(maxBound.getWidth())]
-			[numberOfChunks(maxBound.getHeight())];
+			[numberOfChunks(maxBound.width())]
+			[numberOfChunks(maxBound.height())];
 	}
 
 	private int numberOfChunks(int cells) {
@@ -54,17 +54,17 @@ public class BlobArea<T extends CellParams> implements Iterable<Cell> {
 	}
 
 	@Override
-	public Iterator<Cell> iterator() {
+	public Iterator<BasicCell> iterator() {
 		return cells.iterator();
 	}
 
-	public T get(Cell cell) {
-		return getChunkWithCell(cell).getCell(cell.getX(), cell.getY());
+	public T get(BasicCell cell) {
+		return getChunkWithCell(cell).getCell(cell.x(), cell.y());
 	}
 
-	public Chunk<T> getChunkWithCell(Cell cell) {
-		int chunkX = (cell.getX() - cell.getX() % getChunkSize()) / getChunkSize();
-		int chunkY = (cell.getY() - cell.getY() % getChunkSize()) / getChunkSize();
+	public Chunk<T> getChunkWithCell(BasicCell cell) {
+		int chunkX = (cell.x() - cell.x() % getChunkSize()) / getChunkSize();
+		int chunkY = (cell.y() - cell.y() % getChunkSize()) / getChunkSize();
 		return chunks[chunkX][chunkY];
 	}
 }

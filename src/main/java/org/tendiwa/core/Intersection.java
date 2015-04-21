@@ -1,6 +1,6 @@
 package org.tendiwa.core;
 
-import org.tendiwa.geometry.Cell;
+import org.tendiwa.geometry.BasicCell;
 
 /**
  * Class represents an abstract intersection of two same ammunitionType objects. One of the objects is implicitly
@@ -16,5 +16,5 @@ public abstract class Intersection {
 	 *
 	 * @param side
 	 */
-	public abstract Cell getCornerPointOfQuarter(OrdinalDirection side);
+	public abstract BasicCell getCornerPointOfQuarter(OrdinalDirection side);
 }

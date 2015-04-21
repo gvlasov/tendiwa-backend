@@ -52,11 +52,11 @@ public class Cells {
 		return Math.sqrt(Math.pow(startX - endX, 2) + Math.pow(startY - endY, 2));
 	}
 
-	public static Cell fromStaticAndDynamic(int staticCoord, int dynamicCoord, Orientation orientation) {
+	public static BasicCell fromStaticAndDynamic(int staticCoord, int dynamicCoord, Orientation orientation) {
 		if (orientation.isVertical()) {
-			return new Cell(staticCoord, dynamicCoord);
+			return new BasicCell(staticCoord, dynamicCoord);
 		} else {
-			return new Cell(dynamicCoord, staticCoord);
+			return new BasicCell(dynamicCoord, staticCoord);
 		}
 	}
 }

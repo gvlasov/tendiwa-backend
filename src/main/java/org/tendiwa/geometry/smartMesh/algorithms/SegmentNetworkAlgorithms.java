@@ -10,7 +10,7 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.geometry.smartMesh.OriginalMeshCell;
-import org.tendiwa.geometry.smartMesh.Segment2DSmartMesh;
+import org.tendiwa.geometry.smartMesh.SmartMesh2D;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -23,9 +23,9 @@ public final class SegmentNetworkAlgorithms {
 	 * Actual cycles don't include cycles that are formed with any of the secondary road network's edges.
 	 *
 	 * @return Actual road cycles graph.
-	 * @see org.tendiwa.geometry.smartMesh.Segment2DSmartMesh#originalGraph for original cycles.
+	 * @see org.tendiwa.geometry.smartMesh.SmartMesh2D#originalGraph for original cycles.
 	 */
-	public static UndirectedGraph<Point2D, Segment2D> createFullCycleGraph(Segment2DSmartMesh model) {
+	public static UndirectedGraph<Point2D, Segment2D> createFullCycleGraph(SmartMesh2D model) {
 		UndirectedGraph<Point2D, Segment2D> answer = PlanarGraphs.createGraph();
 		model.networks().forEach(network -> Graphs.addGraph(answer, network.cycle()));
 		return answer;
@@ -34,7 +34,7 @@ public final class SegmentNetworkAlgorithms {
 	/**
 	 * @return A graph of all resulting roads in this city.
 	 */
-	public static UndirectedGraph<Point2D, Segment2D> createFullGraph(Segment2DSmartMesh model) {
+	public static UndirectedGraph<Point2D, Segment2D> createFullGraph(SmartMesh2D model) {
 		UndirectedGraph<Point2D, Segment2D> answer = PlanarGraphs.createGraph();
 		model.networks().forEach(network -> {
 			Graphs.addGraph(answer, network.cycle());
@@ -45,14 +45,14 @@ public final class SegmentNetworkAlgorithms {
 
 	/**
 	 * In each {@link org.tendiwa.geometry.smartMesh.OriginalMeshCell} that this {@link
-	 * org.tendiwa.geometry.smartMesh.Segment2DSmartMesh} consists of, finds such edges that are part of only one
+	 * org.tendiwa.geometry.smartMesh.SmartMesh2D} consists of, finds such edges that are part of only one
 	 * {@link org.tendiwa.geometry.smartMesh.OriginalMeshCell#cycle()}.
 	 *
 	 * @return Map from {@link org.tendiwa.geometry.smartMesh.OriginalMeshCell} to subgraphs of {@link
 	 * org.tendiwa.geometry.smartMesh.OriginalMeshCell#network()} described in this method's description.
 	 */
 	public static Map<OriginalMeshCell, UndirectedGraph<Point2D, Segment2D>> outerCycleEdges(
-		Segment2DSmartMesh model
+		SmartMesh2D model
 	) {
 		Map<OriginalMeshCell, UndirectedGraph<Point2D, Segment2D>> answer = new LinkedHashMap<>();
 		TObjectIntMap<Segment2D> usedEdges = new TObjectIntHashMap<>();

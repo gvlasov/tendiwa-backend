@@ -4,13 +4,13 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.name.Named;
 import org.tendiwa.core.events.*;
-import org.tendiwa.core.meta.CellPosition;
+import org.tendiwa.core.meta.Cell;
 import org.tendiwa.core.observation.Event;
 import org.tendiwa.core.observation.Observable;
 import org.tendiwa.core.player.SinglePlayerMode;
 import org.tendiwa.core.vision.Seer;
 import org.tendiwa.core.vision.SightPassabilityCriteria;
-import org.tendiwa.geometry.Cell;
+import org.tendiwa.geometry.BasicCell;
 import org.tendiwa.geometry.CellSegment;
 import org.tendiwa.geometry.CellSet;
 
@@ -18,7 +18,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class Character implements CellPosition, PlaceableInCell, DamageSource {
+public class Character implements Cell, PlaceableInCell, DamageSource {
 	public final int id = new UniqueObject().id;
 	public final ItemCollection inventory = new ItemCollection();
 	public final Equipment equipment = new Equipment(2, ApparelSlot.values());
@@ -105,8 +105,8 @@ public class Character implements CellPosition, PlaceableInCell, DamageSource {
 
 	protected void shootMissile(int toX, int toY, ItemPile missile) {
 		loseItem(missile);
-		Cell end = seer.getRayEnd(toX, toY);
-		plane.addItem(missile, end.getX(), end.getY());
+		BasicCell end = seer.getRayEnd(toX, toY);
+		plane.addItem(missile, end.x(), end.y());
 //	Cell aimCell = plane.getCell(toX, toY);
 //	if (aimCell.character() != null) {
 //		aimCell.character().getDamage(10, DamageType.PLAIN);
@@ -116,9 +116,9 @@ public class Character implements CellPosition, PlaceableInCell, DamageSource {
 
 	protected void shootMissile(int toX, int toY, UniqueItem item) {
 		loseItem(item);
-		Cell end = seer.getRayEnd(toX, toY);
-		plane.addItem(item, end.getX(), end.getY());
-		Character character = plane.getCharacter(end.getX(), end.getY());
+		BasicCell end = seer.getRayEnd(toX, toY);
+		plane.addItem(item, end.x(), end.y());
+		Character character = plane.getCharacter(end.x(), end.y());
 		if (character != null) {
 			character.getDamage(10, DamageType.PLAIN, this);
 		}
@@ -282,7 +282,7 @@ public class Character implements CellPosition, PlaceableInCell, DamageSource {
 			int bufX = character.x;
 			int bufY = character.y;
 			character.move(nx, ny, MovingStyle.STEP);
-			if (!new Cell(x, y).isNear(nx, ny)) {
+			if (!new BasicCell(x, y).isNear(nx, ny)) {
 				move(bufX, bufY, MovingStyle.STEP);
 			}
 		}
@@ -299,7 +299,7 @@ public class Character implements CellPosition, PlaceableInCell, DamageSource {
 		return seer.canSee(x, y);
 	}
 
-	public Cell[] rays(int startX, int startY, int endX, int endY) {
+	public BasicCell[] rays(int startX, int startY, int endX, int endY) {
 		return seer.rays(startX, startY, endX, endY);
 	}
 
@@ -522,12 +522,12 @@ public class Character implements CellPosition, PlaceableInCell, DamageSource {
 	}
 
 	@Override
-	public int getX() {
+	public int x() {
 		return x;
 	}
 
 	@Override
-	public int getY() {
+	public int y() {
 		return y;
 	}
 
@@ -624,8 +624,8 @@ public class Character implements CellPosition, PlaceableInCell, DamageSource {
 				projectile,
 				x,
 				y,
-				flight.endCoordinate.getX(),
-				flight.endCoordinate.getY(),
+				flight.endCoordinate.x(),
+				flight.endCoordinate.y(),
 				EventProjectileFly.FlightStyle.PROPELLED
 			));
 		}
@@ -643,14 +643,14 @@ public class Character implements CellPosition, PlaceableInCell, DamageSource {
 	}
 
 	private ProjectileFlight computeProjectileFlightEndCoordinate(UniqueItem weapon, Item projectile, int toX, int toY) {
-		Cell endCoordinate = new Cell(toX, toY);
-		Cell[] vector = CellSegment.cells(x, y, toX, toY);
+		BasicCell endCoordinate = new BasicCell(toX, toY);
+		BasicCell[] vector = CellSegment.cells(x, y, toX, toY);
 		Character characterHit = null;
 		for (int i = 1; i < vector.length; i++) {
-			Cell c = vector[i];
-			if (plane.hasCharacter(c.getX(), c.getY()) &&
+			BasicCell c = vector[i];
+			if (plane.hasCharacter(c.x(), c.y()) &&
 				testProjectileHit(weapon, projectile, toX, toY)) {
-				characterHit = plane.getCharacter(c.getX(), c.getY());
+				characterHit = plane.getCharacter(c.x(), c.y());
 				endCoordinate = c;
 			}
 		}
@@ -738,10 +738,10 @@ public class Character implements CellPosition, PlaceableInCell, DamageSource {
 
 	private class ProjectileFlight {
 
-		private final Cell endCoordinate;
+		private final BasicCell endCoordinate;
 		private final Character characterHit;
 
-		public ProjectileFlight(Cell endCoordinate, Character characterHit) {
+		public ProjectileFlight(BasicCell endCoordinate, Character characterHit) {
 
 			this.endCoordinate = endCoordinate;
 			this.characterHit = characterHit;

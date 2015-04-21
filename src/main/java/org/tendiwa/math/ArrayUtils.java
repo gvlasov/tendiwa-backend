@@ -44,10 +44,4 @@ public final class ArrayUtils {
 		// TODO: Maybe it should return array.length instead of -1 when binary search didn't find anything?
 		return lastGreaterImid;
 	}
-
-	public static void main(String[] args) {
-		System.out.println(indexOfEqualOrHigher(new int[]{1, 2, 3, 4, 5}, 6));
-	}
-
-
 }

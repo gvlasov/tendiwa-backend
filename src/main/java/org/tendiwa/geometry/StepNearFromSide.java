@@ -17,23 +17,25 @@ public class StepNearFromSide {
 	}
 
 	public Placement inMiddle() {
-		return new Placement() {
-			@Override
-			public Rectangle placeIn(Placeable placeable, RectangleSystemBuilder builder) {
-				Rectangle existingRec = builder.getRectangleByPointer(pointer).getBounds();
-				Rectangle placeableBounds = placeable.getBounds();
-				int staticCoord = existingRec.getStaticCoordOfSide(fromSide) + (builder.rs.getBorderWidth() + 1) * fromSide.getGrowing();
-				int x, y;
-				int dynamicCoord = (fromSide.isVertical() ? existingRec.getX() : existingRec.getY()) + (existingRec.getDimensionBySide(fromSide) - placeableBounds.getDimensionBySide(fromSide)) / 2;
-				if (fromSide.isVertical()) {
-					x = dynamicCoord;
-					y = staticCoord;
-				} else {
-					x = staticCoord;
-					y = dynamicCoord;
-				}
-				return placeable.place(builder, x, y);
+		return (rectSet, builder) -> {
+			Rectangle existingRec = pointer.find(builder).bounds();
+			Rectangle placeableBounds = rectSet.bounds();
+			int staticCoord = existingRec.side(fromSide).getStaticCoord()
+				+ (builder.borderWidth() + 1) * fromSide.getGrowing();
+			int x, y;
+			int dynamicCoord = (fromSide.isVertical() ? existingRec.x() : existingRec.y())
+				+ (existingRec.side(fromSide).length() - placeableBounds.side(fromSide).length()) / 2;
+			if (fromSide.isVertical()) {
+				x = dynamicCoord;
+				y = staticCoord;
+			} else {
+				x = staticCoord;
+				y = dynamicCoord;
 			}
+			return new RectSetWithPrecomputedBounds(
+				rectSet.moveTo(x, y),
+				placeableBounds.moveTo(x, y)
+			);
 		};
 	}
 }

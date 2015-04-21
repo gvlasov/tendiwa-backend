@@ -8,7 +8,7 @@ import java.util.List;
 public final class SkeletonSerialization {
 	private static void outputPoints(List<Point2D> vertices) {
 		for (Point2D point : Lists.reverse(vertices)) {
-			System.out.println("new Point2D(" + point.x + ", " + point.y + "),");
+			System.out.println("new Point2D(" + point.x() + ", " + point.y() + "),");
 		}
 	}
 }

@@ -1,13 +1,13 @@
 package org.tendiwa.core.vision;
 
-import org.tendiwa.core.meta.CellPosition;
+import org.tendiwa.core.meta.Cell;
 
 public class ModifiableCellVisionCache extends CellVisionCache {
-	private final CellPosition character;
+	private final Cell character;
 	boolean visionCacheWritingEnabled = true;
 	boolean isVisionCacheEmpty = true;
 
-	ModifiableCellVisionCache(CellPosition character) {
+	ModifiableCellVisionCache(Cell character) {
 		this.character = character;
 		invalidate();
 	}
@@ -16,7 +16,7 @@ public class ModifiableCellVisionCache extends CellVisionCache {
 		if (!visionCacheWritingEnabled) {
 			return;
 		}
-		visionCache[x - character.getX() + Seer.VISION_RANGE][y - character.getY() + Seer.VISION_RANGE] = vision;
+		visionCache[x - character.x() + Seer.VISION_RANGE][y - character.y() + Seer.VISION_RANGE] = vision;
 		isVisionCacheEmpty = false;
 	}
 
@@ -33,7 +33,7 @@ public class ModifiableCellVisionCache extends CellVisionCache {
 	}
 
 	Visibility getVisionFromCache(int x, int y) {
-		return visionCache[x - character.getX() + Seer.VISION_RANGE][y - character.getY() + Seer.VISION_RANGE];
+		return visionCache[x - character.x() + Seer.VISION_RANGE][y - character.y() + Seer.VISION_RANGE];
 	}
 
 	public void disableWriting() {

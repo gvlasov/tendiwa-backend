@@ -16,7 +16,7 @@ public class JTSUtils {
 		Coordinate[] coordinates = new Coordinate[l + 1];
 		int i = 0;
 		for (Point2D point : vertices) {
-			coordinates[i++] = new Coordinate(point.x, point.y);
+			coordinates[i++] = new Coordinate(point.x(), point.y());
 		}
 		coordinates[l] = coordinates[0];
 		// JTS's isCCW assumes y-up

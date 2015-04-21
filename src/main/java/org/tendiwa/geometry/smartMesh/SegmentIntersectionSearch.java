@@ -1,6 +1,6 @@
 package org.tendiwa.geometry.smartMesh;
 
-import org.tendiwa.core.meta.Range;
+import org.tendiwa.core.meta.BasicRange;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.RayIntersection;
 import org.tendiwa.geometry.Segment2D;
@@ -33,7 +33,7 @@ final class SegmentIntersectionSearch implements EventSearch {
 	}
 
 	private void tryIntersecting(Segment2D segment) {
-		if (roadSticksToCurrentResult(segment)) {
+		if (segment.oneOfEndsIs(sourceNode) || segment.oneOfEndsIs(targetNode)) {
 			return;
 		}
 		if (isSegmentIntersectionProbable(sourceNode, targetNode, segment.start, segment.end)) {
@@ -59,20 +59,6 @@ final class SegmentIntersectionSearch implements EventSearch {
 	}
 
 	/**
-	 * Checks if one of road's vertices is {@link #sourceNode} or {@link #targetNode}.
-	 *
-	 * @param road
-	 * 	A road.
-	 * @return true if a road has {@link #sourceNode} or {@link #targetNode} as one of its ends, false otherwise.
-	 */
-	private boolean roadSticksToCurrentResult(Segment2D road) {
-		return road.start == sourceNode
-			|| road.end == sourceNode
-			|| road.start == targetNode
-			|| road.end == targetNode;
-	}
-
-	/**
 	 * [Kelly 4.3.3.4]
 	 * <p>
 	 * In [Kelly 4.3.3.4] there is no pseudocode for this function, it is described in the second paragraph.
@@ -95,6 +81,7 @@ final class SegmentIntersectionSearch implements EventSearch {
 		Point2D cdStart,
 		Point2D cdEnd
 	) {
+		// TODO: Replace points with segments
 		PointPosition pointPosition = new PointPosition(abStart, abEnd, cdStart);
 		PointPosition pointPosition2 = new PointPosition(abStart, abEnd, cdEnd);
 		if (Math.signum(pointPosition.s) == Math.signum(pointPosition2.s)) {
@@ -108,7 +95,7 @@ final class SegmentIntersectionSearch implements EventSearch {
          * The difference is that in my version (and in real cases) a line CD with C on an extension
          * and 0<D.r<1 should be tested for an intersection too.
          */
-		return Range.contains(0, 1, pointPosition.r) && Range.contains(0, 1, pointPosition2.r)
+		return BasicRange.contains(0, 1, pointPosition.r) && BasicRange.contains(0, 1, pointPosition2.r)
 			|| !(pointPosition.r > 1 && pointPosition2.r > 1 || pointPosition.r < 0 && pointPosition2.r < 0);
 	}
 }

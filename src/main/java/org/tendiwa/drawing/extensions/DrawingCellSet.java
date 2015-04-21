@@ -14,7 +14,7 @@ public final class DrawingCellSet {
 	public static DrawingAlgorithm<? super FiniteCellSet> withColor(Color color) {
 		requireNonNull(color);
 		return (what, canvas) -> {
-			for (Cell cell : what) {
+			for (BasicCell cell : what) {
 				canvas.drawCell(cell, color);
 			}
 		};
@@ -31,7 +31,7 @@ public final class DrawingCellSet {
 	public static DrawingAlgorithm<? super CellSet> onWholeCanvasWithColor(Color color) {
 		requireNonNull(color);
 		return (what, canvas) -> {
-			for (Cell cell : new Rectangle(0, 0, canvas.getWidth(), canvas.getHeight())) {
+			for (BasicCell cell : new Rectangle(0, 0, canvas.getWidth(), canvas.getHeight())) {
 				if (what.contains(cell)) {
 					canvas.drawCell(cell, color);
 				}

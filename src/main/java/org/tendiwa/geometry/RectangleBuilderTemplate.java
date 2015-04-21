@@ -1,43 +1,44 @@
 package org.tendiwa.geometry;
 
-public abstract class RectangleBuilderTemplate implements Placeable {
-	private RectangleSystem rs;
+import com.google.common.collect.ImmutableCollection;
 
-	public abstract RectangleSystem build();
+import java.util.Objects;
+import java.util.function.Supplier;
 
-	private RectangleSystem getRectangleSystem() {
-		if (rs == null) {
-			rs = build();
+public final class RectangleBuilderTemplate implements RectSet {
+
+	private final Supplier<RectSet> howToBuild;
+	private RectSet rectSet;
+
+	public RectangleBuilderTemplate(Supplier<RectSet> howTobuild) {
+		Objects.requireNonNull(howTobuild);
+		this.howToBuild = howTobuild;
+	}
+
+	@Override
+	public ImmutableCollection<NamedRectSet> parts() {
+		return getInstance().parts();
+	}
+
+	private RectSet getInstance() {
+		if (rectSet == null) {
+			rectSet = howToBuild.get();
 		}
-		return rs;
+		return rectSet;
 	}
 
 	@Override
-	public Rectangle getBounds() {
-		return getRectangleSystem().getBounds();
+	public Rectangle bounds() {
+		return getInstance().bounds();
 	}
 
 	@Override
-	public Rectangle place(RectangleSystemBuilder builder, int x, int y) {
-		return getRectangleSystem().place(builder, x, y);
+	public RectSet part(String name) {
+		return getInstance().part(name);
 	}
 
 	@Override
-	public StepPlaceNextAt repeat(int count) {
-		return null;
-	}
-
-	@Override
-	public void prebuild(RectangleSystemBuilder builder) {
-	}
-
-	@Override
-	public Placeable rotate(Rotation rotation) {
-		return getRectangleSystem().rotate(rotation);
-	}
-
-	@Override
-	public Iterable<Rectangle> getRectangles() {
-		return getRectangleSystem().getRectangles();
+	public RectSet nestedPart(String name) {
+		return getInstance().nestedPart(name);
 	}
 }

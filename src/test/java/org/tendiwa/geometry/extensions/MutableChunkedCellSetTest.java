@@ -1,7 +1,7 @@
 package org.tendiwa.geometry.extensions;
 
 import org.junit.Test;
-import org.tendiwa.geometry.Cell;
+import org.tendiwa.geometry.BasicCell;
 import org.tendiwa.geometry.Rectangle;
 
 import static org.junit.Assert.*;
@@ -26,10 +26,10 @@ public class MutableChunkedCellSetTest {
 		Rectangle r1 = new Rectangle(100, 100, 30, 30);
 		Rectangle r2 = new Rectangle(200, 200, 67, 79);
 		assert !r1.intersectionWith(r2).isPresent();
-		for (Cell cell : r1) {
+		for (BasicCell cell : r1) {
 			cells.add(cell);
 		}
-		for (Cell cell : r2) {
+		for (BasicCell cell : r2) {
 			cells.add(cell);
 		}
 		assertEquals(

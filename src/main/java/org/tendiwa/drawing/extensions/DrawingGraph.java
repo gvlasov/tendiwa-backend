@@ -4,7 +4,7 @@ import com.google.common.collect.Iterators;
 import org.jgrapht.UndirectedGraph;
 import org.tendiwa.drawing.Colors;
 import org.tendiwa.drawing.DrawingAlgorithm;
-import org.tendiwa.geometry.Cell;
+import org.tendiwa.geometry.BasicCell;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
@@ -27,14 +27,14 @@ public class DrawingGraph {
 		Function<V, Double> y
 	) {
 		return (shape, canvas) -> {
-			DrawingAlgorithm<Cell> pointDrawing = DrawingCell.withColorAndSize(Color.RED, 6);
+			DrawingAlgorithm<BasicCell> pointDrawing = DrawingCell.withColorAndSize(Color.RED, 6);
 			for (E e : shape.edgeSet()) {
 				V source = shape.getEdgeSource(e);
 				V target = shape.getEdgeTarget(e);
 				canvas.drawLine(x.apply(source), y.apply(source), x.apply(target), y.apply(target), Color.RED);
 			}
 			for (V v : shape.vertexSet()) {
-				canvas.draw(new Cell(
+				canvas.draw(new BasicCell(
 					x.apply(v).intValue(),
 					y.apply(v).intValue()
 				), pointDrawing);
@@ -96,7 +96,7 @@ public class DrawingGraph {
 		return (shape, canvas) -> {
 			MinimumCycleBasis<Point2D, Segment2D> mcb = PlanarGraphs.minimumCycleBasis(shape);
 			for (Point2D p : mcb.isolatedVertexSet()) {
-				canvas.draw(new Cell(
+				canvas.draw(new BasicCell(
 					(int) p.x,
 					(int) p.y
 				), DrawingCell.withColorAndSize(vertexColor, 3));

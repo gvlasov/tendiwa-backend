@@ -7,8 +7,8 @@ public class RenderPlayer {
 	private int y;
 
 	public RenderPlayer(Character player) {
-		x = player.getX();
-		y = player.getY();
+		x = player.x();
+		y = player.y();
 	}
 
 	public int getY() {

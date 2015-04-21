@@ -3,12 +3,6 @@ package org.tendiwa.geometry;
 import org.tendiwa.core.*;
 
 public class DSL {
-	public static final RectanglePointer LAST_RECTANGLE = RectanglePointer.LAST_RECTANGLE;
-	public static final RectanglePointer FIRST_RECTANGLE = RectanglePointer.FIRST_RECTANGLE;
-	public static final RectanglePointer REMEMBERED_RECTANGLE = RectanglePointer.REMEMBERED_RECTANGLE;
-	public static final RectanglePointer LAST_BOUNDING_REC = RectanglePointer.LAST_BOUNDING_REC;
-	public static final RectanglePointer REMEMBERED_BOUNDING_REC = RectanglePointer.REMEMBERED_BOUNDING_REC;
-	public static final RectanglePointer FOUND_RECTANGLES = RectanglePointer.FOUND_RECTANGLES;
 	public static final Rotation CLOCKWISE = Rotation.CLOCKWISE;
 	public static final Rotation COUNTER_CLOCKWISE = Rotation.COUNTER_CLOCKWISE;
 	public static final Rotation HALF_CIRCLE = Rotation.HALF_CIRCLE;
@@ -25,7 +19,7 @@ public class DSL {
 	}
 
 	public static Rectangle rectangle(int width, int height) {
-		return new Rectangle(0, 0, width, height);
+		return new BasicRectangle(0, 0, width, height);
 	}
 
 	public static RectangleSystemBuilder builder(int borderWidth) {
@@ -40,25 +34,18 @@ public class DSL {
 		return new StepNear(pointer);
 	}
 
-	public static StepUnitedWith unitedWith(RectanglePointer pointer) {
+	public static StepUnitedWith unitedWith(IntimateRectanglePointer pointer) {
 		return new StepUnitedWith(pointer);
 	}
 
 	public static Placement somewhere() {
-		return new Placement() {
-			@Override
-			public Rectangle placeIn(Placeable placeable, RectangleSystemBuilder builder) {
-				return placeable.place(builder, 0, 0);
-			}
-		};
+		return (placeable, builder) -> placeable;
 	}
 
 	public static Placement atPoint(final int x, final int y) {
-		return new Placement() {
-			@Override
-			public Rectangle placeIn(Placeable placeable, RectangleSystemBuilder builder) {
-				return placeable.place(builder, x, y);
-			}
+		return (placeable, builder) -> {
+			Rectangle bounds = placeable.bounds();
+			return placeable.translate(x - bounds.x(), y - bounds.y());
 		};
 	}
 
@@ -66,8 +53,8 @@ public class DSL {
 		return new PathBuilder(builder);
 	}
 
-	public static Cell cell(int x, int y) {
-		return new Cell(x, y);
+	public static BasicCell cell(int x, int y) {
+		return new BasicCell(x, y);
 	}
 
 	public static StepRectangle recursivelySplitRec(int width, int height) {

@@ -9,7 +9,7 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.graphs.algorithms.jerrumSinclair.QuasiJerrumSinclairMarkovChain;
-import org.tendiwa.math.IntegerPermutationGenerator;
+import org.tendiwa.math.FisherYatesPermutation;
 
 import java.util.List;
 import java.util.Random;
@@ -17,6 +17,7 @@ import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
+import static org.tendiwa.geometry.GeometryPrimitives.point2D;
 
 public class JerrumSinclairMarkovChainSimulationResultExplorer implements Runnable {
 
@@ -33,10 +34,10 @@ public class JerrumSinclairMarkovChainSimulationResultExplorer implements Runnab
 		);
 		// Partition 1 vertices
 		List<Point2D> partition1 = range(0, 11)
-			.mapToObj(i -> new Point2D(40, 20 + 20 * i))
+			.mapToObj(i -> point2D(40, 20 + 20 * i))
 			.collect(toList());
 		List<Point2D> partition2 = range(0, 11)
-			.mapToObj(i -> new Point2D(80, 20 + 20 * i))
+			.mapToObj(i -> point2D(80, 20 + 20 * i))
 			.collect(toList());
 		partition1.forEach(underlyingGraph::addVertex);
 		partition2.forEach(underlyingGraph::addVertex);
@@ -45,13 +46,15 @@ public class JerrumSinclairMarkovChainSimulationResultExplorer implements Runnab
 		int numberOfEdges = 6;
 		for (int i = 0; i < size; i++) {
 			Point2D vertex = partition1.get(i);
-			for (int number : IntegerPermutationGenerator.generateUsingFisherYates(size, numberOfEdges, new Random(i))) {
-				Segment2D edge = underlyingGraph.addEdge(
-					vertex,
-					partition2.get(number)
-				);
-				assert edge != null;
-			}
+			new FisherYatesPermutation(size, numberOfEdges, new Random(i))
+				.stream()
+				.forEach(number -> {
+					Segment2D edge = underlyingGraph.addEdge(
+						vertex,
+						partition2.get(number)
+					);
+					assert edge != null;
+				});
 		}
 		ImmutableSet<Point2D> onePartition = ImmutableSet.copyOf(partition1);
 		Set<Segment2D> matching = new HopcroftKarpBipartiteMatching<>(
@@ -62,7 +65,7 @@ public class JerrumSinclairMarkovChainSimulationResultExplorer implements Runnab
 		for (int i = 0; i < NUMBER_OF_MATCHINGS_TO_GENERATE; i++) {
 			UndirectedGraph<Point2D, Segment2D> matchingGraph = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
 			underlyingGraph.vertexSet().forEach(matchingGraph::addVertex);
-			matching.forEach(e -> matchingGraph.addEdge(e.start, e.end, e));
+			matching.forEach(e -> matchingGraph.addEdge(e.start(), e.end(), e));
 			UndirectedGraph<Point2D, Segment2D> generatedMatching = QuasiJerrumSinclairMarkovChain
 				.inGraph(underlyingGraph)
 				.withInitialMatching(matching)

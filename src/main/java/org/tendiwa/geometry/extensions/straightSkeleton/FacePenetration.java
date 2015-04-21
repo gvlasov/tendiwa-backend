@@ -1,17 +1,16 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
-import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingPolygon;
-import org.tendiwa.drawing.extensions.DrawingSegment2D;
+import org.tendiwa.geometry.ParallelSegment;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Polygon;
 import org.tendiwa.geometry.Segment2D;
 
-import java.awt.Color;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.Queue;
+
+import static org.tendiwa.geometry.GeometryPrimitives.segment2D;
 
 final class FacePenetration implements Iterator<Point2D> {
 
@@ -33,11 +32,11 @@ final class FacePenetration implements Iterator<Point2D> {
 	private Segment2D intrudeFaceFront(Polygon face, double depth) {
 //		TestCanvas.canvas.draw(new Segment2D(face.get(0), face.get(face.size() - 1)), DrawingSegment2D.withColorThin(Color
 //			.magenta));
-		return faceFront(face).createParallelSegment(depth, true);
+		return new ParallelSegment(faceFront(face), depth, true);
 	}
 
 	public Segment2D faceFront(Polygon face) {
-		return new Segment2D(
+		return segment2D(
 			face.get(0),
 			face.get(face.size() - 1)
 		);

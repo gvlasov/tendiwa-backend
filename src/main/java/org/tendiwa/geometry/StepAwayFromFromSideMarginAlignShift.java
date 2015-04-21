@@ -9,7 +9,13 @@ public class StepAwayFromFromSideMarginAlignShift implements Placement {
 	private final CardinalDirection alignmentSide;
 	private final int shift;
 
-	StepAwayFromFromSideMarginAlignShift(RectanglePointer pointer, CardinalDirection side, int margin, CardinalDirection alignmentSide, int shift) {
+	StepAwayFromFromSideMarginAlignShift(
+		RectanglePointer pointer,
+		CardinalDirection side,
+		int margin,
+		CardinalDirection alignmentSide,
+		int shift
+	) {
 		this.pointer = pointer;
 		this.side = side;
 		this.margin = margin;
@@ -18,20 +24,22 @@ public class StepAwayFromFromSideMarginAlignShift implements Placement {
 	}
 
 	@Override
-	public Rectangle placeIn(Placeable placeable, RectangleSystemBuilder builder) {
-		Rectangle placeableBounds = placeable.getBounds();
-		Rectangle existingRec = builder.getRectangleByPointer(pointer).getBounds();
-		int staticCoord = existingRec.getStaticCoordOfSide(side) + (builder.rs.getBorderWidth() + 1 + margin) * side.getGrowing();
+	public RectSet placeIn(RectSet rectSet, RectangleSystemBuilder builder) {
+		Rectangle placeableBounds = rectSet.bounds();
+		Rectangle existingRec = pointer.find(builder).bounds();
+		int staticCoord = existingRec.side(side).getStaticCoord()
+			+ (builder.borderWidth() + 1 + margin) * side.getGrowing();
 		if (side == Directions.N) {
-			staticCoord -= placeableBounds.getHeight();
+			staticCoord -= placeableBounds.height();
 		} else if (side == Directions.W) {
-			staticCoord -= placeableBounds.getWidth();
+			staticCoord -= placeableBounds.width();
 		}
-		int dynamicCoord = (side.isVertical() ? existingRec.getX() : existingRec.getY()) + shift * alignmentSide.getGrowing();
+		int dynamicCoord = (side.isVertical() ? existingRec.x() : existingRec.y())
+			+ shift * alignmentSide.getGrowing();
 		if (alignmentSide == Directions.E) {
-			dynamicCoord += existingRec.getWidth() - placeableBounds.getWidth();
+			dynamicCoord += existingRec.width() - placeableBounds.width();
 		} else if (alignmentSide == Directions.S) {
-			dynamicCoord += existingRec.getHeight() - placeableBounds.getHeight();
+			dynamicCoord += existingRec.height() - placeableBounds.height();
 		}
 		int x, y;
 		if (side.isVertical()) {
@@ -41,6 +49,11 @@ public class StepAwayFromFromSideMarginAlignShift implements Placement {
 			x = staticCoord;
 			y = dynamicCoord;
 		}
-		return placeable.place(builder, x, y);
+		int dx = x - placeableBounds.x();
+		int dy = y - placeableBounds.y();
+		return new RectSetWithPrecomputedBounds(
+			rectSet.translate(dx, dy),
+			placeableBounds.translate(dx, dy)
+		);
 	}
 }

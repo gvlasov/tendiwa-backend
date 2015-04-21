@@ -17,7 +17,7 @@ import org.tendiwa.geometry.Chain2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.smartMesh.Segment2DSmartMesh;
+import org.tendiwa.geometry.smartMesh.SmartMesh2D;
 import org.tendiwa.geometry.smartMesh.SegmentNetworkBuilder;
 import org.tendiwa.settlements.utils.BuildingPlacesFilters;
 import org.tendiwa.settlements.utils.RectangleWithNeighbors;
@@ -48,7 +48,7 @@ public class BigCityDemo implements Runnable {
 		drawGraph(graph);
 
 		IntStream.range(0, 1).forEach(seed -> {
-			Segment2DSmartMesh segment2DSmartMesh = createMesh(graph, seed);
+			SmartMesh2D segment2DSmartMesh = createMesh(graph, seed);
 			buildAndDrawLots(segment2DSmartMesh);
 //			leavesAnimation(segment2DSmartMesh);
 			drawBlocks(segment2DSmartMesh);
@@ -59,7 +59,7 @@ public class BigCityDemo implements Runnable {
 		TestCanvas.canvas.draw(graph, DrawingGraph.withColorAndVertexSize(Color.red, 2));
 	}
 
-	private Segment2DSmartMesh createMesh(SimpleGraph<Point2D, Segment2D> graph, int seed) {
+	private SmartMesh2D createMesh(SimpleGraph<Point2D, Segment2D> graph, int seed) {
 		return new SegmentNetworkBuilder(graph)
 			.withDefaults()
 			.withMaxStartPointsPerCycle(5)
@@ -72,7 +72,7 @@ public class BigCityDemo implements Runnable {
 			.build();
 	}
 
-	private void drawBlocks(Segment2DSmartMesh segment2DSmartMesh) {
+	private void drawBlocks(SmartMesh2D segment2DSmartMesh) {
 		segment2DSmartMesh.networks()
 			.stream()
 			.flatMap(n -> n.enclosedBlocks().stream())
@@ -94,14 +94,14 @@ public class BigCityDemo implements Runnable {
 		TestCanvas.canvas = canvas;
 	}
 
-	private void buildAndDrawLots(Segment2DSmartMesh segment2DSmartMesh) {
+	private void buildAndDrawLots(SmartMesh2D segment2DSmartMesh) {
 		UndirectedGraph<Point2D, Segment2D> allRoads = RoadRejector.rejectPartOfNetworksBorders(
-			segment2DSmartMesh.getFullRoadGraph(),
+			segment2DSmartMesh.graph(),
 			segment2DSmartMesh,
 			0.0,
 			new Random(1)
 		);
-//			UndirectedGraph<Point2D, Segment2D> allRoads = pathGeometry.getFullRoadGraph();
+//			UndirectedGraph<Point2D, Segment2D> allRoads = pathGeometry.graph();
 		Set<Chain2D> streets = DetectedStreets
 			.toChain2DStream(allRoads)
 			.collect(Collectors.toImmutableSet());
@@ -126,17 +126,17 @@ public class BigCityDemo implements Runnable {
 		drawLots(recGroups);
 	}
 
-	private void leavesAnimation(Segment2DSmartMesh segment2DSmartMesh) {
+	private void leavesAnimation(SmartMesh2D segment2DSmartMesh) {
 		TestCanvas canvasB = new TestCanvas(1, 800, 600);
 		GifBuilder gif = new GifBuilder(canvasB, 1, Logger.getRootLogger());
 		canvasB.fillBackground(Color.black);
-		canvasB.draw(segment2DSmartMesh.getFullRoadGraph(), DrawingGraph.withColorAndVertexSize(Color.red, 3));
+		canvasB.draw(segment2DSmartMesh.graph(), DrawingGraph.withColorAndVertexSize(Color.red, 3));
 		ImmutableSet<Segment2D> whats = segment2DSmartMesh.innerTreeSegmentsEnds();
 		gif.saveFrame();
 		canvasB.drawAll(whats, DrawingSegment2D.withColorThin(Color.black));
 		canvasB.drawAll(whats, DrawingSegment2D.withColorThin(Color.black));
 		canvasB.drawAll(whats, DrawingSegment2D.withColorThin(Color.black));
-		canvasB.drawAll(segment2DSmartMesh.getFullRoadGraph().vertexSet(), DrawingPoint2D.withColorAndSize(Color
+		canvasB.drawAll(segment2DSmartMesh.graph().vertexSet(), DrawingPoint2D.withColorAndSize(Color
 			.red, 3));
 		gif.saveFrame();
 		gif.saveAnimation("/home/suseika/test.gif");

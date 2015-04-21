@@ -1,8 +1,8 @@
 package org.tendiwa.geometry.extensions.polygonRasterization;
 
+import org.tendiwa.core.meta.Cell;
 import org.tendiwa.core.meta.Utils;
 import org.tendiwa.geometry.BoundedCellSet;
-import org.tendiwa.geometry.Cell;
 import org.tendiwa.geometry.CellSegment;
 import org.tendiwa.geometry.Point2D;
 
@@ -35,18 +35,18 @@ public final class PolygonRasterizer {
 		int size = poly.size();
 		for (int i = 0; i < size; i++) {
 			Point2D vertex = poly.get(i);
-			if (minXd > vertex.x) {
-				minXd = vertex.x;
+			if (minXd > vertex.x()) {
+				minXd = vertex.x();
 				indexWithMinX = i;
 			}
-			if (minYd > vertex.y) {
-				minYd = vertex.y;
+			if (minYd > vertex.y()) {
+				minYd = vertex.y();
 			}
-			if (maxXd < vertex.x) {
-				maxXd = vertex.x;
+			if (maxXd < vertex.x()) {
+				maxXd = vertex.x();
 			}
-			if (maxYd < vertex.y) {
-				maxYd = vertex.y;
+			if (maxYd < vertex.y()) {
+				maxYd = vertex.y();
 			}
 		}
 		int minX = (int) Math.floor(minXd);
@@ -71,25 +71,25 @@ public final class PolygonRasterizer {
 			for (int i = 0; i < numberOfVertices; i++) {
 				vertex = polygon.get(i);
 				Point2D nextVertex = polygon.get(i + 1 == numberOfVertices ? 0 : i + 1);
-				if (vertex.y < y && nextVertex.y > y || vertex.y > y && nextVertex.y < y) {
+				if (vertex.y() < y && nextVertex.y() > y || vertex.y() > y && nextVertex.y() < y) {
 					numberOfIntersections++;
-				} else if (vertex.y == y) {
+				} else if (vertex.y() == y) {
 					/*
 					If we encounter a point right on the horizontal line y, then there are 0+ points after it on line
 					 y (there will usually be 0 points after it).
 					 */
 					int[] segment = new int[2];
 					segment[0] = i;
-					while (i < numberOfVertices && polygon.get(i + 1 == numberOfVertices ? 0 : i + 1).y == y) {
+					while (i < numberOfVertices && polygon.get(i + 1 == numberOfVertices ? 0 : i + 1).y() == y) {
 						// Modification of the counter!
 						i++;
 					}
 					segment[1] = i == numberOfVertices ? 0 : i;
 					Point2D point1 = polygon.get(segment[0]);
 					Point2D point2 = polygon.get(segment[1]);
-					assert point1.y == point2.y;
+					assert point1.y() == point2.y();
 					boolean westToEast = true;
-					if (point1.x > point2.x) {
+					if (point1.x() > point2.x()) {
 						// Index of a point with lesser x-coordinate must be first.
 						westToEast = false;
 						int buf = segment[0];
@@ -104,7 +104,7 @@ public final class PolygonRasterizer {
 					Point2D eastFromLastPoint = polygon.get(
 						westToEast ? nextIndexAfterEastern : Utils.previousIndex(segment[1], numberOfVertices)
 					);
-					if (Math.signum(westFromFirstPoint.y - y) == -Math.signum(eastFromLastPoint.y - y)) {
+					if (Math.signum(westFromFirstPoint.y() - y) == -Math.signum(eastFromLastPoint.y() - y)) {
 						if (consecutiveSegments == null) {
 							consecutiveSegments = new LinkedList<>();
 						}
@@ -120,7 +120,7 @@ public final class PolygonRasterizer {
 			vertex = polygon.get(0);
 			for (int i = 0; i < numberOfVertices; i++) {
 				Point2D nextVertex = polygon.get(i + 1 == numberOfVertices ? 0 : i + 1);
-				if (vertex.y < y && nextVertex.y > y || vertex.y > y && nextVertex.y < y) {
+				if (vertex.y() < y && nextVertex.y() > y || vertex.y() > y && nextVertex.y() < y) {
 					PointSlidingOnEdge pointSlidingOnEdge = map.get(vertex);
 					pointSlidingOnEdge.setToIntersection(vertex, nextVertex, y);
 					intersections[j++] = pointSlidingOnEdge;
@@ -140,13 +140,13 @@ public final class PolygonRasterizer {
 					valueA = ((PointSlidingOnEdge) a).x;
 				} else {
 					assert a instanceof int[];
-					valueA = polygon.get(((int[]) a)[0]).x;
+					valueA = polygon.get(((int[]) a)[0]).x();
 				}
 				if (b instanceof PointSlidingOnEdge) {
 					valueB = ((PointSlidingOnEdge) b).x;
 				} else {
 					assert a instanceof int[];
-					valueB = polygon.get(((int[]) b)[0]).x;
+					valueB = polygon.get(((int[]) b)[0]).x();
 				}
 				return Double.compare(valueA, valueB);
 			});
@@ -156,8 +156,8 @@ public final class PolygonRasterizer {
 			if (intersections.length == 1) {
 				assert intersections[0] instanceof int[];
 				int[] array = (int[]) intersections[0];
-				double ax = polygon.get(array[0]).x;
-				double bx = polygon.get(array[1]).x;
+				double ax = polygon.get(array[0]).x();
+				double bx = polygon.get(array[1]).x();
 				assert bx > ax;
 				Arrays.fill(
 					bitmap[y - minY],
@@ -183,7 +183,7 @@ public final class PolygonRasterizer {
 						if (nextGreaterXIndex == numberOfVertices) {
 							nextGreaterXIndex = 0;
 						}
-						ax = polygon.get(aint[0]).x;
+						ax = polygon.get(aint[0]).x();
 					}
 					if (b instanceof PointSlidingOnEdge) {
 						bx = ((PointSlidingOnEdge) b).x;
@@ -196,7 +196,7 @@ public final class PolygonRasterizer {
 						if (nextGreaterXIndex == numberOfVertices) {
 							nextGreaterXIndex = 0;
 						}
-						bx = polygon.get(bint[1]).x;
+						bx = polygon.get(bint[1]).x();
 					}
 					assert bx > ax;
 					Arrays.fill(
@@ -231,13 +231,11 @@ public final class PolygonRasterizer {
 		for (int i = 0; i < polygonSize; i++) {
 			Point2D nextVertex = polygon.get(Utils.nextIndex(i, polygonSize));
 			Cell[] cells = CellSegment.cells(
-				(int) Math.round(vertex.x),
-				(int) Math.round(vertex.y),
-				(int) Math.round(nextVertex.x),
-				(int) Math.round(nextVertex.y)
+				vertex.toCell(),
+				nextVertex.toCell()
 			);
 			for (Cell cell : cells) {
-				bitmap[cell.y-minY][cell.x-minX] = true;
+				bitmap[cell.y()-minY][cell.x()-minX] = true;
 			}
 			vertex = nextVertex;
 		}

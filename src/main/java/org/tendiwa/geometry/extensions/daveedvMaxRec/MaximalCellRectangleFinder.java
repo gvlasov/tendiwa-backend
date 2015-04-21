@@ -1,6 +1,7 @@
 package org.tendiwa.geometry.extensions.daveedvMaxRec;
 
 
+import org.tendiwa.geometry.BasicRectangle;
 import org.tendiwa.geometry.Rectangle;
 
 import java.util.Deque;
@@ -84,7 +85,7 @@ public class MaximalCellRectangleFinder {
 		if (best_ur[0] == -1 && best_ur[1] == -1) {
 			return Optional.empty();
 		}
-		return Optional.of(new Rectangle(
+		return Optional.of(new BasicRectangle(
 			best_ll[0],
 			best_ll[1],
 			best_ur[0] - best_ll[0] + 1,

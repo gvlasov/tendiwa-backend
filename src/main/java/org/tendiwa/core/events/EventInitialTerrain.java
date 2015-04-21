@@ -7,7 +7,7 @@ import org.tendiwa.core.clients.RenderBorder;
 import org.tendiwa.core.clients.RenderCell;
 import org.tendiwa.core.observation.Event;
 import org.tendiwa.core.vision.*;
-import org.tendiwa.geometry.Cell;
+import org.tendiwa.geometry.BasicCell;
 
 public class EventInitialTerrain implements Event {
 	public final ImmutableList<RenderCell> seenCells;
@@ -30,13 +30,13 @@ public class EventInitialTerrain implements Event {
 		zLevel = plane.getLevel();
 //	Seer seer = backend.getPlayerCharacter().getSeer();
 		Visibility[][] visionCache = seer.getVisionCache().getContent();
-		Cell startPoint = seer.getActualVisionRecStartPoint();
-		Cell theoreticalStartPoint = seer.getTheoreticalVisionRecStartPoint();
-		for (int i = startPoint.getX() - theoreticalStartPoint.getX(); i < ModifiableCellVisionCache.VISION_CACHE_WIDTH; i++) {
-			for (int j = startPoint.getY() - theoreticalStartPoint.getY(); j < ModifiableCellVisionCache.VISION_CACHE_WIDTH; j++) {
+		BasicCell startPoint = seer.getActualVisionRecStartPoint();
+		BasicCell theoreticalStartPoint = seer.getTheoreticalVisionRecStartPoint();
+		for (int i = startPoint.x() - theoreticalStartPoint.x(); i < ModifiableCellVisionCache.VISION_CACHE_WIDTH; i++) {
+			for (int j = startPoint.y() - theoreticalStartPoint.y(); j < ModifiableCellVisionCache.VISION_CACHE_WIDTH; j++) {
 				if (visionCache[i][j] == Visibility.VISIBLE) {
-					int x = theoreticalStartPoint.getX() + i;
-					int y = theoreticalStartPoint.getY() + j;
+					int x = theoreticalStartPoint.x() + i;
+					int y = theoreticalStartPoint.y() + j;
 					seenCellsBuilder.add(new RenderCell(
 						world,
 						x,

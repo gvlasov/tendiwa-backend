@@ -262,13 +262,13 @@ public class BlockRegion extends EnclosedBlock {
 			if (positions.get(node) > 0 && positions.get(node.next) <= 0
 				|| positions.get(node) <= 0 && positions.get(node.next) > 0) {
 				Vector2D cd = Vector2D.fromStartToEnd(node.point, node.next.point);
-				double denom = ab.getX() * cd.getY() - ab.getY() * cd.getX();
+				double denom = ab.x() * cd.y() - ab.y() * cd.x();
 				if (Math.abs(denom) < EPSILON) {
 					throw new GeometryException("Trying to find an intersection of parallel lines");
 				}
 				Vector2D ca = Vector2D.fromStartToEnd(node.point, a);
-				double r = (ca.getY() * cd.getX() - ca.getX() * cd.getY()) / denom;
-				double s = (ca.getY() * ab.getX() - ca.getX() * ab.getY()) / denom;
+				double r = (ca.y() * cd.x() - ca.x() * cd.y()) / denom;
+				double s = (ca.y() * ab.x() - ca.x() * ab.y()) / denom;
 				Node intersectionEdge;
 				if (Math.abs(positions.get(node)) < EPSILON) {
 					intersectionEdge = node;
@@ -381,7 +381,7 @@ public class BlockRegion extends EnclosedBlock {
 		Node node = region.startNode;
 		do {
 			Vector2D ac = Vector2D.fromStartToEnd(a, node.point);
-			leftOrRightPositions.put(node, (-ac.getY() * ab.getX() + ac.getX() * ab.getY()) / lsq);
+			leftOrRightPositions.put(node, (-ac.y() * ab.x() + ac.x() * ab.y()) / lsq);
 			node = node.next;
 		} while (node != region.startNode);
 		return leftOrRightPositions;

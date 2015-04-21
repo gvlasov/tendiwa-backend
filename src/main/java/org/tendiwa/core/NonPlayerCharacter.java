@@ -7,7 +7,7 @@ import org.tendiwa.core.meta.Coordinate;
 import org.tendiwa.core.observation.Observable;
 import org.tendiwa.core.player.SinglePlayerMode;
 import org.tendiwa.core.vision.Seer;
-import org.tendiwa.geometry.Cell;
+import org.tendiwa.geometry.BasicCell;
 import org.tendiwa.pathfinding.dijkstra.PathTable;
 import org.tendiwa.pathfinding.dijkstra.Paths;
 
@@ -294,10 +294,10 @@ public class NonPlayerCharacter extends Character {
 				if (destX == x && destY == y) {
 					idle();
 				} else {
-					LinkedList<Cell> dest = Paths.getPath(new Cell(x,y), new Cell(destX, destY), getPathWalkerOverCharacters(),
+					LinkedList<BasicCell> dest = Paths.getPath(new BasicCell(x,y), new BasicCell(destX, destY), getPathWalkerOverCharacters(),
 						MAX_PATH_TABLE_DEPTH);
-					if (dest.getFirst().getX() != x || dest.getFirst().getY() != y) {
-						step(dest.getFirst().getX(), dest.getFirst().getY());
+					if (dest.getFirst().x() != x || dest.getFirst().y() != y) {
+						step(dest.getFirst().x(), dest.getFirst().y());
 					} else {
 						idle();
 					}
@@ -307,18 +307,18 @@ public class NonPlayerCharacter extends Character {
 				/* */// Maybe this part should be main, and main part should be
 				// deleted?!
 				// If we always use imaginary table.
-				PathTable imaginaryPathTable = Paths.getPathTable(new Cell(x, y), getPathWalkerOverCharacters(), MAX_PATH_TABLE_DEPTH);
-				imaginaryPathTable.getPath(new Cell(activeEnemy.x, activeEnemy.y));
+				PathTable imaginaryPathTable = Paths.getPathTable(new BasicCell(x, y), getPathWalkerOverCharacters(), MAX_PATH_TABLE_DEPTH);
+				imaginaryPathTable.getPath(new BasicCell(activeEnemy.x, activeEnemy.y));
 				if (!imaginaryPathTable.isCellComputed(activeEnemy.x, activeEnemy.y)) {
 					// If path is blocked by characters
-					imaginaryPathTable = Paths.getPathTable(new Cell(x, y), getPathWalkerOverCharacters(),
+					imaginaryPathTable = Paths.getPathTable(new BasicCell(x, y), getPathWalkerOverCharacters(),
 						MAX_PATH_TABLE_DEPTH);
-					LinkedList<Cell> imaginaryPath = imaginaryPathTable.getPath(new Cell(activeEnemy.x, activeEnemy.y));
-					Cell firstStep = imaginaryPath.get(0);
-					if (plane.getCharacter(firstStep.getX(), firstStep.getY()) == null) {
+					LinkedList<BasicCell> imaginaryPath = imaginaryPathTable.getPath(new BasicCell(activeEnemy.x, activeEnemy.y));
+					BasicCell firstStep = imaginaryPath.get(0);
+					if (plane.getCharacter(firstStep.x(), firstStep.y()) == null) {
 						// If there is no character on first cell of imaginary
 						// path, then step there
-						step(firstStep.getX(), firstStep.getY());
+						step(firstStep.x(), firstStep.y());
 					} else {
 						idle();
 					}
@@ -328,19 +328,19 @@ public class NonPlayerCharacter extends Character {
 			}
 		} else if (getUnseenEnemyToChase()) {
 			Coordinate lastSeenCoord = lastSeenEnemyCoord.get(enemyToChase);
-			PathTable pathTable = Paths.getPathTable(new Cell(x, y), getPathWalkerOverCharacters(),
+			PathTable pathTable = Paths.getPathTable(new BasicCell(x, y), getPathWalkerOverCharacters(),
 				MAX_PATH_TABLE_DEPTH);
 
 			if (!pathTable.isCellComputed(lastSeenCoord.x, lastSeenCoord.y)) {
 				// If path is blocked by characters
-				LinkedList<Cell> path = Paths.getPath(new Cell(x, y), new Cell(lastSeenCoord.x, lastSeenCoord.y),
+				LinkedList<BasicCell> path = Paths.getPath(new BasicCell(x, y), new BasicCell(lastSeenCoord.x, lastSeenCoord.y),
 					getPathWalkerOverCharacters(), MAX_PATH_TABLE_DEPTH);
 				assert path != null : lastSeenCoord;
-				Cell firstStep = path.getFirst();
-				if (plane.getCharacter(firstStep.getX(), firstStep.getY()) == null) {
+				BasicCell firstStep = path.getFirst();
+				if (plane.getCharacter(firstStep.x(), firstStep.y()) == null) {
 					// If there is no character on first cell of imaginary path,
 					// then step there
-					step(firstStep.getX(), firstStep.getY());
+					step(firstStep.x(), firstStep.y());
 				} else {
 					idle();
 				}

@@ -6,7 +6,7 @@ import com.google.common.collect.ImmutableSet;
 import org.jgrapht.UndirectedGraph;
 import org.tendiwa.core.CardinalDirection;
 import org.tendiwa.core.Direction;
-import org.tendiwa.geometry.Cell;
+import org.tendiwa.geometry.BasicCell;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.terrain.KnownWorldGenerationException;
@@ -25,9 +25,9 @@ final class EdgeReducer {
 	 *
 	 * @return A collection of all cells on border that have 3 or 4 neighbors.
 	 */
-	private static Collection<Cell> findIntersectionCells(BiMap<Cell, Point2D> map) {
-		Collection<Cell> answer = new HashSet<>();
-		for (Cell cell : map.keySet()) {
+	private static Collection<BasicCell> findIntersectionCells(BiMap<BasicCell, Point2D> map) {
+		Collection<BasicCell> answer = new HashSet<>();
+		for (BasicCell cell : map.keySet()) {
 			int neighbourCells = 0;
 			for (Direction dir : CardinalDirection.values()) {
 				if (map.containsKey(cell.moveToSide(dir))) {
@@ -53,27 +53,27 @@ final class EdgeReducer {
 	 * @param graphToMutate
 	 * 	A graph to be mutated by the algorithm.
 	 * @param map
-	 * 	A mapping to vertices of {@code graphToMutate} from those vertices transformed to {@link Cell}s.
+	 * 	A mapping to vertices of {@code graphToMutate} from those vertices transformed to {@link org.tendiwa.geometry.BasicCell}s.
 	 * @return Mutated {@code graphToMutate}.
 	 */
 	public static UndirectedGraph<Point2D, Segment2D> reduceEdges(
 		UndirectedGraph<Point2D, Segment2D> graphToMutate,
-		BiMap<Cell, Point2D> map
+		BiMap<BasicCell, Point2D> map
 	) {
 		boolean changesMade;
 		Collection<Point2D> finalVertices = new CompactHashSet<>(map.size() / 4);
 		Set<Point2D> vertices = ImmutableSet.copyOf(graphToMutate.vertexSet());
 		do {
 			changesMade = false;
-			Collection<Cell> intersectionCells = findIntersectionCells(map);
+			Collection<BasicCell> intersectionCells = findIntersectionCells(map);
 			for (Point2D point : vertices) {
 				if (!graphToMutate.containsVertex(point) || finalVertices.contains(point)) {
 					continue;
 				}
-				Cell graphCell = map.inverse().get(point);
+				BasicCell graphCell = map.inverse().get(point);
 				for (CardinalDirection dir : growingDirs) {
 					int combinedEdgeLength = 1;
-					Cell movedCell = graphCell;
+					BasicCell movedCell = graphCell;
 					while (true) {
 						// Find a cell on one side of a straight segment
 						movedCell = movedCell.moveToSide(dir);
@@ -87,7 +87,7 @@ final class EdgeReducer {
 							break;
 						}
 					}
-					Cell oppositeMovedCell = graphCell;
+					BasicCell oppositeMovedCell = graphCell;
 					while (true) {
 						// Find a cell on the other side of a straight segment
 						oppositeMovedCell = oppositeMovedCell.moveToSide(dir.opposite());
@@ -103,7 +103,7 @@ final class EdgeReducer {
 					}
 					if (combinedEdgeLength > 2) {
 						for (
-							Cell cell = movedCell.moveToSide(dir.opposite());
+							BasicCell cell = movedCell.moveToSide(dir.opposite());
 							!cell.equals(oppositeMovedCell) && !finalVertices.contains(map.get(cell));
 							cell = cell.moveToSide(dir.opposite())
 							) {

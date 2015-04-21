@@ -33,10 +33,10 @@ public class MutableRasterizationResult {
 	 * 	A rectangle to fill.
 	 */
 	public void excludeRectangle(Rectangle r) {
-		int startX = r.x - x;
-		int endX = r.x + r.width - x;
-		int endY = r.y - this.y + r.height;
-		for (int row = r.y - this.y; row < endY; row++) {
+		int startX = r.x() - x;
+		int endX = r.x() + r.width() - x;
+		int endY = r.y() - this.y + r.height();
+		for (int row = r.y() - this.y; row < endY; row++) {
 			Arrays.fill(
 				bitmap[row],
 				startX,

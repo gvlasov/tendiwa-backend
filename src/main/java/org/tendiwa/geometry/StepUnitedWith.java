@@ -4,9 +4,9 @@ import org.tendiwa.core.CardinalDirection;
 
 public class StepUnitedWith {
 
-	private final RectanglePointer pointer;
+	private final IntimateRectanglePointer pointer;
 
-	public StepUnitedWith(RectanglePointer pointer) {
+	public StepUnitedWith(IntimateRectanglePointer pointer) {
 		this.pointer = pointer;
 	}
 

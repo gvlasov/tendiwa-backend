@@ -14,34 +14,34 @@ public class StepNear {
 	}
 
 	public Placement fromCorner(final OrdinalDirection corner) {
-		return new Placement() {
-			@Override
-			public Rectangle placeIn(Placeable placeable, RectangleSystemBuilder builder) {
-				Rectangle placeableBounds = placeable.getBounds();
-				Rectangle existingRec = builder.getRectangleByPointer(pointer).getBounds();
-				int x, y;
-				switch (corner) {
-					case NE:
-						x = existingRec.getX() + existingRec.getWidth() + builder.rs.getBorderWidth();
-						y = existingRec.getY() - placeableBounds.getHeight() - builder.rs.getBorderWidth();
-						break;
-					case NW:
-						x = existingRec.getX() - placeableBounds.getWidth() - builder.rs.getBorderWidth();
-						y = existingRec.getY() - placeableBounds.getHeight() - builder.rs.getBorderWidth();
-						break;
-					case SE:
-						x = existingRec.getX() + existingRec.getWidth() + builder.rs.getBorderWidth();
-						y = existingRec.getY() + existingRec.getHeight() + builder.rs.getBorderWidth();
-						break;
-					case SW:
-						y = existingRec.getY() + existingRec.getHeight() + builder.rs.getBorderWidth();
-						x = existingRec.getX() - placeableBounds.getWidth() - builder.rs.getBorderWidth();
-						break;
-					default:
-						throw new RuntimeException();
-				}
-				return placeable.place(builder, x, y);
+		return (rectSet, builder) -> {
+			Rectangle placeableBounds = rectSet.bounds();
+			Rectangle existingRec = pointer.find(builder).bounds();
+			int x, y;
+			switch (corner) {
+				case NE:
+					x = existingRec.x() + existingRec.width() + builder.borderWidth();
+					y = existingRec.y() - placeableBounds.height() - builder.borderWidth();
+					break;
+				case NW:
+					x = existingRec.x() - placeableBounds.width() - builder.borderWidth();
+					y = existingRec.y() - placeableBounds.height() - builder.borderWidth();
+					break;
+				case SE:
+					x = existingRec.x() + existingRec.width() + builder.borderWidth();
+					y = existingRec.y() + existingRec.height() + builder.borderWidth();
+					break;
+				case SW:
+					y = existingRec.y() + existingRec.height() + builder.borderWidth();
+					x = existingRec.x() - placeableBounds.width() - builder.borderWidth();
+					break;
+				default:
+					throw new RuntimeException();
 			}
+			return new RectSetWithPrecomputedBounds(
+				rectSet.moveTo(x, y),
+				placeableBounds.moveTo(x, y)
+			);
 		};
 	}
 }

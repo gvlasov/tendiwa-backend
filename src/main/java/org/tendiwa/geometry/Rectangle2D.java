@@ -104,6 +104,11 @@ public final class Rectangle2D implements RectangularHull {
 			&& point.y >= y && point.y <= getMaxY();
 	}
 
+	public boolean strictlyContains(Point2D point) {
+		return point.x > x && point.x < getMaxX()
+			&& point.y > y && point.y < getMaxY();
+	}
+
 	@Override
 	public double minX() {
 		return x;

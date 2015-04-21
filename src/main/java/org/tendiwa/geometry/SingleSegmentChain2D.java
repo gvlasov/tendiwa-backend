@@ -17,6 +17,6 @@ public final class SingleSegmentChain2D implements Chain2D {
 
 	@Override
 	public Stream<Point2D> asPointStream() {
-		return Stream.of(segment.start, segment.end);
+		return Stream.of(segment.start(), segment.end());
 	}
 }

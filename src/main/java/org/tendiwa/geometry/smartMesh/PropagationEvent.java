@@ -1,8 +1,18 @@
 package org.tendiwa.geometry.smartMesh;
 
-/**
- * Describes how a line snaps to a vertex or an edge of {@link OriginalMeshCell}.
- */
+import org.tendiwa.geometry.Segment2D;
+
+import java.util.Optional;
+
 interface PropagationEvent extends PropagationStep {
-	void integrateInto(AppendableNetworkPart networkPart);
+	Segment2D addedSegment();
+
+	Optional<Segment2D> splitSegmentMaybe();
+
+	default Ray createNextRay() {
+		return new Ray(
+			target(),
+			source().angleTo(target())
+		);
+	}
 }

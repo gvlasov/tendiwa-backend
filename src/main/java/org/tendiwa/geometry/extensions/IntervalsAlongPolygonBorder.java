@@ -1,8 +1,6 @@
 package org.tendiwa.geometry.extensions;
 
-import com.google.common.collect.ImmutableCollection;
-import org.tendiwa.collections.Collectors;
-import org.tendiwa.core.meta.Range;
+import org.tendiwa.core.meta.BasicRange;
 import org.tendiwa.core.meta.Utils;
 import org.tendiwa.geometry.*;
 
@@ -91,7 +89,7 @@ public final class IntervalsAlongPolygonBorder {
 		double minY = Math.min(currentVertex.y, nextVertex.y);
 		double maxY = Math.max(currentVertex.y, nextVertex.y);
 //		assert minX != maxX && minY != maxY; // I just don't know what to do in this case, though it is legit.
-		intersections.removeIf(p -> !Range.contains(minX, maxX, p.x) || !Range.contains(minY, maxY, p.y));
+		intersections.removeIf(p -> !BasicRange.contains(minX, maxX, p.x) || !BasicRange.contains(minY, maxY, p.y));
 		assert intersections.stream().allMatch(p -> !p.equals(nextVertex)); // I just don't knot what to do in this case, though it is legit.
 		snapIntersectionPointsToSegmentEndsByEpsilon(intersections);
 		return intersections;
@@ -172,8 +170,8 @@ public final class IntervalsAlongPolygonBorder {
 		double maxX = Math.max(firstAnswerPoint.x, polygon1.x);
 		double minY = Math.min(firstAnswerPoint.y, polygon1.y);
 		double maxY = Math.max(firstAnswerPoint.y, polygon1.y);
-		return Range.contains(minX, maxX, lastCircleIntersection.x)
-			&& Range.contains(minY, maxY, lastCircleIntersection.y);
+		return BasicRange.contains(minX, maxX, lastCircleIntersection.x)
+			&& BasicRange.contains(minY, maxY, lastCircleIntersection.y);
 	}
 
 	/**

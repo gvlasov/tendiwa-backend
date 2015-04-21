@@ -1,7 +1,6 @@
 package org.tendiwa.geometry.extensions.daveedvMaxRec;
 
 import com.google.common.collect.ImmutableList;
-import org.tendiwa.geometry.Recs;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.extensions.polygonRasterization.MutableRasterizationResult;
 
@@ -11,11 +10,13 @@ public class MaximalRectanlges {
 	public static Optional<Rectangle> findLargestIn(MutableRasterizationResult rasterizedPolygon) {
 		Optional<Rectangle> r = MaximalCellRectangleFinder.compute(rasterizedPolygon.bitmap);
 		if (r.isPresent()) {
-			return Optional.of(Recs.rectangleMovedFromOriginal(
-				r.get(),
-				rasterizedPolygon.x,
-				rasterizedPolygon.y
-			));
+			return Optional.of(
+				// TODO: Or should it be translated by dx/dy instead?
+				r.get().moveTo(
+					rasterizedPolygon.x,
+					rasterizedPolygon.y
+				)
+			);
 		} else {
 			return Optional.empty();
 		}
@@ -43,7 +44,7 @@ public class MaximalRectanlges {
 			if (!r.isPresent() || r.get().area() < minimumArea) {
 				break;
 			}
-			Rectangle maxRecAbsolute = r.get().moveBy(rasterizedPolygon.x, rasterizedPolygon.y);
+			Rectangle maxRecAbsolute = r.get().translate(rasterizedPolygon.x, rasterizedPolygon.y);
 			builder.add(maxRecAbsolute);
 			rasterizedPolygon.excludeRectangle(maxRecAbsolute);
 		}

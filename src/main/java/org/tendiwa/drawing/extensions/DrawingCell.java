@@ -1,7 +1,7 @@
 package org.tendiwa.drawing.extensions;
 
 import org.tendiwa.drawing.DrawingAlgorithm;
-import org.tendiwa.geometry.Cell;
+import org.tendiwa.geometry.BasicCell;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
@@ -17,8 +17,8 @@ public final class DrawingCell {
 	 * @param color
 	 * 	Color of a cell.
 	 */
-	public static DrawingAlgorithm<Cell> withColor(final Color color) {
-		return (point, canvas) -> canvas.drawCell(point.getX(), point.getY(), color);
+	public static DrawingAlgorithm<BasicCell> withColor(final Color color) {
+		return (point, canvas) -> canvas.drawCell(point.x(), point.y(), color);
 	}
 
 	/**
@@ -29,7 +29,7 @@ public final class DrawingCell {
 	 * @param diameter
 	 * 	Diameter of a cicrle.
 	 */
-	public static DrawingAlgorithm<Cell> withColorAndSize(final Color color, final double diameter) {
+	public static DrawingAlgorithm<BasicCell> withColorAndSize(final Color color, final double diameter) {
 		return (shape, canvas) -> {
 			double halfDiameter = diameter / 2;
 			canvas.fillShape(

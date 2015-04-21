@@ -6,10 +6,14 @@ public final class Bisector {
 
 	public Bisector(Vector2D cw, Vector2D ccw) {
 		if (cw.isZero()) {
-			throw new IllegalArgumentException("Trying to compute bisector when one of the vectors is 0");
+			throw new IllegalArgumentException(
+				"Trying to compute bisector when one of the vectors is 0"
+			);
 		}
 		if (ccw.isZero()) {
-			throw new IllegalArgumentException("Trying to compute bisector when one of the vectors is 0");
+			throw new IllegalArgumentException(
+				"Trying to compute bisector when one of the vectors is 0"
+			);
 		}
 		Vector2D bisectorDirection = cw.normalize().add(ccw.normalize());
 		if (bisectorDirection.isZero()) {

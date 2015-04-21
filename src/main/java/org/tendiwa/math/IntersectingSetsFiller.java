@@ -12,14 +12,14 @@ import java.util.function.ToIntFunction;
 /**
  * This algorithm randomly and uniformly generates solutions for the following problem:
  * <p>
- * There is a set <i>A</i> of <i>n</i> distinguishable objects and <i>1 <= m <= n</i> its subsets
- * <i>B<sub>i</sub></i>. For each <i>B<sub>i</sub></i> there is defined <i>1<= c<sub>i</sub> <=n</i> that is
- * called a cap of <i>B<sub>i</sub></i>. Find a mapping from <i>A</i> to <i>{B<sub>i</sub>}</i> so that each
- * <i>B<sub>i</sub></i> has no more than <i>c<sub>i</sub></i> preimages.
+ * There is a set <i>A</i> of <i>n</i> distinguishable objects and <i>m</i> its subsets
+ * <i>B<sub>i</sub></i> where <i>1 <= m <= n</i>. For each <i>B<sub>i</sub></i> there is defined <i>1<= c<sub>i</sub>
+ * <=n</i> that is called a cap of <i>B<sub>i</sub></i>. Find a mapping from <i>A</i> to <i>{B<sub>i</sub>}</i> so that
+ * each <i>B<sub>i</sub></i> has no more than <i>c<sub>i</sub></i> preimages.
  * <p>
  * This algorithm works in O(n*m)
  */
-public class IntersectingSetsFiller<T> {
+public final class IntersectingSetsFiller<T> {
 
 	private final TObjectIntMap<Set<T>> positionsLeft;
 	private final Random random;
@@ -68,7 +68,7 @@ public class IntersectingSetsFiller<T> {
 		}
 
 		Map<T, Set<T>[]> containing = prepareContainingMap(superset, subsets);
-		int[] indices = IntegerPermutationGenerator.generateUsingFisherYates(contentsSize, contentsSize, random);
+		int[] indices = new FisherYatesPermutation(contentsSize, contentsSize, random).generate();
 		T[] arrayContents = (T[]) superset.toArray();
 		ImmutableMap.Builder<T, Set<T>> builder = ImmutableMap.builder();
 		for (int index : indices) {

@@ -2,15 +2,15 @@ package org.tendiwa.demos.settlements;
 
 import org.tendiwa.drawing.DrawableInto;
 import org.tendiwa.drawing.DrawingAlgorithm;
-import org.tendiwa.geometry.smartMesh.Segment2DSmartMesh;
+import org.tendiwa.geometry.smartMesh.SmartMesh2D;
 import org.tendiwa.geometry.smartMesh.algorithms.SegmentNetworkAlgorithms;
 
 import java.awt.Color;
 
-public class CityDrawer implements DrawingAlgorithm<Segment2DSmartMesh> {
+public class CityDrawer implements DrawingAlgorithm<SmartMesh2D> {
 
 	@Override
-	public void draw(Segment2DSmartMesh segment2DSmartMesh, DrawableInto canvas) {
+	public void draw(SmartMesh2D segment2DSmartMesh, DrawableInto canvas) {
 //		Iterator<Color> colors = Iterators.cycle(Color.red, Color.blue, Color.green, Color.orange, Color.cyan, Color.black);
 		segment2DSmartMesh.networks().stream()
 			.forEach(c -> c.network().edgeSet().stream()

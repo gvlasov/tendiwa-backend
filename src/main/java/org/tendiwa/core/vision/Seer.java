@@ -1,7 +1,7 @@
 package org.tendiwa.core.vision;
 
 import org.tendiwa.core.*;
-import org.tendiwa.core.meta.CellPosition;
+import org.tendiwa.core.meta.Cell;
 import org.tendiwa.core.meta.DoubleRange;
 import org.tendiwa.core.meta.DoubleRangeCollection;
 import org.tendiwa.core.meta.Utils;
@@ -14,7 +14,7 @@ public class Seer {
 	private final static double visionSourceDiameter = 0.7;
 	public final ModifiableCellVisionCache visionCache;
 	final CellVisionCache visionPrevious;
-	private final CellPosition character;
+	private final Cell character;
 	private final SightPassabilityCriteria vision;
 	/**
 	 * Saves field of view on previous turn when it is needed to calculate differences between FOV on previous turn and
@@ -26,7 +26,7 @@ public class Seer {
 	private final BorderVisionCache borderVisionPrevious;
 	private World world;
 
-	public Seer(CellPosition character, SightPassabilityCriteria vision, ObstacleFindingStrategy strategy) {
+	public Seer(Cell character, SightPassabilityCriteria vision, ObstacleFindingStrategy strategy) {
 		this.character = character;
 		this.vision = vision;
 		this.obstaclesCache = new ObstaclesCache(null, character, strategy);
@@ -122,7 +122,7 @@ public class Seer {
 			obstaclesCache.buildObstacles();
 		}
 
-		if (x == character.getX() && y == character.getY()) {
+		if (x == character.x() && y == character.y()) {
 			if (excluded == null) {
 				visionCache.cacheVision(x, y, Visibility.VISIBLE);
 			}
@@ -151,7 +151,7 @@ public class Seer {
 				obstacle,
 				-x,
 				-y,
-				getAngle(character.getX(), character.getY(), x, y) - Math.PI / 2
+				getAngle(character.x(), character.y(), x, y) - Math.PI / 2
 			);
 			if (transformedObstacleIsOnBothSidesFromXAxis(transformed)) {
 				transformed = transformed.splitWithXAxis();
@@ -188,8 +188,8 @@ public class Seer {
 
 	private boolean isObstacleInTargetQuarter(Border obstacle, int targetX, int targetY) {
 		assert obstaclesCache.isObstacleInSeersCell(obstacle);
-		int dx = targetX - character.getX();
-		int dy = targetY - character.getY();
+		int dx = targetX - character.x();
+		int dy = targetY - character.y();
 		CardinalDirection side = obstaclesCache.getSideOfObstacleOnSeersCellBorder(obstacle);
 		assert side != null;
 		if (dx >= 0 && dy >= 0 && (side == Directions.S || side == Directions.E)) {
@@ -216,7 +216,7 @@ public class Seer {
 			// If the obstacle is behind target cell
 			return false;
 		}
-		if (transformed.getY() < -Cells.distanceDouble(toX, toY, character.getX(), character.getY())) {
+		if (transformed.getY() < -Cells.distanceDouble(toX, toY, character.x(), character.y())) {
 			// If the obstacle is behind Seer
 			return false;
 		}
@@ -225,8 +225,8 @@ public class Seer {
 
 	private boolean cellIsInVisibilityRectangle(int x, int y) {
 		// TODO: Cache this rectangle
-		return Recs.rectangleByCenterPoint(
-			new Cell(character.getX(), character.getY()),
+		return StupidPriceduralRecs.rectangleByCenterPoint(
+			new BasicCell(character.x(), character.y()),
 			ModifiableCellVisionCache.VISION_CACHE_WIDTH, ModifiableCellVisionCache.VISION_CACHE_WIDTH
 		).contains(x, y);
 	}
@@ -241,7 +241,7 @@ public class Seer {
 	 * @return true if cell is close enough to be seen; false if it is too far away to be seen.
 	 */
 	private boolean cellIsInVisibilityRange(int x, int y) {
-		return Math.floor(new Cell(character.getX(), character.getY()).distanceInt(x, y)) <= Seer.VISION_RANGE;
+		return Math.floor(new BasicCell(character.x(), character.y()).distanceInt(x, y)) <= Seer.VISION_RANGE;
 	}
 
 	/**
@@ -263,152 +263,152 @@ public class Seer {
 		obstaclesCache.invalidate();
 	}
 
-	public Cell getRayEnd(int endX, int endY) {
-		Cell characterCoord = new Cell(character.getX(), character.getY());
-		if (characterCoord.isNear(endX, endY) || character.getX() == endX && character.getY() == endY) {
-			return new Cell(endX, endY);
+	public BasicCell getRayEnd(int endX, int endY) {
+		BasicCell characterCoord = new BasicCell(character.x(), character.y());
+		if (characterCoord.isNear(endX, endY) || character.x() == endX && character.y() == endY) {
+			return new BasicCell(endX, endY);
 		}
-		if (endX == character.getX() || endY == character.getY()) {
-			if (endX == character.getX()) {
-				int dy = Math.abs(endY - character.getY()) / (endY - character.getY());
-				for (int i = character.getY() + dy; i != endY + dy; i += dy) {
+		if (endX == character.x() || endY == character.y()) {
+			if (endX == character.x()) {
+				int dy = Math.abs(endY - character.y()) / (endY - character.y());
+				for (int i = character.y() + dy; i != endY + dy; i += dy) {
 					if (!vision.canSee(endX, i)) {
-						return new Cell(endX, i - dy);
+						return new BasicCell(endX, i - dy);
 					}
 				}
 			} else {
-				int dx = Math.abs(endX - character.getX()) / (endX - character.getX());
-				for (int i = character.getX() + dx; i != endX + dx; i += dx) {
+				int dx = Math.abs(endX - character.x()) / (endX - character.x());
+				for (int i = character.x() + dx; i != endX + dx; i += dx) {
 					if (!vision.canSee(i, endY)) {
-						return new Cell(i - dx, endY);
+						return new BasicCell(i - dx, endY);
 					}
 				}
 			}
-			return new Cell(endX, endY);
-		} else if (Math.abs(endX - character.getX()) == 1) {
-			int dy = Math.abs(endY - character.getY()) / (endY - character.getY());
+			return new BasicCell(endX, endY);
+		} else if (Math.abs(endX - character.x()) == 1) {
+			int dy = Math.abs(endY - character.y()) / (endY - character.y());
 			int y1 = endY, y2 = endY;
-			for (int i = character.getY() + dy; i != endY + dy; i += dy) {
+			for (int i = character.y() + dy; i != endY + dy; i += dy) {
 				if (!vision.canSee(endX, i)) {
 					y1 = i - dy;
 					break;
 				}
 				if (i == endY) {
-					return new Cell(endX, endY);
+					return new BasicCell(endX, endY);
 				}
 			}
-			for (int i = character.getY() + dy; i != endY + dy; i += dy) {
-				if (!vision.canSee(character.getX(), i)) {
+			for (int i = character.y() + dy; i != endY + dy; i += dy) {
+				if (!vision.canSee(character.x(), i)) {
 					y2 = i - dy;
 					break;
 				}
 			}
-			Cell answer;
-			if (characterCoord.distanceDouble(endX, y1) > characterCoord.distanceDouble(character.getX(), y2)) {
-				answer = new Cell(endX, y1);
+			BasicCell answer;
+			if (characterCoord.distanceDouble(endX, y1) > characterCoord.distanceDouble(character.x(), y2)) {
+				answer = new BasicCell(endX, y1);
 			} else {
-				answer = new Cell(character.getX(), y2);
+				answer = new BasicCell(character.x(), y2);
 			}
-			if (answer.getX() == character.getX()
-				&& answer.getY() == y2
+			if (answer.x() == character.x()
+				&& answer.y() == y2
 				&& vision.canSee(endX, endY)) {
 				// If answer is the furthest cell on the same line, but
 				// {endX:endY} is free
-				answer = new Cell(endX, endY);
-			} else if (answer.getX() == character.getX()
-				&& answer.getY() == y2
+				answer = new BasicCell(endX, endY);
+			} else if (answer.x() == character.x()
+				&& answer.y() == y2
 				&& !vision.canSee(endX, endY)) {
 				// If answer is the furthest cell on the same line, and
 				// {endX:endY} has no passage
-				answer = new Cell(answer.getX(), answer.getY() - dy);
+				answer = new BasicCell(answer.x(), answer.y() - dy);
 			}
 			return answer;
-		} else if (Math.abs(endY - character.getY()) == 1) {
-			int dx = Math.abs(endX - character.getX()) / (endX - character.getX());
+		} else if (Math.abs(endY - character.y()) == 1) {
+			int dx = Math.abs(endX - character.x()) / (endX - character.x());
 			int x1 = endX, x2 = endX;
-			for (int i = character.getX() + dx; i != endX + dx; i += dx) {
+			for (int i = character.x() + dx; i != endX + dx; i += dx) {
 				if (!vision.canSee(i, endY)) {
 					x1 = i - dx;
 					break;
 				}
 				if (i == endX) {
-					return new Cell(endX, endY);
+					return new BasicCell(endX, endY);
 				}
 			}
-			for (int i = character.getX() + dx; i != endX + dx; i += dx) {
-				if (!vision.canSee(i, character.getY())) {
+			for (int i = character.x() + dx; i != endX + dx; i += dx) {
+				if (!vision.canSee(i, character.y())) {
 					x2 = i - dx;
 					break;
 				}
 			}
-			Cell answer;
-			if (characterCoord.distanceDouble(x1, endY) > characterCoord.distanceDouble(x2, character.getY())) {
-				answer = new Cell(x1, endY);
+			BasicCell answer;
+			if (characterCoord.distanceDouble(x1, endY) > characterCoord.distanceDouble(x2, character.y())) {
+				answer = new BasicCell(x1, endY);
 			} else {
-				answer = new Cell(x2, character.getY());
+				answer = new BasicCell(x2, character.y());
 			}
-			if (answer.getX() == x2
-				&& answer.getY() == character.getY()
+			if (answer.x() == x2
+				&& answer.y() == character.y()
 				&& vision.canSee(endX, endY)) {
 				// If answer is the furthest cell on the same line, but
 				// {endX:endY} is free
-				answer = new Cell(endX, endY);
-			} else if (answer.getX() == x2
-				&& answer.getY() == character.getY()
+				answer = new BasicCell(endX, endY);
+			} else if (answer.x() == x2
+				&& answer.y() == character.y()
 				&& !vision.canSee(endX, endY)) {
 				// If answer is the furthest cell on the same line, and
 				// {endX:endY} has no passage
-				answer = new Cell(answer.getX() - dx, answer.getY());
+				answer = new BasicCell(answer.x() - dx, answer.y());
 			}
 
 			return answer;
-		} else if (Math.abs(endX - character.getX()) == Math.abs(endY - character.getY())) {
-			int dMax = Math.abs(endX - character.getX());
-			int dx = endX > character.getX() ? 1 : -1;
-			int dy = endY > character.getY() ? 1 : -1;
-			int cx = character.getX();
-			int cy = character.getY();
+		} else if (Math.abs(endX - character.x()) == Math.abs(endY - character.y())) {
+			int dMax = Math.abs(endX - character.x());
+			int dx = endX > character.x() ? 1 : -1;
+			int dy = endY > character.y() ? 1 : -1;
+			int cx = character.x();
+			int cy = character.y();
 			for (int i = 1; i <= dMax; i++) {
 				cx += dx;
 				cy += dy;
 				if (!vision.canSee(cx, cy)) {
-					return new Cell(cx - dx, cy - dy);
+					return new BasicCell(cx - dx, cy - dy);
 				}
 
 			}
-			return new Cell(endX, endY);
+			return new BasicCell(endX, endY);
 		} else {
 			double[][] start = new double[2][2];
 			double[] end = new double[4];
-			end[0] = (endX > character.getX()) ? endX - 0.5 : endX + 0.5;
-			end[1] = (endY > character.getY()) ? endY - 0.5 : endY + 0.5;
+			end[0] = (endX > character.x()) ? endX - 0.5 : endX + 0.5;
+			end[1] = (endY > character.y()) ? endY - 0.5 : endY + 0.5;
 			end[2] = endX;
 			end[3] = endY;
-			start[0][0] = (endX > character.getX()) ? character.getX() + 0.5 : character.getX() - 0.5;
-			start[0][1] = (endY > character.getY()) ? character.getY() + 0.5 : character.getY() - 0.5;
-			start[1][0] = (endX > character.getX()) ? character.getX() + 0.5 : character.getX() - 0.5;
+			start[0][0] = (endX > character.x()) ? character.x() + 0.5 : character.x() - 0.5;
+			start[0][1] = (endY > character.y()) ? character.y() + 0.5 : character.y() - 0.5;
+			start[1][0] = (endX > character.x()) ? character.x() + 0.5 : character.x() - 0.5;
 			// start[0][1]=this.y;
 			// start[1][0]=this.x;
-			start[1][1] = (endY > character.getY()) ? character.getY() + 0.5 : character.getY() - 0.5;
-			Cell[] rays = rays(character.getX(), character.getY(), endX, endY);
-			int breakX = character.getX(), breakY = character.getY();
+			start[1][1] = (endY > character.y()) ? character.y() + 0.5 : character.y() - 0.5;
+			BasicCell[] rays = rays(character.x(), character.y(), endX, endY);
+			int breakX = character.x(), breakY = character.y();
 			jump:
 			for (int k = 0; k < 3; k++) {
 				int endNumX = (k == 0 || k == 1) ? 0 : 2;
 				int endNumY = (k == 0 || k == 2) ? 1 : 3;
 				for (int j = 0; j < 1; j++) {
-					if (start[j][0] == character.getX() && start[j][1] == character.getY()) {
+					if (start[j][0] == character.x() && start[j][1] == character.y()) {
 						continue;
 					}
 					double xEnd = end[endNumX];
 					double yEnd = end[endNumY];
 					double xStart = start[j][0];
 					double yStart = start[j][1];
-					for (Cell c : rays) {
+					for (BasicCell c : rays) {
 						try {
-							if (!vision.canSee(c.getX(), c.getY())) {
-								if (Math.abs(((yStart - yEnd) * c.getX()
-									+ (xEnd - xStart) * c.getY() + (xStart
+							if (!vision.canSee(c.x(), c.y())) {
+								if (Math.abs(((yStart - yEnd) * c.x()
+									+ (xEnd - xStart) * c.y() + (xStart
 									* yEnd - yStart * xEnd))
 									/ Math.sqrt(Math.abs((xEnd - xStart)
 									* (xEnd - xStart)
@@ -418,21 +418,21 @@ public class Seer {
 								}
 
 							} else {
-								breakX = c.getX();
-								breakY = c.getY();
+								breakX = c.x();
+								breakY = c.y();
 							}
 						} catch (Exception e) {
 							throw new Error();
 						}
 					}
-					return new Cell(endX, endY);
+					return new BasicCell(endX, endY);
 				}
 			}
-			return new Cell(breakX, breakY);
+			return new BasicCell(breakX, breakY);
 		}
 	}
 
-	public Cell[] rays(int startX, int startY, int endX, int endY) {
+	public BasicCell[] rays(int startX, int startY, int endX, int endY) {
 		return Utils.concatAll(
 			CellSegment.cells(startX, startY, endX, endY),
 			CellSegment.cells(startX, startY + (endY > startY ? 1 : -1), endX + (endX > startX ? -1 : 1), endY),
@@ -446,10 +446,10 @@ public class Seer {
 	}
 
 	public boolean canSee(int x, int y) {
-		if (Math.abs(x - character.getX()) > VISION_RANGE) {
+		if (Math.abs(x - character.x()) > VISION_RANGE) {
 			return false;
 		}
-		if (Math.abs(y - character.getY()) > VISION_RANGE) {
+		if (Math.abs(y - character.y()) > VISION_RANGE) {
 			return false;
 		}
 		Visibility visionFromCache = visionCache.getVisionFromCache(x, y);
@@ -461,10 +461,10 @@ public class Seer {
 	}
 
 	public Visibility canSeeBorder(Border border) {
-		if (Math.abs(border.x - character.getX()) > VISION_RANGE) {
+		if (Math.abs(border.x - character.x()) > VISION_RANGE) {
 			return Visibility.INVISIBLE;
 		}
-		if (Math.abs(border.y - character.getY()) > VISION_RANGE) {
+		if (Math.abs(border.y - character.y()) > VISION_RANGE) {
 			return Visibility.INVISIBLE;
 		}
 		return borderVision.get(border);
@@ -476,10 +476,10 @@ public class Seer {
 	 * of view in client — non player characters compute visibility only to particular cells as needed.
 	 */
 	public void computeFullVisionCache() {
-		int startX = getStartIndexOfRelativeTable(character.getX(), VISION_RANGE);
-		int startY = getStartIndexOfRelativeTable(character.getY(), VISION_RANGE);
-		int endX = getEndIndexOfRelativeTableX(character.getX(), VISION_RANGE);
-		int endY = getEndIndexOfRelativeTableY(character.getY(), VISION_RANGE);
+		int startX = getStartIndexOfRelativeTable(character.x(), VISION_RANGE);
+		int startY = getStartIndexOfRelativeTable(character.y(), VISION_RANGE);
+		int endX = getEndIndexOfRelativeTableX(character.x(), VISION_RANGE);
+		int endY = getEndIndexOfRelativeTableY(character.y(), VISION_RANGE);
 		borderVision.saveCurrentCenterCoordinates(character);
 		computeCellVision(startX, startY, endX, endY);
 		computeAllBordersVisibility(startX, startY, endX, endY);
@@ -489,7 +489,7 @@ public class Seer {
 	private void computeCellVision(int startX, int startY, int endX, int endY) {
 		for (int i = startX; i < endX; i++) {
 			for (int j = startY; j < endY; j++) {
-				isCellVisible(character.getX() - VISION_RANGE + i, character.getY() - VISION_RANGE + j, null);
+				isCellVisible(character.x() - VISION_RANGE + i, character.y() - VISION_RANGE + j, null);
 			}
 		}
 	}
@@ -506,8 +506,8 @@ public class Seer {
 	private void computeAllBordersVisibility(int startX, int startY, int endX, int endY) {
 		for (int i = startX; i < endX; i++) {
 			for (int j = startY; j < endY; j++) {
-				int actualWorldX = character.getX() - VISION_RANGE + i;
-				int actualWorldY = character.getY() - VISION_RANGE + j;
+				int actualWorldX = character.x() - VISION_RANGE + i;
+				int actualWorldY = character.y() - VISION_RANGE + j;
 				computeBorderVisibility(actualWorldX, actualWorldY, Directions.W);
 				computeBorderVisibility(actualWorldX, actualWorldY, Directions.N);
 			}
@@ -580,20 +580,20 @@ public class Seer {
 	 * @return Minimum rectangle where this Seer's vision range is contained.
 	 */
 	public Rectangle getVisionRectangle() {
-		Cell startPoint = getActualVisionRecStartPoint();
+		BasicCell startPoint = getActualVisionRecStartPoint();
 		int actualWorldEndX = Math.min(
 			world.getWidth() - 1,
-			character.getX() - Seer.VISION_RANGE + ModifiableCellVisionCache.VISION_CACHE_WIDTH
+			character.x() - Seer.VISION_RANGE + ModifiableCellVisionCache.VISION_CACHE_WIDTH
 		);
 		int actualWorldEndY = Math.min(
 			world.getHeight() - 1,
-			character.getY() - Seer.VISION_RANGE + ModifiableCellVisionCache.VISION_CACHE_WIDTH
+			character.y() - Seer.VISION_RANGE + ModifiableCellVisionCache.VISION_CACHE_WIDTH
 		);
 		return new Rectangle(
-			startPoint.getX(),
-			startPoint.getY(),
-			actualWorldEndX - startPoint.getX(),
-			actualWorldEndY - startPoint.getY()
+			startPoint.x(),
+			startPoint.y(),
+			actualWorldEndX - startPoint.x(),
+			actualWorldEndY - startPoint.y()
 		);
 	}
 
@@ -602,10 +602,10 @@ public class Seer {
 	 *
 	 * @return North-western point of a rectangle that contains the vision range of this Seer.
 	 */
-	public Cell getActualVisionRecStartPoint() {
-		return new Cell(
-			Math.max(0, character.getX() - Seer.VISION_RANGE),
-			Math.max(0, character.getY() - Seer.VISION_RANGE)
+	public BasicCell getActualVisionRecStartPoint() {
+		return new BasicCell(
+			Math.max(0, character.x() - Seer.VISION_RANGE),
+			Math.max(0, character.y() - Seer.VISION_RANGE)
 		);
 	}
 
@@ -614,10 +614,10 @@ public class Seer {
 	 *
 	 * @return North-western point of a rectangle that contains the vision range of this Seer.
 	 */
-	public Cell getTheoreticalVisionRecStartPoint() {
-		return new Cell(
-			character.getX() - Seer.VISION_RANGE,
-			character.getY() - Seer.VISION_RANGE
+	public BasicCell getTheoreticalVisionRecStartPoint() {
+		return new BasicCell(
+			character.x() - Seer.VISION_RANGE,
+			character.y() - Seer.VISION_RANGE
 		);
 	}
 }

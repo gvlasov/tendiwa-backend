@@ -3,7 +3,7 @@ package org.tendiwa.core.vision;
 import org.tendiwa.core.Border;
 import org.tendiwa.core.CardinalDirection;
 import org.tendiwa.core.Directions;
-import org.tendiwa.core.meta.CellPosition;
+import org.tendiwa.core.meta.Cell;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -14,10 +14,10 @@ import java.util.Iterator;
 public class BorderVisionCache implements Iterable<BorderVisibility> {
 	protected static final int WIDTH = ModifiableCellVisionCache.VISION_CACHE_WIDTH + 1;
 	protected static final int BORDER_VISION_CACHE_SIZE = WIDTH * WIDTH * 2;
-	protected CellPosition center;
+	protected Cell center;
 	Visibility[] borderVision = new Visibility[BORDER_VISION_CACHE_SIZE];
 
-	BorderVisionCache(CellPosition center) {
+	BorderVisionCache(Cell center) {
 		this.center = center;
 		invalidate();
 	}
@@ -31,7 +31,7 @@ public class BorderVisionCache implements Iterable<BorderVisibility> {
 	}
 
 	protected int getBorderCacheIndex(int x, int y, CardinalDirection side) {
-		return (side == Directions.W ? 1 : 0) + (y - center.getY() + Seer.VISION_RANGE) * 2 + (x - center.getX() + Seer.VISION_RANGE) * WIDTH * 2;
+		return (side == Directions.W ? 1 : 0) + (y - center.y() + Seer.VISION_RANGE) * 2 + (x - center.x() + Seer.VISION_RANGE) * WIDTH * 2;
 	}
 
 	@Override
@@ -65,8 +65,8 @@ public class BorderVisionCache implements Iterable<BorderVisibility> {
 					currentSide = Directions.W;
 				}
 				index++;
-				int worldX = currentRelativeX + center.getX() - Seer.VISION_RANGE;
-				int worldY = currentRelativeY + center.getY() - Seer.VISION_RANGE;
+				int worldX = currentRelativeX + center.x() - Seer.VISION_RANGE;
+				int worldY = currentRelativeY + center.y() - Seer.VISION_RANGE;
 				assert getBorderCacheIndex(
 					worldX,
 					worldY,

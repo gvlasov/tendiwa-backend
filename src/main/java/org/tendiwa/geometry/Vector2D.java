@@ -1,11 +1,6 @@
 package org.tendiwa.geometry;
 
-/**
- * Quick and dirty operations with vectors. For performance-critical code you better not use this API (actually,
- * in that case you better not use OOP approach at all).
- */
 public interface Vector2D extends Position2D {
-
 	/**
 	 * Sums two vectors.
 	 *
@@ -13,7 +8,9 @@ public interface Vector2D extends Position2D {
 	 * 	A vector.
 	 * @return Third vector that is a sum of two vectors.
 	 */
-	public Vector2D add(Vector2D another);
+	public default Vector2D add(Vector2D another) {
+		return new BasicPoint2D(x() + another.x(), y() + another.y());
+	}
 
 	/**
 	 * Subtracts one vector from this one.
@@ -22,7 +19,9 @@ public interface Vector2D extends Position2D {
 	 * 	A vector.
 	 * @return Third vector that is a sum of two vectors.
 	 */
-	public Vector2D subtract(Vector2D another);
+	public default Vector2D subtract(Vector2D another) {
+		return new BasicPoint2D(x() - another.x(), y() - another.y());
+	}
 
 	/**
 	 * Returns magnitude of a vector (length of vector in case of a vector in 2d Euclidean space).
@@ -30,7 +29,7 @@ public interface Vector2D extends Position2D {
 	 * @return Magnitude of a vector.
 	 */
 	public default double magnitude() {
-		return Math.sqrt(getX() * getX() + getY() * getY());
+		return Math.sqrt(x() * x() + y() * y());
 	}
 
 	/**
@@ -40,20 +39,37 @@ public interface Vector2D extends Position2D {
 	 * 	A scalar to divide by.
 	 * @return A new vector.
 	 */
-	public Vector2D divide(double scalar);
+	public default Vector2D divide(double scalar) {
+		return new BasicPoint2D(x() / scalar, y() / scalar);
+	}
 
 	public default Vector2D normalize() {
 		return divide(magnitude());
 	}
 
-	Vector2D multiply(double magnitude);
+	default Vector2D multiply(double magnitude) {
+		return new BasicPoint2D(x() * magnitude, y() * magnitude);
+	}
 
 	public default double dotProduct(Vector2D vector) {
-		return (getX() * vector.getX() + getY() * vector.getY());
+		return (x() * vector.x() + y() * vector.y());
 	}
 
 	public static Vector2D vector(double x, double y) {
-		return new Point2D(x, y);
+		return new BasicPoint2D(x, y);
+	}
+
+	/**
+	 * Creates a new point moved from this one by {dx:dy}.
+	 *
+	 * @param dx
+	 * 	Change in x coordinate.
+	 * @param dy
+	 * 	Change in y coordinate.
+	 * @return A new Point2D.
+	 */
+	public default Vector2D moveBy(double dx, double dy) {
+		return new BasicPoint2D(x() + dx, y() + dy);
 	}
 
 	/**
@@ -75,21 +91,21 @@ public interface Vector2D extends Position2D {
 	 * @return A new vector, rotated 90 degrees clockwise from this one.
 	 */
 	public default Vector2D rotateQuarterClockwise() {
-		return new Point2D(-getY(), getX());
+		return new BasicPoint2D(-y(), x());
 	}
 
 	public default Vector2D reverse() {
-		return new Point2D(-getX(), -getY());
+		return new BasicPoint2D(-x(), -y());
 	}
 
 	public default Vector2D rotate(double radians) {
 		double ca = Math.cos(radians);
 		double sa = Math.sin(radians);
-		return new Point2D(ca * getX() - sa * getY(), sa * getX() + ca * getY());
+		return new BasicPoint2D(ca * x() - sa * y(), sa * x() + ca * y());
 	}
 
 	public default boolean isZero() {
-		return getX() == 0 && getY() == 0;
+		return x() == 0 && y() == 0;
 	}
 
 	/**
@@ -106,7 +122,7 @@ public interface Vector2D extends Position2D {
 	}
 
 	public default double perpDotProduct(Vector2D vector) {
-		return getX() * vector.getY() - getY() * vector.getX();
+		return x() * vector.y() - y() * vector.x();
 	}
 
 	public default boolean isBetweenVectors(Vector2D cw, Vector2D ccw) {
@@ -115,5 +131,19 @@ public interface Vector2D extends Position2D {
 		} else {
 			return cw.perpDotProduct(this) > 0 && this.perpDotProduct(ccw) > 0;
 		}
+	}
+
+	/**
+	 * Finds Chebyshev distance between this cell and another cell.
+	 * <p>
+	 * Finding Chebyshev distance is much cheaper than finding Euclidean distance with {@link
+	 * #distanceTo(BasicPoint2D)}.
+	 *
+	 * @param point
+	 * 	Another point.
+	 * @return Chebyshev distance between two cells.
+	 */
+	public default double chebyshovDistanceTo(Point2D point) {
+		return Math.max(Math.abs(point.x() - x()), Math.abs(point.y() - y()));
 	}
 }

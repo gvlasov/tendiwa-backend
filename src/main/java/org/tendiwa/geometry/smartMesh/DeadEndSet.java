@@ -1,12 +1,13 @@
 package org.tendiwa.geometry.smartMesh;
 
+import org.tendiwa.geometry.CutSegment2D;
 import org.tendiwa.geometry.Segment2D;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- * Aggregate of leaves of depleted branches of {@link InnerTree}s.
+ * Aggregate of leaves of depleted branches of {@link FloodPart}s.
  * <p>
  * This is a <a href="http://en.wikipedia.org/wiki/Mediator_pattern">Mediator</a> that helps FloodNetworkTrees remove
  * leaves already terminated by another FloodNetworkTree.
@@ -22,16 +23,11 @@ final class DeadEndSet {
 		return deadEnds.contains(segment);
 	}
 
-	void addDeadEndSegment(Segment2D lastSegmentOfBranch) {
+	void add(Segment2D lastSegmentOfBranch) {
 		assert !deadEnds.contains(lastSegmentOfBranch);
 		deadEnds.add(lastSegmentOfBranch);
 	}
 
-	/**
-	 * Start of a segment is a petiole, end of a segment is a leaf.
-	 *
-	 * @return A set that contains a petiole-leaf segment for each leaf of this tree that can't be grown any further.
-	 */
 	Set<Segment2D> values() {
 		return deadEnds;
 	}
@@ -41,5 +37,15 @@ final class DeadEndSet {
 		deadEnds.remove(old);
 		assert !deadEnds.contains(replacement);
 		deadEnds.add(replacement);
+	}
+	void replace(CutSegment2D cutSegment) {
+		assert cutSegment.segmentStream().count() == 2;
+		assert deadEnds.contains(cutSegment.originalSegment());
+		Segment2D replacement = cutSegment
+			.segmentStream()
+			.skip(1)
+			.findFirst()
+			.get();
+		replaceDeadEndSegment(cutSegment.originalSegment(), replacement);
 	}
 }

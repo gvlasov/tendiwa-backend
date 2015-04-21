@@ -5,11 +5,12 @@ import com.google.common.collect.Table;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.graph.UnmodifiableUndirectedGraph;
+import org.tendiwa.core.meta.Cell;
 import org.tendiwa.geometry.*;
 
 import java.util.*;
 
-class IntershapeNetworkAlgorithm {
+final class IntershapeNetworkAlgorithm {
 
 	private final CellSet walkableCells;
 	private final UnmodifiableUndirectedGraph<FiniteCellSet, CellSegment> graph;

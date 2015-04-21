@@ -67,12 +67,12 @@ public class GrowingRectangleSystem extends RectangleSystem {
 				startY = r.getY() - borderWidth - height;
 				break;
 			case E:
-				startX = r.getX() + r.getWidth() + borderWidth;
+				startX = r.getX() + r.width() + borderWidth;
 				startY = r.getY() + offset;
 				break;
 			case S:
 				startX = r.getX() + offset;
-				startY = r.getY() + r.getHeight() + borderWidth;
+				startY = r.getY() + r.height() + borderWidth;
 				break;
 			case W:
 			default:

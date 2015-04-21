@@ -2,6 +2,7 @@ package org.tendiwa.core;
 
 import org.tendiwa.core.meta.Chance;
 import org.tendiwa.core.meta.Range;
+import org.tendiwa.core.meta.BasicRange;
 import org.tendiwa.geometry.Rectangle;
 
 import java.awt.*;
@@ -22,11 +23,11 @@ import java.util.*;
 public class FuckingTrailRectangleSystem extends GrowingRectangleSystem {
 	private static final int MIN_SECONDARY_AXIS_COVERING_SIZE = 4;
 	protected Point lastPoint;
-	protected Range sizeRange;
+	protected BasicRange sizeRange;
 	final HashMap<Point, Rectangle> pointsToRectangles = new HashMap<Point, Rectangle>();
 	public static boolean STOP = false;
 
-	public FuckingTrailRectangleSystem(int borderWidth, Range sizeRange, Point start) {
+	public FuckingTrailRectangleSystem(int borderWidth, BasicRange sizeRange, Point start) {
 		super(borderWidth);
 		if (sizeRange.max < 2) {
 			throw new IllegalArgumentException("Maximum of sizeRange must be at least 2; your range is " + sizeRange);
@@ -106,8 +107,8 @@ public class FuckingTrailRectangleSystem extends GrowingRectangleSystem {
 			// If there is some placeIn between two rectangles on ends of the line,
 			// where at least one other rectangle can be placed, start preparing
 			// those middle rectangles.
-			Range distanceRange = new Range(minDistanceLeft, maxDistanceLeft);
-			Range sizeRangeWithBorder = new Range(sizeRange.min + borderWidth, sizeRange.max + borderWidth);
+			BasicRange distanceRange = new BasicRange(minDistanceLeft, maxDistanceLeft);
+			BasicRange sizeRangeWithBorder = new BasicRange(sizeRange.min + borderWidth, sizeRange.max + borderWidth);
 			int[] lengths = splitRandomLengthIntoRandomPieces(
 				distanceRange,
 				sizeRangeWithBorder,
@@ -273,8 +274,8 @@ public class FuckingTrailRectangleSystem extends GrowingRectangleSystem {
 		}
 		lengthsBySecondaryAxis.add(lengthOfBottomRec);
 		// And finally set coordinates of rectangles by secondary axis.
-		Range rangeOfTopRec = new Range(0, lengthOfTopRec - 1);
-		Range rangeOfBottomRec = new Range(
+		BasicRange rangeOfTopRec = new BasicRange(0, lengthOfTopRec - 1);
+		BasicRange rangeOfBottomRec = new BasicRange(
 			sumOfUncoveredAreasExceptForLastRec - (coordBottomPoint - coordTopPoint),
 			sumOfUncoveredAreasExceptForLastRec - (coordBottomPoint - coordTopPoint) + lengthOfBottomRec - 1
 		);
@@ -324,7 +325,7 @@ public class FuckingTrailRectangleSystem extends GrowingRectangleSystem {
 		return Math.abs(xIsGreater ? lastPoint.y - newPoint.y : lastPoint.x - newPoint.x) + 1;
 	}
 
-	public int[] splitRandomLengthIntoRandomPieces(Range randomLength, Range randomPieceLength, boolean xIsGreater, Point newPoint) {
+	public int[] splitRandomLengthIntoRandomPieces(BasicRange randomLength, BasicRange randomPieceLength, boolean xIsGreater, Point newPoint) {
 		int maxNumberOfPieces = randomLength.max / randomPieceLength.min;
 		int minNumberOfPieces = randomLength.min / Math.min(randomPieceLength.max, randomLength.min);
 	/*

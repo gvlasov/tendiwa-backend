@@ -8,13 +8,13 @@ import static org.tendiwa.geometry.DSL.cell;
 public class WaveTest {
 	@Test
 	public void iterateOverAllCells() {
-		Cell startCell = cell(5, 5);
+		BasicCell startCell = cell(5, 5);
 		int width = 13;
 		int height = 8;
-		Rectangle rectangle = Recs.rectangleByCenterPoint(startCell, width, height);
+		Rectangle rectangle = StupidPriceduralRecs.rectangleByCenterPoint(startCell, width, height);
 		int i = 0;
 		//noinspection UnusedDeclaration
-		for (Cell cell : Wave.from(startCell).goingOver(rectangle::contains).in8Directions()) {
+		for (BasicCell cell : Wave.from(startCell).goingOver(rectangle::contains).in8Directions()) {
 			i++;
 		}
 		assertEquals(i, width * height);
@@ -22,8 +22,8 @@ public class WaveTest {
 
 	@Test
 	public void iterateOverCellSetBoundedByScalar() {
-		Cell centerPoint = new Cell(5, 5);
-		Rectangle rectangle = Recs.rectangleByCenterPoint(centerPoint, 3, 3);
+		BasicCell centerPoint = new BasicCell(5, 5);
+		Rectangle rectangle = StupidPriceduralRecs.rectangleByCenterPoint(centerPoint, 3, 3);
 		int numberOfCellsInWave = Wave
 			.from(centerPoint)
 			.goingOver(rectangle::contains)
@@ -36,8 +36,8 @@ public class WaveTest {
 
 	@Test
 	public void iterateOverCellSetBoundedByRectangle() {
-		Cell centerPoint = new Cell(5, 5);
-		Rectangle rectangle = Recs.rectangleByCenterPoint(centerPoint, 3, 4);
+		BasicCell centerPoint = new BasicCell(5, 5);
+		Rectangle rectangle = StupidPriceduralRecs.rectangleByCenterPoint(centerPoint, 3, 4);
 		int numberOfCellsInWave = Wave
 			.from(centerPoint)
 			.goingOver(rectangle::contains)
@@ -54,9 +54,9 @@ public class WaveTest {
 	 */
 	@Test(expected = IndexOutOfBoundsException.class)
 	public void wrongBounds() {
-		Cell centerPoint = new Cell(5, 5);
-		Rectangle outerRec = Recs.rectangleByCenterPoint(centerPoint, 3, 5);
-		Rectangle innerRec = Recs.rectangleByCenterPoint(centerPoint, 2, 3);
+		BasicCell centerPoint = new BasicCell(5, 5);
+		Rectangle outerRec = StupidPriceduralRecs.rectangleByCenterPoint(centerPoint, 3, 5);
+		Rectangle innerRec = StupidPriceduralRecs.rectangleByCenterPoint(centerPoint, 2, 3);
 		Wave.from(centerPoint)
 			.goingOver(outerRec::contains)
 			.in8Directions()

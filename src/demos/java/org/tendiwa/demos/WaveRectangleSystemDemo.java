@@ -1,7 +1,7 @@
 package org.tendiwa.demos;
 
 import com.google.inject.Inject;
-import org.tendiwa.core.meta.Range;
+import org.tendiwa.core.meta.BasicRange;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.RectangleSystem;
@@ -40,7 +40,7 @@ public class WaveRectangleSystemDemo implements Runnable {
 		for (int i = 0; i < (WaveRectangleSystem.DEBUG ? 1 : tries); i++) {
 			WaveRectangleSystem rs = new WaveRectangleSystem(
 				0,
-				new Range(7, 20),
+				new BasicRange(7, 20),
 				irs);
 			if (tries == 1) {
 				rs.canvas.show();

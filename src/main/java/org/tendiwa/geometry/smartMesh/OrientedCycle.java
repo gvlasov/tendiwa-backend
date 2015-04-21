@@ -16,7 +16,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Holds a graph of a cycle within which {@link org.tendiwa.geometry.smartMesh.InnerTree} is constructed,
+ * Holds a graph of a cycle within which {@link FloodPart} is constructed,
  * and for each edge remembers whether that edge goes clockwise or counter-clockwise. That effectively means that
  * OrientedCycle can tell if its innards are to the right or to the left from its certain edge.
  */
@@ -114,6 +114,7 @@ final class OrientedCycle implements NetworkPart {
 		reverseEdges.add(edge);
 	}
 
+	// TODO: bisector is not deviated
 	public Ray deviatedAngleBisector(Point2D bisectorStart, boolean inward) {
 		Set<Segment2D> adjacentEdges = cycleGraph.edgesOf(bisectorStart);
 		assert adjacentEdges.size() == 2;
@@ -161,5 +162,27 @@ final class OrientedCycle implements NetworkPart {
 			.stream()
 			.map(NeighborsTriplet::current)
 			.collect(Collectors.toList());
+	}
+
+	Ray normal(SplitSegment2D segmentWithPoint, boolean inward) {
+		Point2D cwPoint, ccwPoint;
+		if (isClockwise(segmentWithPoint.originalSegment()) ^ inward) {
+			cwPoint = segmentWithPoint.originalStart();
+			ccwPoint = segmentWithPoint.originalEnd();
+		} else {
+			cwPoint = segmentWithPoint.originalEnd();
+			ccwPoint = segmentWithPoint.originalStart();
+		}
+		Point2D rayStart = segmentWithPoint.middlePoint();
+		Point2D pointOnRay = rayStart.add(
+			new Bisector(
+				cwPoint.subtract(rayStart),
+				ccwPoint.subtract(rayStart)
+			).asInbetweenVector()
+		);
+		return new Ray(
+			rayStart,
+			rayStart.angleTo(pointOnRay)
+		);
 	}
 }

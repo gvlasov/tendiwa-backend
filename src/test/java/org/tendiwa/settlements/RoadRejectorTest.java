@@ -7,7 +7,7 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.geometry.smartMesh.SegmentNetworkBuilder;
-import org.tendiwa.geometry.smartMesh.Segment2DSmartMesh;
+import org.tendiwa.geometry.smartMesh.SmartMesh2D;
 import org.tendiwa.settlements.utils.RoadRejector;
 
 import java.util.Random;
@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
 
 public class RoadRejectorTest {
 
-	private Segment2DSmartMesh geometry;
+	private SmartMesh2D geometry;
 	private UndirectedGraph<Point2D, Segment2D> fullRoadGraph;
 
 	@Before
@@ -31,7 +31,7 @@ public class RoadRejectorTest {
 		geometry = new SegmentNetworkBuilder(topology)
 			.withDefaults()
 			.build();
-		fullRoadGraph = geometry.getFullRoadGraph();
+		fullRoadGraph = geometry.graph();
 	}
 
 	/**
@@ -69,8 +69,8 @@ public class RoadRejectorTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void wrongProbability() {
-		RoadRejector.rejectPartOfNetworksBorders(geometry.getFullRoadGraph(), geometry, 2.0, new Random(1));
-		RoadRejector.rejectPartOfNetworksBorders(geometry.getFullRoadGraph(), geometry, -2.0, new Random(1));
+		RoadRejector.rejectPartOfNetworksBorders(geometry.graph(), geometry, 2.0, new Random(1));
+		RoadRejector.rejectPartOfNetworksBorders(geometry.graph(), geometry, -2.0, new Random(1));
 	}
 
 }

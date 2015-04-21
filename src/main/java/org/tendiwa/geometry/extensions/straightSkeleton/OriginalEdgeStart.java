@@ -1,12 +1,15 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
 import org.tendiwa.collections.SuccessiveTuples;
+import org.tendiwa.geometry.GeometryPrimitives;
 import org.tendiwa.geometry.RayIntersection;
 import org.tendiwa.geometry.Segment2D;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Stream;
+
+import static org.tendiwa.geometry.GeometryPrimitives.segment2D;
 
 /**
  * Apart from being a {@link Node}, this class acts as an access point to an original edge of a polygon emanating
@@ -16,7 +19,7 @@ final class OriginalEdgeStart extends Node {
 	private Face face;
 
 	OriginalEdgeStart(Segment2D edge) {
-		super(edge.start);
+		super(edge.start());
 		currentEdge = edge;
 		currentEdgeStart = this;
 	}
@@ -63,8 +66,8 @@ final class OriginalEdgeStart extends Node {
 		Segment2D oppositeInClosed = findClosestIntersectedSegment(parent.bisector);
 		Node oneNode = null, anotherNode = null;
 		for (Node node : face) {
-			if (node.vertex.equals(oppositeInClosed.start)
-				|| node.vertex.equals(oppositeInClosed.end)) {
+			if (node.vertex.equals(oppositeInClosed.start())
+				|| node.vertex.equals(oppositeInClosed.end())) {
 				if (oneNode == null) {
 					oneNode = node;
 				} else {
@@ -94,7 +97,7 @@ final class OriginalEdgeStart extends Node {
 		Collection<Segment2D> segments = new ArrayList<>();
 		SuccessiveTuples.forEachLooped(face, (a, b) -> {
 			if (a.vertex != b.vertex) {
-				segments.add(new Segment2D(a.vertex, b.vertex));
+				segments.add(segment2D(a.vertex, b.vertex));
 			}
 		});
 		return segments.stream();

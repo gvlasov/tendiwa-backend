@@ -3,8 +3,8 @@ package org.tendiwa.core.vision;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.tendiwa.core.*;
-import org.tendiwa.core.meta.CellPosition;
-import org.tendiwa.geometry.Cell;
+import org.tendiwa.core.meta.Cell;
+import org.tendiwa.geometry.BasicCell;
 
 import java.util.*;
 
@@ -23,13 +23,13 @@ class ObstaclesCache implements Iterable<Border> {
 	private Collection<Border> obstacles = new LinkedList<>();
 	private boolean built;
 	private Map<Border, CardinalDirection> obstaclesOnSeersCellBorder = new HashMap<>();
-	private Map<Border, Cell> obstacleToObjectPosition = new HashMap<>();
-	private Multimap<Cell, Border> objectPositionToObstacle = HashMultimap.create();
-	private CellPosition position;
+	private Map<Border, BasicCell> obstacleToObjectPosition = new HashMap<>();
+	private Multimap<BasicCell, Border> objectPositionToObstacle = HashMultimap.create();
+	private Cell position;
 
 	ObstaclesCache(
 		World world,
-		CellPosition position,
+		Cell position,
 		ObstacleFindingStrategy strategy
 	) {
 		this.world = world;
@@ -46,14 +46,14 @@ class ObstaclesCache implements Iterable<Border> {
 		obstaclesOnSeersCellBorder.clear();
 		obstacleToObjectPosition.clear();
 		objectPositionToObstacle.clear();
-		int endX = Math.min(world.getWidth() - 1, position.getX() + Seer.VISION_RANGE);
-		int endY = Math.min(world.getHeight() - 1, position.getY() + Seer.VISION_RANGE);
-		int startX = Math.max(0, position.getX() - Seer.VISION_RANGE);
-		int startY = Math.max(0, position.getY() - Seer.VISION_RANGE);
+		int endX = Math.min(world.getWidth() - 1, position.x() + Seer.VISION_RANGE);
+		int endY = Math.min(world.getHeight() - 1, position.y() + Seer.VISION_RANGE);
+		int startX = Math.max(0, position.x() - Seer.VISION_RANGE);
+		int startY = Math.max(0, position.y() - Seer.VISION_RANGE);
 		for (int x = startX; x <= endX; x++) {
 			for (int y = startY; y <= endY; y++) {
 				boolean[] sideOccupied = new boolean[]{false, false, false, false};
-				Cell objectPosition = new Cell(x, y);
+				BasicCell objectPosition = new BasicCell(x, y);
 				if (strategy.isCellBlockingVision(x, y)) {
 					sideOccupied[0] = true;
 					sideOccupied[1] = true;
@@ -78,9 +78,9 @@ class ObstaclesCache implements Iterable<Border> {
 		built = true;
 	}
 
-	private void addObjectObstacles(Cell objectPosition) {
+	private void addObjectObstacles(BasicCell objectPosition) {
 		for (CardinalDirection side : CardinalDirection.values()) {
-			Border border = new Border(objectPosition.getX(), objectPosition.getY(), side);
+			Border border = new Border(objectPosition.x(), objectPosition.y(), side);
 			addSingleBorderObstacle(border);
 			obstacleToObjectPosition.put(border, objectPosition);
 		}
@@ -122,21 +122,21 @@ class ObstaclesCache implements Iterable<Border> {
 	 * @return
 	 */
 	private boolean isOnBorderOfSeersCell(Border border) {
-		boolean sameX = border.x == position.getX();
-		boolean sameY = border.y == position.getY();
+		boolean sameX = border.x == position.x();
+		boolean sameY = border.y == position.y();
 		if (sameX && sameY) {
 			return true;
 		}
-		if (sameY && border.x - position.getX() == 1 && border.side == Directions.W) {
+		if (sameY && border.x - position.x() == 1 && border.side == Directions.W) {
 			return true;
 		}
-		if (sameY && border.x - position.getX() == -1 && border.side == Directions.E) {
+		if (sameY && border.x - position.x() == -1 && border.side == Directions.E) {
 			return true;
 		}
-		if (sameX && border.y - position.getY() == 1 && border.side == Directions.N) {
+		if (sameX && border.y - position.y() == 1 && border.side == Directions.N) {
 			return true;
 		}
-		if (sameX && border.y - position.getY() == -1 && border.side == Directions.S) {
+		if (sameX && border.y - position.y() == -1 && border.side == Directions.S) {
 			return true;
 		}
 		return false;
@@ -149,7 +149,7 @@ class ObstaclesCache implements Iterable<Border> {
 	 * @return Side of obstacle relative to Seer's position.
 	 */
 	private CardinalDirection getSideOfObstacleRelativeToSeerPosition(Border border) {
-		return position.getX() == border.x && position.getY() == border.y ? border.side : border.side.opposite();
+		return position.x() == border.x && position.y() == border.y ? border.side : border.side.opposite();
 	}
 
 	boolean isBuilt() {
@@ -174,8 +174,8 @@ class ObstaclesCache implements Iterable<Border> {
 	 * @return
 	 */
 	boolean isTargetObjectObstacle(Border obstacleBorder, int targetX, int targetY) {
-		Cell objectPosition = obstacleToObjectPosition.get(obstacleBorder);
-		return objectPosition != null && objectPosition.getX() == targetX && objectPosition.getY() == targetY;
+		BasicCell objectPosition = obstacleToObjectPosition.get(obstacleBorder);
+		return objectPosition != null && objectPosition.x() == targetX && objectPosition.y() == targetY;
 	}
 
 	CardinalDirection getSideOfObstacleOnSeersCellBorder(Border obstacle) {

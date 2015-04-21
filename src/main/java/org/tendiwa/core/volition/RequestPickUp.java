@@ -22,7 +22,7 @@ public class RequestPickUp implements Request {
 	@Override
 	public void process() {
 		HorizontalPlane plane = player.getPlane();
-		Iterator<Item> iterator = plane.getItems(player.getX(), player.getY()).iterator();
+		Iterator<Item> iterator = plane.getItems(player.x(), player.y()).iterator();
 		if (iterator.hasNext()) {
 			player.pickUp(iterator.next());
 		}

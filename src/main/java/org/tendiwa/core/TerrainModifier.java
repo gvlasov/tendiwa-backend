@@ -3,10 +3,7 @@ package org.tendiwa.core;
 import org.jgrapht.Graph;
 import org.tendiwa.core.meta.Coordinate;
 import org.tendiwa.core.meta.Utils;
-import org.tendiwa.geometry.Cell;
-import org.tendiwa.geometry.Rectangle;
-import org.tendiwa.geometry.RectangleSystem;
-import org.tendiwa.geometry.Segment;
+import org.tendiwa.geometry.*;
 
 import java.util.*;
 
@@ -120,27 +117,27 @@ public class TerrainModifier {
 				 */
 					continue;
 				}
-				ArrayList<Segment> segments = new ArrayList<>();
+				ArrayList<OrthoCellSegment> segments = new ArrayList<>();
 				// Knowing of close rectangles, create a list of segments. Each
 				// neighbor rectangle corresponds to a segment.
 				for (Rectangle r2 : rectanglesFromThatSide) {
 					CardinalDirection side2 = side.opposite();
 					// A segment on the border of close rectangle from side
 					// opposite to the original r1's side.
-					Segment segment;
+					OrthoCellSegment segment;
 					switch (side2) {
 						case N:
-							segment = new Segment(r2.getX(), r2.getY(), r2.getWidth(), Orientation.HORIZONTAL);
+							segment = new BasicOrthoCellSegment(r2.getX(), r2.getY(), r2.width(), Orientation.HORIZONTAL);
 							break;
 						case E:
-							segment = new Segment(r2.getX() + r2.getWidth() - 1, r2.getY(), r2.getHeight(), Orientation.VERTICAL);
+							segment = new BasicOrthoCellSegment(r2.getX() + r2.width() - 1, r2.getY(), r2.height(), Orientation.VERTICAL);
 							break;
 						case S:
-							segment = new Segment(r2.getX(), r2.getY() + r2.getHeight() - 1, r2.getWidth(), Orientation.HORIZONTAL);
+							segment = new BasicOrthoCellSegment(r2.getX(), r2.getY() + r2.height() - 1, r2.width(), Orientation.HORIZONTAL);
 							break;
 						case W:
 						default:
-							segment = new Segment(r2.getX(), r2.getY(), r2.getHeight(), Orientation.VERTICAL);
+							segment = new BasicOrthoCellSegment(r2.getX(), r2.getY(), r2.height(), Orientation.VERTICAL);
 					}
 					segments.add(segment);
 				}
@@ -164,14 +161,14 @@ public class TerrainModifier {
 				 */
 					Rectangle nextRectangle = rectanglesFromThatSide.get(i + 1);
 					if (rs.areRectanglesNear(rectanglesFromThatSide.get(i), nextRectangle)) {
-						Segment segment = segments.get(i);
+						OrthoCellSegment segment = segments.get(i);
 						segments.set(
 							i,
-							new Segment(
+							new BasicOrthoCellSegment(
 								segment.getX(),
 								segment.getY(),
-								segment.getLength() + segments.get(i + 1).getLength() + rs.getBorderWidth(),
-								segment.getOrientation()
+								segment.length() + segments.get(i + 1).length() + rs.getBorderWidth(),
+								segment.orientation()
 							)
 						);
 						segments.remove(i + 1);
@@ -214,13 +211,13 @@ public class TerrainModifier {
 					Set<Rectangle> neighborsN = rs.getNeighborsFromSide(r1, Directions.N);
 					Set<Rectangle> neighborsS = rs.getNeighborsFromSide(r1, Directions.S);
 					for (Rectangle r : neighborsN) {
-						if (r.getX() + r.getWidth() == r1.getX() + r1.getWidth()) {
+						if (r.getX() + r.width() == r1.getX() + r1.width()) {
 							hasPrevSameLineNeighbor = true;
 							break;
 						}
 					}
 					for (Rectangle r : neighborsS) {
-						if (r.getX() + r.getWidth() == r1.getX() + r1.getWidth()) {
+						if (r.getX() + r.width() == r1.getX() + r1.width()) {
 							hasNextSameLineNeighbor = true;
 							break;
 						}
@@ -229,13 +226,13 @@ public class TerrainModifier {
 					Set<Rectangle> neighborsW = rs.getNeighborsFromSide(r1, Directions.W);
 					Set<Rectangle> neighborsE = rs.getNeighborsFromSide(r1, Directions.E);
 					for (Rectangle r : neighborsW) {
-						if (r.getY() + r.getHeight() == r1.getY() + r1.getHeight()) {
+						if (r.getY() + r.height() == r1.getY() + r1.height()) {
 							hasPrevSameLineNeighbor = true;
 							break;
 						}
 					}
 					for (Rectangle r : neighborsE) {
-						if (r.getY() + r.getHeight() == r1.getY() + r1.getHeight()) {
+						if (r.getY() + r.height() == r1.getY() + r1.height()) {
 							hasNextSameLineNeighbor = true;
 							break;
 						}
@@ -263,55 +260,55 @@ public class TerrainModifier {
 			 * that it starts/ends at the start/end of r1's side.
 			 */
 				if (side == Directions.N || side == Directions.S) {
-					Segment segment = segments.get(0);
+					OrthoCellSegment segment = segments.get(0);
 					if (segment.getX() < r1.getX()) {
 						segments.set(
 							0,
-							new Segment(
+							new BasicOrthoCellSegment(
 								r1.getX() - (hasPrevSameLineNeighbor ? 1 : 0),
 								segment.getY(),
-								segment.getLength() - (r1.getX() - (hasPrevSameLineNeighbor ? 1 : 0) - segment.getX()),
-								segment.getOrientation()
+								segment.length() - (r1.getX() - (hasPrevSameLineNeighbor ? 1 : 0) - segment.getX()),
+								segment.orientation()
 							)
 						);
 					}
 					int index = segments.size() - 1;
 					segment = segments.get(index);
-					if (segment.getX() + segment.getLength() > r1.getX() + r1.getWidth()) {
+					if (segment.getX() + segment.length() > r1.getX() + r1.width()) {
 						segments.set(
 							index,
-							new Segment(
+							new BasicOrthoCellSegment(
 								segment.getX(),
 								segment.getY(),
-								segment.getLength() - (segment.getX() + segment.getLength() - (r1.getX() + r1.getWidth())) + (hasNextSameLineNeighbor ? 1 : 0),
-								segment.getOrientation()
+								segment.length() - (segment.getX() + segment.length() - (r1.getX() + r1.width())) + (hasNextSameLineNeighbor ? 1 : 0),
+								segment.orientation()
 							)
 						);
 					}
 				} else if (side == Directions.E || side == Directions.W) {
 					int index = 0;
-					Segment segment = segments.get(index);
+					OrthoCellSegment segment = segments.get(index);
 					if (segment.getY() < r1.getY()) {
 						segments.set(
 							index,
-							new Segment(
+							new BasicOrthoCellSegment(
 								segment.getX(),
 								r1.getY() - (hasPrevSameLineNeighbor ? 1 : 0),
-								segment.getLength() - r1.getY() - (hasPrevSameLineNeighbor ? 1 : 0) - segment.getY(),
-								segment.getOrientation()
+								segment.length() - r1.getY() - (hasPrevSameLineNeighbor ? 1 : 0) - segment.getY(),
+								segment.orientation()
 							)
 						);
 					}
 					index = segments.size() - 1;
 					segment = segments.get(index);
-					if (segment.getY() + segment.getLength() > r1.getY() + r1.getHeight()) {
+					if (segment.getY() + segment.length() > r1.getY() + r1.height()) {
 						segments.set(
 							index,
-							new Segment(
+							new BasicOrthoCellSegment(
 								segment.getX(),
 								segment.getY(),
-								segment.getLength() - (segment.getY() + segment.getLength() - (r1.getY() + r1.getHeight())) + (hasNextSameLineNeighbor ? 1 : 0),
-								segment.getOrientation()
+								segment.length() - (segment.getY() + segment.length() - (r1.getY() + r1.height())) + (hasNextSameLineNeighbor ? 1 : 0),
+								segment.orientation()
 							)
 						);
 					}
@@ -322,36 +319,36 @@ public class TerrainModifier {
 			 * borders. The segments are also drawn here.
 			 */
 				for (int i = 0; i < segments.size(); i++) {
-					Segment oldSegment = segments.get(i);
-					Segment newSegment;
+					OrthoCellSegment oldSegment = segments.get(i);
+					OrthoCellSegment newSegment;
 					if (side == Directions.N) {
-						newSegment = new Segment(
+						newSegment = new BasicOrthoCellSegment(
 							oldSegment.getX(),
 							oldSegment.getY() + rs.getBorderWidth(),
-							oldSegment.getLength(),
-							oldSegment.getOrientation()
+							oldSegment.length(),
+							oldSegment.orientation()
 						);
 					} else if (side == Directions.E) {
-						newSegment = new Segment(
+						newSegment = new BasicOrthoCellSegment(
 							oldSegment.getX() - rs.getBorderWidth(),
 							oldSegment.getY(),
-							oldSegment.getLength(),
-							oldSegment.getOrientation()
+							oldSegment.length(),
+							oldSegment.orientation()
 						);
 					} else if (side == Directions.S) {
-						newSegment = new Segment(
+						newSegment = new BasicOrthoCellSegment(
 							oldSegment.getX(),
 							oldSegment.getY() - rs.getBorderWidth(),
-							oldSegment.getLength(),
-							oldSegment.getOrientation()
+							oldSegment.length(),
+							oldSegment.orientation()
 						);
 					} else {
 						assert side == Directions.W;
-						newSegment = new Segment(
+						newSegment = new BasicOrthoCellSegment(
 							oldSegment.getX() + rs.getBorderWidth(),
 							oldSegment.getY(),
-							oldSegment.getLength(),
-							oldSegment.getOrientation()
+							oldSegment.length(),
+							oldSegment.orientation()
 						);
 					}
 					segments.set(i, newSegment);
@@ -378,8 +375,8 @@ public class TerrainModifier {
 		for (Rectangle r : rs.getOuterSides().keySet()) {
 			Collection<CardinalDirection> sides = rs.getOuterSides().get(r);
 			for (CardinalDirection side : sides) {
-				Set<Segment> segments = rs.getSegmentsFreeFromNeighbors(r, side);
-				for (Segment segment : segments) {
+				Set<OrthoCellSegment> segments = rs.getSegmentsFreeFromNeighbors(r, side);
+				for (OrthoCellSegment segment : segments) {
 					int newX, newY;
 					if (side == Directions.N) {
 						newX = segment.getX() - rs.getBorderWidth();
@@ -395,11 +392,11 @@ public class TerrainModifier {
 						newX = segment.getX() - rs.getBorderWidth();
 						newY = segment.getY() - rs.getBorderWidth();
 					}
-					location.drawSegment(new Segment(
+					location.drawSegment(new BasicOrthoCellSegment(
 						newX,
 						newY,
-						segment.getLength() + rs.getBorderWidth() * 2,
-						segment.getOrientation()
+						segment.length() + rs.getBorderWidth() * 2,
+						segment.orientation()
 					), rs.getBorderWidth(), placeable);
 				}
 			}
@@ -407,8 +404,8 @@ public class TerrainModifier {
 	}
 
 	public void connectCornersWithLines(TypePlaceableInCell placeable, int padding, boolean considerBorderWidth) {
-		Rectangle boundingRec = rs.getBounds();
-		ccwlLastCellHolder.center = new Coordinate(Math.round(boundingRec.getX() + boundingRec.getWidth() / 2), Math.round(boundingRec.getY() + boundingRec.getHeight() / 2));
+		Rectangle boundingRec = rs.bounds();
+		ccwlLastCellHolder.center = new Coordinate(Math.round(boundingRec.getX() + boundingRec.width() / 2), Math.round(boundingRec.getY() + boundingRec.height() / 2));
 		ArrayList<Coordinate> corners = new ArrayList<>();
 		Comparator<Coordinate> comparator = new Comparator<Coordinate>() {
 			@Override
@@ -423,14 +420,14 @@ public class TerrainModifier {
 			boolean s = sides.contains(Directions.S);
 			boolean w = sides.contains(Directions.W);
 			if (n && e) {
-				corners.add(new Coordinate(r.getX() + r.getWidth() - 1 + (considerBorderWidth ? rs.getBorderWidth() : 0) + padding, r.getY() + (considerBorderWidth ? -rs.getBorderWidth() : 0) - padding));
+				corners.add(new Coordinate(r.getX() + r.width() - 1 + (considerBorderWidth ? rs.getBorderWidth() : 0) + padding, r.getY() + (considerBorderWidth ? -rs.getBorderWidth() : 0) - padding));
 
 			}
 			if (e && s) {
-				corners.add(new Coordinate(r.getX() + r.getWidth() - 1 + (considerBorderWidth ? rs.getBorderWidth() : 0) + padding, r.getY() + r.getHeight() - 1 + (considerBorderWidth ? rs.getBorderWidth() : 0) + padding));
+				corners.add(new Coordinate(r.getX() + r.width() - 1 + (considerBorderWidth ? rs.getBorderWidth() : 0) + padding, r.getY() + r.height() - 1 + (considerBorderWidth ? rs.getBorderWidth() : 0) + padding));
 			}
 			if (s && w) {
-				corners.add(new Coordinate(r.getX() + (considerBorderWidth ? -rs.getBorderWidth() : 0) - padding, r.getY() + r.getHeight() - 1 + (considerBorderWidth ? rs.getBorderWidth() : 0) + padding));
+				corners.add(new Coordinate(r.getX() + (considerBorderWidth ? -rs.getBorderWidth() : 0) - padding, r.getY() + r.height() - 1 + (considerBorderWidth ? rs.getBorderWidth() : 0) + padding));
 			}
 			if (w && n) {
 				corners.add(new Coordinate(r.getX() + (considerBorderWidth ? -rs.getBorderWidth() : 0) - padding, r.getY() + (considerBorderWidth ? -rs.getBorderWidth() : 0) - padding));
@@ -459,9 +456,9 @@ public class TerrainModifier {
 	public void drawLines(TypePlaceableInCell placeable) {
 		Graph<Rectangle, RectangleSystem.Neighborship> graph = rs.getGraph();
 		for (RectangleSystem.Neighborship e : graph.edgeSet()) {
-			Cell c1 = new Cell(graph.getEdgeSource(e).getCenterPoint());
-			Cell c2 = new Cell(graph.getEdgeTarget(e).getCenterPoint());
-			location.line(c1.getX(), c1.getY(), c2.getX(), c2.getY(), placeable);
+			BasicCell c1 = new BasicCell(graph.getEdgeSource(e).getCenterPoint());
+			BasicCell c2 = new BasicCell(graph.getEdgeTarget(e).getCenterPoint());
+			location.line(c1.x(), c1.y(), c2.x(), c2.y(), placeable);
 		}
 	}
 

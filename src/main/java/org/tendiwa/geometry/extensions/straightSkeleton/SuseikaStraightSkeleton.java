@@ -8,10 +8,8 @@ import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.core.meta.Utils;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingPoint2D;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Polygon;
-import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.StraightSkeleton;
+import org.tendiwa.geometry.*;
+import org.tendiwa.geometry.extensions.PlanarGraphs;
 
 import java.awt.Color;
 import java.util.*;
@@ -77,7 +75,7 @@ public final class SuseikaStraightSkeleton implements StraightSkeleton {
 
 	@Override
 	public UndirectedGraph<Point2D, Segment2D> graph() {
-		UndirectedGraph<Point2D, Segment2D> graph = new SimpleGraph<>(Segment2D::new);
+		UndirectedGraph<Point2D, Segment2D> graph = PlanarGraphs.createGraph();
 		for (Map.Entry<Point2D, Collection<Point2D>> startToEnds : arcs.asMap().entrySet()) {
 			Point2D start = startToEnds.getKey();
 			graph.addVertex(start);

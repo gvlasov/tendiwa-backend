@@ -1,16 +1,15 @@
 package org.tendiwa.geometry;
 
 import com.google.common.collect.ImmutableSet;
+import org.tendiwa.collections.IterableToStream;
+import org.tendiwa.core.meta.Cell;
 
-import java.util.function.Consumer;
-import java.util.function.IntBinaryOperator;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import static java.util.Objects.requireNonNull;
 
 /**
- * An CellSet that holds a finite number of {@link org.tendiwa.geometry.Cell}s.
+ * An CellSet that holds a finite number of {@link Cell}s.
  * <p>
  * Note this is not a functional interface (because it extends both {@link CellSet} and {@link Iterable}, so it can't
  * be used as a lambda expression.
@@ -28,7 +27,9 @@ public interface FiniteCellSet extends CellSet, Iterable<Cell> {
 		return new ScatteredCellSet(ImmutableSet.copyOf(cells));
 	}
 
-	public ImmutableSet<Cell> toSet();
+	public default ImmutableSet<Cell> toSet() {
+		return ImmutableSet.copyOf(this);
+	}
 
 	/**
 	 * Applies a function to all the cells in this {@link org.tendiwa.geometry.FiniteCellSet}. Order of iteration is
@@ -38,8 +39,11 @@ public interface FiniteCellSet extends CellSet, Iterable<Cell> {
 	 */
 	public default void forEach(CellConsumer consumer) {
 		for (Cell cell : this) {
-			consumer.consume(cell.x, cell.y);
+			consumer.consume(cell.x(), cell.y());
 		}
 	}
 
+	public default Stream<Cell> stream() {
+		return IterableToStream.stream(this);
+	}
 }

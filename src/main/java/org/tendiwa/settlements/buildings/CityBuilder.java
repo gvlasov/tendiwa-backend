@@ -1,7 +1,7 @@
 package org.tendiwa.settlements.buildings;
 
 import com.google.common.collect.ImmutableSet;
-import org.tendiwa.geometry.Placeable;
+import org.tendiwa.geometry.RectSet;
 import org.tendiwa.settlements.streets.LotStreetAssigner;
 import org.tendiwa.settlements.streets.Street;
 import org.tendiwa.settlements.utils.RectangleWithNeighbors;
@@ -13,7 +13,7 @@ public class CityBuilder {
 	private final Map<RectangleWithNeighbors, Building> buildings = new LinkedHashMap<>();
 	// TODO: Keys are lists, linked hash map has O(n) hashing!
 	private final Map<Chain2D, Street> streets = new LinkedHashMap<>();
-	private final Set<Placeable> districts = new LinkedHashSet<>();
+	private final Set<RectSet> districts = new LinkedHashSet<>();
 	private final Info info = new Info();
 	private String localizationId;
 	private boolean used = false;
@@ -81,7 +81,7 @@ public class CityBuilder {
 			return buildingPlaces;
 		}
 
-		private final Set<Placeable> districts = Collections.unmodifiableSet(
+		private final Set<RectSet> districts = Collections.unmodifiableSet(
 			CityBuilder.this.districts
 		);
 
@@ -89,7 +89,7 @@ public class CityBuilder {
 			return streets;
 		}
 
-		public Set<Placeable> getDistricts() {
+		public Set<RectSet> getDistricts() {
 			return districts;
 		}
 

@@ -3,21 +3,15 @@ package org.tendiwa.geometry.smartMesh;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 
+import java.util.Optional;
+
 public class SnapToNode implements PropagationEvent {
-	private final Point2D source;
-	private final Point2D target;
+	private final Segment2D segment;
 
 	SnapToNode(Point2D source, Point2D target) {
-		this.source = source;
-		this.target = target;
+		this.segment = new Segment2D(source, target);
 	}
 
-	@Override
-	public void integrateInto(AppendableNetworkPart networkPart) {
-		assert fullNetwork.graph().containsVertex(target);
-		segmentInserter.addSecondaryNetworkEdge(source, target);
-		networkPart.appendSegment(source.segmentTo(target ));
-	}
 
 	@Override
 	public boolean createsNewSegment() {
@@ -26,7 +20,12 @@ public class SnapToNode implements PropagationEvent {
 
 	@Override
 	public Point2D target() {
-		return target;
+		return segment.end;
+	}
+
+	@Override
+	public Point2D source() {
+		return segment.start;
 	}
 
 	@Override
@@ -34,4 +33,13 @@ public class SnapToNode implements PropagationEvent {
 		return true;
 	}
 
+	@Override
+	public Segment2D addedSegment() {
+		return segment;
+	}
+
+	@Override
+	public Optional<Segment2D> splitSegmentMaybe() {
+		return Optional.empty();
+	}
 }

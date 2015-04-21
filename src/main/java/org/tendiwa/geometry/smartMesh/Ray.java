@@ -19,9 +19,10 @@ final class Ray {
 	}
 
 	public Ray changeDirection(double newDirection) {
-		return new Ray(
-			start,
-			newDirection
-		);
+		return new Ray(start, newDirection);
+	}
+
+	public Ray changeStart(Point2D newStart) {
+		return new Ray(newStart, direction);
 	}
 }

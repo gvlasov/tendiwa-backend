@@ -25,7 +25,7 @@ public class RequestMove implements Request {
 	@Override
 	public void process() {
 		int[] coords = direction.side2d();
-		player.move(player.getX() + coords[0], player.getY() + coords[1], MovingStyle.STEP);
+		player.move(player.x() + coords[0], player.y() + coords[1], MovingStyle.STEP);
 
 	}
 

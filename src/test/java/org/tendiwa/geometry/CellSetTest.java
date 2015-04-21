@@ -9,9 +9,9 @@ import static org.junit.Assert.*;
 public class CellSetTest {
 	@Test
 	public void testAnd() throws Exception {
-		CellSet cells = FiniteCellSet.of(new Cell(1, 2))
-			.and(FiniteCellSet.of(new Cell(1, 3), new Cell(1, 2)))
-			.and(FiniteCellSet.of(new Cell(1, 4), new Cell(1, 2)));
+		CellSet cells = FiniteCellSet.of(new BasicCell(1, 2))
+			.and(FiniteCellSet.of(new BasicCell(1, 3), new BasicCell(1, 2)))
+			.and(FiniteCellSet.of(new BasicCell(1, 4), new BasicCell(1, 2)));
 
 		assertTrue(cells.contains(1, 2));
 		assertFalse(cells.contains(1, 3));
@@ -22,9 +22,9 @@ public class CellSetTest {
 	@Test
 	public void testOr() throws Exception {
 
-		CellSet cells = FiniteCellSet.of(new Cell(1, 2))
-			.or(FiniteCellSet.of(new Cell(1, 3)))
-			.or(FiniteCellSet.of(new Cell(1, 4)));
+		CellSet cells = FiniteCellSet.of(new BasicCell(1, 2))
+			.or(FiniteCellSet.of(new BasicCell(1, 3)))
+			.or(FiniteCellSet.of(new BasicCell(1, 4)));
 		assertTrue(cells.contains(1, 2));
 		assertTrue(cells.contains(1, 3));
 		assertTrue(cells.contains(1, 4));
@@ -33,9 +33,9 @@ public class CellSetTest {
 	@Test
 	public void testToCellSet() throws Exception {
 		CellSet cellSet = ImmutableSet.of(
-			new Cell(1, 2),
-			new Cell(2, 3),
-			new Cell(3, 4)
+			new BasicCell(1, 2),
+			new BasicCell(2, 3),
+			new BasicCell(3, 4)
 		)
 			.stream()
 			.map(c -> c.moveToSide(CardinalDirection.W))

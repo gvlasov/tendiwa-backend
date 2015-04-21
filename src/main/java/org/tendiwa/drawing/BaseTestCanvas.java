@@ -1,7 +1,7 @@
 package org.tendiwa.drawing;
 
 import com.google.inject.Inject;
-import org.tendiwa.geometry.Cell;
+import org.tendiwa.geometry.BasicCell;
 import org.tendiwa.geometry.CellSegment;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.Rectangle2D;
@@ -340,8 +340,8 @@ class BaseTestCanvas implements DrawableInto {
 	}
 
 	@Override
-	public void drawRasterLine(Cell p1, Cell p2, Color color) {
-		for (Cell coordinate : CellSegment.cells(p1.x, p1.y, p2.x, p2.y)) {
+	public void drawRasterLine(BasicCell p1, BasicCell p2, Color color) {
+		for (BasicCell coordinate : CellSegment.cells(p1.x, p1.y, p2.x, p2.y)) {
 			drawCell(coordinate.x, coordinate.y, color);
 		}
 	}
@@ -350,11 +350,11 @@ class BaseTestCanvas implements DrawableInto {
 	@Override
 	public void drawLine(double startX, double startY, double endX, double endY, Color color) {
 		// TODO: Too cumbersome, many objects created instead of computing coordinates only
-		Cell[] cells = CellSegment.vector(
-			new Cell((int) Math.round(startX), (int) Math.round(startY)),
-			new Cell((int) Math.round(endX), (int) Math.round(endY))
+		BasicCell[] cells = CellSegment.vector(
+			new BasicCell((int) Math.round(startX), (int) Math.round(startY)),
+			new BasicCell((int) Math.round(endX), (int) Math.round(endY))
 		);
-		for (Cell cell : cells) {
+		for (BasicCell cell : cells) {
 			drawCell(cell.x, cell.y, color);
 		}
 	}

@@ -2,7 +2,7 @@ package org.tendiwa.demos.geometry;
 
 import com.google.common.base.Stopwatch;
 import org.tendiwa.demos.Demos;
-import org.tendiwa.geometry.Cell;
+import org.tendiwa.geometry.BasicCell;
 
 public class DistanceDemo implements Runnable {
 	public static void main(String[] args) {
@@ -11,8 +11,8 @@ public class DistanceDemo implements Runnable {
 
 	@Override
 	public void run() {
-		Cell c1 = new Cell(45, 68);
-		Cell c2 = new Cell(104, 198);
+		BasicCell c1 = new BasicCell(45, 68);
+		BasicCell c2 = new BasicCell(104, 198);
 		Stopwatch watch = Stopwatch.createStarted();
 		double j = 0;
 		long ops = 900000000l;

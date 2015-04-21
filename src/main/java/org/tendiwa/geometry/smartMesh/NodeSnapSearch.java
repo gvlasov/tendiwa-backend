@@ -2,6 +2,7 @@ package org.tendiwa.geometry.smartMesh;
 
 import org.jgrapht.Graph;
 import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Sector;
 import org.tendiwa.geometry.Segment2D;
 
 import java.util.Collection;

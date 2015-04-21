@@ -2,6 +2,7 @@ package org.tendiwa.geometry;
 
 import com.google.common.collect.ImmutableSet;
 import org.tendiwa.collections.IterableToStream;
+import org.tendiwa.core.meta.Cell;
 
 import java.util.Iterator;
 import java.util.function.Consumer;
@@ -21,18 +22,11 @@ public interface BoundedCellSet extends FiniteCellSet {
 	 */
 	public Rectangle getBounds();
 
-	/**
-	 * Iterates over cells in this {@link CellSet}.
-	 * <p>
-	 * Most of the time it is better to use {@link org.tendiwa.geometry.BoundedCellSet#forEach(CellConsumer)}.
-	 *
-	 * @return
-	 */
 	@Override
 	public default Iterator<Cell> iterator() {
 		return new Iterator<Cell>() {
 			private int n = -1;
-			private final int maxN = getBounds().width * getBounds().height;
+			private final int maxN = getBounds().width() * getBounds().height();
 			private Cell next = findNext();
 
 
@@ -52,12 +46,12 @@ public interface BoundedCellSet extends FiniteCellSet {
 				int x, y;
 				do {
 					n++;
-					x = (n % getBounds().width) + getBounds().x;
-					y = (n / getBounds().width) + getBounds().y;
+					x = (n % getBounds().width()) + getBounds().x();
+					y = (n / getBounds().width()) + getBounds().y();
 				}
 				while (n < maxN && !contains(x, y));
 				if (n < maxN) {
-					next = new Cell(x, y);
+					next = new BasicCell(x, y);
 				} else {
 					next = null;
 				}
@@ -83,12 +77,12 @@ public interface BoundedCellSet extends FiniteCellSet {
 	 */
 	public default ImmutableSet<Cell> toSet() {
 		ImmutableSet.Builder<Cell> builder = ImmutableSet.builder();
-		int width = getBounds().getWidth();
-		int height = getBounds().getHeight();
+		int width = getBounds().width();
+		int height = getBounds().height();
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
-				if (contains(i + getBounds().x, j + getBounds().y)) {
-					builder.add(new Cell(i + getBounds().x, j + getBounds().y));
+				if (contains(i + getBounds().x(), j + getBounds().y())) {
+					builder.add(new BasicCell(i + getBounds().x(), j + getBounds().y()));
 				}
 			}
 		}
@@ -97,14 +91,14 @@ public interface BoundedCellSet extends FiniteCellSet {
 
 	@Override
 	public default void forEach(Consumer<? super Cell> action) {
-		int startX = getBounds().x;
-		int startY = getBounds().y;
-		int maxX = getBounds().getMaxX() + 1;
-		int maxY = getBounds().getMaxY() + 1;
+		int startX = getBounds().x();
+		int startY = getBounds().y();
+		int maxX = getBounds().maxX() + 1;
+		int maxY = getBounds().maxY() + 1;
 		for (int x = startX; x < maxX; x++) {
 			for (int y = startY; y < maxY; y++) {
 				if (contains(x, y)) {
-					action.accept(new Cell(x, y));
+					action.accept(new BasicCell(x, y));
 				}
 			}
 		}
@@ -112,10 +106,10 @@ public interface BoundedCellSet extends FiniteCellSet {
 
 	@Override
 	public default void forEach(CellConsumer action) {
-		int startX = getBounds().x;
-		int startY = getBounds().y;
-		int maxX = getBounds().getMaxX() + 1;
-		int maxY = getBounds().getMaxY() + 1;
+		int startX = getBounds().x();
+		int startY = getBounds().y();
+		int maxX = getBounds().maxX() + 1;
+		int maxY = getBounds().maxY() + 1;
 		for (int x = startX; x < maxX; x++) {
 			for (int y = startY; y < maxY; y++) {
 				if (contains(x, y)) {
@@ -139,4 +133,5 @@ public interface BoundedCellSet extends FiniteCellSet {
 			}
 		};
 	}
+
 }

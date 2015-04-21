@@ -1,6 +1,7 @@
 package org.tendiwa.geometry.extensions;
 
 import org.tendiwa.core.meta.Range;
+import org.tendiwa.core.meta.BasicRange;
 import org.tendiwa.geometry.RectangleSystem;
 
 import java.awt.Point;
@@ -18,7 +19,7 @@ public class TrailRectangleSystem extends RectangleSystem {
 	}
 
 	public TrailRectangleSystem(int borderWidth, Point startPoint, int sizeRange) {
-		this(borderWidth, startPoint, new Range(sizeRange, sizeRange));
+		this(borderWidth, startPoint, new BasicRange(sizeRange, sizeRange));
 	}
 
 	public TrailRectangleSystem nextPoint(Point point) {

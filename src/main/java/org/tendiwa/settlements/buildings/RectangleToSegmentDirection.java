@@ -23,7 +23,7 @@ final class RectangleToSegmentDirection {
 	 * @return
 	 */
 	public static CardinalDirection getDirectionToSegment(Segment2D segment, Rectangle rectangle) {
-		if (Recs.rectangleIntersectsSegment(rectangle, segment)) {
+		if (StupidPriceduralRecs.rectangleIntersectsSegment(rectangle, segment)) {
 			throw new GeometryException("Segment and rectangle should not intersect");
 		}
 		List<CardinalDirection> intersectedAreas = computeIntersectedCardinalAreas(segment, rectangle);
@@ -55,8 +55,8 @@ final class RectangleToSegmentDirection {
 		// TODO: Can be optimised because not all the cases are necessary to compute
 		boolean toTheLeft = anyPoint.x < rectangle.x;
 		boolean toTheTop = anyPoint.y < rectangle.y;
-		boolean toTheRight = anyPoint.x > rectangle.getMaxX();
-		boolean toTheBottom = anyPoint.y > rectangle.getMaxY();
+		boolean toTheRight = anyPoint.x > rectangle.maxX();
+		boolean toTheBottom = anyPoint.y > rectangle.maxY();
 		if (toTheLeft && toTheTop) {
 			return horizontal ? CardinalDirection.N : CardinalDirection.W;
 		} else if (toTheRight && toTheTop) {
@@ -157,7 +157,7 @@ final class RectangleToSegmentDirection {
 			if (dir == CardinalDirection.N) {
 				constraints = new BasicVector(new double[]{
 					rectangle.x,
-					-rectangle.getMaxX(),
+					-rectangle.maxX(),
 					-rectangle.y
 				});
 				signs = new Basic2DMatrix(new double[][]{
@@ -168,8 +168,8 @@ final class RectangleToSegmentDirection {
 			} else if (dir == CardinalDirection.E) {
 				constraints = new BasicVector(new double[]{
 					rectangle.y,
-					-rectangle.getMaxY(),
-					rectangle.getMaxX()
+					-rectangle.maxY(),
+					rectangle.maxX()
 				});
 				signs = new Basic2DMatrix(new double[][]{
 					{0, 1},
@@ -179,8 +179,8 @@ final class RectangleToSegmentDirection {
 			} else if (dir == CardinalDirection.S) {
 				constraints = new BasicVector(new double[]{
 					rectangle.x,
-					-rectangle.getMaxX(),
-					rectangle.getMaxY()
+					-rectangle.maxX(),
+					rectangle.maxY()
 				});
 				signs = new Basic2DMatrix(new double[][]{
 					{1, 0},
@@ -191,7 +191,7 @@ final class RectangleToSegmentDirection {
 				assert dir == CardinalDirection.W;
 				constraints = new BasicVector(new double[]{
 					rectangle.y,
-					-rectangle.getMaxY(),
+					-rectangle.maxY(),
 					-rectangle.x
 				});
 				signs = new Basic2DMatrix(new double[][]{

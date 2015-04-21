@@ -3,11 +3,10 @@ package org.tendiwa.demos;
 import com.google.common.base.Stopwatch;
 import com.google.inject.Inject;
 import org.tendiwa.drawing.DrawableInto;
-import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingCell;
 import org.tendiwa.drawing.extensions.DrawingRectangle;
-import org.tendiwa.geometry.Cell;
-import org.tendiwa.geometry.Recs;
+import org.tendiwa.geometry.BasicCell;
+import org.tendiwa.geometry.StupidPriceduralRecs;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.noise.Noise;
 import org.tendiwa.pathfinding.astar.AStar;
@@ -49,7 +48,7 @@ public class NoiseDemo implements Runnable {
 //			} else {
 				noise = noise(x, y, 7);
 //			}
-				Cell point = new Cell(x, y);
+				BasicCell point = new BasicCell(x, y);
 				if (noise > 145) {
 					Color lighterGrey = new Color((int) (noise * 1.2), (int) (noise * 1.2), (int) (noise * 0.2));
 					canvas.drawCell(point, lighterGrey);
@@ -65,20 +64,20 @@ public class NoiseDemo implements Runnable {
 	}
 
 	private void astar() {
-		Cell start = new Cell(387, 480);
-		Cell end = new Cell(770, 500);
+		BasicCell start = new BasicCell(387, 480);
+		BasicCell end = new BasicCell(770, 500);
 		Stopwatch time = Stopwatch.createStarted();
-		List<Cell> path = new AStar((cell, neighbor) -> {
-			int noise = noise(cell.getX(), cell.getY(), 7);
+		List<BasicCell> path = new AStar((cell, neighbor) -> {
+			int noise = noise(cell.x(), cell.y(), 7);
 			return (double) (noise < 145 && noise > 125 ? 1 : 10000) * cell.diagonalComponent(neighbor);
 		}).path(start, end);
 		System.out.println("AStar: " + time);
-		for (Cell cell : path) {
+		for (BasicCell cell : path) {
 			canvas.drawCell(cell, RED);
 		}
 
-		canvas.draw(Recs.rectangleByCenterPoint(start, 5, 5), DrawingRectangle.withColor(RED));
-		canvas.draw(Recs.rectangleByCenterPoint(end, 5, 5), DrawingRectangle.withColor(Color.PINK));
+		canvas.draw(StupidPriceduralRecs.rectangleByCenterPoint(start, 5, 5), DrawingRectangle.withColor(RED));
+		canvas.draw(StupidPriceduralRecs.rectangleByCenterPoint(end, 5, 5), DrawingRectangle.withColor(Color.PINK));
 	}
 
 	private void blob(int width, int height) {
@@ -87,7 +86,7 @@ public class NoiseDemo implements Runnable {
 		BlobArea<TestParams> blob = new BlobArea<>(
 			maxBound,
 			new PathTable(
-				new Cell(140, 105),
+				new BasicCell(140, 105),
 				(x, y) -> {
 					if (!maxBound.contains(x, y)) {
 						return false;
@@ -100,7 +99,7 @@ public class NoiseDemo implements Runnable {
 			(x, y) -> new TestParams((x + y) % 19)
 		);
 		System.out.println("Blob: " + time);
-		for (Cell cell : blob) {
+		for (BasicCell cell : blob) {
 			int value = blob.get(cell).value;
 			canvas.draw(cell, DrawingCell.withColor(new Color(value * 255 / 19, 0, 0)));
 		}

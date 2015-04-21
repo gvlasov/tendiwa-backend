@@ -8,7 +8,7 @@ import org.tendiwa.data.DistantCellsInBufferBorderModule;
 import org.tendiwa.drawing.LargerScaleCanvasModule;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingModule;
-import org.tendiwa.geometry.Cell;
+import org.tendiwa.geometry.BasicCell;
 import org.tendiwa.geometry.DistantCellsFinder;
 import org.tendiwa.geometry.Rectangle;
 
@@ -47,7 +47,7 @@ public class DistantCellsDemo implements Runnable {
 	@Override
 	public void run() {
 		canvas.draw(waterRec, withColor(Color.BLUE));
-		for (Cell cell : cells) {
+		for (BasicCell cell : cells) {
 			System.out.println(cell);
 			canvas.drawCell(cell, RED);
 		}

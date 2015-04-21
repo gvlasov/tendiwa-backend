@@ -1,6 +1,7 @@
 package org.tendiwa.geometry;
 
 import com.google.common.collect.ImmutableSet;
+import org.tendiwa.core.meta.Cell;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -161,7 +162,7 @@ public class Wave implements Iterable<Cell> {
 		for (Cell old : currentFront) {
 			// Four first elements of dx and dy are cardinal direction shifts.
 			for (int j = 0; j < directions; j++) {
-				Cell cell = new Cell(old.x + dx[j], old.y + dy[j]);
+				Cell cell = new BasicCell(old.x() + dx[j], old.y() + dy[j]);
 				if (!previousFront.contains(cell)
 					&& !newFront.contains(cell)
 					&& !currentFront.contains(cell)

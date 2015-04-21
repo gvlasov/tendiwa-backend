@@ -1,7 +1,7 @@
 package org.tendiwa.settlements.buildings;
 
 import com.google.common.collect.ImmutableSet;
-import org.tendiwa.geometry.Placeable;
+import org.tendiwa.geometry.RectSet;
 import org.tendiwa.settlements.utils.RectangleWithNeighbors;
 import org.tendiwa.settlements.streets.Street;
 
@@ -11,14 +11,14 @@ import java.util.Set;
 public final class City {
 	final Map<RectangleWithNeighbors, Building> lotsToBuildings;
 	final Set<Street> streets;
-	final Set<Placeable> districts;
+	final Set<RectSet> districts;
 	private final String localizationId;
 
 	City(
 		String localizationId,
 		Map<RectangleWithNeighbors, Building> lotsToBuildings,
 		ImmutableSet<Street> streets,
-		Set<Placeable> districts
+		Set<RectSet> districts
 	) {
 		this.localizationId = localizationId;
 		this.lotsToBuildings = lotsToBuildings;

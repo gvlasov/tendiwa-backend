@@ -122,10 +122,10 @@ final class SnapTest {
 	 */
 	private Collection<Segment2D> findNearbySegments(Point2D onePoint, Point2D anotherPoint, double snapSize) {
 		RectangularHull hull = new BasicRectangularHull(
-			Math.min(onePoint.x, anotherPoint.x) - snapSize,
-			Math.max(onePoint.x, anotherPoint.x) + snapSize,
-			Math.min(onePoint.y, anotherPoint.y) - snapSize,
-			Math.max(onePoint.y, anotherPoint.y) + snapSize
+			Math.min(onePoint.x(), anotherPoint.x()) - snapSize,
+			Math.max(onePoint.x(), anotherPoint.x()) + snapSize,
+			Math.min(onePoint.y(), anotherPoint.y()) - snapSize,
+			Math.max(onePoint.y(), anotherPoint.y()) + snapSize
 		);
 		return fullNetworkGraph.edgeSet().stream()
 			.filter(hull::intersectsHull)

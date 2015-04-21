@@ -29,7 +29,7 @@ public class LocationNeighborship {
 	}
 
 	public int getLength() {
-		return commonSidePiece.getSegment().getLength();
+		return commonSidePiece.getSegment().length();
 	}
 
 	/**

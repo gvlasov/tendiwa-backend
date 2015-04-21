@@ -3,8 +3,8 @@ package org.tendiwa.geometry;
 import org.tendiwa.core.Orientation;
 
 /**
- * This class represents a junction between two rectangles. It s a rectangle that overlaps two rectangles with a
- * single {@link org.tendiwa.geometry.Segment} each. Junction consists of those two segments and space between
+ * This class represents a junction between two rectangles. It's a rectangle that overlaps two rectangles with a
+ * single {@link BasicOrthoCellSegment} each. Junction consists of those two segments and space between
  * rectangles. You can think of junction as of a rectangular bridge with particular width between two rectangles.
  */
 public class RectanglesJunction {
@@ -22,7 +22,7 @@ public class RectanglesJunction {
 		this.r2 = r2;
 	}
 
-	Segment getSegmentOnRectangle(Rectangle r) {
+	OrthoCellSegment getSegmentOnRectangle(Rectangle r) {
 		throw new UnsupportedOperationException();
 	}
 

@@ -53,7 +53,7 @@ public class Chance {
 			.abs(max - min));
 	}
 
-	public static int rand(Range range) {
+	public static int rand(BasicRange range) {
 		return rand(range.min, range.max);
 	}
 

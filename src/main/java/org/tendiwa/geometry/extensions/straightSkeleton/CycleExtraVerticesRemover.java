@@ -2,14 +2,13 @@ package org.tendiwa.geometry.extensions.straightSkeleton;
 
 import com.google.common.collect.Lists;
 import org.tendiwa.core.meta.Utils;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.Vector2D;
-import org.tendiwa.geometry.Vectors2D;
+import org.tendiwa.geometry.*;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.tendiwa.geometry.GeometryPrimitives.segment2D;
 
 public final class CycleExtraVerticesRemover {
 	/**
@@ -28,7 +27,7 @@ public final class CycleExtraVerticesRemover {
 		if (l < 3) {
 			return vertices;
 		}
-		Map<Integer, Point2D> nonRemovedVertices = new LinkedHashMap<Integer, Point2D>();
+		Map<Integer, Point2D> nonRemovedVertices = new LinkedHashMap<>();
 		for (int i = 0; i < l; i++) {
 			nonRemovedVertices.put(i, vertices.get(i));
 		}
@@ -49,10 +48,8 @@ public final class CycleExtraVerticesRemover {
 	}
 
 	private static boolean isOnLineBetweenPreviousAndNextNodes(Point2D previous, Point2D current, Point2D next) {
-		return previous != null &&
-			current.distanceToLine(
-				new Segment2D(previous, next)
-			) < Vectors2D.EPSILON
+		return previous != null
+			&& current.distanceToLine(segment2D(previous, next)) < Vectors2D.EPSILON
 			&& !isMiddlePointPointy(previous, current, next);
 	}
 

@@ -1,5 +1,6 @@
 package org.tendiwa.core;
 
+import org.tendiwa.core.meta.Cell;
 import org.tendiwa.core.meta.Chance;
 import org.tendiwa.geometry.*;
 
@@ -43,13 +44,13 @@ public class Location {
 			EntityPlacer.place(activePlane, placeable, rectangle.x + startX, rectangle.y + startY);
 			return;
 		}
-		Cell[] cells = CellSegment.cells(startX, startY, endX, endY);
+		BasicCell[] cells = CellSegment.cells(startX, startY, endX, endY);
 		int size = cells.length;
 		for (int i = 0; i < size - 1; i++) {
-			int x = cells[i].getX();
-			int y = cells[i].getY();
-			int x2 = cells[i + 1].getX();
-			int y2 = cells[i + 1].getY();
+			int x = cells[i].x();
+			int y = cells[i].y();
+			int x2 = cells[i + 1].x();
+			int y2 = cells[i + 1].y();
 
 			EntityPlacer.place(activePlane, placeable, rectangle.x + x, rectangle.y + y);
 			if (i < cells.length - 1 && x != x2 && y != y2) {
@@ -67,7 +68,7 @@ public class Location {
 	}
 
 	public void square(Rectangle r, TypePlaceableInCell placeable, boolean fill) {
-		square(r.getX(), r.getY(), r.getWidth(), r.getHeight(), placeable, fill);
+		square(r.getX(), r.getY(), r.width(), r.height(), placeable, fill);
 	}
 
 	public void square(int startX, int startY, int w, int h, TypePlaceableInCell placeable, boolean fill) {
@@ -91,8 +92,8 @@ public class Location {
 		}
 	}
 
-	public ArrayList<Cell> getCircle(int cx, int cy, int r) {
-		ArrayList<Cell> answer = new ArrayList<>();
+	public ArrayList<BasicCell> getCircle(int cx, int cy, int r) {
+		ArrayList<BasicCell> answer = new ArrayList<>();
 		int d = -r / 2;
 		int xCoord = 0;
 		int yCoord = r;
@@ -113,16 +114,16 @@ public class Location {
 		} while (yCoord > 0);
 		int size = x.size();
 		for (int i = 0; i < size; i++) {
-			answer.add(new Cell(cx + x.get(i), cy + y.get(i)));
-			answer.add(new Cell(cx - x.get(i), cy + y.get(i)));
-			answer.add(new Cell(cx + x.get(i), cy - y.get(i)));
-			answer.add(new Cell(cx - x.get(i), cy - y.get(i)));
+			answer.add(new BasicCell(cx + x.get(i), cy + y.get(i)));
+			answer.add(new BasicCell(cx - x.get(i), cy + y.get(i)));
+			answer.add(new BasicCell(cx + x.get(i), cy - y.get(i)));
+			answer.add(new BasicCell(cx - x.get(i), cy - y.get(i)));
 		}
 		return answer;
 	}
 
 	/**
-	 * Uses a {@link org.tendiwa.geometry.Segment} to drawWorld a rectangle. This method is almost identical to {@link
+	 * Uses a {@link org.tendiwa.geometry.BasicOrthoCellSegment} to drawWorld a rectangle. This method is almost identical to {@link
 	 * Location#square(int, int,
 	 * int, int, TypePlaceableInCell)}, it is just more convenient to use when Segments are often used. The drawn
 	 * rectangle's top-left cell will be {segment.x;segment.y}.
@@ -135,11 +136,11 @@ public class Location {
 	 * @param placeable
 	 * 	What to drawWorld in each cell
 	 */
-	public void drawSegment(Segment segment, int width, TypePlaceableInCell placeable) {
-		if (segment.getOrientation().isHorizontal()) {
-			square(segment.getX(), segment.getY(), segment.getLength(), width, placeable, true);
+	public void drawSegment(OrthoCellSegment segment, int width, TypePlaceableInCell placeable) {
+		if (segment.orientation().isHorizontal()) {
+			square(segment.getX(), segment.getY(), segment.length(), width, placeable, true);
 		} else {
-			square(segment.getX(), segment.getY(), width, segment.getLength(), placeable, true);
+			square(segment.getX(), segment.getY(), width, segment.length(), placeable, true);
 		}
 	}
 
@@ -179,44 +180,44 @@ public class Location {
 		return new TerrainModifier(this, rs);
 	}
 
-	public CellCollection getCellCollection(ArrayList<Cell> cls) {
+	public CellCollection getCellCollection(ArrayList<BasicCell> cls) {
 		return new CellCollection(cls, this);
 	}
 
 	// From TerrainGenerator
-	public ArrayList<Cell> polygon(ArrayList<Cell> coords) {
+	public ArrayList<BasicCell> polygon(ArrayList<BasicCell> coords) {
 		return polygon(coords, false);
 	}
 
-	public ArrayList<Cell> polygon(ArrayList<Cell> coords, boolean mode) {
-		ArrayList<Cell> answer = new ArrayList<>();
+	public ArrayList<BasicCell> polygon(ArrayList<BasicCell> coords, boolean mode) {
+		ArrayList<BasicCell> answer = new ArrayList<>();
 
 		int size = coords.size();
-		Cell[] v;
+		BasicCell[] v;
 		int vSize;
 		for (int i = 0; i < size; i++) {
-			Cell coord = coords.get(i);
-			Cell nextCoord = coords.get((i == size - 1) ? 0 : i + 1);
-			v = CellSegment.cells(coord.getX(), coord.getY(), nextCoord.getX(), nextCoord.getY());
+			BasicCell coord = coords.get(i);
+			BasicCell nextCoord = coords.get((i == size - 1) ? 0 : i + 1);
+			v = CellSegment.cells(coord.x(), coord.y(), nextCoord.x(), nextCoord.y());
 			vSize = v.length;
 			for (int j = 0; j < vSize - 1; j++) {
 				answer.add(v[j]);
 			}
 		}
-		int startX = (int) Math.floor((coords.get(0).getX() + coords.get(1).getX() + coords.get(2).getX()) / 3);
-		int startY = (int) Math.floor((coords.get(0).getY() + coords.get(1).getY() + coords.get(2).getY()) / 3);
+		int startX = (int) Math.floor((coords.get(0).x() + coords.get(1).x() + coords.get(2).x()) / 3);
+		int startY = (int) Math.floor((coords.get(0).y() + coords.get(1).y() + coords.get(2).y()) / 3);
 		if (!mode) {
-			HashSet<Cell> oldFront = new HashSet<>();
-			HashSet<Cell> newFront = new HashSet<>();
-			newFront.add(new Cell(startX, startY));
+			HashSet<BasicCell> oldFront = new HashSet<>();
+			HashSet<BasicCell> newFront = new HashSet<>();
+			newFront.add(new BasicCell(startX, startY));
 			int[][] pathTable = new int[rectangle.width][rectangle.height];
 			for (int i = 0; i < rectangle.width; i++) {
 				Arrays.fill(pathTable[i], 0);
 			}
-			Iterator<Cell> it = answer.iterator();
+			Iterator<BasicCell> it = answer.iterator();
 			while (it.hasNext()) {
-				Cell cell = it.next();
-				pathTable[cell.getX()][cell.getY()] = 2;
+				BasicCell cell = it.next();
+				pathTable[cell.x()][cell.y()] = 2;
 			}
 			answer = new ArrayList<>();
 			do {
@@ -225,9 +226,9 @@ public class Location {
 				size = oldFront.size();
 				it = oldFront.iterator();
 				while (it.hasNext()) {
-					Cell cell = it.next();
-					int x = cell.getX();
-					int y = cell.getY();
+					BasicCell cell = it.next();
+					int x = cell.x();
+					int y = cell.y();
 					int[] adjactentX = {x + 1, x, x, x - 1};
 					int[] adjactentY = {y, y - 1, y + 1, y};
 					for (int j = 0; j < 4; j++) {
@@ -246,9 +247,9 @@ public class Location {
 						// continue;
 						// }
 						if (pathTable[thisNumX][thisNumY] == 0) {
-							newFront.add(new Cell(thisNumX, thisNumY));
+							newFront.add(new BasicCell(thisNumX, thisNumY));
 						}
-						answer.add(new Cell(thisNumX, thisNumY));
+						answer.add(new BasicCell(thisNumX, thisNumY));
 						pathTable[thisNumX][thisNumY] = 1;
 					}
 				}
@@ -265,12 +266,12 @@ public class Location {
 		}
 	}
 
-	public ArrayList<Cell> closeCells(int startX, int startY, int length, Passability pass, boolean noDiagonal) {
-		ArrayList<Cell> oldFront = new ArrayList<>();
-		ArrayList<Cell> newFront = new ArrayList<>();
-		ArrayList<Cell> answer = new ArrayList<>();
-		answer.add(new Cell(startX, startY));
-		newFront.add(new Cell(startX, startY));
+	public ArrayList<BasicCell> closeCells(int startX, int startY, int length, Passability pass, boolean noDiagonal) {
+		ArrayList<BasicCell> oldFront = new ArrayList<>();
+		ArrayList<BasicCell> newFront = new ArrayList<>();
+		ArrayList<BasicCell> answer = new ArrayList<>();
+		answer.add(new BasicCell(startX, startY));
+		newFront.add(new BasicCell(startX, startY));
 		int[][] pathTable = new int[rectangle.width][rectangle.height];
 		for (int i = 0; i < rectangle.width; i++) {
 			Arrays.fill(pathTable[i], 0);
@@ -287,13 +288,13 @@ public class Location {
 		}
 		do {
 			oldFront = newFront;
-			newFront = new ArrayList<Cell>();
-			Iterator<Cell> it = oldFront.iterator();
+			newFront = new ArrayList<BasicCell>();
+			Iterator<BasicCell> it = oldFront.iterator();
 			while (it.hasNext()) {
 				// ������� ����� �� ������ ��������� ������ �� ������ ������
-				Cell c = it.next();
-				int x = c.getX();
-				int y = c.getY();
+				BasicCell c = it.next();
+				int x = c.x();
+				int y = c.y();
 
 				for (int j = 0; j < numOfSides; j++) {
 					int thisNumX = x + adjactentX[j];
@@ -319,8 +320,8 @@ public class Location {
 					if (Math.floor(Cells.distanceInt(startX, startY, thisNumX, thisNumY)) >= length) {
 						continue;
 					}
-					newFront.add(new Cell(thisNumX, thisNumY));
-					answer.add(new Cell(thisNumX, thisNumY));
+					newFront.add(new BasicCell(thisNumX, thisNumY));
+					answer.add(new BasicCell(thisNumX, thisNumY));
 					pathTable[thisNumX][thisNumY] = 1;
 				}
 			}
@@ -328,7 +329,7 @@ public class Location {
 		return answer;
 	}
 
-	public ArrayList<Cell> getElementsAreaBorder(
+	public ArrayList<BasicCell> getElementsAreaBorder(
 		int startX,
 		int startY,
 		PlaceableInCell placeable,
@@ -340,11 +341,11 @@ public class Location {
 		// noDiagonal - �������� ������� ���������� ������ �� ������ �������,
 		// ��� �� ��� ������ ������.
 		int[][] pathTable = new int[rectangle.width][rectangle.height];
-		ArrayList<Cell> cells = new ArrayList<>();
-		ArrayList<Cell> oldFront = new ArrayList<>();
-		ArrayList<Cell> newFront = new ArrayList<>();
+		ArrayList<BasicCell> cells = new ArrayList<>();
+		ArrayList<BasicCell> oldFront = new ArrayList<>();
+		ArrayList<BasicCell> newFront = new ArrayList<>();
 		// �� ����� ������ �������� ������
-		newFront.add(new Cell(startX, startY));
+		newFront.add(new BasicCell(startX, startY));
 		for (int i = 0; i < rectangle.width; i++) {
 			for (int j = 0; j < rectangle.height; j++) {
 				pathTable[i][j] = 0;
@@ -366,8 +367,8 @@ public class Location {
 			oldFront = newFront;
 			newFront = new ArrayList<>();
 			for (int i = 0; i < oldFront.size(); i++) {
-				int x = oldFront.get(i).getX();
-				int y = oldFront.get(i).getY();
+				int x = oldFront.get(i).x();
+				int y = oldFront.get(i).y();
 				for (int j = 0; j < numOfSides; j++) {
 					int thisNumX = x + adjactentX[j];
 					int thisNumY = y + adjactentY[j];
@@ -376,9 +377,9 @@ public class Location {
 					}
 					if (placeable.containedIn(activePlane, thisNumX, thisNumY) && !(thisNumX == startX && thisNumY == startY)) {
 						pathTable[thisNumX][thisNumY] = t + 1;
-						newFront.add(new Cell(thisNumX, thisNumY));
+						newFront.add(new BasicCell(thisNumX, thisNumY));
 					} else if (!placeable.containedIn(activePlane, thisNumX, thisNumY)) {
-						cells.add(new Cell(x, y));
+						cells.add(new BasicCell(x, y));
 					}
 				}
 			}
@@ -388,8 +389,8 @@ public class Location {
 	}
 
 	public void waveStructure(int startX, int startY, PlaceableInCell placeable, int maxSize) {
-		Hashtable<Integer, Cell> newFront = new Hashtable<>();
-		newFront.put(0, new Cell(startX, startY));
+		Hashtable<Integer, BasicCell> newFront = new Hashtable<>();
+		newFront.put(0, new BasicCell(startX, startY));
 		int[][] canceled = new int[rectangle.width][rectangle.height];
 		int[][] pathTable = new int[rectangle.width][rectangle.height];
 		for (int i = 0; i < rectangle.width; i++) {
@@ -401,9 +402,9 @@ public class Location {
 		do {
 			int size = newFront.size();
 			for (int i = 0; i < size; i++) {
-				Cell c = newFront.get(i);
-				int x = c.getX();
-				int y = c.getY();
+				BasicCell c = newFront.get(i);
+				int x = c.x();
+				int y = c.y();
 				int[] adjactentX = {x + 1, x, x, x - 1};
 				int[] adjactentY = {y, y - 1, y + 1, y};
 				for (int j = 0; j < 4; j++) {
@@ -425,23 +426,23 @@ public class Location {
 						continue;
 					}
 					placeable.place(activePlane, thisNumX, thisNumY);
-					newFront.put(newFront.size(), new Cell(thisNumX, thisNumY));
+					newFront.put(newFront.size(), new BasicCell(thisNumX, thisNumY));
 				}
 			}
 			t++;
 		} while (newFront.size() > 0 && t < maxSize);
 	}
 
-	public CellCollection newCellCollection(Collection<Cell> cls) {
+	public CellCollection newCellCollection(Collection<BasicCell> cls) {
 		return new CellCollection(cls, this);
 	}
 
 	public int[][] getPathTable(int startX, int startY, int endX, int endY, boolean noDiagonal) {
 		int[][] pathTable = new int[rectangle.width][rectangle.height];
 		boolean isPathFound = false;
-		ArrayList<Cell> oldFront = new ArrayList<>();
-		ArrayList<Cell> newFront = new ArrayList<>();
-		newFront.add(new Cell(startX, startY));
+		ArrayList<BasicCell> oldFront = new ArrayList<>();
+		ArrayList<BasicCell> newFront = new ArrayList<>();
+		newFront.add(new BasicCell(startX, startY));
 		for (int i = 0; i < rectangle.width; i++) {
 			for (int j = 0; j < rectangle.height; j++) {
 				pathTable[i][j] = 0;
@@ -461,10 +462,10 @@ public class Location {
 		}
 		do {
 			oldFront = newFront;
-			newFront = new ArrayList<Cell>();
+			newFront = new ArrayList<BasicCell>();
 			for (int i = 0; i < oldFront.size(); i++) {
-				int x = oldFront.get(i).getX();
-				int y = oldFront.get(i).getY();
+				int x = oldFront.get(i).x();
+				int y = oldFront.get(i).y();
 				for (int j = 0; j < numOfSides; j++) {
 					int thisNumX = x + adjactentX[j];
 					int thisNumY = y + adjactentY[j];
@@ -476,7 +477,7 @@ public class Location {
 					}
 					if (activePlane.getPassability(thisNumX, thisNumY) == Passability.FREE && !(thisNumX == startX && thisNumY == startY)) {
 						pathTable[thisNumX][thisNumY] = t + 1;
-						newFront.add(new Cell(thisNumX, thisNumY));
+						newFront.add(new BasicCell(thisNumX, thisNumY));
 					}
 				}
 			}
@@ -485,20 +486,20 @@ public class Location {
 		return pathTable;
 	}
 
-	public ArrayList<Cell> getPath(int startX, int startY, int destinationX, int destinationY, boolean noDiagonal) {
+	public ArrayList<BasicCell> getPath(int startX, int startY, int destinationX, int destinationY, boolean noDiagonal) {
 		// �������� ���� �� ������ � ���� ������� ��������� (0 - ������ ��� � �.
 		// �.)
 		if (destinationX == startX && destinationY == startY) {
 			throw new Error("Getting path to itself");
 		}
 		int[][] pathTable = getPathTable(startX, startY, destinationX, destinationY, noDiagonal);
-		ArrayList<Cell> path = new ArrayList<Cell>();
+		ArrayList<BasicCell> path = new ArrayList<BasicCell>();
 		if (Cells.isNear(startX, startY, destinationX, destinationY)) {
-			path.add(new Cell(destinationX, destinationY));
+			path.add(new BasicCell(destinationX, destinationY));
 			return path;
 		}
 		// ���������� ����
-		path.add(new Cell(startX, startY));
+		path.add(new BasicCell(startX, startY));
 		int currentNumX = destinationX;
 		int currentNumY = destinationY;
 		int x = currentNumX;
@@ -516,7 +517,7 @@ public class Location {
 		for (int j = pathTable[currentNumX][currentNumY]; j > 0; j = pathTable[currentNumX][currentNumY]) {
 			// �������: �� ���-�� ����� �� ������ dest �� ��������� ������ (���
 			// 1)
-			path.add(0, new Cell(currentNumX, currentNumY));
+			path.add(0, new BasicCell(currentNumX, currentNumY));
 			currentNumX = -1;
 			for (int i = 0; i < numOfSides; i++) {
 				// ��� ������ �� ��������� ������ (�, �, �, �)
@@ -657,20 +658,20 @@ public class Location {
 	}
 
 	public void drawPath(int startX, int startY, int endX, int endY, PlaceableInCell placeable) {
-		ArrayList<Cell> path = getPath(startX, startY, endX, endY, true);
+		ArrayList<BasicCell> path = getPath(startX, startY, endX, endY, true);
 		int size = path.size();
 		for (int i = 0; i < size; i++) {
-			Cell coordinate = path.get(i);
-			placeable.place(activePlane, coordinate.getX(), coordinate.getY());
+			BasicCell coordinate = path.get(i);
+			placeable.place(activePlane, coordinate.x(), coordinate.y());
 		}
 	}
 
 	protected CellCollection getCoast(int startX, int startY) {
 		int[][] pathTable = new int[rectangle.width][rectangle.height];
-		ArrayList<Cell> cells = new ArrayList<>();
-		ArrayList<Cell> oldFront = new ArrayList<>();
-		ArrayList<Cell> newFront = new ArrayList<>();
-		newFront.add(new Cell(startX, startY));
+		ArrayList<BasicCell> cells = new ArrayList<>();
+		ArrayList<BasicCell> oldFront = new ArrayList<>();
+		ArrayList<BasicCell> newFront = new ArrayList<>();
+		newFront.add(new BasicCell(startX, startY));
 		for (int i = 0; i < rectangle.width; i++) {
 			for (int j = 0; j < rectangle.height; j++) {
 				pathTable[i][j] = 0;
@@ -682,8 +683,8 @@ public class Location {
 			oldFront = newFront;
 			newFront = new ArrayList<>();
 			for (int i = 0; i < oldFront.size(); i++) {
-				int x = oldFront.get(i).getX();
-				int y = oldFront.get(i).getY();
+				int x = oldFront.get(i).x();
+				int y = oldFront.get(i).y();
 				int[] adjactentX = new int[]{x + 1, x, x, x - 1,};
 				int[] adjactentY = new int[]{y, y - 1, y + 1, y};
 				for (int j = 0; j < 4; j++) {
@@ -694,9 +695,9 @@ public class Location {
 					}
 					if (activePlane.getPassability(thisNumX, thisNumY) == Passability.NO && !(thisNumX == startX && thisNumY == startY)) {
 						pathTable[thisNumX][thisNumY] = t + 1;
-						newFront.add(new Cell(thisNumX, thisNumY));
+						newFront.add(new BasicCell(thisNumX, thisNumY));
 					} else if (activePlane.getPassability(thisNumX, thisNumY) != Passability.NO) {
-						cells.add(new Cell(x, y));
+						cells.add(new BasicCell(x, y));
 					}
 				}
 			}
@@ -705,13 +706,13 @@ public class Location {
 		return newCellCollection(cells);
 	}
 
-	public ArrayList<Cell> getCellsAroundCell(int x, int y) {
-		ArrayList<Cell> answer = new ArrayList<>();
+	public ArrayList<BasicCell> getCellsAroundCell(int x, int y) {
+		ArrayList<BasicCell> answer = new ArrayList<>();
 		int x1[] = {x, x + 1, x + 1, x + 1, x, x - 1, x - 1, x - 1};
 		int y1[] = {y - 1, y - 1, y, y + 1, y + 1, y + 1, y, y - 1};
 		for (int i = 0; i < 8; i++) {
 			if (activePlane.getPassability(x1[i], y1[i]) == Passability.FREE) {
-				answer.add(new Cell(x1[i], y1[i]));
+				answer.add(new BasicCell(x1[i], y1[i]));
 			}
 		}
 		return answer;
@@ -835,38 +836,38 @@ public class Location {
 	 * @param point
 	 * 	Point in location coordinates.
 	 */
-	public void place(TypePlaceableInCell placeable, Cell point) {
+	public void place(TypePlaceableInCell placeable, BasicCell point) {
 		assert placeable != null : "Trying to place a null object";
 		assert point != null;
-		EntityPlacer.place(activePlane, placeable, rectangle.x + point.getX(), rectangle.y + point.getY());
+		EntityPlacer.place(activePlane, placeable, rectangle.x() + point.x(), rectangle.y() + point.y());
 	}
 
-	public void lineOfThin(RectangleSidePiece line, BorderObjectType type) {
-		for (Cell point : line.getSegment()) {
-			activePlane.setBorderObject(point.getX(), point.getY(), line.getDirection(), type);
+	public void lineOfThin(Side line, BorderObjectType type) {
+		for (Cell point : line) {
+			activePlane.setBorderObject(point.x(), point.y(), line.face(), type);
 		}
 	}
 
 	public void squareOfThin(Rectangle r, BorderObjectType type) {
-		for (int i = 0; i < r.getWidth(); i++) {
+		for (int i = 0; i < r.width(); i++) {
 			activePlane.setBorderObject(r.getX() + i, r.getY(), Directions.N, type);
-			activePlane.setBorderObject(r.getX() + i, r.getY() + r.getHeight() - 1, Directions.S, type);
+			activePlane.setBorderObject(r.getX() + i, r.getY() + r.height() - 1, Directions.S, type);
 		}
-		for (int i = 0; i < r.getHeight(); i++) {
+		for (int i = 0; i < r.height(); i++) {
 			activePlane.setBorderObject(r.getX(), r.getY() + i, Directions.W, type);
-			activePlane.setBorderObject(r.getX() + r.getWidth() - 1, r.getY() + i, Directions.E, type);
+			activePlane.setBorderObject(r.getX() + r.width() - 1, r.getY() + i, Directions.E, type);
 		}
 	}
 
 	public void drawCellSet(FiniteCellSet cellSet, TypePlaceableInCell placeable) {
 		Objects.requireNonNull(placeable);
-		for (Cell cell : cellSet) {
+		for (BasicCell cell : cellSet) {
 			activePlane.place(placeable, rectangle.x + cell.x, rectangle.y + cell.y);
 		}
 	}
 
 	public void drawCellSet(CellSet cellSet, Rectangle bounds, TypePlaceableInCell placeable) {
-		for (Cell cell : bounds) {
+		for (BasicCell cell : bounds) {
 			if (cellSet.contains(cell)) {
 				activePlane.place(placeable, cell.x, cell.y);
 			}

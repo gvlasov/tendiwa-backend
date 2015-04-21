@@ -1,6 +1,7 @@
 package org.tendiwa.geometry.smartMesh;
 
 import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Sector;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Vector2D;
 import org.tendiwa.graphs.graphs2d.MutableGraph2D;

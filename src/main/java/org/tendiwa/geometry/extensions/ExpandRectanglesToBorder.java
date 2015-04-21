@@ -25,8 +25,8 @@ public class ExpandRectanglesToBorder {
 			newRectangles.add(new Rectangle(
 				r.getX() - depth,
 				r.getY() - depth,
-				r.getWidth() + depth * 2,
-				r.getHeight() + depth * 2
+				r.width() + depth * 2,
+				r.height() + depth * 2
 			));
 		}
 		RectangleSystem newRs = new RectangleSystem(rs.getBorderWidth() - depth * 2);

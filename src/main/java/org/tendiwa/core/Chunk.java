@@ -2,7 +2,6 @@ package org.tendiwa.core;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import org.tendiwa.geometry.Cell;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -224,7 +223,7 @@ public class Chunk implements Serializable {
 
 	public boolean hasCharacter(int x, int y) {
 		for (Character character : characters.values()) {
-			if (character.getX() == x && character.getY() == y) {
+			if (character.x() == x && character.y() == y) {
 				return true;
 			}
 		}

@@ -8,7 +8,7 @@ import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PointTrail;
 import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.geometry.smartMesh.SegmentNetworkBuilder;
-import org.tendiwa.geometry.smartMesh.Segment2DSmartMesh;
+import org.tendiwa.geometry.smartMesh.SmartMesh2D;
 
 public class NetworkWithHoles implements Runnable {
 	public static void main(String[] args) {
@@ -23,7 +23,7 @@ public class NetworkWithHoles implements Runnable {
 			.cycleOfVertices(new PointTrail(20, 20).moveBy(0, 30).moveBy(30, 0).moveBy(0, -30).points())
 			.cycleOfVertices(new PointTrail(10, 10).moveBy(0, 100).moveBy(100, 0).moveBy(0, -100).points())
 			.graph();
-		Segment2DSmartMesh segment2DSmartMesh = new SegmentNetworkBuilder(graph)
+		SmartMesh2D segment2DSmartMesh = new SegmentNetworkBuilder(graph)
 			.withDefaults()
 			.withMaxStartPointsPerCycle(1)
 			.build();

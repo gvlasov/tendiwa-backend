@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.Random;
 
 /**
- * A fluent builder to create instances of {@link Segment2DSmartMesh}.
+ * A fluent builder to create instances of {@link SmartMesh2D}.
  */
 public class SegmentNetworkBuilder {
 	/**
@@ -154,7 +154,7 @@ public class SegmentNetworkBuilder {
 	public SegmentNetworkBuilder withSecondaryRoadNetworkRoadLengthDeviation(double dLength) {
 		if (Math.abs(dLength) >= roadSegmentLength) {
 			throw new IllegalArgumentException(
-				"secondaryNetworkSegmentLengthDeviation can't be greater than " +
+				"innerNetworkSegmentLengthDeviation can't be greater than " +
 					"segmentLength (the former is " + secondaryRoadNetworkDeviationAngle + ", " +
 					"the latter is " + roadSegmentLength + ")"
 			);
@@ -204,7 +204,7 @@ public class SegmentNetworkBuilder {
 		return this;
 	}
 
-	public Segment2DSmartMesh build() {
+	public SmartMesh2D build() {
 		if (graph == null) {
 			throw new IllegalStateException("Graph not set");
 		}
@@ -233,7 +233,7 @@ public class SegmentNetworkBuilder {
 			throw new IllegalStateException("maxNumOfStartPoints not set");
 		}
 		if (secondaryRoadNetworkRoadLengthDeviation == null) {
-			throw new IllegalStateException("secondaryNetworkSegmentLengthDeviation not set");
+			throw new IllegalStateException("innerNetworkSegmentLengthDeviation not set");
 		}
 		if (seededRandom == null) {
 			throw new IllegalStateException("seed not set");
@@ -247,7 +247,7 @@ public class SegmentNetworkBuilder {
 			secondaryRoadNetworkRoadLengthDeviation,
 			favourAxisAlignedSegments
 		);
-		return new Segment2DSmartMesh(
+		return new SmartMesh2D(
 			createRoadGraph(graph.vertexSet(), graph.edgeSet()),
 			parameters,
 			seededRandom

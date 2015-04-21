@@ -20,12 +20,11 @@ import java.util.*;
  * remembers what rectangles are neighbours and what rectangles are outer (don't have any neighbors from some
  * side).</p>
  */
-public class RectangleSystem extends RectangleSequence {
+public class RectangleSystem extends BasicRectangleSequence {
 	private static final Comparator<Rectangle> COMPARATOR_HORIZONTAL = new RectangleComparator(Orientation.HORIZONTAL);
 	private static final Comparator<Rectangle> COMPARATOR_VERTICAL = new RectangleComparator(Orientation.VERTICAL);
-	public static Comparator<Rectangle> horizontalRectangleComparator = new Comparator<Rectangle>() {
-		@Override
-		public int compare(Rectangle r1, Rectangle r2) {
+	public static Comparator<Rectangle> horizontalRectangleComparator =
+		(r1, r2) -> {
 			if (r1.getX() > r2.getX()) {
 				return 1;
 			}
@@ -33,8 +32,7 @@ public class RectangleSystem extends RectangleSequence {
 				return -1;
 			}
 			return 0;
-		}
-	};
+		};
 	public static Comparator<Rectangle> verticalRectangleComparator = new Comparator<Rectangle>() {
 		@Override
 		public int compare(Rectangle r1, Rectangle r2) {
@@ -64,8 +62,8 @@ public class RectangleSystem extends RectangleSequence {
 		this.borderWidth = borderWidth;
 		graph = new SimpleGraph<>(Neighborship.class);
 		sortedRectangles = new HashMap<>();
-		sortedRectangles.put(Orientation.HORIZONTAL, new TreeSet<Rectangle>(COMPARATOR_HORIZONTAL));
-		sortedRectangles.put(Orientation.VERTICAL, new TreeSet<Rectangle>(COMPARATOR_VERTICAL));
+		sortedRectangles.put(Orientation.HORIZONTAL, new TreeSet<>(COMPARATOR_HORIZONTAL));
+		sortedRectangles.put(Orientation.VERTICAL, new TreeSet<>(COMPARATOR_VERTICAL));
 	}
 
 	/**
@@ -84,20 +82,20 @@ public class RectangleSystem extends RectangleSequence {
 	 * @see RectangleSystem#areRectanglesUnited(Rectangle, Rectangle)
 	 */
 	static boolean areRectanglesInXCells(Rectangle r1, Rectangle r2, int amount) {
-		if (r1.getX() + r1.getWidth() + amount == r2.getX() || r2.getX() + r2.getWidth() + amount == r1.getX()) {
+		if (r1.getX() + r1.width() + amount == r2.getX() || r2.getX() + r2.width() + amount == r1.getX()) {
 			// Rectangles share a vertical line
 			int a1 = r1.getY();
-			int a2 = r1.getY() + r1.getHeight() - 1;
+			int a2 = r1.getY() + r1.height() - 1;
 			int b1 = r2.getY();
-			int b2 = r2.getY() + r2.getHeight() - 1;
+			int b2 = r2.getY() + r2.height() - 1;
 			int intersection = Utils.integersRangeIntersection(a1, a2, b1, b2);
 			return intersection >= 1;
-		} else if (r1.getY() + r1.getHeight() + amount == r2.getY() || r2.getY() + r2.getHeight() + amount == r1.getY()) {
+		} else if (r1.getY() + r1.height() + amount == r2.getY() || r2.getY() + r2.height() + amount == r1.getY()) {
 			// Rectangles share a horizontal line
 			int a1 = r1.getX();
-			int a2 = r1.getX() + r1.getWidth() - 1;
+			int a2 = r1.getX() + r1.width() - 1;
 			int b1 = r2.getX();
-			int b2 = r2.getX() + r2.getWidth() - 1;
+			int b2 = r2.getX() + r2.width() - 1;
 			int intersection = Utils.integersRangeIntersection(a1, a2, b1, b2);
 			return intersection >= 1;
 		} else {
@@ -147,16 +145,16 @@ public class RectangleSystem extends RectangleSequence {
 	 * @return Side from which neighbor is located relatively to a rectangle.
 	 */
 	CardinalDirection getNeighborSide(Rectangle rectangle, Rectangle neighbor) {
-		if (rectangle.getY() == neighbor.getY() + neighbor.getHeight() + borderWidth) {
+		if (rectangle.getY() == neighbor.getY() + neighbor.height() + borderWidth) {
 			return CardinalDirection.N;
 		}
-		if (rectangle.getX() + rectangle.getWidth() + borderWidth == neighbor.getX()) {
+		if (rectangle.getX() + rectangle.width() + borderWidth == neighbor.getX()) {
 			return CardinalDirection.E;
 		}
-		if (rectangle.getY() + rectangle.getHeight() + borderWidth == neighbor.getY()) {
+		if (rectangle.getY() + rectangle.height() + borderWidth == neighbor.getY()) {
 			return CardinalDirection.S;
 		}
-		if (rectangle.getX() == neighbor.getX() + neighbor.getWidth() + borderWidth) {
+		if (rectangle.getX() == neighbor.getX() + neighbor.width() + borderWidth) {
 			return CardinalDirection.W;
 		}
 		throw new RuntimeException(
@@ -164,7 +162,7 @@ public class RectangleSystem extends RectangleSequence {
 	}
 
 	/**
-	 * Returns a set of {@link org.tendiwa.geometry.Segment}s that this system forms with its outer rectangle.
+	 * Returns a set of {@link BasicOrthoCellSegment}s that this system forms with its outer rectangle.
 	 *
 	 * @param r
 	 * 	A rectangle to find free segments of.
@@ -172,7 +170,7 @@ public class RectangleSystem extends RectangleSequence {
 	 * 	A side of that rectangle.
 	 * @return A set of all such segments (a zero-length one if a rectangle is not outer)
 	 */
-	public ImmutableSet<Segment> getSegmentsFreeFromNeighbors(Rectangle r, CardinalDirection side) {
+	public ImmutableSet<OrthoCellSegment> getSegmentsFreeFromNeighbors(Rectangle r, CardinalDirection side) {
 		ArrayList<Rectangle> rectanglesFromThatSide = new ArrayList<>(getRectanglesCloseToSide(r, side));
 		// Sort neighbors from that direction from top to bottom or from left to right
 		if (side == CardinalDirection.N || side == CardinalDirection.S) {
@@ -184,32 +182,32 @@ public class RectangleSystem extends RectangleSequence {
 				rectanglesFromThatSide,
 				verticalRectangleComparator);
 		}
-		ArrayList<Segment> segments = new ArrayList<>();
+		ArrayList<OrthoCellSegment> segments = new ArrayList<>();
 		// We start from a single segment which fills the whole direction of
 		// rectangle r.
 		if (side == CardinalDirection.N) {
-			segments.add(new Segment(
+			segments.add(new BasicOrthoCellSegment(
 				r.getX(),
 				r.getY(),
-				r.getWidth(),
+				r.width(),
 				Orientation.HORIZONTAL
 			));
 		} else if (side == CardinalDirection.E) {
-			segments.add(new Segment(
-				r.getX() + r.getWidth() - 1,
+			segments.add(new BasicOrthoCellSegment(
+				r.getX() + r.width() - 1,
 				r.getY(),
-				r.getHeight(),
+				r.height(),
 				Orientation.VERTICAL
 			));
 		} else if (side == Directions.S) {
-			segments.add(new Segment(
+			segments.add(new BasicOrthoCellSegment(
 				r.getX(),
-				r.getY() + r.getHeight() - 1,
-				r.getWidth(),
+				r.getY() + r.height() - 1,
+				r.width(),
 				Orientation.HORIZONTAL));
 		} else {
 			// if (direction == DirectionOldSide.W)
-			segments.add(new Segment(r.getX(), r.getY(), r.getHeight(), Orientation.VERTICAL));
+			segments.add(new BasicOrthoCellSegment(r.getX(), r.getY(), r.height(), Orientation.VERTICAL));
 		}
 		int splitSegmentStartCoord, splitSegmentLength;
 		// For each neighbor from that direction, we split our initial segment
@@ -222,20 +220,20 @@ public class RectangleSystem extends RectangleSequence {
 			switch (side) {
 				case N:
 					splitSegmentStartCoord = neighbor.getX() - borderWidth;
-					splitSegmentLength = neighbor.getWidth() + borderWidth * 2;
+					splitSegmentLength = neighbor.width() + borderWidth * 2;
 					break;
 				case E:
 					splitSegmentStartCoord = neighbor.getY() - borderWidth;
-					splitSegmentLength = neighbor.getHeight() + borderWidth * 2;
+					splitSegmentLength = neighbor.height() + borderWidth * 2;
 					break;
 				case S:
 					splitSegmentStartCoord = neighbor.getX() - borderWidth;
-					splitSegmentLength = neighbor.getWidth() + borderWidth * 2;
+					splitSegmentLength = neighbor.width() + borderWidth * 2;
 					break;
 				case W:
 				default:
 					splitSegmentStartCoord = neighbor.getY() - borderWidth;
-					splitSegmentLength = neighbor.getHeight() + borderWidth * 2;
+					splitSegmentLength = neighbor.height() + borderWidth * 2;
 			}
 			// Now, there may be a situation when the whole direction segment is
 			// eliminated, and there are still rectangles from that direction.
@@ -249,7 +247,7 @@ public class RectangleSystem extends RectangleSequence {
 			// rectangle direction segment, we get several segments. That is why
 			// we sorted all the neighbors — otherwise we would have to compare
 			// each neighbor to each segment on each step.
-			Segment[] newSegments = segments
+			OrthoCellSegment[] newSegments = segments
 				.get(segments.size() - 1)
 				.splitWithSegment(splitSegmentStartCoord, splitSegmentLength);
 			// If the segment was split (meaning there is at least one new
@@ -266,21 +264,6 @@ public class RectangleSystem extends RectangleSequence {
 		}
 		// segments.remove(null);
 		return ImmutableSet.copyOf(segments);
-	}
-
-	public ImmutableSet<RectangleSidePiece> getSidePiecesFreeFromNeighbours(Rectangle r, CardinalDirection side) {
-		ImmutableSet<Segment> segmentsFreeFromNeighbors = getSegmentsFreeFromNeighbors(r, side);
-		Builder<RectangleSidePiece> answer = ImmutableSet.builder();
-		for (Segment segment : segmentsFreeFromNeighbors) {
-			// TODO: When Segment will be immutablized, create a constructor
-			// that uses an existing segment.
-			answer.add(new RectangleSidePiece(
-				side,
-				segment.getX(),
-				segment.getY(),
-				segment.getLength()));
-		}
-		return answer.build();
 	}
 
 	/**
@@ -309,47 +292,47 @@ public class RectangleSystem extends RectangleSequence {
 				 * each case checks if a neighbor rectangle touches _side_ (not
 				 * border!) of the rectangle r with its direction _or_ border.
 				 */
-				if (neighbor.getY() + neighbor.getHeight() + borderWidth == r.getY() && Utils
+				if (neighbor.getY() + neighbor.height() + borderWidth == r.getY() && Utils
 					.integersRangeIntersection(
 						neighbor.getX() - borderWidth,
-						neighbor.getX() + neighbor.getWidth() - 1 + borderWidth,
+						neighbor.getX() + neighbor.width() - 1 + borderWidth,
 						r.getX(),
-						r.getX() + r.getWidth() - 1) > 0) {
+						r.getX() + r.width() - 1) > 0) {
 					rectanglesFromThatSide.add(neighbor);
 				}
 			}
 
 		} else if (side == CardinalDirection.E) {
 			for (Rectangle neighbor : content) {
-				if (neighbor.getX() == r.getX() + r.getWidth() + borderWidth && Utils
+				if (neighbor.getX() == r.getX() + r.width() + borderWidth && Utils
 					.integersRangeIntersection(
 						neighbor.getY() - borderWidth,
-						neighbor.getY() + neighbor.getHeight() - 1 + borderWidth,
+						neighbor.getY() + neighbor.height() - 1 + borderWidth,
 						r.getY(),
-						r.getY() + r.getHeight() - 1) > 0) {
+						r.getY() + r.height() - 1) > 0) {
 					rectanglesFromThatSide.add(neighbor);
 				}
 			}
 		} else if (side == CardinalDirection.S) {
 			for (Rectangle neighbor : content) {
-				if (neighbor.getY() == r.getY() + r.getHeight() + borderWidth && Utils
+				if (neighbor.getY() == r.getY() + r.height() + borderWidth && Utils
 					.integersRangeIntersection(
 						neighbor.getX() - borderWidth,
-						neighbor.getX() + neighbor.getWidth() - 1 + borderWidth,
+						neighbor.getX() + neighbor.width() - 1 + borderWidth,
 						r.getX(),
-						r.getX() + r.getWidth() - 1) > 0) {
+						r.getX() + r.width() - 1) > 0) {
 					rectanglesFromThatSide.add(neighbor);
 				}
 			}
 		} else {
 			// if (direction == SideTest.W)
 			for (Rectangle neighbor : content) {
-				if (neighbor.getX() + neighbor.getWidth() + borderWidth == r.getX() && Utils
+				if (neighbor.getX() + neighbor.width() + borderWidth == r.getX() && Utils
 					.integersRangeIntersection(
 						neighbor.getY() - borderWidth,
-						neighbor.getY() + neighbor.getHeight() - 1 + borderWidth,
+						neighbor.getY() + neighbor.height() - 1 + borderWidth,
 						r.getY(),
-						r.getY() + r.getHeight() - 1) > 0) {
+						r.getY() + r.height() - 1) > 0) {
 					rectanglesFromThatSide.add(neighbor);
 				}
 			}
@@ -373,7 +356,7 @@ public class RectangleSystem extends RectangleSequence {
 		Set<Rectangle> rectanglesFromThatSide = new HashSet<>();
 		// TODO: Add somewhere examples of such rectangles as in comment below.
 		/*
-	     * Not only neighbors can shorten free segments, but also the rectangles
+		 * Not only neighbors can shorten free segments, but also the rectangles
 		 * that touch this rectangle only with their border can
 		 * too. That's why we check all the rectangles, and not only
 		 * the neighbors.
@@ -385,12 +368,12 @@ public class RectangleSystem extends RectangleSequence {
 				 * each case checks if a neighbor rectangle touches _side_ (not
 				 * border!) of the rectangle r with its direction _or_ border.
 				 */
-				if (neighbor.getY() + neighbor.getHeight() + borderWidth == r.getY() && Utils
+				if (neighbor.getY() + neighbor.height() + borderWidth == r.getY() && Utils
 					.integersRangeIntersection(
 						neighbor.getX() - borderWidth,
-						neighbor.getX() + neighbor.getWidth() - 1 + borderWidth,
+						neighbor.getX() + neighbor.width() - 1 + borderWidth,
 						r.getX() - borderWidth,
-						r.getX() + r.getWidth() - 1 + borderWidth) > 0) {
+						r.getX() + r.width() - 1 + borderWidth) > 0) {
 					rectanglesFromThatSide.add(neighbor);
 				}
 			}
@@ -398,12 +381,12 @@ public class RectangleSystem extends RectangleSequence {
 		} else if (side == CardinalDirection.E) {
 			for (Rectangle neighbor : content) {
 				if (
-					neighbor.getX() == r.getX() + r.getWidth() + borderWidth
+					neighbor.getX() == r.getX() + r.width() + borderWidth
 						&& Utils.integersRangeIntersection(
 						neighbor.getY() - borderWidth,
-						neighbor.getY() + neighbor.getHeight() - 1 + borderWidth,
+						neighbor.getY() + neighbor.height() - 1 + borderWidth,
 						r.getY() - borderWidth,
-						r.getY() + r.getHeight() - 1 + borderWidth
+						r.getY() + r.height() - 1 + borderWidth
 					) > 0
 					) {
 					rectanglesFromThatSide.add(neighbor);
@@ -411,24 +394,24 @@ public class RectangleSystem extends RectangleSequence {
 			}
 		} else if (side == CardinalDirection.S) {
 			for (Rectangle neighbor : content) {
-				if (neighbor.getY() == r.getY() + r.getHeight() + borderWidth && Utils
+				if (neighbor.getY() == r.getY() + r.height() + borderWidth && Utils
 					.integersRangeIntersection(
 						neighbor.getX() - borderWidth,
-						neighbor.getX() + neighbor.getWidth() - 1 + borderWidth,
+						neighbor.getX() + neighbor.width() - 1 + borderWidth,
 						r.getX() - borderWidth,
-						r.getX() + r.getWidth() - 1 + borderWidth) > 0) {
+						r.getX() + r.width() - 1 + borderWidth) > 0) {
 					rectanglesFromThatSide.add(neighbor);
 				}
 			}
 		} else {
 			// if (direction == SideTest.W)
 			for (Rectangle neighbor : content) {
-				if (neighbor.getX() + neighbor.getWidth() + borderWidth == r.getX() && Utils
+				if (neighbor.getX() + neighbor.width() + borderWidth == r.getX() && Utils
 					.integersRangeIntersection(
 						neighbor.getY() - borderWidth,
-						neighbor.getY() + neighbor.getHeight() - 1 + borderWidth,
+						neighbor.getY() + neighbor.height() - 1 + borderWidth,
 						r.getY() - borderWidth,
-						r.getY() + r.getHeight() - 1 + borderWidth) > 0) {
+						r.getY() + r.height() - 1 + borderWidth) > 0) {
 					rectanglesFromThatSide.add(neighbor);
 				}
 			}
@@ -501,7 +484,7 @@ public class RectangleSystem extends RectangleSequence {
 	 * 	Another rectangle from this rectangle system.
 	 * @return A segment that lies inside r1 close to its borders, and is located in front of r2.
 	 */
-	Segment getAdjacencySegment(Rectangle r1, Rectangle r2) {
+	OrthoCellSegment getAdjacencySegment(Rectangle r1, Rectangle r2) {
 		if (!areRectanglesNear(r1, r2)) {
 			throw new IllegalArgumentException(
 				"Both rectangles must be near each other: " + r1 + " " + r2);
@@ -509,26 +492,26 @@ public class RectangleSystem extends RectangleSequence {
 		CardinalDirection side = getNeighborSide(r1, r2);
 		switch (side) {
 			case N:
-				return new Segment(Math.max(r1.getX(), r2.getX()), r1.getY(), Math.min(
-					r1.getX() + r1.getWidth() - r2.getX(),
-					r2.getX() + r2.getWidth() - r1.getX()), Orientation.HORIZONTAL);
+				return new BasicOrthoCellSegment(Math.max(r1.getX(), r2.getX()), r1.getY(), Math.min(
+					r1.getX() + r1.width() - r2.getX(),
+					r2.getX() + r2.width() - r1.getX()), Orientation.HORIZONTAL);
 			case E:
-				return new Segment(
-					r1.getX() + r1.getWidth() - 1,
+				return new BasicOrthoCellSegment(
+					r1.getX() + r1.width() - 1,
 					Math.max(r1.getY(), r2.getY()),
-					Math.min(r1.getY() + r1.getHeight() - r2.getY(), r2.getY() + r2.getHeight() - r2.getY()),
+					Math.min(r1.getY() + r1.height() - r2.getY(), r2.getY() + r2.height() - r2.getY()),
 					Orientation.VERTICAL);
 			case S:
-				return new Segment(
+				return new BasicOrthoCellSegment(
 					Math.max(r1.getX(), r2.getX()),
-					r1.getY() + r1.getHeight() - 1,
-					Math.min(r1.getX() + r1.getWidth() - r2.getX(), r2.getX() + r2.getWidth() - r1.getX()),
+					r1.getY() + r1.height() - 1,
+					Math.min(r1.getX() + r1.width() - r2.getX(), r2.getX() + r2.width() - r1.getX()),
 					Orientation.HORIZONTAL);
 			case W:
 			default:
-				return new Segment(r1.getX(), Math.max(r1.getY(), r2.getY()), Math.min(
-					r1.getY() + r1.getHeight() - r2.getY(),
-					r2.getY() + r2.getHeight() - r1.getY()), Orientation.VERTICAL);
+				return new BasicOrthoCellSegment(r1.getX(), Math.max(r1.getY(), r2.getY()), Math.min(
+					r1.getY() + r1.height() - r2.getY(),
+					r2.getY() + r2.height() - r1.getY()), Orientation.VERTICAL);
 		}
 	}
 
@@ -559,7 +542,7 @@ public class RectangleSystem extends RectangleSequence {
 	private String shortDef(Rectangle r) {
 		CardinalDirection dir1 = r.getY() == 0 ? CardinalDirection.N : CardinalDirection.S;
 		CardinalDirection dir2 = r.getX() == 0 ? CardinalDirection.W : CardinalDirection.E;
-		return "[" + dir1 + " " + dir2 + " " + r.getWidth() + " " + r.getHeight() + "]";
+		return "[" + dir1 + " " + dir2 + " " + r.width() + " " + r.height() + "]";
 	}
 
 	/**
@@ -573,7 +556,12 @@ public class RectangleSystem extends RectangleSequence {
 	 * @param sourceRecOccupiedSide
 	 * 	Which side of source rectangle is occupied by destination rectangle.
 	 */
-	private void addEdgeBetween(Rectangle r1, Rectangle r2, CardinalDirection sourceRecOccupiedSide, Neighborship.NeighborshipType type) {
+	private void addEdgeBetween(
+		Rectangle r1,
+		Rectangle r2,
+		CardinalDirection sourceRecOccupiedSide,
+		Neighborship.NeighborshipType type
+	) {
 		graph.addEdge(r1, r2, new Neighborship(sourceRecOccupiedSide, type));
 	}
 
@@ -590,7 +578,10 @@ public class RectangleSystem extends RectangleSequence {
 	 * the
 	 * list contains neighbors of ammunitionType Near, second index contains neighbors of ammunitionType United.
 	 */
-	private ArrayList<Map<Rectangle, CardinalDirection>> findNeighborsInSortedSet(Rectangle r, Orientation orientation) {
+	private ArrayList<Map<Rectangle, CardinalDirection>> findNeighborsInSortedSet(
+		Rectangle r,
+		Orientation orientation
+	) {
 		TreeSet<Rectangle> treeSet = sortedRectangles.get(orientation);
 		ArrayList<Map<Rectangle, CardinalDirection>> answer = new ArrayList<>();
 		Map<Rectangle, CardinalDirection> nears = new HashMap<>();
@@ -858,45 +849,45 @@ public class RectangleSystem extends RectangleSequence {
 			// Vertically
 			if (negativeWidth) {
 				// This will be the width of the old Rectangle
-				widthOrHeight = r.getWidth() + widthOrHeight - borderWidth;
+				widthOrHeight = r.width() + widthOrHeight - borderWidth;
 			}
-			if (widthOrHeight > r.getWidth()) {
+			if (widthOrHeight > r.width()) {
 				throw new IllegalArgumentException(
 					"Width " + widthOrHeight + " in vertical splitting is too big");
 			}
 			if (widthOrHeight < 1) {
-				widthOrHeight = widthOrHeight + borderWidth - r.getWidth();
+				widthOrHeight = widthOrHeight + borderWidth - r.width();
 				throw new IllegalArgumentException(
 					"Width " + widthOrHeight + " in vertical splitting is too big");
 			}
 			int newStartX = r.getX() + widthOrHeight + borderWidth;
 			if (reverseAreas) {
-				newRec = new Rectangle(r.getX(), r.getY(), widthOrHeight, r.getHeight());
+				newRec = new Rectangle(r.getX(), r.getY(), widthOrHeight, r.height());
 				resizeRectangle(r,
 					newStartX,
 					r.getY(),
-					r.getWidth() - widthOrHeight - borderWidth,
-					r.getHeight());
+					r.width() - widthOrHeight - borderWidth,
+					r.height());
 			} else {
 				newRec = new Rectangle(
 					newStartX,
 					r.getY(),
-					r.getWidth() - widthOrHeight - borderWidth,
-					r.getHeight());
-				resizeRectangle(r, widthOrHeight, r.getHeight());
+					r.width() - widthOrHeight - borderWidth,
+					r.height());
+				resizeRectangle(r, widthOrHeight, r.height());
 			}
 		} else {
 			// Horizontally
 			if (negativeWidth) {
 				// This will be the width of the old Rectangle
-				widthOrHeight = r.getHeight() + widthOrHeight - borderWidth;
+				widthOrHeight = r.height() + widthOrHeight - borderWidth;
 			}
-			if (widthOrHeight > r.getHeight()) {
+			if (widthOrHeight > r.height()) {
 				throw new IllegalArgumentException(
 					"Width " + widthOrHeight + " in horizontal splitting is too big");
 			}
 			if (widthOrHeight < 1) {
-				widthOrHeight = widthOrHeight + borderWidth - r.getHeight();
+				widthOrHeight = widthOrHeight + borderWidth - r.height();
 				throw new IllegalArgumentException(
 					"Width " + widthOrHeight + " in horizontal splitting is too big");
 			}
@@ -904,19 +895,19 @@ public class RectangleSystem extends RectangleSequence {
 			// Though argument is called width, it is height if a rectangle
 			// is split vertically
 			if (reverseAreas) {
-				newRec = new Rectangle(r.getX(), r.getY(), r.getWidth(), widthOrHeight);
+				newRec = new Rectangle(r.getX(), r.getY(), r.width(), widthOrHeight);
 				resizeRectangle(r,
 					r.getX(),
 					newStartY,
-					r.getWidth(),
-					r.getHeight() - widthOrHeight - borderWidth);
+					r.width(),
+					r.height() - widthOrHeight - borderWidth);
 			} else {
 				newRec = new Rectangle(
 					r.getX(),
 					newStartY,
-					r.getWidth(),
-					r.getHeight() - widthOrHeight - borderWidth);
-				resizeRectangle(r, r.getWidth(), widthOrHeight);
+					r.width(),
+					r.height() - widthOrHeight - borderWidth);
+				resizeRectangle(r, r.width(), widthOrHeight);
 			}
 		}
 		return addRectangle(newRec);
@@ -1021,7 +1012,7 @@ public class RectangleSystem extends RectangleSequence {
 		return new NeighboursIterable(this, r);
 	}
 
-	public Collection<Segment> getOuterSegmentsOf(Rectangle r, CardinalDirection side) {
+	public Collection<OrthoCellSegment> getOuterSegmentsOf(Rectangle r, CardinalDirection side) {
 		return outerSegments.getOuterSegmentsOf(r, side);
 	}
 
@@ -1070,14 +1061,14 @@ public class RectangleSystem extends RectangleSequence {
 	}
 
 	class OuterSegments {
-		final Map<Rectangle, Map<CardinalDirection, ImmutableSet<Segment>>> recsToSegments = new HashMap<>();
+		final Map<Rectangle, Map<CardinalDirection, ImmutableSet<OrthoCellSegment>>> recsToSegments = new HashMap<>();
 		private Map<Rectangle, Set<CardinalDirection>> allOuterSides;
 
-		Collection<Segment> getOuterSegmentsOf(Rectangle r, CardinalDirection side) {
+		Collection<OrthoCellSegment> getOuterSegmentsOf(Rectangle r, CardinalDirection side) {
 			if (!recsToSegments.containsKey(r)) {
 				return computeOuterSegmentsOf(r, side);
 			}
-			Map<CardinalDirection, ImmutableSet<Segment>> segments = recsToSegments.get(r);
+			Map<CardinalDirection, ImmutableSet<OrthoCellSegment>> segments = recsToSegments.get(r);
 			if (segments == null || segments.get(side) == null) {
 				return computeOuterSegmentsOf(r, side);
 			} else {
@@ -1100,7 +1091,7 @@ public class RectangleSystem extends RectangleSequence {
 		 */
 		public Map<Rectangle, Set<CardinalDirection>> outerSidesOfRectangles() {
 			ImmutableMap.Builder<Rectangle, Set<CardinalDirection>> builder = ImmutableMap.builder();
-			for (Map.Entry<Rectangle, Map<CardinalDirection, ImmutableSet<Segment>>> entry : recsToSegments.entrySet()) {
+			for (Map.Entry<Rectangle, Map<CardinalDirection, ImmutableSet<OrthoCellSegment>>> entry : recsToSegments.entrySet()) {
 				assert !entry.getValue().isEmpty();
 				Builder<CardinalDirection> valueBuilder = ImmutableSet.builder();
 				for (CardinalDirection dir : CardinalDirection.values()) {
@@ -1122,9 +1113,9 @@ public class RectangleSystem extends RectangleSequence {
 		 * 	A side of that rectangle from which you need to find free segments.
 		 * @return Saved segments.
 		 */
-		private Collection<Segment> computeOuterSegmentsOf(Rectangle r, CardinalDirection side) {
-			ImmutableSet<Segment> segments = getSegmentsFreeFromNeighbors(r, side);
-			Map<CardinalDirection, ImmutableSet<Segment>> map;
+		private Collection<OrthoCellSegment> computeOuterSegmentsOf(Rectangle r, CardinalDirection side) {
+			ImmutableSet<OrthoCellSegment> segments = getSegmentsFreeFromNeighbors(r, side);
+			Map<CardinalDirection, ImmutableSet<OrthoCellSegment>> map;
 			if (recsToSegments.containsKey(r)) {
 				map = recsToSegments.get(r);
 			} else {
@@ -1139,7 +1130,7 @@ public class RectangleSystem extends RectangleSequence {
 		private Collection<CardinalDirection> getOuterSidesOf(Rectangle r) {
 			Builder<CardinalDirection> builder = ImmutableSet.builder();
 			for (CardinalDirection dir : CardinalDirection.values()) {
-				Collection<Segment> segments = getOuterSegmentsOf(r, dir);
+				Collection<OrthoCellSegment> segments = getOuterSegmentsOf(r, dir);
 				if (!segments.isEmpty()) {
 					builder.add(dir);
 				}
@@ -1165,7 +1156,7 @@ public class RectangleSystem extends RectangleSequence {
 		public ImmutableMap<Rectangle, Collection<CardinalDirection>> getAllOuterSides() {
 			computeForAllRectangles();
 			ImmutableMap.Builder<Rectangle, Collection<CardinalDirection>> builder = ImmutableMap.builder();
-			for (Map.Entry<Rectangle, Map<CardinalDirection, ImmutableSet<Segment>>> entry : recsToSegments.entrySet()) {
+			for (Map.Entry<Rectangle, Map<CardinalDirection, ImmutableSet<OrthoCellSegment>>> entry : recsToSegments.entrySet()) {
 				if (!entry.getValue().isEmpty()) {
 					builder.put(entry.getKey(), entry.getValue().keySet());
 				}
@@ -1190,8 +1181,8 @@ public class RectangleSystem extends RectangleSequence {
 		NeighboursIterable(RectangleSystem rs, Rectangle centralRectangle) {
 			this.rs = rs;
 			this.centralRectangle = centralRectangle;
-			this.centerX = centralRectangle.getCenterX();
-			this.centerY = centralRectangle.getCenterY();
+			this.centerX = centralRectangle.centerX();
+			this.centerY = centralRectangle.centerY();
 		}
 
 		@Override
@@ -1257,8 +1248,8 @@ public class RectangleSystem extends RectangleSequence {
 					startingNeighbourIndex = rectangles.size();
 				}
 				rectangles.add(new AngleRectanglePair(Math.atan2(
-					r.getCenterY() - centerY,
-					r.getCenterX() - centerX), r));
+					r.centerY() - centerY,
+					r.centerX() - centerX), r));
 			}
 			Collections.sort(rectangles, new Comparator<AngleRectanglePair>() {
 				// Sort collection by angle value

@@ -15,11 +15,11 @@ public class PathTable implements BoundedCellSet {
 	private final int maxDepth;
 	private final int width;
 	int[][] pathTable;
-	ArrayList<Cell> newFront;
+	ArrayList<BasicCell> newFront;
 	int step;
 	private final Rectangle bounds;
 
-	public PathTable(Cell start, CellSet availableCells, int maxDepth) {
+	public PathTable(BasicCell start, CellSet availableCells, int maxDepth) {
 		this.startX = start.x;
 		this.startY = start.y;
 		this.availableCells = availableCells;
@@ -46,9 +46,9 @@ public class PathTable implements BoundedCellSet {
 	 * @return A List containing only a starting cell if the starting cell is walkable, or a List containing no cell if
 	 * it is not.
 	 */
-	private ArrayList<Cell> getInitialNewFront() {
-		ArrayList<Cell> answer = new ArrayList<>();
-		Cell firstCell = new Cell(startX, startY);
+	private ArrayList<BasicCell> getInitialNewFront() {
+		ArrayList<BasicCell> answer = new ArrayList<>();
+		BasicCell firstCell = new BasicCell(startX, startY);
 		computeCell(firstCell.x, firstCell.y, maxDepth, maxDepth);
 		if (contains(firstCell.x, firstCell.y)) {
 			answer.add(firstCell);
@@ -62,8 +62,8 @@ public class PathTable implements BoundedCellSet {
 	 *
 	 * @return A new Cell.
 	 */
-	public final Cell getStart() {
-		return new Cell(startX, startY);
+	public final BasicCell getStart() {
+		return new BasicCell(startX, startY);
 	}
 
 	/**
@@ -105,11 +105,11 @@ public class PathTable implements BoundedCellSet {
 //        if (step == maxDepth) {
 //            return false;
 //        }
-		ArrayList<Cell> oldFront = newFront;
+		ArrayList<BasicCell> oldFront = newFront;
 		newFront = new ArrayList<>();
-		for (Cell anOldFront : oldFront) {
-			int x = anOldFront.getX();
-			int y = anOldFront.getY();
+		for (BasicCell anOldFront : oldFront) {
+			int x = anOldFront.x();
+			int y = anOldFront.y();
 			int[] adjacentX = new int[]{x + 1, x, x, x - 1, x + 1, x + 1, x - 1, x - 1};
 			int[] adjacentY = new int[]{y, y - 1, y + 1, y, y + 1, y - 1, y + 1, y - 1};
 			for (int j = 0; j < 8; j++) {
@@ -145,7 +145,7 @@ public class PathTable implements BoundedCellSet {
 			// Step to cell if character can see it and it is free
 			// or character cannot se it and it is not PASSABILITY_NO
 			pathTable[tableX][tableY] = step + 1;
-			newFront.add(new Cell(thisNumX, thisNumY));
+			newFront.add(new BasicCell(thisNumX, thisNumY));
 		}
 	}
 
@@ -157,7 +157,7 @@ public class PathTable implements BoundedCellSet {
 	 * 	Destination y coordinate.
 	 * @return null if path can't be found.
 	 */
-	public final LinkedList<Cell> getPath(Cell target) {
+	public final LinkedList<BasicCell> getPath(BasicCell target) {
 		if (Math.abs(target.x - startX) > maxDepth || Math.abs(target.y - startY) > maxDepth) {
 			throw new IllegalArgumentException("Trying to get path to " + target.x + ":" + target.y + ". That point is too far from start point " + startX + ":" + startY + ", maxDepth is " + maxDepth);
 		}
@@ -171,9 +171,9 @@ public class PathTable implements BoundedCellSet {
 		if (target.x == startX && target.y == startY) {
 			throw new RuntimeException("Getting path to itself");
 		}
-		LinkedList<Cell> path = new LinkedList<>();
+		LinkedList<BasicCell> path = new LinkedList<>();
 		if (Cells.isNear(startX, startY, target.x, target.y)) {
-			path.add(new Cell(target.x, target.y));
+			path.add(new BasicCell(target.x, target.y));
 			return path;
 		}
 		int currentNumX = target.x;
@@ -185,7 +185,7 @@ public class PathTable implements BoundedCellSet {
 			j > 0;
 			j = pathTable[currentNumX - startX + maxDepth][currentNumY - startY + maxDepth]
 			) {
-			path.addFirst(new Cell(currentNumX, currentNumY));
+			path.addFirst(new BasicCell(currentNumX, currentNumY));
 			int[] adjacentX = {cX, cX + 1, cX, cX - 1, cX + 1, cX + 1, cX - 1, cX - 1};
 			int[] adjacentY = {cY - 1, cY, cY + 1, cY, cY + 1, cY - 1, cY + 1, cY - 1};
 			for (int i = 0; i < 8; i++) {

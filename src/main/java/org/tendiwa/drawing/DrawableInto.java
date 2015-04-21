@@ -1,13 +1,12 @@
 package org.tendiwa.drawing;
 
-import org.tendiwa.geometry.Cell;
+import org.tendiwa.geometry.BasicCell;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.Rectangle2D;
 import org.tendiwa.geometry.Segment2D;
 
 import java.awt.Color;
 import java.awt.Shape;
-import java.util.Collection;
 
 public interface DrawableInto {
 	<T> void draw(T what, DrawingAlgorithm<? super T> how, BaseTestCanvas.Layer where);
@@ -45,7 +44,7 @@ public interface DrawableInto {
 
 	void drawRectangle2D(Rectangle2D r, Color color);
 
-	void drawRasterLine(Cell p1, Cell p2, Color color);
+	void drawRasterLine(BasicCell p1, BasicCell p2, Color color);
 
 	void drawLine(double startX, double startY, double endX, double endY, Color color);
 
@@ -53,7 +52,7 @@ public interface DrawableInto {
 		drawRasterLine(line.start.toCell(), line.end.toCell(), color);
 	}
 
-	default void drawCell(Cell cell, Color color) {
+	default void drawCell(BasicCell cell, Color color) {
 		drawCell(cell.x, cell.y, color);
 	}
 

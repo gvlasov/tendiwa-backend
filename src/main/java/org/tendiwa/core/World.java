@@ -23,11 +23,11 @@ public class World {
 		this.rectangle = new Rectangle(
 			0,
 			0,
-			dimension.getWidth(),
-			dimension.getHeight()
+			dimension.width(),
+			dimension.height()
 		);
-		this.width = dimension.getWidth();
-		this.height = dimension.getHeight();
+		this.width = dimension.width();
+		this.height = dimension.height();
 		defaultPlane = initPlane(0);
 		planes.put(0, defaultPlane);
 	}
@@ -45,8 +45,8 @@ public class World {
 	private void checkIfLocationPlacesFillAllWorld(WorldRectangleBuilder builder) {
 		boolean filled[][] = new boolean[width][height];
 		for (LocationPlace place : builder.rectanglesToPlaces.values()) {
-			for (int x = place.getX(); x < place.getWidth(); x++) {
-				for (int y = place.getY(); y < place.getHeight(); y++) {
+			for (int x = place.getX(); x < place.width(); x++) {
+				for (int y = place.getY(); y < place.height(); y++) {
 					filled[x][y] = true;
 				}
 			}
@@ -104,7 +104,7 @@ public class World {
 		}
 		defaultPlane.addCharacter(playerCharacter);
 //	timeStream.addPlayerCharacter(playerCharacter);
-		Set<Chunk> chunks = defaultPlane.getChunksAroundCoordinate(character.getX(), character.getY(), Chunk.SIZE * 5);
+		Set<Chunk> chunks = defaultPlane.getChunksAroundCoordinate(character.x(), character.y(), Chunk.SIZE * 5);
 		for (Chunk chunk : chunks) {
 //		timeStream.addChunk(chunk);
 		}

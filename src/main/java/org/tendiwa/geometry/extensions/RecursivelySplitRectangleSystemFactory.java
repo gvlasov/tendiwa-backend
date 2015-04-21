@@ -27,14 +27,14 @@ public class RecursivelySplitRectangleSystemFactory {
 			// Cloned, because splitting rectangles changes contents.
 			Set<Rectangle> rectangles = new HashSet<>(rs.getRectangles());
 			for (Rectangle r : rectangles) {
-				if (r.getWidth() > splitableRecSizeLimit && r.getHeight() > splitableRecSizeLimit) {
+				if (r.width() > splitableRecSizeLimit && r.height() > splitableRecSizeLimit) {
 					noMoreRectangles = false;
 					randomlySplitRectangle(r, ch.roll() ? Orientation.VERTICAL
 						: Orientation.HORIZONTAL, rs, minRectangleWidth);
-				} else if (r.getWidth() > splitableRecSizeLimit) {
+				} else if (r.width() > splitableRecSizeLimit) {
 					noMoreRectangles = false;
 					randomlySplitRectangle(r, Orientation.VERTICAL, rs, minRectangleWidth);
-				} else if (r.getHeight() > splitableRecSizeLimit) {
+				} else if (r.height() > splitableRecSizeLimit) {
 					noMoreRectangles = false;
 					randomlySplitRectangle(r, Orientation.HORIZONTAL, rs, minRectangleWidth);
 				}
@@ -53,11 +53,11 @@ public class RecursivelySplitRectangleSystemFactory {
 	 */
 	private static void randomlySplitRectangle(Rectangle r, Orientation orientation, RectangleSystem rs, int minRectangleWidth) {
 		if (orientation.isHorizontal()) {
-			int y = Chance.rand(r.getY() + minRectangleWidth, r.getY() + r.getHeight() - minRectangleWidth - rs.getBorderWidth());
+			int y = Chance.rand(r.getY() + minRectangleWidth, r.getY() + r.height() - minRectangleWidth - rs.getBorderWidth());
 			rs.splitRectangle(r, orientation, y - r.getY(), false);
 		} else {
 			assert orientation.isVertical();
-			int x = Chance.rand(r.getX() + minRectangleWidth, r.getX() + r.getWidth() - minRectangleWidth - rs.getBorderWidth());
+			int x = Chance.rand(r.getX() + minRectangleWidth, r.getX() + r.width() - minRectangleWidth - rs.getBorderWidth());
 			rs.splitRectangle(r, orientation, x - r.getX(), false);
 		}
 	}

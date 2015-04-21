@@ -20,6 +20,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.tendiwa.geometry.GeometryPrimitives.point2D;
+import static org.tendiwa.geometry.GeometryPrimitives.segment2D;
+
 /**
  * This class is a facade for <a href="http://twak.blogspot.ru/2009/10/skeleton-index-page.html">a straight skeleton
  * implementation</a> written by a fella named twak.
@@ -42,7 +45,8 @@ public class TwakStraightSkeleton implements StraightSkeleton {
 		Loop<Bar> aloop = new Loop<>();
 		edges.add(aloop);
 
-		List<Point2d> transformedPoints = vertices.stream().map(v -> new Point2d(v.x, v.y)).collect(Collectors.toList());
+		List<Point2d> transformedPoints = vertices.stream().map(v -> new Point2d(v.x(), v.y())).collect(Collectors
+			.toList());
 		assert !transformedPoints.isEmpty();
 		for (Pair<Point2d, Point2d> pair : new ConsecutivePairs<>(transformedPoints, true)) {
 			aloop.append(new Bar(pair.first(), pair.second()));
@@ -80,7 +84,7 @@ public class TwakStraightSkeleton implements StraightSkeleton {
 			List<Segment2D> originalEdges1 = pointsToSegments(
 				vertices
 					.stream()
-					.map(v -> new Point2D(v.x + 300, v.y - 200))
+					.map(v -> point2D(v.x() + 300, v.y() - 200))
 					.collect(Collectors.toList())
 			);
 
@@ -93,7 +97,7 @@ public class TwakStraightSkeleton implements StraightSkeleton {
 	private TwakStraightSkeleton(Skeleton skeleton, List<Segment2D> originalEdges) {
 		this.originalEdges = originalEdges
 			.stream()
-			.map(e -> new Segment2D(e.end, e.start))
+			.map(e -> segment2D(e.end(), e.start()))
 			.collect(Collectors.toList());
 		edges = skeleton.output.edges.map.values();
 	}
@@ -105,17 +109,19 @@ public class TwakStraightSkeleton implements StraightSkeleton {
 		edges
 			.stream()
 			.map(
-				e -> new Segment2D(
-					new Point2D(e.start.x, e.start.y),
-					new Point2D(e.end.x, e.end.y)
+				e -> segment2D(
+					e.start.x,
+					e.start.y,
+					e.end.x,
+					e.end.y
 				)
 			)
 			.filter(a -> !originalEdges.contains(a) && !originalEdges.contains(a.reverse()))
 			.forEach(segment -> {
-				if (!graph.containsEdge(segment.end, segment.start)) {
-					graph.addVertex(segment.start);
-					graph.addVertex(segment.end);
-					graph.addEdge(segment.start, segment.end, segment);
+				if (!graph.containsEdge(segment.end(), segment.start())) {
+					graph.addVertex(segment.start());
+					graph.addVertex(segment.end());
+					graph.addEdge(segment.start(), segment.end(), segment);
 				}
 			});
 		return graph;
@@ -171,10 +177,9 @@ public class TwakStraightSkeleton implements StraightSkeleton {
 		List<Segment2D> originalEdges = new ArrayList<>(points.size());
 		Point2D previous = points.get(points.size() - 1);
 		for (Point2D current : points) {
-			originalEdges.add(new Segment2D(
-				previous,
-				current
-			));
+			originalEdges.add(
+				segment2D(previous, current)
+			);
 			previous = current;
 		}
 		return originalEdges;

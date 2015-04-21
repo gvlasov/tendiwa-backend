@@ -43,7 +43,7 @@ final class LadderyEdgesOptimizer {
 		for (Point2D vertex : vertices) {
 			Neighbors neighbors = findNeighbors(vertex, ladderyCycleGraph);
 			Rectangle hullingRectangle = createRectangleAroundPoints(neighbors.one, neighbors.another);
-			if (hullingRectangle.width > tolerance && hullingRectangle.height > tolerance) {
+			if (hullingRectangle.width() > tolerance && hullingRectangle.height() > tolerance) {
 				continue;
 			}
 			if (!areAllCellsOfRectangleInInnerArea(shape, hullingRectangle)) {
@@ -68,20 +68,20 @@ final class LadderyEdgesOptimizer {
 		Set<Segment2D> edgesOfVertex = cycleGraph.edgesOf(vertex);
 		assert edgesOfVertex.size() == 2;
 		for (Segment2D edgeOfVertex : edgesOfVertex) {
-			if (edgeOfVertex.start.equals(vertex)) {
+			if (edgeOfVertex.start().equals(vertex)) {
 				if (previousVertex == null) {
-					previousVertex = edgeOfVertex.end;
+					previousVertex = edgeOfVertex.end();
 				} else {
 					assert nextVertex == null;
-					nextVertex = edgeOfVertex.end;
+					nextVertex = edgeOfVertex.end();
 				}
 			} else {
-				assert edgeOfVertex.end.equals(vertex);
+				assert edgeOfVertex.end().equals(vertex);
 				if (previousVertex == null) {
-					previousVertex = edgeOfVertex.start;
+					previousVertex = edgeOfVertex.start();
 				} else {
 					assert nextVertex == null;
-					nextVertex = edgeOfVertex.start;
+					nextVertex = edgeOfVertex.start();
 				}
 			}
 		}
@@ -112,7 +112,12 @@ final class LadderyEdgesOptimizer {
 	 * @param graph
 	 * 	The graph containing all the three vertices.
 	 */
-	private static void removeVertex(Point2D vertex, Point2D previous, Point2D next, UndirectedGraph<Point2D, Segment2D> graph) {
+	private static void removeVertex(
+		Point2D vertex,
+		Point2D previous,
+		Point2D next,
+		UndirectedGraph<Point2D, Segment2D> graph
+	) {
 		graph.removeEdge(vertex, previous);
 		graph.removeEdge(vertex, next);
 		graph.removeVertex(vertex);
@@ -120,19 +125,17 @@ final class LadderyEdgesOptimizer {
 	}
 
 	private static Rectangle createRectangleAroundPoints(Point2D previousVertex, Point2D nextVertex) {
-		return Recs.getRectangleFromTwoCorners(
-			(int) Math.round(previousVertex.x),
-			(int) Math.round(previousVertex.y),
-			(int) Math.round(nextVertex.x),
-			(int) Math.round(nextVertex.y)
+		return new RectangleByTwoCorners(
+			previousVertex.toCell(),
+			nextVertex.toCell()
 		);
 	}
 
 	private static boolean areAllCellsOfRectangleInInnerArea(CellSet innerArea, Rectangle hullingRectangle) {
-		int maxX = hullingRectangle.getMaxX();
-		int maxY = hullingRectangle.getMaxY();
-		for (int x = hullingRectangle.x; x < maxX; x++) {
-			for (int y = hullingRectangle.y; y < maxY; y++) {
+		int maxX = hullingRectangle.maxX();
+		int maxY = hullingRectangle.maxY();
+		for (int x = hullingRectangle.x(); x < maxX; x++) {
+			for (int y = hullingRectangle.y(); y < maxY; y++) {
 				if (!innerArea.contains(x, y)) {
 					return false;
 				}

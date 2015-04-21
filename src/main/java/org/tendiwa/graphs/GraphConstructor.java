@@ -56,12 +56,7 @@ public class GraphConstructor<V, E> {
 	 * @return A new GraphConstructor.
 	 */
 	public static <V> GraphConstructor<V, DefaultEdge> createDefault() {
-		return new GraphConstructor<>(new EdgeFactory<V, DefaultEdge>() {
-			@Override
-			public DefaultEdge createEdge(V v, V v2) {
-				return new DefaultEdge();
-			}
-		});
+		return new GraphConstructor<>((v, v2) -> new DefaultEdge());
 	}
 
 	public GraphConstructor(EdgeFactory<V, E> factory) {

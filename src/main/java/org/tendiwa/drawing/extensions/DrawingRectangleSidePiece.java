@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.util.Iterator;
 
 import org.tendiwa.drawing.DrawingAlgorithm;
-import org.tendiwa.geometry.Cell;
+import org.tendiwa.geometry.BasicCell;
 import org.tendiwa.geometry.RectangleSidePiece;
 
 import com.google.common.collect.Iterables;
@@ -13,12 +13,12 @@ import com.google.common.collect.Iterables;
 public class DrawingRectangleSidePiece {
 	public static DrawingAlgorithm<RectangleSidePiece> withColors(final Color color1, final Color color2) {
 		return (piece, canvas) -> {
-			for (Cell point : piece.getSegment()) {
+			for (BasicCell point : piece.getSegment()) {
 				point.moveToSide(piece.getDirection());
-				if ((point.getX() + point.getY()) % 2 == 0) {
-					canvas.drawCell(point.getX(), point.getY(), color1);
+				if ((point.x() + point.y()) % 2 == 0) {
+					canvas.drawCell(point.x(), point.y(), color1);
 				} else {
-					canvas.drawCell(point.getX(), point.getY(), color2);
+					canvas.drawCell(point.x(), point.y(), color2);
 				}
 			}
 		};
@@ -26,9 +26,9 @@ public class DrawingRectangleSidePiece {
 
 	public static DrawingAlgorithm<RectangleSidePiece> withColor(final Color color) {
 		return (piece, canvas) -> {
-			for (Cell point : piece.getSegment()) {
+			for (BasicCell point : piece.getSegment()) {
 				point.moveToSide(piece.getDirection());
-				canvas.drawCell(point.getX(), point.getY(), color);
+				canvas.drawCell(point.x(), point.y(), color);
 			}
 
 		};
@@ -37,9 +37,9 @@ public class DrawingRectangleSidePiece {
 	public static DrawingAlgorithm<RectangleSidePiece> withColorLoop(final Color... colors) {
 		final Iterator<Color> iter = Iterables.cycle(colors).iterator();
 		return (piece, canvas) -> {
-			for (Cell point : piece.getSegment()) {
+			for (BasicCell point : piece.getSegment()) {
 				point.moveToSide(piece.getDirection());
-				canvas.drawCell(point.getX(), point.getY(), iter.next());
+				canvas.drawCell(point.x(), point.y(), iter.next());
 			}
 		};
 	}

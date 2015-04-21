@@ -42,15 +42,15 @@ public class DrawingRectangleSystem {
 			Graph<Rectangle, RectangleSystem.Neighborship> graph = rs.getGraph();
 			for (RectangleSystem.Neighborship edge : graph.edgeSet()) {
 				canvas.drawRasterLine(
-					new Cell(graph.getEdgeSource(edge).getCenterPoint()),
-					new Cell(graph.getEdgeTarget(edge).getCenterPoint()),
+					new BasicCell(graph.getEdgeSource(edge).getCenterPoint()),
+					new BasicCell(graph.getEdgeTarget(edge).getCenterPoint()),
 					graphColor
 				);
 			}
-			DrawingAlgorithm<Segment> red = DrawingSegment.withColor(Color.RED);
+			DrawingAlgorithm<OrthoCellSegment> red = DrawingSegment.withColor(Color.RED);
 			for (Rectangle r : rs) {
 				for (CardinalDirection dir : CardinalDirection.values()) {
-					for (Segment segment : rs.getOuterSegmentsOf(r, dir)) {
+					for (OrthoCellSegment segment : rs.getOuterSegmentsOf(r, dir)) {
 						canvas.draw(segment, red);
 					}
 				}
@@ -67,8 +67,8 @@ public class DrawingRectangleSystem {
 			Graph<Rectangle, RectangleSystem.Neighborship> graph = rs.getGraph();
 			for (RectangleSystem.Neighborship edge : graph.edgeSet()) {
 				canvas.drawRasterLine(
-					new Cell(graph.getEdgeSource(edge).getCenterPoint()),
-					new Cell(graph.getEdgeTarget(edge).getCenterPoint()),
+					new BasicCell(graph.getEdgeSource(edge).getCenterPoint()),
+					new BasicCell(graph.getEdgeTarget(edge).getCenterPoint()),
 					(edge.isNeighborship()) ? neighborshipColor : unionColor
 				);
 			}

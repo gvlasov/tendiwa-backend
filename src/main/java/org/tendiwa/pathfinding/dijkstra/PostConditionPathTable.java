@@ -1,6 +1,6 @@
 package org.tendiwa.pathfinding.dijkstra;
 
-import org.tendiwa.geometry.Cell;
+import org.tendiwa.geometry.BasicCell;
 import org.tendiwa.geometry.CellSet;
 
 /**
@@ -13,7 +13,7 @@ import org.tendiwa.geometry.CellSet;
  */
 public class PostConditionPathTable extends PathTable {
 
-	public PostConditionPathTable(Cell start, CellSet availableCells, int maxDepth) {
+	public PostConditionPathTable(BasicCell start, CellSet availableCells, int maxDepth) {
 		super(start, availableCells, maxDepth);
 	}
 
@@ -22,7 +22,7 @@ public class PostConditionPathTable extends PathTable {
 		if (pathTable[tableX][tableY] == NOT_COMPUTED_CELL) {
 			pathTable[tableX][tableY] = step + 1;
 			if (availableCells.contains(thisNumX, thisNumY)) {
-				newFront.add(new Cell(thisNumX, thisNumY));
+				newFront.add(new BasicCell(thisNumX, thisNumY));
 			}
 		}
 	}

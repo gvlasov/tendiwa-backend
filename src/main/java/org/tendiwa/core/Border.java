@@ -1,6 +1,6 @@
 package org.tendiwa.core;
 
-import org.tendiwa.geometry.Cell;
+import org.tendiwa.geometry.BasicCell;
 
 public class Border {
 	public final int x;
@@ -58,8 +58,8 @@ public class Border {
 		return result;
 	}
 
-	public Cell toPoint() {
-		return new Cell(x, y);
+	public BasicCell toPoint() {
+		return new BasicCell(x, y);
 	}
 
 	@Override

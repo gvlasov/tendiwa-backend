@@ -1,7 +1,7 @@
 package org.tendiwa.geometry;
 
 public interface Position2D {
-	public double getX();
+	public double x();
 
-	public double getY();
+	public double y();
 }

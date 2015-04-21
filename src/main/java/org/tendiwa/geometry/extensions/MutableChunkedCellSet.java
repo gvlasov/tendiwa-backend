@@ -2,7 +2,7 @@ package org.tendiwa.geometry.extensions;
 
 import com.google.common.collect.ImmutableSet;
 import org.tendiwa.geometry.BoundedCellSet;
-import org.tendiwa.geometry.Cell;
+import org.tendiwa.geometry.BasicCell;
 import org.tendiwa.geometry.MutableCellSet;
 import org.tendiwa.geometry.Rectangle;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -41,7 +41,7 @@ public final class MutableChunkedCellSet implements MutableCellSet, BoundedCellS
 	}
 
 	@Override
-	public void add(Cell cell) {
+	public void add(BasicCell cell) {
 		lazilyGetChunkByCell(cell.x, cell.y).add((cell.x - bounds.x) % chunkSize, (cell.y - bounds.y) % chunkSize);
 	}
 
@@ -51,13 +51,13 @@ public final class MutableChunkedCellSet implements MutableCellSet, BoundedCellS
 	}
 
 	@Override
-	public void remove(Cell cell) {
+	public void remove(BasicCell cell) {
 		lazilyGetChunkByCell(cell.x, cell.y).remove((cell.x - bounds.x) % chunkSize, (cell.y - bounds.y) % chunkSize);
 	}
 
 	@Override
-	public ImmutableSet<Cell> toSet() {
-		ImmutableSet.Builder<Cell> builder = ImmutableSet.builder();
+	public ImmutableSet<BasicCell> toSet() {
+		ImmutableSet.Builder<BasicCell> builder = ImmutableSet.builder();
 		int chunksInColumn = getWholeNumberOfChunks(bounds.height, chunkSize);
 		for (int chunkColumn = 0; chunkColumn < chunksInRow; chunkColumn++) {
 			for (int chunkRow = 0; chunkRow < chunksInColumn; chunkRow++) {
@@ -67,7 +67,7 @@ public final class MutableChunkedCellSet implements MutableCellSet, BoundedCellS
 						for (int cellColumn = 0; cellColumn < chunkSize; cellColumn++) {
 							if (chunk.cells[cellRow][cellColumn]) {
 								builder.add(
-									new Cell(
+									new BasicCell(
 										bounds.x + chunkColumn * chunkSize + cellRow,
 										bounds.y + chunkRow * chunkSize + cellColumn
 									)
@@ -92,7 +92,7 @@ public final class MutableChunkedCellSet implements MutableCellSet, BoundedCellS
 	}
 
 	@Override
-	public Iterator<Cell> iterator() {
+	public Iterator<BasicCell> iterator() {
 		throw new NotImplementedException();
 	}
 

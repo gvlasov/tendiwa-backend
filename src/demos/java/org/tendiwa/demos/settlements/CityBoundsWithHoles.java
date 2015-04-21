@@ -1,12 +1,15 @@
 package org.tendiwa.demos.settlements;
 
-import org.jgrapht.UndirectedGraph;
 import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingCellSet;
 import org.tendiwa.drawing.extensions.DrawingGraph;
 import org.tendiwa.drawing.extensions.DrawingRectangle;
-import org.tendiwa.geometry.*;
+import org.tendiwa.geometry.BoundedCellSet;
+import org.tendiwa.geometry.BasicCell;
+import org.tendiwa.geometry.CellSet;
+import org.tendiwa.geometry.Rectangle;
+import org.tendiwa.geometry.graphs2d.Cycle2D;
 import org.tendiwa.noise.Noise;
 import org.tendiwa.pathfinding.dijkstra.PathTable;
 import org.tendiwa.settlements.cityBounds.CityBounds;
@@ -20,7 +23,7 @@ class CityBoundsWithHoles implements Runnable {
 //	GifBuilder gifBuilder = new GifBuilder(canvas, 6, Logger.getLogger("cityBoundsWithHoles"));
 	int iterations = 55;
 	int cityRadius = 100;
-	Cell startCell = new Cell(200, 200);
+	BasicCell startCell = new BasicCell(200, 200);
 
 
 	public static void main(String[] args) {
@@ -40,11 +43,11 @@ class CityBoundsWithHoles implements Runnable {
 
 		for (int i = 0; i < iterations; i++) {
 			System.out.println(i);
-			UndirectedGraph<Point2D, Segment2D> cityBounds = buildCityBoundsGraph(water);
+			Cycle2D cityBounds = buildCityBoundsGraph(water);
 
 			canvas.draw(worldRec, DrawingRectangle.withColor(Color.green));
 			canvas.draw(water, DrawingCellSet.onWholeCanvasWithColor(Color.blue));
-			canvas.draw(cityBounds, DrawingGraph.withColorAndVertexSize(Color.red, 0));
+			canvas.draw(cityBounds.graph(), DrawingGraph.withColorAndVertexSize(Color.red, 0));
 
 //			gifBuilder.saveFrame();
 			canvas.clear();
@@ -53,7 +56,7 @@ class CityBoundsWithHoles implements Runnable {
 //		gifBuilder.saveAnimation(System.getProperty("user.home") + "/cityBoundsWithHolesAnimation.gif");
 	}
 
-	private UndirectedGraph<Point2D, Segment2D> buildCityBoundsGraph(CellSet water) {
+	private Cycle2D buildCityBoundsGraph(CellSet water) {
 		BoundedCellSet cityShape = new PathTable(
 			startCell,
 			(x, y) -> !water.contains(x, y),

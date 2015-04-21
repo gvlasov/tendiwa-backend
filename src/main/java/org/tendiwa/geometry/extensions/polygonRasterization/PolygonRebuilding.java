@@ -59,7 +59,7 @@ final class PolygonRebuilding {
 
 	private void operateOnLastVertex(int index) {
 		Point2D vertex = polygon.get(index);
-		if (vertex.y == previousVertex.y) {
+		if (vertex.y() == previousVertex.y()) {
 			answer.add(vertex);
 		} else {
 			operateOnVertex(index);
@@ -68,7 +68,7 @@ final class PolygonRebuilding {
 
 	private void operateOnVertex(int index) {
 		Point2D vertex = polygon.get(index);
-		if (vertex.y == previousVertex.y) {
+		if (vertex.y() == previousVertex.y()) {
 			consecutive = true;
 		} else {
 			addIfConsecutive();
@@ -96,35 +96,35 @@ final class PolygonRebuilding {
 	 * rebuild it.
 	 */
 	static List<Point2D> rebuildIfBad(List<Point2D> polygon, int indexWithMinX) {
-		assert polygon.stream().allMatch(v -> v.x >= polygon.get(indexWithMinX).x);
+		assert polygon.stream().allMatch(v -> v.x() >= polygon.get(indexWithMinX).x());
 		int streak = 0;
 		double lastYValue = Double.NaN;
 		int size = polygon.size();
 		for (int i = indexWithMinX; i < size; i++) {
 			// From startIndex to size
 			Point2D vertex = polygon.get(i);
-			if (vertex.y == lastYValue) {
+			if (vertex.y() == lastYValue) {
 				streak++;
 				if (streak == 3) {
 					return new PolygonRebuilding(polygon).rebuildPolygon(indexWithMinX);
 				}
 			} else {
 				streak = 1;
-				lastYValue = vertex.y;
+				lastYValue = vertex.y();
 			}
 		}
 		// Code duplication is required here: it is the most sane solution right now.
 		for (int i = 0; i < indexWithMinX; i++) {
 			// Do exactly the same thing from 0 to startIndex
 			Point2D vertex = polygon.get(i);
-			if (vertex.y == lastYValue) {
+			if (vertex.y() == lastYValue) {
 				streak++;
 				if (streak == 3) {
 					return new PolygonRebuilding(polygon).rebuildPolygon(indexWithMinX);
 				}
 			} else {
 				streak = 1;
-				lastYValue = vertex.y;
+				lastYValue = vertex.y();
 			}
 		}
 		return polygon;

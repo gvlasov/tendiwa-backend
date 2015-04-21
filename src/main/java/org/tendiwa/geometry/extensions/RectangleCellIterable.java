@@ -1,11 +1,11 @@
 package org.tendiwa.geometry.extensions;
 
-import org.tendiwa.geometry.Cell;
+import org.tendiwa.geometry.BasicCell;
 import org.tendiwa.geometry.Rectangle;
 
 import java.util.Iterator;
 
-public class RectangleCellIterable implements Iterable<Cell> {
+public class RectangleCellIterable implements Iterable<BasicCell> {
 	private final Rectangle rec;
 
 	public RectangleCellIterable(Rectangle rec) {
@@ -13,10 +13,10 @@ public class RectangleCellIterable implements Iterable<Cell> {
 	}
 
 	@Override
-	public Iterator<Cell> iterator() {
-		return new Iterator<Cell>() {
+	public Iterator<BasicCell> iterator() {
+		return new Iterator<BasicCell>() {
 			private int n = 0;
-			private int maxN = rec.getWidth() * rec.getHeight();
+			private int maxN = rec.width() * rec.height();
 
 			@Override
 			public boolean hasNext() {
@@ -24,11 +24,11 @@ public class RectangleCellIterable implements Iterable<Cell> {
 			}
 
 			@Override
-			public Cell next() {
+			public BasicCell next() {
 				n++;
-				return new Cell(
-					rec.getX() + (n - 1) % rec.getWidth(),
-					rec.getY() + (n - 1) / rec.getHeight()
+				return new BasicCell(
+					rec.getX() + (n - 1) % rec.width(),
+					rec.getY() + (n - 1) / rec.height()
 				);
 			}
 

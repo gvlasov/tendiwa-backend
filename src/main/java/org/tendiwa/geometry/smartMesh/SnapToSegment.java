@@ -4,24 +4,16 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Vectors2D;
 
+import java.util.Optional;
+
 final class SnapToSegment implements PropagationEvent {
-	private final Point2D source;
-	private final Point2D target;
-	private final Segment2D road;
+	private final Segment2D addedSegment;
+	private final Segment2D splitSegment;
 
-	public SnapToSegment(Point2D source, Point2D target, Segment2D road) {
-		this.source = source;
-		this.target = target;
-		this.road = road;
-		assert target.distanceToLine(road) < Vectors2D.EPSILON;
-	}
-
-	@Override
-	public void integrateInto(AppendableNetworkPart networkPart) {
-		assert fullNetwork.graph().containsVertex(road.start);
-		assert fullNetwork.graph().containsVertex(road.end);
-		segmentInserter.splitEdge(road, target);
-		segmentInserter.addSecondaryNetworkEdge(source, target);
+	public SnapToSegment(Point2D source, Point2D target, Segment2D splitSegment) {
+		this.addedSegment = new Segment2D(source, target);
+		this.splitSegment = splitSegment;
+		assert target.distanceToLine(splitSegment) < Vectors2D.EPSILON;
 	}
 
 	@Override
@@ -31,11 +23,26 @@ final class SnapToSegment implements PropagationEvent {
 
 	@Override
 	public Point2D target() {
-		return target;
+		return addedSegment.end;
+	}
+
+	@Override
+	public Point2D source() {
+		return addedSegment.start;
 	}
 
 	@Override
 	public boolean isTerminal() {
 		return true;
+	}
+
+	@Override
+	public Segment2D addedSegment() {
+		return addedSegment;
+	}
+
+	@Override
+	public Optional<Segment2D> splitSegmentMaybe() {
+		return Optional.of(splitSegment);
 	}
 }

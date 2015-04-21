@@ -1,7 +1,7 @@
 package org.tendiwa.settlements.buildings;
 
 import gnu.trove.map.TObjectDoubleMap;
-import org.tendiwa.geometry.Placeable;
+import org.tendiwa.geometry.RectSet;
 import org.tendiwa.settlements.streets.Street;
 
 import java.util.Collection;
@@ -11,7 +11,7 @@ public final class ArchitecturePolicy {
 	final int minInstancesTopBound;
 	final int maxInstances;
 	final Priority priority;
-	final Placeable allowedArea;
+	final RectSet allowedArea;
 	final Collection<Street> onStreet;
 	// Dependent
 	final TObjectDoubleMap<Architecture> closeEnough;
@@ -24,7 +24,7 @@ public final class ArchitecturePolicy {
 		int maxInstances,
 		TObjectDoubleMap<Architecture> closeEnough,
 		Priority priority,
-		Placeable allowedArea,
+		RectSet allowedArea,
 		Collection<Architecture> presence,
 		Collection<Street> onStreet
 	) {

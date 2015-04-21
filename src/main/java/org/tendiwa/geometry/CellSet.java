@@ -1,6 +1,7 @@
 package org.tendiwa.geometry;
 
 import com.google.common.collect.ImmutableSet;
+import org.tendiwa.core.meta.Cell;
 
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -37,7 +38,7 @@ public interface CellSet {
 	 */
 	@SuppressWarnings("unused")
 	public default boolean contains(Cell cell) {
-		return contains(cell.x, cell.y);
+		return contains(cell.x(), cell.y());
 	}
 
 	/**

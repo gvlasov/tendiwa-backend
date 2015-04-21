@@ -20,9 +20,9 @@ final class PointSlidingOnEdge {
 	 * 	Y-coordinate of a horizontal line.
 	 */
 	void setToIntersection(Point2D start, Point2D end, int y) {
-		double a = start.y - end.y;
-		double b = end.x - start.x;
-		double c = start.x * end.y - end.x * start.y;
+		double a = start.y() - end.y();
+		double b = end.x() - start.x();
+		double c = start.x() * end.y() - end.x() * start.y();
 		double horizontalA = 0;
 		double horizontalB = 100;
 		double horizontalC = -100 * y;

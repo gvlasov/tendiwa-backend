@@ -2,16 +2,14 @@ package org.tendiwa.geometry.extensions.straightSkeleton;
 
 import com.google.common.collect.Lists;
 import org.tendiwa.core.meta.Utils;
-import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingPoint2D;
 import org.tendiwa.geometry.JTSUtils;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.tendiwa.geometry.GeometryPrimitives.segment2D;
 import static org.tendiwa.geometry.extensions.straightSkeleton.CycleExtraVerticesRemover.removeVerticesOnLineBetweenNeighbors;
 
 /**
@@ -68,7 +66,7 @@ final class InitialListOfActiveVertices {
 		List<Segment2D> edges = new ArrayList<>(l);
 		for (int i = 0; i < l; i++) {
 			edges.add(
-				new Segment2D(
+				segment2D(
 					vertices.get(i),
 					vertices.get(Utils.nextIndex(i, l))
 				)

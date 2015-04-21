@@ -3,13 +3,12 @@ package org.tendiwa.drawing.extensions;
 import org.tendiwa.drawing.DrawableInto;
 import org.tendiwa.drawing.DrawingAlgorithm;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.geometry.Cell;
+import org.tendiwa.geometry.BasicCell;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.Rectangle2D;
 
 import java.awt.Color;
 import java.awt.Shape;
-import java.util.Collection;
 
 public class NullCanvas implements DrawableInto {
 	@Override
@@ -63,7 +62,7 @@ public class NullCanvas implements DrawableInto {
 	}
 
 	@Override
-	public void drawRasterLine(Cell p1, Cell p2, Color color) {
+	public void drawRasterLine(BasicCell p1, BasicCell p2, Color color) {
 
 	}
 

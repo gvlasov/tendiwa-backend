@@ -17,6 +17,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.tendiwa.collections.Collectors.toLinkedHashSet;
+
 final class NetworksProducer {
 	private final NetworkGenerationParameters parameters;
 	private final Random random;
@@ -69,9 +71,10 @@ final class NetworksProducer {
 			})
 			.map(cycle -> new OriginalMeshCell(
 				fullNetwork,
-				splitOriginalMesh,
-				cycle,
-				enclosedCycleDetector.cyclesEnclosedIn(cycle),
+				splitOriginalMesh.createCycleNetworkPart(cycle),
+				enclosedCycleDetector.cyclesEnclosedIn(cycle).stream()
+					.map(splitOriginalMesh::createCycleNetworkPart)
+					.collect(toLinkedHashSet()),
 				parameters,
 				random
 			));

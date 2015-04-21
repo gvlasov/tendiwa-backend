@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.NoSuchElementException;
 
 /**
- * An editable CellSet that holds a finite number of {@link org.tendiwa.geometry.Cell}s.
+ * An editable CellSet that holds a finite number of {@link BasicCell}s.
  * <p>
  * This class wraps a {@link java.util.HashSet}, so complexity of operations and memory used are those of a
  * {@link java.util.HashSet}.
@@ -17,7 +17,7 @@ public class ScatteredMutableCellSet extends ScatteredCellSet implements Mutable
 
 	@Override
 	public void add(int x, int y) {
-		if (!cells.add(new Cell(x, y))) {
+		if (!cells.add(new BasicCell(x, y))) {
 			throw new IllegalArgumentException(
 				"Cell " + x + ":" + y + " is already present in this set of " + cells.size() + " cells"
 			);
@@ -33,7 +33,7 @@ public class ScatteredMutableCellSet extends ScatteredCellSet implements Mutable
 	 * 	If the cell is already present in this set.
 	 */
 	@Override
-	public void add(Cell cell) {
+	public void add(BasicCell cell) {
 		if (!cells.add(cell)) {
 			throw new IllegalArgumentException(
 				"Cell " + cell + " is already present in this set of " + cells.size() + " cells"
@@ -50,7 +50,7 @@ public class ScatteredMutableCellSet extends ScatteredCellSet implements Mutable
 	 * 	If {@code cell} doesn't exist in this set.
 	 */
 	@Override
-	public void remove(Cell cell) {
+	public void remove(BasicCell cell) {
 		if (!cells.remove(cell)) {
 			throw new NoSuchElementException(
 				"Can't remove cell " + cell + " because it doesn't exist in this set"
@@ -60,7 +60,7 @@ public class ScatteredMutableCellSet extends ScatteredCellSet implements Mutable
 
 	@Override
 	public void remove(int x, int y) {
-		if (!cells.remove(new Cell(x, y))) {
+		if (!cells.remove(new BasicCell(x, y))) {
 			throw new NoSuchElementException(
 				"Can't remove cell " + x + ":" + y + " because it doesn't exist in this set"
 			);

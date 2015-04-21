@@ -1,20 +1,25 @@
 package org.tendiwa.geometry.smartMesh;
 
 import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Segment2D;
+
+import java.util.Optional;
 
 public class NowhereToSnap implements PropagationEvent {
-	private final Point2D source;
-	private final Point2D target;
+	private final Segment2D segment;
 
 	NowhereToSnap(Point2D source, Point2D target) {
-		this.source = source;
-		this.target = target;
+		this.segment = new Segment2D(source, target);
 	}
 
 	@Override
-	public void integrateInto(AppendableNetworkPart networkPart) {
-		fullNetwork.graph().addVertex(target);
-		segmentInserter.addSecondaryNetworkEdge(source, target);
+	public Segment2D addedSegment() {
+		return segment;
+	}
+
+	@Override
+	public Optional<Segment2D> splitSegmentMaybe() {
+		return Optional.empty();
 	}
 
 	@Override
@@ -24,7 +29,13 @@ public class NowhereToSnap implements PropagationEvent {
 
 	@Override
 	public Point2D target() {
-		return target;
+		return segment.end;
+	}
+
+	@Override
+	public Point2D source() {
+		return segment.start;
+
 	}
 
 	@Override

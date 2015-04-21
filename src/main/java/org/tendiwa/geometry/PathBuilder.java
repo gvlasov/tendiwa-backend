@@ -2,9 +2,6 @@ package org.tendiwa.geometry;
 
 import org.jgrapht.graph.SimpleGraph;
 
-/**
- * Builds new {@link InterrectangularPath}s using rectangles in a {@link org.tendiwa.geometry.RectangleSystemBuilder}.
- */
 public class PathBuilder {
 
 	private final SimpleGraph<Rectangle, RectanglesJunction> path;
@@ -22,17 +19,17 @@ public class PathBuilder {
 	}
 
 	public WithStep link(String name) {
-		rectangleToLinkSource = builder.getByName(name).getBounds();
+		rectangleToLinkSource = builder.getByName(name).bounds();
 		return withStep;
 	}
 
 	public WithStep link(int index) {
-		rectangleToLinkSource = builder.getByIndex(index).getBounds();
+		rectangleToLinkSource = builder.getByIndex(index).bounds();
 		return withStep;
 	}
 
-	public WithStep link(RectanglePointer pointer) {
-		rectangleToLinkSource = builder.getRectangleByPointer(pointer).getBounds();
+	public WithStep link(IntimateRectanglePointer pointer) {
+		rectangleToLinkSource = pointer.find(builder).bounds();
 		return withStep;
 	}
 
@@ -42,17 +39,17 @@ public class PathBuilder {
 
 	public class WithStep {
 		public WidthStep with(int index) {
-			rectangleToLinkEnd = builder.getByIndex(index).getBounds();
+			rectangleToLinkEnd = builder.getByIndex(index).bounds();
 			return widthStep;
 		}
 
 		public WidthStep with(String name) {
-			rectangleToLinkEnd = builder.getByName(name).getBounds();
+			rectangleToLinkEnd = builder.getByName(name).bounds();
 			return widthStep;
 		}
 
-		public WidthStep with(RectanglePointer pointer) {
-			rectangleToLinkEnd = builder.getRectangleByPointer(pointer).getBounds();
+		public WidthStep with(IntimateRectanglePointer pointer) {
+			rectangleToLinkEnd = pointer.find(builder).bounds();
 			return widthStep;
 		}
 	}
@@ -74,15 +71,15 @@ public class PathBuilder {
 
 	public class ShiftStep {
 		public PathBuilder shift(int shift) {
-			Segment segment = rectangleToLinkSource.getProjectionSegment(rectangleToLinkEnd);
+			OrthoCellSegment segment = rectangleToLinkSource.getProjectionSegment(rectangleToLinkEnd);
 			path.addVertex(rectangleToLinkSource);
 			path.addVertex(rectangleToLinkEnd);
 			path.addEdge(
 				rectangleToLinkSource,
 				rectangleToLinkEnd,
 				new RectanglesJunction(
-					segment.getOrientation(),
-					segment.getStartCoord() + shift,
+					segment.orientation(),
+					segment.min() + shift,
 					junctionWidth,
 					rectangleToLinkSource,
 					rectangleToLinkEnd

@@ -22,7 +22,7 @@ public class DistantCellsInBufferBorderTest {
 
 	@Test
 	public void shouldShow5Points() {
-		HashSet<Cell> cells = Sets.newHashSet(distantCells);
+		HashSet<BasicCell> cells = Sets.newHashSet(distantCells);
 		assertFalse(String.valueOf(cells.size()), cells.isEmpty());
 	}
 }

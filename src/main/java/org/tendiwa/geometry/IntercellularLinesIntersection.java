@@ -27,16 +27,16 @@ public class IntercellularLinesIntersection extends Intersection {
 	}
 
 	@Override
-	public Cell getCornerPointOfQuarter(OrdinalDirection side) {
+	public BasicCell getCornerPointOfQuarter(OrdinalDirection side) {
 		switch (side) {
 			case NE:
-				return new Cell(x, y);
+				return new BasicCell(x, y);
 			case SE:
-				return new Cell(x, y + 1);
+				return new BasicCell(x, y + 1);
 			case SW:
-				return new Cell(x - 1, y + 1);
+				return new BasicCell(x - 1, y + 1);
 			case NW:
-				return new Cell(x - 1, y);
+				return new BasicCell(x - 1, y);
 			default:
 				throw new IllegalArgumentException("Only ordinal sides can be used here");
 

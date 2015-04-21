@@ -2,6 +2,7 @@ package org.tendiwa.geometry;
 
 import com.google.common.collect.ImmutableSet;
 import org.tendiwa.collections.IterableToStream;
+import org.tendiwa.core.meta.Cell;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -76,7 +77,7 @@ public class DistantCellsFinder implements Iterable<Cell> {
 			}
 
 			private void occupyAreaAroundCell(Cell nextCell) {
-				occupiedPlaces.add(Recs.rectangleByCenterPoint(
+				occupiedPlaces.add(new RectangleCenteredAt(
 					nextCell,
 					minDistance * 2 + 1,
 					minDistance * 2 + 1
