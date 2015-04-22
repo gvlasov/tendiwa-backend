@@ -5,7 +5,7 @@ import org.tendiwa.core.CardinalDirection;
 public final class StepAwayFrom {
 	private final RectanglePointer pointer;
 
-	public StepAwayFrom(RectanglePointer pointer) {
+	StepAwayFrom(RectanglePointer pointer) {
 		this.pointer = pointer;
 	}
 

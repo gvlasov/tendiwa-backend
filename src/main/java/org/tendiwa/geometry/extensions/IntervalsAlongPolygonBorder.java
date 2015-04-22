@@ -84,12 +84,12 @@ public final class IntervalsAlongPolygonBorder {
 			lastCircleIntersection,
 			intervalToSpend
 		);
-		double minX = Math.min(currentVertex.x, nextVertex.x);
-		double maxX = Math.max(currentVertex.x, nextVertex.x);
-		double minY = Math.min(currentVertex.y, nextVertex.y);
-		double maxY = Math.max(currentVertex.y, nextVertex.y);
+		double minX = Math.min(currentVertex.x(), nextVertex.x());
+		double maxX = Math.max(currentVertex.x(), nextVertex.x());
+		double minY = Math.min(currentVertex.y(), nextVertex.y());
+		double maxY = Math.max(currentVertex.y(), nextVertex.y());
 //		assert minX != maxX && minY != maxY; // I just don't know what to do in this case, though it is legit.
-		intersections.removeIf(p -> !BasicRange.contains(minX, maxX, p.x) || !BasicRange.contains(minY, maxY, p.y));
+		intersections.removeIf(p -> !BasicRange.contains(minX, maxX, p.x()) || !BasicRange.contains(minY, maxY, p.y()));
 		assert intersections.stream().allMatch(p -> !p.equals(nextVertex)); // I just don't knot what to do in this case, though it is legit.
 		snapIntersectionPointsToSegmentEndsByEpsilon(intersections);
 		return intersections;
@@ -166,12 +166,12 @@ public final class IntervalsAlongPolygonBorder {
 	private boolean isCircleIntersectionBetween0thPointAnd1stVertex() {
 		assert returnedToEdgeIndex0;
 		Point2D polygon1 = polygon.get(1);
-		double minX = Math.min(firstAnswerPoint.x, polygon1.x);
-		double maxX = Math.max(firstAnswerPoint.x, polygon1.x);
-		double minY = Math.min(firstAnswerPoint.y, polygon1.y);
-		double maxY = Math.max(firstAnswerPoint.y, polygon1.y);
-		return BasicRange.contains(minX, maxX, lastCircleIntersection.x)
-			&& BasicRange.contains(minY, maxY, lastCircleIntersection.y);
+		double minX = Math.min(firstAnswerPoint.x(), polygon1.x());
+		double maxX = Math.max(firstAnswerPoint.x(), polygon1.x());
+		double minY = Math.min(firstAnswerPoint.y(), polygon1.y());
+		double maxY = Math.max(firstAnswerPoint.y(), polygon1.y());
+		return BasicRange.contains(minX, maxX, lastCircleIntersection.x())
+			&& BasicRange.contains(minY, maxY, lastCircleIntersection.y());
 	}
 
 	/**
@@ -274,6 +274,9 @@ public final class IntervalsAlongPolygonBorder {
 		Point2D end
 	) {
 		double position = random.nextDouble() * Math.min(1, interval / start.distanceTo(end));
-		return new Point2D(start.x + (end.x - start.x) * position, start.y + (end.y - start.y) * position);
+		return new BasicPoint2D(
+			start.x() + (end.x() - start.x()) * position,
+			start.y() + (end.y() - start.y()) *  position
+		);
 	}
 }

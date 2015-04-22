@@ -1,19 +1,35 @@
 package org.tendiwa.drawing;
 
-import org.tendiwa.geometry.BasicCell;
-import org.tendiwa.geometry.Rectangle;
-import org.tendiwa.geometry.Rectangle2D;
-import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.core.meta.Cell;
+import org.tendiwa.geometry.*;
 
 import java.awt.Color;
 import java.awt.Shape;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 public interface DrawableInto {
 	<T> void draw(T what, DrawingAlgorithm<? super T> how, BaseTestCanvas.Layer where);
 
 	<T> void draw(T what, DrawingAlgorithm<? super T> how);
 
-	<T> void drawAll(Iterable<T> what, DrawingAlgorithm<? super T> how);
+	void draw(Drawable drawable);
+
+	default <T> void drawAll(Iterable<T> whats, DrawingAlgorithm<? super T> how) {
+		for (T what : whats) {
+			draw(what, how);
+		}
+	}
+
+	default <T> void drawAll(Iterable<T> what, Function<T, Drawable> toDrawable) {
+		for (T shape : what) {
+			toDrawable.apply(shape).drawIn(this);
+		}
+	}
+
+	default <T> void drawAll(Stream<T> what, Function<T, Drawable> toDrawable) {
+		what.forEach(element -> toDrawable.apply(element).drawIn(this));
+	}
 
 	void fillBackground(Color backgroundColor);
 
@@ -42,18 +58,18 @@ public interface DrawableInto {
 
 	void drawRectangle(Rectangle r, Color color);
 
-	void drawRectangle2D(Rectangle2D r, Color color);
+	void drawRectangle2D(BasicRectangle2D r, Color color);
 
 	void drawRasterLine(BasicCell p1, BasicCell p2, Color color);
 
 	void drawLine(double startX, double startY, double endX, double endY, Color color);
 
 	default void drawRasterLine(Segment2D line, Color color) {
-		drawRasterLine(line.start.toCell(), line.end.toCell(), color);
+		drawRasterLine(line.start().toCell(), line.end().toCell(), color);
 	}
 
-	default void drawCell(BasicCell cell, Color color) {
-		drawCell(cell.x, cell.y, color);
+	default void drawCell(Cell cell, Color color) {
+		drawCell(cell.x(), cell.y(), color);
 	}
 
 	void fillShape(Shape shape, Color color);

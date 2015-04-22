@@ -1,8 +1,9 @@
 package org.tendiwa.geometry.extensions;
 
 import com.google.common.collect.ImmutableSet;
-import org.tendiwa.geometry.BoundedCellSet;
+import org.tendiwa.core.meta.Cell;
 import org.tendiwa.geometry.BasicCell;
+import org.tendiwa.geometry.BoundedCellSet;
 import org.tendiwa.geometry.MutableCellSet;
 import org.tendiwa.geometry.Rectangle;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -18,8 +19,8 @@ public final class MutableChunkedCellSet implements MutableCellSet, BoundedCellS
 	public MutableChunkedCellSet(Rectangle bounds, int chunkSize) {
 		this.bounds = bounds;
 		this.chunkSize = chunkSize;
-		this.chunksInRow = getWholeNumberOfChunks(bounds.width, chunkSize);
-		int numberOfChunks = chunksInRow * getWholeNumberOfChunks(bounds.height, chunkSize);
+		this.chunksInRow = getWholeNumberOfChunks(bounds.width(), chunkSize);
+		int numberOfChunks = chunksInRow * getWholeNumberOfChunks(bounds.height(), chunkSize);
 		this.chunks = new Chunk[numberOfChunks];
 	}
 
@@ -28,7 +29,7 @@ public final class MutableChunkedCellSet implements MutableCellSet, BoundedCellS
 	}
 
 	private Chunk lazilyGetChunkByCell(int x, int y) {
-		int chunkIndex = (x - bounds.x) / chunkSize + (y - bounds.y) / chunkSize * chunksInRow;
+		int chunkIndex = (x - bounds.x()) / chunkSize + (y - bounds.y()) / chunkSize * chunksInRow;
 		if (chunks[chunkIndex] == null) {
 			chunks[chunkIndex] = new Chunk();
 		}
@@ -37,28 +38,29 @@ public final class MutableChunkedCellSet implements MutableCellSet, BoundedCellS
 
 	@Override
 	public void add(int x, int y) {
-		lazilyGetChunkByCell(x, y).add((x - bounds.x) % chunkSize, (y - bounds.y) % chunkSize);
+		lazilyGetChunkByCell(x, y).add((x - bounds.x()) % chunkSize, (y - bounds.y()) % chunkSize);
 	}
 
 	@Override
-	public void add(BasicCell cell) {
-		lazilyGetChunkByCell(cell.x, cell.y).add((cell.x - bounds.x) % chunkSize, (cell.y - bounds.y) % chunkSize);
+	public void add(Cell cell) {
+		lazilyGetChunkByCell(cell.x(), cell.y()).add((cell.x() - bounds.x()) % chunkSize, (cell.y() - bounds.y()) % chunkSize);
 	}
 
 	@Override
 	public void remove(int x, int y) {
-		lazilyGetChunkByCell(x, y).remove((x - bounds.x) % chunkSize, (y - bounds.y) % chunkSize);
+		lazilyGetChunkByCell(x, y).remove((x - bounds.x()) % chunkSize, (y - bounds.y()) % chunkSize);
 	}
 
 	@Override
-	public void remove(BasicCell cell) {
-		lazilyGetChunkByCell(cell.x, cell.y).remove((cell.x - bounds.x) % chunkSize, (cell.y - bounds.y) % chunkSize);
+	public void remove(Cell cell) {
+		lazilyGetChunkByCell(cell.x(), cell.y()).remove((cell.x() - bounds.x()) % chunkSize, (cell.y() - bounds.y()) %
+			chunkSize);
 	}
 
 	@Override
-	public ImmutableSet<BasicCell> toSet() {
-		ImmutableSet.Builder<BasicCell> builder = ImmutableSet.builder();
-		int chunksInColumn = getWholeNumberOfChunks(bounds.height, chunkSize);
+	public ImmutableSet<Cell> toSet() {
+		ImmutableSet.Builder<Cell> builder = ImmutableSet.builder();
+		int chunksInColumn = getWholeNumberOfChunks(bounds.height(), chunkSize);
 		for (int chunkColumn = 0; chunkColumn < chunksInRow; chunkColumn++) {
 			for (int chunkRow = 0; chunkRow < chunksInColumn; chunkRow++) {
 				Chunk chunk = chunks[chunkColumn + chunkRow * chunksInRow];
@@ -68,8 +70,8 @@ public final class MutableChunkedCellSet implements MutableCellSet, BoundedCellS
 							if (chunk.cells[cellRow][cellColumn]) {
 								builder.add(
 									new BasicCell(
-										bounds.x + chunkColumn * chunkSize + cellRow,
-										bounds.y + chunkRow * chunkSize + cellColumn
+										bounds.x() + chunkColumn * chunkSize + cellRow,
+										bounds.y() + chunkRow * chunkSize + cellColumn
 									)
 								);
 							}
@@ -83,7 +85,7 @@ public final class MutableChunkedCellSet implements MutableCellSet, BoundedCellS
 
 	@Override
 	public boolean contains(int x, int y) {
-		return lazilyGetChunkByCell(x, y).contains((x - bounds.x) % chunkSize, (y - bounds.y) % chunkSize);
+		return lazilyGetChunkByCell(x, y).contains((x - bounds.x()) % chunkSize, (y - bounds.y()) % chunkSize);
 	}
 
 	@Override
@@ -92,7 +94,7 @@ public final class MutableChunkedCellSet implements MutableCellSet, BoundedCellS
 	}
 
 	@Override
-	public Iterator<BasicCell> iterator() {
+	public Iterator<Cell> iterator() {
 		throw new NotImplementedException();
 	}
 

@@ -4,9 +4,7 @@ import com.google.common.collect.Iterators;
 import org.jgrapht.UndirectedGraph;
 import org.tendiwa.drawing.Colors;
 import org.tendiwa.drawing.DrawingAlgorithm;
-import org.tendiwa.geometry.BasicCell;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.graphs.Filament;
 import org.tendiwa.graphs.GraphConstructor;
@@ -16,6 +14,8 @@ import org.tendiwa.graphs.MinimumCycleBasis;
 import java.awt.Color;
 import java.util.Iterator;
 import java.util.function.Function;
+
+import static org.tendiwa.geometry.GeometryPrimitives.segment2D;
 
 public class DrawingGraph {
 	static Iterator<Color> cycleColors = Iterators.cycle(Color.red, Color.blue, Color.green, Color.orange,
@@ -55,19 +55,19 @@ public class DrawingGraph {
 		int size
 	) {
 		return (shape, canvas) -> {
-			DrawingAlgorithm<Point2D> pointDrawing = DrawingPoint2D.withColorAndSize(color, size);
 			DrawingAlgorithm<Segment2D> segmentDrawing = DrawingSegment2D.withColorThin(color);
 			for (Segment2D e : shape.edgeSet()) {
 				Point2D source = shape.getEdgeSource(e);
 				Point2D target = shape.getEdgeTarget(e);
 				canvas.draw(
-					Segment2D.create(source.x, source.y, target.x, target.y),
+					segment2D(source, target),
 					segmentDrawing
 				);
 			}
-			for (Point2D v : shape.vertexSet()) {
-				canvas.draw(v, pointDrawing);
-			}
+			canvas.drawAll(
+				shape.vertexSet(),
+				p -> new DrawablePoint2D.Circle(p, color, size)
+			);
 		};
 	}
 
@@ -79,7 +79,7 @@ public class DrawingGraph {
 			for (org.tendiwa.geometry.Segment2D e : shape.edgeSet()) {
 				Point2D source = shape.getEdgeSource(e);
 				Point2D target = shape.getEdgeTarget(e);
-				Segment2D shape1 = Segment2D.create(source.x, source.y, target.x, target.y);
+				Segment2D shape1 = segment2D(source, target);
 				canvas.draw(
 					shape1,
 					how
@@ -96,35 +96,20 @@ public class DrawingGraph {
 		return (shape, canvas) -> {
 			MinimumCycleBasis<Point2D, Segment2D> mcb = PlanarGraphs.minimumCycleBasis(shape);
 			for (Point2D p : mcb.isolatedVertexSet()) {
-				canvas.draw(new BasicCell(
-					(int) p.x,
-					(int) p.y
-				), DrawingCell.withColorAndSize(vertexColor, 3));
+				canvas.draw(new DrawablePoint2D.Circle(p, vertexColor, 3));
 			}
 			for (Filament<Point2D, Segment2D> filament : mcb.filamentsSet()) {
-				for (Segment2D edge : filament) {
-					canvas.draw(new Segment2D(
-						shape.getEdgeSource(edge),
-						shape.getEdgeTarget(edge)
-					), DrawingSegment2D.withColor(filamentColor));
-				}
+				canvas.drawAll(
+					filament,
+					edge -> new DrawableSegment2D(edge, filamentColor)
+				);
 			}
 			for (MinimalCycle<Point2D, Segment2D> cycle : mcb.minimalCyclesSet()) {
-				for (Segment2D edge : cycle.asEdges()) {
-					canvas.draw(new Segment2D(
-						shape.getEdgeSource(edge),
-						shape.getEdgeTarget(edge)
-					), DrawingSegment2D.withColor(cycleColor));
-				}
+				canvas.drawAll(
+					cycle.asEdges(),
+					edge -> new DrawableSegment2D(edge, cycleColor)
+				);
 			}
-//			for (Point2D p : graph.vertexSet()) {
-//				canvas.drawString(
-//					Integer.toString(constructor.aliasOf(p)),
-//					p.x + 5,
-//					p.y + 5,
-//					Color.BLUE
-//				);
-//			}
 		};
 	}
 
@@ -134,13 +119,13 @@ public class DrawingGraph {
 			(i * 234 + 200) % 255,
 			(i * 123 + 178) % 255
 		));
-		return (graph, canvas) -> graph
-			.edgeSet()
-			.stream()
-			.forEach(edge -> canvas.drawRasterLine(
-				edge.start.toCell(),
-				edge.end.toCell(),
-				colors.next()
-			));
+		return (graph, canvas) ->
+			graph
+				.edgeSet()
+				.stream()
+				.map(BasicCellSegment::new)
+				.forEach(cellSegment -> canvas.draw(
+					new DrawableCellSegment(cellSegment, colors.next())
+				));
 	}
 }

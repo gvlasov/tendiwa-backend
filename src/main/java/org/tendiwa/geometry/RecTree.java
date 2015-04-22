@@ -1,11 +1,8 @@
 package org.tendiwa.geometry;
 
 import com.google.common.collect.ImmutableCollection;
-import com.google.common.collect.ImmutableList;
-import org.tendiwa.collections.Collectors;
 import org.tendiwa.core.Orientation;
 
-import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -15,8 +12,8 @@ import static org.tendiwa.collections.Collectors.toImmutableList;
 /**
  * Shape that consists of rectangles.
  */
-public interface RectSet {
-	ImmutableCollection<NamedRectSet> parts();
+public interface RecTree {
+	ImmutableCollection<NamedRecTree> parts();
 
 	/**
 	 * Returns a minimum rectangle that contains all rectangles in this template.
@@ -25,26 +22,26 @@ public interface RectSet {
 	 */
 	Rectangle bounds();
 
-	RectSet part(String name);
+	RecTree part(String name);
 
-	RectSet nestedPart(String name);
+	RecTree nestedPart(String name);
 
 
-	default RectSet translate(int dx, int dy) {
-		return new ModifiedRectSet(this, p -> p.translate(dx, dy));
+	default RecTree translate(int dx, int dy) {
+		return new ModifiedRecTree(this, p -> p.translate(dx, dy));
 	}
 
-	default RectSet moveTo(int x, int y) {
+	default RecTree moveTo(int x, int y) {
 		Rectangle bounds = bounds();
-		return new ModifiedRectSet(this, p -> p.translate(x - bounds.x(), y - bounds.y()));
+		return new ModifiedRecTree(this, p -> p.translate(x - bounds.x(), y - bounds.y()));
 	}
 
-	default RectSet rotate(Rotation rotation) {
-		return new ModifiedRectSet(this, p -> rotate(rotation));
+	default RecTree rotate(Rotation rotation) {
+		return new ModifiedRecTree(this, p -> rotate(rotation));
 	}
 
-	default RectSet flip(Orientation orientation) {
-		return new ModifiedRectSet(this, p -> p.flip(orientation));
+	default RecTree flip(Orientation orientation) {
+		return new ModifiedRecTree(this, p -> p.flip(orientation));
 	}
 
 
@@ -61,7 +58,7 @@ public interface RectSet {
 
 	default Stream<Rectangle> rectangles() {
 		return parts().stream()
-			.flatMap(RectSet::rectangles);
+			.flatMap(RecTree::rectangles);
 	}
 
 	default boolean encloses(Rectangle rectangle) {

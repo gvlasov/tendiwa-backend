@@ -4,8 +4,8 @@ import org.tendiwa.drawing.DrawableInto;
 import org.tendiwa.drawing.DrawingAlgorithm;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.BasicCell;
+import org.tendiwa.geometry.BasicRectangle2D;
 import org.tendiwa.geometry.Rectangle;
-import org.tendiwa.geometry.Rectangle2D;
 
 import java.awt.Color;
 import java.awt.Shape;
@@ -57,7 +57,7 @@ public class NullCanvas implements DrawableInto {
 	}
 
 	@Override
-	public void drawRectangle2D(Rectangle2D r, Color color) {
+	public void drawRectangle2D(BasicRectangle2D r, Color color) {
 
 	}
 

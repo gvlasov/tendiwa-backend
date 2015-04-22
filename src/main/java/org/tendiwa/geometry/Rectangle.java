@@ -6,6 +6,7 @@ import org.tendiwa.core.CardinalDirection;
 import org.tendiwa.core.OrdinalDirection;
 import org.tendiwa.core.Orientation;
 import org.tendiwa.core.meta.Cell;
+import org.tendiwa.core.meta.Utils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,7 +14,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public interface Rectangle extends RectSet, BoundedCellSet, Dimension {
+public interface Rectangle extends RecTree, BoundedCellSet, Dimension {
 
 
 	public int x();
@@ -93,8 +94,8 @@ public interface Rectangle extends RectSet, BoundedCellSet, Dimension {
 	}
 
 	@Override
-	default ImmutableCollection<NamedRectSet> parts() {
-		return ImmutableList.of(new NamedRectSet(this, Optional.empty()));
+	default ImmutableCollection<NamedRecTree> parts() {
+		return ImmutableList.of(new NamedRecTree(this, Optional.empty()));
 	}
 
 	default int centerX() {
@@ -106,7 +107,7 @@ public interface Rectangle extends RectSet, BoundedCellSet, Dimension {
 	}
 
 	@Override
-	default RectSet rotate(Rotation rotation) {
+	default RecTree rotate(Rotation rotation) {
 		int newWidth, newHeight;
 		switch (rotation) {
 			case CLOCKWISE:
@@ -250,6 +251,7 @@ public interface Rectangle extends RectSet, BoundedCellSet, Dimension {
 	default int area() {
 		return width() * height();
 	}
+
 	default Rectangle moveTo(int x, int y) {
 		return new BasicRectangle(
 			x,
@@ -348,11 +350,11 @@ public interface Rectangle extends RectSet, BoundedCellSet, Dimension {
 		return this;
 	}
 
-	default RectSet part(String name) {
+	default RecTree part(String name) {
 		throw new UnsupportedOperationException("Trying to get part of a single rectangle");
 	}
 
-	default RectSet nestedPart(String name) {
+	default RecTree nestedPart(String name) {
 		throw new UnsupportedOperationException("Trying to get part of a single rectangle");
 	}
 
@@ -367,6 +369,10 @@ public interface Rectangle extends RectSet, BoundedCellSet, Dimension {
 	 */
 	default boolean intersects(Segment2D segment) {
 		return new RectangleSegmentIntersection(this, segment).intersect();
+	}
+
+	default int perpendicularDistanceTo(Rectangle rectangle) {
+		throw new UnsupportedOperationException();
 	}
 
 }

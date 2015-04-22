@@ -1,5 +1,6 @@
 package org.tendiwa.geometry.extensions;
 
+import org.tendiwa.geometry.BasicSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 
@@ -25,6 +26,6 @@ public class PolygonSegments {
 	}
 
 	private static void addSegment(List<Segment2D> answer, Point2D start, Point2D end) {
-		answer.add(new Segment2D(start, end));
+		answer.add(new BasicSegment2D(start, end));
 	}
 }

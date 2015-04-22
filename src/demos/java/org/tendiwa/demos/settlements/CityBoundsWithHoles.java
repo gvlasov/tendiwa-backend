@@ -1,6 +1,7 @@
 package org.tendiwa.demos.settlements;
 
 import org.tendiwa.demos.Demos;
+import org.tendiwa.demos.DrawableRectangle;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingCellSet;
 import org.tendiwa.drawing.extensions.DrawingGraph;
@@ -20,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 class CityBoundsWithHoles implements Runnable {
 	Rectangle worldRec = new Rectangle(0, 0, 400, 400);
 	TestCanvas canvas = new TestCanvas(1, worldRec.width, worldRec.height);
-//	GifBuilder gifBuilder = new GifBuilder(canvas, 6, Logger.getLogger("cityBoundsWithHoles"));
+	//	GifBuilder gifBuilder = new GifBuilder(canvas, 6, Logger.getLogger("cityBoundsWithHoles"));
 	int iterations = 55;
 	int cityRadius = 100;
 	BasicCell startCell = new BasicCell(200, 200);
@@ -45,9 +46,22 @@ class CityBoundsWithHoles implements Runnable {
 			System.out.println(i);
 			Cycle2D cityBounds = buildCityBoundsGraph(water);
 
-			canvas.draw(worldRec, DrawingRectangle.withColor(Color.green));
-			canvas.draw(water, DrawingCellSet.onWholeCanvasWithColor(Color.blue));
-			canvas.draw(cityBounds.graph(), DrawingGraph.withColorAndVertexSize(Color.red, 0));
+			canvas.draw(
+				new DrawableRectangle(
+					worldRec,
+					Color.green
+				)
+			);
+			canvas.draw(
+				new DrawableCellSet(
+					water,
+					Color.blue
+				)
+			);
+			canvas.draw(
+				cityBounds.graph(),
+				DrawingGraph.withColorAndVertexSize(Color.red, 0)
+			);
 
 //			gifBuilder.saveFrame();
 			canvas.clear();

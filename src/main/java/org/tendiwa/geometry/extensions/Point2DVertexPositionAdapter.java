@@ -8,12 +8,12 @@ public class Point2DVertexPositionAdapter {
 	private static VertexPositionAdapter<Point2D> vertexPositionAdapter = new VertexPositionAdapter<Point2D>() {
 		@Override
 		public double getX(Point2D vertex) {
-			return vertex.x;
+			return vertex.x();
 		}
 
 		@Override
 		public double getY(Point2D vertex) {
-			return vertex.y;
+			return vertex.y();
 		}
 	};
 

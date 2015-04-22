@@ -31,16 +31,6 @@ public final class DrawingCell {
 	 */
 	public static DrawingAlgorithm<BasicCell> withColorAndSize(final Color color, final double diameter) {
 		return (shape, canvas) -> {
-			double halfDiameter = diameter / 2;
-			canvas.fillShape(
-				new Ellipse2D.Double(
-					shape.x - halfDiameter,
-					shape.y - halfDiameter,
-					diameter,
-					diameter
-				),
-				color
-			);
 		};
 	}
 }

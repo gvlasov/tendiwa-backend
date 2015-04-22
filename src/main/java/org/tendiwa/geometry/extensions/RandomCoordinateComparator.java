@@ -18,6 +18,6 @@ public final class RandomCoordinateComparator implements Comparator<Point2D> {
 	}
 
 	private double getCoordinate(Point2D o2) {
-		return coordinate ? o2.x : o2.y;
+		return coordinate ? o2.x() : o2.y();
 	}
 }

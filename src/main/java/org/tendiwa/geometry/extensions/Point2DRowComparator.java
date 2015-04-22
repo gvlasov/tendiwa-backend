@@ -16,10 +16,10 @@ public class Point2DRowComparator implements Comparator<Point2D> {
 
 	@Override
 	public int compare(Point2D o1, Point2D o2) {
-		if (o1.y != o2.y) {
-			return (int) (o1.y - o2.y);
+		if (o1.y() != o2.y()) {
+			return (int) (o1.y() - o2.y());
 		} else {
-			return (int) (o1.x - o2.x);
+			return (int) (o1.x() - o2.x());
 		}
 	}
 }

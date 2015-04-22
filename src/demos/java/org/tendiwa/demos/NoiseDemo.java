@@ -2,11 +2,10 @@ package org.tendiwa.demos;
 
 import com.google.common.base.Stopwatch;
 import com.google.inject.Inject;
+import org.tendiwa.core.meta.Cell;
 import org.tendiwa.drawing.DrawableInto;
-import org.tendiwa.drawing.extensions.DrawingCell;
-import org.tendiwa.drawing.extensions.DrawingRectangle;
+import org.tendiwa.drawing.extensions.DrawableCell;
 import org.tendiwa.geometry.BasicCell;
-import org.tendiwa.geometry.StupidPriceduralRecs;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.noise.Noise;
 import org.tendiwa.pathfinding.astar.AStar;
@@ -18,6 +17,7 @@ import java.awt.Color;
 import java.util.List;
 
 import static java.awt.Color.*;
+import static org.tendiwa.geometry.GeometryPrimitives.rectangle;
 
 public class NoiseDemo implements Runnable {
 
@@ -72,17 +72,27 @@ public class NoiseDemo implements Runnable {
 			return (double) (noise < 145 && noise > 125 ? 1 : 10000) * cell.diagonalComponent(neighbor);
 		}).path(start, end);
 		System.out.println("AStar: " + time);
-		for (BasicCell cell : path) {
-			canvas.drawCell(cell, RED);
-		}
-
-		canvas.draw(StupidPriceduralRecs.rectangleByCenterPoint(start, 5, 5), DrawingRectangle.withColor(RED));
-		canvas.draw(StupidPriceduralRecs.rectangleByCenterPoint(end, 5, 5), DrawingRectangle.withColor(Color.PINK));
+		canvas.drawAll(
+			path,
+			cell -> new DrawableCell(cell, Color.red)
+		);
+		canvas.draw(
+			new DrawableRectangle(
+				start.centerRectangle(5, 5),
+				Color.red
+			)
+		);
+		canvas.draw(
+			new DrawableRectangle(
+				end.centerRectangle(5, 5),
+				Color.pink
+			)
+		);
 	}
 
 	private void blob(int width, int height) {
 		Stopwatch time = Stopwatch.createStarted();
-		final Rectangle maxBound = new Rectangle(0, 0, width, height);
+		final Rectangle maxBound = rectangle(0, 0, width, height);
 		BlobArea<TestParams> blob = new BlobArea<>(
 			maxBound,
 			new PathTable(
@@ -99,9 +109,14 @@ public class NoiseDemo implements Runnable {
 			(x, y) -> new TestParams((x + y) % 19)
 		);
 		System.out.println("Blob: " + time);
-		for (BasicCell cell : blob) {
+		for (Cell cell : blob) {
 			int value = blob.get(cell).value;
-			canvas.draw(cell, DrawingCell.withColor(new Color(value * 255 / 19, 0, 0)));
+			canvas.draw(
+				new DrawableCell(
+					cell,
+					new Color(value * 255 / 19, 0, 0)
+				)
+			);
 		}
 	}
 

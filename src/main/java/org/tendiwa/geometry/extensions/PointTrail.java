@@ -1,6 +1,7 @@
 package org.tendiwa.geometry.extensions;
 
 import com.google.common.collect.ImmutableList;
+import org.tendiwa.geometry.BasicPoint2D;
 import org.tendiwa.geometry.Point2D;
 
 import java.util.List;
@@ -12,7 +13,7 @@ public class PointTrail {
 
 	public PointTrail(double x, double y) {
 		builder = ImmutableList.builder();
-		add(new Point2D(x, y));
+		add(new BasicPoint2D(x, y));
 	}
 
 	private void add(Point2D point) {

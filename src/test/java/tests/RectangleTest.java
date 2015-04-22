@@ -6,8 +6,6 @@ import org.tendiwa.core.Directions;
 import org.tendiwa.core.Orientation;
 import org.tendiwa.geometry.*;
 
-import java.util.ArrayList;
-
 import static org.junit.Assert.*;
 import static org.tendiwa.geometry.DSL.*;
 import static org.tendiwa.geometry.GeometryPrimitives.*;
@@ -53,7 +51,7 @@ public class RectangleTest {
 
 	@Test
 	public void projectRectangleOnAnotherRectangle() {
-		RectangleSystemBuilder builder = builder(0)
+		RecTreeBuilder builder = builder(0)
 			.place("one", rectangle(10, 20), atPoint(0, 0))
 			.place("two", rectangle(20, 15), near(LAST_RECTANGLE).fromSide(E).align(S).shift(4));
 		Rectangle rec1 = (Rectangle) builder.getByName("one");

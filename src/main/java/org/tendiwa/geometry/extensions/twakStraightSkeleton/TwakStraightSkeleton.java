@@ -5,7 +5,7 @@ import com.google.common.collect.Lists;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingSegment2D;
+import org.tendiwa.drawing.extensions.DrawableSegment2D;
 import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.extensions.straightSkeleton.CycleExtraVerticesRemover;
 import org.tendiwa.geometry.extensions.twakStraightSkeleton.ui.Bar;
@@ -88,7 +88,10 @@ public class TwakStraightSkeleton implements StraightSkeleton {
 					.collect(Collectors.toList())
 			);
 
-			new TestCanvas(1, 600, 600).drawAll(originalEdges1, DrawingSegment2D.withColor(Color.red));
+			new TestCanvas(1, 600, 600).drawAll(
+				originalEdges1,
+				edge -> new DrawableSegment2D(edge, Color.red)
+			);
 			throw e;
 		}
 		return new TwakStraightSkeleton(skeleton, pointsToSegments(vertices));

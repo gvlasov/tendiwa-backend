@@ -6,10 +6,7 @@ import org.tendiwa.demos.geometry.polygons.ConvexAndReflexAmoeba;
 import org.tendiwa.drawing.GifBuilder;
 import org.tendiwa.drawing.GifBuilderFactory;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingGraph;
-import org.tendiwa.drawing.extensions.DrawingModule;
-import org.tendiwa.drawing.extensions.DrawingPolygon;
-import org.tendiwa.drawing.extensions.DrawingSegment2D;
+import org.tendiwa.drawing.extensions.*;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.StraightSkeleton;
@@ -121,15 +118,17 @@ public class StraightSkeletonDemo implements Runnable {
 			);
 			if (config.drawToCanvas) {
 				if (config.drawEdges) {
-					for (Segment2D edge : skeleton.originalEdges()) {
-						assert canvas != null;
-						canvas.draw(edge, DrawingSegment2D.withColor(Color.red));
-					}
+					canvas.drawAll(
+						skeleton.originalEdges(),
+						edge -> new DrawableSegment2D(edge, Color.red)
+					);
 				}
-				assert canvas != null;
 				canvas.drawString(String.valueOf(i), 40, 15, Color.lightGray);
 				canvas.draw(skeleton.graph(), DrawingGraph.withColor(Color.cyan));
-				canvas.drawAll(skeleton.cap(shrunkDepth.next()), DrawingPolygon.withColor(Color.green));
+				canvas.drawAll(
+					skeleton.cap(shrunkDepth.next()),
+					polygon -> new DrawablePolygon(polygon, Color.green)
+				);
 				if (config.saveGif) {
 					gifBuilder.saveFrame();
 				}

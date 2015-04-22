@@ -1,6 +1,8 @@
 package org.tendiwa.geometry;
 
-import org.tendiwa.core.*;
+import org.tendiwa.core.CardinalDirection;
+import org.tendiwa.core.Directions;
+import org.tendiwa.core.OrdinalDirection;
 
 public class DSL {
 	public static final Rotation CLOCKWISE = Rotation.CLOCKWISE;
@@ -18,14 +20,6 @@ public class DSL {
 	private DSL() {
 	}
 
-	public static Rectangle rectangle(int width, int height) {
-		return new BasicRectangle(0, 0, width, height);
-	}
-
-	public static RectangleSystemBuilder builder(int borderWidth) {
-		return new RectangleSystemBuilder(borderWidth);
-	}
-
 	public static StepAwayFrom awayFrom(RectanglePointer pointer) {
 		return new StepAwayFrom(pointer);
 	}
@@ -34,7 +28,7 @@ public class DSL {
 		return new StepNear(pointer);
 	}
 
-	public static StepUnitedWith unitedWith(IntimateRectanglePointer pointer) {
+	public static StepUnitedWith unitedWith(RectanglePointer pointer) {
 		return new StepUnitedWith(pointer);
 	}
 
@@ -47,14 +41,6 @@ public class DSL {
 			Rectangle bounds = placeable.bounds();
 			return placeable.translate(x - bounds.x(), y - bounds.y());
 		};
-	}
-
-	public static PathBuilder path(RectangleSystemBuilder builder) {
-		return new PathBuilder(builder);
-	}
-
-	public static BasicCell cell(int x, int y) {
-		return new BasicCell(x, y);
 	}
 
 	public static StepRectangle recursivelySplitRec(int width, int height) {

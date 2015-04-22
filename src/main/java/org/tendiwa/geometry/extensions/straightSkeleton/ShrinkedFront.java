@@ -6,10 +6,7 @@ import com.google.common.collect.ImmutableSet;
 import org.tendiwa.collections.DoublyLinkedNode;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingSegment2D;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Polygon;
-import org.tendiwa.geometry.RayIntersection;
-import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.*;
 
 import java.awt.Color;
 import java.util.*;
@@ -114,7 +111,7 @@ final class ShrinkedFront implements Penetrable {
 				.get();
 			List<Point2D> points = new ArrayList<>();
 			node.forEach(points::add);
-			Polygon polygon = new Polygon(points);
+			Polygon polygon = new BasicPolygon(points);
 			builder.add(polygon);
 			polygon.forEach(pointsToNodes::remove);
 		}

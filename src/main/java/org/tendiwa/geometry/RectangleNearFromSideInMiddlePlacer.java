@@ -12,7 +12,7 @@ public class RectangleNearFromSideInMiddlePlacer implements Placement {
 	}
 
 	@Override
-	public void placeIn(RectSet rectSet, RectangleSystemBuilder builder) {
+	public void placeIn(RecTree recTree, RecTreeBuilder builder) {
 		throw new UnsupportedOperationException();
 	}
 }

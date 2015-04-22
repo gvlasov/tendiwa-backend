@@ -2,7 +2,7 @@ package org.tendiwa.geometry;
 
 import org.tendiwa.core.*;
 
-public class StepNear {
+public final class StepNear {
 	private final RectanglePointer pointer;
 
 	StepNear(RectanglePointer pointer) {
@@ -38,7 +38,7 @@ public class StepNear {
 				default:
 					throw new RuntimeException();
 			}
-			return new RectSetWithPrecomputedBounds(
+			return new RecTreeWithPrecomputedBounds(
 				rectSet.moveTo(x, y),
 				placeableBounds.moveTo(x, y)
 			);

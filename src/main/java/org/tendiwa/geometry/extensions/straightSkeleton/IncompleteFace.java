@@ -122,7 +122,7 @@ final class IncompleteFace implements Face, UnderlyingFace {
 		}
 
 		assertPolygonCorrectness(points);
-		return new Polygon(points);
+		return new BasicPolygon(points);
 	}
 
 	private void assertPolygonCorrectness(List<Point2D> points) {
@@ -130,7 +130,7 @@ final class IncompleteFace implements Face, UnderlyingFace {
 		// TODO: Remove this check
 		if (JTSUtils.isYDownCCW(points)) {
 			TestCanvas.canvas.drawAll(
-				new Polygon(points).toSegments(),
+				new BasicPolygon(points).toSegments(),
 				DrawingSegment2D.withColorDirected(Color.white, 1)
 			);
 			assert false;

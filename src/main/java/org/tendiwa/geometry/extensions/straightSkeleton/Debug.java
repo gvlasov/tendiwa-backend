@@ -2,11 +2,9 @@ package org.tendiwa.geometry.extensions.straightSkeleton;
 
 import com.google.common.collect.Multimap;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingPoint2D;
+import org.tendiwa.drawing.extensions.DrawablePoint2D;
 import org.tendiwa.drawing.extensions.DrawingSegment2D;
-import org.tendiwa.geometry.GeometryPrimitives;
 import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.ShamosHoeyAlgorithm;
 
 import java.awt.Color;
@@ -56,8 +54,8 @@ final class Debug {
 
 	void drawEventHeight(SkeletonEvent event) {
 		TestCanvas.canvas.draw(
-			event.point,
-			DrawingPoint2D.withTextMarker(
+			new DrawablePoint2D.Billboard(
+				event.point,
 				String.format("%1.6s", event.distanceToOriginalEdge),
 				Color.black,
 				Color.white

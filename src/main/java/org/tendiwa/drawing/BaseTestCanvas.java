@@ -1,13 +1,13 @@
 package org.tendiwa.drawing;
 
 import com.google.inject.Inject;
-import org.tendiwa.geometry.BasicCell;
-import org.tendiwa.geometry.CellSegment;
+import org.tendiwa.core.meta.Cell;
+import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.Rectangle;
-import org.tendiwa.geometry.Rectangle2D;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -54,7 +54,12 @@ class BaseTestCanvas implements DrawableInto {
 		int height
 	) {
 		this.scale = scale;
-		this.pixelBounds = new Rectangle(startX * scale, startY * scale, width * scale, height * scale);
+		this.pixelBounds = new BasicRectangle(
+			startX * scale,
+			startY * scale,
+			width * scale,
+			height * scale
+		);
 		defaultTitle = "tendiwa canvas";
 		frame = new JFrame(defaultTitle);
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -69,9 +74,9 @@ class BaseTestCanvas implements DrawableInto {
 		panel.add(DEFAULT_LAYER.component);
 		panel.add(MIDDLE_LAYER.component);
 		panel.add(TOP_LAYER.component);
-		setSize(pixelBounds.width, pixelBounds.height);
-		panel.setSize(pixelBounds.width, pixelBounds.height);
-		panel.setPreferredSize(new Dimension(pixelBounds.width, pixelBounds.height));
+		setSize(pixelBounds.width(), pixelBounds.height());
+		panel.setSize(pixelBounds.width(), pixelBounds.height());
+		panel.setPreferredSize(new Dimension(pixelBounds.width(), pixelBounds.height()));
 		frame.setResizable(false);
 		frame.pack();
 		frame.setVisible(true);
@@ -128,17 +133,16 @@ class BaseTestCanvas implements DrawableInto {
 	/**
 	 * Returns absolute world coordinates of a cell where a click was made.
 	 *
-	 * @param e
 	 * @return "x:y"
 	 */
 	private String clickOutput(MouseEvent e) {
 		return "point.chebyshovDistanceTo(new Point2D("
-			+ (pixelBounds.x + e.getX()) / scale + "," + (pixelBounds.y + e.getY()) / scale
+			+ (pixelBounds.x() + e.getX()) / scale + "," + (pixelBounds.y() + e.getY()) / scale
 			+ "))<1.5";
 	}
 
 	private String getClickCoordinatesAsString(MouseEvent e) {
-		return (pixelBounds.x + e.getX()) / scale + "," + (pixelBounds.y + e.getY()) / scale;
+		return (pixelBounds.x() + e.getX()) / scale + "," + (pixelBounds.y() + e.getY()) / scale;
 	}
 
 	public void close() {
@@ -206,10 +210,8 @@ class BaseTestCanvas implements DrawableInto {
 	}
 
 	@Override
-	public <T> void drawAll(Iterable<T> whats, DrawingAlgorithm<? super T> how) {
-		for (T what : whats) {
-			draw(what, how);
-		}
+	public void draw(Drawable drawable) {
+		drawable.drawIn(this);
 	}
 
 	public RenderedImage getImage() {
@@ -225,24 +227,24 @@ class BaseTestCanvas implements DrawableInto {
 	}
 
 	public void clear() {
-		graphics.clearRect(0, 0, pixelBounds.width, pixelBounds.height);
+		graphics.clearRect(0, 0, pixelBounds.width(), pixelBounds.height());
 	}
 
 	@Override
 	public void fillBackground(Color backgroundColor) {
 		setLayer(DEFAULT_LAYER);
 		graphics.setColor(backgroundColor);
-		graphics.fillRect(0, 0, pixelBounds.width, pixelBounds.height);
+		graphics.fillRect(0, 0, pixelBounds.width(), pixelBounds.height());
 	}
 
 	@Override
 	public int getWidth() {
-		return pixelBounds.width;
+		return pixelBounds.width();
 	}
 
 	@Override
 	public int getHeight() {
-		return pixelBounds.height;
+		return pixelBounds.height();
 	}
 
 	@Override
@@ -257,8 +259,8 @@ class BaseTestCanvas implements DrawableInto {
 
 		private Layer() {
 			image = new BufferedImage(
-				BaseTestCanvas.this.pixelBounds.width,
-				BaseTestCanvas.this.pixelBounds.height,
+				BaseTestCanvas.this.pixelBounds.width(),
+				BaseTestCanvas.this.pixelBounds.height(),
 				BufferedImage.TYPE_INT_ARGB
 			);
 			graphics = image.createGraphics();
@@ -284,12 +286,12 @@ class BaseTestCanvas implements DrawableInto {
 
 				return;
 			}
-			image.setRGB(x - pixelBounds.x, y - pixelBounds.y, color.getRGB());
+			image.setRGB(x - pixelBounds.x(), y - pixelBounds.y(), color.getRGB());
 		} else {
 			graphics.setColor(color);
 			graphics.fillRect(
-				x * scale - pixelBounds.x,
-				y * scale - pixelBounds.y,
+				x * scale - pixelBounds.x(),
+				y * scale - pixelBounds.y(),
 				scale,
 				scale
 			);
@@ -307,17 +309,17 @@ class BaseTestCanvas implements DrawableInto {
 		g2d.setTransform(transform);
 		g2d.fill(
 			new java.awt.Rectangle(
-				r.x * scale - pixelBounds.x,
-				r.y * scale - pixelBounds.y,
-				r.width * scale,
-				r.height * scale
+				r.x() * scale - pixelBounds.x(),
+				r.y() * scale - pixelBounds.y(),
+				r.width() * scale,
+				r.height() * scale
 			)
 		);
 		g2d.setTransform(defaultTransform);
 	}
 
 	@Override
-	public void drawRectangle2D(Rectangle2D r, Color color) {
+	public void drawRectangle2D(BasicRectangle2D r, Color color) {
 		graphics.setColor(color);
 		Graphics2D g2d = (Graphics2D) graphics;
 		AffineTransform transform = new AffineTransform();
@@ -330,8 +332,8 @@ class BaseTestCanvas implements DrawableInto {
 		g2d.setTransform(defaultTransform);
 		g2d.fill(
 			new java.awt.Rectangle(
-				(int) Math.round((r.x + 0.5) * scale - pixelBounds.x),
-				(int) Math.round((r.y + 0.5) * scale - pixelBounds.y),
+				(int) Math.round((r.x + 0.5) * scale - pixelBounds.x()),
+				(int) Math.round((r.y + 0.5) * scale - pixelBounds.y()),
 				(int) Math.round(r.width * scale),
 				(int) Math.round(r.height * scale)
 			)
@@ -341,8 +343,8 @@ class BaseTestCanvas implements DrawableInto {
 
 	@Override
 	public void drawRasterLine(BasicCell p1, BasicCell p2, Color color) {
-		for (BasicCell coordinate : CellSegment.cells(p1.x, p1.y, p2.x, p2.y)) {
-			drawCell(coordinate.x, coordinate.y, color);
+		for (Cell coordinate : BasicCellSegment.cells(p1.x, p1.y, p2.x, p2.y)) {
+			drawCell(coordinate.x(), coordinate.y(), color);
 		}
 	}
 
@@ -350,12 +352,12 @@ class BaseTestCanvas implements DrawableInto {
 	@Override
 	public void drawLine(double startX, double startY, double endX, double endY, Color color) {
 		// TODO: Too cumbersome, many objects created instead of computing coordinates only
-		BasicCell[] cells = CellSegment.vector(
+		Cell[] cells = BasicCellSegment.vector(
 			new BasicCell((int) Math.round(startX), (int) Math.round(startY)),
 			new BasicCell((int) Math.round(endX), (int) Math.round(endY))
 		);
-		for (BasicCell cell : cells) {
-			drawCell(cell.x, cell.y, color);
+		for (Cell cell : cells) {
+			drawCell(cell.x(), cell.y(), color);
 		}
 	}
 
@@ -364,7 +366,7 @@ class BaseTestCanvas implements DrawableInto {
 		Graphics2D g2d = (Graphics2D) graphics;
 		graphics.setColor(color);
 		AffineTransform transform = new AffineTransform();
-		transform.translate(-pixelBounds.x, -pixelBounds.y);
+		transform.translate(-pixelBounds.x(), -pixelBounds.y());
 		transform.scale(scale, scale);
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.setTransform(transform);
@@ -378,7 +380,7 @@ class BaseTestCanvas implements DrawableInto {
 		Graphics2D g2d = (Graphics2D) graphics;
 		graphics.setColor(color);
 		AffineTransform transform = new AffineTransform();
-		transform.translate(-pixelBounds.x, -pixelBounds.y);
+		transform.translate(-pixelBounds.x(), -pixelBounds.y());
 		transform.scale(scale, scale);
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.setTransform(transform);
@@ -390,8 +392,8 @@ class BaseTestCanvas implements DrawableInto {
 	@Override
 	public void drawString(String text, double x, double y, Color color) {
 		graphics.setColor(color);
-		int translatedX = (int) ((x+0.5 - ((double)pixelBounds.x)/scale) * scale);
-		int translatedY = (int) ((y+0.5 - ((double)pixelBounds.y)/scale) * scale);
+		int translatedX = (int) ((x+0.5 - ((double)pixelBounds.x())/scale) * scale);
+		int translatedY = (int) ((y+0.5 - ((double)pixelBounds.y())/scale) * scale);
 		graphics.drawString(text, translatedX, translatedY);
 	}
 

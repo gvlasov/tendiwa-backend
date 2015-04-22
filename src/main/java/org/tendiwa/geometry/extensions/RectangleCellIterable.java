@@ -27,8 +27,8 @@ public class RectangleCellIterable implements Iterable<BasicCell> {
 			public BasicCell next() {
 				n++;
 				return new BasicCell(
-					rec.getX() + (n - 1) % rec.width(),
-					rec.getY() + (n - 1) / rec.height()
+					rec.x() + (n - 1) % rec.width(),
+					rec.y() + (n - 1) / rec.height()
 				);
 			}
 

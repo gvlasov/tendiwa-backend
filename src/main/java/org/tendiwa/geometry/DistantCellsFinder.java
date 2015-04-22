@@ -33,15 +33,11 @@ public class DistantCellsFinder implements Iterable<Cell> {
 	private final ImmutableSet<Cell> cells;
 	private final int minDistance;
 
-	public DistantCellsFinder(
-		FiniteCellSet cells,
-		int minDistance
-	)
-
-	{
+	public DistantCellsFinder(FiniteCellSet cells, int minDistance) {
 		this.cells = cells.toSet();
 		this.minDistance = minDistance;
 	}
+
 	public Stream<Cell> stream() {
 		return IterableToStream.stream(iterator());
 	}

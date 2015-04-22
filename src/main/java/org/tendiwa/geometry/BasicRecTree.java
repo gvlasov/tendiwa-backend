@@ -9,23 +9,23 @@ import java.util.Map;
  * Represents a most basic placeable collection of non-overlapping rectangles. Unlike {@link RectangleSystem},
  * RectangleSequence doesn't maintain neighborship and outerness of rectangles.
  */
-final class BasicRectangleSequence implements RectSet {
+final class BasicRecTree implements RecTree {
 	/**
 	 * RectangleAreas that are parts of this RectangleSystem.
 	 */
-	private final ImmutableCollection<NamedRectSet> content;
-	private final Map<String, NamedRectSet> named;
+	private final ImmutableCollection<NamedRecTree> content;
+	private final Map<String, NamedRecTree> named;
 
 	/**
 	 * Creates an empty RectangleSequence.
 	 */
-	BasicRectangleSequence(ImmutableCollection<NamedRectSet> content) {
+	BasicRecTree(ImmutableCollection<NamedRecTree> content) {
 		this.content = content;
 		this.named = createNameMap(content);
 	}
 
-	private Map<String, NamedRectSet> createNameMap(ImmutableCollection<NamedRectSet> content) {
-		Map<String, NamedRectSet> map = new LinkedHashMap<>(content.size());
+	private Map<String, NamedRecTree> createNameMap(ImmutableCollection<NamedRecTree> content) {
+		Map<String, NamedRecTree> map = new LinkedHashMap<>(content.size());
 		content.forEach(
 			r -> r.name().ifPresent(
 				name -> map.put(name, r)
@@ -35,7 +35,7 @@ final class BasicRectangleSequence implements RectSet {
 	}
 
 	@Override
-	public ImmutableCollection<NamedRectSet> parts() {
+	public ImmutableCollection<NamedRecTree> parts() {
 		return content;
 	}
 
@@ -45,8 +45,8 @@ final class BasicRectangleSequence implements RectSet {
 		int minY = Integer.MAX_VALUE;
 		int maxX = Integer.MIN_VALUE;
 		int maxY = Integer.MIN_VALUE;
-		for (RectSet rectSet : content) {
-			Rectangle r = rectSet.bounds();
+		for (RecTree recTree : content) {
+			Rectangle r = recTree.bounds();
 			if (r.x() < minX) {
 				minX = r.x();
 			}
@@ -69,7 +69,7 @@ final class BasicRectangleSequence implements RectSet {
 	}
 
 	@Override
-	public RectSet part(String name) {
+	public RecTree part(String name) {
 		if (!named.containsKey(name)) {
 			throw new IllegalArgumentException(
 				"Trying to get a part named \"" + name + "\" when there is no such part"
@@ -79,9 +79,9 @@ final class BasicRectangleSequence implements RectSet {
 	}
 
 	@Override
-	public RectSet nestedPart(String name) {
-		for (NamedRectSet innerPart : parts()) {
-			RectSet foundPart = nestedPartWithoutError(innerPart, name);
+	public RecTree nestedPart(String name) {
+		for (NamedRecTree innerPart : parts()) {
+			RecTree foundPart = nestedPartWithoutError(innerPart, name);
 			if (foundPart != null) {
 				return foundPart;
 			}
@@ -91,12 +91,12 @@ final class BasicRectangleSequence implements RectSet {
 		);
 	}
 
-	private static RectSet nestedPartWithoutError(NamedRectSet part, String name) {
+	private static RecTree nestedPartWithoutError(NamedRecTree part, String name) {
 		if (part.hasName(name)) {
 			return part;
 		} else {
-			for (NamedRectSet innerPart : part.parts()) {
-				RectSet foundPart = nestedPartWithoutError(innerPart, name);
+			for (NamedRecTree innerPart : part.parts()) {
+				RecTree foundPart = nestedPartWithoutError(innerPart, name);
 				if (foundPart != null) {
 					return foundPart;
 				}

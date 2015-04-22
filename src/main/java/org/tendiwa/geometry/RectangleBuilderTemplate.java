@@ -5,26 +5,26 @@ import com.google.common.collect.ImmutableCollection;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public final class RectangleBuilderTemplate implements RectSet {
+public final class RectangleBuilderTemplate implements RecTree {
 
-	private final Supplier<RectSet> howToBuild;
-	private RectSet rectSet;
+	private final Supplier<RecTree> howToBuild;
+	private RecTree recTree;
 
-	public RectangleBuilderTemplate(Supplier<RectSet> howTobuild) {
+	public RectangleBuilderTemplate(Supplier<RecTree> howTobuild) {
 		Objects.requireNonNull(howTobuild);
 		this.howToBuild = howTobuild;
 	}
 
 	@Override
-	public ImmutableCollection<NamedRectSet> parts() {
+	public ImmutableCollection<NamedRecTree> parts() {
 		return getInstance().parts();
 	}
 
-	private RectSet getInstance() {
-		if (rectSet == null) {
-			rectSet = howToBuild.get();
+	private RecTree getInstance() {
+		if (recTree == null) {
+			recTree = howToBuild.get();
 		}
-		return rectSet;
+		return recTree;
 	}
 
 	@Override
@@ -33,12 +33,12 @@ public final class RectangleBuilderTemplate implements RectSet {
 	}
 
 	@Override
-	public RectSet part(String name) {
+	public RecTree part(String name) {
 		return getInstance().part(name);
 	}
 
 	@Override
-	public RectSet nestedPart(String name) {
+	public RecTree nestedPart(String name) {
 		return getInstance().nestedPart(name);
 	}
 }

@@ -1,5 +1,5 @@
 package org.tendiwa.geometry;
 
 public interface Placement {
-	RectSet placeIn(RectSet rectSet, RectangleSystemBuilder builder);
+	RecTree placeIn(RecTree recTree, RecTreeBuilder builder);
 }

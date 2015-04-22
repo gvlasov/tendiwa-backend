@@ -20,4 +20,9 @@ public abstract class Cell_Wr implements Cell {
 		this.x = x;
 		this.y = y;
 	}
+
+	protected Cell_Wr(Cell cell) {
+		this.x = cell.x();
+		this.y = cell.y();
+	}
 }

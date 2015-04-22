@@ -9,7 +9,7 @@ import java.awt.*;
 import java.util.Iterator;
 
 public class DrawingRectangle {
-	public static DrawingAlgorithm<RectSet> withColor(final Color color) {
+	public static DrawingAlgorithm<RecTree> withColor(final Color color) {
 		return (shape, canvas) -> {
 			for (Rectangle r : shape.getRectangles()) {
 				canvas.drawRectangle(r, color);
@@ -17,7 +17,7 @@ public class DrawingRectangle {
 		};
 	}
 
-	public static DrawingAlgorithm<RectSet> withColorAndBorder(final Color fillColor, final Color borderColor) {
+	public static DrawingAlgorithm<RecTree> withColorAndBorder(final Color fillColor, final Color borderColor) {
 		return (shape, canvas) -> {
 			for (Rectangle r : shape.getRectangles()) {
 				canvas.drawRectangle(r, fillColor);
@@ -29,7 +29,7 @@ public class DrawingRectangle {
 		};
 	}
 
-	public static DrawingAlgorithm<RectSet> withColorLoop(final Color... colors) {
+	public static DrawingAlgorithm<RecTree> withColorLoop(final Color... colors) {
 		final Iterator<Color> iter = Iterables.cycle(colors).iterator();
 		return (shape, canvas) -> {
 			for (Rectangle r : shape.getRectangles()) {
@@ -38,16 +38,6 @@ public class DrawingRectangle {
 		};
 	}
 
-	public static DrawingAlgorithm<RectSet> chequerwise(final Color color1, final Color color2) {
-		return (shape, canvas) -> {
-			for (Rectangle r : shape.getRectangles()) {
-				for (int i = r.getX(); i < r.getX() + r.width() - 1; i++) {
-					for (int j = r.getY(); j < r.getY() + r.width() - 1; j++) {
-						canvas.drawCell(i, j, (i + j) % 2 == 1 ? color1 : color2);
-					}
-				}
-			}
-
-		};
+	public static DrawingAlgorithm<RecTree> chequerwise(final Color color1, final Color color2) {
 	}
 }

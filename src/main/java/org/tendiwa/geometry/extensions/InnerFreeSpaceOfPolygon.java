@@ -28,20 +28,20 @@ public final class InnerFreeSpaceOfPolygon {
 		List<Segment2D> edges = new ArrayList<>(polygonSize);
 		int lastButOne = polygonSize - 1;
 		for (int i = 0; i < lastButOne; i++) {
-			edges.add(new Segment2D(polygon.get(i), polygon.get(i + 1)));
+			edges.add(new BasicSegment2D(polygon.get(i), polygon.get(i + 1)));
 		}
-		edges.add(new Segment2D(polygon.get(lastButOne), polygon.get(0)));
+		edges.add(new BasicSegment2D(polygon.get(lastButOne), polygon.get(0)));
 
 		assert !ShamosHoeyAlgorithm.areIntersected(edges);
 		TObjectDoubleMap<Segment2D> map = new TObjectDoubleHashMap<>(polygonSize);
 		double[] distancesToOtherEdges = new double[polygonSize];
 		for (int i = 0; i < polygonSize; i++) {
 			Segment2D edge = edges.get(i);
-			Vector2D perpendicular = Vector2D.fromStartToEnd(edge.start, edge.end).rotateQuarterClockwise();
+			Vector2D perpendicular = Vector2D.fromStartToEnd(edge.start(), edge.end()).rotateQuarterClockwise();
 			if (counterClockWise) {
 				perpendicular.multiply(-1);
 			}
-			Point2D edgeCenter = edge.start.moveBy(edge.dx() / 2, edge.dy() / 2);
+			Point2D edgeCenter = edge.start().moveBy(edge.dx() / 2, edge.dy() / 2);
 			Point2D target = edgeCenter.add(perpendicular);
 			for (int j = 0; j < polygonSize; j++) {
 				if (i == j) {
@@ -86,7 +86,7 @@ public final class InnerFreeSpaceOfPolygon {
 	}
 
 	private static boolean pointInSegmentRectangle(Point2D point, Segment2D segment) {
-		return point.x >= segment.start.x && point.x <= segment.end.x
-			|| point.x >= segment.end.x && point.x <= segment.start.x;
+		return point.x() >= segment.start().x() && point.x() <= segment.end().x()
+			|| point.x() >= segment.end().x() && point.x() <= segment.start().x();
 	}
 }

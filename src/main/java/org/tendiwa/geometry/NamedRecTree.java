@@ -2,11 +2,11 @@ package org.tendiwa.geometry;
 
 import java.util.Optional;
 
-public final class NamedRectSet extends RectSet_Wr {
+public final class NamedRecTree extends RecTree_Wr {
 	private final Optional<String> name;
 
-	NamedRectSet(RectSet rectSet, Optional<String> name) {
-		super(rectSet);
+	NamedRecTree(RecTree recTree, Optional<String> name) {
+		super(recTree);
 		this.name = name;
 	}
 

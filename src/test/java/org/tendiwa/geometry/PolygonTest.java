@@ -1,12 +1,8 @@
 package org.tendiwa.geometry;
 
 import org.junit.Test;
-import org.tendiwa.demos.Demos;
-import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingPolygon;
 import org.tendiwa.geometry.extensions.PointTrail;
 
-import java.awt.Color;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -20,13 +16,13 @@ public class PolygonTest {
 			.moveByY(20)
 			.moveByX(-20)
 			.points();
-		assertTrue(new Polygon(points).isClockwise());
+		assertTrue(new BasicPolygon(points).isClockwise());
 		points = new PointTrail(40, 20)
 			.moveByX(-35)
 			.moveByY(20)
 			.moveByX(35)
 			.points();
-		assertFalse(new Polygon(points).isClockwise());
+		assertFalse(new BasicPolygon(points).isClockwise());
 	}
 	@Test
 	public void isClockwiseConcave() {
@@ -45,6 +41,6 @@ public class PolygonTest {
 			.moveByY(50)
 			.moveByX(-145)
 			.points();
-		assertTrue(new Polygon(points).isClockwise());
+		assertTrue(new BasicPolygon(points).isClockwise());
 	}
 }

@@ -10,7 +10,7 @@ import java.util.Arrays;
  * @see org.tendiwa.geometry.extensions.polygonRasterization.PolygonRasterizer#rasterizeToMutable(java.util.List) to
  * construct this object.
  */
-public class MutableRasterizationResult {
+public final class MutableRasterizationResult {
 	public final int x;
 	public final int y;
 	public final int width;

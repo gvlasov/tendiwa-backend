@@ -117,7 +117,7 @@ public final class MinimalCycle<V, E> implements Primitive<V> {
 	 *
 	 * @return A {@link List} of all vertices of this cycle.
 	 */
-	public List<V> vertexList() {
+	public ImmutableList<V> vertexList() {
 		return ImmutableList.copyOf(cycle);
 	}
 }

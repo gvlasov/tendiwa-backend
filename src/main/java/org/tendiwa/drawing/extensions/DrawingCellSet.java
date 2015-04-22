@@ -29,13 +29,5 @@ public final class DrawingCellSet {
 	 * @return A drawing algorithm that can draw a cell set with {@code color}.
 	 */
 	public static DrawingAlgorithm<? super CellSet> onWholeCanvasWithColor(Color color) {
-		requireNonNull(color);
-		return (what, canvas) -> {
-			for (BasicCell cell : new Rectangle(0, 0, canvas.getWidth(), canvas.getHeight())) {
-				if (what.contains(cell)) {
-					canvas.drawCell(cell, color);
-				}
-			}
-		};
 	}
 }

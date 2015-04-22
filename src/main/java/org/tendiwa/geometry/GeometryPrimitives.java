@@ -3,6 +3,9 @@ package org.tendiwa.geometry;
 import org.tendiwa.core.Orientation;
 import org.tendiwa.core.meta.BasicRange;
 import org.tendiwa.core.meta.Range;
+import org.tendiwa.graphs.GraphConstructor;
+
+import java.util.List;
 
 public final class GeometryPrimitives {
 	public static Point2D point2D(double x, double y) {
@@ -42,5 +45,16 @@ public final class GeometryPrimitives {
 
 	public static OrthoCellSegment orthoCellSegment(int x, int y, int length, Orientation orientation) {
 		return new BasicOrthoCellSegment(x, y, length, orientation);
+	}
+
+	public static GraphConstructor<Point2D, Segment2D> graphConstructor() {
+		return new GraphConstructor<>(BasicSegment2D::new);
+	}
+
+	public static Polygon polygon(List<Point2D> points) {
+		return new BasicPolygon(points);
+	}
+	public static Polygon polygon(Point2D... points) {
+		return new BasicPolygon(points);
 	}
 }

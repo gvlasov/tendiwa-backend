@@ -1,11 +1,11 @@
 package org.tendiwa.geometry;
 
-final class RectSetWithPrecomputedBounds extends RectSet_Wr {
+final class RecTreeWithPrecomputedBounds extends RecTree_Wr {
 
 	private final Rectangle bounds;
 
-	RectSetWithPrecomputedBounds(RectSet rectSet, Rectangle bounds) {
-		super(rectSet);
+	RecTreeWithPrecomputedBounds(RecTree recTree, Rectangle bounds) {
+		super(recTree);
 		this.bounds = bounds;
 	}
 

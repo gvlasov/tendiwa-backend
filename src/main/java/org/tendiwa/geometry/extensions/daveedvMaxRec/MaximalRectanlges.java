@@ -7,8 +7,12 @@ import org.tendiwa.geometry.extensions.polygonRasterization.MutableRasterization
 import java.util.Optional;
 
 public class MaximalRectanlges {
-	public static Optional<Rectangle> findLargestIn(MutableRasterizationResult rasterizedPolygon) {
-		Optional<Rectangle> r = MaximalCellRectangleFinder.compute(rasterizedPolygon.bitmap);
+	public static Optional<Rectangle> findLargestIn(
+		MutableRasterizationResult rasterizedPolygon
+	) {
+		Optional<Rectangle> r = MaximalCellRectangleFinder.compute(
+			rasterizedPolygon.bitmap
+		);
 		if (r.isPresent()) {
 			return Optional.of(
 				// TODO: Or should it be translated by dx/dy instead?

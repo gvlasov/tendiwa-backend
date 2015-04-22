@@ -1,21 +1,25 @@
 package org.tendiwa.terrain;
 
 import com.google.common.collect.ImmutableList;
-import org.tendiwa.geometry.BasicCell;
+import org.tendiwa.core.meta.Cell;
 import org.tendiwa.geometry.Rectangle;
 
 import java.util.Iterator;
 
-public class BlobArea<T extends CellParams> implements Iterable<BasicCell> {
-	private final Iterable<BasicCell> cells;
+public final class BlobArea<T extends CellParams> implements Iterable<Cell> {
+	private final Iterable<Cell> cells;
 	private Chunk<T>[][] chunks;
 	private final Rectangle maxBound;
 
-	public BlobArea(Rectangle maxBound, Iterable<BasicCell> cells, CellParamsFactory<T> factory) {
+	public BlobArea(
+		Rectangle maxBound,
+		Iterable<Cell> cells,
+		CellParamsFactory<T> factory
+	) {
 		this.maxBound = maxBound;
 		this.cells = ImmutableList.copyOf(cells);
 		createChunks(maxBound);
-		for (BasicCell cell : cells) {
+		for (Cell cell : cells) {
 			int startX = cell.x() - cell.x() % getChunkSize();
 			int startY = cell.y() - cell.y() % getChunkSize();
 			touchChunk(startX, startY).put(cell.x(), cell.y(), factory);
@@ -33,8 +37,8 @@ public class BlobArea<T extends CellParams> implements Iterable<BasicCell> {
 	}
 
 	private Chunk<T> touchChunk(int startX, int startY) {
-		int nChunkX = (startX - maxBound.getX()) / getChunkSize();
-		int nChunkY = (startY - maxBound.getY()) / getChunkSize();
+		int nChunkX = (startX - maxBound.x()) / getChunkSize();
+		int nChunkY = (startY - maxBound.y()) / getChunkSize();
 		Chunk<T> chunk = chunks[nChunkX][nChunkY];
 		if (chunk == null) {
 			return chunks[nChunkX][nChunkY] = new Chunk<>(startX, startY, getChunkSize());
@@ -44,8 +48,8 @@ public class BlobArea<T extends CellParams> implements Iterable<BasicCell> {
 
 	public void put(int x, int y, CellParamsFactory<T> factory) {
 		chunks
-			[(x - maxBound.getX()) / getChunkSize()]
-			[(y - maxBound.getY()) / getChunkSize()]
+			[(x - maxBound.x()) / getChunkSize()]
+			[(y - maxBound.y()) / getChunkSize()]
 			.put(x, y, factory);
 	}
 
@@ -54,15 +58,15 @@ public class BlobArea<T extends CellParams> implements Iterable<BasicCell> {
 	}
 
 	@Override
-	public Iterator<BasicCell> iterator() {
+	public Iterator<Cell> iterator() {
 		return cells.iterator();
 	}
 
-	public T get(BasicCell cell) {
+	public T get(Cell cell) {
 		return getChunkWithCell(cell).getCell(cell.x(), cell.y());
 	}
 
-	public Chunk<T> getChunkWithCell(BasicCell cell) {
+	public Chunk<T> getChunkWithCell(Cell cell) {
 		int chunkX = (cell.x() - cell.x() % getChunkSize()) / getChunkSize();
 		int chunkY = (cell.y() - cell.y() % getChunkSize()) / getChunkSize();
 		return chunks[chunkX][chunkY];

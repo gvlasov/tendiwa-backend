@@ -3,6 +3,7 @@ package org.tendiwa.demos;
 import org.jgrapht.UndirectedGraph;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingGraph;
+import org.tendiwa.geometry.BasicSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PointTrail;
@@ -46,7 +47,7 @@ public class SameOrPerpendicularSlopeGraphEdgesPerturbationsTest implements Runn
 			.moveBy(10, -10)
 			.moveBy(-5, -1)
 			.points();
-		UndirectedGraph<Point2D, Segment2D> graph = new GraphConstructor<>(Segment2D::new)
+		UndirectedGraph<Point2D, Segment2D> graph = new GraphConstructor<>(BasicSegment2D::new)
 			.cycleOfVertices(polygon)
 			.graph();
 		SameOrPerpendicularSlopeGraphEdgesPerturbations.perturb(graph, 1e-4);

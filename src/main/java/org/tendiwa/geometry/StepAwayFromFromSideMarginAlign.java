@@ -21,8 +21,8 @@ public class StepAwayFromFromSideMarginAlign implements Placement {
 	}
 
 	@Override
-	public RectSet placeIn(RectSet rectSet, RectangleSystemBuilder builder) {
-		Rectangle placeableBounds = rectSet.bounds();
+	public RecTree placeIn(RecTree recTree, RecTreeBuilder builder) {
+		Rectangle placeableBounds = recTree.bounds();
 		Rectangle existingRec = pointer.find(builder).bounds();
 		int staticCoord = existingRec.side(side).getStaticCoord() + (builder.borderWidth() + 1 +
 			margin) * side.getGrowing();
@@ -47,8 +47,8 @@ public class StepAwayFromFromSideMarginAlign implements Placement {
 		}
 		int dx = x - placeableBounds.x();
 		int dy = y - placeableBounds.y();
-		return new RectSetWithPrecomputedBounds(
-			rectSet.translate(dx, dy),
+		return new RecTreeWithPrecomputedBounds(
+			recTree.translate(dx, dy),
 			placeableBounds.translate(dx, dy)
 		);
 	}

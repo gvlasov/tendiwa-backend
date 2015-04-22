@@ -136,8 +136,10 @@ public class BigCityDemo implements Runnable {
 		canvasB.drawAll(whats, DrawingSegment2D.withColorThin(Color.black));
 		canvasB.drawAll(whats, DrawingSegment2D.withColorThin(Color.black));
 		canvasB.drawAll(whats, DrawingSegment2D.withColorThin(Color.black));
-		canvasB.drawAll(segment2DSmartMesh.graph().vertexSet(), DrawingPoint2D.withColorAndSize(Color
-			.red, 3));
+		canvasB.drawAll(
+			segment2DSmartMesh.graph().vertexSet(),
+			p->new DrawablePoint2D.Circle(p, Color.red, 3)
+		);
 		gif.saveFrame();
 		gif.saveAnimation("/home/suseika/test.gif");
 	}

@@ -15,5 +15,5 @@ public interface RectanglePointer {
 		return builder -> builder.getByName(name);
 	}
 
-	RectSet find(RectangleSystemBuilder builder);
+	RecTree find(RecTreeBuilder builder);
 }

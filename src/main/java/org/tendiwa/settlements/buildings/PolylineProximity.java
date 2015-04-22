@@ -77,7 +77,7 @@ public final class PolylineProximity {
 	 * @param rectangle
 	 */
 	private void findSegmentsForLot(RectangleWithNeighbors lot, Rectangle rectangle) {
-		Rectangle2D extendedRec = Recs2D.stretch(rectangle, streetsWidth + Vectors2D.EPSILON);
+		BasicRectangle2D extendedRec = Recs2D.stretch(rectangle, streetsWidth + Vectors2D.EPSILON);
 		Rectangle2DWithMaxCoordinates extendedRecWithMaxCoordinates =
 			new Rectangle2DWithMaxCoordinates(extendedRec);
 		allStreetSegments.stream()
@@ -96,16 +96,16 @@ public final class PolylineProximity {
 	}
 
 	/**
-	 * Just a {@link org.tendiwa.geometry.Rectangle2D} with precomputed
-	 * {@link org.tendiwa.geometry.Rectangle2D#getMaxX()}
-	 * and {@link org.tendiwa.geometry.Rectangle2D#getMaxX()}.
+	 * Just a {@link org.tendiwa.geometry.BasicRectangle2D} with precomputed
+	 * {@link org.tendiwa.geometry.BasicRectangle2D#getMaxX()}
+	 * and {@link org.tendiwa.geometry.BasicRectangle2D#getMaxX()}.
 	 */
 	private class Rectangle2DWithMaxCoordinates {
 		private final double maxX;
 		private final double maxY;
-		private final Rectangle2D rectangle;
+		private final BasicRectangle2D rectangle;
 
-		Rectangle2DWithMaxCoordinates(Rectangle2D rectangle) {
+		Rectangle2DWithMaxCoordinates(BasicRectangle2D rectangle) {
 			this.rectangle = rectangle;
 			maxX = rectangle.getMaxX();
 			maxY = rectangle.getMaxY();
@@ -113,7 +113,7 @@ public final class PolylineProximity {
 
 		/**
 		 * Does a weaker and simpler check than
-		 * {@link org.tendiwa.geometry.Rectangle2D#intersectsSegment(org.tendiwa.geometry.Segment2D)}.
+		 * {@link org.tendiwa.geometry.BasicRectangle2D#intersectsSegment(org.tendiwa.geometry.Segment2D)}.
 		 * <p>
 		 * Checks intersection of a rectangle with segment's hull, which is much cheaper than checking intersection
 		 * with the segment itself.

@@ -11,7 +11,7 @@ import org.tendiwa.core.player.SinglePlayerMode;
 import org.tendiwa.core.vision.Seer;
 import org.tendiwa.core.vision.SightPassabilityCriteria;
 import org.tendiwa.geometry.BasicCell;
-import org.tendiwa.geometry.CellSegment;
+import org.tendiwa.geometry.BasicCellSegment;
 import org.tendiwa.geometry.CellSet;
 
 import java.util.Collection;
@@ -644,7 +644,7 @@ public class Character implements Cell, PlaceableInCell, DamageSource {
 
 	private ProjectileFlight computeProjectileFlightEndCoordinate(UniqueItem weapon, Item projectile, int toX, int toY) {
 		BasicCell endCoordinate = new BasicCell(toX, toY);
-		BasicCell[] vector = CellSegment.cells(x, y, toX, toY);
+		BasicCell[] vector = BasicCellSegment.cells(x, y, toX, toY);
 		Character characterHit = null;
 		for (int i = 1; i < vector.length; i++) {
 			BasicCell c = vector[i];

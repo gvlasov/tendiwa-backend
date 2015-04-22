@@ -14,8 +14,8 @@ public class StepNearFromSideAlign implements Placement {
 	}
 
 	@Override
-	public RectSet placeIn(RectSet rectSet, RectangleSystemBuilder builder) {
-		return shift(0).placeIn(rectSet, builder);
+	public RecTree placeIn(RecTree recTree, RecTreeBuilder builder) {
+		return shift(0).placeIn(recTree, builder);
 	}
 
 	public Placement shift(final int shift) {
@@ -45,7 +45,7 @@ public class StepNearFromSideAlign implements Placement {
 				x = staticCoord;
 				y = dynamicCoord;
 			}
-			return new RectSetWithPrecomputedBounds(
+			return new RecTreeWithPrecomputedBounds(
 				rectSet.moveTo(x, y),
 				placeableBounds.moveTo(x, y)
 			);

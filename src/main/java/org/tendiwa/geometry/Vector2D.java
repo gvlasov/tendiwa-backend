@@ -8,7 +8,7 @@ public interface Vector2D extends Position2D {
 	 * 	A vector.
 	 * @return Third vector that is a sum of two vectors.
 	 */
-	public default Vector2D add(Vector2D another) {
+	default Vector2D add(Vector2D another) {
 		return new BasicPoint2D(x() + another.x(), y() + another.y());
 	}
 
@@ -19,7 +19,7 @@ public interface Vector2D extends Position2D {
 	 * 	A vector.
 	 * @return Third vector that is a sum of two vectors.
 	 */
-	public default Vector2D subtract(Vector2D another) {
+	default Vector2D subtract(Vector2D another) {
 		return new BasicPoint2D(x() - another.x(), y() - another.y());
 	}
 
@@ -28,7 +28,7 @@ public interface Vector2D extends Position2D {
 	 *
 	 * @return Magnitude of a vector.
 	 */
-	public default double magnitude() {
+	default double magnitude() {
 		return Math.sqrt(x() * x() + y() * y());
 	}
 
@@ -39,11 +39,11 @@ public interface Vector2D extends Position2D {
 	 * 	A scalar to divide by.
 	 * @return A new vector.
 	 */
-	public default Vector2D divide(double scalar) {
+	default Vector2D divide(double scalar) {
 		return new BasicPoint2D(x() / scalar, y() / scalar);
 	}
 
-	public default Vector2D normalize() {
+	default Vector2D normalize() {
 		return divide(magnitude());
 	}
 
@@ -51,11 +51,11 @@ public interface Vector2D extends Position2D {
 		return new BasicPoint2D(x() * magnitude, y() * magnitude);
 	}
 
-	public default double dotProduct(Vector2D vector) {
+	default double dotProduct(Vector2D vector) {
 		return (x() * vector.x() + y() * vector.y());
 	}
 
-	public static Vector2D vector(double x, double y) {
+	static Vector2D vector(double x, double y) {
 		return new BasicPoint2D(x, y);
 	}
 
@@ -68,7 +68,7 @@ public interface Vector2D extends Position2D {
 	 * 	Change in y coordinate.
 	 * @return A new Point2D.
 	 */
-	public default Vector2D moveBy(double dx, double dy) {
+	default Point2D moveBy(double dx, double dy) {
 		return new BasicPoint2D(x() + dx, y() + dy);
 	}
 
@@ -81,7 +81,7 @@ public interface Vector2D extends Position2D {
 	 * 	End point.
 	 * @return A vector that is end-start;
 	 */
-	public static Vector2D fromStartToEnd(Vector2D start, Vector2D end) {
+	static Vector2D fromStartToEnd(Vector2D start, Vector2D end) {
 		return end.subtract(start);
 	}
 
@@ -90,21 +90,21 @@ public interface Vector2D extends Position2D {
 	 *
 	 * @return A new vector, rotated 90 degrees clockwise from this one.
 	 */
-	public default Vector2D rotateQuarterClockwise() {
+	default Vector2D rotateQuarterClockwise() {
 		return new BasicPoint2D(-y(), x());
 	}
 
-	public default Vector2D reverse() {
+	default Vector2D reverse() {
 		return new BasicPoint2D(-x(), -y());
 	}
 
-	public default Vector2D rotate(double radians) {
+	default Vector2D rotate(double radians) {
 		double ca = Math.cos(radians);
 		double sa = Math.sin(radians);
 		return new BasicPoint2D(ca * x() - sa * y(), sa * x() + ca * y());
 	}
 
-	public default boolean isZero() {
+	default boolean isZero() {
 		return x() == 0 && y() == 0;
 	}
 
@@ -117,15 +117,15 @@ public interface Vector2D extends Position2D {
 	 * @return true if the angle between vectors going clockwise from this vector to {@code another} is reflex,
 	 * false otherwise.
 	 */
-	public default boolean makesReflexAngle(Vector2D cw) {
+	default boolean makesReflexAngle(Vector2D cw) {
 		return cw.perpDotProduct(this) > 0;
 	}
 
-	public default double perpDotProduct(Vector2D vector) {
+	default double perpDotProduct(Vector2D vector) {
 		return x() * vector.y() - y() * vector.x();
 	}
 
-	public default boolean isBetweenVectors(Vector2D cw, Vector2D ccw) {
+	default boolean isBetweenVectors(Vector2D cw, Vector2D ccw) {
 		if (cw.makesReflexAngle(ccw)) {
 			return ccw.perpDotProduct(this) < 0 || this.perpDotProduct(cw) < 0;
 		} else {
@@ -133,17 +133,4 @@ public interface Vector2D extends Position2D {
 		}
 	}
 
-	/**
-	 * Finds Chebyshev distance between this cell and another cell.
-	 * <p>
-	 * Finding Chebyshev distance is much cheaper than finding Euclidean distance with {@link
-	 * #distanceTo(BasicPoint2D)}.
-	 *
-	 * @param point
-	 * 	Another point.
-	 * @return Chebyshev distance between two cells.
-	 */
-	public default double chebyshovDistanceTo(Point2D point) {
-		return Math.max(Math.abs(point.x() - x()), Math.abs(point.y() - y()));
-	}
 }

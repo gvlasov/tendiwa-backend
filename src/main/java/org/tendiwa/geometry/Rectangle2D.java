@@ -1,24 +1,15 @@
 package org.tendiwa.geometry;
 
-public final class Rectangle2D implements RectangularHull {
-	public final double x;
-	public final double y;
-	public final double width;
-	public final double height;
-
-	public Rectangle2D(double x, double y, double width, double height) {
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
+public interface Rectangle2D extends RectangularHull {
+	double x();
+	double y();
+	double width();
+	double height();
+	default double getMaxX() {
+		return x() + width();
 	}
-
-	public double getMaxX() {
-		return x + width;
-	}
-
-	public double getMaxY() {
-		return y + height;
+	default double getMaxY() {
+		return y() + height();
 	}
 
 	/**
@@ -30,20 +21,20 @@ public final class Rectangle2D implements RectangularHull {
 	 * @see <a href="http://stackoverflow.com/a/293052/1542343">How to test if a line segment intersects an
 	 * axis-aligned rectange in 2D</a>
 	 */
-	public boolean intersectsSegment(Segment2D segment) {
-		double pointPosition = pointRelativeToLine(x, y, segment);
+	default boolean intersectsSegment(Segment2D segment) {
+		double pointPosition = pointRelativeToLine(x(), y(), segment);
 		do {
 			if (Math.abs(pointPosition) < Vectors2D.EPSILON) {
 				break;
 			}
-			double newPointPosition = pointRelativeToLine(getMaxX(), y, segment);
+			double newPointPosition = pointRelativeToLine(getMaxX(), y(), segment);
 			if (Math.abs(newPointPosition) < Vectors2D.EPSILON) {
 				break;
 			}
 			if (Math.signum(newPointPosition) != Math.signum(pointPosition)) {
 				break;
 			}
-			newPointPosition = pointRelativeToLine(x, getMaxY(), segment);
+			newPointPosition = pointRelativeToLine(x(), getMaxY(), segment);
 			if (Math.abs(newPointPosition) < Vectors2D.EPSILON) {
 				break;
 			}
@@ -61,24 +52,24 @@ public final class Rectangle2D implements RectangularHull {
 		} while (false);
 		double segmentBoundsMin;
 		double segmentBoundsMax;
-		if (segment.start.x < segment.end.x) {
-			segmentBoundsMin = segment.start.x;
-			segmentBoundsMax = segment.end.x;
+		if (segment.start().x() < segment.end().x()) {
+			segmentBoundsMin = segment.start().x();
+			segmentBoundsMax = segment.end().x();
 		} else {
-			segmentBoundsMin = segment.end.x;
-			segmentBoundsMax = segment.start.x;
+			segmentBoundsMin = segment.end().x();
+			segmentBoundsMax = segment.start().x();
 		}
-		if (segmentBoundsMax < x || segmentBoundsMin > getMaxX()) {
+		if (segmentBoundsMax < x() || segmentBoundsMin > getMaxX()) {
 			return false;
 		}
-		if (segment.start.y < segment.end.y) {
-			segmentBoundsMin = segment.start.y;
-			segmentBoundsMax = segment.end.y;
+		if (segment.start().y() < segment.end().y()) {
+			segmentBoundsMin = segment.start().y();
+			segmentBoundsMax = segment.end().y();
 		} else {
-			segmentBoundsMin = segment.end.y;
-			segmentBoundsMax = segment.start.y;
+			segmentBoundsMin = segment.end().y();
+			segmentBoundsMax = segment.start().y();
 		}
-		if (segmentBoundsMax < y || segmentBoundsMin > getMaxY()) {
+		if (segmentBoundsMax < y() || segmentBoundsMin > getMaxY()) {
 			return false;
 		}
 		return true;
@@ -93,39 +84,39 @@ public final class Rectangle2D implements RectangularHull {
 	 * 	A segment.
 	 * @return > 0 if point is below line, < 0 if point is above line, 0 if point is on line.
 	 */
-	private double pointRelativeToLine(double x, double y, Segment2D segment) {
-		return (segment.end.y - segment.start.y) * x
-			+ (segment.start.x - segment.end.x) * y
-			+ (segment.end.x * segment.start.y - segment.start.x * segment.end.y);
+	default double pointRelativeToLine(double x, double y, Segment2D segment) {
+		return (segment.end().y() - segment.start().y()) * x
+			+ (segment.start().x() - segment.end().x()) * y
+			+ (segment.end().x() * segment.start().y() - segment.start().x() * segment.end().y());
 	}
 
-	public boolean contains(Point2D point) {
-		return point.x >= x && point.x <= getMaxX()
-			&& point.y >= y && point.y <= getMaxY();
+	default boolean contains(Point2D point) {
+		return point.x() >= x() && point.x() <= getMaxX()
+			&& point.y() >= y() && point.y() <= getMaxY();
 	}
 
-	public boolean strictlyContains(Point2D point) {
-		return point.x > x && point.x < getMaxX()
-			&& point.y > y && point.y < getMaxY();
-	}
-
-	@Override
-	public double minX() {
-		return x;
+	default boolean strictlyContains(Point2D point) {
+		return point.x() > x() && point.x() < getMaxX()
+			&& point.y() > y() && point.y() < getMaxY();
 	}
 
 	@Override
-	public double maxX() {
-		return x + width;
+	default double minX() {
+		return x();
 	}
 
 	@Override
-	public double minY() {
-		return y;
+	default double maxX() {
+		return x() + width();
 	}
 
 	@Override
-	public double maxY() {
-		return y + height;
+	default double minY() {
+		return y();
+	}
+
+	@Override
+	default double maxY() {
+		return y() + height();
 	}
 }

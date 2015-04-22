@@ -3,7 +3,7 @@ package org.tendiwa.geometry.extensions.straightSkeleton;
 import com.google.common.collect.Iterators;
 import org.tendiwa.collections.SuccessiveTuples;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingPoint2D;
+import org.tendiwa.drawing.extensions.DrawablePoint2D;
 import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.*;
 
@@ -236,7 +236,9 @@ abstract class Node implements Iterable<Node> {
 						DrawingSegment2D.withColorThin(colors.next())
 					);
 				}
-				TestCanvas.canvas.draw(start.vertex, DrawingPoint2D.withColorAndSize(Color.yellow, 2));
+				TestCanvas.canvas.draw(
+					new DrawablePoint2D.Circle(start.vertex, Color.yellow, 2)
+				);
 			}
 		};
 	}

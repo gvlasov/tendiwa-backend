@@ -2,11 +2,11 @@ package org.tendiwa.geometry;
 
 import org.tendiwa.core.CardinalDirection;
 
-public class StepUnitedWith {
+final class StepUnitedWith {
 
-	private final IntimateRectanglePointer pointer;
+	private final RectanglePointer pointer;
 
-	public StepUnitedWith(IntimateRectanglePointer pointer) {
+	StepUnitedWith(RectanglePointer pointer) {
 		this.pointer = pointer;
 	}
 

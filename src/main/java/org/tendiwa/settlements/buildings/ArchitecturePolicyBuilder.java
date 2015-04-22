@@ -2,7 +2,7 @@ package org.tendiwa.settlements.buildings;
 
 import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.hash.TObjectDoubleHashMap;
-import org.tendiwa.geometry.RectSet;
+import org.tendiwa.geometry.RecTree;
 import org.tendiwa.settlements.streets.Street;
 
 import java.util.Collection;
@@ -13,7 +13,7 @@ public class ArchitecturePolicyBuilder {
 	private int minInstances = 0;
 	private int maxInstances = Integer.MAX_VALUE;
 	private ArchitecturePolicy.Priority priority = ArchitecturePolicy.Priority.DEFAULT;
-	private RectSet allowedArea;
+	private RecTree allowedArea;
 	private Collection<Architecture> presence = new LinkedHashSet<>();
 	private Collection<Street> streets = new LinkedHashSet<>();
 	private int minInstancesTopBound = 0;
@@ -46,7 +46,7 @@ public class ArchitecturePolicyBuilder {
 		return this;
 	}
 
-	public ArchitecturePolicyBuilder withInArea(RectSet area) {
+	public ArchitecturePolicyBuilder withInArea(RecTree area) {
 		allowedArea = area;
 		return this;
 	}

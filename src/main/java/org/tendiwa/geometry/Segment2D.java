@@ -63,7 +63,7 @@ public interface Segment2D extends RectangularHull {
 
 	public static Function<Segment2D, List<Cell>> toCellList() {
 		return e -> Lists.newArrayList(
-			CellSegment.vector(e.start().toCell(), e.end().toCell())
+			BasicCellSegment.vector(e.start().toCell(), e.end().toCell())
 		);
 	}
 

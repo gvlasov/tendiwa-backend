@@ -1,7 +1,6 @@
 package org.tendiwa.geometry;
 
 import com.google.common.collect.ImmutableCollection;
-import org.tendiwa.core.Orientation;
 
 public final class BasicRectangle implements Rectangle {
 	private final int x;
@@ -54,17 +53,17 @@ public final class BasicRectangle implements Rectangle {
 	}
 
 	@Override
-	public ImmutableCollection<NamedRectSet> parts() {
+	public ImmutableCollection<NamedRecTree> parts() {
 		return null;
 	}
 
 	@Override
-	public RectSet part(String name) {
+	public RecTree part(String name) {
 		return null;
 	}
 
 	@Override
-	public RectSet nestedPart(String name) {
+	public RecTree nestedPart(String name) {
 		return null;
 	}
 }

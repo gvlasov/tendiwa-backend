@@ -2,8 +2,8 @@ package org.tendiwa.geometry.extensions.polygonRasterization;
 
 import org.tendiwa.core.meta.Cell;
 import org.tendiwa.core.meta.Utils;
+import org.tendiwa.geometry.BasicCellSegment;
 import org.tendiwa.geometry.BoundedCellSet;
-import org.tendiwa.geometry.CellSegment;
 import org.tendiwa.geometry.Point2D;
 
 import java.util.*;
@@ -230,7 +230,7 @@ public final class PolygonRasterizer {
 		Point2D vertex = polygon.get(0);
 		for (int i = 0; i < polygonSize; i++) {
 			Point2D nextVertex = polygon.get(Utils.nextIndex(i, polygonSize));
-			Cell[] cells = CellSegment.cells(
+			Cell[] cells = BasicCellSegment.cells(
 				vertex.toCell(),
 				nextVertex.toCell()
 			);

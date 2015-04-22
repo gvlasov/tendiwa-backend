@@ -32,7 +32,7 @@ public class StepNearFromSide {
 				x = staticCoord;
 				y = dynamicCoord;
 			}
-			return new RectSetWithPrecomputedBounds(
+			return new RecTreeWithPrecomputedBounds(
 				rectSet.moveTo(x, y),
 				placeableBounds.moveTo(x, y)
 			);

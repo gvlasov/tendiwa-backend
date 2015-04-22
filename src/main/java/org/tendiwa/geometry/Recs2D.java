@@ -7,8 +7,8 @@ public final class Recs2D {
 	 * @return
 	 * @see org.tendiwa.geometry.Rectangle#stretch(int)
 	 */
-	public static Rectangle2D stretch(Rectangle rectangle, double amount) {
-		return new Rectangle2D(
+	public static BasicRectangle2D stretch(Rectangle rectangle, double amount) {
+		return new BasicRectangle2D(
 			rectangle.x - amount,
 			rectangle.y - amount,
 			rectangle.width + amount * 2,
@@ -16,7 +16,7 @@ public final class Recs2D {
 		);
 	}
 	public static Rectangle2D boundingBox(Segment2D splitSegment) {
-		return new Rectangle2D(
+		return new BasicRectangle2D(
 			Math.min(splitSegment.start.x, splitSegment.end.x),
 			Math.min(splitSegment.start.y, splitSegment.end.y),
 			Math.abs(splitSegment.dx()),

@@ -434,9 +434,9 @@ public class Seer {
 
 	public BasicCell[] rays(int startX, int startY, int endX, int endY) {
 		return Utils.concatAll(
-			CellSegment.cells(startX, startY, endX, endY),
-			CellSegment.cells(startX, startY + (endY > startY ? 1 : -1), endX + (endX > startX ? -1 : 1), endY),
-			CellSegment.cells(startX + (endX > startX ? 1 : -1), startY, endX, endY + (endY > startY ? -1 : 1))
+			BasicCellSegment.cells(startX, startY, endX, endY),
+			BasicCellSegment.cells(startX, startY + (endY > startY ? 1 : -1), endX + (endX > startX ? -1 : 1), endY),
+			BasicCellSegment.cells(startX + (endX > startX ? 1 : -1), startY, endX, endY + (endY > startY ? -1 : 1))
 		);
 	}
 

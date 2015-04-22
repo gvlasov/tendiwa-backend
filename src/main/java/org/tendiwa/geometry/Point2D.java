@@ -18,9 +18,10 @@ public interface Point2D extends Vector2D {
 	public default double squaredDistanceTo(Point2D end) {
 		return (end.x() - this.x()) * (end.x() - this.x()) + (end.y() - this.y()) * (end.y() - this.y());
 	}
+
 	@Override
 	default Point2D add(Vector2D vector) {
-		return new BasicPoint2D(x()+vector.x(), y()+vector.y());
+		return new BasicPoint2D(x() + vector.x(), y() + vector.y());
 	}
 
 	public default BasicCell toCell() {
@@ -50,5 +51,18 @@ public interface Point2D extends Vector2D {
 
 	public default Segment2D segmentTo(Point2D anotherEnd) {
 		return new BasicSegment2D(this, anotherEnd);
+	}
+
+	/**
+	 * Finds Chebyshev distance between this cell and another cell.
+	 * <p>
+	 * Finding Chebyshev distance is much cheaper than finding Euclidean distance with {@link #distanceTo(Point2D)}.
+	 *
+	 * @param point
+	 * 	Another point.
+	 * @return Chebyshev distance between two cells.
+	 */
+	default double chebyshovDistanceTo(Point2D point) {
+		return Math.max(Math.abs(point.x() - x()), Math.abs(point.y() - y()));
 	}
 }

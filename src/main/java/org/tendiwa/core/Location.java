@@ -44,7 +44,7 @@ public class Location {
 			EntityPlacer.place(activePlane, placeable, rectangle.x + startX, rectangle.y + startY);
 			return;
 		}
-		BasicCell[] cells = CellSegment.cells(startX, startY, endX, endY);
+		BasicCell[] cells = BasicCellSegment.cells(startX, startY, endX, endY);
 		int size = cells.length;
 		for (int i = 0; i < size - 1; i++) {
 			int x = cells[i].x();
@@ -198,7 +198,7 @@ public class Location {
 		for (int i = 0; i < size; i++) {
 			BasicCell coord = coords.get(i);
 			BasicCell nextCoord = coords.get((i == size - 1) ? 0 : i + 1);
-			v = CellSegment.cells(coord.x(), coord.y(), nextCoord.x(), nextCoord.y());
+			v = BasicCellSegment.cells(coord.x(), coord.y(), nextCoord.x(), nextCoord.y());
 			vSize = v.length;
 			for (int j = 0; j < vSize - 1; j++) {
 				answer.add(v[j]);
