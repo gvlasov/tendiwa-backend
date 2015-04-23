@@ -1,16 +1,12 @@
 package org.tendiwa.demos.settlements;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import org.apache.log4j.Logger;
 import org.jgrapht.UndirectedGraph;
-import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.collections.Collectors;
 import org.tendiwa.data.FourCyclePenisGraph;
 import org.tendiwa.demos.Demos;
 import org.tendiwa.demos.DrawableRectangle;
 import org.tendiwa.drawing.DrawableInto;
-import org.tendiwa.drawing.GifBuilder;
 import org.tendiwa.drawing.MagnifierCanvas;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.*;
@@ -30,7 +26,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.stream.IntStream;
 
 public class BigCityDemo implements Runnable {
 
@@ -42,34 +37,30 @@ public class BigCityDemo implements Runnable {
 
 	@Override
 	public void run() {
-		SimpleGraph<Point2D, Segment2D> graph = createGraph();
+		FourCyclePenisGraph graph = new FourCyclePenisGraph();
 		createCanvas();
 
-		drawGraph(graph);
+		TestCanvas.canvas.draw(
+			new DrawableGraph2D.CircleVertices(
+				graph,
+				Color.red,
+				2
+			)
+		);
 
-		IntStream.range(0, 1).forEach(seed -> {
-			SmartMesh2D segment2DSmartMesh = createMesh(graph, seed);
-			buildAndDrawLots(segment2DSmartMesh);
-//			leavesAnimation(segment2DSmartMesh);
-			drawBlocks(segment2DSmartMesh);
-		});
-	}
-
-	private void drawGraph(SimpleGraph<Point2D, Segment2D> graph) {
-		TestCanvas.canvas.draw(graph, DrawingGraph.withColorAndVertexSize(Color.red, 2));
-	}
-
-	private SmartMesh2D createMesh(SimpleGraph<Point2D, Segment2D> graph, int seed) {
-		return new SegmentNetworkBuilder(graph)
+		SmartMesh2D segment2DSmartMesh = new SegmentNetworkBuilder(graph)
 			.withDefaults()
 			.withMaxStartPointsPerCycle(5)
 			.withRoadsFromPoint(2)
 			.withSecondaryRoadNetworkDeviationAngle(0.5)
 			.withRoadSegmentLength(20)
 			.withSnapSize(5)
-			.withSeed(seed)
+			.withSeed(0)
 			.withAxisAlignedSegments(false)
 			.build();
+		buildAndDrawLots(segment2DSmartMesh);
+//		leavesAnimation(segment2DSmartMesh);
+		drawBlocks(segment2DSmartMesh);
 	}
 
 	private void drawBlocks(SmartMesh2D segment2DSmartMesh) {
@@ -79,12 +70,11 @@ public class BigCityDemo implements Runnable {
 			.flatMap(b -> b.shrinkToRegions(3, 0).stream())
 			.forEach(
 				block ->
-					canvas.draw(block, DrawingEnclosedBlock.withColor(Color.lightGray))
+					canvas.draw(
+						block,
+						DrawingEnclosedBlock.withColor(Color.lightGray)
+					)
 			);
-	}
-
-	private SimpleGraph<Point2D, Segment2D> createGraph() {
-		return FourCyclePenisGraph.create().graph();
 	}
 
 	private void createCanvas() {
@@ -112,10 +102,14 @@ public class BigCityDemo implements Runnable {
 				Color.orange, Color.black, Color.lightGray, Color.gray
 			)
 		);
-		for (Chain2D street : streets) {
-			Color streetColor = streetsColoring.get(street);
-			canvas.draw(street, DrawingChain.withColorThin(streetColor));
-		}
+		canvas.drawAll(
+			streets,
+			street ->
+				new DrawableChain2D.Thin(
+					street,
+					streetsColoring.get(street)
+				)
+		);
 		Collection<RectangleWithNeighbors> lots = RectangularBuildingLots
 			.placeInside(segment2DSmartMesh);
 		Set<RectangleWithNeighbors> recGroups = lots
@@ -124,24 +118,6 @@ public class BigCityDemo implements Runnable {
 			.collect(Collectors.toImmutableSet());
 
 		drawLots(recGroups);
-	}
-
-	private void leavesAnimation(SmartMesh2D segment2DSmartMesh) {
-		TestCanvas canvasB = new TestCanvas(1, 800, 600);
-		GifBuilder gif = new GifBuilder(canvasB, 1, Logger.getRootLogger());
-		canvasB.fillBackground(Color.black);
-		canvasB.draw(segment2DSmartMesh.graph(), DrawingGraph.withColorAndVertexSize(Color.red, 3));
-		ImmutableSet<Segment2D> whats = segment2DSmartMesh.innerTreeSegmentsEnds();
-		gif.saveFrame();
-		canvasB.drawAll(whats, DrawingSegment2D.withColorThin(Color.black));
-		canvasB.drawAll(whats, DrawingSegment2D.withColorThin(Color.black));
-		canvasB.drawAll(whats, DrawingSegment2D.withColorThin(Color.black));
-		canvasB.drawAll(
-			segment2DSmartMesh.graph().vertexSet(),
-			p -> new DrawablePoint2D.Circle(p, Color.red, 3)
-		);
-		gif.saveFrame();
-		gif.saveAnimation("/home/suseika/test.gif");
 	}
 
 	private void drawLots(Set<RectangleWithNeighbors> recGroups) {

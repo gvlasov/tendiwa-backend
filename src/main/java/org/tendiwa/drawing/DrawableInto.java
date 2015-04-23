@@ -58,9 +58,9 @@ public interface DrawableInto {
 
 	void drawRectangle(Rectangle r, Color color);
 
-	void drawRectangle2D(BasicRectangle2D r, Color color);
+	void drawRectangle2D(Rectangle2D r, Color color);
 
-	void drawRasterLine(BasicCell p1, BasicCell p2, Color color);
+	void drawRasterLine(Cell p1, Cell p2, Color color);
 
 	void drawLine(double startX, double startY, double endX, double endY, Color color);
 
@@ -76,7 +76,7 @@ public interface DrawableInto {
 
 	void drawShape(Shape shape, Color color);
 
-	void drawString(String text, double x, double y, Color color);
+	void drawString(String text, Point2D start, Color color);
 
 	int textWidth(String string);
 

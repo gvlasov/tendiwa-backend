@@ -49,46 +49,10 @@ public class DrawingGraph {
 		};
 	}
 
-	public static DrawingAlgorithm<? super UndirectedGraph<Point2D, Segment2D>> withColor(Color color) {
-		return withColorAndVertexSize(color, 6);
-	}
-
-	public static DrawingAlgorithm<UndirectedGraph<Point2D, org.tendiwa.geometry.Segment2D>> withColorAndVertexSize(
-		final Color color,
-		int size
-	) {
-		return (shape, canvas) -> {
-			DrawingAlgorithm<Segment2D> segmentDrawing = DrawingSegment2D.withColorThin(color);
-			for (Segment2D e : shape.edgeSet()) {
-				Point2D source = shape.getEdgeSource(e);
-				Point2D target = shape.getEdgeTarget(e);
-				canvas.draw(
-					segment2D(source, target),
-					segmentDrawing
-				);
-			}
-			canvas.drawAll(
-				shape.vertexSet(),
-				p -> new DrawablePoint2D.Circle(p, color, size)
-			);
-		};
-	}
-
 	public static DrawingAlgorithm<UndirectedGraph<Point2D, Segment2D>> withColorAndAntialiasing(
 		final Color color
 	) {
-		return (shape, canvas) -> {
-			DrawingAlgorithm<Segment2D> how = DrawingSegment2D.withColorThin(color);
-			for (org.tendiwa.geometry.Segment2D e : shape.edgeSet()) {
-				Point2D source = shape.getEdgeSource(e);
-				Point2D target = shape.getEdgeTarget(e);
-				Segment2D shape1 = segment2D(source, target);
-				canvas.draw(
-					shape1,
-					how
-				);
-			}
-		};
+		return (shape, canvas) ->
 	}
 
 	public static DrawingAlgorithm<UndirectedGraph<Point2D, Segment2D>> basis(

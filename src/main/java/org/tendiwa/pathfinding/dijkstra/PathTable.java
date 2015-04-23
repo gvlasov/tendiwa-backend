@@ -1,10 +1,13 @@
 package org.tendiwa.pathfinding.dijkstra;
 
+import org.tendiwa.core.meta.Cell;
 import org.tendiwa.geometry.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
+
+import static org.tendiwa.geometry.GeometryPrimitives.*;
 
 public class PathTable implements BoundedCellSet {
 
@@ -19,14 +22,14 @@ public class PathTable implements BoundedCellSet {
 	int step;
 	private final Rectangle bounds;
 
-	public PathTable(BasicCell start, CellSet availableCells, int maxDepth) {
-		this.startX = start.x;
-		this.startY = start.y;
+	public PathTable(Cell start, CellSet availableCells, int maxDepth) {
+		this.startX = start.x();
+		this.startY = start.y();
 		this.availableCells = availableCells;
 		this.maxDepth = maxDepth;
 		this.width = maxDepth * 2 + 1;
 		//noinspection SuspiciousNameCombination
-		this.bounds = new Rectangle(startX - maxDepth, startY - maxDepth, width, width);
+		this.bounds = rectangle(startX - maxDepth, startY - maxDepth, width, width);
 		step = 0;
 
 		this.pathTable = new int[maxDepth * 2 + 1][maxDepth * 2 + 1];

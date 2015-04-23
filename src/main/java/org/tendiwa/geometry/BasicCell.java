@@ -72,18 +72,6 @@ public final class BasicCell implements Cell {
 		return x + ":" + y;
 	}
 
-	/**
-	 * Creates a new cell, moved from the original one.
-	 *
-	 * @param direction
-	 * 	Direction to move.
-	 * @return The same mutated point.
-	 */
-	public BasicCell moveToSide(Direction direction) {
-		int[] d = direction.side2d();
-		return new BasicCell(x + d[0], y + d[1]);
-	}
-
 
 	public Cell newRelativePoint(Direction dir) {
 		int[] coords = dir.side2d();

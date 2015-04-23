@@ -5,6 +5,7 @@ import org.jgrapht.UndirectedGraph;
 import org.tendiwa.demos.Demos;
 import org.tendiwa.demos.geometry.polygons.ConvexAndReflexAmoeba;
 import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawableGraph2D;
 import org.tendiwa.drawing.extensions.DrawablePolygon;
 import org.tendiwa.drawing.extensions.DrawingGraph;
 import org.tendiwa.drawing.extensions.DrawingModule;
@@ -31,7 +32,13 @@ public class MinimumCycleBasisDemo implements Runnable {
 		UndirectedGraph<Point2D, Segment2D> graph = graphConstructor()
 			.cycleOfVertices(new ConvexAndReflexAmoeba())
 			.graph();
-		canvas.draw(graph, DrawingGraph.withColorAndVertexSize(Color.red, 1));
+		canvas.draw(
+			new DrawableGraph2D.CircleVertices(
+				graph,
+				Color.red,
+				1
+			)
+		);
 		canvas.drawAll(
 			PlanarGraphs
 				.minimumCycleBasis(graph)

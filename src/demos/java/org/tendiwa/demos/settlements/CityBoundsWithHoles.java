@@ -1,9 +1,10 @@
 package org.tendiwa.demos.settlements;
 
+import org.tendiwa.core.meta.Cell;
 import org.tendiwa.demos.Demos;
 import org.tendiwa.demos.DrawableRectangle;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingGraph;
+import org.tendiwa.drawing.extensions.DrawableGraph2D;
 import org.tendiwa.geometry.BasicCell;
 import org.tendiwa.geometry.BoundedCellSet;
 import org.tendiwa.geometry.CellSet;
@@ -16,6 +17,7 @@ import org.tendiwa.settlements.cityBounds.CityBounds;
 import java.awt.Color;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.tendiwa.geometry.GeometryPrimitives.cell;
 import static org.tendiwa.geometry.GeometryPrimitives.rectangle;
 
 class CityBoundsWithHoles implements Runnable {
@@ -24,7 +26,7 @@ class CityBoundsWithHoles implements Runnable {
 	//	GifBuilder gifBuilder = new GifBuilder(canvas, 6, Logger.getLogger("cityBoundsWithHoles"));
 	int iterations = 55;
 	int cityRadius = 100;
-	BasicCell startCell = new BasicCell(200, 200);
+	Cell startCell = cell(200, 200);
 
 
 	public static void main(String[] args) {
@@ -59,8 +61,11 @@ class CityBoundsWithHoles implements Runnable {
 				)
 			);
 			canvas.draw(
-				cityBounds.graph(),
-				DrawingGraph.withColorAndVertexSize(Color.red, 0)
+				new DrawableGraph2D.CircleVertices(
+					cityBounds.graph(),
+					Color.red,
+					0
+				)
 			);
 
 //			gifBuilder.saveFrame();

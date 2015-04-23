@@ -6,11 +6,13 @@ import org.tendiwa.geometry.Bisector;
 final class VectorsAndBisector {
 	final Vector2D cw;
 	final Vector2D ccw;
-	final Vector2D bisector;
 
 	VectorsAndBisector(Vector2D cw, Vector2D ccw) {
 		this.cw = cw;
 		this.ccw = ccw;
-		this.bisector = new Bisector(cw, ccw).asInbetweenVector();
+	}
+
+	Vector2D bisector() {
+		return new Bisector(cw, ccw).asInbetweenVector();
 	}
 }

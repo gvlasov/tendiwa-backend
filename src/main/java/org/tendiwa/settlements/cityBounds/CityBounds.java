@@ -7,6 +7,7 @@ import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.core.Direction;
 import org.tendiwa.core.Directions;
+import org.tendiwa.core.meta.Cell;
 import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.extensions.*;
 import org.tendiwa.geometry.graphs2d.BasicCycle2D;
@@ -39,7 +40,7 @@ public final class CityBounds {
 	 */
 	public static Cycle2D create(
 		BoundedCellSet cityShape,
-		BasicCell startCell,
+		Cell startCell,
 		int maxCityRadius
 	) {
 		if (!isCellDeepEnoughInsideShape(startCell, cityShape)) {
@@ -61,16 +62,16 @@ public final class CityBounds {
 	 * @param shape
 	 * @return
 	 */
-	private static boolean isCellDeepEnoughInsideShape(BasicCell cell, CellSet shape) {
+	private static boolean isCellDeepEnoughInsideShape(Cell cell, CellSet shape) {
 		return shape.contains(cell)
-			&& shape.contains(cell.x, cell.y - 1)
-			&& shape.contains(cell.x + 1, cell.y - 1)
-			&& shape.contains(cell.x + 1, cell.y)
-			&& shape.contains(cell.x + 1, cell.y + 1)
-			&& shape.contains(cell.x, cell.y + 1)
-			&& shape.contains(cell.x - 1, cell.y + 1)
-			&& shape.contains(cell.x - 1, cell.y)
-			&& shape.contains(cell.x - 1, cell.y - 1);
+			&& shape.contains(cell.x(), cell.y() - 1)
+			&& shape.contains(cell.x() + 1, cell.y() - 1)
+			&& shape.contains(cell.x() + 1, cell.y())
+			&& shape.contains(cell.x() + 1, cell.y() + 1)
+			&& shape.contains(cell.x(), cell.y() + 1)
+			&& shape.contains(cell.x() - 1, cell.y() + 1)
+			&& shape.contains(cell.x() - 1, cell.y())
+			&& shape.contains(cell.x() - 1, cell.y() - 1);
 	}
 
 	/**
@@ -106,7 +107,7 @@ public final class CityBounds {
 	 */
 	private static PathTable areaBoundedByBufferBorderExclusive(
 		CellSet bufferBorder,
-		BasicCell start,
+		Cell start,
 		Rectangle boundingRec,
 		int radius
 	) {
@@ -119,7 +120,7 @@ public final class CityBounds {
 
 	private static UndirectedGraph<Point2D, Segment2D> computeCityBoundingRoads(
 		BoundedCellSet cityShape,
-		BasicCell startCell,
+		Cell startCell,
 		int radius
 	) {
 		CachedCellSet bufferBorder = new CachedCellSet(
@@ -168,15 +169,15 @@ public final class CityBounds {
 	) {
 		UndirectedGraph<Point2D, Segment2D> graph = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
 
-		ImmutableSet<BasicCell> borderCells = bufferBorder.toSet();
-		BiMap<BasicCell, Point2D> cell2PointMap = HashBiMap.create();
-		for (BasicCell cell : borderCells) {
-			cell2PointMap.put(cell, new Point2D(cell.x, cell.y));
+		ImmutableSet<Cell> borderCells = bufferBorder.toSet();
+		BiMap<Cell, Point2D> cell2PointMap = HashBiMap.create();
+		for (Cell cell : borderCells) {
+			cell2PointMap.put(cell, cell.toPoint());
 		}
-		for (BasicCell cell : borderCells) {
+		for (Cell cell : borderCells) {
 			graph.addVertex(cell2PointMap.get(cell));
 		}
-		for (BasicCell cell : borderCells) {
+		for (Cell cell : borderCells) {
 			for (Direction dir : Directions.CARDINAL_DIRECTIONS) {
 				Point2D neighbour = cell2PointMap.get(cell.moveToSide(dir));
 				if (graph.containsVertex(neighbour)) {

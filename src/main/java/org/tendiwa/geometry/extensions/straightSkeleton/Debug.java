@@ -3,7 +3,7 @@ package org.tendiwa.geometry.extensions.straightSkeleton;
 import com.google.common.collect.Multimap;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawablePoint2D;
-import org.tendiwa.drawing.extensions.DrawingSegment2D;
+import org.tendiwa.drawing.extensions.DrawableSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.extensions.ShamosHoeyAlgorithm;
 
@@ -21,20 +21,26 @@ final class Debug {
 	void drawSplitEventArc(SplitEvent event) {
 		if (!debug) return;
 		TestCanvas.canvas.draw(
-			segment2D(event.parent().vertex, event.point),
-			DrawingSegment2D.withColorThin(Color.red)
+			new DrawableSegment2D(
+				segment2D(event.parent().vertex, event.point),
+				Color.red
+			)
 		);
 	}
 
 	void drawEdgeEventArcs(Node leftParent, Node rightParent, Point2D point) {
 		if (!debug) return;
 		TestCanvas.canvas.draw(
-			segment2D(leftParent.vertex, point),
-			DrawingSegment2D.withColorThin(Color.yellow)
+			new DrawableSegment2D.Thin(
+				segment2D(leftParent.vertex, point),
+				Color.yellow
+			)
 		);
 		TestCanvas.canvas.draw(
-			segment2D(rightParent.vertex, point),
-			DrawingSegment2D.withColorThin(Color.yellow)
+			new DrawableSegment2D.Thin(
+				segment2D(rightParent.vertex, point),
+				Color.yellow
+			)
 		);
 	}
 
@@ -66,32 +72,42 @@ final class Debug {
 	void drawIntersectingArc(Point2D start, Point2D end) {
 		if (!debug) return;
 		TestCanvas.canvas.draw(
-			segment2D(start, end),
-			DrawingSegment2D.withColorThin(Color.white)
+			new DrawableSegment2D.Thin(
+				segment2D(start, end),
+				Color.white
+			)
 		);
 	}
 
 	void draw3NodeLavArcs(EdgeEvent point) {
 		if (!debug) return;
 		TestCanvas.canvas.draw(
-			segment2D(point.leftParent().vertex, point.point),
-			DrawingSegment2D.withColorThin(Color.cyan)
+			new DrawableSegment2D.Thin(
+				segment2D(point.leftParent().vertex, point.point),
+				Color.cyan
+			)
 		);
 		TestCanvas.canvas.draw(
-			segment2D(point.rightParent().vertex, point.point),
-			DrawingSegment2D.withColorThin(Color.cyan)
+			new DrawableSegment2D.Thin(
+				segment2D(point.rightParent().vertex, point.point),
+				Color.cyan
+			)
 		);
 		TestCanvas.canvas.draw(
-			segment2D(point.leftParent().previous().vertex, point.point),
-			DrawingSegment2D.withColorThin(Color.cyan)
+			new DrawableSegment2D.Thin(
+				segment2D(point.leftParent().previous().vertex, point.point),
+				Color.cyan
+			)
 		);
 	}
 
 	public void draw2NodeLavArc(Node node1, Node node2) {
 		if (!debug) return;
 		TestCanvas.canvas.draw(
-			segment2D(node1.vertex, node2.vertex),
-			DrawingSegment2D.withColorThin(Color.magenta)
+			new DrawableSegment2D.Thin(
+				segment2D(node1.vertex, node2.vertex),
+				Color.magenta
+			)
 		);
 	}
 }

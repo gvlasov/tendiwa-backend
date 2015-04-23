@@ -5,8 +5,7 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.Multimap;
 import org.tendiwa.core.CardinalDirection;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingChain;
-import org.tendiwa.geometry.StupidPriceduralRecs;
+import org.tendiwa.drawing.extensions.DrawableChain2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.settlements.utils.RectangleWithNeighbors;
 import org.tendiwa.settlements.streets.LotStreetAssigner;
@@ -50,10 +49,10 @@ public final class FairLotFacadeAndStreetAssigner implements LotFacadeAssigner, 
 		streetToLots = HashMultimap.create(streetsSize, lotsSize / streetsSize);
 		facades = new HashMap<>(lotsSize);
 		lotToStreet = new LinkedHashMap<>(lotsSize);
-		for (Chain2D street : streets) {
-			TestCanvas.canvas.draw(street, DrawingChain.withColorThin(Color.red));
-		}
-
+		TestCanvas.canvas.drawAll(
+			streets,
+			street -> new DrawableChain2D.Thin(street, Color.red)
+		);
 		assignSingleStreetBuildings();
 		fairlyAssignTheRestOfBuildings();
 	}
@@ -89,7 +88,7 @@ public final class FairLotFacadeAndStreetAssigner implements LotFacadeAssigner, 
 			}
 			Thirstiest thirstiest = searchForThirstiestSegmentAndStreet(lot);
 			lotToStreet.put(lot, thirstiest.street);
-			if (StupidPriceduralRecs.rectangleIntersectsSegment(lot.rectangle, thirstiest.segment)) {
+			if (lot.rectangle.intersects(thirstiest.segment)) {
 				// TODO: This should not happen!
 				continue;
 			}

@@ -4,11 +4,15 @@ import org.apache.log4j.Logger;
 import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.GifBuilder;
 import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.files.FileInHome;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Vector2D;
 
 import java.awt.Color;
+import java.io.File;
 import java.util.stream.IntStream;
+
+import static org.tendiwa.geometry.GeometryPrimitives.*;
 
 final class BisectorDemo implements Runnable {
 	public static void main(String[] args) {
@@ -18,18 +22,18 @@ final class BisectorDemo implements Runnable {
 	final TestCanvas canvas = new TestCanvas(1, 200, 200);
 	final GifBuilder gif = new GifBuilder(canvas, 10, Logger.getRootLogger());
 
-	final String animationPath = "/home/suseika/bisectors.gif";
+	final File animationFile = new FileInHome("bisectors.gif");
 
-	final Point2D center = new Point2D(100, 100);
+	final Point2D center = point2D(100, 100);
 	final int iterations = 20;
 
 	@Override
 	public void run() {
-		Vector2D cw = Vector2D.vector(40, 0);
+		Vector2D cw = vector(40, 0);
 		IntStream.range(0, iterations)
 			.asDoubleStream()
-			.map(a -> Math.PI * 2 / iterations * a)
-			.mapToObj(a -> new VectorsAndBisector(cw, cw.rotate(a).multiply(1.3)))
+			.map(i -> Math.PI * 2 / iterations * i)
+			.mapToObj(angle -> new VectorsAndBisector(cw, cw.rotate(angle).multiply(1.3)))
 			.forEach(vab -> {
 				canvas.fillBackground(Color.white);
 				canvas.draw(vab, DrawingVectorsAndBisector.around(center));
@@ -40,8 +44,8 @@ final class BisectorDemo implements Runnable {
 		canvas.fillBackground(Color.white);
 		canvas.draw(
 			new VectorsAndBisector(
-				new Point2D(20, 0),
-				new Point2D(-20, 0)
+				vector(20, 0),
+				vector(-20, 0)
 			),
 			DrawingVectorsAndBisector.around(center)
 		);

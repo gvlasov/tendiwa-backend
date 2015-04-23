@@ -3,7 +3,7 @@ package org.tendiwa.geometry;
 import org.tendiwa.collections.DoublyLinkedNode;
 import org.tendiwa.collections.IterableToStream;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingSegment2D;
+import org.tendiwa.drawing.extensions.DrawableSegment2D;
 
 import java.awt.Color;
 import java.util.stream.Stream;
@@ -39,15 +39,20 @@ public final class LinkedListBasedChain2D implements Chain2D {
 		assert chainStart.isStartOfAChain();
 		Segment2D currentSegment = chainStart.getPayload();
 		if (!chainStart.hasNext()) {
-			TestCanvas.canvas.draw(currentSegment, DrawingSegment2D.withColorThin(Color.cyan));
+			TestCanvas.canvas.draw(
+				new DrawableSegment2D.Thin(
+					currentSegment,
+					Color.cyan
+				)
+			);
 		}
 		Segment2D nextSegment = chainStart.getNext().getPayload();
 		Point2D firstPoint;
-		if (nextSegment.oneOfEndsIs(currentSegment.start)) {
-			firstPoint = currentSegment.end;
+		if (nextSegment.oneOfEndsIs(currentSegment.start())) {
+			firstPoint = currentSegment.end();
 		} else {
-			assert nextSegment.oneOfEndsIs(currentSegment.end);
-			firstPoint = currentSegment.start;
+			assert nextSegment.oneOfEndsIs(currentSegment.end());
+			firstPoint = currentSegment.start();
 		}
 		assert chainStart.getPayload().oneOfEndsIs(firstPoint);
 		return firstPoint;

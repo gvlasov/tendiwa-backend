@@ -4,6 +4,7 @@ import com.google.common.collect.Iterators;
 import org.tendiwa.collections.SuccessiveTuples;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawablePoint2D;
+import org.tendiwa.drawing.extensions.DrawableSegment2D;
 import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.*;
 
@@ -232,8 +233,10 @@ abstract class Node implements Iterable<Node> {
 				Iterator<Color> colors = Iterators.cycle(Color.darkGray, Color.gray, Color.lightGray, Color.white);
 				for (int i = 0; i < points.size() - 1; i++) {
 					TestCanvas.canvas.draw(
-						segment2D(points.get(i), points.get(i + 1)),
-						DrawingSegment2D.withColorThin(colors.next())
+						new DrawableSegment2D.Thin(
+							segment2D(points.get(i), points.get(i + 1)),
+							colors.next()
+						)
 					);
 				}
 				TestCanvas.canvas.draw(

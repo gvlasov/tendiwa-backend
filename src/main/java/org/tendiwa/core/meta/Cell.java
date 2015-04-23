@@ -197,4 +197,9 @@ public interface Cell {
 			height
 		);
 	}
+
+	default BasicCell moveToSide(Direction direction) {
+		int[] d = direction.side2d();
+		return new BasicCell(x() + d[0], y() + d[1]);
+	}
 }

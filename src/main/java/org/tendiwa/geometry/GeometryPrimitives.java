@@ -2,6 +2,7 @@ package org.tendiwa.geometry;
 
 import org.tendiwa.core.Orientation;
 import org.tendiwa.core.meta.BasicRange;
+import org.tendiwa.core.meta.Cell;
 import org.tendiwa.core.meta.Range;
 import org.tendiwa.graphs.GraphConstructor;
 
@@ -54,7 +55,16 @@ public final class GeometryPrimitives {
 	public static Polygon polygon(List<Point2D> points) {
 		return new BasicPolygon(points);
 	}
+
 	public static Polygon polygon(Point2D... points) {
 		return new BasicPolygon(points);
+	}
+
+	public static Cell cell(int x, int y) {
+		return new BasicCell(x, y);
+	}
+
+	public static Vector2D vector(double x, double y) {
+		return new BasicPoint2D(x, y);
 	}
 }

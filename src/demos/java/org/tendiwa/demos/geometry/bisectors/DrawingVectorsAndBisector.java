@@ -27,6 +27,7 @@ final class DrawingVectorsAndBisector {
 			private void drawVectorWithColor(Vector2D vector, Color color, DrawableInto canvas) {
 				canvas.draw(
 					new Segment2D(
+						center.point()
 						Point2D.of(center),
 						Point2D.of(center.add(vector))
 					),

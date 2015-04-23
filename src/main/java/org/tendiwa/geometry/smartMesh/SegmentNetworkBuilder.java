@@ -22,10 +22,6 @@ public class SegmentNetworkBuilder {
 	 */
 	public static final int DEFAULT_ROADS_FROM_POINT = 4;
 	/**
-	 * @see #withConnectivity(double)
-	 */
-	public static final double DEFAULT_CONNECTIVITY = 1.0;
-	/**
 	 * @see #withRoadSegmentLength(double)
 	 */
 	public static final double DEFAULT_ROAD_SEGMENT_LENGTH = 10.;
@@ -262,7 +258,7 @@ public class SegmentNetworkBuilder {
 		UndirectedGraph<Point2D, Segment2D> answer = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
 		vertices.forEach(answer::addVertex);
 		for (Segment2D edge : edges) {
-			answer.addEdge(edge.start, edge.end, edge);
+			answer.addEdge(edge.start(), edge.end(), edge);
 		}
 		return answer;
 	}

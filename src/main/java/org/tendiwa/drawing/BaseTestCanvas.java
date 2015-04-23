@@ -390,10 +390,10 @@ class BaseTestCanvas implements DrawableInto {
 	}
 
 	@Override
-	public void drawString(String text, double x, double y, Color color) {
+	public void drawString(String text, Point2D start, Color color) {
 		graphics.setColor(color);
-		int translatedX = (int) ((x+0.5 - ((double)pixelBounds.x())/scale) * scale);
-		int translatedY = (int) ((y+0.5 - ((double)pixelBounds.y())/scale) * scale);
+		int translatedX = (int) ((start.x()+0.5 - ((double)pixelBounds.x())/scale) * scale);
+		int translatedY = (int) ((start.y()+0.5 - ((double)pixelBounds.y())/scale) * scale);
 		graphics.drawString(text, translatedX, translatedY);
 	}
 

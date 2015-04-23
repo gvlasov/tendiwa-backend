@@ -6,9 +6,11 @@ import org.tendiwa.demos.geometry.polygons.ConvexAndReflexAmoeba;
 import org.tendiwa.drawing.GifBuilder;
 import org.tendiwa.drawing.GifBuilderFactory;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.*;
+import org.tendiwa.drawing.extensions.DrawableGraph2D;
+import org.tendiwa.drawing.extensions.DrawablePolygon;
+import org.tendiwa.drawing.extensions.DrawableSegment2D;
+import org.tendiwa.drawing.extensions.DrawingModule;
 import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.StraightSkeleton;
 import org.tendiwa.geometry.extensions.straightSkeleton.SuseikaStraightSkeleton;
 
@@ -19,6 +21,8 @@ import java.util.function.IntSupplier;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
+import static org.tendiwa.geometry.GeometryPrimitives.point2D;
+import static org.tendiwa.geometry.GeometryPrimitives.vector;
 
 public class StraightSkeletonDemo implements Runnable {
 	@Inject
@@ -110,10 +114,7 @@ public class StraightSkeletonDemo implements Runnable {
 			StraightSkeleton skeleton = new SuseikaStraightSkeleton(
 				points.stream().map(p -> {
 					double angle = Math.PI * 2 / (180 / (points.indexOf(p) % 6 + 1)) * iteration;
-					return new Point2D(
-						p.x + Math.cos(angle) * 6,
-						p.y + Math.sin(angle) * 6
-					);
+					return p.add(vector(Math.cos(angle) * 6, Math.sin(angle) * 6));
 				}).collect(toList())
 			);
 			if (config.drawToCanvas) {
@@ -123,8 +124,13 @@ public class StraightSkeletonDemo implements Runnable {
 						edge -> new DrawableSegment2D(edge, Color.red)
 					);
 				}
-				canvas.drawString(String.valueOf(i), 40, 15, Color.lightGray);
-				canvas.draw(skeleton.graph(), DrawingGraph.withColor(Color.cyan));
+				canvas.drawString(String.valueOf(i), point2D(40, 15), Color.lightGray);
+				canvas.draw(
+					new DrawableGraph2D.OnlyThinEdges(
+						skeleton.graph(),
+						Color.cyan
+					)
+				);
 				canvas.drawAll(
 					skeleton.cap(shrunkDepth.next()),
 					polygon -> new DrawablePolygon(polygon, Color.green)
