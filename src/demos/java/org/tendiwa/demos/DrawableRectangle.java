@@ -40,4 +40,48 @@ public final class DrawableRectangle extends Rectangle_Wr implements Drawable {
 			}
 		}
 	}
+
+	public static final class Outlined extends Rectangle_Wr implements Drawable {
+		private final Color background;
+		private final Color outline;
+
+		public Outlined(Rectangle rectangle, Color background, Color outline) {
+			super(rectangle);
+			this.background = background;
+			this.outline = outline;
+		}
+
+		@Override
+		public void drawIn(DrawableInto canvas) {
+			canvas.drawRectangle(this, background);
+			canvas.drawLine(
+				this.x(),
+				this.y(),
+				this.x() + this.width() - 1,
+				this.y(),
+				outline
+			);
+			canvas.drawLine(
+				this.x(),
+				this.y(),
+				this.x(),
+				this.y() + this.height() - 1,
+				outline
+			);
+			canvas.drawLine(
+				this.x() + this.width() - 1,
+				this.y(),
+				this.x() + this.width() - 1,
+				this.y() + this.height() - 1,
+				outline
+			);
+			canvas.drawLine(
+				this.x(),
+				this.y() + this.height() - 1,
+				this.x() + this.width() - 1,
+				this.y() + this.height() - 1,
+				outline
+			);
+		}
+	}
 }

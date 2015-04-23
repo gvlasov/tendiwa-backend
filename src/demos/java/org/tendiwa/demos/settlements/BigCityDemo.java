@@ -8,6 +8,7 @@ import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.collections.Collectors;
 import org.tendiwa.data.FourCyclePenisGraph;
 import org.tendiwa.demos.Demos;
+import org.tendiwa.demos.DrawableRectangle;
 import org.tendiwa.drawing.DrawableInto;
 import org.tendiwa.drawing.GifBuilder;
 import org.tendiwa.drawing.MagnifierCanvas;
@@ -15,10 +16,9 @@ import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.*;
 import org.tendiwa.geometry.Chain2D;
 import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.smartMesh.SmartMesh2D;
 import org.tendiwa.geometry.smartMesh.SegmentNetworkBuilder;
+import org.tendiwa.geometry.smartMesh.SmartMesh2D;
 import org.tendiwa.settlements.utils.BuildingPlacesFilters;
 import org.tendiwa.settlements.utils.RectangleWithNeighbors;
 import org.tendiwa.settlements.utils.RectangularBuildingLots;
@@ -138,7 +138,7 @@ public class BigCityDemo implements Runnable {
 		canvasB.drawAll(whats, DrawingSegment2D.withColorThin(Color.black));
 		canvasB.drawAll(
 			segment2DSmartMesh.graph().vertexSet(),
-			p->new DrawablePoint2D.Circle(p, Color.red, 3)
+			p -> new DrawablePoint2D.Circle(p, Color.red, 3)
 		);
 		gif.saveFrame();
 		gif.saveAnimation("/home/suseika/test.gif");
@@ -147,15 +147,20 @@ public class BigCityDemo implements Runnable {
 	private void drawLots(Set<RectangleWithNeighbors> recGroups) {
 		for (RectangleWithNeighbors rectangleWithNeighbors : recGroups) {
 			canvas.draw(
-				rectangleWithNeighbors.rectangle,
-				DrawingRectangle.withColorAndBorder(Color.blue, Color.gray)
+				new DrawableRectangle.Outlined(
+					rectangleWithNeighbors.rectangle,
+					Color.blue,
+					Color.gray
+				)
 			);
-			for (Rectangle neighbor : rectangleWithNeighbors.neighbors) {
-				canvas.draw(
+			canvas.drawAll(
+				rectangleWithNeighbors.neighbors,
+				neighbor -> new DrawableRectangle.Outlined(
 					neighbor,
-					DrawingRectangle.withColorAndBorder(Color.magenta, Color.magenta.darker())
-				);
-			}
+					Color.magenta,
+					Color.magenta.darker()
+				)
+			);
 		}
 	}
 }

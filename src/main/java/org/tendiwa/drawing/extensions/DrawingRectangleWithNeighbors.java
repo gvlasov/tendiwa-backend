@@ -1,5 +1,6 @@
 package org.tendiwa.drawing.extensions;
 
+import org.tendiwa.demos.DrawableRectangle;
 import org.tendiwa.drawing.DrawingAlgorithm;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.settlements.utils.RectangleWithNeighbors;
@@ -19,10 +20,21 @@ public class DrawingRectangleWithNeighbors {
 	 */
 	public static DrawingAlgorithm<RectangleWithNeighbors> withColorAndDefaultBorder(Color rectangle, Color neighbors) {
 		return (shape, canvas) -> {
-			canvas.draw(shape.rectangle, DrawingRectangle.withColorAndBorder(rectangle, rectangle.darker()));
-			for (Rectangle neighbor : shape.neighbors) {
-				canvas.draw(neighbor, DrawingRectangle.withColorAndBorder(neighbors, neighbors.darker()));
-			}
+			canvas.draw(
+				new DrawableRectangle.Outlined(
+					shape.rectangle,
+					rectangle,
+					rectangle.darker()
+				)
+			);
+			canvas.drawAll(
+				shape.neighbors,
+				neighbor-> new DrawableRectangle.Outlined(
+					neighbor,
+					neighbors,
+					neighbors.darker()
+				)
+			);
 		};
 	}
 }

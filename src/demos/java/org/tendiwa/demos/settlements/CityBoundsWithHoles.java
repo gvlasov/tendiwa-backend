@@ -3,11 +3,9 @@ package org.tendiwa.demos.settlements;
 import org.tendiwa.demos.Demos;
 import org.tendiwa.demos.DrawableRectangle;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingCellSet;
 import org.tendiwa.drawing.extensions.DrawingGraph;
-import org.tendiwa.drawing.extensions.DrawingRectangle;
-import org.tendiwa.geometry.BoundedCellSet;
 import org.tendiwa.geometry.BasicCell;
+import org.tendiwa.geometry.BoundedCellSet;
 import org.tendiwa.geometry.CellSet;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.graphs2d.Cycle2D;
@@ -18,9 +16,11 @@ import org.tendiwa.settlements.cityBounds.CityBounds;
 import java.awt.Color;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.tendiwa.geometry.GeometryPrimitives.rectangle;
+
 class CityBoundsWithHoles implements Runnable {
-	Rectangle worldRec = new Rectangle(0, 0, 400, 400);
-	TestCanvas canvas = new TestCanvas(1, worldRec.width, worldRec.height);
+	Rectangle worldRec = rectangle(0, 0, 400, 400);
+	TestCanvas canvas = new TestCanvas(1, worldRec.width(), worldRec.height());
 	//	GifBuilder gifBuilder = new GifBuilder(canvas, 6, Logger.getLogger("cityBoundsWithHoles"));
 	int iterations = 55;
 	int cityRadius = 100;
@@ -36,14 +36,14 @@ class CityBoundsWithHoles implements Runnable {
 	public void run() {
 		TestCanvas.canvas = canvas;
 		AtomicInteger counter = new AtomicInteger(146);
-		CellSet water = (x, y) -> Noise.noise(
-			((double) x + 700 + 0) / 50,
-			((double) y + 200 + 0) / 50,
-			5
-		) < counter.get();
+		CellSet water = (x, y) ->
+			Noise.noise(
+				((double) x + 700 + 0) / 50,
+				((double) y + 200 + 0) / 50,
+				5
+			) < counter.get();
 
 		for (int i = 0; i < iterations; i++) {
-			System.out.println(i);
 			Cycle2D cityBounds = buildCityBoundsGraph(water);
 
 			canvas.draw(

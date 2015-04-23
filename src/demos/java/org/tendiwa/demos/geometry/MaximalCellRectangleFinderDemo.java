@@ -1,18 +1,17 @@
 package org.tendiwa.demos.geometry;
 
-import com.google.inject.Inject;
 import org.tendiwa.demos.Demos;
 import org.tendiwa.demos.DrawableRectangle;
 import org.tendiwa.demos.geometry.polygons.ConvexAndReflexAmoeba;
+import org.tendiwa.demos.settlements.DrawableCellSet;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingCellSet;
 import org.tendiwa.drawing.extensions.DrawingModule;
-import org.tendiwa.drawing.extensions.PieChartTimeProfiler;
-import org.tendiwa.geometry.*;
+import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.extensions.CachedCellSet;
+import org.tendiwa.geometry.extensions.daveedvMaxRec.MaximalCellRectangleFinder;
 import org.tendiwa.geometry.extensions.polygonRasterization.MutableRasterizationResult;
 import org.tendiwa.geometry.extensions.polygonRasterization.PolygonRasterizer;
-import org.tendiwa.geometry.extensions.daveedvMaxRec.MaximalCellRectangleFinder;
 
 import java.awt.Color;
 import java.util.List;
@@ -47,12 +46,14 @@ public class MaximalCellRectangleFinderDemo implements Runnable {
 			rasterizedPolygon.height
 		);
 		canvas.draw(
-			new CachedCellSet(
-				(x, y) -> bounds.contains(x, y)
-					&& rasterizedPolygon.bitmap[y - rasterizedPolygon.y][x - rasterizedPolygon.x],
-				bounds
-			),
-			DrawingCellSet.withColor(Color.red)
+			new DrawableCellSet(
+				new CachedCellSet(
+					(x, y) -> bounds.contains(x, y)
+						&& rasterizedPolygon.bitmap[y - rasterizedPolygon.y][x - rasterizedPolygon.x],
+					bounds
+				),
+				Color.red
+			)
 		);
 		canvas.draw(
 			new DrawableRectangle(

@@ -9,22 +9,10 @@ import java.awt.*;
 import java.util.Iterator;
 
 public class DrawingRectangle {
-	public static DrawingAlgorithm<RecTree> withColor(final Color color) {
-		return (shape, canvas) -> {
-			for (Rectangle r : shape.getRectangles()) {
-				canvas.drawRectangle(r, color);
-			}
-		};
-	}
 
 	public static DrawingAlgorithm<RecTree> withColorAndBorder(final Color fillColor, final Color borderColor) {
 		return (shape, canvas) -> {
 			for (Rectangle r : shape.getRectangles()) {
-				canvas.drawRectangle(r, fillColor);
-				canvas.drawLine(r.x, r.y, r.x + r.width - 1, r.y, borderColor);
-				canvas.drawLine(r.x, r.y, r.x, r.y + r.height - 1, borderColor);
-				canvas.drawLine(r.x + r.width - 1, r.y, r.x + r.width - 1, r.y + r.height - 1, borderColor);
-				canvas.drawLine(r.x, r.y + r.height - 1, r.x + r.width - 1, r.y + r.height - 1, borderColor);
 			}
 		};
 	}

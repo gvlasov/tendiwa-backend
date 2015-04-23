@@ -27,18 +27,21 @@ public class DrawingGraph {
 		Function<V, Double> y
 	) {
 		return (shape, canvas) -> {
-			DrawingAlgorithm<BasicCell> pointDrawing = DrawingCell.withColorAndSize(Color.RED, 6);
 			for (E e : shape.edgeSet()) {
 				V source = shape.getEdgeSource(e);
 				V target = shape.getEdgeTarget(e);
 				canvas.drawLine(x.apply(source), y.apply(source), x.apply(target), y.apply(target), Color.RED);
 			}
-			for (V v : shape.vertexSet()) {
-				canvas.draw(new BasicCell(
-					x.apply(v).intValue(),
-					y.apply(v).intValue()
-				), pointDrawing);
-			}
+			canvas.drawAll(
+				shape.vertexSet(),
+				p -> new DrawableCell(
+					new BasicCell(
+						x.apply(p).intValue(),
+						y.apply(p).intValue()
+					),
+					Color.red
+				)
+			);
 			for (V v : shape.vertexSet()) {
 				canvas.drawString(Integer.toString(constructor.aliasOf(v)), x.apply(v) + 5, y.apply(v) + 5,
 					Color.BLUE);
