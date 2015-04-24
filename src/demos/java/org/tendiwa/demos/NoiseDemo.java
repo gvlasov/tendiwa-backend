@@ -3,7 +3,7 @@ package org.tendiwa.demos;
 import com.google.common.base.Stopwatch;
 import com.google.inject.Inject;
 import org.tendiwa.core.meta.Cell;
-import org.tendiwa.drawing.DrawableInto;
+import org.tendiwa.drawing.Canvas;
 import org.tendiwa.drawing.extensions.DrawableCell;
 import org.tendiwa.geometry.BasicCell;
 import org.tendiwa.geometry.Rectangle;
@@ -22,7 +22,7 @@ import static org.tendiwa.geometry.GeometryPrimitives.rectangle;
 public class NoiseDemo implements Runnable {
 
 	@Inject
-	DrawableInto canvas;
+	Canvas canvas;
 
 	public static void main(String[] args) {
 		Demos.run(NoiseDemo.class);

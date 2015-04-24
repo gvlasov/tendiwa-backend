@@ -1,9 +1,8 @@
 package org.tendiwa.settlements.buildings;
 
-import org.tendiwa.geometry.StupidPriceduralRecs;
 import org.tendiwa.geometry.Rectangle;
-import org.tendiwa.settlements.utils.RectangleWithNeighbors;
 import org.tendiwa.settlements.streets.Street;
+import org.tendiwa.settlements.utils.RectangleWithNeighbors;
 
 import java.util.*;
 
@@ -59,15 +58,15 @@ public class PossiblePlacesFinder {
 				LinkedHashSet<RectangleWithNeighbors> allowedArea = new LinkedHashSet<>();
 				Rectangle boundingRec = policy.allowedArea.bounds();
 				for (RectangleWithNeighbors place : allPlaces) {
-					Optional<Rectangle> intersection = boundingRec.intersectionWith(place.rectangle);
-					if (intersection.isPresent() && intersection.get().equals(place.rectangle)) {
+					Optional<Rectangle> intersection = boundingRec.intersection(place.mainRectangle());
+					if (intersection.isPresent() && intersection.get().equals(place.mainRectangle())) {
 						allowedArea.add(place);
 					}
 				}
 				Iterator<RectangleWithNeighbors> iter = allowedArea.iterator();
 				while (iter.hasNext()) {
 					RectangleWithNeighbors rectangle = iter.next();
-					if (!StupidPriceduralRecs.placeableEnclosesRectangle(policy.allowedArea, rectangle.rectangle)) {
+					if (!policy.allowedArea.encloses(rectangle.mainRectangle())) {
 						iter.remove();
 					}
 				}

@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 public class RectangleWithNeighborsTest {
 	@Test
 	public void rectangleWithoutNeighborsIterations() {
-		RectangleWithNeighbors rectangleWithNeighbors = new RectangleWithNeighbors(
+		RectangleWithNeighbors rectangleWithNeighbors = new BasicRectangleWithNeighbors(
 			new Rectangle(1, 2, 3, 4),
 			ImmutableList.of()
 		);
@@ -19,7 +19,7 @@ public class RectangleWithNeighborsTest {
 
 	@Test
 	public void rectangleWithOneNeighborIterations() {
-		RectangleWithNeighbors rectangleWithNeighbors = new RectangleWithNeighbors(
+		RectangleWithNeighbors rectangleWithNeighbors = new BasicRectangleWithNeighbors(
 			new Rectangle(1, 2, 3, 4),
 			ImmutableList.of(
 				new Rectangle(2, 3, 4, 5)
@@ -30,7 +30,7 @@ public class RectangleWithNeighborsTest {
 
 	@Test
 	public void rectangleWithTwoNeighborsIterations() {
-		RectangleWithNeighbors rectangleWithNeighbors = new RectangleWithNeighbors(
+		RectangleWithNeighbors rectangleWithNeighbors = new BasicRectangleWithNeighbors(
 			new Rectangle(1, 2, 3, 4),
 			ImmutableList.of(
 				new Rectangle(2, 3, 4, 5),
@@ -42,7 +42,7 @@ public class RectangleWithNeighborsTest {
 
 	@Test
 	public void rectangleWithTenNeighborsIterations() {
-		RectangleWithNeighbors rectangleWithNeighbors = new RectangleWithNeighbors(
+		RectangleWithNeighbors rectangleWithNeighbors = new BasicRectangleWithNeighbors(
 			new Rectangle(1, 2, 3, 4),
 			ImmutableList.of(
 				new Rectangle(2, 3, 4, 5),

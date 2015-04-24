@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableSet;
 import org.jgrapht.UndirectedGraph;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawableGraph2D;
-import org.tendiwa.drawing.extensions.DrawingGraph;
 import org.tendiwa.geometry.GeometryException;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
@@ -53,7 +52,12 @@ public final class SmartMesh2D implements Mesh2D {
 
 	private void errorIfGraphIntersectsItself(UndirectedGraph<Point2D, Segment2D> originalGraph) {
 		if (ShamosHoeyAlgorithm.areIntersected(originalGraph.edgeSet())) {
-			TestCanvas.canvas.draw(originalGraph, DrawingGraph.withColorAndAntialiasing(Color.cyan));
+			TestCanvas.canvas.draw(
+				new DrawableGraph2D.Thin(
+					originalGraph,
+					Color.cyan
+				)
+			);
 			throw new IllegalArgumentException("Graph intersects itself");
 		}
 	}

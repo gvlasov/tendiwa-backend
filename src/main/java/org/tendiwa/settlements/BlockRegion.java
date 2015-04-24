@@ -129,14 +129,14 @@ public class BlockRegion extends EnclosedBlock {
 				Node current = startNode;
 				longestEdgeStart = null;
 				do {
-					if (current.point == bestSegment.start) {
-						if (roadPoints.get(current.point) == bestSegment.end) {
+					if (current.point == bestSegment.start()) {
+						if (roadPoints.get(current.point) == bestSegment.end()) {
 							longestEdgeStart = current;
 							break;
 						}
 					}
-					if (current.point == bestSegment.end) {
-						if (roadPoints.get(current.point) == bestSegment.start) {
+					if (current.point == bestSegment.end()) {
+						if (roadPoints.get(current.point) == bestSegment.start()) {
 							longestEdgeStart = current;
 							break;
 						}

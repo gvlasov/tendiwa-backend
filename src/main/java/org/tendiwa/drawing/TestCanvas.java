@@ -1,7 +1,9 @@
 package org.tendiwa.drawing;
 
-public final class TestCanvas extends BaseTestCanvas {
-	public TestCanvas(int scale, int width, int height) {
-		super(scale, 0, 0, width, height);
+import org.tendiwa.geometry.Dimension;
+
+public final class TestCanvas extends BaseAwtCanvas {
+	public TestCanvas(int scale, Dimension size) {
+		super(scale, 0, 0, size.width(), size.height());
 	}
 }

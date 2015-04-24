@@ -1,7 +1,7 @@
 package org.tendiwa.drawing.extensions;
 
 import org.tendiwa.drawing.Drawable;
-import org.tendiwa.drawing.DrawableInto;
+import org.tendiwa.drawing.Canvas;
 import org.tendiwa.geometry.Chain2D;
 import org.tendiwa.geometry.Chain2D_Wr;
 
@@ -22,7 +22,7 @@ public final class DrawableChain2D {
 		}
 
 		@Override
-		public void drawIn(DrawableInto canvas) {
+		public void drawIn(Canvas canvas) {
 			canvas.drawAll(
 				asSegmentStream(),
 				segment -> new DrawableSegment2D.Thin(segment, color)

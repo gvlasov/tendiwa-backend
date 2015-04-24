@@ -39,7 +39,7 @@ public final class RectangularBuildingLots {
 			.map(lot -> PolygonRasterizer.rasterizeToMutable(lot.toPolygon()))
 			.map(rasterized -> MaximalRectanlges.searchUntilSmallEnoughMutatingBitmap(rasterized, 21))
 			.filter(list -> !list.isEmpty())
-			.map(list -> new RectangleWithNeighbors(list.get(0), list.subList(1, list.size())))
+			.map(list -> new BasicRectangleWithNeighbors(list.get(0), list.subList(1, list.size())))
 			.collect(Collectors.toImmutableSet());
 	}
 

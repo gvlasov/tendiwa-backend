@@ -40,16 +40,16 @@ final class CycleWithStartingPoints {
 	}
 
 	private Point2D snapToSegmentEnd(Point2D startingPoint, Segment2D edge) {
-		double toStart = startingPoint.squaredDistanceTo(edge.start);
-		double toEnd = startingPoint.squaredDistanceTo(edge.end);
+		double toStart = startingPoint.squaredDistanceTo(edge.start());
+		double toEnd = startingPoint.squaredDistanceTo(edge.end());
 		double snapSizeSquared = config.snapSize * config.snapSize;
 		if (toStart < toEnd) {
 			if (toStart < snapSizeSquared) {
-				return edge.start;
+				return edge.start();
 			}
 		} else {
 			if (toEnd < snapSizeSquared) {
-				return edge.end;
+				return edge.end();
 			}
 		}
 		return startingPoint;

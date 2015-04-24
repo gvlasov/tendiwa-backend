@@ -24,7 +24,7 @@ public class Utils {
 	public static void printListOfPoints(List<Point2D> points) {
 		System.out.println("List:");
 		for (Point2D point : points) {
-			System.out.println("\tnew Point2D(" + point.x + ", " + point.y + "),");
+			System.out.println("\tnew Point2D(" + point.x() + ", " + point.y() + "),");
 		}
 	}
 

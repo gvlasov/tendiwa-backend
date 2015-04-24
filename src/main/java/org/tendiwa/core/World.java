@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
 
+import static org.tendiwa.geometry.GeometryPrimitives.rectangle;
+
 public class World {
 
 	private static final int defaultPlaneIndex = Integer.MAX_VALUE / 2;
@@ -20,9 +22,7 @@ public class World {
 	public World(
 		Dimension dimension
 	) {
-		this.rectangle = new Rectangle(
-			0,
-			0,
+		this.rectangle = rectangle(
 			dimension.width(),
 			dimension.height()
 		);
@@ -40,24 +40,6 @@ public class World {
 
 	public HorizontalPlane getDefaultPlane() {
 		return defaultPlane;
-	}
-
-	private void checkIfLocationPlacesFillAllWorld(WorldRectangleBuilder builder) {
-		boolean filled[][] = new boolean[width][height];
-		for (LocationPlace place : builder.rectanglesToPlaces.values()) {
-			for (int x = place.getX(); x < place.width(); x++) {
-				for (int y = place.getY(); y < place.height(); y++) {
-					filled[x][y] = true;
-				}
-			}
-		}
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
-				if (!filled[x][y]) {
-					throw new WorldException("Not the whole world was filled with locations: " + x + " " + y);
-				}
-			}
-		}
 	}
 
 	public Character getPlayer() {
@@ -84,7 +66,6 @@ public class World {
 		defaultPlane.addCharacter(character);
 //	timeStream.addNonPlayerCharacter(character);
 		return character;
-
 	}
 
 	/**

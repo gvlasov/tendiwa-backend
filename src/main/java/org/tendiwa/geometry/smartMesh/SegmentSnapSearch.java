@@ -64,8 +64,8 @@ final class SegmentSnapSearch implements EventSearch {
 			return Optional.empty();
 		}
 		PointPosition pointPosition = new PointPosition(
-			segment.start,
-			segment.end,
+			segment.start(),
+			segment.end(),
 			targetNode
 		);
 		if (pointPosition.r >= minR) {

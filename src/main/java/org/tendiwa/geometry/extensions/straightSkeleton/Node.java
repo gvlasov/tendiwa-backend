@@ -5,7 +5,6 @@ import org.tendiwa.collections.SuccessiveTuples;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawablePoint2D;
 import org.tendiwa.drawing.extensions.DrawableSegment2D;
-import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.*;
 
 import javax.annotation.Nullable;
@@ -81,7 +80,11 @@ abstract class Node implements Iterable<Node> {
 			this,
 			(a, b) -> {
 				TestCanvas.canvas.draw(
-					segment2D(a.vertex, b.vertex), DrawingSegment2D.withColorDirected(Color.cyan, 1)
+					new DrawableSegment2D.Arrow(
+						segment2D(a.vertex, b.vertex),
+						Color.cyan,
+						1
+					)
 				);
 			}
 		);
@@ -131,7 +134,7 @@ abstract class Node implements Iterable<Node> {
 			vertex,
 			next.vertex
 		);
-		Bisector bisector1 = new Bisector(
+		Bisector bisector1 = new BasicBisector(
 			currentEdgeStart.currentEdge.asVector(),
 			previousEdgeStart.currentEdge.asVector().reverse()
 		);
@@ -214,8 +217,11 @@ abstract class Node implements Iterable<Node> {
 				Node current = start;
 				do {
 					TestCanvas.canvas.draw(
-						segment2D(current.vertex, current.next.vertex),
-						DrawingSegment2D.withColorDirected(Color.cyan, 0.5)
+						new DrawableSegment2D.Arrow(
+							segment2D(current.vertex, current.next.vertex),
+							Color.cyan,
+							0.5
+						)
 					);
 					current = current.next;
 				} while (current != node);
@@ -395,7 +401,7 @@ abstract class Node implements Iterable<Node> {
 			).commonPoint()
 				.subtract(bisectorStart);
 		Vector2D ccw = vertex.subtract(bisectorStart);
-		Bisector anotherBisector = new Bisector(cw, ccw);
+		Bisector anotherBisector = new BasicBisector(cw, ccw);
 		RayIntersection intersection = new RayIntersection(
 			segment2D(
 				bisectorStart,

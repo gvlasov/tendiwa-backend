@@ -1,6 +1,5 @@
 package org.tendiwa.geometry;
 
-import static org.tendiwa.geometry.DSL.builder;
 import static org.tendiwa.geometry.DSL.somewhere;
 
 public final class StepPlaceNextAt {
@@ -13,7 +12,7 @@ public final class StepPlaceNextAt {
 	}
 
 	public RecTree placingNextAt(final Placement where) {
-		RecTreeBuilder newBuilder = builder(0);
+		RecTreeBuilder newBuilder = new RecTreeBuilder();
 		newBuilder.place(recTree, somewhere());
 		for (int i = 1; i < count; i++) {
 			newBuilder.place(recTree, where);

@@ -7,6 +7,7 @@ import org.tendiwa.core.CardinalDirection;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawableChain2D;
 import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.settlements.utils.BasicRectangleWithNeighbors;
 import org.tendiwa.settlements.utils.RectangleWithNeighbors;
 import org.tendiwa.settlements.streets.LotStreetAssigner;
 import org.tendiwa.geometry.Chain2D;
@@ -79,7 +80,7 @@ public final class FairLotFacadeAndStreetAssigner implements LotFacadeAssigner, 
 	 */
 	private void fairlyAssignTheRestOfBuildings() {
 		initStreetsLengthsAndThirsts();
-		for (RectangleWithNeighbors lot : lots) {
+		for (BasicRectangleWithNeighbors lot : lots) {
 			if (facades.containsKey(lot)) {
 				continue;
 			}
@@ -150,7 +151,7 @@ public final class FairLotFacadeAndStreetAssigner implements LotFacadeAssigner, 
 	 * {@link #lotsAndStreets}.
 	 */
 	private void assignSingleStreetBuildings() {
-		for (RectangleWithNeighbors lot : lotsAndStreets.getLots()) {
+		for (BasicRectangleWithNeighbors lot : lotsAndStreets.getLots()) {
 			Set<Chain2D> streetsForLot = lotsAndStreets.getStreetsForLot(lot);
 			if (streetsForLot.size() == 1) {
 				Collection<Segment2D> segmentsForLot = lotsAndStreets.getSegmentsForLot(lot);

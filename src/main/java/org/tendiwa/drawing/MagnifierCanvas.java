@@ -1,6 +1,6 @@
 package org.tendiwa.drawing;
 
-public final class MagnifierCanvas extends BaseTestCanvas {
+public final class MagnifierCanvas extends BaseAwtCanvas {
 	public MagnifierCanvas(int scale, int centerX, int centerY, int pixelWidth, int pixelHeight) {
 		super(
 			scale,

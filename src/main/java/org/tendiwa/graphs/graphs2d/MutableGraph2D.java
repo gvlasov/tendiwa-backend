@@ -20,7 +20,7 @@ public class MutableGraph2D implements UndirectedGraph<Point2D, Segment2D> {
 	}
 
 	public void addSegmentAsEdge(Segment2D segment) {
-		boolean added = addEdge(segment.start, segment.end, segment);
+		boolean added = addEdge(segment.start(), segment.end(), segment);
 		if (!added) {
 			throw new IllegalArgumentException("Segment " + segment + " is already contained in this graph");
 		}
@@ -50,7 +50,7 @@ public class MutableGraph2D implements UndirectedGraph<Point2D, Segment2D> {
 			);
 		}
 		cutSegment.segmentStream()
-			.map(s -> s.end)
+			.map(Segment2D::end)
 			.forEach(graph::addVertex);
 		cutSegment.forEach(this::addSegmentAsEdge);
 		assert !cutSegment.hasBeenCut() || !graph.containsEdge(originalSegment);

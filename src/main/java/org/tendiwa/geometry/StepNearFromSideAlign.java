@@ -23,8 +23,7 @@ public class StepNearFromSideAlign implements Placement {
 			Rectangle placeableBounds = rectSet.bounds();
 			Rectangle existingRec = pointer.find(builder).bounds();
 			int staticCoord = existingRec.side(fromSide).getStaticCoord()
-				+ (builder.borderWidth() + 1)
-				* fromSide.getGrowing();
+				+ fromSide.getGrowing();
 			if (fromSide == Directions.N) {
 				staticCoord -= placeableBounds.height();
 			} else if (fromSide == Directions.W) {

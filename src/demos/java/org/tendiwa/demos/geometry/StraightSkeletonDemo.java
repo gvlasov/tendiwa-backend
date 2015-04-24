@@ -3,8 +3,6 @@ package org.tendiwa.demos.geometry;
 import com.google.inject.Inject;
 import org.tendiwa.demos.Demos;
 import org.tendiwa.demos.geometry.polygons.ConvexAndReflexAmoeba;
-import org.tendiwa.drawing.GifBuilder;
-import org.tendiwa.drawing.GifBuilderFactory;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawableGraph2D;
 import org.tendiwa.drawing.extensions.DrawablePolygon;
@@ -25,8 +23,6 @@ import static org.tendiwa.geometry.GeometryPrimitives.point2D;
 import static org.tendiwa.geometry.GeometryPrimitives.vector;
 
 public class StraightSkeletonDemo implements Runnable {
-	@Inject
-	GifBuilderFactory factory;
 
 	public static void main(String[] args) {
 		Demos.run(StraightSkeletonDemo.class, new DrawingModule());

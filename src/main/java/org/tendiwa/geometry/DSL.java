@@ -42,8 +42,4 @@ public class DSL {
 			return placeable.translate(x - bounds.x(), y - bounds.y());
 		};
 	}
-
-	public static StepRectangle recursivelySplitRec(int width, int height) {
-		return new StepRectangle(width, height);
-	}
 }

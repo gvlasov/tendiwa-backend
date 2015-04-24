@@ -299,7 +299,7 @@ public class Character implements Cell, PlaceableInCell, DamageSource {
 		return seer.canSee(x, y);
 	}
 
-	public BasicCell[] rays(int startX, int startY, int endX, int endY) {
+	public Cell[] rays(int startX, int startY, int endX, int endY) {
 		return seer.rays(startX, startY, endX, endY);
 	}
 
@@ -643,11 +643,11 @@ public class Character implements Cell, PlaceableInCell, DamageSource {
 	}
 
 	private ProjectileFlight computeProjectileFlightEndCoordinate(UniqueItem weapon, Item projectile, int toX, int toY) {
-		BasicCell endCoordinate = new BasicCell(toX, toY);
-		BasicCell[] vector = BasicCellSegment.cells(x, y, toX, toY);
+		Cell endCoordinate = new BasicCell(toX, toY);
+		Cell[] vector = BasicCellSegment.cells(x, y, toX, toY);
 		Character characterHit = null;
 		for (int i = 1; i < vector.length; i++) {
-			BasicCell c = vector[i];
+			Cell c = vector[i];
 			if (plane.hasCharacter(c.x(), c.y()) &&
 				testProjectileHit(weapon, projectile, toX, toY)) {
 				characterHit = plane.getCharacter(c.x(), c.y());
@@ -738,10 +738,10 @@ public class Character implements Cell, PlaceableInCell, DamageSource {
 
 	private class ProjectileFlight {
 
-		private final BasicCell endCoordinate;
+		private final Cell endCoordinate;
 		private final Character characterHit;
 
-		public ProjectileFlight(BasicCell endCoordinate, Character characterHit) {
+		public ProjectileFlight(Cell endCoordinate, Character characterHit) {
 
 			this.endCoordinate = endCoordinate;
 			this.characterHit = characterHit;

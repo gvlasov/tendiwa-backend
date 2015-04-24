@@ -176,4 +176,12 @@ public interface Segment2D extends RectangularHull {
 	default boolean intersects(Rectangle rectangle) {
 		return new RectangleSegmentIntersection(rectangle, this).intersect();
 	}
+	default Rectangle2D boundingBox() {
+		return new BasicRectangle2D(
+			Math.min(start().x(), end().x()),
+			Math.min(start().y(), end().y()),
+			Math.abs(dx()),
+			Math.abs(dy())
+		);
+	}
 }

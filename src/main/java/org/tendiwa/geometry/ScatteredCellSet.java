@@ -12,10 +12,9 @@ import static java.util.Objects.*;
  * An CellSet that holds a finite number of {@link Cell}s.
  * <p>
  * This implementation of {@link CellSet} is better memory-wise than {@link org.tendiwa.geometry.extensions
- * .CachedCellSet} when a bounding rectangle of all the cells would cover much more cells that are in the set. That is,
- * this implementation uses {@code O(n)} where n is the number of cells in a set, when CachedCellSet uses {@code
- * O(w*h)}
- * memory where {@code w} and {@code h} are width and height of the bounding rectangle.
+ * .CachedCellSet} when a bounding rectangle of all the cells would cover much more cells than there are in the set.
+ * Particularly, this implementation uses {@code O(n)} where n is the number of cells in a set, when CachedCellSet uses
+ * {@code O(w*h)} memory where {@code w} and {@code h} are width and height of the bounding rectangle.
  *
  * @see org.tendiwa.geometry.ScatteredMutableCellSet
  */
@@ -27,7 +26,8 @@ public final class ScatteredCellSet implements FiniteCellSet {
 		this.cells = requireNonNull(cells);
 	}
 
-	ScatteredCellSet() {
+	private ScatteredCellSet() {
+		throw new UnsupportedOperationException();
 	}
 
 	public ScatteredCellSet(CellSet infiniteSet, Rectangle bounds) {

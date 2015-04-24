@@ -4,7 +4,6 @@ import org.tendiwa.drawing.DrawingAlgorithm;
 import org.tendiwa.geometry.BasicCell;
 
 import java.awt.*;
-import java.awt.geom.Ellipse2D;
 
 public final class DrawingCell {
 	private DrawingCell() {

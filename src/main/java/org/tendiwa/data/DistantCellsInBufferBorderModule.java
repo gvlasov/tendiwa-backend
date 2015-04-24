@@ -3,14 +3,12 @@ package org.tendiwa.data;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.name.Named;
-import org.tendiwa.geometry.BoundedCellSet;
-import org.tendiwa.geometry.DistantCellsFinder;
-import org.tendiwa.geometry.Rectangle;
+import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.extensions.CachedCellSet;
 import org.tendiwa.geometry.extensions.ChebyshovDistanceBufferBorder;
 
 import static com.google.inject.name.Names.named;
-import static org.tendiwa.geometry.DSL.rectangle;
+import static org.tendiwa.geometry.GeometryPrimitives.*;
 
 public class DistantCellsInBufferBorderModule extends AbstractModule {
 
@@ -24,7 +22,7 @@ public class DistantCellsInBufferBorderModule extends AbstractModule {
 			.toInstance(5);
 		bind(Rectangle.class)
 			.annotatedWith(named("waterRectangle"))
-			.toInstance(new Rectangle(40, 40, 20, 20));
+			.toInstance(rectangle(40, 40, 20, 20));
 		bind(Rectangle.class)
 			.annotatedWith(named("worldRectangle"))
 			.toInstance(rectangle(100, 100));

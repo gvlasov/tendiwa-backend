@@ -3,13 +3,10 @@ package org.tendiwa.demos.geometry;
 import com.google.inject.Inject;
 import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingGraph;
 import org.tendiwa.drawing.extensions.DrawingModule;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.extensions.PointTrail;
-import org.tendiwa.geometry.extensions.twakStraightSkeleton.TwakStraightSkeleton;
 
-import java.awt.Color;
 import java.util.List;
 
 public class TwakStraightSkeletonDemo implements Runnable {

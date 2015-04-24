@@ -1,6 +1,6 @@
 package org.tendiwa.drawing.extensions;
 
-import org.tendiwa.drawing.DrawableInto;
+import org.tendiwa.drawing.Canvas;
 import org.tendiwa.geometry.BasicRectangle2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Rectangle2D;
@@ -14,7 +14,7 @@ final class Marker implements Rectangle2D {
 	private final Segment2D post;
 	private final Point2D stringStart;
 
-	public Marker(Point2D point, String text, DrawableInto canvas) {
+	public Marker(Point2D point, String text, Canvas canvas) {
 
 		double tailHeight = 10. / canvas.getScale();
 		double textWidth = ((double) canvas.textWidth(text)) / canvas.getScale();

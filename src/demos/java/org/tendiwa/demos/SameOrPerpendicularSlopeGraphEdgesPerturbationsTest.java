@@ -1,17 +1,19 @@
 package org.tendiwa.demos;
 
 import org.jgrapht.UndirectedGraph;
+import org.tendiwa.drawing.Canvas;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingGraph;
-import org.tendiwa.geometry.BasicSegment2D;
+import org.tendiwa.drawing.extensions.DrawableGraph2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PointTrail;
-import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.graphs.algorithms.SameOrPerpendicularSlopeGraphEdgesPerturbations;
 
 import java.awt.Color;
 import java.util.List;
+
+import static org.tendiwa.geometry.GeometryPrimitives.graphConstructor;
+import static org.tendiwa.geometry.GeometryPrimitives.rectangle;
 
 public class SameOrPerpendicularSlopeGraphEdgesPerturbationsTest implements Runnable {
 	public static void main(String[] args) {
@@ -47,11 +49,17 @@ public class SameOrPerpendicularSlopeGraphEdgesPerturbationsTest implements Runn
 			.moveBy(10, -10)
 			.moveBy(-5, -1)
 			.points();
-		UndirectedGraph<Point2D, Segment2D> graph = new GraphConstructor<>(BasicSegment2D::new)
+		UndirectedGraph<Point2D, Segment2D> graph = graphConstructor()
 			.cycleOfVertices(polygon)
 			.graph();
 		SameOrPerpendicularSlopeGraphEdgesPerturbations.perturb(graph, 1e-4);
-		new TestCanvas(1, 500, 400).draw(graph, DrawingGraph.withColor(Color.red));
+		Canvas canvas = new TestCanvas(1, rectangle(500, 400));
+		canvas.draw(
+			new DrawableGraph2D.Thin(
+				graph,
+				Color.red
+			)
+		);
 	}
 
 }

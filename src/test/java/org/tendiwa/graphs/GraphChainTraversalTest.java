@@ -4,8 +4,11 @@ import com.google.common.collect.Lists;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.junit.Test;
+import org.tendiwa.drawing.Canvas;
 import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawableGraph2D;
 import org.tendiwa.drawing.extensions.DrawingGraph;
+import org.tendiwa.geometry.GeometryPrimitives;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PointTrail;
@@ -15,6 +18,7 @@ import java.util.List;
 import java.util.StringJoiner;
 
 import static org.junit.Assert.*;
+import static org.tendiwa.geometry.GeometryPrimitives.*;
 
 public class GraphChainTraversalTest {
 	@Test
@@ -48,11 +52,20 @@ public class GraphChainTraversalTest {
 			.moveByX(50)
 			.moveByY(-50)
 			.points();
-		UndirectedGraph<Point2D, Segment2D> graph = new GraphConstructor<>(Segment2D::new)
+		UndirectedGraph<Point2D, Segment2D> graph = graphConstructor()
 			.chain(trail)
 			.graph();
-		new TestCanvas(3, 200, 200).draw(graph, DrawingGraph.withColorAndAntialiasing(Color.red));
-		Point2D startVertex = new Point2D(50, 50);
+		Canvas canvas = new TestCanvas(
+			3,
+			rectangle(200, 200)
+		);
+		canvas.draw(
+			new DrawableGraph2D.Thin(
+				graph,
+				Color.red
+			)
+		);
+		Point2D startVertex = point2D(50, 50);
 		long verticesTraversed = GraphChainTraversal
 			.traverse(graph)
 			.startingWith(startVertex)

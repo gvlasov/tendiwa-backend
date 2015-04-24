@@ -8,11 +8,12 @@ import org.tendiwa.core.events.*;
 import org.tendiwa.core.observation.Observable;
 import org.tendiwa.core.player.PlayerModule;
 import org.tendiwa.core.volition.RequestsModule;
+import org.tendiwa.geometry.GeometryPrimitives;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.tendiwa.geometry.DSL.rectangle;
+import static org.tendiwa.geometry.GeometryPrimitives.*;
 
 @Singleton
 public class Tendiwa extends Observable {

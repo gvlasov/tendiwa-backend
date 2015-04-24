@@ -1,5 +1,6 @@
 package org.tendiwa.geometry.smartMesh;
 
+import org.tendiwa.geometry.BasicPoint2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 
@@ -42,18 +43,18 @@ final class PointPosition {
 	 */
 	PointPosition(Point2D segmentStart, Point2D segmentEnd, Point2D point) {
 		double l = segmentStart.distanceTo(segmentEnd);
-		r = ((point.x - segmentStart.x) * (segmentEnd.x - segmentStart.x)
-			+ (point.y - segmentStart.y) * (segmentEnd.y - segmentStart.y))
+		r = ((point.x() - segmentStart.x()) * (segmentEnd.x() - segmentStart.x())
+			+ (point.y() - segmentStart.y()) * (segmentEnd.y() - segmentStart.y()))
 			/ (l * l);
-		s = ((segmentStart.y - point.y) * (segmentEnd.x - segmentStart.x)
-			- (segmentStart.x - point.x) * (segmentEnd.y - segmentStart.y))
+		s = ((segmentStart.y() - point.y()) * (segmentEnd.x() - segmentStart.x())
+			- (segmentStart.x() - point.x()) * (segmentEnd.y() - segmentStart.y()))
 			/ (l * l);
 		distance = Math.abs(s) * l;
 	}
 	Point2D pointOnSegment(Segment2D segment) {
-		return new Point2D(
-			segment.start.x + r * (segment.end.x - segment.start.x),
-			segment.start.y + r * (segment.end.y - segment.start.y)
+		return new BasicPoint2D(
+			segment.start().x() + r * (segment.end().x() - segment.start().x()),
+			segment.start().y() + r * (segment.end().y() - segment.start().y())
 		);
 	}
 }

@@ -5,7 +5,6 @@ import org.tendiwa.demos.Demos;
 import org.tendiwa.demos.DrawableRectangle;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawableGraph2D;
-import org.tendiwa.geometry.BasicCell;
 import org.tendiwa.geometry.BoundedCellSet;
 import org.tendiwa.geometry.CellSet;
 import org.tendiwa.geometry.Rectangle;

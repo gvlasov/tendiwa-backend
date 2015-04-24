@@ -1,6 +1,6 @@
 package org.tendiwa.drawing.extensions;
 
-import org.tendiwa.drawing.DrawableInto;
+import org.tendiwa.drawing.Canvas;
 import org.tendiwa.drawing.DrawingAlgorithm;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.BasicCell;
@@ -10,7 +10,7 @@ import org.tendiwa.geometry.Rectangle;
 import java.awt.Color;
 import java.awt.Shape;
 
-public class NullCanvas implements DrawableInto {
+public class NullCanvas implements Canvas {
 	@Override
 	public <T> void draw(T what, DrawingAlgorithm<? super T> how, TestCanvas.Layer where) {
 

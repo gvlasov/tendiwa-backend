@@ -24,8 +24,8 @@ public class StepAwayFromFromSideMarginAlign implements Placement {
 	public RecTree placeIn(RecTree recTree, RecTreeBuilder builder) {
 		Rectangle placeableBounds = recTree.bounds();
 		Rectangle existingRec = pointer.find(builder).bounds();
-		int staticCoord = existingRec.side(side).getStaticCoord() + (builder.borderWidth() + 1 +
-			margin) * side.getGrowing();
+		int staticCoord = existingRec.side(side).getStaticCoord() +
+			(1 + margin) * side.getGrowing();
 		if (side == Directions.N) {
 			staticCoord -= placeableBounds.height();
 		} else if (side == Directions.W) {

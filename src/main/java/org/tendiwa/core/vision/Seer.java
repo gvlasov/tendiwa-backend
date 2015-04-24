@@ -1,11 +1,13 @@
 package org.tendiwa.core.vision;
 
-import org.tendiwa.core.*;
+import org.tendiwa.core.Border;
+import org.tendiwa.core.CardinalDirection;
+import org.tendiwa.core.Directions;
+import org.tendiwa.core.World;
 import org.tendiwa.core.meta.Cell;
 import org.tendiwa.core.meta.DoubleRange;
 import org.tendiwa.core.meta.DoubleRangeCollection;
 import org.tendiwa.core.meta.Utils;
-import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.*;
 
 public class Seer {
@@ -225,10 +227,14 @@ public class Seer {
 
 	private boolean cellIsInVisibilityRectangle(int x, int y) {
 		// TODO: Cache this rectangle
-		return StupidPriceduralRecs.rectangleByCenterPoint(
-			new BasicCell(character.x(), character.y()),
-			ModifiableCellVisionCache.VISION_CACHE_WIDTH, ModifiableCellVisionCache.VISION_CACHE_WIDTH
-		).contains(x, y);
+		return
+			new BasicCell(
+				character.x(),
+				character.y()
+			).centerRectangle(
+				ModifiableCellVisionCache.VISION_CACHE_WIDTH,
+				ModifiableCellVisionCache.VISION_CACHE_WIDTH
+			).contains(x, y);
 	}
 
 	/**
@@ -390,7 +396,7 @@ public class Seer {
 			// start[0][1]=this.y;
 			// start[1][0]=this.x;
 			start[1][1] = (endY > character.y()) ? character.y() + 0.5 : character.y() - 0.5;
-			BasicCell[] rays = rays(character.x(), character.y(), endX, endY);
+			Cell[] rays = rays(character.x(), character.y(), endX, endY);
 			int breakX = character.x(), breakY = character.y();
 			jump:
 			for (int k = 0; k < 3; k++) {
@@ -404,7 +410,7 @@ public class Seer {
 					double yEnd = end[endNumY];
 					double xStart = start[j][0];
 					double yStart = start[j][1];
-					for (BasicCell c : rays) {
+					for (Cell c : rays) {
 						try {
 							if (!vision.canSee(c.x(), c.y())) {
 								if (Math.abs(((yStart - yEnd) * c.x()
@@ -432,7 +438,7 @@ public class Seer {
 		}
 	}
 
-	public BasicCell[] rays(int startX, int startY, int endX, int endY) {
+	public Cell[] rays(int startX, int startY, int endX, int endY) {
 		return Utils.concatAll(
 			BasicCellSegment.cells(startX, startY, endX, endY),
 			BasicCellSegment.cells(startX, startY + (endY > startY ? 1 : -1), endX + (endX > startX ? -1 : 1), endY),
@@ -589,7 +595,7 @@ public class Seer {
 			world.getHeight() - 1,
 			character.y() - Seer.VISION_RANGE + ModifiableCellVisionCache.VISION_CACHE_WIDTH
 		);
-		return new Rectangle(
+		return new BasicRectangle(
 			startPoint.x(),
 			startPoint.y(),
 			actualWorldEndX - startPoint.x(),

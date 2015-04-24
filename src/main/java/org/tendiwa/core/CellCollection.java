@@ -1,19 +1,20 @@
 package org.tendiwa.core;
 
+import org.tendiwa.core.meta.Cell;
 import org.tendiwa.core.meta.Chance;
 import org.tendiwa.geometry.BasicCell;
 
-import java.awt.*;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collection;
 
 public class CellCollection {
 	public Location location;
-	ArrayList<BasicCell> unoccupied;
+	ArrayList<Cell> unoccupied;
 	boolean hasCells = true;
-	private ArrayList<BasicCell> cells;
+	private ArrayList<Cell> cells;
 
-	public CellCollection(Collection<BasicCell> cls, Location loc) {
+	public CellCollection(Collection<Cell> cls, Location loc) {
 		if (cls.isEmpty()) {
 			throw new Error("Can't create an empty cell collection: argument is an empty collection");
 		}
@@ -30,8 +31,8 @@ public class CellCollection {
 //		unsetCell(cellIndex);
 //		return location.createCharacter(ammunitionType, name, cell.x, cell.y);
 //	}
-	public static ArrayList<BasicCell> rectangleToCellsList(Rectangle r) {
-		ArrayList<BasicCell> answer = new ArrayList<>();
+	public static ArrayList<Cell> rectangleToCellsList(Rectangle r) {
+		ArrayList<Cell> answer = new ArrayList<>();
 		for (int i = r.x; i < r.x + r.width; i++) {
 			for (int j = r.y; j < r.y + r.height; j++) {
 				answer.add(new BasicCell(i, j));
@@ -74,7 +75,7 @@ public class CellCollection {
 //	}
 	public void removeCellsCloseTo(int x, int y, int distance) {
 		int size = cells.size();
-		for (BasicCell c : cells) {
+		for (Cell c : cells) {
 			if (c.distanceDouble(x, y) <= distance) {
 				cells.remove(c);
 				size--;
@@ -82,7 +83,7 @@ public class CellCollection {
 		}
 	}
 
-	protected void unsetCell(BasicCell cell) {
+	protected void unsetCell(Cell cell) {
 		cells.remove(cell);
 		if (cells.isEmpty()) {
 			hasCells = false;
@@ -103,7 +104,7 @@ public class CellCollection {
 				throw new RuntimeException("CellCollection has no cells left");
 			}
 			int cellIndex = Chance.rand(0, cells.size() - 1);
-			BasicCell cell = cells.get(cellIndex);
+			Cell cell = cells.get(cellIndex);
 			placeable.place(location.getActivePlane(), cell.x(), cell.y());
 			unsetCell(cell);
 		}
@@ -118,30 +119,30 @@ public class CellCollection {
 				throw new RuntimeException("CellCollection has no cells left");
 			}
 			int cellIndex = Chance.rand(0, cells.size() - 1);
-			BasicCell cell = cells.get(cellIndex);
+			Cell cell = cells.get(cellIndex);
 			EntityPlacer.place(location.getActivePlane(), type, cell.x(), cell.y());
 			unsetCell(cell);
 		}
 	}
 
-	public BasicCell getRandomCell() {
+	public Cell getRandomCell() {
 		return cells.get(Chance.rand(0, cells.size() - 1));
 	}
 
 	public void fillWithElements(PlaceableInCell placeable) {
-		for (BasicCell c : cells) {
+		for (Cell c : cells) {
 			placeable.place(location.getActivePlane(), c.x(), c.y());
 		}
 	}
 
-	public ArrayList<BasicCell> setElementsAndReport(PlaceableInCell placeable, int amount) {
-		ArrayList<BasicCell> coords = new ArrayList<>();
+	public ArrayList<Cell> setElementsAndReport(PlaceableInCell placeable, int amount) {
+		ArrayList<Cell> coords = new ArrayList<>();
 		for (int i = 0; i < amount; i++) {
 			if (!hasCells) {
 				throw new RuntimeException("CellCollection has no cells left");
 			}
 			int cellIndex = Chance.rand(0, cells.size() - 1);
-			BasicCell cell = cells.get(cellIndex);
+			Cell cell = cells.get(cellIndex);
 			placeable.place(location.getActivePlane(), cell.x(), cell.y());
 			unsetCell(cell);
 			coords.add(cell);
@@ -149,23 +150,23 @@ public class CellCollection {
 		return coords;
 	}
 
-	public BasicCell setElementAndReport(PlaceableInCell placeable) {
+	public Cell setElementAndReport(PlaceableInCell placeable) {
 		if (!hasCells) {
 			throw new Error("No more cells");
 		}
 		int cellIndex = Chance.rand(0, cells.size() - 1);
-		BasicCell cell = cells.get(cellIndex);
+		Cell cell = cells.get(cellIndex);
 		placeable.place(location.getActivePlane(), cell.x(), cell.y());
 		unsetCell(cell);
 		return cell;
 	}
 
-	public BasicCell setObjectAndReport(ObjectType objectType) {
+	public Cell setObjectAndReport(ObjectType objectType) {
 		if (!hasCells) {
 			throw new Error("No more cells");
 		}
 		int cellIndex = Chance.rand(0, cells.size() - 1);
-		BasicCell cell = cells.get(cellIndex);
+		Cell cell = cells.get(cellIndex);
 		EntityPlacer.place(location.getActivePlane(), objectType, cell.x(), cell.y());
 
 		unsetCell(cell);

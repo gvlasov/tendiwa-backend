@@ -1,7 +1,7 @@
 package org.tendiwa.demos;
 
 import org.tendiwa.drawing.Drawable;
-import org.tendiwa.drawing.DrawableInto;
+import org.tendiwa.drawing.Canvas;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.geometry.Rectangle_Wr;
 
@@ -16,7 +16,7 @@ public final class DrawableRectangle extends Rectangle_Wr implements Drawable {
 	}
 
 	@Override
-	public void drawIn(DrawableInto canvas) {
+	public void drawIn(Canvas canvas) {
 		canvas.drawRectangle(this, color);
 	}
 
@@ -32,7 +32,7 @@ public final class DrawableRectangle extends Rectangle_Wr implements Drawable {
 		}
 
 		@Override
-		public void drawIn(DrawableInto canvas) {
+		public void drawIn(Canvas canvas) {
 			for (int i = this.x(); i < this.x() + this.width() - 1; i++) {
 				for (int j = this.y(); j < this.y() + this.width() - 1; j++) {
 					canvas.drawCell(i, j, (i + j) % 2 == 1 ? color1 : color2);
@@ -52,7 +52,7 @@ public final class DrawableRectangle extends Rectangle_Wr implements Drawable {
 		}
 
 		@Override
-		public void drawIn(DrawableInto canvas) {
+		public void drawIn(Canvas canvas) {
 			canvas.drawRectangle(this, background);
 			canvas.drawLine(
 				this.x(),

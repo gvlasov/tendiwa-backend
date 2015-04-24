@@ -1,5 +1,5 @@
 package org.tendiwa.drawing;
 
 public interface Drawable {
-	void drawIn(DrawableInto canvas);
+	void drawIn(Canvas canvas);
 }

@@ -2,7 +2,6 @@ package org.tendiwa.geometry.smartMesh;
 
 
 import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Recs2D;
 import org.tendiwa.geometry.Sector;
 import org.tendiwa.geometry.Segment2D;
 
@@ -26,6 +25,6 @@ final class FloodStart {
 
 	private void assertPointIsStrictlyInsideSegment(Point2D point, Optional<Segment2D> holdingSegment) {
 		assert !holdingSegment.isPresent()
-			|| Recs2D.boundingBox(holdingSegment.get()).strictlyContains(point);
+			|| holdingSegment.get().boundingBox().strictlyContains(point);
 	}
 }

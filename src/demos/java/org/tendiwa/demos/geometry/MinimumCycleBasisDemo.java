@@ -7,7 +7,6 @@ import org.tendiwa.demos.geometry.polygons.ConvexAndReflexAmoeba;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawableGraph2D;
 import org.tendiwa.drawing.extensions.DrawablePolygon;
-import org.tendiwa.drawing.extensions.DrawingGraph;
 import org.tendiwa.drawing.extensions.DrawingModule;
 import org.tendiwa.geometry.GeometryPrimitives;
 import org.tendiwa.geometry.Point2D;

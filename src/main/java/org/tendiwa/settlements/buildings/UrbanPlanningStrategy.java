@@ -8,6 +8,7 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.graphs.algorithms.jerrumSinclair.QuasiJerrumSinclairMarkovChain;
 import org.tendiwa.math.IntersectingSetsFiller;
+import org.tendiwa.settlements.utils.BasicRectangleWithNeighbors;
 import org.tendiwa.settlements.utils.RectangleWithNeighbors;
 import org.tendiwa.terrain.WorldGenerationException;
 
@@ -46,7 +47,7 @@ final class UrbanPlanningStrategy {
 
 	/**
 	 * Generates a configuration of what {@link Architecture} is going to what {@link
-	 * org.tendiwa.settlements.utils.RectangleWithNeighbors} based on
+	 * org.tendiwa.settlements.utils.BasicRectangleWithNeighbors} based on
 	 * what policies are assigned to those Architectures.
 	 *
 	 * @return A mapping from lots to architecture in those lots.
@@ -115,7 +116,7 @@ final class UrbanPlanningStrategy {
 			if (source instanceof NeedForPlace) {
 				policy = ((NeedForPlace) source).policy;
 				lot = (RectangleWithNeighbors) generatedMaximumMatching.getEdgeTarget(edge);
-			} else if (source instanceof RectangleWithNeighbors) {
+			} else if (source instanceof BasicRectangleWithNeighbors) {
 				policy = ((NeedForPlace) generatedMaximumMatching.getEdgeTarget(edge)).policy;
 				lot = (RectangleWithNeighbors) source;
 			} else {

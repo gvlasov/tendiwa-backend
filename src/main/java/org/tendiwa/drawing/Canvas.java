@@ -2,24 +2,17 @@ package org.tendiwa.drawing;
 
 import org.tendiwa.core.meta.Cell;
 import org.tendiwa.geometry.*;
+import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Rectangle2D;
 
 import java.awt.Color;
 import java.awt.Shape;
+import java.awt.geom.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-public interface DrawableInto {
-	<T> void draw(T what, DrawingAlgorithm<? super T> how, BaseTestCanvas.Layer where);
-
-	<T> void draw(T what, DrawingAlgorithm<? super T> how);
-
+public interface Canvas {
 	void draw(Drawable drawable);
-
-	default <T> void drawAll(Iterable<T> whats, DrawingAlgorithm<? super T> how) {
-		for (T what : whats) {
-			draw(what, how);
-		}
-	}
 
 	default <T> void drawAll(Iterable<T> what, Function<T, Drawable> toDrawable) {
 		for (T shape : what) {
@@ -33,26 +26,15 @@ public interface DrawableInto {
 
 	void fillBackground(Color backgroundColor);
 
-	/**
-	 * Width in pixels.
-	 *
-	 * @return
-	 */
-	int getWidth();
+	Dimension size();
 
-	/**
-	 * Height in pixels.
-	 *
-	 * @return
-	 */
-	int getHeight();
+	void clear();
 
 	/**
 	 * Size of a cell in pixels.
 	 *
 	 * @return
 	 */
-	int getScale();
 
 	void drawCell(int x, int y, Color color);
 
@@ -72,13 +54,11 @@ public interface DrawableInto {
 		drawCell(cell.x(), cell.y(), color);
 	}
 
-	void fillShape(Shape shape, Color color);
-
-	void drawShape(Shape shape, Color color);
-
 	void drawString(String text, Point2D start, Color color);
 
 	int textWidth(String string);
 
 	int textLineHeight();
+
+	void drawSegment2D(Segment2D segment, Color color);
 }

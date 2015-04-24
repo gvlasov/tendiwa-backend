@@ -21,14 +21,14 @@ public final class MutableShreddedSegment2D implements CutSegment2D {
 	public MutableShreddedSegment2D(Segment2D originalSegment, List<Point2D> splitPoints) {
 		this(originalSegment, splitPoints.size() + 1);
 		splitPoints.stream()
-			.filter(point -> !originalSegment.start.equals(point) && !originalSegment.end.equals(point))
+			.filter(point -> !originalSegment.start().equals(point) && !originalSegment.end().equals(point))
 			.forEach(this::splitAt);
 	}
 
 	public void splitAt(Point2D point) {
 		Segment2D segmentToSplit = getSplitPartWithPoint(point);
-		Segment2D onePart = new Segment2D(segmentToSplit.start, point);
-		Segment2D anotherPart = new Segment2D(point, segmentToSplit.end);
+		Segment2D onePart = new BasicSegment2D(segmentToSplit.start(), point);
+		Segment2D anotherPart = new BasicSegment2D(point, segmentToSplit.end());
 		split(segmentToSplit, onePart, anotherPart);
 	}
 
@@ -41,14 +41,14 @@ public final class MutableShreddedSegment2D implements CutSegment2D {
 	}
 
 	private static boolean isPointInBoundingRectangle(Point2D point, Segment2D segment) {
-		if (segment.start.x != segment.end.x) {
-			double minX = Math.min(segment.start.x, segment.end.x);
-			double maxX = Math.max(segment.start.x, segment.end.x);
-			return point.x > minX && point.x < maxX;
+		if (segment.start().x() != segment.end().x()) {
+			double minX = Math.min(segment.start().x(), segment.end().x());
+			double maxX = Math.max(segment.start().x(), segment.end().x());
+			return point.x() > minX && point.x() < maxX;
 		} else {
-			double minY = Math.min(segment.start.y, segment.end.y);
-			double maxY = Math.max(segment.start.y, segment.end.y);
-			return point.y > minY && point.y < maxY;
+			double minY = Math.min(segment.start().y(), segment.end().y());
+			double maxY = Math.max(segment.start().y(), segment.end().y());
+			return point.y() > minY && point.y() < maxY;
 		}
 	}
 
@@ -58,8 +58,8 @@ public final class MutableShreddedSegment2D implements CutSegment2D {
 			.filter(s -> isPointInBoundingRectangle(startingPoint, s))
 			.findAny()
 			.orElseThrow(() -> new GeometryException("Can't find split part"));
-		assert !answer.start.equals(startingPoint)
-			&& !answer.end.equals(startingPoint);
+		assert !answer.start().equals(startingPoint)
+			&& !answer.end().equals(startingPoint);
 		return answer;
 	}
 
@@ -94,7 +94,7 @@ public final class MutableShreddedSegment2D implements CutSegment2D {
 	public Stream<Point2D> pointStream() {
 		return segments.stream()
 			.skip(1)
-			.map(segment -> segment.start);
+			.map(Segment2D::start);
 	}
 
 	@Override

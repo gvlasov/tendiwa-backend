@@ -15,11 +15,13 @@ package org.tendiwa.core.meta;
 import javax.imageio.*;
 import javax.imageio.metadata.*;
 import javax.imageio.stream.*;
+import java.awt.Image;
 import java.awt.image.*;
 import java.io.*;
 import java.util.Iterator;
 
 public class GifSequenceWriter {
+	private final ImageOutputStream outputStream;
 	protected ImageWriter gifWriter;
 	protected ImageWriteParam imageWriteParam;
 	protected IIOMetadata imageMetaData;
@@ -45,6 +47,7 @@ public class GifSequenceWriter {
 		int timeBetweenFramesMS,
 		boolean loopContinuously
 	) throws IIOException, IOException {
+		this.outputStream = outputStream;
 		// my method to create a writer
 		gifWriter = getWriter();
 		imageWriteParam = gifWriter.getDefaultWriteParam();
@@ -112,20 +115,28 @@ public class GifSequenceWriter {
 		gifWriter.prepareWriteSequence(null);
 	}
 
-	public void writeToSequence(RenderedImage img) throws IOException {
-		gifWriter.writeToSequence(
-			new IIOImage(img, null, imageMetaData),
-			imageWriteParam
-		);
+	public void writeToSequence(BufferedImage img) {
+		try {
+			gifWriter.writeToSequence(
+				new IIOImage(img, null, imageMetaData),
+				imageWriteParam
+			);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**
 	 * Close this GifSequenceWriter object. This does not close the underlying
 	 * segmentStream, just finishes off the GIF.
 	 */
-	public void close() throws IOException {
-		gifWriter.endWriteSequence();
-		System.out.println("Done writing image");
+	public void close() {
+		try {
+			outputStream.close();
+			gifWriter.endWriteSequence();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**

@@ -12,5 +12,13 @@ public abstract class PlaceableToColorMap {
 	protected final void setColor(TypePlaceableInCell type, Color color) {
 		colors.put(type, color);
 	}
+
+	public final Color get(TypePlaceableInCell type) {
+		return colors.get(type);
+	}
+
+	public final boolean containsKey(TypePlaceableInCell type) {
+		return colors.containsKey(type);
+	}
 }
 

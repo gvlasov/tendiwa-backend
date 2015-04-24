@@ -6,7 +6,7 @@ import org.tendiwa.collections.Collectors;
 import org.tendiwa.data.FourCyclePenisGraph;
 import org.tendiwa.demos.Demos;
 import org.tendiwa.demos.DrawableRectangle;
-import org.tendiwa.drawing.DrawableInto;
+import org.tendiwa.drawing.Canvas;
 import org.tendiwa.drawing.MagnifierCanvas;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.*;
@@ -15,10 +15,7 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.smartMesh.SegmentNetworkBuilder;
 import org.tendiwa.geometry.smartMesh.SmartMesh2D;
-import org.tendiwa.settlements.utils.BuildingPlacesFilters;
-import org.tendiwa.settlements.utils.RectangleWithNeighbors;
-import org.tendiwa.settlements.utils.RectangularBuildingLots;
-import org.tendiwa.settlements.utils.RoadRejector;
+import org.tendiwa.settlements.utils.*;
 import org.tendiwa.settlements.utils.streetsDetector.DetectedStreets;
 
 import java.awt.Color;
@@ -29,7 +26,7 @@ import java.util.Set;
 
 public class BigCityDemo implements Runnable {
 
-	DrawableInto canvas;
+	Canvas canvas;
 
 	public static void main(String[] args) {
 		Demos.run(BigCityDemo.class, new DrawingModule());
@@ -121,7 +118,7 @@ public class BigCityDemo implements Runnable {
 	}
 
 	private void drawLots(Set<RectangleWithNeighbors> recGroups) {
-		for (RectangleWithNeighbors rectangleWithNeighbors : recGroups) {
+		for (BasicRectangleWithNeighbors rectangleWithNeighbors : recGroups) {
 			canvas.draw(
 				new DrawableRectangle.Outlined(
 					rectangleWithNeighbors.rectangle,

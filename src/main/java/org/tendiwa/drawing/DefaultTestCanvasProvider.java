@@ -1,12 +1,10 @@
 package org.tendiwa.drawing;
 
 import com.google.inject.Provider;
-import com.google.inject.name.Named;
-import com.thoughtworks.xstream.converters.reflection.CGLIBEnhancedConverter;
 
-public class DefaultTestCanvasProvider implements Provider<DrawableInto> {
+public class DefaultTestCanvasProvider implements Provider<Canvas> {
 	@Override
-	public DrawableInto get() {
+	public Canvas get() {
 		return new TestCanvas(1, 800, 600);
 	}
 }

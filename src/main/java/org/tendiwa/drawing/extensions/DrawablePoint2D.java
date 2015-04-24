@@ -1,7 +1,7 @@
 package org.tendiwa.drawing.extensions;
 
 import org.tendiwa.drawing.Drawable;
-import org.tendiwa.drawing.DrawableInto;
+import org.tendiwa.drawing.Canvas;
 import org.tendiwa.geometry.*;
 
 import java.awt.Color;
@@ -19,7 +19,7 @@ public final class DrawablePoint2D extends Point2D_Wr implements Drawable {
 	}
 
 	@Override
-	public void drawIn(DrawableInto canvas) {
+	public void drawIn(Canvas canvas) {
 		canvas.drawCell(toCell(), color);
 	}
 
@@ -34,7 +34,7 @@ public final class DrawablePoint2D extends Point2D_Wr implements Drawable {
 		}
 
 		@Override
-		public void drawIn(DrawableInto canvas) {
+		public void drawIn(Canvas canvas) {
 			canvas.fillShape(
 				new Ellipse2D.Double(
 					this.x() - diameter,
@@ -66,7 +66,7 @@ public final class DrawablePoint2D extends Point2D_Wr implements Drawable {
 		}
 
 		@Override
-		public void drawIn(DrawableInto canvas) {
+		public void drawIn(Canvas canvas) {
 			Marker marker = new Marker(this, text, canvas);
 			canvas.draw(
 				new DrawableSegment2D(

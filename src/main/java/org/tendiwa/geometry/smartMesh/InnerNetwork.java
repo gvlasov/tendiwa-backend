@@ -96,13 +96,13 @@ final class InnerNetwork {
 		if (splitMaybe.isPresent()) {
 			Segment2D edge = splitMaybe.get();
 			if (edgeIsOnCycles(edge)) {
-				branchEnds.addOnSegment(newSegment.end, edge);
+				branchEnds.addOnSegment(newSegment.end(), edge);
 			} else {
-				fullGraph.integrateCutSegment(new SplitSegment2D(edge, newSegment.end));
+				fullGraph.integrateCutSegment(new SplitSegment2D(edge, newSegment.end()));
 			}
 		}
 
-		fullGraph.addVertex(newSegment.end);
+		fullGraph.addVertex(newSegment.end());
 		fullGraph.addSegmentAsEdge(newSegment);
 
 		NonIntersectionTest.test(fullGraph, newSegment);

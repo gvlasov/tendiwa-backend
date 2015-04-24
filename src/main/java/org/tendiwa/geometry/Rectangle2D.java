@@ -119,4 +119,12 @@ public interface Rectangle2D extends RectangularHull {
 	default double maxY() {
 		return y() + height();
 	}
+	default Rectangle2D stretch(double amount) {
+		return new BasicRectangle2D(
+			x() - amount,
+			y() - amount,
+			width() + amount * 2,
+			height() + amount * 2
+		);
+	}
 }

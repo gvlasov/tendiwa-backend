@@ -40,7 +40,7 @@ public class Line2D {
 		if (Math.abs(zn) < Vectors2D.EPSILON) {
 			return null;
 		}
-		return new Point2D(
+		return new BasicPoint2D(
 			-det(c, b, line.c, line.b) / zn,
 			-det(a, c, line.a, line.c) / zn
 		);

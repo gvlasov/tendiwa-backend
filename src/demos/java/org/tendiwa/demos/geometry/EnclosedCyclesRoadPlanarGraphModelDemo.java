@@ -2,7 +2,7 @@ package org.tendiwa.demos.geometry;
 
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.demos.Demos;
-import org.tendiwa.drawing.DrawableInto;
+import org.tendiwa.drawing.Canvas;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
@@ -19,7 +19,7 @@ public class EnclosedCyclesRoadPlanarGraphModelDemo implements Runnable {
 
 	@Override
 	public void run() {
-		DrawableInto canvas = new TestCanvas(1, 800, 600);
+		Canvas canvas = new TestCanvas(1, 800, 600);
 //		DrawableInto canvas = new MagnifierCanvas(10, 219, 21, 600, 600);
 		TestCanvas.canvas = canvas;
 		SimpleGraph<Point2D, Segment2D> graph = new GraphConstructor<>(PlanarGraphs.getEdgeFactory())

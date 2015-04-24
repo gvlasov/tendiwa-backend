@@ -36,7 +36,7 @@ public class StepAwayFromFromSideMargin {
 				Rectangle placeableBounds = recTree.bounds();
 				Rectangle existingRec = pointer.find(builder).bounds();
 				int staticCoord = existingRec.side(side).getStaticCoord()
-					+ (builder.borderWidth() + 1 + margin) * side.getGrowing();
+					+ (1 + margin) * side.getGrowing();
 				if (side == Directions.N) {
 					staticCoord -= placeableBounds.height();
 				} else if (side == Directions.W) {

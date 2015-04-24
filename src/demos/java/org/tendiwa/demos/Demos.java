@@ -2,15 +2,10 @@ package org.tendiwa.demos;
 
 import com.google.inject.Guice;
 import com.google.inject.Module;
-import groovy.lang.GroovyShell;
-import org.codehaus.groovy.control.CompilerConfiguration;
-import org.tendiwa.core.ScriptShell;
 import org.tendiwa.core.Tendiwa;
-import org.tendiwa.core.World;
 import org.tendiwa.core.worlds.Genesis;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingModule;
-import org.tendiwa.drawing.extensions.DrawingWorld;
 
 public final class Demos {
 	private Demos() {

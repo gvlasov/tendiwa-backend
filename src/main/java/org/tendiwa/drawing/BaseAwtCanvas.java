@@ -3,39 +3,41 @@ package org.tendiwa.drawing;
 import com.google.inject.Inject;
 import org.tendiwa.core.meta.Cell;
 import org.tendiwa.geometry.*;
+import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Rectangle;
+import org.tendiwa.geometry.Rectangle2D;
 
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLayeredPane;
+import javax.swing.WindowConstants;
 import java.awt.*;
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowEvent;
-import java.awt.geom.AffineTransform;
+import java.awt.geom.*;
+import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Objects;
 
 /**
  * Window where you can draw world, locations or anything for what there is a {@link DrawingAlgorithm}.
  */
-class BaseTestCanvas implements DrawableInto {
+class BaseAwtCanvas implements AwtCanvas, ScaledCanvas {
 	private static final AffineTransform defaultTransform = new AffineTransform();
 	private final BasicStroke singleWidthStroke;
-	public static DrawableInto canvas;
+	public static Canvas canvas;
 
 	static {
 		defaultTransform.setToScale(1, 1);
 	}
 
 	public final Layer DEFAULT_LAYER;
-	public final Layer MIDDLE_LAYER;
-	public final Layer TOP_LAYER;
-	final int scale;
+	private final int scale;
 	private final JFrame frame;
 	private final JLayeredPane panel;
 	private final String defaultTitle;
@@ -46,7 +48,7 @@ class BaseTestCanvas implements DrawableInto {
 
 
 	@Inject
-	public BaseTestCanvas(
+	public BaseAwtCanvas(
 		final int scale,
 		int startX,
 		int startY,
@@ -66,14 +68,8 @@ class BaseTestCanvas implements DrawableInto {
 		panel = new JLayeredPane();
 		frame.add(panel);
 		DEFAULT_LAYER = new Layer();
-		MIDDLE_LAYER = new Layer();
-		TOP_LAYER = new Layer();
 		panel.setLayer(DEFAULT_LAYER.component, 0);
-		panel.setLayer(MIDDLE_LAYER.component, 1);
-		panel.setLayer(TOP_LAYER.component, 2);
 		panel.add(DEFAULT_LAYER.component);
-		panel.add(MIDDLE_LAYER.component);
-		panel.add(TOP_LAYER.component);
 		setSize(pixelBounds.width(), pixelBounds.height());
 		panel.setSize(pixelBounds.width(), pixelBounds.height());
 		panel.setPreferredSize(new Dimension(pixelBounds.width(), pixelBounds.height()));
@@ -175,46 +171,13 @@ class BaseTestCanvas implements DrawableInto {
 		currentLayer = layer;
 	}
 
-	/**
-	 * Draws an object on this test canvas using a particular algorithm, on a particular {@link Layer}.
-	 *
-	 * @param what
-	 * 	an object to drawWorld.
-	 * @param how
-	 * 	an algorithm to drawWorld the object.
-	 * @param where
-	 * 	a layer on which the object will be drawn.
-	 */
-	@Override
-	public <T> void draw(T what, DrawingAlgorithm<? super T> how, Layer where) {
-		setLayer(where);
-		how.draw(what, this);
-		panel.repaint();
-	}
-
-	/**
-	 * Draws an object on this test canvas using a particular {@link DrawingAlgorithm}, on the layer {@link
-	 * TestCanvas#DEFAULT_LAYER}.
-	 *
-	 * @param what
-	 * 	an object to drawWorld.
-	 * @param how
-	 * 	an algorithm to drawWorld the object.
-	 */
-	@Override
-	public <T> void draw(T what, DrawingAlgorithm<? super T> how) {
-		Objects.requireNonNull(what);
-		setLayer(DEFAULT_LAYER);
-		how.draw(what, this);
-		panel.repaint();
-	}
-
 	@Override
 	public void draw(Drawable drawable) {
 		drawable.drawIn(this);
 	}
 
-	public RenderedImage getImage() {
+	@Override
+	public BufferedImage getImage() {
 		return image;
 	}
 
@@ -226,8 +189,14 @@ class BaseTestCanvas implements DrawableInto {
 		frame.setVisible(false);
 	}
 
+	@Override
 	public void clear() {
-		graphics.clearRect(0, 0, pixelBounds.width(), pixelBounds.height());
+		graphics.clearRect(
+			0,
+			0,
+			pixelBounds.width(),
+			pixelBounds.height()
+		);
 	}
 
 	@Override
@@ -238,13 +207,8 @@ class BaseTestCanvas implements DrawableInto {
 	}
 
 	@Override
-	public int getWidth() {
-		return pixelBounds.width();
-	}
-
-	@Override
-	public int getHeight() {
-		return pixelBounds.height();
+	public org.tendiwa.geometry.Dimension size() {
+		return pixelBounds;
 	}
 
 	@Override
@@ -259,8 +223,8 @@ class BaseTestCanvas implements DrawableInto {
 
 		private Layer() {
 			image = new BufferedImage(
-				BaseTestCanvas.this.pixelBounds.width(),
-				BaseTestCanvas.this.pixelBounds.height(),
+				BaseAwtCanvas.this.pixelBounds.width(),
+				BaseAwtCanvas.this.pixelBounds.height(),
 				BufferedImage.TYPE_INT_ARGB
 			);
 			graphics = image.createGraphics();
@@ -319,7 +283,7 @@ class BaseTestCanvas implements DrawableInto {
 	}
 
 	@Override
-	public void drawRectangle2D(BasicRectangle2D r, Color color) {
+	public void drawRectangle2D(Rectangle2D r, Color color) {
 		graphics.setColor(color);
 		Graphics2D g2d = (Graphics2D) graphics;
 		AffineTransform transform = new AffineTransform();
@@ -332,18 +296,18 @@ class BaseTestCanvas implements DrawableInto {
 		g2d.setTransform(defaultTransform);
 		g2d.fill(
 			new java.awt.Rectangle(
-				(int) Math.round((r.x + 0.5) * scale - pixelBounds.x()),
-				(int) Math.round((r.y + 0.5) * scale - pixelBounds.y()),
-				(int) Math.round(r.width * scale),
-				(int) Math.round(r.height * scale)
+				(int) Math.round((r.x() + 0.5) * scale - pixelBounds.x()),
+				(int) Math.round((r.y() + 0.5) * scale - pixelBounds.y()),
+				(int) Math.round(r.width() * scale),
+				(int) Math.round(r.height() * scale)
 			)
 		);
 		g2d.setTransform(defaultTransform);
 	}
 
 	@Override
-	public void drawRasterLine(BasicCell p1, BasicCell p2, Color color) {
-		for (Cell coordinate : BasicCellSegment.cells(p1.x, p1.y, p2.x, p2.y)) {
+	public void drawRasterLine(Cell p1, Cell p2, Color color) {
+		for (Cell coordinate : new BasicCellSegment(p1, p2)) {
 			drawCell(coordinate.x(), coordinate.y(), color);
 		}
 	}
@@ -392,8 +356,8 @@ class BaseTestCanvas implements DrawableInto {
 	@Override
 	public void drawString(String text, Point2D start, Color color) {
 		graphics.setColor(color);
-		int translatedX = (int) ((start.x()+0.5 - ((double)pixelBounds.x())/scale) * scale);
-		int translatedY = (int) ((start.y()+0.5 - ((double)pixelBounds.y())/scale) * scale);
+		int translatedX = (int) ((start.x() + 0.5 - ((double) pixelBounds.x()) / scale) * scale);
+		int translatedY = (int) ((start.y() + 0.5 - ((double) pixelBounds.y()) / scale) * scale);
 		graphics.drawString(text, translatedX, translatedY);
 	}
 
@@ -405,5 +369,18 @@ class BaseTestCanvas implements DrawableInto {
 	@Override
 	public int textLineHeight() {
 		return graphics.getFontMetrics().getHeight();
+	}
+
+	@Override
+	public void drawSegment2D(Segment2D segment, Color color) {
+		drawShape(
+			new Line2D.Double(
+				segment.start().x() + 0.5,
+				segment.start().y() + 0.5,
+				segment.end().x() + 0.5,
+				segment.end().y() + 0.5
+			),
+			color
+		);
 	}
 }

@@ -21,7 +21,7 @@ public class StepNearFromSide {
 			Rectangle existingRec = pointer.find(builder).bounds();
 			Rectangle placeableBounds = rectSet.bounds();
 			int staticCoord = existingRec.side(fromSide).getStaticCoord()
-				+ (builder.borderWidth() + 1) * fromSide.getGrowing();
+				+ fromSide.getGrowing();
 			int x, y;
 			int dynamicCoord = (fromSide.isVertical() ? existingRec.x() : existingRec.y())
 				+ (existingRec.side(fromSide).length() - placeableBounds.side(fromSide).length()) / 2;

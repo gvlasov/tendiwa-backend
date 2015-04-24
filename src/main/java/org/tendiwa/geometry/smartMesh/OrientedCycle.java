@@ -3,7 +3,6 @@ package org.tendiwa.geometry.smartMesh;
 import org.jgrapht.Graph;
 import org.tendiwa.collections.SuccessiveTuples;
 import org.tendiwa.geometry.*;
-import org.tendiwa.geometry.Bisector;
 import org.tendiwa.graphs.GraphChainTraversal;
 import org.tendiwa.graphs.GraphChainTraversal.NeighborsTriplet;
 import org.tendiwa.graphs.MinimalCycle;
@@ -53,8 +52,8 @@ final class OrientedCycle implements NetworkPart {
 					GraphChainTraversal
 						.traverse(splitOriginalGraph)
 						.startingWith(current)
-						.awayFrom(splitOriginalGraph.findNeighborOnSegment(current, new Segment2D(current, previous)))
-						.past(splitOriginalGraph.findNeighborOnSegment(current, new Segment2D(current, next)))
+						.awayFrom(splitOriginalGraph.findNeighborOnSegment(current, current.segmentTo(previous)))
+						.past(splitOriginalGraph.findNeighborOnSegment(current, current.segmentTo(next)))
 						.until(triplet -> triplet.next() == next)
 						.stream()
 						.filter(triplet -> triplet.next() != null)
@@ -129,16 +128,16 @@ final class OrientedCycle implements NetworkPart {
 			next = next.reverse();
 		}
 
-		if (next.end.equals(previous.start)) {
+		if (next.end().equals(previous.start())) {
 			Segment2D buf = previous;
 			previous = next;
 			next = buf;
 		}
 		Segment2D bisectorSegment =
-			new Segment2D(
+			new BasicSegment2D(
 				bisectorStart,
 				bisectorStart.add(
-					new Bisector(
+					new BasicBisector(
 						next.asVector(),
 						previous.asVector().reverse()
 					).asInbetweenVector()
@@ -147,7 +146,7 @@ final class OrientedCycle implements NetworkPart {
 			);
 		return new Ray(
 			bisectorStart,
-			bisectorSegment.start.angleTo(bisectorSegment.end)
+			bisectorSegment.start().angleTo(bisectorSegment.end())
 		);
 	}
 
@@ -175,7 +174,7 @@ final class OrientedCycle implements NetworkPart {
 		}
 		Point2D rayStart = segmentWithPoint.middlePoint();
 		Point2D pointOnRay = rayStart.add(
-			new Bisector(
+			new BasicBisector(
 				cwPoint.subtract(rayStart),
 				ccwPoint.subtract(rayStart)
 			).asInbetweenVector()

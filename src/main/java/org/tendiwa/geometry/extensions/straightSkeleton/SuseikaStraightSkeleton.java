@@ -4,14 +4,12 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import org.jgrapht.UndirectedGraph;
-import org.jgrapht.graph.SimpleGraph;
-import org.tendiwa.core.meta.Utils;
-import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawingPoint2D;
-import org.tendiwa.geometry.*;
+import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Polygon;
+import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.StraightSkeleton;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
 
-import java.awt.Color;
 import java.util.*;
 
 public final class SuseikaStraightSkeleton implements StraightSkeleton {

@@ -1,11 +1,13 @@
 package org.tendiwa.drawing.extensions;
 
 import org.jgrapht.UndirectedGraph;
+import org.tendiwa.drawing.AwtCanvas;
+import org.tendiwa.drawing.Canvas;
 import org.tendiwa.drawing.Drawable;
-import org.tendiwa.drawing.DrawableInto;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.Graph2D_Wr;
+import org.tendiwa.graphs.GraphConstructor;
 
 import java.awt.Color;
 import java.util.function.Function;
@@ -25,7 +27,7 @@ public final class DrawableGraph2D extends Graph2D_Wr implements Drawable {
 	}
 
 	@Override
-	public void drawIn(DrawableInto canvas) {
+	public void drawIn(Canvas canvas) {
 		canvas.drawAll(
 			vertexSet(),
 			howToDrawVertices
@@ -52,15 +54,10 @@ public final class DrawableGraph2D extends Graph2D_Wr implements Drawable {
 		}
 
 		@Override
-		public void drawIn(DrawableInto canvas) {
-			canvas.drawAll(
-				edgeSet(),
-				edge -> new DrawableSegment2D(edge, color)
-			);
-			canvas.drawAll(
-				vertexSet(),
-				p -> new DrawablePoint2D.Circle(p, color, diameter)
-			);
+		public void drawIn(Canvas canvas) {
+			edgeSet().stream()
+				.map(edge -> new DrawableSegment2D(edge, color))
+				.forEach(drawable -> drawable.drawIn(canvas));
 		}
 	}
 
@@ -76,7 +73,7 @@ public final class DrawableGraph2D extends Graph2D_Wr implements Drawable {
 		}
 
 		@Override
-		public void drawIn(DrawableInto canvas) {
+		public void drawIn(Canvas canvas) {
 			canvas.drawAll(
 				edgeSet(),
 				edge -> new DrawableSegment2D.Thin(edge, color)
@@ -97,10 +94,44 @@ public final class DrawableGraph2D extends Graph2D_Wr implements Drawable {
 		}
 
 		@Override
-		public void drawIn(DrawableInto canvas) {
+		public void drawIn(Canvas canvas) {
 			canvas.drawAll(
 				edgeSet(),
 				edge -> new DrawableSegment2D.Thin(edge, color)
+			);
+		}
+	}
+
+	public static final class WithAliases extends Graph2D_Wr implements Drawable {
+
+		private final GraphConstructor<Point2D, Segment2D> graphConstructor;
+
+		public WithAliases(
+			UndirectedGraph<Point2D, Segment2D> graph,
+			GraphConstructor<Point2D, Segment2D> aliasSource
+		) {
+			super(graph);
+			this.graphConstructor = aliasSource;
+		}
+
+		@Override
+		public void drawIn(Canvas canvas) {
+			canvas.drawAll(
+				edgeSet(),
+				edge -> new DrawableSegment2D(edge, Color.red)
+			);
+			canvas.drawAll(
+				vertexSet(),
+				p -> new DrawablePoint2D(p, Color.red)
+			);
+			canvas.drawAll(
+				vertexSet().stream(),
+				vertex ->
+					new DrawableText(
+						Integer.toString(graphConstructor.aliasOf(vertex)),
+						vertex,
+						Color.red
+					)
 			);
 		}
 	}

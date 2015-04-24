@@ -1,7 +1,7 @@
 package org.tendiwa.demos.drawing;
 
 import org.tendiwa.demos.Demos;
-import org.tendiwa.drawing.DrawableInto;
+import org.tendiwa.drawing.Canvas;
 import org.tendiwa.drawing.MagnifierCanvas;
 import org.tendiwa.drawing.extensions.DrawablePoint2D;
 import org.tendiwa.drawing.extensions.DrawingPoint2D;
@@ -18,7 +18,7 @@ final class Rectangle2D implements Runnable {
 
 	@Override
 	public void run() {
-		DrawableInto canvas = new MagnifierCanvas(15, 6, 6, 150, 150);
+		Canvas canvas = new MagnifierCanvas(15, 6, 6, 150, 150);
 		BasicRectangle2D box =
 			new BasicRectangle2D(0, 0, 1, 1);
 		BasicRectangle2D box2 =
