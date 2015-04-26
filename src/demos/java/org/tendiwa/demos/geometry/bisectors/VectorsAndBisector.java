@@ -8,7 +8,7 @@ import org.tendiwa.geometry.*;
 
 import java.awt.Color;
 
-final class VectorsAndBisector extends Bisector_Wr implements Drawable<Canvas> {
+final class VectorsAndBisector extends Bisector_Wr implements Drawable {
 	private final Point2D start;
 	final Vector2D cw;
 	final Vector2D ccw;

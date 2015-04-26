@@ -2,6 +2,7 @@ package org.tendiwa.geometry.extensions.straightSkeleton;
 
 import org.tendiwa.collections.DoublyLinkedNode;
 import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawableSegment2D;
 import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.*;
 
@@ -131,7 +132,12 @@ final class IncompleteFace implements Face, UnderlyingFace {
 		if (JTSUtils.isYDownCCW(points)) {
 			TestCanvas.canvas.drawAll(
 				new BasicPolygon(points).toSegments(),
-				DrawingSegment2D.withColorDirected(Color.white, 1)
+				segment ->
+					new DrawableSegment2D.Arrow(
+						segment,
+						Color.white,
+						1
+					)
 			);
 			assert false;
 		}

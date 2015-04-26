@@ -36,7 +36,7 @@ final class SegmentIntersectionSearch implements EventSearch {
 		if (segment.oneOfEndsIs(sourceNode) || segment.oneOfEndsIs(targetNode)) {
 			return;
 		}
-		if (isSegmentIntersectionProbable(sourceNode, targetNode, segment.start, segment.end)) {
+		if (isSegmentIntersectionProbable(sourceNode, targetNode, segment.start(), segment.end())) {
 			RayIntersection intersection = new RayIntersection(sourceNode, targetNode, segment);
 			if (isIntersectionInsideUnsnappedSegment(intersection)) {
 				Point2D intersectionPoint = intersection.commonPoint();
@@ -47,7 +47,8 @@ final class SegmentIntersectionSearch implements EventSearch {
 				if (result != null && intersectionPoint.equals(result.target())) {
 					return;
 				}
-				assert !intersectionPoint.equals(segment.end) : segment.end.hashCode() + " it should have been a point snap";
+				assert !intersectionPoint.equals(segment.end()) : segment.end().hashCode() + " it should have been a " +
+					"point snap";
 				result = new SnapToSegment(sourceNode, intersectionPoint, segment);
 				minR = intersection.r;
 			}

@@ -67,20 +67,20 @@ public final class ShapeFromOutline {
 		double maxX = Integer.MIN_VALUE;
 		double maxY = Integer.MIN_VALUE;
 		for (Point2D point : outline.vertexSet()) {
-			if (minX > point.x) {
-				minX = point.x;
+			if (minX > point.x()) {
+				minX = point.x();
 			}
-			if (minY > point.y) {
-				minY = point.y;
+			if (minY > point.y()) {
+				minY = point.y();
 			}
-			if (maxX < point.x) {
-				maxX = point.x;
+			if (maxX < point.x()) {
+				maxX = point.x();
 			}
-			if (maxY < point.y) {
-				maxY = point.y;
+			if (maxY < point.y()) {
+				maxY = point.y();
 			}
 		}
-		return new Rectangle(
+		return new BasicRectangle(
 			(int) Math.floor(minX),
 			(int) Math.floor(minY),
 			(int) Math.ceil(maxX - minX),
@@ -97,7 +97,7 @@ public final class ShapeFromOutline {
 		GeometryFactory gf = new GeometryFactory();
 		Coordinate[] coordinates = cycle.vertexList()
 			.stream()
-			.map(p -> new Coordinate(p.x, p.y))
+			.map(p -> new Coordinate(p.x(), p.y()))
 			.collect(Collectors.toList())
 			.toArray(new Coordinate[cycle.vertexList().size() + 1]);
 		coordinates[coordinates.length - 1] = coordinates[0];

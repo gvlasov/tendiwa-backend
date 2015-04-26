@@ -2,17 +2,15 @@ package org.tendiwa.drawing;
 
 import org.tendiwa.core.meta.Cell;
 import org.tendiwa.geometry.*;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Rectangle2D;
 
 import java.awt.Color;
-import java.awt.Shape;
-import java.awt.geom.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
 public interface Canvas {
 	void draw(Drawable drawable);
+
+	int getScale();
 
 	default <T> void drawAll(Iterable<T> what, Function<T, Drawable> toDrawable) {
 		for (T shape : what) {
@@ -29,12 +27,6 @@ public interface Canvas {
 	Dimension size();
 
 	void clear();
-
-	/**
-	 * Size of a cell in pixels.
-	 *
-	 * @return
-	 */
 
 	void drawCell(int x, int y, Color color);
 
@@ -61,4 +53,6 @@ public interface Canvas {
 	int textLineHeight();
 
 	void drawSegment2D(Segment2D segment, Color color);
+
+	void drawCircle(Circle circle, Color color);
 }

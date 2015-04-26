@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.tendiwa.geometry.GeometryPrimitives.point2D;
+import static org.tendiwa.geometry.GeometryPrimitives.rectangle;
 import static org.tendiwa.geometry.GeometryPrimitives.segment2D;
 
 /**
@@ -88,7 +89,7 @@ public class TwakStraightSkeleton implements StraightSkeleton {
 					.collect(Collectors.toList())
 			);
 
-			new TestCanvas(1, 600, 600).drawAll(
+			new TestCanvas(1, rectangle(600, 600)).drawAll(
 				originalEdges1,
 				edge -> new DrawableSegment2D(edge, Color.red)
 			);

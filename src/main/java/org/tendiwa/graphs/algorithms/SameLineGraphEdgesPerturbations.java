@@ -12,8 +12,8 @@ import java.util.Set;
 
 public final class SameLineGraphEdgesPerturbations {
 	private static final Comparator<Segment2D> HORIZONTAL_COMPARATOR = (a, b) -> {
-		assert a.start.y == a.end.y && b.start.y == b.end.y;
-		double d = a.start.y - b.start.y;
+		assert a.start().y() == a.end().y() && b.start().y() == b.end().y();
+		double d = a.start().y() - b.start().y();
 		if (d < 0) {
 			return -1;
 		}
@@ -23,8 +23,8 @@ public final class SameLineGraphEdgesPerturbations {
 		return 0;
 	};
 	private static final Comparator<Segment2D> VERTICAL_COMPARATOR = (a, b) -> {
-		assert a.start.x == a.end.x && b.start.x == b.end.x;
-		double d = a.start.x - b.start.x;
+		assert a.start().x() == a.end().x() && b.start().x() == b.end().x();
+		double d = a.start().x() - b.start().x();
 		if (d < 0) {
 			return -1;
 		}
@@ -51,9 +51,9 @@ public final class SameLineGraphEdgesPerturbations {
 		List<Segment2D> verticalEdges = new ArrayList<>(graph.edgeSet().size());
 		List<Segment2D> horizontalEdges = new ArrayList<>(graph.edgeSet().size());
 		for (Segment2D edge : graph.edgeSet()) {
-			if (edge.start.x == edge.end.x) {
+			if (edge.start().x() == edge.end().x()) {
 				verticalEdges.add(edge);
-			} else if (edge.start.y == edge.end.y) {
+			} else if (edge.start().y() == edge.end().y()) {
 				horizontalEdges.add(edge);
 			}
 		}
@@ -70,15 +70,15 @@ public final class SameLineGraphEdgesPerturbations {
 		  */
 		int size = verticalEdges.size() - 1;
 		for (int i = 0; i < size; i++) {
-			Point2D vertex = verticalEdges.get(i).start; // .end would be fine too
-			if (vertex.x == verticalEdges.get(i + 1).start.x) {
+			Point2D vertex = verticalEdges.get(i).start(); // .end would be fine too
+			if (vertex.x() == verticalEdges.get(i + 1).start().x()) {
 				perturbVertexAndItsEdges(vertex, graph, magnitude);
 			}
 		}
 		size = horizontalEdges.size() - 1;
 		for (int i = 0; i < size; i++) {
-			Point2D vertex = horizontalEdges.get(i).start; // .end would be fine too
-			if (vertex.y == horizontalEdges.get(i + 1).start.y) {
+			Point2D vertex = horizontalEdges.get(i).start(); // .end would be fine too
+			if (vertex.y() == horizontalEdges.get(i + 1).start().y()) {
 				if (!graph.containsVertex(vertex)) {
 					// Same edge could already be perturbed in a loop over vertical edges.
 					continue;
@@ -105,11 +105,11 @@ public final class SameLineGraphEdgesPerturbations {
 			assert removed;
 			// It should be .end, not .start, because in perturbIfHasSameLineEdges we used
 			// vertex = edges.get(i).start
-			if (edge.start == vertex) {
-				graph.addEdge(newVertex, edge.end);
+			if (edge.start() == vertex) {
+				graph.addEdge(newVertex, edge.end());
 			} else {
-				assert edge.end == vertex;
-				graph.addEdge(newVertex, edge.start);
+				assert edge.end() == vertex;
+				graph.addEdge(newVertex, edge.start());
 			}
 		}
 		assert graph.degreeOf(vertex) == 0 : graph.degreeOf(vertex);

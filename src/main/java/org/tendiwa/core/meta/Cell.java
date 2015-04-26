@@ -35,6 +35,9 @@ public interface Cell {
 	default double distanceDouble(int x, int y) {
 		return Math.sqrt(Math.pow(x - x(), 2) + Math.pow(y - y(), 2));
 	}
+	default double distanceDouble(Cell cell) {
+		return distanceDouble(cell.x(), cell.y());
+	}
 
 	default boolean isNear(int x, int y) {
 		int ableX = Math.abs(x() - x);

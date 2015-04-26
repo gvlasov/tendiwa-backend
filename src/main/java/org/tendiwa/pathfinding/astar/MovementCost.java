@@ -1,5 +1,6 @@
 package org.tendiwa.pathfinding.astar;
 
+import org.tendiwa.core.meta.Cell;
 import org.tendiwa.geometry.BasicCell;
 
 @FunctionalInterface
@@ -13,5 +14,5 @@ public interface MovementCost {
 	 * 	Destination cell.
 	 * @return Cost of moving from {@code current} to {@code neighbor}.
 	 */
-	public double cost(BasicCell current, BasicCell neighbor);
+	public double cost(Cell current, Cell neighbor);
 }

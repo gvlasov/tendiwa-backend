@@ -138,17 +138,6 @@ public class Mutable2DCellSet implements MutableCellSet, BoundedCellSet {
 	}
 
 	@Override
-	public void forEach(CellConsumer action) {
-		for (int x = 0; x < bounds.width(); x++) {
-			for (int y = 0; y < bounds.height(); y++) {
-				if (cells[x][y]) {
-					action.consume(x + bounds.x(), y + bounds.y());
-				}
-			}
-		}
-	}
-
-	@Override
 	public void forEach(Consumer<? super Cell> action) {
 		for (int x = 0; x < bounds.width(); x++) {
 			for (int y = 0; y < bounds.height(); y++) {

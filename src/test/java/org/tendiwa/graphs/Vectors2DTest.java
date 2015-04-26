@@ -1,22 +1,23 @@
 package org.tendiwa.graphs;
 
 import org.junit.Test;
-import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 
 import static org.junit.Assert.*;
+import static org.tendiwa.geometry.GeometryPrimitives.point2D;
+import static org.tendiwa.geometry.GeometryPrimitives.segment2D;
 import static org.tendiwa.geometry.Vectors2D.*;
 
 public class Vectors2DTest {
 	@Test
 	public void testPerpDotProduct() {
-		Segment2D a = new Segment2D(
-			new Point2D(20, 60),
-			new Point2D(60, 60)
+		Segment2D a = segment2D(
+			point2D(20, 60),
+			point2D(60, 60)
 		);
-		Segment2D b = new Segment2D(
-			new Point2D(60, 60),
-			new Point2D(80, 80)
+		Segment2D b = segment2D(
+			point2D(60, 60),
+			point2D(80, 80)
 		);
 		double pdp = perpDotProduct(
 			new double[]{a.dx(), a.dy()},

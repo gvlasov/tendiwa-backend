@@ -28,13 +28,8 @@ public class MaximalCellRectangleFinderDemo implements Runnable {
 	@Override
 	public void run() {
 		TestCanvas canvas;
-		TestCanvas.canvas = canvas = new TestCanvas(1, 200, 200);
+		TestCanvas.canvas = canvas = new TestCanvas(1, rectangle(200, 200));
 		List<Point2D> polygon = new ConvexAndReflexAmoeba();
-//		List<Point2D> polygon = new PointTrail(20, 20)
-//			.moveBy(30, -10)
-//			.moveBy(10, 30)
-//			.moveBy(-30, 10)
-//			.points();
 		MutableRasterizationResult rasterizedPolygon = PolygonRasterizer.rasterizeToMutable(polygon);
 		Rectangle largestRectangle = MaximalCellRectangleFinder.compute(
 			rasterizedPolygon.bitmap

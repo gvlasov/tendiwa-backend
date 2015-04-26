@@ -3,7 +3,7 @@ package org.tendiwa.geometry.smartMesh;
 import org.jgrapht.UndirectedGraph;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.settlements.EnclosedBlock;
+import org.tendiwa.settlements.LinkedPolygon;
 
 import java.util.Iterator;
 
@@ -27,7 +27,7 @@ public final class EnclosedCyclesSet {
 		cyclesRoadGraph = segment2DSmartMesh.getFullCycleGraph();
 	}
 
-	public boolean contains(EnclosedBlock block) {
+	public boolean contains(LinkedPolygon block) {
 		/**
 		 * A block is considered to be in the enclosed cycles set iff its edges are all contained among split
 		 * original edges.

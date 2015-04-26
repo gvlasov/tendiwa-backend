@@ -13,6 +13,16 @@ public abstract class CellSegment_Wr implements CellSegment {
 	}
 
 	@Override
+	public Cell start() {
+		return segment.start();
+	}
+
+	@Override
+	public Cell end() {
+		return segment.end();
+	}
+
+	@Override
 	public Iterator<Cell> iterator() {
 		return segment.iterator();
 	}

@@ -4,7 +4,6 @@ import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.Canvas;
 import org.tendiwa.drawing.MagnifierCanvas;
 import org.tendiwa.drawing.extensions.DrawablePoint2D;
-import org.tendiwa.drawing.extensions.DrawingPoint2D;
 import org.tendiwa.geometry.BasicRectangle2D;
 
 import java.awt.Color;

@@ -27,7 +27,7 @@ public class DistantCellsDemo implements Runnable {
 			),
 			distanceBetweenCells
 		);
-		TestCanvas canvas = new TestCanvas(1, waterRec.width(), waterRec.height());
+		TestCanvas canvas = new TestCanvas(1, waterRec);
 		canvas.draw(
 			new DrawableRectangle(
 				waterRec,

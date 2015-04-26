@@ -1,12 +1,15 @@
 package org.tendiwa.demos;
 
 import org.tendiwa.demos.settlements.CityDrawer;
+import org.tendiwa.demos.settlements.DrawableMesh2D;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.geometry.smartMesh.SegmentNetworkBuilder;
 import org.tendiwa.geometry.smartMesh.SmartMesh2D;
+
+import java.awt.Color;
 
 import static org.tendiwa.geometry.GeometryPrimitives.graphConstructor;
 import static org.tendiwa.geometry.GeometryPrimitives.point2D;
@@ -38,6 +41,11 @@ public class InnerFilamentCityDemo implements Runnable {
 			.withDefaults()
 			.withRoadSegmentLength(50)
 			.build();
-		canvas.draw(segment2DSmartMesh, new CityDrawer());
+		canvas.draw(
+			new DrawableMesh2D(
+				segment2DSmartMesh,
+				Color.red
+			)
+		);
 	}
 }

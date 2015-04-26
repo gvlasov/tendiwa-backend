@@ -5,7 +5,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.geometry.smartMesh.SegmentNetworkBuilder;
 import org.tendiwa.geometry.smartMesh.SmartMesh2D;
 import org.tendiwa.settlements.utils.RoadRejector;
@@ -13,6 +12,8 @@ import org.tendiwa.settlements.utils.RoadRejector;
 import java.util.Random;
 
 import static org.junit.Assert.*;
+import static org.tendiwa.geometry.GeometryPrimitives.graphConstructor;
+import static org.tendiwa.geometry.GeometryPrimitives.point2D;
 
 public class RoadRejectorTest {
 
@@ -21,11 +22,11 @@ public class RoadRejectorTest {
 
 	@Before
 	public void setUp() {
-		UndirectedGraph<Point2D, Segment2D> topology = new GraphConstructor<>(Segment2D::new)
-			.vertex(0, new Point2D(50, 50))
-			.vertex(1, new Point2D(150, 50))
-			.vertex(2, new Point2D(160, 150))
-			.vertex(3, new Point2D(50, 150))
+		UndirectedGraph<Point2D, Segment2D> topology = graphConstructor()
+			.vertex(0, point2D(50, 50))
+			.vertex(1, point2D(150, 50))
+			.vertex(2, point2D(160, 150))
+			.vertex(3, point2D(50, 150))
 			.cycle(0, 1, 2, 3)
 			.graph();
 		geometry = new SegmentNetworkBuilder(topology)

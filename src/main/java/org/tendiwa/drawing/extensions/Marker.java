@@ -1,6 +1,7 @@
 package org.tendiwa.drawing.extensions;
 
 import org.tendiwa.drawing.Canvas;
+import org.tendiwa.drawing.ScaledCanvas;
 import org.tendiwa.geometry.BasicRectangle2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Rectangle2D;

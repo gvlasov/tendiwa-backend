@@ -1,13 +1,22 @@
 package org.tendiwa.geometry;
 
+import org.tendiwa.core.OrdinalDirection;
+
+import java.util.Objects;
+
 public interface Rectangle2D extends RectangularHull {
 	double x();
+
 	double y();
+
 	double width();
+
 	double height();
+
 	default double getMaxX() {
 		return x() + width();
 	}
+
 	default double getMaxY() {
 		return y() + height();
 	}
@@ -119,6 +128,7 @@ public interface Rectangle2D extends RectangularHull {
 	default double maxY() {
 		return y() + height();
 	}
+
 	default Rectangle2D stretch(double amount) {
 		return new BasicRectangle2D(
 			x() - amount,
@@ -126,5 +136,20 @@ public interface Rectangle2D extends RectangularHull {
 			width() + amount * 2,
 			height() + amount * 2
 		);
+	}
+
+	default Point2D corner(OrdinalDirection direction) {
+		Objects.requireNonNull(direction);
+		switch (direction) {
+			case NW:
+				return new BasicPoint2D(x(), y());
+			case NE:
+				return new BasicPoint2D(x() + width(), y());
+			case SE:
+				return new BasicPoint2D(x() + width(), y() + height());
+			case SW:
+			default:
+				return new BasicPoint2D(x(), y() + height());
+		}
 	}
 }

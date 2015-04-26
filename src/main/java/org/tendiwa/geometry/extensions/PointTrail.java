@@ -2,7 +2,11 @@ package org.tendiwa.geometry.extensions;
 
 import com.google.common.collect.ImmutableList;
 import org.tendiwa.geometry.BasicPoint2D;
+import org.tendiwa.geometry.BasicPolygon;
 import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Polygon;
+import org.tendiwa.geometry.graphs2d.BasicCycle2D;
+import org.tendiwa.geometry.graphs2d.Cycle2D;
 
 import java.util.List;
 
@@ -38,5 +42,8 @@ public class PointTrail {
 
 	public List<Point2D> points() {
 		return builder.build();
+	}
+	public Polygon polygon() {
+		return new BasicPolygon(builder.build());
 	}
 }

@@ -4,6 +4,7 @@ import gnu.trove.map.TDoubleObjectMap;
 import gnu.trove.map.hash.TDoubleObjectHashMap;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
+import org.tendiwa.geometry.BasicPoint2D;
 import org.tendiwa.geometry.GeometryException;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
@@ -131,8 +132,8 @@ public final class SameOrPerpendicularSlopeGraphEdgesPerturbations {
 
 		void addEdge(Segment2D edge) {
 			graph.addEdge(
-				getPerturbed(edge.start),
-				getPerturbed(edge.end)
+				getPerturbed(edge.start()),
+				getPerturbed(edge.end())
 			);
 		}
 
@@ -165,9 +166,9 @@ public final class SameOrPerpendicularSlopeGraphEdgesPerturbations {
 		 * @return A point slightly moved from {@code originalVertex}.
 		 */
 		private Point2D perturb(Point2D originalVertex) {
-			return new Point2D(
-				originalVertex.x + (random.nextDouble() - 0.5) * magnitude,
-				originalVertex.y + (random.nextDouble() - 0.5) * magnitude
+			return new BasicPoint2D(
+				originalVertex.x() + (random.nextDouble() - 0.5) * magnitude,
+				originalVertex.y() + (random.nextDouble() - 0.5) * magnitude
 			);
 		}
 
@@ -188,7 +189,7 @@ public final class SameOrPerpendicularSlopeGraphEdgesPerturbations {
 		) {
 			Set<Segment2D> edges = graph.edgesOf(originalVertex);
 			Set<Point2D> otherEnds = edges.stream()
-				.map(e -> e.start == originalVertex ? e.end : e.start)
+				.map(e -> e.start() == originalVertex ? e.end() : e.start())
 				.collect(Collectors.toSet());
 			graph.removeVertex(originalVertex);
 			graph.addVertex(newPosition);

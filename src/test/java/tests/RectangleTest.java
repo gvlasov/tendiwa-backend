@@ -1,15 +1,11 @@
 package tests;
 
 import org.junit.Test;
-import org.tendiwa.core.CardinalDirection;
 import org.tendiwa.core.Directions;
-import org.tendiwa.core.Orientation;
-import org.tendiwa.geometry.*;
+import org.tendiwa.geometry.Rectangle;
 
 import static org.junit.Assert.*;
-import static org.tendiwa.geometry.DSL.*;
 import static org.tendiwa.geometry.GeometryPrimitives.*;
-import static org.tendiwa.geometry.GeometryPrimitives.rectangle;
 
 public class RectangleTest {
 
@@ -46,20 +42,6 @@ public class RectangleTest {
 		assertEquals(
 			rectangle(20, 11, 10, 10),
 			cell(20, 20).growRectangle(Directions.NE, 10, 10)
-		);
-	}
-
-	@Test
-	public void projectRectangleOnAnotherRectangle() {
-		RecTreeBuilder builder = builder(0)
-			.place("one", rectangle(10, 20), atPoint(0, 0))
-			.place("two", rectangle(20, 15), near(LAST_RECTANGLE).fromSide(E).align(S).shift(4));
-		Rectangle rec1 = (Rectangle) builder.getByName("one");
-		Rectangle rec2 = (Rectangle) builder.getByName("two");
-		OrthoCellSegment projection = rec1.side(CardinalDirection.E).getProjectionSegment(rec2);
-		assertEquals(
-			new BasicOrthoCellSegment(9, 9, 11, Orientation.VERTICAL),
-			projection
 		);
 	}
 

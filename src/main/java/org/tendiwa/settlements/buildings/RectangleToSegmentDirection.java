@@ -23,7 +23,7 @@ final class RectangleToSegmentDirection {
 	 * @return
 	 */
 	public static CardinalDirection getDirectionToSegment(Segment2D segment, Rectangle rectangle) {
-		if (StupidPriceduralRecs.rectangleIntersectsSegment(rectangle, segment)) {
+		if (rectangle.intersects(segment)) {
 			throw new GeometryException("Segment and rectangle should not intersect");
 		}
 		List<CardinalDirection> intersectedAreas = computeIntersectedCardinalAreas(segment, rectangle);
@@ -50,13 +50,13 @@ final class RectangleToSegmentDirection {
 	}
 
 	private static CardinalDirection chooseDirectionForCornerArea(Segment2D segment, Rectangle rectangle) {
-		Point2D anyPoint = segment.start; // Could as well be segment.end since both ends are in the same corner area
+		Point2D anyPoint = segment.start(); // Could as well be segment.end since both ends are in the same corner area
 		boolean horizontal = isSegmentSlopeHorizontal(segment);
 		// TODO: Can be optimised because not all the cases are necessary to compute
-		boolean toTheLeft = anyPoint.x < rectangle.x;
-		boolean toTheTop = anyPoint.y < rectangle.y;
-		boolean toTheRight = anyPoint.x > rectangle.maxX();
-		boolean toTheBottom = anyPoint.y > rectangle.maxY();
+		boolean toTheLeft = anyPoint.x() < rectangle.x();
+		boolean toTheTop = anyPoint.y() < rectangle.y();
+		boolean toTheRight = anyPoint.x() > rectangle.maxX();
+		boolean toTheBottom = anyPoint.y() > rectangle.maxY();
 		if (toTheLeft && toTheTop) {
 			return horizontal ? CardinalDirection.N : CardinalDirection.W;
 		} else if (toTheRight && toTheTop) {
@@ -78,7 +78,7 @@ final class RectangleToSegmentDirection {
 			if (dy == 0) {
 				return true;
 			} else if (dx == dy) {
-				return (Double.doubleToLongBits(segment.start.x) & 1) == 1;
+				return (Double.doubleToLongBits(segment.start().x()) & 1) == 1;
 			} else {
 				return Math.abs(dx) > Math.abs(dy);
 			}
@@ -111,12 +111,12 @@ final class RectangleToSegmentDirection {
 		CardinalDirection dir
 	) {
 		ComponentWiseInequality inequality = new ComponentWiseInequality(rectangle, dir);
-		Vector startComponents = getComponentsForPoint(segment.start, inequality);
+		Vector startComponents = getComponentsForPoint(segment.start(), inequality);
 		boolean[] startResults = comparingResults(inequality, startComponents);
 		if (areAllComponentsSatisfied(startResults)) {
 			return true;
 		}
-		Vector endComponents = getComponentsForPoint(segment.end, inequality);
+		Vector endComponents = getComponentsForPoint(segment.end(), inequality);
 		boolean[] endResults = comparingResults(inequality, endComponents);
 		if (areAllComponentsSatisfied(endResults)) {
 			return true;
@@ -126,8 +126,8 @@ final class RectangleToSegmentDirection {
 
 	private static Vector getComponentsForPoint(Point2D point, ComponentWiseInequality inequality) {
 		return inequality.signs.multiply(new BasicVector(new double[]{
-			point.x,
-			point.y
+			point.x(),
+			point.y()
 		}));
 	}
 
@@ -156,9 +156,9 @@ final class RectangleToSegmentDirection {
 		ComponentWiseInequality(Rectangle rectangle, CardinalDirection dir) {
 			if (dir == CardinalDirection.N) {
 				constraints = new BasicVector(new double[]{
-					rectangle.x,
+					rectangle.x(),
 					-rectangle.maxX(),
-					-rectangle.y
+					-rectangle.y()
 				});
 				signs = new Basic2DMatrix(new double[][]{
 					{1, 0},
@@ -167,7 +167,7 @@ final class RectangleToSegmentDirection {
 				});
 			} else if (dir == CardinalDirection.E) {
 				constraints = new BasicVector(new double[]{
-					rectangle.y,
+					rectangle.y(),
 					-rectangle.maxY(),
 					rectangle.maxX()
 				});
@@ -178,7 +178,7 @@ final class RectangleToSegmentDirection {
 				});
 			} else if (dir == CardinalDirection.S) {
 				constraints = new BasicVector(new double[]{
-					rectangle.x,
+					rectangle.x(),
 					-rectangle.maxX(),
 					rectangle.maxY()
 				});
@@ -190,9 +190,9 @@ final class RectangleToSegmentDirection {
 			} else {
 				assert dir == CardinalDirection.W;
 				constraints = new BasicVector(new double[]{
-					rectangle.y,
+					rectangle.y(),
 					-rectangle.maxY(),
-					-rectangle.x
+					-rectangle.x()
 				});
 				signs = new Basic2DMatrix(new double[][]{
 					{0, 1},

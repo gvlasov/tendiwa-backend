@@ -25,11 +25,11 @@ final class Joint implements Comparable<Joint> {
 	final Segment2D bone2;
 
 	Joint(Segment2D bone1, Segment2D bone2) {
-		if (bone2.oneOfEndsIs(bone1.start)) {
-			this.middle = bone1.start;
+		if (bone2.oneOfEndsIs(bone1.start())) {
+			this.middle = bone1.start();
 		} else {
-			assert bone2.oneOfEndsIs(bone1.end);
-			this.middle = bone1.end;
+			assert bone2.oneOfEndsIs(bone1.end());
+			this.middle = bone1.end();
 		}
 		this.start = bone1.anotherEnd(middle);
 		this.end = bone2.anotherEnd(middle);
@@ -40,8 +40,8 @@ final class Joint implements Comparable<Joint> {
 
 	private double angle() {
 		double angle = Vectors2D.angleBetweenVectors(
-			new double[]{start.x - middle.x, start.y - middle.y},
-			new double[]{end.x - middle.x, end.y - middle.y},
+			new double[]{start.x() - middle.x(), start.y() - middle.y()},
+			new double[]{end.x() - middle.x(), end.y() - middle.y()},
 			ANY_BOOLEAN_VALUE
 		);
 		if (angle > Math.PI) {

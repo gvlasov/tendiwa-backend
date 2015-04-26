@@ -9,6 +9,8 @@ import org.tendiwa.geometry.Chain2D;
 
 import java.util.*;
 
+import static org.tendiwa.geometry.GeometryPrimitives.*;
+
 /**
  * Finds out which lots are on which {@link Street}. If a lot belongs to a {@link Street}, it is said that the lot has
  * a facade on that street, hence the name of this class. A lot can have multiple facades, i.e. it can belong to
@@ -77,7 +79,7 @@ public final class PolylineProximity {
 	 * @param rectangle
 	 */
 	private void findSegmentsForLot(RectangleWithNeighbors lot, Rectangle rectangle) {
-		BasicRectangle2D extendedRec = Recs2D.stretch(rectangle, streetsWidth + Vectors2D.EPSILON);
+		Rectangle2D extendedRec = rectangle2D(rectangle).stretch(streetsWidth + Vectors2D.EPSILON);
 		Rectangle2DWithMaxCoordinates extendedRecWithMaxCoordinates =
 			new Rectangle2DWithMaxCoordinates(extendedRec);
 		allStreetSegments.stream()
@@ -103,9 +105,9 @@ public final class PolylineProximity {
 	private class Rectangle2DWithMaxCoordinates {
 		private final double maxX;
 		private final double maxY;
-		private final BasicRectangle2D rectangle;
+		private final Rectangle2D rectangle;
 
-		Rectangle2DWithMaxCoordinates(BasicRectangle2D rectangle) {
+		Rectangle2DWithMaxCoordinates(Rectangle2D rectangle) {
 			this.rectangle = rectangle;
 			maxX = rectangle.getMaxX();
 			maxY = rectangle.getMaxY();
@@ -119,12 +121,12 @@ public final class PolylineProximity {
 		 * with the segment itself.
 		 */
 		private boolean intersectsSegmentHull(Segment2D segment) {
-			double segmentMinX = Math.min(segment.start.x, segment.end.x) - streetsWidth;
-			double segmentMaxX = Math.max(segment.start.x, segment.end.x) + streetsWidth;
-			double segmentMinY = Math.min(segment.start.y, segment.end.y) - streetsWidth;
-			double segmentMaxY = Math.max(segment.start.y, segment.end.y) + streetsWidth;
+			double segmentMinX = Math.min(segment.start().x(), segment.end().x()) - streetsWidth;
+			double segmentMaxX = Math.max(segment.start().x(), segment.end().x()) + streetsWidth;
+			double segmentMinY = Math.min(segment.start().y(), segment.end().y()) - streetsWidth;
+			double segmentMaxY = Math.max(segment.start().y(), segment.end().y()) + streetsWidth;
 			// http://stackoverflow.com/questions/306316/determine-if-two-rectangles-overlap-each-other
-			return rectangle.x < segmentMaxX && maxX > segmentMinX && rectangle.y < segmentMaxY && maxY > segmentMinY;
+			return rectangle.x() < segmentMaxX && maxX > segmentMinX && rectangle.y() < segmentMaxY && maxY > segmentMinY;
 		}
 	}
 

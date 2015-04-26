@@ -1,6 +1,6 @@
 package tests.graph;
 
-import org.jgrapht.graph.SimpleGraph;
+import org.jgrapht.UndirectedGraph;
 import org.jukito.UseModules;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,7 +9,6 @@ import org.tendiwa.data.FourCyclePenisGraph;
 import org.tendiwa.drawing.extensions.DrawingModule;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.geometry.smartMesh.SegmentNetworkBuilder;
 
 import java.util.Arrays;
@@ -65,8 +64,7 @@ public class OrthoCellSegmentMeshTest {
 
 	@Test
 	public void buildCity() {
-		GraphConstructor<Point2D, Segment2D> gc = FourCyclePenisGraph.create();
-		SimpleGraph<Point2D, Segment2D> graph = gc.graph();
+		UndirectedGraph<Point2D, Segment2D> graph = new FourCyclePenisGraph();
 		for (int i = 0; i < 1; i++) {
 			new SegmentNetworkBuilder(graph)
 				.withDefaults()

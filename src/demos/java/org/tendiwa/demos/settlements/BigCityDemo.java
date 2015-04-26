@@ -61,17 +61,13 @@ public class BigCityDemo implements Runnable {
 	}
 
 	private void drawBlocks(SmartMesh2D segment2DSmartMesh) {
-		segment2DSmartMesh.networks()
-			.stream()
-			.flatMap(n -> n.enclosedBlocks().stream())
-			.flatMap(b -> b.shrinkToRegions(3, 0).stream())
-			.forEach(
-				block ->
-					canvas.draw(
-						block,
-						DrawingEnclosedBlock.withColor(Color.lightGray)
-					)
-			);
+		canvas.drawAll(
+			segment2DSmartMesh.networks()
+				.stream()
+				.flatMap(n -> n.enclosedBlocks().stream())
+				.flatMap(b -> b.shrinkToRegions(3).stream()),
+			polygon-> new DrawablePolygon.Thin(polygon, Color.lightGray)
+		);
 	}
 
 	private void createCanvas() {
@@ -118,16 +114,16 @@ public class BigCityDemo implements Runnable {
 	}
 
 	private void drawLots(Set<RectangleWithNeighbors> recGroups) {
-		for (BasicRectangleWithNeighbors rectangleWithNeighbors : recGroups) {
+		for (RectangleWithNeighbors rectangleWithNeighbors : recGroups) {
 			canvas.draw(
 				new DrawableRectangle.Outlined(
-					rectangleWithNeighbors.rectangle,
+					rectangleWithNeighbors.mainRectangle(),
 					Color.blue,
 					Color.gray
 				)
 			);
 			canvas.drawAll(
-				rectangleWithNeighbors.neighbors,
+				rectangleWithNeighbors.neighbors(),
 				neighbor -> new DrawableRectangle.Outlined(
 					neighbor,
 					Color.magenta,

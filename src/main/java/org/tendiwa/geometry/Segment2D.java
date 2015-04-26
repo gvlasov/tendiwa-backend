@@ -79,7 +79,7 @@ public interface Segment2D extends RectangularHull {
 	}
 
 	default Line2D toLine() {
-		return new Line2D(
+		return new BasicLine2D(
 			start().x(),
 			start().y(),
 			end().x(),

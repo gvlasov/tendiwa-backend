@@ -1,13 +1,13 @@
 package org.tendiwa.drawing.extensions;
 
-import org.tendiwa.drawing.Drawable;
 import org.tendiwa.drawing.Canvas;
-import org.tendiwa.geometry.*;
+import org.tendiwa.drawing.Drawable;
+import org.tendiwa.geometry.BasicCircle;
+import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Point2D_Wr;
 
 import java.awt.Color;
 import java.awt.geom.Ellipse2D;
-
-import static org.tendiwa.geometry.GeometryPrimitives.segment2D;
 
 public final class DrawablePoint2D extends Point2D_Wr implements Drawable {
 
@@ -25,25 +25,17 @@ public final class DrawablePoint2D extends Point2D_Wr implements Drawable {
 
 	public static final class Circle extends Point2D_Wr implements Drawable {
 		private final Color color;
-		private final double diameter;
+		private final double radius;
 
-		public Circle(Point2D center, Color color, double diameter) {
+		public Circle(Point2D center, Color color, double radius) {
 			super(center);
 			this.color = color;
-			this.diameter = diameter;
+			this.radius = radius;
 		}
 
 		@Override
 		public void drawIn(Canvas canvas) {
-			canvas.fillShape(
-				new Ellipse2D.Double(
-					this.x() - diameter,
-					this.y() - diameter,
-					diameter,
-					diameter
-				),
-				color
-			);
+			canvas.drawCircle(new BasicCircle(this, radius), color);
 		}
 	}
 

@@ -8,9 +8,12 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.geometry.extensions.PointTrail;
-import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.geometry.smartMesh.SegmentNetworkBuilder;
 import org.tendiwa.geometry.smartMesh.SmartMesh2D;
+import org.tendiwa.graphs.GraphConstructor;
+
+import static org.tendiwa.geometry.GeometryPrimitives.graphConstructor;
+import static org.tendiwa.geometry.GeometryPrimitives.rectangle;
 
 public class EnclosedCyclesRoadPlanarGraphModelDemo implements Runnable {
 	public static void main(String[] args) {
@@ -19,10 +22,10 @@ public class EnclosedCyclesRoadPlanarGraphModelDemo implements Runnable {
 
 	@Override
 	public void run() {
-		Canvas canvas = new TestCanvas(1, 800, 600);
+		Canvas canvas = new TestCanvas(1, rectangle(800, 600));
 //		DrawableInto canvas = new MagnifierCanvas(10, 219, 21, 600, 600);
 		TestCanvas.canvas = canvas;
-		SimpleGraph<Point2D, Segment2D> graph = new GraphConstructor<>(PlanarGraphs.getEdgeFactory())
+		SimpleGraph<Point2D, Segment2D> graph = graphConstructor()
 			.cycleOfVertices(
 				new PointTrail(20, 20)
 					.moveByX(200)

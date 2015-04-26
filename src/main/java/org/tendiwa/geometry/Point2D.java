@@ -1,5 +1,7 @@
 package org.tendiwa.geometry;
 
+import org.tendiwa.core.meta.Cell;
+
 public interface Point2D extends Vector2D {
 
 	public default double angleTo(Vector2D end) {
@@ -24,7 +26,7 @@ public interface Point2D extends Vector2D {
 		return new BasicPoint2D(x() + vector.x(), y() + vector.y());
 	}
 
-	public default BasicCell toCell() {
+	public default Cell toCell() {
 		return new BasicCell((int) Math.round(x()), (int) Math.round(y()));
 	}
 

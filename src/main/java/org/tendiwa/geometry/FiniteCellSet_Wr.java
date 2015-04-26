@@ -1,11 +1,13 @@
 package org.tendiwa.geometry;
 
+import org.tendiwa.core.meta.Cell;
+
 import java.util.Iterator;
 
-public abstract class FiniteCellSetWr implements FiniteCellSet {
+public abstract class FiniteCellSet_Wr implements FiniteCellSet {
 	private final FiniteCellSet cells;
 
-	public FiniteCellSetWr(FiniteCellSet cells) {
+	public FiniteCellSet_Wr(FiniteCellSet cells) {
 		this.cells = cells;
 	}
 
@@ -15,7 +17,7 @@ public abstract class FiniteCellSetWr implements FiniteCellSet {
 	}
 
 	@Override
-	public Iterator<BasicCell> iterator() {
+	public Iterator<Cell> iterator() {
 		return cells.iterator();
 	}
 }

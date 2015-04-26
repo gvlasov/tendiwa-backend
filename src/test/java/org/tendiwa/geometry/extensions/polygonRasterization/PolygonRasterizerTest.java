@@ -2,6 +2,7 @@ package org.tendiwa.geometry.extensions.polygonRasterization;
 
 import org.junit.Test;
 import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.geometry.GeometryPrimitives;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.extensions.PointTrail;
 
@@ -63,6 +64,6 @@ public class PolygonRasterizerTest {
 			.moveByX(-100)
 			.points();
 		PolygonRasterizer.rasterizeToCellSet(polygon);
-		new TestCanvas(1, 500, 500);
+		new TestCanvas(1, GeometryPrimitives.rectangle(500, 500));
 	}
 }

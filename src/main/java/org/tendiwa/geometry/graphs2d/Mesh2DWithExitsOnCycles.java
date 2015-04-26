@@ -9,6 +9,6 @@ final class Mesh2DWithExitsOnCycles {
 
 	}
 	public Set<SplitSegment2D> exits() {
-
+		throw new UnsupportedOperationException();
 	}
 }

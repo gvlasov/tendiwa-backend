@@ -69,19 +69,6 @@ public class RasterizationResult implements BoundedCellSet {
 	}
 
 	@Override
-	public void forEach(CellConsumer action) {
-		int maxX = bounds.maxX();
-		int maxY = bounds.maxY();
-		for (int i = bounds.x(); i < maxX; i++) {
-			for (int j = bounds.y(); j < maxY; j++) {
-				if (bitmap[j - bounds.y()][i - bounds.x()]) {
-					action.consume(i, j);
-				}
-			}
-		}
-	}
-
-	@Override
 	public Rectangle getBounds() {
 		return bounds;
 	}

@@ -105,21 +105,6 @@ public interface BoundedCellSet extends FiniteCellSet {
 	}
 
 	@Override
-	public default void forEach(CellConsumer action) {
-		int startX = getBounds().x();
-		int startY = getBounds().y();
-		int maxX = getBounds().maxX() + 1;
-		int maxY = getBounds().maxY() + 1;
-		for (int x = startX; x < maxX; x++) {
-			for (int y = startY; y < maxY; y++) {
-				if (contains(x, y)) {
-					action.consume(x, y);
-				}
-			}
-		}
-	}
-
-	@Override
 	public default BoundedCellSet without(CellSet set) {
 		return new BoundedCellSet() {
 			@Override

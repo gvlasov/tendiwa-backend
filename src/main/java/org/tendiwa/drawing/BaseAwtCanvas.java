@@ -383,4 +383,18 @@ class BaseAwtCanvas implements AwtCanvas, ScaledCanvas {
 			color
 		);
 	}
+
+	@Override
+	public void drawCircle(Circle circle, Color color) {
+		Rectangle2D bounds = circle.bounds();
+		fillShape(
+			new Ellipse2D.Double(
+				bounds.x(),
+				bounds.y(),
+				bounds.width(),
+				bounds.height()
+			),
+			color
+		);
+	}
 }

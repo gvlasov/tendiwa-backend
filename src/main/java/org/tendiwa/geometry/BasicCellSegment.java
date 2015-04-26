@@ -92,4 +92,14 @@ public final class BasicCellSegment implements CellSegment {
 	public List<Cell> asList() {
 		return Arrays.asList(vector(start, end));
 	}
+
+	@Override
+	public Cell start() {
+		return start;
+	}
+
+	@Override
+	public Cell end() {
+		return end;
+	}
 }

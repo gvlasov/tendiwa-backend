@@ -32,7 +32,7 @@ final class EnclosedCycleDetector {
 		List<Point2D> points = cycle.vertexList();
 		Coordinate[] coordinates = points
 			.stream()
-			.map(point -> new Coordinate(point.x, point.y))
+			.map(point -> new Coordinate(point.x(), point.y()))
 			.collect(Collectors.toList())
 			.toArray(new Coordinate[points.size() + 1]);
 		coordinates[coordinates.length - 1] = coordinates[0];
@@ -40,8 +40,8 @@ final class EnclosedCycleDetector {
 	}
 
 	private MinimalCycle<Point2D, Segment2D> findEnclosingCycle(MinimalCycle<Point2D, Segment2D> cycle) {
-		Point2D anyPointOfCycle3 = cycle.asEdges().iterator().next().start;
-		Coordinate coordinate = new Coordinate(anyPointOfCycle3.x, anyPointOfCycle3.y);
+		Point2D anyPointOfCycle3 = cycle.asEdges().iterator().next().start();
+		Coordinate coordinate = new Coordinate(anyPointOfCycle3.x(), anyPointOfCycle3.y());
 		for (MinimalCycle<Point2D, Segment2D> c : geometries.keySet()) {
 			if (factory.createPoint(coordinate).within(geometries.get(c))) {
 				return c;

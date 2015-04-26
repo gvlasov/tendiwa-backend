@@ -67,4 +67,17 @@ public final class GeometryPrimitives {
 	public static Vector2D vector(double x, double y) {
 		return new BasicPoint2D(x, y);
 	}
+
+	public static Rectangle2D rectangle2D(Rectangle rectangle) {
+		return new BasicRectangle2D(
+			rectangle.x(),
+			rectangle.y(),
+			rectangle.width(),
+			rectangle.height()
+		);
+	}
+
+	public static Line2D line2D(double ax, double ay, double bx, double by) {
+		return new BasicLine2D(ax, ay, bx, by);
+	}
 }

@@ -25,11 +25,11 @@ final class OrientedCycleSector implements Sector {
 		Iterator<Segment2D> iterator = edges.iterator();
 		Segment2D oneEdge = toCounterClockwise(iterator.next(), cycle);
 		Segment2D anotherEdge = toCounterClockwise(iterator.next(), cycle);
-		if (oneEdge.start == source ^ !inner) {
+		if (oneEdge.start() == source ^ !inner) {
 			cw = oneEdge.asVector();
 			ccw = anotherEdge.reverse().asVector();
 		} else {
-			assert anotherEdge.start == source ^ !inner;
+			assert anotherEdge.start() == source ^ !inner;
 			cw = anotherEdge.asVector();
 			ccw = oneEdge.reverse().asVector();
 		}

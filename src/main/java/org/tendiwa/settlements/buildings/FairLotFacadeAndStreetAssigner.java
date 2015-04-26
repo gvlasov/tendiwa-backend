@@ -6,11 +6,10 @@ import com.google.common.collect.Multimap;
 import org.tendiwa.core.CardinalDirection;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawableChain2D;
-import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.settlements.utils.BasicRectangleWithNeighbors;
-import org.tendiwa.settlements.utils.RectangleWithNeighbors;
-import org.tendiwa.settlements.streets.LotStreetAssigner;
 import org.tendiwa.geometry.Chain2D;
+import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.settlements.streets.LotStreetAssigner;
+import org.tendiwa.settlements.utils.RectangleWithNeighbors;
 
 import java.awt.Color;
 import java.util.*;
@@ -80,7 +79,7 @@ public final class FairLotFacadeAndStreetAssigner implements LotFacadeAssigner, 
 	 */
 	private void fairlyAssignTheRestOfBuildings() {
 		initStreetsLengthsAndThirsts();
-		for (BasicRectangleWithNeighbors lot : lots) {
+		for (RectangleWithNeighbors lot : lots) {
 			if (facades.containsKey(lot)) {
 				continue;
 			}
@@ -89,13 +88,13 @@ public final class FairLotFacadeAndStreetAssigner implements LotFacadeAssigner, 
 			}
 			Thirstiest thirstiest = searchForThirstiestSegmentAndStreet(lot);
 			lotToStreet.put(lot, thirstiest.street);
-			if (lot.rectangle.intersects(thirstiest.segment)) {
+			if (lot.mainRectangle().intersects(thirstiest.segment)) {
 				// TODO: This should not happen!
 				continue;
 			}
 			facades.put(
 				lot,
-				RectangleToSegmentDirection.getDirectionToSegment(thirstiest.segment, lot.rectangle)
+				RectangleToSegmentDirection.getDirectionToSegment(thirstiest.segment, lot.mainRectangle())
 			);
 			streetToLots.put(thirstiest.street, lot);
 			updateThirst(thirstiest.street);
@@ -151,12 +150,12 @@ public final class FairLotFacadeAndStreetAssigner implements LotFacadeAssigner, 
 	 * {@link #lotsAndStreets}.
 	 */
 	private void assignSingleStreetBuildings() {
-		for (BasicRectangleWithNeighbors lot : lotsAndStreets.getLots()) {
+		for (RectangleWithNeighbors lot : lotsAndStreets.getLots()) {
 			Set<Chain2D> streetsForLot = lotsAndStreets.getStreetsForLot(lot);
 			if (streetsForLot.size() == 1) {
 				Collection<Segment2D> segmentsForLot = lotsAndStreets.getSegmentsForLot(lot);
 				for (Segment2D segment : segmentsForLot) {
-					facades.put(lot, RectangleToSegmentDirection.getDirectionToSegment(segment, lot.rectangle));
+					facades.put(lot, RectangleToSegmentDirection.getDirectionToSegment(segment, lot.mainRectangle()));
 					Chain2D street = streetsForLot.iterator().next();
 					lotToStreet.put(lot, street);
 					streetToLots.put(street, lot);

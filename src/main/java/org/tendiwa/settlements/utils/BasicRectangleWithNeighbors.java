@@ -14,7 +14,7 @@ import java.util.function.Consumer;
  * axis-aligned rectangles.
  *
  * @see org.tendiwa.settlements.utils.RectangularBuildingLots For a way to create instances of this class.
- * @see org.tendiwa.settlements.EnclosedBlock For a polygon that is being approximated.
+ * @see org.tendiwa.settlements.LinkedPolygon For a polygon that is being approximated.
  */
 public final class BasicRectangleWithNeighbors implements RectangleWithNeighbors {
 	private final Rectangle rectangle;

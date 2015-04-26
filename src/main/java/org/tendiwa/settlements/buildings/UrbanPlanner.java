@@ -5,7 +5,6 @@ import org.tendiwa.core.CardinalDirection;
 import org.tendiwa.core.HorizontalPlane;
 import org.tendiwa.core.Location;
 import org.tendiwa.settlements.streets.Street;
-import org.tendiwa.settlements.utils.BasicRectangleWithNeighbors;
 import org.tendiwa.settlements.utils.RectangleWithNeighbors;
 
 import java.util.LinkedHashMap;
@@ -47,7 +46,7 @@ public final class UrbanPlanner implements BuildingPlacer {
 			cityInfo.getBuildingPlaces(),
 			random
 		).compute();
-		for (BasicRectangleWithNeighbors rectangle : placement.keySet()) {
+		for (RectangleWithNeighbors rectangle : placement.keySet()) {
 			addBuilding(rectangle, placement.get(rectangle), cityInfo);
 		}
 	}
@@ -59,7 +58,7 @@ public final class UrbanPlanner implements BuildingPlacer {
 		this.architecture.put(policy, architecture);
 	}
 
-	private void addBuilding(BasicRectangleWithNeighbors where, Architecture what, CityBuilder.Info info) {
+	private void addBuilding(RectangleWithNeighbors where, Architecture what, CityBuilder.Info info) {
 		if (!what.fits(where)) {
 			throw new ArchitectureError(
 				"Architecture " + what.getClass().getName() + " doesn't fit in rectangle " + where
@@ -75,7 +74,7 @@ public final class UrbanPlanner implements BuildingPlacer {
 		what.draw(
 			features,
 			facadeDirection,
-			new Location(plane, where.rectangle)
+			new Location(plane, where.mainRectangle())
 		);
 		info.addBuilding(features.build());
 	}

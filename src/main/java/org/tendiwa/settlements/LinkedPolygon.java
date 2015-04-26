@@ -1,32 +1,20 @@
 package org.tendiwa.settlements;
 
 import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Polygon;
+import org.tendiwa.geometry.Polygon_Wr;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
 
-public class EnclosedBlock implements Iterable<Point2D> {
+public abstract class LinkedPolygon extends Polygon_Wr {
 	protected final Node startNode;
 	protected final int numberOfNodes;
 
-	public EnclosedBlock(List<Point2D> outline) {
+	public LinkedPolygon(Polygon outline) {
+		super(outline);
 		this.numberOfNodes = outline.size();
 		this.startNode = constructChainOfNodes(outline);
-	}
-
-	public List<Point2D> toPolygon() {
-		Node node = startNode;
-		List<Point2D> answer = new LinkedList<>();
-		do {
-			answer.add(node.point);
-			node = node.next;
-		} while (node != startNode);
-		return answer;
-	}
-
-	EnclosedBlock(Node startNode) {
-		assert startNode != null;
-		this.startNode = startNode;
-		numberOfNodes = Integer.MAX_VALUE; // With this constructor, we don't care how much segments we have.
 	}
 
 	private Node constructChainOfNodes(List<Point2D> outline) {
@@ -63,9 +51,7 @@ public class EnclosedBlock implements Iterable<Point2D> {
 		};
 	}
 
-
 	class Node {
-		// This class is made generic so subclasses
 		final Point2D point;
 		Node next;
 

@@ -8,6 +8,8 @@ import org.jgraph.graph.DefaultGraphCell;
 import org.jgraph.graph.GraphConstants;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.ext.JGraphModelAdapter;
+import org.tendiwa.geometry.BasicRectangle;
+import org.tendiwa.geometry.BasicRectangle2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
@@ -75,8 +77,8 @@ public class GraphExplorer {
 		GraphConstants.setBounds(
 			attributes,
 			new Rectangle(
-				(int) vertex.x - vertexSize / 2,
-				(int) vertex.y - vertexSize / 2,
+				(int) vertex.x() - vertexSize / 2,
+				(int) vertex.y() - vertexSize / 2,
 				vertexSize,
 				vertexSize
 			)

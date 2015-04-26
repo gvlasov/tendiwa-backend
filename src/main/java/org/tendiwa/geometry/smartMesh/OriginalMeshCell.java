@@ -2,6 +2,7 @@ package org.tendiwa.geometry.smartMesh;
 
 import com.google.common.collect.ImmutableSet;
 import org.jgrapht.UndirectedGraph;
+import org.tendiwa.geometry.BasicPolygon;
 import org.tendiwa.geometry.CutSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
@@ -53,7 +54,13 @@ public final class OriginalMeshCell {
 			.minimumCycleBasis(fullCellGraph)
 			.minimalCyclesSet()
 			.stream()
-			.map(cycle -> new SecondaryRoadNetworkBlock(cycle.vertexList()))
+			.map(cycle ->
+					new SecondaryRoadNetworkBlock(
+						new BasicPolygon(
+							cycle.vertexList()
+						)
+					)
+			)
 			.collect(toList());
 	}
 

@@ -1,5 +1,6 @@
 package org.tendiwa.geometry.smartMesh;
 
+import org.tendiwa.geometry.BasicSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 
@@ -9,7 +10,7 @@ public class NowhereToSnap implements PropagationEvent {
 	private final Segment2D segment;
 
 	NowhereToSnap(Point2D source, Point2D target) {
-		this.segment = new Segment2D(source, target);
+		this.segment = new BasicSegment2D(source, target);
 	}
 
 	@Override
@@ -29,12 +30,12 @@ public class NowhereToSnap implements PropagationEvent {
 
 	@Override
 	public Point2D target() {
-		return segment.end;
+		return segment.end();
 	}
 
 	@Override
 	public Point2D source() {
-		return segment.start;
+		return segment.start();
 
 	}
 

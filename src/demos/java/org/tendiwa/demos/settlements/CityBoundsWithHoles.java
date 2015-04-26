@@ -21,7 +21,7 @@ import static org.tendiwa.geometry.GeometryPrimitives.rectangle;
 
 class CityBoundsWithHoles implements Runnable {
 	Rectangle worldRec = rectangle(0, 0, 400, 400);
-	TestCanvas canvas = new TestCanvas(1, worldRec.width(), worldRec.height());
+	TestCanvas canvas = new TestCanvas(1, worldRec);
 	//	GifBuilder gifBuilder = new GifBuilder(canvas, 6, Logger.getLogger("cityBoundsWithHoles"));
 	int iterations = 55;
 	int cityRadius = 100;

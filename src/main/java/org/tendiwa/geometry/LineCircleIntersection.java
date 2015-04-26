@@ -1,11 +1,10 @@
 package org.tendiwa.geometry;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class LineCircleIntersection {
+public final class LineCircleIntersection {
 
 	public static List<Point2D> findIntersections(
 		Point2D segmentStart,
@@ -13,10 +12,10 @@ public class LineCircleIntersection {
 		Point2D circleCenter,
 		double circleRadius
 	) {
-		double baX = segmentEnd.x - segmentStart.x;
-		double baY = segmentEnd.y - segmentStart.y;
-		double caX = circleCenter.x - segmentStart.x;
-		double caY = circleCenter.y - segmentStart.y;
+		double baX = segmentEnd.x() - segmentStart.x();
+		double baY = segmentEnd.y() - segmentStart.y();
+		double caX = circleCenter.x() - segmentStart.x();
+		double caY = circleCenter.y() - segmentStart.y();
 
 		double a = baX * baX + baY * baY;
 		double bBy2 = baX * caX + baY * caY;
@@ -34,13 +33,17 @@ public class LineCircleIntersection {
 		double abScalingFactor1 = -pBy2 + tmpSqrt;
 		double abScalingFactor2 = -pBy2 - tmpSqrt;
 
-		Point2D p1 = new Point2D(segmentStart.x - baX * abScalingFactor1, segmentStart.y
-			- baY * abScalingFactor1);
+		Point2D p1 = new BasicPoint2D(
+			segmentStart.x() - baX * abScalingFactor1,
+			segmentStart.y() - baY * abScalingFactor1
+		);
 		if (disc == 0) { // abScalingFactor1 == abScalingFactor2
 			return Collections.singletonList(p1);
 		}
-		Point2D p2 = new Point2D(segmentStart.x - baX * abScalingFactor2, segmentStart.y
-			- baY * abScalingFactor2);
+		Point2D p2 = new BasicPoint2D(
+			segmentStart.x() - baX * abScalingFactor2,
+			segmentStart.y() - baY * abScalingFactor2
+		);
 		List<Point2D> answer = new ArrayList<>(2);
 		answer.add(p1);
 		answer.add(p2);

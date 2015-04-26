@@ -33,7 +33,7 @@ public class RoadGraph implements UndirectedGraph<Point2D, Segment2D> {
 		}
 		adjacencyLists = adjacencyListsBuilder.build();
 		for (Segment2D edge : edges) {
-			addNewEdge(edge.start, edge.end);
+			addNewEdge(edge.start(), edge.end());
 		}
 	}
 
@@ -92,7 +92,7 @@ public class RoadGraph implements UndirectedGraph<Point2D, Segment2D> {
 
 	@Override
 	public boolean containsEdge(Segment2D edge) {
-		return adjacencyLists.containsKey(edge.start) && adjacencyLists.get(edge.start).contains(edge.end);
+		return adjacencyLists.containsKey(edge.start()) && adjacencyLists.get(edge.start()).contains(edge.end());
 	}
 
 	@Override
@@ -162,12 +162,12 @@ public class RoadGraph implements UndirectedGraph<Point2D, Segment2D> {
 
 	@Override
 	public Point2D getEdgeSource(Segment2D edge) {
-		return edge.start;
+		return edge.start();
 	}
 
 	@Override
 	public Point2D getEdgeTarget(Segment2D edge) {
-		return edge.end;
+		return edge.end();
 	}
 
 	@Override

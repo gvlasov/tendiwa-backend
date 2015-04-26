@@ -12,4 +12,8 @@ public interface CellSegment extends Iterable<Cell> {
 	double length();
 
 	List<Cell> asList();
+
+	Cell start();
+
+	Cell end();
 }

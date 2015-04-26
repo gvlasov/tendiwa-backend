@@ -1,43 +1,49 @@
 package org.tendiwa.geometry;
 
 import org.junit.Test;
+import org.tendiwa.core.meta.Cell;
 
 import static junit.framework.Assert.assertEquals;
-import static org.tendiwa.geometry.DSL.cell;
+import static org.tendiwa.geometry.GeometryPrimitives.cell;
 
 public class WaveTest {
 	@Test
 	public void iterateOverAllCells() {
-		BasicCell startCell = cell(5, 5);
-		int width = 13;
-		int height = 8;
-		Rectangle rectangle = StupidPriceduralRecs.rectangleByCenterPoint(startCell, width, height);
-		int i = 0;
-		//noinspection UnusedDeclaration
-		for (BasicCell cell : Wave.from(startCell).goingOver(rectangle::contains).in8Directions()) {
-			i++;
-		}
-		assertEquals(i, width * height);
+		Cell startCell = cell(5, 5);
+		Rectangle rectangle = startCell.centerRectangle(13, 8);
+		assertEquals(
+			Wave
+				.from(startCell)
+				.goingOver(rectangle::contains)
+				.in8Directions()
+				.asCellSet(rectangle)
+				.stream()
+				.count(),
+			rectangle.area()
+		);
 	}
 
 	@Test
 	public void iterateOverCellSetBoundedByScalar() {
 		BasicCell centerPoint = new BasicCell(5, 5);
-		Rectangle rectangle = StupidPriceduralRecs.rectangleByCenterPoint(centerPoint, 3, 3);
+		Rectangle rectangle = centerPoint.centerRectangle(3, 3);
 		int numberOfCellsInWave = Wave
 			.from(centerPoint)
 			.goingOver(rectangle::contains)
 			.in8Directions()
-			.asCellSet(rectangle.width * rectangle.height)
+			.asCellSet(rectangle.area())
 			.toSet()
 			.size();
-		assertEquals(9, numberOfCellsInWave);
+		assertEquals(
+			rectangle.area(),
+			numberOfCellsInWave
+		);
 	}
 
 	@Test
 	public void iterateOverCellSetBoundedByRectangle() {
-		BasicCell centerPoint = new BasicCell(5, 5);
-		Rectangle rectangle = StupidPriceduralRecs.rectangleByCenterPoint(centerPoint, 3, 4);
+		Cell centerPoint = cell(5, 5);
+		Rectangle rectangle = centerPoint.centerRectangle(3, 4);
 		int numberOfCellsInWave = Wave
 			.from(centerPoint)
 			.goingOver(rectangle::contains)
@@ -45,7 +51,7 @@ public class WaveTest {
 			.asCellSet(rectangle)
 			.toSet()
 			.size();
-		assertEquals(12, numberOfCellsInWave);
+		assertEquals(rectangle.area(), numberOfCellsInWave);
 	}
 
 	/**
@@ -54,9 +60,9 @@ public class WaveTest {
 	 */
 	@Test(expected = IndexOutOfBoundsException.class)
 	public void wrongBounds() {
-		BasicCell centerPoint = new BasicCell(5, 5);
-		Rectangle outerRec = StupidPriceduralRecs.rectangleByCenterPoint(centerPoint, 3, 5);
-		Rectangle innerRec = StupidPriceduralRecs.rectangleByCenterPoint(centerPoint, 2, 3);
+		Cell centerPoint = cell(5, 5);
+		Rectangle outerRec = centerPoint.centerRectangle(3, 5);
+		Rectangle innerRec = centerPoint.centerRectangle(2, 3);
 		Wave.from(centerPoint)
 			.goingOver(outerRec::contains)
 			.in8Directions()

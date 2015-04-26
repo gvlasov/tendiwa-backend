@@ -1,31 +1,31 @@
 package org.tendiwa.pathfinding.astar;
 
 import org.tendiwa.core.Directions;
-import org.tendiwa.geometry.BasicCell;
+import org.tendiwa.core.meta.Cell;
 
 import java.util.*;
 
-public class AStar {
+public final class AStar {
 	private final MovementCost movementCostFunction;
-	private final Map<BasicCell, Double> g = new HashMap<>();
-	private final PriorityQueue<BasicCell> open = new PriorityQueue<>(30, new AStarComparator());
-	private final Set<BasicCell> closed = new HashSet<>();
+	private final Map<Cell, Double> g = new HashMap<>();
+	private final PriorityQueue<Cell> open = new PriorityQueue<>(30, new AStarComparator());
+	private final Set<Cell> closed = new HashSet<>();
 	/**
 	 * Maps cells to their parents
 	 */
-	private final Map<BasicCell, BasicCell> parents = new HashMap<>();
-	private BasicCell goal;
+	private final Map<Cell, Cell> parents = new HashMap<>();
+	private Cell goal;
 
 	public AStar(MovementCost movementCost) {
 		this.movementCostFunction = movementCost;
 	}
 
-	public List<BasicCell> path(BasicCell start, BasicCell goal) {
+	public List<Cell> path(Cell start, Cell goal) {
 		this.goal = goal;
 		addToOpen(start, null, 0);
-		for (BasicCell current = open.poll(); !current.equals(goal); current = open.poll()) {
+		for (Cell current = open.poll(); !current.equals(goal); current = open.poll()) {
 			closed.add(current);
-			for (BasicCell neighbor : neighborsOf(current)) {
+			for (Cell neighbor : neighborsOf(current)) {
 				double movementCost = movementCostFunction.cost(current, neighbor);
 				if (movementCost == Integer.MAX_VALUE) {
 					continue;
@@ -42,8 +42,8 @@ public class AStar {
 				}
 			}
 		}
-		List<BasicCell> answer = new ArrayList<>();
-		for (BasicCell cell = goal;
+		List<Cell> answer = new ArrayList<>();
+		for (Cell cell = goal;
 			 parents.get(cell) != null;
 			 cell = parents.get(cell)
 			) {
@@ -52,24 +52,24 @@ public class AStar {
 		return answer;
 	}
 
-	private void addToOpen(BasicCell what, BasicCell parent, double g) {
+	private void addToOpen(Cell what, Cell parent, double g) {
 		this.g.put(what, g);
 		open.add(what);
 		parents.put(what, parent);
 	}
 
-	private double g(BasicCell current) {
+	private double g(Cell current) {
 		return g.get(current);
 	}
 
-	private double h(BasicCell current) {
+	private double h(Cell current) {
 //	return current.chebyshovDistanceTo(goal);
 //	return current.quickDistance(goal);
 		return current.distanceDouble(goal);
 	}
 
-	private BasicCell[] neighborsOf(BasicCell current) {
-		return new BasicCell[]{
+	private Cell[] neighborsOf(Cell current) {
+		return new Cell[]{
 			current.moveToSide(Directions.N),
 			current.moveToSide(Directions.NE),
 			current.moveToSide(Directions.E),
@@ -81,9 +81,9 @@ public class AStar {
 		};
 	}
 
-	private class AStarComparator implements Comparator<BasicCell> {
+	private class AStarComparator implements Comparator<Cell> {
 		@Override
-		public int compare(BasicCell o1, BasicCell o2) {
+		public int compare(Cell o1, Cell o2) {
 			return (int) Math.round(g(o1) + h(o1) - g(o2) - h(o2));
 		}
 	}

@@ -60,9 +60,9 @@ final class NetworksProducer {
 			.sorted((o1, o2) -> {
 				Point2D p1 = o1.vertexList().get(0);
 				Point2D p2 = o2.vertexList().get(0);
-				int compare = Double.compare(p1.x, p2.x);
+				int compare = Double.compare(p1.x(), p2.x());
 				if (compare == 0) {
-					int compare1 = Double.compare(p1.y, p2.y);
+					int compare1 = Double.compare(p1.y(), p2.y());
 					assert compare1 != 0;
 					return compare1;
 				} else {
@@ -87,8 +87,8 @@ final class NetworksProducer {
 					// TODO: Do we really need this sorting here?
 				.sorted((a, b) ->
 						Point2DRowComparator.getInstance().compare(
-							a.asEdges().iterator().next().start,
-							b.asEdges().iterator().next().start
+							a.asEdges().iterator().next().start(),
+							b.asEdges().iterator().next().start()
 						)
 				)
 				.collect(Collectors.toList())

@@ -6,9 +6,10 @@ import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.tendiwa.core.meta.Cell;
 import org.tendiwa.data.DistantCellsInBufferBorderModule;
 
-import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -22,7 +23,10 @@ public class DistantCellsInBufferBorderTest {
 
 	@Test
 	public void shouldShow5Points() {
-		HashSet<BasicCell> cells = Sets.newHashSet(distantCells);
-		assertFalse(String.valueOf(cells.size()), cells.isEmpty());
+		Set<Cell> cells = Sets.newHashSet(distantCells);
+		assertFalse(
+			String.valueOf(cells.size()),
+			cells.isEmpty()
+		);
 	}
 }

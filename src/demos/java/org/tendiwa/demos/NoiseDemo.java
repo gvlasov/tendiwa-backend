@@ -5,7 +5,6 @@ import com.google.inject.Inject;
 import org.tendiwa.core.meta.Cell;
 import org.tendiwa.drawing.Canvas;
 import org.tendiwa.drawing.extensions.DrawableCell;
-import org.tendiwa.geometry.BasicCell;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.noise.Noise;
 import org.tendiwa.pathfinding.astar.AStar;
@@ -17,6 +16,7 @@ import java.awt.Color;
 import java.util.List;
 
 import static java.awt.Color.*;
+import static org.tendiwa.geometry.GeometryPrimitives.cell;
 import static org.tendiwa.geometry.GeometryPrimitives.rectangle;
 
 public class NoiseDemo implements Runnable {
@@ -48,7 +48,7 @@ public class NoiseDemo implements Runnable {
 //			} else {
 				noise = noise(x, y, 7);
 //			}
-				BasicCell point = new BasicCell(x, y);
+				Cell point = cell(x, y);
 				if (noise > 145) {
 					Color lighterGrey = new Color((int) (noise * 1.2), (int) (noise * 1.2), (int) (noise * 0.2));
 					canvas.drawCell(point, lighterGrey);
@@ -64,10 +64,10 @@ public class NoiseDemo implements Runnable {
 	}
 
 	private void astar() {
-		BasicCell start = new BasicCell(387, 480);
-		BasicCell end = new BasicCell(770, 500);
+		Cell start = cell(387, 480);
+		Cell end = cell(770, 500);
 		Stopwatch time = Stopwatch.createStarted();
-		List<BasicCell> path = new AStar((cell, neighbor) -> {
+		List<Cell> path = new AStar((cell, neighbor) -> {
 			int noise = noise(cell.x(), cell.y(), 7);
 			return (double) (noise < 145 && noise > 125 ? 1 : 10000) * cell.diagonalComponent(neighbor);
 		}).path(start, end);
@@ -96,7 +96,7 @@ public class NoiseDemo implements Runnable {
 		BlobArea<TestParams> blob = new BlobArea<>(
 			maxBound,
 			new PathTable(
-				new BasicCell(140, 105),
+				cell(140, 105),
 				(x, y) -> {
 					if (!maxBound.contains(x, y)) {
 						return false;

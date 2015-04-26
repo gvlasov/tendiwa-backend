@@ -5,6 +5,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableSet;
 import org.tendiwa.collections.DoublyLinkedNode;
 import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawableSegment2D;
 import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.*;
 
@@ -61,7 +62,13 @@ final class ShrinkedFront implements Penetrable {
 			return Optional.of(getExistingIntersectionPoint(reverse));
 		} else {
 			if (intersectionsOnSegments.containsValue(inner)) {
-				TestCanvas.canvas.draw(inner, DrawingSegment2D.withColorDirected(Color.white, 1));
+				TestCanvas.canvas.draw(
+					new DrawableSegment2D.Arrow(
+						inner,
+						Color.white,
+						1
+					)
+				);
 				assert false;
 			}
 			RayIntersection intersection = new RayIntersection(inner, intruded);

@@ -14,7 +14,7 @@ final class UnitedGraph2D extends AbstractBaseGraph<Point2D, Segment2D> implemen
 		super(oneGraph.getEdgeFactory(), false, false);
 		oneGraph.vertexSet().forEach(this::addVertex);
 		anotherGraph.vertexSet().forEach(this::addVertex);
-		oneGraph.edgeSet().forEach(e -> this.addEdge(e.start, e.end, e));
-		anotherGraph.edgeSet().forEach(e -> this.addEdge(e.start, e.end, e));
+		oneGraph.edgeSet().forEach(e -> this.addEdge(e.start(), e.end(), e));
+		anotherGraph.edgeSet().forEach(e -> this.addEdge(e.start(), e.end(), e));
 	}
 }

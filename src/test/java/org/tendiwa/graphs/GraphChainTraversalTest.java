@@ -7,8 +7,6 @@ import org.junit.Test;
 import org.tendiwa.drawing.Canvas;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawableGraph2D;
-import org.tendiwa.drawing.extensions.DrawingGraph;
-import org.tendiwa.geometry.GeometryPrimitives;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PointTrail;

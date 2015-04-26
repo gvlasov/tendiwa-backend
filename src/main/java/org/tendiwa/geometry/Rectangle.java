@@ -26,8 +26,8 @@ public interface Rectangle extends RecTree, BoundedCellSet, Dimension {
 	public int height();
 
 
-	public default Collection<BasicCell> getCells() {
-		ArrayList<BasicCell> answer = new ArrayList<>();
+	public default Collection<Cell> getCells() {
+		ArrayList<Cell> answer = new ArrayList<>();
 		for (int i = x(); i < x() + width(); i++) {
 			for (int j = y(); j < y() + height(); j++) {
 				answer.add(new BasicCell(i, j));

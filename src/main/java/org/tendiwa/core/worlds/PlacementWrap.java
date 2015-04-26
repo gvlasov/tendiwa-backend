@@ -1,38 +1,27 @@
 package org.tendiwa.core.worlds;
 
-import org.tendiwa.core.FloorType;
-import org.tendiwa.geometry.*;
+import org.tendiwa.core.TypePlaceableInCell;
+import org.tendiwa.core.meta.Cell;
+import org.tendiwa.geometry.BoundedCellSet;
+import org.tendiwa.geometry.Rectangle;
 
-import java.util.Random;
 import java.util.function.Function;
 
-import static org.tendiwa.groovy.Registry.floorTypes;
-
-public final class PlacementWrap implements Placement<FloorType> {
+public final class PlacementWrap implements Placement<TypePlaceableInCell> {
 
 	private final BoundedCellSet cells;
-	private final Function<BasicCell, FloorType> function;
+	private final Function<Cell, TypePlaceableInCell> function;
 
 	PlacementWrap(
 		BoundedCellSet cells,
-		Function<BasicCell, FloorType> function
+		Function<Cell, TypePlaceableInCell> function
 	) {
 		this.cells = cells;
 		this.function = function;
-		Placement<FloorType> p = new PlacementWrap(
-			new BasicBoundedCells(
-				(x, y) -> (x + y) % 7 == 0,
-				DSL.rectangle(80, 90)
-			),
-			new RandomContent<>(
-				new Random(123),
-				(c, r) -> r.nextBoolean() ? floorTypes.get("grass") : floorTypes.get("stone")
-			)
-		);
 	}
 
 	@Override
-	public FloorType contentAt(BasicCell cell) {
+	public TypePlaceableInCell contentAt(Cell cell) {
 		return function.apply(cell);
 	}
 

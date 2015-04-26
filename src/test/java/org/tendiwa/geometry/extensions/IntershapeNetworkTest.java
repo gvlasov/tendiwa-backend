@@ -9,7 +9,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
-import static org.tendiwa.geometry.DSL.rectangle;
+import static org.tendiwa.geometry.GeometryPrimitives.rectangle;
 
 public class IntershapeNetworkTest {
 	@Test

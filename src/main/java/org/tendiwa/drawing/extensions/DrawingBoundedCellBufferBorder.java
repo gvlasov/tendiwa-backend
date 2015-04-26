@@ -10,12 +10,13 @@ import java.awt.*;
 public class DrawingBoundedCellBufferBorder {
 	public static DrawingAlgorithm<BoundedCellSet> withColor(final Color color) {
 		return (border, canvas) -> {
-			DrawingAlgorithm<BasicCell> how = DrawingCell.withColor(color);
-			for (BasicCell cell : border.getBounds().getCells()) {
-				if (border.contains(cell.x, cell.y)) {
-					canvas.draw(cell, how);
-				}
-			}
+			canvas.drawAll(
+				border.getBounds()
+					.getCells()
+					.stream()
+					.filter(border::contains),
+				cell -> new DrawableCell(cell, color)
+			);
 		};
 	}
 }

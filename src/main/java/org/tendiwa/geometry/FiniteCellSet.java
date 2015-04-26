@@ -31,17 +31,6 @@ public interface FiniteCellSet extends CellSet, Iterable<Cell> {
 		return ImmutableSet.copyOf(this);
 	}
 
-	/**
-	 * Applies a function to all the cells in this {@link org.tendiwa.geometry.FiniteCellSet}. Order of iteration is
-	 * undefined.
-	 *
-	 * @param consumer
-	 */
-	public default void forEach(CellConsumer consumer) {
-		for (Cell cell : this) {
-			consumer.consume(cell.x(), cell.y());
-		}
-	}
 
 	public default Stream<Cell> stream() {
 		return IterableToStream.stream(this);

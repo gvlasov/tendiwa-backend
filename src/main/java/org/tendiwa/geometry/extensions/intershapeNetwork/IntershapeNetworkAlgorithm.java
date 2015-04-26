@@ -39,9 +39,9 @@ final class IntershapeNetworkAlgorithm {
 
 		Map<Cell, FiniteCellSet> cellsToSets = mapCellsToTheirSets(exitSets);
 		Table<FiniteCellSet, FiniteCellSet, CellSegment> shortestConnections = HashBasedTable.create();
-		for (BasicCellSegment connection : connections) {
-			FiniteCellSet sourceExitSet = cellsToSets.get(connection.start);
-			FiniteCellSet targetExitSet = cellsToSets.get(connection.end);
+		for (CellSegment connection : connections) {
+			FiniteCellSet sourceExitSet = cellsToSets.get(connection.start());
+			FiniteCellSet targetExitSet = cellsToSets.get(connection.end());
 			if (
 				!shortestConnections.contains(sourceExitSet, targetExitSet)
 					|| shortestConnections.get(sourceExitSet, targetExitSet).length() > connection.length()
@@ -50,10 +50,10 @@ final class IntershapeNetworkAlgorithm {
 				shortestConnections.put(sourceExitSet, targetExitSet, connection);
 			}
 		}
-		for (BasicCellSegment connection : shortestConnections.values()) {
+		for (CellSegment connection : shortestConnections.values()) {
 			graph.addEdge(
-				cellsToSets.get(connection.start),
-				cellsToSets.get(connection.end),
+				cellsToSets.get(connection.start()),
+				cellsToSets.get(connection.end()),
 				connection
 			);
 		}

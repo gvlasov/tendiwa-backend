@@ -5,15 +5,15 @@ import org.junit.Test;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PointTrail;
-import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.settlements.utils.streetsDetector.DetectedStreets;
 
 import static org.junit.Assert.*;
+import static org.tendiwa.geometry.GeometryPrimitives.graphConstructor;
 
 public class DetectedStreetsTest {
 
 	private UndirectedGraph<Point2D, Segment2D> graphWithTwoConnectivityComponents =
-		new GraphConstructor<>(Segment2D::new)
+		graphConstructor()
 			// First connectivity component
 			.cycleOfVertices(new PointTrail(40, 40).moveBy(30, 10).moveBy(-20, 20).points())
 				// Second connectivity component

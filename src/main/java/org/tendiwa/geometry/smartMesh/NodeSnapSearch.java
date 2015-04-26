@@ -107,10 +107,10 @@ final class NodeSnapSearch implements EventSearch {
 		Set<Point2D> answer = new HashSet<>();
 		for (Segment2D segment : segments) {
 			// Individual vertices will be added only once
-			if (!segment.start.equals(source) && !segment.end.equals(source)) {
+			if (!segment.start().equals(source) && !segment.end().equals(source)) {
 				assert !segment.oneOfEndsIs(source);
-				answer.add(segment.start);
-				answer.add(segment.end);
+				answer.add(segment.start());
+				answer.add(segment.end());
 			}
 		}
 		return answer;
