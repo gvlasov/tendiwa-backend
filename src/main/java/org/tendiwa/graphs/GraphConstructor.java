@@ -8,6 +8,7 @@ import org.jgrapht.EdgeFactory;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.collections.SuccessiveTuples;
+import org.tendiwa.geometry.Point2D;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -102,6 +103,18 @@ public class GraphConstructor<V, E> {
 			throw new IllegalArgumentException("Can't add an edge from a vertex to itself");
 		}
 		edges.add(new int[]{start, end});
+		return this;
+	}
+
+	public GraphConstructor<V, E> edge(V start, V end) {
+		if (!graph.containsVertex(start)) {
+			throw new IllegalArgumentException("Start vertex must be present in the graph being constructed");
+		}
+		if (!graph.containsVertex(end)) {
+
+			throw new IllegalArgumentException("End vertex must be present in the graph being constructed");
+		}
+		graph.addEdge(start, end);
 		return this;
 	}
 
@@ -207,14 +220,19 @@ public class GraphConstructor<V, E> {
 		return vertices.inverse().get(vertex);
 	}
 
-	public GraphConstructor<V, E> chain(List<V> points) {
-		vertex(getNextAlias(), points.get(0));
-		SuccessiveTuples.forEach(points, (a, b) -> {
+	public GraphConstructor<V, E> chain(List<V> vertices) {
+		vertex(getNextAlias(), vertices.get(0));
+		SuccessiveTuples.forEach(vertices, (a, b) -> {
 			int currentAlias = lastVertexAlias;
 			int nextAlias = getNextAlias();
 			vertex(nextAlias, b);
 			edge(currentAlias, nextAlias);
 		});
+		return this;
+	}
+
+	public GraphConstructor<V, E> vertex(V vertex) {
+		vertex(getNextAlias(), vertex);
 		return this;
 	}
 }

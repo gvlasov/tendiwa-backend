@@ -1,10 +1,16 @@
 package org.tendiwa.geometry;
 
+import com.google.common.collect.ImmutableList;
 import org.tendiwa.core.OrdinalDirection;
 
+import java.util.List;
 import java.util.Objects;
 
-public interface Rectangle2D extends RectangularHull {
+import static org.tendiwa.geometry.GeometryPrimitives.point2D;
+import static org.tendiwa.geometry.GeometryPrimitives.rectangle2D;
+import static org.tendiwa.geometry.GeometryPrimitives.segment2D;
+
+public interface Rectangle2D extends RectangularHull, Polygon {
 	double x();
 
 	double y();
@@ -99,12 +105,13 @@ public interface Rectangle2D extends RectangularHull {
 			+ (segment.end().x() * segment.start().y() - segment.start().x() * segment.end().y());
 	}
 
-	default boolean contains(Point2D point) {
+	@Override
+	default boolean containsPoint(Point2D point) {
 		return point.x() >= x() && point.x() <= getMaxX()
 			&& point.y() >= y() && point.y() <= getMaxY();
 	}
 
-	default boolean strictlyContains(Point2D point) {
+	default boolean strictlyContainsPoint(Point2D point) {
 		return point.x() > x() && point.x() < getMaxX()
 			&& point.y() > y() && point.y() < getMaxY();
 	}
@@ -151,5 +158,91 @@ public interface Rectangle2D extends RectangularHull {
 			default:
 				return new BasicPoint2D(x(), y() + height());
 		}
+	}
+
+	@Override
+	default boolean isClockwise() {
+		return true;
+	}
+
+	@Override
+	default List<Segment2D> toSegments() {
+		return ImmutableList.of(
+			segment2D(
+				corner(OrdinalDirection.NW),
+				corner(OrdinalDirection.NE)
+			),
+			segment2D(
+				corner(OrdinalDirection.NE),
+				corner(OrdinalDirection.SE)
+			),
+			segment2D(
+				corner(OrdinalDirection.SE),
+				corner(OrdinalDirection.SW)
+			),
+			segment2D(
+				corner(OrdinalDirection.SW),
+				corner(OrdinalDirection.NW)
+			)
+		);
+	}
+
+	default Point2D nwCorner() {
+		return point2D(x(), y());
+	}
+
+	default Point2D neCorner() {
+		return point2D(maxX(), y());
+	}
+
+	default Point2D seCorner() {
+		return point2D(maxX(), maxY());
+	}
+
+	default Point2D swCorner() {
+		return point2D(x(), maxY());
+	}
+
+	@Override
+	default int size() {
+		return 4;
+	}
+
+	@Override
+	default boolean contains(Object o) {
+		if (!(o instanceof Point2D)) {
+			return false;
+		}
+		Point2D point = (Point2D) o;
+		return isNWCorner(point)
+			|| isNECorner(point)
+			|| isSECorner(point)
+			|| isSWCorner(point);
+	}
+
+	default boolean isNWCorner(Point2D point) {
+		return point.x() == x() && point.y() == y();
+	}
+
+	default boolean isNECorner(Point2D point) {
+		return point.x() == maxX() && point.y() == y();
+	}
+
+	default boolean isSECorner(Point2D point) {
+		return point.x() == maxX() && point.y() == maxY();
+	}
+
+	default boolean isSWCorner(Point2D point) {
+		return point.x() == x() && point.y() == maxY();
+	}
+
+	@Override
+	default Rectangle2D translate(Vector2D vector) {
+		return new BasicRectangle2D(
+			x() + vector.x(),
+			y() + vector.y(),
+			width(),
+			height()
+		);
 	}
 }

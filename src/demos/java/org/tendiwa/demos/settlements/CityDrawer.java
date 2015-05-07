@@ -2,23 +2,22 @@ package org.tendiwa.demos.settlements;
 
 import org.tendiwa.drawing.Canvas;
 import org.tendiwa.drawing.DrawingAlgorithm;
-import org.tendiwa.geometry.smartMesh.SmartMesh2D;
-import org.tendiwa.geometry.smartMesh.algorithms.SegmentNetworkAlgorithms;
+import org.tendiwa.geometry.smartMesh.SmartMeshedNetwork;
 
 import java.awt.Color;
 
-public class CityDrawer implements DrawingAlgorithm<SmartMesh2D> {
+public class CityDrawer implements DrawingAlgorithm<SmartMeshedNetwork> {
 
 	@Override
-	public void draw(SmartMesh2D segment2DSmartMesh, Canvas canvas) {
+	public void draw(SmartMeshedNetwork segment2DSmartMesh, Canvas canvas) {
 //		Iterator<Color> colors = Iterators.cycle(Color.red, Color.blue, Color.green, Color.orange, Color.cyan, Color.black);
-		segment2DSmartMesh.networks().stream()
-			.forEach(c -> c.network().edgeSet().stream()
+		segment2DSmartMesh.meshes().stream()
+			.forEach(mesh -> mesh.edgeSet().stream()
 					.forEach(line -> {
 //							canvas.drawRasterLine(line.start.toCell(), line.end.toCell(), colors.next());
 					})
 			);
-		SegmentNetworkAlgorithms.createFullGraph(segment2DSmartMesh)
+		segment2DSmartMesh.fullGraph()
 			.edgeSet()
 			.forEach(e -> canvas.drawRasterLine(e, Color.red));
 //		for (Point2D vertex : city.getOriginalGraph().vertexSet()) {

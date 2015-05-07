@@ -25,6 +25,6 @@ final class FloodStart {
 
 	private void assertPointIsStrictlyInsideSegment(Point2D point, Optional<Segment2D> holdingSegment) {
 		assert !holdingSegment.isPresent()
-			|| holdingSegment.get().boundingBox().strictlyContains(point);
+			|| holdingSegment.get().boundingBox().strictlyContainsPoint(point);
 	}
 }

@@ -12,6 +12,8 @@ import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.extensions.*;
 import org.tendiwa.geometry.graphs2d.BasicCycle2D;
 import org.tendiwa.geometry.graphs2d.Cycle2D;
+import org.tendiwa.geometry.smartMesh.MeshedNetworkBuilder;
+import org.tendiwa.geometry.smartMesh.SmartMeshedNetwork;
 import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.graphs.algorithms.SameOrPerpendicularSlopeGraphEdgesPerturbations;
 import org.tendiwa.pathfinding.dijkstra.PathTable;
@@ -21,7 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * From {@link CellSet}, creates a graph used as a base for a {@link org.tendiwa.geometry.smartMesh.SmartMesh2D}.
+ * From {@link CellSet}, creates a graph used as a base for a {@link SmartMeshedNetwork}.
  */
 public final class CityBounds {
 
@@ -29,14 +31,14 @@ public final class CityBounds {
 	}
 
 	/**
-	 * Creates a new graph that can be used as a base for {@link org.tendiwa.geometry.smartMesh.SmartMesh2D}.
+	 * Creates a new graph that can be used as a base for {@link SmartMeshedNetwork}.
 	 *
 	 * @param startCell
 	 * 	A cell from which a City originates. Roughly denotes its final position.
 	 * @param maxCityRadius
 	 * 	A maximum radius of a Rectangle containing resulting City.
-	 * @return A new graph that can be used as a base for {@link org.tendiwa.geometry.smartMesh.SmartMesh2D}.
-	 * @see org.tendiwa.geometry.smartMesh.SegmentNetworkBuilder
+	 * @return A new graph that can be used as a base for {@link SmartMeshedNetwork}.
+	 * @see MeshedNetworkBuilder
 	 */
 	public static Cycle2D create(
 		BoundedCellSet cityShape,

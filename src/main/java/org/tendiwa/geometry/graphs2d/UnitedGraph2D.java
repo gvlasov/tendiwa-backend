@@ -5,7 +5,7 @@ import org.jgrapht.graph.AbstractBaseGraph;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 
-final class UnitedGraph2D extends AbstractBaseGraph<Point2D, Segment2D> implements UndirectedGraph<Point2D, Segment2D> {
+final class UnitedGraph2D extends AbstractBaseGraph<Point2D, Segment2D> implements Graph2D {
 
 	public UnitedGraph2D(
 		UndirectedGraph<Point2D, Segment2D> oneGraph,

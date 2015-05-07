@@ -1,11 +1,7 @@
 package org.tendiwa.demos.geometry.polygons;
 
 import org.tendiwa.geometry.BasicPolygon;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Polygon;
 import org.tendiwa.geometry.Polygon_Wr;
-
-import java.util.ArrayList;
 
 import static org.tendiwa.geometry.GeometryPrimitives.point2D;
 

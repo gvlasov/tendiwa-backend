@@ -1,10 +1,13 @@
 package org.tendiwa.geometry.smartMesh;
 
 import org.tendiwa.core.meta.BasicRange;
+import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawableSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.RayIntersection;
 import org.tendiwa.geometry.Segment2D;
 
+import java.awt.Color;
 import java.util.Collection;
 import java.util.Optional;
 

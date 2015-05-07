@@ -3,11 +3,11 @@ package org.tendiwa.geometry;
 import org.tendiwa.core.meta.Cell;
 
 public final class CellsBounds extends Rectangle_Wr {
-	public CellsBounds(Iterable<BasicCell> cells) {
+	public CellsBounds(Iterable<Cell> cells) {
 		super(bounds(cells));
 	}
 
-	private static Rectangle bounds(Iterable<BasicCell> cells) {
+	private static Rectangle bounds(Iterable<Cell> cells) {
 		int xMin = Integer.MAX_VALUE;
 		int xMax = Integer.MIN_VALUE;
 		int yMin = Integer.MAX_VALUE;

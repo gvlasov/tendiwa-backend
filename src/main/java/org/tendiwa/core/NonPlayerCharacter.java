@@ -3,6 +3,7 @@ package org.tendiwa.core;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.name.Named;
+import org.tendiwa.core.meta.Cell;
 import org.tendiwa.core.meta.Coordinate;
 import org.tendiwa.core.observation.Observable;
 import org.tendiwa.core.player.SinglePlayerMode;
@@ -15,6 +16,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+
+import static org.tendiwa.geometry.GeometryPrimitives.cell;
 
 public class NonPlayerCharacter extends Character {
 	private static final int PATH_TABLE_WIDTH = 41;
@@ -294,8 +297,12 @@ public class NonPlayerCharacter extends Character {
 				if (destX == x && destY == y) {
 					idle();
 				} else {
-					LinkedList<BasicCell> dest = Paths.getPath(new BasicCell(x,y), new BasicCell(destX, destY), getPathWalkerOverCharacters(),
-						MAX_PATH_TABLE_DEPTH);
+					LinkedList<Cell> dest = Paths.getPath(
+						cell(x, y),
+						cell(destX, destY),
+						getPathWalkerOverCharacters(),
+						MAX_PATH_TABLE_DEPTH
+					);
 					if (dest.getFirst().x() != x || dest.getFirst().y() != y) {
 						step(dest.getFirst().x(), dest.getFirst().y());
 					} else {
@@ -313,8 +320,8 @@ public class NonPlayerCharacter extends Character {
 					// If path is blocked by characters
 					imaginaryPathTable = Paths.getPathTable(new BasicCell(x, y), getPathWalkerOverCharacters(),
 						MAX_PATH_TABLE_DEPTH);
-					LinkedList<BasicCell> imaginaryPath = imaginaryPathTable.getPath(new BasicCell(activeEnemy.x, activeEnemy.y));
-					BasicCell firstStep = imaginaryPath.get(0);
+					LinkedList<Cell> imaginaryPath = imaginaryPathTable.getPath(activeEnemy.position());
+					Cell firstStep = imaginaryPath.get(0);
 					if (plane.getCharacter(firstStep.x(), firstStep.y()) == null) {
 						// If there is no character on first cell of imaginary
 						// path, then step there
@@ -333,10 +340,14 @@ public class NonPlayerCharacter extends Character {
 
 			if (!pathTable.isCellComputed(lastSeenCoord.x, lastSeenCoord.y)) {
 				// If path is blocked by characters
-				LinkedList<BasicCell> path = Paths.getPath(new BasicCell(x, y), new BasicCell(lastSeenCoord.x, lastSeenCoord.y),
-					getPathWalkerOverCharacters(), MAX_PATH_TABLE_DEPTH);
+				LinkedList<Cell> path = Paths.getPath(
+					cell(x, y),
+					cell(lastSeenCoord.x, lastSeenCoord.y),
+					getPathWalkerOverCharacters(),
+					MAX_PATH_TABLE_DEPTH
+				);
 				assert path != null : lastSeenCoord;
-				BasicCell firstStep = path.getFirst();
+				Cell firstStep = path.getFirst();
 				if (plane.getCharacter(firstStep.x(), firstStep.y()) == null) {
 					// If there is no character on first cell of imaginary path,
 					// then step there
@@ -525,8 +536,10 @@ public class NonPlayerCharacter extends Character {
 		this.dialogue = dialogue;
 	}
 
-	public void proceedToNextDialoguePoint(Character player,
-										   int answerIndex) {
+	public void proceedToNextDialoguePoint(
+		Character player,
+		int answerIndex
+	) {
 		DialoguePoint prevDP = dialogues.get(player);
 		dialogues.put(player, prevDP.getNextPoint(answerIndex, player));
 		DialoguePoint curDP = dialogues.get(player);

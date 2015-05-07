@@ -250,7 +250,11 @@ class BaseAwtCanvas implements AwtCanvas, ScaledCanvas {
 
 				return;
 			}
-			image.setRGB(x - pixelBounds.x(), y - pixelBounds.y(), color.getRGB());
+			image.setRGB(
+				x - pixelBounds.x(),
+				y - pixelBounds.y(),
+				color.getRGB()
+			);
 		} else {
 			graphics.setColor(color);
 			graphics.fillRect(
@@ -260,6 +264,7 @@ class BaseAwtCanvas implements AwtCanvas, ScaledCanvas {
 				scale
 			);
 		}
+		currentLayer.component.repaint();
 	}
 
 

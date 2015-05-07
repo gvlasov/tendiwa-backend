@@ -44,4 +44,5 @@ public final class BasicPoint2D implements Point2D {
 		result = 31 * result + (int) (temp ^ (temp >>> 32));
 		return result;
 	}
+
 }

@@ -1,8 +1,10 @@
 package org.tendiwa.geometry.smartMesh;
 
-import org.jgrapht.Graph;
 import org.tendiwa.collections.SuccessiveTuples;
 import org.tendiwa.geometry.*;
+import org.tendiwa.geometry.graphs2d.Cycle2D;
+import org.tendiwa.geometry.graphs2d.Graph2D;
+import org.tendiwa.graphs.graphs2d.Graph2D_Wr;
 import org.tendiwa.graphs.GraphChainTraversal;
 import org.tendiwa.graphs.GraphChainTraversal.NeighborsTriplet;
 import org.tendiwa.graphs.MinimalCycle;
@@ -19,28 +21,29 @@ import java.util.stream.Collectors;
  * and for each edge remembers whether that edge goes clockwise or counter-clockwise. That effectively means that
  * OrientedCycle can tell if its innards are to the right or to the left from its certain edge.
  */
-final class OrientedCycle implements NetworkPart {
+final class OrientedCycle implements NetworkPart, Cycle2D {
 	private final boolean isCycleClockwise;
-	private final MutableGraph2D splitOriginalGraph;
-	private final MutableGraph2D cycleGraph;
+	private final Graph2D splitOriginalGraph;
+	private final Graph2D cycleGraph;
 	private final Set<Segment2D> reverseEdges = new HashSet<>();
 
 	OrientedCycle(
 		MinimalCycle<Point2D, Segment2D> originalMinimalCycle,
-		MutableGraph2D splitOriginalGraph
+		Graph2D splitOriginalGraph
 	) {
+		this.cycleGraph = createCycleGraph(originalMinimalCycle, splitOriginalGraph);
 		this.splitOriginalGraph = splitOriginalGraph;
-		this.cycleGraph = createCycleGraph(originalMinimalCycle);
 		this.isCycleClockwise = JTSUtils.isYDownCCW(originalMinimalCycle.vertexList());
 	}
 
 	@Override
 	public MutableGraph2D graph() {
-		return cycleGraph;
+		return this;
 	}
 
 	private MutableGraph2D createCycleGraph(
-		MinimalCycle<Point2D, Segment2D> originalMinimalCycle
+		MinimalCycle<Point2D, Segment2D> originalMinimalCycle,
+		Graph2D splitOriginalGraph
 	) {
 		MutableGraph2D cycleGraph = new MutableGraph2D();
 		SuccessiveTuples.forEachLooped(
@@ -70,7 +73,11 @@ final class OrientedCycle implements NetworkPart {
 		return cycleGraph;
 	}
 
-	private void addAutoDirectedEdge(Graph<Point2D, Segment2D> cycleGraph, Point2D current, Point2D next) {
+	private void addAutoDirectedEdge(
+		Graph2D cycleGraph,
+		Point2D current,
+		Point2D next
+	) {
 		assert splitOriginalGraph.containsEdge(current, next);
 		cycleGraph.addVertex(current);
 		cycleGraph.addVertex(next);
@@ -150,7 +157,8 @@ final class OrientedCycle implements NetworkPart {
 		);
 	}
 
-	boolean isClockwise(Segment2D edge) {
+	@Override
+	public boolean isClockwise(Segment2D edge) {
 		return isCycleClockwise ^ isAgainstCycleDirection(edge);
 	}
 

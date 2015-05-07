@@ -4,4 +4,5 @@ public interface GameObject {
 
 	public ObjectType getType();
 
+	boolean isUsable();
 }

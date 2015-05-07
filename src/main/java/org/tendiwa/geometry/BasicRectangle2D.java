@@ -1,5 +1,12 @@
 package org.tendiwa.geometry;
 
+import com.google.common.collect.ImmutableList;
+
+import java.util.Iterator;
+import java.util.List;
+
+import static org.tendiwa.geometry.GeometryPrimitives.point2D;
+
 public final class BasicRectangle2D implements Rectangle2D {
 	public final double x;
 	public final double y;
@@ -31,5 +38,32 @@ public final class BasicRectangle2D implements Rectangle2D {
 	@Override
 	public double height() {
 		return height;
+	}
+
+
+	@Override
+	public Iterator<Point2D> iterator() {
+		return
+			ImmutableList.of(
+				point2D(x(), y()),
+				point2D(maxX(), y()),
+				point2D(maxX(), maxY()),
+				point2D(x(), maxY())
+			).iterator();
+	}
+
+	@Override
+	public Point2D get(int index) {
+		return null;
+	}
+
+	@Override
+	public int indexOf(Object o) {
+		return 0;
+	}
+
+	@Override
+	public int lastIndexOf(Object o) {
+		return 0;
 	}
 }

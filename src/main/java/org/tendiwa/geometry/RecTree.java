@@ -64,7 +64,7 @@ public interface RecTree {
 	default boolean encloses(Rectangle rectangle) {
 		Objects.requireNonNull(this);
 		Objects.requireNonNull(rectangle);
-		int recArea = rectangle.area();
+		double recArea = rectangle.area();
 		int intersectionArea = 0;
 
 		for (Rectangle areaPiece : this.rectangles().collect(toImmutableList())) {

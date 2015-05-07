@@ -8,7 +8,7 @@ import org.tendiwa.geometry.Polygon;
 import org.tendiwa.geometry.extensions.daveedvMaxRec.MaximalRectanlges;
 import org.tendiwa.geometry.extensions.polygonRasterization.PolygonRasterizer;
 import org.tendiwa.geometry.smartMesh.EnclosedCyclesSet;
-import org.tendiwa.geometry.smartMesh.SmartMesh2D;
+import org.tendiwa.geometry.smartMesh.SmartMeshedNetwork;
 import org.tendiwa.settlements.LinkedPolygon;
 
 import java.awt.Color;
@@ -21,7 +21,7 @@ public final class RectangularBuildingLots {
 	}
 
 	public static Set<RectangleWithNeighbors> placeInside(
-		SmartMesh2D segment2DSmartMesh
+		SmartMeshedNetwork segment2DSmartMesh
 	) {
 		EnclosedCyclesSet enclosedCycles = new EnclosedCyclesSet(segment2DSmartMesh);
 
@@ -44,7 +44,7 @@ public final class RectangularBuildingLots {
 			.collect(Collectors.toImmutableSet());
 	}
 
-	private static void drawEnclosedBlocks(SmartMesh2D segment2DSmartMesh, EnclosedCyclesSet enclosedCycles) {
+	private static void drawEnclosedBlocks(SmartMeshedNetwork segment2DSmartMesh, EnclosedCyclesSet enclosedCycles) {
 		TestCanvas.canvas.drawAll(
 			segment2DSmartMesh.networks()
 				.stream()

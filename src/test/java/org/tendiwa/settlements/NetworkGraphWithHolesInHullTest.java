@@ -5,9 +5,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.smartMesh.SegmentNetworkBuilder;
-import org.tendiwa.geometry.smartMesh.SmartMesh2D;
-import org.tendiwa.settlements.utils.RoadRejector;
+import org.tendiwa.geometry.smartMesh.MeshedNetworkBuilder;
+import org.tendiwa.geometry.smartMesh.SmartMeshedNetwork;
+import org.tendiwa.settlements.utils.NetworkGraphWithHolesInHull;
 
 import java.util.Random;
 
@@ -15,9 +15,9 @@ import static org.junit.Assert.*;
 import static org.tendiwa.geometry.GeometryPrimitives.graphConstructor;
 import static org.tendiwa.geometry.GeometryPrimitives.point2D;
 
-public class RoadRejectorTest {
+public class NetworkGraphWithHolesInHullTest {
 
-	private SmartMesh2D geometry;
+	private SmartMeshedNetwork geometry;
 	private UndirectedGraph<Point2D, Segment2D> fullRoadGraph;
 
 	@Before
@@ -29,10 +29,10 @@ public class RoadRejectorTest {
 			.vertex(3, point2D(50, 150))
 			.cycle(0, 1, 2, 3)
 			.graph();
-		geometry = new SegmentNetworkBuilder(topology)
+		geometry = new MeshedNetworkBuilder(topology)
 			.withDefaults()
 			.build();
-		fullRoadGraph = geometry.graph();
+		fullRoadGraph = geometry.fullGraph();
 	}
 
 	/**
@@ -40,7 +40,7 @@ public class RoadRejectorTest {
 	 */
 	@Test
 	public void roadRejectionWithSingleCycleCityGraph() {
-		RoadRejector.rejectPartOfNetworksBorders(fullRoadGraph, geometry, 0.5, new Random(1));
+		NetworkGraphWithHolesInHull.rejectPartOfNetworksBorders(fullRoadGraph, geometry, 0.5, new Random(1));
 
 	}
 
@@ -49,7 +49,7 @@ public class RoadRejectorTest {
 	 */
 	@Test
 	public void noRoadRejection() {
-		UndirectedGraph<Point2D, Segment2D> unmodifiedGraph = RoadRejector.rejectPartOfNetworksBorders(fullRoadGraph, geometry, 0.0, new Random(1));
+		UndirectedGraph<Point2D, Segment2D> unmodifiedGraph = NetworkGraphWithHolesInHull.rejectPartOfNetworksBorders(fullRoadGraph, geometry, 0.0, new Random(1));
 		assertTrue(fullRoadGraph.edgeSet().equals(unmodifiedGraph.edgeSet()));
 	}
 
@@ -58,7 +58,7 @@ public class RoadRejectorTest {
 	 */
 	@Test
 	public void allOuterRoadsRejected() {
-		UndirectedGraph<Point2D, Segment2D> graphWithoutCycleEdges = RoadRejector.rejectPartOfNetworksBorders(fullRoadGraph, geometry, 1.0, new Random(1));
+		UndirectedGraph<Point2D, Segment2D> graphWithoutCycleEdges = NetworkGraphWithHolesInHull.rejectPartOfNetworksBorders(fullRoadGraph, geometry, 1.0, new Random(1));
 		assertTrue(
 			geometry
 				.networks()
@@ -70,8 +70,8 @@ public class RoadRejectorTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void wrongProbability() {
-		RoadRejector.rejectPartOfNetworksBorders(geometry.graph(), geometry, 2.0, new Random(1));
-		RoadRejector.rejectPartOfNetworksBorders(geometry.graph(), geometry, -2.0, new Random(1));
+		NetworkGraphWithHolesInHull.rejectPartOfNetworksBorders(geometry.fullGraph(), geometry, 2.0, new Random(1));
+		NetworkGraphWithHolesInHull.rejectPartOfNetworksBorders(geometry.fullGraph(), geometry, -2.0, new Random(1));
 	}
 
 }

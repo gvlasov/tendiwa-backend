@@ -1,6 +1,7 @@
 package org.tendiwa.geometry.smartMesh;
 
 import org.tendiwa.geometry.CutSegment2D;
+import org.tendiwa.geometry.graphs2d.Graph2D;
 import org.tendiwa.graphs.graphs2d.MutableGraph2D;
 
 interface NetworkPart {

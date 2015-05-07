@@ -100,7 +100,6 @@ public final class GraphChainTraversal {
 				assert graph.getEdgeSource(startEdge).equals(startVertex);
 				return graph.getEdgeTarget(startEdge);
 			}
-
 		}
 
 		public Stream<NeighborsTriplet<V>> stream() {

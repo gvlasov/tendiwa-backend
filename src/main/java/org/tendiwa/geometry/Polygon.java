@@ -2,85 +2,158 @@ package org.tendiwa.geometry;
 
 import com.sun.istack.internal.NotNull;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.function.Consumer;
+
+import static org.tendiwa.collections.Collectors.*;
 
 public interface Polygon extends List<Point2D> {
 	boolean isClockwise();
 
+	default List<Segment2D> toSegments() {
+		List<Segment2D> segments = new ArrayList<>(size());
+		int last = size() - 1;
+		for (int i = 0; i < last; i++) {
+			segments.add(new BasicSegment2D(get(i), get(i + 1)));
+		}
+		segments.add(new BasicSegment2D(get(last), get(0)));
+		return segments;
+	}
 
-	List<Segment2D> toSegments();
+	@Override
+	default boolean containsAll(Collection<?> c) {
+		for (Object o : c) {
+			if (!contains(o)) {
+				return false;
+			}
+		}
+		return true;
+	}
 
 
 	@NotNull
 	@Override
-	@Deprecated
-	Object[] toArray();
-
-	@NotNull
-	@Override
-	<T> T[] toArray(T[] a);
+	default <T> T[] toArray(T[] a) {
+		throw new UnsupportedOperationException();
+	}
 
 	@Deprecated
 	@Override
-	boolean add(Point2D point2D);
+	default boolean add(Point2D point2D) {
+		throw new UnsupportedOperationException();
+	}
 
-	@Override
-	@Deprecated
-	boolean remove(Object o);
-
-	@Override
-	boolean containsAll(Collection<?> c);
 
 	@Deprecated
 	@Override
-	boolean addAll(Collection<? extends Point2D> c);
+	default boolean addAll(Collection<? extends Point2D> c) {
+		throw new UnsupportedOperationException();
+	}
 
 	@Deprecated
 	@Override
-	boolean addAll(int index, Collection<? extends Point2D> c);
+	default boolean addAll(int index, Collection<? extends Point2D> c) {
+		throw new UnsupportedOperationException();
+	}
 
 	@Deprecated
 	@Override
-	boolean removeAll(Collection<?> c);
+	default boolean removeAll(Collection<?> c) {
+		throw new UnsupportedOperationException();
+	}
 
 	@Deprecated
 	@Override
-	boolean retainAll(Collection<?> c);
+	default boolean retainAll(Collection<?> c) {
+		throw new UnsupportedOperationException();
+	}
 
 	@Deprecated
 	@Override
-	void clear();
+	default void clear() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Deprecated
+	@Override
+	default Point2D set(int index, Point2D element) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Deprecated
+	@Override
+	default void add(int index, Point2D element) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Deprecated
+	@Override
+	default Point2D remove(int index) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Deprecated
+	@Override
+	default ListIterator<Point2D> listIterator() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Deprecated
+	@Override
+	default ListIterator<Point2D> listIterator(int index) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Deprecated
+	@Override
+	default List<Point2D> subList(int fromIndex, int toIndex) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Deprecated
+	@Override
+	default Object[] toArray() {
+		throw new UnsupportedOperationException();
+	}
 
 	@Override
-	@Deprecated
-	Point2D set(int index, Point2D element);
+	default boolean isEmpty() {
+		return false;
+	}
 
+	@Deprecated
 	@Override
-	@Deprecated
-	void add(int index, Point2D element);
+	default boolean remove(Object o) {
+		throw new UnsupportedOperationException();
+	}
 
-	@Override
-	@Deprecated
-	Point2D remove(int index);
+	/**
+	 * <a href="http://www.mathopenref.com/coordpolygonarea2.html">Algorithm to find the area of a polygon</a>
+	 *
+	 * @return Area of this polygon.
+	 */
+	default double area() {
+		double area = 0;
+		int j = size() - 1;
 
-	@NotNull
-	@Override
-	@Deprecated
-	ListIterator<Point2D> listIterator();
+		for (int i = 0; i < size(); i++) {
+			area = area + (get(j).x() + get(i).x()) * (get(j).y() - get(i).y());
+			j = i;
+		}
+		return area / 2;
+	}
 
-	@NotNull
-	@Override
-	@Deprecated
-	ListIterator<Point2D> listIterator(int index);
+	default Polygon translate(Vector2D vector) {
+		return new BasicPolygon(
+			stream()
+				.map(p -> p.add(vector))
+				.collect(toImmutableList())
+		);
+	}
 
-	@NotNull
-	@Override
-	@Deprecated
-	List<Point2D> subList(int fromIndex, int toIndex);
-
-
+	default boolean containsPoint(Point2D point) {
+		throw new UnsupportedOperationException();
+	}
 }

@@ -6,11 +6,9 @@ import org.tendiwa.drawing.Canvas;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.geometry.extensions.PointTrail;
-import org.tendiwa.geometry.smartMesh.SegmentNetworkBuilder;
-import org.tendiwa.geometry.smartMesh.SmartMesh2D;
-import org.tendiwa.graphs.GraphConstructor;
+import org.tendiwa.geometry.smartMesh.MeshedNetworkBuilder;
+import org.tendiwa.geometry.smartMesh.SmartMeshedNetwork;
 
 import static org.tendiwa.geometry.GeometryPrimitives.graphConstructor;
 import static org.tendiwa.geometry.GeometryPrimitives.rectangle;
@@ -63,7 +61,7 @@ public class EnclosedCyclesRoadPlanarGraphModelDemo implements Runnable {
 			)
 			.graph();
 
-		SmartMesh2D city = new SegmentNetworkBuilder(graph)
+		SmartMeshedNetwork city = new MeshedNetworkBuilder(graph)
 			.withDefaults()
 			.withRoadSegmentLength(47)
 			.withSnapSize(20)

@@ -1,6 +1,6 @@
 package org.tendiwa.data;
 
-import org.tendiwa.graphs.Graph2D_Wr;
+import org.tendiwa.graphs.graphs2d.Graph2D_Wr;
 
 import static org.tendiwa.geometry.GeometryPrimitives.graphConstructor;
 import static org.tendiwa.geometry.GeometryPrimitives.point2D;

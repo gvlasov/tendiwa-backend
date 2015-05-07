@@ -6,12 +6,12 @@ import org.tendiwa.collections.Collectors;
 
 import java.util.Set;
 
-final class ConnectivityComponent<V, E> {
+public final class ConnectivityComponent<V, E> {
 
 	private final UndirectedGraph<V, E> fullGraph;
 	private final Set<V> vertices;
 
-	ConnectivityComponent(
+	public ConnectivityComponent(
 		UndirectedGraph<V, E> fullGraph,
 		Set<V> componentVertices
 	) {
@@ -20,7 +20,7 @@ final class ConnectivityComponent<V, E> {
 		this.vertices = componentVertices;
 	}
 
-	UndirectedGraph<V, E> graph() {
+	public UndirectedGraph<V, E> graph() {
 		return new UndirectedSubgraph<>(
 			fullGraph,
 			vertices,

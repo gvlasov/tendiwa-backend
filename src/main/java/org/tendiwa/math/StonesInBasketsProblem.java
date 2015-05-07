@@ -1,14 +1,14 @@
 package org.tendiwa.math;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
  * @author Suseika
  */
-public final class StonesInBasketsProblem implements IndexToNumberProblem {
-	private final int[] basketsCapacity;
-	private final int numberOfStones;
-	private final Random random;
+public final class StonesInBasketsProblem {
+	private final List<MutableBasketWithStones> baskets;
 
 	/**
 	 * A problem of generating a random uniformly distributed partition of N
@@ -29,31 +29,33 @@ public final class StonesInBasketsProblem implements IndexToNumberProblem {
 		int numberOfStones,
 		Random random
 	) {
-		this.basketsCapacity = basketsCapacity;
-		this.numberOfStones = numberOfStones;
-		this.random = random;
-	}
-
-	@Override
-	public int[] solve() {
-		Random rand = new Random(random.nextInt());
-		int totalCapacity = computeTotalBasketsCapacity(basketsCapacity);
+		this.baskets = new ArrayList<>(basketsCapacity.length);
+		for (int capacity : basketsCapacity) {
+			baskets.add(new MutableBasketWithStones(capacity));
+		}
+		random = new Random(random.nextInt());
+		int totalCapacity = baskets.stream()
+			.mapToInt(MutableBasketWithStones::capacity)
+			.sum();
 		if (numberOfStones > totalCapacity) {
 			throw new IllegalArgumentException(
 				"Number of stones must be no greater than total capacity of baskets " +
 					"(" + numberOfStones + " stones, " + totalCapacity + " total capacity of baskets)"
 			);
 		}
-		int[] basketPutChances = computeBasketsChances(basketsCapacity, totalCapacity);
-		int numberOfBaskets = basketsCapacity.length;
+		int[] basketPutChances = computeBasketsChances(basketsCapacity);
+		int numberOfBaskets = baskets.size();
 		int[] stonesPartition = new int[numberOfBaskets];
 		for (int i = 0; i < numberOfStones; i++) {
-			int generatedPlace = (int) Math.floor(rand.nextDouble() * (totalCapacity + 1));
+			int generatedPlace = (int) Math.floor(random.nextDouble() * (totalCapacity + 1));
 			assert generatedPlace >= 0 && generatedPlace <= totalCapacity;
 			int index = findWhereToPutStone(basketPutChances, numberOfBaskets, stonesPartition, generatedPlace);
-			stonesPartition[index]++;
+			baskets.get(index).addStone();
 		}
-		return stonesPartition;
+	}
+
+	public BasketWithStones getBasket(int index) {
+		return baskets.get(index);
 	}
 
 	/**
@@ -69,12 +71,12 @@ public final class StonesInBasketsProblem implements IndexToNumberProblem {
 	) {
 		int index = ArrayUtils.indexOfEqualOrHigher(basketPutChances, generatedPlace);
 		assert index != -1;
-		if (stonesPartition[index] == basketsCapacity[index]) {
+		if (stonesPartition[index] == baskets.get(index).capacity()) {
 			// If a basket is full, select next basket until we find one that is not full.
 			int j = 1;
 			for (; j < numberOfBaskets; j++) {
 				int newIndex = (index + j) % numberOfBaskets;
-				if (stonesPartition[newIndex] < basketsCapacity[newIndex]) {
+				if (stonesPartition[newIndex] < baskets.get(newIndex).capacity()) {
 					index = newIndex;
 					break;
 				}
@@ -87,32 +89,14 @@ public final class StonesInBasketsProblem implements IndexToNumberProblem {
 	/**
 	 * @param basketsCapacity
 	 * 	Capacities of baskets.
-	 * @param summarySize
-	 * 	Total capacity of all baskets.
 	 * @return Array whose i-th element is a sum of elements of {@code basketsCapacity} from 0-th to i-th.
 	 */
-	private static int[] computeBasketsChances(int[] basketsCapacity, int summarySize) {
+	private static int[] computeBasketsChances(int[] basketsCapacity) {
 		int[] chances = new int[basketsCapacity.length];
 		chances[0] = basketsCapacity[0];
 		for (int i = 1; i < basketsCapacity.length; i++) {
 			chances[i] = chances[i - 1] + basketsCapacity[i];
 		}
 		return chances;
-	}
-
-	/**
-	 * Finds what is the total capacity of all baskets.
-	 *
-	 * @param basketsCapacity
-	 * 	Capacities of baskets.
-	 * @return Sum of all capacities of baskets.
-	 */
-	private static int computeTotalBasketsCapacity(int[] basketsCapacity) {
-		int size = 0;
-		for (int i = 0; i < basketsCapacity.length; i++) {
-			assert basketsCapacity[i] >= 1;
-			size += basketsCapacity[i];
-		}
-		return size;
 	}
 }

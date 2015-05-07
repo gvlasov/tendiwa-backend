@@ -26,6 +26,7 @@ public final class PlanarGraphs {
 		return blockBoundsNetwork;
 	}
 
+
 	public static MinimumCycleBasis<Point2D, Segment2D> minimumCycleBasis(UndirectedGraph<Point2D, Segment2D> graph) {
 		return new MinimumCycleBasis<>(graph, Point2DVertexPositionAdapter.get());
 	}
@@ -48,14 +49,6 @@ public final class PlanarGraphs {
 	 * 	An edge to remove.
 	 */
 	public static void removeEdgeAndOrphanedVertices(UndirectedGraph<Point2D, Segment2D> graph, Segment2D edge) {
-		assert graph.containsEdge(edge);
-		graph.removeEdge(edge);
-		if (graph.degreeOf(edge.start()) == 0) {
-			graph.removeVertex(edge.start());
-		}
-		if (graph.degreeOf(edge.end()) == 0) {
-			graph.removeVertex(edge.end());
-		}
 	}
 
 	public UndirectedGraph<Point2D, Segment2D> graphOfSegments(Iterable<Segment2D> segments) {

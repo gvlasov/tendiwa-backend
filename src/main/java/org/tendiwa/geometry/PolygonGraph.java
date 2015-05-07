@@ -1,18 +1,19 @@
-package org.tendiwa.graphs;
+package org.tendiwa.geometry;
 
 import org.jgrapht.EdgeFactory;
-import org.jgrapht.UndirectedGraph;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.graphs2d.Cycle2D;
+import org.tendiwa.geometry.graphs2d.Graph2D;
 
 import java.util.Collection;
 import java.util.Set;
 
-public abstract class Graph2D_Wr implements UndirectedGraph<Point2D, Segment2D> {
-	private final UndirectedGraph<Point2D, Segment2D> graph;
+public final class PolygonGraph extends Polygon_Wr implements Cycle2D {
 
-	protected Graph2D_Wr(UndirectedGraph<Point2D, Segment2D> graph) {
-		this.graph = graph;
+	private final Graph2D graph;
+
+	public PolygonGraph(Polygon polygon) {
+		super(polygon);
+		this.graph = Graph2D.createGraph(polygon, polygon.toSegments());
 	}
 
 	@Override

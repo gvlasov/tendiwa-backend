@@ -4,8 +4,8 @@ import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.smartMesh.SegmentNetworkBuilder;
-import org.tendiwa.geometry.smartMesh.SmartMesh2D;
+import org.tendiwa.geometry.smartMesh.MeshedNetworkBuilder;
+import org.tendiwa.geometry.smartMesh.SmartMeshedNetwork;
 import org.tendiwa.graphs.GraphConstructor;
 
 import java.awt.Color;
@@ -29,7 +29,7 @@ public class FirstCityGenerationDemo {
 			.vertex(9, point2D(184, 187))
 			.cycle(0, 1, 2, 3, 4)
 			.cycle(3, 5, 9, 8, 7, 6, 1, 2);
-		SmartMesh2D segment2DSmartMesh = new SegmentNetworkBuilder(gc.graph())
+		SmartMeshedNetwork segment2DSmartMesh = new MeshedNetworkBuilder(gc.graph())
 			.withDefaults()
 			.build();
 		canvas.draw(

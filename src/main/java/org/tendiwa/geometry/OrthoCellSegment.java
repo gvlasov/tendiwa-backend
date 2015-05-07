@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static org.tendiwa.geometry.GeometryPrimitives.cell;
+
 public interface OrthoCellSegment extends BoundedCellSet, Range {
 	int getX();
 
@@ -37,6 +39,24 @@ public interface OrthoCellSegment extends BoundedCellSet, Range {
 				return getY() + length() - 1;
 			default:
 				throw new TwoDimensionalWorldConstraintViolation();
+		}
+	}
+
+	default Cell getCell(CardinalDirection segmentEndDirection, int number) {
+		if (segmentEndDirection.getOrientation() != orientation()) {
+			throw new IllegalArgumentException(
+				"Side orientation must be the same as the orientation of segmentEndDirection"
+			);
+		}
+		if (segmentEndDirection == CardinalDirection.W) {
+			return cell(getX() + number, getY());
+		} else if (segmentEndDirection == CardinalDirection.E) {
+			return cell(max() - number, getY());
+		} else if (segmentEndDirection == CardinalDirection.N) {
+			return cell(getX(), getY() + number);
+		} else {
+			assert segmentEndDirection == CardinalDirection.S;
+			return cell(getX(), max() - number);
 		}
 	}
 
@@ -167,5 +187,9 @@ public interface OrthoCellSegment extends BoundedCellSet, Range {
 			);
 		}
 		return new IteratorWithoutRemove<>(cells.iterator());
+	}
+
+	default Cell start() {
+		return new BasicCell(getX(), getY());
 	}
 }

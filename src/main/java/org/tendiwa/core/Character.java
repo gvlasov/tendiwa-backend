@@ -75,6 +75,10 @@ public class Character implements Cell, PlaceableInCell, DamageSource {
 		this.seer = new Seer(this, new CharacterVisionCriteria(), new DefaultObstacleFindingStrategy(this));
 	}
 
+	public Cell position() {
+		return new BasicCell(x, y);
+	}
+
 	public PathWalkerOverCharacters getPathWalkerOverCharacters() {
 		if (pathWalkerOverCharacters == null) {
 			pathWalkerOverCharacters = new PathWalkerOverCharacters();
@@ -642,7 +646,12 @@ public class Character implements Cell, PlaceableInCell, DamageSource {
 		backend.waitForAnimationToStartAndComplete();
 	}
 
-	private ProjectileFlight computeProjectileFlightEndCoordinate(UniqueItem weapon, Item projectile, int toX, int toY) {
+	private ProjectileFlight computeProjectileFlightEndCoordinate(
+		UniqueItem weapon,
+		Item projectile,
+		int toX,
+		int toY
+	) {
 		Cell endCoordinate = new BasicCell(toX, toY);
 		Cell[] vector = BasicCellSegment.cells(x, y, toX, toY);
 		Character characterHit = null;

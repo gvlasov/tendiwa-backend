@@ -58,6 +58,7 @@ final class InnerNetwork {
 
 	Optional<Ray> tryPlacingSegment(Ray beginning, Sector allowedSector) {
 		double segmentLength = deviatedLength();
+		assert fullGraph.vertexSet().contains(beginning.start);
 		PropagationEvent event = new SnapTest(
 			config.snapSize,
 			beginning.start,

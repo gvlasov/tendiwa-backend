@@ -1,7 +1,6 @@
 package org.tendiwa.demos.settlements;
 
 import com.google.common.collect.Lists;
-import org.jgrapht.UndirectedGraph;
 import org.tendiwa.collections.Collectors;
 import org.tendiwa.data.FourCyclePenisGraph;
 import org.tendiwa.demos.Demos;
@@ -11,10 +10,11 @@ import org.tendiwa.drawing.MagnifierCanvas;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.*;
 import org.tendiwa.geometry.Chain2D;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.smartMesh.SegmentNetworkBuilder;
-import org.tendiwa.geometry.smartMesh.SmartMesh2D;
+import org.tendiwa.geometry.extensions.straightSkeleton.ShrinkedPolygon;
+import org.tendiwa.geometry.graphs2d.Graph2D;
+import org.tendiwa.geometry.smartMesh.MeshedNetwork;
+import org.tendiwa.geometry.smartMesh.MeshedNetworkBuilder;
+import org.tendiwa.geometry.smartMesh.SmartMeshedNetwork;
 import org.tendiwa.settlements.utils.*;
 import org.tendiwa.settlements.utils.streetsDetector.DetectedStreets;
 
@@ -45,7 +45,7 @@ public class BigCityDemo implements Runnable {
 			)
 		);
 
-		SmartMesh2D segment2DSmartMesh = new SegmentNetworkBuilder(graph)
+		SmartMeshedNetwork segment2DSmartMesh = new MeshedNetworkBuilder(graph)
 			.withDefaults()
 			.withMaxStartPointsPerCycle(5)
 			.withRoadsFromPoint(2)
@@ -60,13 +60,13 @@ public class BigCityDemo implements Runnable {
 		drawBlocks(segment2DSmartMesh);
 	}
 
-	private void drawBlocks(SmartMesh2D segment2DSmartMesh) {
+	private void drawBlocks(SmartMeshedNetwork segment2DSmartMesh) {
 		canvas.drawAll(
-			segment2DSmartMesh.networks()
+			segment2DSmartMesh.meshes()
 				.stream()
-				.flatMap(n -> n.enclosedBlocks().stream())
-				.flatMap(b -> b.shrinkToRegions(3).stream()),
-			polygon-> new DrawablePolygon.Thin(polygon, Color.lightGray)
+				.flatMap(n -> n.meshCells().stream())
+				.flatMap(b -> new ShrinkedPolygon(b, 3).stream()),
+			polygon -> new DrawablePolygon.Thin(polygon, Color.lightGray)
 		);
 	}
 
@@ -77,10 +77,10 @@ public class BigCityDemo implements Runnable {
 		TestCanvas.canvas = canvas;
 	}
 
-	private void buildAndDrawLots(SmartMesh2D segment2DSmartMesh) {
-		UndirectedGraph<Point2D, Segment2D> allRoads = RoadRejector.rejectPartOfNetworksBorders(
-			segment2DSmartMesh.graph(),
-			segment2DSmartMesh,
+	private void buildAndDrawLots(MeshedNetwork network) {
+		Graph2D allRoads = NetworkGraphWithHolesInHull.rejectPartOfNetworksBorders(
+			network.fullGraph(),
+			network,
 			0.0,
 			new Random(1)
 		);
@@ -104,7 +104,7 @@ public class BigCityDemo implements Runnable {
 				)
 		);
 		Collection<RectangleWithNeighbors> lots = RectangularBuildingLots
-			.placeInside(segment2DSmartMesh);
+			.placeInside(network);
 		Set<RectangleWithNeighbors> recGroups = lots
 			.stream()
 			.filter(BuildingPlacesFilters.closeToRoads(streets, lots, 8))

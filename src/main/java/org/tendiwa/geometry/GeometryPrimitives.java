@@ -1,10 +1,14 @@
 package org.tendiwa.geometry;
 
+import org.jgrapht.UndirectedGraph;
 import org.tendiwa.core.Orientation;
 import org.tendiwa.core.meta.BasicRange;
 import org.tendiwa.core.meta.Cell;
 import org.tendiwa.core.meta.Range;
+import org.tendiwa.geometry.extensions.PointTrail;
+import org.tendiwa.geometry.graphs2d.Graph2D;
 import org.tendiwa.graphs.GraphConstructor;
+import org.tendiwa.graphs.graphs2d.MutableGraph2D;
 
 import java.util.List;
 
@@ -79,5 +83,16 @@ public final class GeometryPrimitives {
 
 	public static Line2D line2D(double ax, double ay, double bx, double by) {
 		return new BasicLine2D(ax, ay, bx, by);
+	}
+
+	public static Graph2D graph2D(UndirectedGraph<Point2D, Segment2D> graph) {
+		MutableGraph2D graph2D = new MutableGraph2D();
+		graph.vertexSet().forEach(graph2D::addVertex);
+		graph.edgeSet().forEach(graph2D::addSegmentAsEdge);
+		return graph2D;
+	}
+
+	public static PointTrail pointTrail(double startX, double startY) {
+		return new PointTrail(startX, startY);
 	}
 }

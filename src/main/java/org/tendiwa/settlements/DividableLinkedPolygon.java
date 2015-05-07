@@ -3,8 +3,6 @@ package org.tendiwa.settlements;
 import com.google.common.collect.ImmutableSet;
 import org.tendiwa.geometry.Polygon;
 
-import java.util.Set;
-
 public interface DividableLinkedPolygon extends Polygon {
 	/**
 	 * [Kelly 2008 Figure 54]

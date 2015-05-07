@@ -193,10 +193,6 @@ public class HorizontalPlane {
 		return getChunkWithCell(x, y).hasObject(x, y);
 	}
 
-	public void place(TypePlaceableInCell entityType, int x, int y) {
-		EntityPlacer.place(this, entityType, x, y);
-	}
-
 	public void placeObject(GameObject gameObject, int x, int y) {
 		getChunkWithCell(x, y).setObject(gameObject, x, y);
 	}
@@ -285,5 +281,13 @@ public class HorizontalPlane {
 				return Iterators.forArray(chunks1);
 			}
 		};
+	}
+
+	public WallType wall(int x, int y) {
+		GameObject gameObject = getGameObject(x, y);
+		if (gameObject instanceof WallType) {
+			return (WallType) gameObject;
+		}
+		throw new RuntimeException("No wall in cell " + x + " " + y);
 	}
 }

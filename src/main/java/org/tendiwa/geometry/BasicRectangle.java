@@ -1,6 +1,7 @@
 package org.tendiwa.geometry;
 
 import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableList;
 
 public final class BasicRectangle implements Rectangle {
 	private final int x;
@@ -49,21 +50,21 @@ public final class BasicRectangle implements Rectangle {
 
 	@Override
 	public Rectangle getBounds() {
-		return null;
+		return this;
 	}
 
 	@Override
 	public ImmutableCollection<NamedRecTree> parts() {
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public RecTree part(String name) {
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public RecTree nestedPart(String name) {
-		return null;
+		throw new UnsupportedOperationException();
 	}
 }

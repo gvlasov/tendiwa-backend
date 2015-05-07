@@ -18,7 +18,7 @@ public class PathTable implements BoundedCellSet {
 	private final int maxDepth;
 	private final int width;
 	int[][] pathTable;
-	ArrayList<BasicCell> newFront;
+	ArrayList<Cell> newFront;
 	int step;
 	private final Rectangle bounds;
 
@@ -49,11 +49,11 @@ public class PathTable implements BoundedCellSet {
 	 * @return A List containing only a starting cell if the starting cell is walkable, or a List containing no cell if
 	 * it is not.
 	 */
-	private ArrayList<BasicCell> getInitialNewFront() {
-		ArrayList<BasicCell> answer = new ArrayList<>();
-		BasicCell firstCell = new BasicCell(startX, startY);
-		computeCell(firstCell.x, firstCell.y, maxDepth, maxDepth);
-		if (contains(firstCell.x, firstCell.y)) {
+	private ArrayList<Cell> getInitialNewFront() {
+		ArrayList<Cell> answer = new ArrayList<>();
+		Cell firstCell = new BasicCell(startX, startY);
+		computeCell(firstCell.x(), firstCell.y(), maxDepth, maxDepth);
+		if (contains(firstCell.x(), firstCell.y())) {
 			answer.add(firstCell);
 		}
 		return answer;
@@ -108,9 +108,9 @@ public class PathTable implements BoundedCellSet {
 //        if (step == maxDepth) {
 //            return false;
 //        }
-		ArrayList<BasicCell> oldFront = newFront;
+		ArrayList<Cell> oldFront = newFront;
 		newFront = new ArrayList<>();
-		for (BasicCell anOldFront : oldFront) {
+		for (Cell anOldFront : oldFront) {
 			int x = anOldFront.x();
 			int y = anOldFront.y();
 			int[] adjacentX = new int[]{x + 1, x, x, x - 1, x + 1, x + 1, x - 1, x - 1};
@@ -160,27 +160,27 @@ public class PathTable implements BoundedCellSet {
 	 * 	Destination y coordinate.
 	 * @return null if path can't be found.
 	 */
-	public final LinkedList<BasicCell> getPath(BasicCell target) {
-		if (Math.abs(target.x - startX) > maxDepth || Math.abs(target.y - startY) > maxDepth) {
-			throw new IllegalArgumentException("Trying to get path to " + target.x + ":" + target.y + ". That point is too far from start point " + startX + ":" + startY + ", maxDepth is " + maxDepth);
+	public final LinkedList<Cell> getPath(Cell target) {
+		if (Math.abs(target.x() - startX) > maxDepth || Math.abs(target.y() - startY) > maxDepth) {
+			throw new IllegalArgumentException("Trying to get path to " + target.x() + ":" + target.y() + ". That point is too far from start point " + startX + ":" + startY + ", maxDepth is " + maxDepth);
 		}
-		while (pathTable[maxDepth + target.x - startX][maxDepth + target.y - startY] == NOT_COMPUTED_CELL) {
+		while (pathTable[maxDepth + target.x() - startX][maxDepth + target.y() - startY] == NOT_COMPUTED_CELL) {
 			// There will be 0 iterations if that cell is already computed
 			boolean waveAddedNewCells = nextWave();
 			if (!waveAddedNewCells) {
 				return null;
 			}
 		}
-		if (target.x == startX && target.y == startY) {
+		if (target.x() == startX && target.y() == startY) {
 			throw new RuntimeException("Getting path to itself");
 		}
-		LinkedList<BasicCell> path = new LinkedList<>();
-		if (Cells.isNear(startX, startY, target.x, target.y)) {
-			path.add(new BasicCell(target.x, target.y));
+		LinkedList<Cell> path = new LinkedList<>();
+		if (Cells.isNear(startX, startY, target.x(), target.y())) {
+			path.add(new BasicCell(target.x(), target.y()));
 			return path;
 		}
-		int currentNumX = target.x;
-		int currentNumY = target.y;
+		int currentNumX = target.x();
+		int currentNumY = target.y();
 		int cX = currentNumX;
 		int cY = currentNumY;
 		for (

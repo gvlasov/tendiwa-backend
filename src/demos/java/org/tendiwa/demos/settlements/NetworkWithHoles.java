@@ -8,8 +8,11 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Polygon;
 import org.tendiwa.geometry.RectanglePolygon;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.smartMesh.SegmentNetworkBuilder;
-import org.tendiwa.geometry.smartMesh.SmartMesh2D;
+import org.tendiwa.geometry.graphs2d.Graph2D;
+import org.tendiwa.geometry.graphs2d.Mesh2D;
+import org.tendiwa.geometry.smartMesh.MeshedNetwork;
+import org.tendiwa.geometry.smartMesh.MeshedNetworkBuilder;
+import org.tendiwa.geometry.smartMesh.SmartMeshedNetwork;
 
 import java.awt.Color;
 
@@ -40,13 +43,16 @@ public class NetworkWithHoles implements Runnable {
 			.cycleOfVertices(innerCycle1)
 			.cycleOfVertices(innerCycle2)
 			.graph();
-		SmartMesh2D segment2DSmartMesh = new SegmentNetworkBuilder(graph)
+		MeshedNetwork segment2DSmartMesh = new MeshedNetworkBuilder(graph)
 			.withDefaults()
 			.withMaxStartPointsPerCycle(1)
 			.build();
 		canvas.draw(
 			new DrawableGraph2D.Thin(
-				segment2DSmartMesh.getFullCycleGraph(),
+				segment2DSmartMesh.meshes()
+					.stream()
+					.map(Mesh2D::hull)
+					.collect(Graph2D.toGraph2DUnion()),
 				Color.cyan
 			)
 		);

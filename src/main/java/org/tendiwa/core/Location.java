@@ -6,6 +6,8 @@ import org.tendiwa.geometry.*;
 
 import java.util.*;
 
+import static org.tendiwa.geometry.GeometryPrimitives.cell;
+
 /**
  * A modifiable view of a portion of a {@link org.tendiwa.core.HorizontalPlane}.
  */
@@ -41,7 +43,7 @@ public class Location {
 
 	public void line(int startX, int startY, int endX, int endY, TypePlaceableInCell placeable) {
 		if (startX == endX && startY == endY) {
-			EntityPlacer.place(activePlane, placeable, rectangle.x() + startX, rectangle.y() + startY);
+			placeable.getPlaced(activePlane, cell(rectangle.x() + startX, rectangle.y() + startY));
 			return;
 		}
 		Cell[] cells = BasicCellSegment.cells(startX, startY, endX, endY);
@@ -52,13 +54,13 @@ public class Location {
 			int x2 = cells[i + 1].x();
 			int y2 = cells[i + 1].y();
 
-			EntityPlacer.place(activePlane, placeable, rectangle.x() + x, rectangle.y() + y);
+			placeable.getPlaced(activePlane, cell(rectangle.x() + x, rectangle.y() + y));
 			if (i < cells.length - 1 && x != x2 && y != y2) {
 				int cx = x + ((x2 > x) ? 1 : -1);
-				EntityPlacer.place(activePlane, placeable, rectangle.x() + cx, rectangle.y() + y);
+				placeable.getPlaced(activePlane, cell(rectangle.x() + cx, rectangle.y() + y));
 			}
 			if (i == size - 2) {
-				EntityPlacer.place(activePlane, placeable, rectangle.x() + x2, rectangle.y() + y2);
+				placeable.getPlaced(activePlane, cell(rectangle.x() + x2, rectangle.y() + y2));
 			}
 		}
 	}
@@ -672,7 +674,7 @@ public class Location {
 		}
 	}
 
-	protected CellCollection getCoast(int startX, int startY) {
+	protected FiniteCellSet getCoast(int startX, int startY) {
 		int[][] pathTable = new int[rectangle.width()][rectangle.height()];
 		ArrayList<Cell> cells = new ArrayList<>();
 		ArrayList<Cell> oldFront = new ArrayList<>();
@@ -710,7 +712,7 @@ public class Location {
 			}
 			t++;
 		} while (newFront.size() > 0 && t < 2000);
-		return newCellCollection(cells);
+		return new ScatteredCellSet(cells);
 	}
 
 	public ArrayList<Cell> getCellsAroundCell(int x, int y) {
@@ -811,7 +813,7 @@ public class Location {
 		try {
 			for (x = r.x(); x < r.x() + r.width(); x++) {
 				for (y = r.y(); y < r.y() + r.height(); y++) {
-					EntityPlacer.place(activePlane, placeable, rectangle.x() + x, rectangle.y() + y);
+					placeable.getPlaced(activePlane, cell(rectangle.x() + x, rectangle.y() + y));
 				}
 			}
 		} catch (IndexOutOfBoundsException e) {
@@ -832,7 +834,7 @@ public class Location {
 	 */
 	public void place(TypePlaceableInCell placeable, int x, int y) {
 		assert placeable != null;
-		EntityPlacer.place(activePlane, placeable, rectangle.x() + x, rectangle.y() + y);
+		placeable.getPlaced(activePlane, cell(rectangle.x() + x, rectangle.y() + y));
 	}
 
 	/**
@@ -846,7 +848,7 @@ public class Location {
 	public void place(TypePlaceableInCell placeable, Cell point) {
 		assert placeable != null : "Trying to place a null object";
 		assert point != null;
-		EntityPlacer.place(activePlane, placeable, rectangle.x() + point.x(), rectangle.y() + point.y());
+		placeable.getPlaced(activePlane, cell(rectangle.x() + point.x(), rectangle.y() + point.y()));
 	}
 
 	public void lineOfThin(Side line, BorderObjectType type) {
@@ -869,14 +871,14 @@ public class Location {
 	public void drawCellSet(FiniteCellSet cellSet, TypePlaceableInCell placeable) {
 		Objects.requireNonNull(placeable);
 		for (Cell cell : cellSet) {
-			activePlane.place(placeable, rectangle.x() + cell.x(), rectangle.y() + cell.y());
+			placeable.getPlaced(activePlane, cell(rectangle.x() + cell.x(), rectangle.y() + cell.y()));
 		}
 	}
 
 	public void drawCellSet(CellSet cellSet, Rectangle bounds, TypePlaceableInCell placeable) {
 		for (Cell cell : bounds) {
 			if (cellSet.contains(cell)) {
-				activePlane.place(placeable, cell.x(), cell.y());
+				placeable.getPlaced(activePlane, cell);
 			}
 		}
 	}
@@ -889,5 +891,12 @@ public class Location {
 	 */
 	public Rectangle getRelativeBounds() {
 		return new BasicRectangle(0, 0, rectangle.width(), rectangle.height());
+	}
+
+	public void removeWall(Cell cell) {
+		if (!activePlane.hasWall(cell.x(), cell.y())) {
+			throw new IllegalArgumentException("No wall at cell " + cell);
+		}
+		activePlane.removeObject(cell.x(), cell.y());
 	}
 }

@@ -207,16 +207,4 @@ public final class BasicPolygon implements Polygon {
 	public void forEach(Consumer<? super Point2D> action) {
 		points.forEach(action::accept);
 	}
-
-	@Override
-	public List<Segment2D> toSegments() {
-		List<Segment2D> segments = new ArrayList<>(size());
-		int last = size() - 1;
-		for (int i = 0; i < last; i++) {
-			segments.add(new BasicSegment2D(points.get(i), points.get(i + 1)));
-		}
-		segments.add(new BasicSegment2D(points.get(last), points.get(0)));
-		return segments;
-	}
-
 }

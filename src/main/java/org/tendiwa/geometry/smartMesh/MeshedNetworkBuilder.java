@@ -10,9 +10,9 @@ import java.util.Collection;
 import java.util.Random;
 
 /**
- * A fluent builder to create instances of {@link SmartMesh2D}.
+ * A fluent builder to create instances of {@link SmartMeshedNetwork}.
  */
-public class SegmentNetworkBuilder {
+public class MeshedNetworkBuilder {
 	/**
 	 * @see #withSamplesPerStep(int)
 	 */
@@ -69,11 +69,11 @@ public class SegmentNetworkBuilder {
 	 * 	The high level road graph of a city.
 	 * @see [Kelly 4.2.0]
 	 */
-	public SegmentNetworkBuilder(UndirectedGraph<Point2D, Segment2D> graph) {
+	public MeshedNetworkBuilder(UndirectedGraph<Point2D, Segment2D> graph) {
 		this.graph = graph;
 	}
 
-	public SegmentNetworkBuilder withMaxStartPointsPerCycle(int amount) {
+	public MeshedNetworkBuilder withMaxStartPointsPerCycle(int amount) {
 		if (amount < 0) {
 			throw new IllegalArgumentException("NumOfStartPoints must be at least 0");
 		}
@@ -81,7 +81,7 @@ public class SegmentNetworkBuilder {
 		return this;
 	}
 
-	public SegmentNetworkBuilder withSampleRadius(double sampleRadius) {
+	public MeshedNetworkBuilder withSampleRadius(double sampleRadius) {
 		if (sampleRadius <= 0) {
 			throw new IllegalArgumentException("Sample radius must be > 0");
 		}
@@ -89,7 +89,7 @@ public class SegmentNetworkBuilder {
 		return this;
 	}
 
-	public SegmentNetworkBuilder withRoadSegmentLength(double length) {
+	public MeshedNetworkBuilder withRoadSegmentLength(double length) {
 		if (length <= 0) {
 			throw new IllegalArgumentException(
 				"segmentLength must be > 0 (" + length + " provided)"
@@ -99,7 +99,7 @@ public class SegmentNetworkBuilder {
 		return this;
 	}
 
-	public SegmentNetworkBuilder withRoadSegmentLength(double min, double max) {
+	public MeshedNetworkBuilder withRoadSegmentLength(double min, double max) {
 		if (min > max) {
 			throw new IllegalArgumentException("min must be <= max");
 		}
@@ -108,7 +108,7 @@ public class SegmentNetworkBuilder {
 		return this;
 	}
 
-	public SegmentNetworkBuilder withSamplesPerStep(int samplesPerStep) {
+	public MeshedNetworkBuilder withSamplesPerStep(int samplesPerStep) {
 		if (samplesPerStep <= 0) {
 			throw new IllegalArgumentException("Samples per step must be > 0");
 		}
@@ -116,7 +116,7 @@ public class SegmentNetworkBuilder {
 		return this;
 	}
 
-	public SegmentNetworkBuilder withDeviationAngle(double dAngle) {
+	public MeshedNetworkBuilder withDeviationAngle(double dAngle) {
 		if (dAngle < 0 || dAngle >= Math.PI / 4) {
 			throw new IllegalArgumentException(
 				"Deviation angle must be >= 0 and < Math.PI/4 (" + dAngle + " provided)"
@@ -137,7 +137,7 @@ public class SegmentNetworkBuilder {
 	 * 	Angle in radians.
 	 * @return The same builder.
 	 */
-	public SegmentNetworkBuilder withSecondaryRoadNetworkDeviationAngle(double dAngle) {
+	public MeshedNetworkBuilder withSecondaryRoadNetworkDeviationAngle(double dAngle) {
 		if (Math.abs(secondaryRoadNetworkDeviationAngle) >= Math.PI * 2) {
 			throw new IllegalArgumentException(
 				"secondaryRoadNetworkDeviationAngle must be in [0; Math.PI*2)"
@@ -147,7 +147,7 @@ public class SegmentNetworkBuilder {
 		return this;
 	}
 
-	public SegmentNetworkBuilder withSecondaryRoadNetworkRoadLengthDeviation(double dLength) {
+	public MeshedNetworkBuilder withSecondaryRoadNetworkRoadLengthDeviation(double dLength) {
 		if (Math.abs(dLength) >= roadSegmentLength) {
 			throw new IllegalArgumentException(
 				"innerNetworkSegmentLengthDeviation can't be greater than " +
@@ -159,7 +159,7 @@ public class SegmentNetworkBuilder {
 		return this;
 	}
 
-	public SegmentNetworkBuilder withRoadsFromPoint(int amount) {
+	public MeshedNetworkBuilder withRoadsFromPoint(int amount) {
 		if (amount < 2) {
 			throw new IllegalArgumentException("roadsFromPoint must be >= 2");
 		}
@@ -167,7 +167,7 @@ public class SegmentNetworkBuilder {
 		return this;
 	}
 
-	public SegmentNetworkBuilder withSnapSize(double snapSize) {
+	public MeshedNetworkBuilder withSnapSize(double snapSize) {
 		if (snapSize < 0) {
 			throw new IllegalArgumentException("snapSize must be >= 0");
 		}
@@ -175,7 +175,7 @@ public class SegmentNetworkBuilder {
 		return this;
 	}
 
-	public SegmentNetworkBuilder withAxisAlignedSegments(boolean favourAxisAligned) {
+	public MeshedNetworkBuilder withAxisAlignedSegments(boolean favourAxisAligned) {
 		this.favourAxisAlignedSegments = favourAxisAligned;
 		return this;
 	}
@@ -186,7 +186,7 @@ public class SegmentNetworkBuilder {
 	 *
 	 * @return this
 	 */
-	public SegmentNetworkBuilder withDefaults() {
+	public MeshedNetworkBuilder withDefaults() {
 		sampleRadius = DEFAULT_SAMPLE_RADIUS;
 		samplesPerStep = DEFAULT_SAMPLES_PER_STEP;
 		roadsFromPoint = DEFAULT_ROADS_FROM_POINT;
@@ -200,7 +200,7 @@ public class SegmentNetworkBuilder {
 		return this;
 	}
 
-	public SmartMesh2D build() {
+	public SmartMeshedNetwork build() {
 		if (graph == null) {
 			throw new IllegalStateException("Graph not set");
 		}
@@ -243,7 +243,7 @@ public class SegmentNetworkBuilder {
 			secondaryRoadNetworkRoadLengthDeviation,
 			favourAxisAlignedSegments
 		);
-		return new SmartMesh2D(
+		return new SmartMeshedNetwork(
 			createRoadGraph(graph.vertexSet(), graph.edgeSet()),
 			parameters,
 			seededRandom
@@ -263,7 +263,7 @@ public class SegmentNetworkBuilder {
 		return answer;
 	}
 
-	public SegmentNetworkBuilder withSeed(int i) {
+	public MeshedNetworkBuilder withSeed(int i) {
 		seededRandom = new Random(i);
 		return this;
 	}

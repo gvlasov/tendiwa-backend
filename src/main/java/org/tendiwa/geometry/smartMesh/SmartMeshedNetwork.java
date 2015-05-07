@@ -8,8 +8,8 @@ import org.tendiwa.geometry.GeometryException;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.ShamosHoeyAlgorithm;
+import org.tendiwa.geometry.graphs2d.Graph2D;
 import org.tendiwa.geometry.graphs2d.Mesh2D;
-import org.tendiwa.geometry.smartMesh.algorithms.SegmentNetworkAlgorithms;
 import org.tendiwa.graphs.graphs2d.MutableGraph2D;
 
 import java.awt.Color;
@@ -18,13 +18,14 @@ import java.util.Random;
 
 import static org.tendiwa.collections.Collectors.toImmutableSet;
 
-public final class SmartMesh2D implements Mesh2D {
+public final class SmartMeshedNetwork implements MeshedNetwork {
 	private final ImmutableSet<OriginalMeshCell> networks;
 	private final MutableGraph2D fullGraph;
 	private final MutableGraph2D fullCycleGraph;
+	private ImmutableSet<Mesh2D> meshes;
 
-	SmartMesh2D(
-		UndirectedGraph<Point2D, Segment2D> originalGraph,
+	SmartMeshedNetwork(
+		Graph2D originalGraph,
 		NetworkGenerationParameters parameters,
 		Random random
 	) {
@@ -67,16 +68,27 @@ public final class SmartMesh2D implements Mesh2D {
 	}
 
 	@Override
-	public UndirectedGraph<Point2D, Segment2D> graph() {
+	public ImmutableSet<Graph2D> filaments() {
+		return null;
+	}
+
+	@Override
+	public ImmutableSet<Mesh2D> meshes() {
+		return meshes;
+	}
+
+	@Override
+	public Graph2D fullGraph() {
 		return fullGraph;
 	}
 
-	public UndirectedGraph<Point2D, Segment2D> getFullCycleGraph() {
-		return fullCycleGraph;
+	@Override
+	public Graph2D outerHull() {
+		return new OuterHull(this).graph();
 	}
 
-	public Map<OriginalMeshCell, UndirectedGraph<Point2D, Segment2D>> outerCycleEdges() {
-		return SegmentNetworkAlgorithms.outerCycleEdges(this);
+	public Graph2D getFullCycleGraph() {
+		return fullCycleGraph;
 	}
 
 	public ImmutableSet<Segment2D> innerTreeSegmentsEnds() {

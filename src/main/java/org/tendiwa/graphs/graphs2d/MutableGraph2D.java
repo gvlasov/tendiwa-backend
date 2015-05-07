@@ -8,15 +8,25 @@ import org.tendiwa.geometry.GeometryException;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
+import org.tendiwa.geometry.graphs2d.Graph2D;
 
 import java.util.Collection;
 import java.util.Set;
 
-public class MutableGraph2D implements UndirectedGraph<Point2D, Segment2D> {
+public final class MutableGraph2D implements Graph2D {
 	private final UndirectedGraph<Point2D, Segment2D> graph;
 
 	public MutableGraph2D() {
 		this.graph = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
+	}
+
+	/**
+	 * Copies vertices and edges of another graph into this graph.
+	 */
+	public MutableGraph2D(Graph2D graph) {
+		this.graph = new MutableGraph2D();
+		graph.vertexSet().forEach(this::addVertex);
+		graph.edgeSet().forEach(this::addSegmentAsEdge);
 	}
 
 	public void addSegmentAsEdge(Segment2D segment) {
@@ -60,21 +70,15 @@ public class MutableGraph2D implements UndirectedGraph<Point2D, Segment2D> {
 		return graph.containsEdge(edge) && graph.edgeSet().size() == 1;
 	}
 
-	public Point2D findNeighborOnSegment(Point2D hub, Segment2D segment) {
-		if (!segment.oneOfEndsIs(hub)) {
-			throw new IllegalArgumentException("Hub point should be one of the segment's ends");
+	public void removeEdgeAndOrphanedVertices(Segment2D edge) {
+		assert graph.containsEdge(edge);
+		graph.removeEdge(edge);
+		if (graph.degreeOf(edge.start()) == 0) {
+			graph.removeVertex(edge.start());
 		}
-		Point2D answer = null;
-		for (Segment2D edge : graph.edgesOf(hub)) {
-			Point2D anotherEnd = edge.anotherEnd(hub);
-			if (segment.contains(anotherEnd)) {
-				if (answer != null) {
-					throw new GeometryException("2 neighbors of hub point are on segment");
-				}
-				answer = anotherEnd;
-			}
+		if (graph.degreeOf(edge.end()) == 0) {
+			graph.removeVertex(edge.end());
 		}
-		return answer;
 	}
 
 	@Override

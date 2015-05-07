@@ -3,7 +3,6 @@ package org.tendiwa.geometry.extensions.straightSkeleton;
 import org.tendiwa.collections.DoublyLinkedNode;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawableSegment2D;
-import org.tendiwa.drawing.extensions.DrawingSegment2D;
 import org.tendiwa.geometry.*;
 
 import javax.annotation.Nonnull;

@@ -8,25 +8,25 @@ import org.tendiwa.core.Orientation;
 import org.tendiwa.core.meta.Cell;
 import org.tendiwa.core.meta.Utils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
+
+import static org.tendiwa.geometry.GeometryPrimitives.point2D;
+import static org.tendiwa.geometry.GeometryPrimitives.segment2D;
 
 public interface Rectangle extends RecTree, BoundedCellSet, Dimension {
 
 
-	public int x();
+	int x();
 
-	public int y();
+	int y();
 
-	public int width();
+	int width();
 
-	public int height();
+	int height();
 
 
-	public default Collection<Cell> getCells() {
+	default Collection<Cell> getCells() {
 		ArrayList<Cell> answer = new ArrayList<>();
 		for (int i = x(); i < x() + width(); i++) {
 			for (int j = y(); j < y() + height(); j++) {
@@ -46,7 +46,7 @@ public interface Rectangle extends RecTree, BoundedCellSet, Dimension {
 	 * 	shrink. Notice that if SideTest == N or W, rectangle.x and rectangle.y will move. If depth == 0 then
 	 * 	rectangle stays the same.
 	 */
-	public default Rectangle stretch(CardinalDirection side, int amount) {
+	default Rectangle stretch(CardinalDirection side, int amount) {
 		switch (side) {
 			case N:
 				return new BasicRectangle(
@@ -248,7 +248,7 @@ public interface Rectangle extends RecTree, BoundedCellSet, Dimension {
 	}
 
 
-	default int area() {
+	default double area() {
 		return width() * height();
 	}
 
@@ -287,11 +287,11 @@ public interface Rectangle extends RecTree, BoundedCellSet, Dimension {
 		);
 	}
 
-	default public Side side(CardinalDirection direction) {
+	default Side side(CardinalDirection direction) {
 		return new BasicRectangleSide(this, direction);
 	}
 
-	default public boolean intersects(Rectangle b) {
+	default boolean intersects(Rectangle b) {
 		Rectangle a = this;
 		int tw = a.width();
 		int th = a.height();
@@ -374,5 +374,4 @@ public interface Rectangle extends RecTree, BoundedCellSet, Dimension {
 	default int perpendicularDistanceTo(Rectangle rectangle) {
 		throw new UnsupportedOperationException();
 	}
-
 }

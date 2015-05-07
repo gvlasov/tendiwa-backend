@@ -1,12 +1,11 @@
 package org.tendiwa.drawing.extensions;
 
 import org.jgrapht.UndirectedGraph;
-import org.tendiwa.drawing.AwtCanvas;
 import org.tendiwa.drawing.Canvas;
 import org.tendiwa.drawing.Drawable;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.graphs.Graph2D_Wr;
+import org.tendiwa.graphs.graphs2d.Graph2D_Wr;
 import org.tendiwa.graphs.GraphConstructor;
 
 import java.awt.Color;

@@ -120,7 +120,7 @@ public class CellCollection {
 			}
 			int cellIndex = Chance.rand(0, cells.size() - 1);
 			Cell cell = cells.get(cellIndex);
-			EntityPlacer.place(location.getActivePlane(), type, cell.x(), cell.y());
+			type.getPlaced(location.getActivePlane(), cell);
 			unsetCell(cell);
 		}
 	}
@@ -150,16 +150,6 @@ public class CellCollection {
 		return coords;
 	}
 
-	public Cell setElementAndReport(PlaceableInCell placeable) {
-		if (!hasCells) {
-			throw new Error("No more cells");
-		}
-		int cellIndex = Chance.rand(0, cells.size() - 1);
-		Cell cell = cells.get(cellIndex);
-		placeable.place(location.getActivePlane(), cell.x(), cell.y());
-		unsetCell(cell);
-		return cell;
-	}
 
 	public Cell setObjectAndReport(ObjectType objectType) {
 		if (!hasCells) {
@@ -167,7 +157,7 @@ public class CellCollection {
 		}
 		int cellIndex = Chance.rand(0, cells.size() - 1);
 		Cell cell = cells.get(cellIndex);
-		EntityPlacer.place(location.getActivePlane(), objectType, cell.x(), cell.y());
+		objectType.getPlaced(location.getActivePlane(), cell);
 
 		unsetCell(cell);
 		return cell;
