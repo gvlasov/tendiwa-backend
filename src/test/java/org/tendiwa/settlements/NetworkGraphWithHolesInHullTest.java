@@ -1,10 +1,8 @@
 package org.tendiwa.settlements;
 
-import org.jgrapht.UndirectedGraph;
 import org.junit.Before;
 import org.junit.Test;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.graphs2d.Graph2D;
 import org.tendiwa.geometry.smartMesh.MeshedNetworkBuilder;
 import org.tendiwa.geometry.smartMesh.SmartMeshedNetwork;
 import org.tendiwa.settlements.utils.NetworkGraphWithHolesInHull;
@@ -12,27 +10,29 @@ import org.tendiwa.settlements.utils.NetworkGraphWithHolesInHull;
 import java.util.Random;
 
 import static org.junit.Assert.*;
-import static org.tendiwa.geometry.GeometryPrimitives.graphConstructor;
-import static org.tendiwa.geometry.GeometryPrimitives.point2D;
+import static org.tendiwa.geometry.GeometryPrimitives.*;
 
 public class NetworkGraphWithHolesInHullTest {
 
-	private SmartMeshedNetwork geometry;
-	private UndirectedGraph<Point2D, Segment2D> fullRoadGraph;
+	private SmartMeshedNetwork network;
+	private Graph2D fullRoadGraph;
 
 	@Before
 	public void setUp() {
-		UndirectedGraph<Point2D, Segment2D> topology = graphConstructor()
-			.vertex(0, point2D(50, 50))
-			.vertex(1, point2D(150, 50))
-			.vertex(2, point2D(160, 150))
-			.vertex(3, point2D(50, 150))
-			.cycle(0, 1, 2, 3)
-			.graph();
-		geometry = new MeshedNetworkBuilder(topology)
+		network = new MeshedNetworkBuilder(
+			graph2D(
+				graphConstructor()
+					.vertex(0, point2D(50, 50))
+					.vertex(1, point2D(150, 50))
+					.vertex(2, point2D(160, 150))
+					.vertex(3, point2D(50, 150))
+					.cycle(0, 1, 2, 3)
+					.graph()
+			)
+		)
 			.withDefaults()
 			.build();
-		fullRoadGraph = geometry.fullGraph();
+		fullRoadGraph = network.fullGraph();
 	}
 
 	/**
@@ -40,8 +40,11 @@ public class NetworkGraphWithHolesInHullTest {
 	 */
 	@Test
 	public void roadRejectionWithSingleCycleCityGraph() {
-		NetworkGraphWithHolesInHull.rejectPartOfNetworksBorders(fullRoadGraph, geometry, 0.5, new Random(1));
-
+		new NetworkGraphWithHolesInHull(
+			network,
+			0.5,
+			new Random(1)
+		);
 	}
 
 	/**
@@ -49,8 +52,15 @@ public class NetworkGraphWithHolesInHullTest {
 	 */
 	@Test
 	public void noRoadRejection() {
-		UndirectedGraph<Point2D, Segment2D> unmodifiedGraph = NetworkGraphWithHolesInHull.rejectPartOfNetworksBorders(fullRoadGraph, geometry, 0.0, new Random(1));
-		assertTrue(fullRoadGraph.edgeSet().equals(unmodifiedGraph.edgeSet()));
+		assertTrue(
+			new NetworkGraphWithHolesInHull(
+				network,
+				0.0,
+				new Random(1)
+			)
+				.edgeSet()
+				.equals(fullRoadGraph.edgeSet())
+		);
 	}
 
 	/**
@@ -58,20 +68,36 @@ public class NetworkGraphWithHolesInHullTest {
 	 */
 	@Test
 	public void allOuterRoadsRejected() {
-		UndirectedGraph<Point2D, Segment2D> graphWithoutCycleEdges = NetworkGraphWithHolesInHull.rejectPartOfNetworksBorders(fullRoadGraph, geometry, 1.0, new Random(1));
+		Graph2D graphWithoutCycleEdges =
+			new NetworkGraphWithHolesInHull(
+				network,
+				1.0,
+				new Random(1)
+			);
 		assertTrue(
-			geometry
-				.networks()
+			network
+				.meshes()
 				.stream()
-				.flatMap(network -> network.cycle().edgeSet().stream())
+				.flatMap(mesh -> mesh.hull().edgeSet().stream())
 				.allMatch(e -> !graphWithoutCycleEdges.containsEdge(e))
 		);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void wrongProbability() {
-		NetworkGraphWithHolesInHull.rejectPartOfNetworksBorders(geometry.fullGraph(), geometry, 2.0, new Random(1));
-		NetworkGraphWithHolesInHull.rejectPartOfNetworksBorders(geometry.fullGraph(), geometry, -2.0, new Random(1));
+	public void tooBigProbability() {
+		new NetworkGraphWithHolesInHull(
+			network,
+			2.0,
+			new Random(1)
+		);
 	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void tooSmallProbability() {
+		new NetworkGraphWithHolesInHull(
+			network,
+			-2.0,
+			new Random(1)
+		);
+	}
 }

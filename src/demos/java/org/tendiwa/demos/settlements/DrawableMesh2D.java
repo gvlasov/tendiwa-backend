@@ -23,7 +23,7 @@ public final class DrawableMesh2D implements Drawable {
 	public void drawIn(Canvas canvas) {
 		canvas.draw(
 			new DrawableGraph2D.Thin(
-				mesh.graph(),
+				mesh,
 				color
 			)
 		);

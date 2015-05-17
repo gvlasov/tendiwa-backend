@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.tendiwa.data.FourCyclePenisGraph;
 import org.tendiwa.geometry.PolygonGraph;
 import org.tendiwa.geometry.graphs2d.Graph2D;
-import org.tendiwa.geometry.graphs2d.PolylineGraph;
+import org.tendiwa.geometry.graphs2d.PolylineGraph2D;
 
 import static org.junit.Assert.*;
 import static org.tendiwa.geometry.GeometryPrimitives.pointTrail;
@@ -24,7 +24,7 @@ public final class SmartMeshedNetworkTest {
 
 	@Test
 	public void canProduceAdditionalSegments() throws Exception {
-		assertTrue(originalGraph.edgeSet().size() <= network.edgeSet().size());
+		assertTrue(originalGraph.edgeSet().size() <= network.fullGraph().edgeSet().size());
 	}
 
 	@Test
@@ -37,7 +37,7 @@ public final class SmartMeshedNetworkTest {
 		assertEquals(
 			0,
 			new DefaultMeshedNetwork(
-				new PolylineGraph(
+				new PolylineGraph2D(
 					pointTrail(0, 0)
 						.moveBy(20, 0)
 						.moveBy(0, 20)

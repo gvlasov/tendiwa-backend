@@ -2,10 +2,11 @@ package org.tendiwa.demos.settlements;
 
 import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawableGraph2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.smartMesh.MeshedNetwork;
 import org.tendiwa.geometry.smartMesh.MeshedNetworkBuilder;
-import org.tendiwa.geometry.smartMesh.SmartMeshedNetwork;
 import org.tendiwa.graphs.GraphConstructor;
 
 import java.awt.Color;
@@ -31,13 +32,13 @@ public class VariousCityGenerationDemo {
 //                .edge(6, 10)
 			.cycle(0, 1, 2, 3, 4)
 			.cycle(3, 5, 9, 8, 7, 6, 1, 2);
-		SmartMeshedNetwork segment2DSmartMesh = new MeshedNetworkBuilder(gc.graph())
+		MeshedNetwork network = new MeshedNetworkBuilder(gc.graph())
 			.withDefaults()
 			.withRoadsFromPoint(5)
 			.build();
 		canvas.draw(
-			new DrawableMesh2D(
-				segment2DSmartMesh,
+			new DrawableGraph2D.Thin(
+				network.fullGraph(),
 				Color.red
 			)
 		);

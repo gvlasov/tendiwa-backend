@@ -53,7 +53,7 @@ final class FloodFromMissingInnerCycles {
 
 	private Stream<FloodStart> createMissingFloodStart(OrientedCycle cycle, Point2D oppositePoint) {
 		assert oppositePoint != null;
-		assert cycle.graph().vertexSet().contains(oppositePoint);
+		assert cycle.vertexSet().contains(oppositePoint);
 		return Stream.of(
 			createFlood(
 				cycle,
@@ -64,12 +64,12 @@ final class FloodFromMissingInnerCycles {
 
 	private Stream<FloodStart> create2OppositeMissingFloodStarts(OrientedCycle cycle) {
 		Comparator<Point2D> coordinateComparator = new RandomCoordinateComparator(random);
-		Point2D leastPoint = cycle.graph()
+		Point2D leastPoint = cycle
 			.vertexSet()
 			.stream()
 			.max(coordinateComparator)
 			.get();
-		Point2D greatestPoint = cycle.graph()
+		Point2D greatestPoint = cycle
 			.vertexSet()
 			.stream()
 			.min(coordinateComparator)
@@ -82,13 +82,13 @@ final class FloodFromMissingInnerCycles {
 
 	private Set<Point2D> pointsOfContactWithInnerNetwork(OrientedCycle cycle) {
 		return Sets.intersection(
-			cycle.graph().vertexSet(),
+			cycle.vertexSet(),
 			deadEnds
 		);
 	}
 
 	private Point2D findOppositePointOnCycle(OrientedCycle cycle, Point2D point) {
-		return cycle.graph()
+		return cycle.asMutable()
 			.vertexSet()
 			.stream()
 			.max((a, b) -> {

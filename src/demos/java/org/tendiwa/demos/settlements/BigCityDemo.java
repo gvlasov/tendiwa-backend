@@ -78,8 +78,7 @@ public class BigCityDemo implements Runnable {
 	}
 
 	private void buildAndDrawLots(MeshedNetwork network) {
-		Graph2D allRoads = NetworkGraphWithHolesInHull.rejectPartOfNetworksBorders(
-			network.fullGraph(),
+		Graph2D allRoads = new NetworkGraphWithHolesInHull(
 			network,
 			0.0,
 			new Random(1)

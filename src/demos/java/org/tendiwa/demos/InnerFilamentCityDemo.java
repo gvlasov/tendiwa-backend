@@ -2,8 +2,10 @@ package org.tendiwa.demos;
 
 import org.tendiwa.demos.settlements.DrawableMesh2D;
 import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawableGraph2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.smartMesh.MeshedNetwork;
 import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.geometry.smartMesh.MeshedNetworkBuilder;
 import org.tendiwa.geometry.smartMesh.SmartMeshedNetwork;
@@ -36,13 +38,13 @@ public class InnerFilamentCityDemo implements Runnable {
 				.edge(0, 8)
 				.edge(6, 9);
 		TestCanvas canvas = Demos.createCanvas();
-		SmartMeshedNetwork segment2DSmartMesh = new MeshedNetworkBuilder(gc.graph())
+		MeshedNetwork network = new MeshedNetworkBuilder(gc.graph())
 			.withDefaults()
 			.withRoadSegmentLength(50)
 			.build();
 		canvas.draw(
-			new DrawableMesh2D(
-				segment2DSmartMesh,
+			new DrawableGraph2D.Thin(
+				network.fullGraph(),
 				Color.red
 			)
 		);

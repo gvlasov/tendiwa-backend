@@ -12,6 +12,7 @@ import org.tendiwa.graphs.algorithms.SameOrPerpendicularSlopeGraphEdgesPerturbat
 import java.awt.Color;
 import java.util.List;
 
+import static org.tendiwa.geometry.GeometryPrimitives.graph2D;
 import static org.tendiwa.geometry.GeometryPrimitives.graphConstructor;
 import static org.tendiwa.geometry.GeometryPrimitives.rectangle;
 
@@ -56,7 +57,7 @@ public class SameOrPerpendicularSlopeGraphEdgesPerturbationsTest implements Runn
 		Canvas canvas = new TestCanvas(1, rectangle(500, 400));
 		canvas.draw(
 			new DrawableGraph2D.Thin(
-				graph,
+				graph2D(graph),
 				Color.red
 			)
 		);

@@ -1,5 +1,6 @@
 package org.tendiwa.geometry.graphs2d;
 
+import org.tendiwa.graphs.graphs2d.BasicMutableGraph2D;
 import org.tendiwa.graphs.graphs2d.MutableGraph2D;
 
 import java.util.Set;
@@ -12,7 +13,7 @@ import java.util.stream.Collector;
 public final class Graph2DUnionCollector implements Collector<Graph2D, MutableGraph2D, Graph2D> {
 	@Override
 	public Supplier<MutableGraph2D> supplier() {
-		return MutableGraph2D::new;
+		return BasicMutableGraph2D::new;
 	}
 
 	@Override

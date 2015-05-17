@@ -7,7 +7,7 @@ import org.tendiwa.drawing.Canvas;
 import org.tendiwa.drawing.extensions.DrawableCell;
 import org.tendiwa.geometry.Rectangle;
 import org.tendiwa.noise.Noise;
-import org.tendiwa.pathfinding.astar.AStar;
+import org.tendiwa.pathfinding.astar.Path;
 import org.tendiwa.pathfinding.dijkstra.PathTable;
 import org.tendiwa.terrain.BlobArea;
 import org.tendiwa.terrain.CellParams;
@@ -67,10 +67,14 @@ public class NoiseDemo implements Runnable {
 		Cell start = cell(387, 480);
 		Cell end = cell(770, 500);
 		Stopwatch time = Stopwatch.createStarted();
-		List<Cell> path = new AStar((cell, neighbor) -> {
-			int noise = noise(cell.x(), cell.y(), 7);
-			return (double) (noise < 145 && noise > 125 ? 1 : 10000) * cell.diagonalComponent(neighbor);
-		}).path(start, end);
+		List<Cell> path = new Path(
+			start,
+			end,
+			(cell, neighbor) -> {
+				int noise = noise(cell.x(), cell.y(), 7);
+				return (double) (noise < 145 && noise > 125 ? 1 : 10000) * cell.diagonalComponent(neighbor);
+			}
+		);
 		System.out.println("AStar: " + time);
 		canvas.drawAll(
 			path,

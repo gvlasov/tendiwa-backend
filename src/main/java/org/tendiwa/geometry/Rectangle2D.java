@@ -1,13 +1,14 @@
 package org.tendiwa.geometry;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterators;
 import org.tendiwa.core.OrdinalDirection;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
 import static org.tendiwa.geometry.GeometryPrimitives.point2D;
-import static org.tendiwa.geometry.GeometryPrimitives.rectangle2D;
 import static org.tendiwa.geometry.GeometryPrimitives.segment2D;
 
 public interface Rectangle2D extends RectangularHull, Polygon {
@@ -18,6 +19,53 @@ public interface Rectangle2D extends RectangularHull, Polygon {
 	double width();
 
 	double height();
+
+	@Override
+	default Point2D get(int index) {
+		if (index == 0) {
+			return nwCorner();
+		} else if (index == 1) {
+			return neCorner();
+		} else if (index == 2) {
+			return seCorner();
+		} else if (index == 3) {
+			return swCorner();
+		} else {
+			throw new IndexOutOfBoundsException(
+				"Rectangle has only 4 points with indices 0 to 3, you attempted to access index " + index
+			);
+		}
+	}
+
+	@Override
+	default Iterator<Point2D> iterator() {
+		return Iterators.forArray(
+			nwCorner(),
+			neCorner(),
+			seCorner(),
+			swCorner()
+		);
+	}
+
+	@Override
+	default int indexOf(Object o) {
+		if (nwCorner().equals(o)) {
+			return 0;
+		} else if (neCorner().equals(o)) {
+			return 1;
+		} else if (seCorner().equals(o)) {
+			return 2;
+		} else if (swCorner().equals(o)) {
+			return 3;
+		} else {
+			return -1;
+		}
+	}
+
+	@Override
+	default int lastIndexOf(Object o) {
+		return indexOf(o);
+	}
 
 	default double getMaxX() {
 		return x() + width();

@@ -4,6 +4,7 @@ import org.jgrapht.EdgeFactory;
 import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.graphs2d.Graph2D;
 import org.tendiwa.geometry.smartMesh.MeshedNetwork;
+import org.tendiwa.graphs.graphs2d.BasicMutableGraph2D;
 import org.tendiwa.graphs.graphs2d.MutableGraph2D;
 import org.tendiwa.math.BasketWithStones;
 import org.tendiwa.math.StonesInBasketsProblem;
@@ -22,7 +23,7 @@ public final class NetworkGraphWithHolesInHull implements Graph2D {
 	private final double probability;
 	private final Graph2D graphWithHoles;
 
-	private NetworkGraphWithHolesInHull(
+	public NetworkGraphWithHolesInHull(
 		MeshedNetwork network,
 		double probability,
 		Random random
@@ -40,7 +41,7 @@ public final class NetworkGraphWithHolesInHull implements Graph2D {
 	 * Removes some of the outer cycle edges
 	 */
 	private Graph2D rejectRoads() {
-		MutableGraph2D modifiedGraph = new MutableGraph2D(network.fullGraph());
+		MutableGraph2D modifiedGraph = new BasicMutableGraph2D(network.fullGraph());
 		placeHolesOnChains(
 			new HullSplitInChains(network).hullChains()
 		)

@@ -1,51 +1,45 @@
 package org.tendiwa.geometry.smartMesh;
 
+import lombok.Lazy;
+import org.jgrapht.EdgeFactory;
 import org.tendiwa.collections.SuccessiveTuples;
 import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.graphs2d.Cycle2D;
 import org.tendiwa.geometry.graphs2d.Graph2D;
-import org.tendiwa.graphs.graphs2d.Graph2D_Wr;
 import org.tendiwa.graphs.GraphChainTraversal;
-import org.tendiwa.graphs.GraphChainTraversal.NeighborsTriplet;
 import org.tendiwa.graphs.MinimalCycle;
+import org.tendiwa.graphs.graphs2d.BasicMutableGraph2D;
 import org.tendiwa.graphs.graphs2d.MutableGraph2D;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 
 /**
  * Holds a graph of a cycle within which {@link FloodPart} is constructed,
  * and for each edge remembers whether that edge goes clockwise or counter-clockwise. That effectively means that
  * OrientedCycle can tell if its innards are to the right or to the left from its certain edge.
  */
-final class OrientedCycle implements NetworkPart, Cycle2D {
-	private final boolean isCycleClockwise;
+final class OrientedCycle implements MutableGraph2D, Cycle2D {
+	private final MinimalCycle<Point2D, Segment2D> originalMinimalCycle;
 	private final Graph2D splitOriginalGraph;
-	private final Graph2D cycleGraph;
 	private final Set<Segment2D> reverseEdges = new HashSet<>();
 
 	OrientedCycle(
 		MinimalCycle<Point2D, Segment2D> originalMinimalCycle,
 		Graph2D splitOriginalGraph
 	) {
-		this.cycleGraph = createCycleGraph(originalMinimalCycle, splitOriginalGraph);
+		this.originalMinimalCycle = originalMinimalCycle;
 		this.splitOriginalGraph = splitOriginalGraph;
-		this.isCycleClockwise = JTSUtils.isYDownCCW(originalMinimalCycle.vertexList());
 	}
 
-	@Override
-	public MutableGraph2D graph() {
-		return this;
+	// TODO: primitive support for @Lazy annotation
+	@Lazy
+	private Boolean isCycleClockwise() {
+		return JTSUtils.isYDownCCW(originalMinimalCycle.vertexList());
 	}
 
-	private MutableGraph2D createCycleGraph(
-		MinimalCycle<Point2D, Segment2D> originalMinimalCycle,
-		Graph2D splitOriginalGraph
-	) {
-		MutableGraph2D cycleGraph = new MutableGraph2D();
+	@Lazy
+	private MutableGraph2D cycleGraph() {
+		MutableGraph2D cycleGraph = new BasicMutableGraph2D();
 		SuccessiveTuples.forEachLooped(
 			originalMinimalCycle.asVertices(),
 			(previous, current, next) -> {
@@ -74,35 +68,37 @@ final class OrientedCycle implements NetworkPart, Cycle2D {
 	}
 
 	private void addAutoDirectedEdge(
-		Graph2D cycleGraph,
+		MutableGraph2D cycleGraph,
 		Point2D current,
 		Point2D next
 	) {
 		assert splitOriginalGraph.containsEdge(current, next);
+		Segment2D edge = splitOriginalGraph.getEdge(current, next);
 		cycleGraph.addVertex(current);
 		cycleGraph.addVertex(next);
-		Segment2D edge = splitOriginalGraph.getEdge(current, next);
-		if (splitOriginalGraph.getEdgeSource(edge) != current) {
-			assert splitOriginalGraph.getEdgeSource(edge) == next
-				&& splitOriginalGraph.getEdgeTarget(edge) == current;
-			reverseEdges.add(edge);
-		} else {
-			assert splitOriginalGraph.getEdgeSource(edge) == current
-				&& splitOriginalGraph.getEdgeTarget(edge) == next;
+		cycleGraph.addSegmentAsEdge(edge);
+		if (isEdgeReverse(edge)) {
+			setReverse(edge);
 		}
-		cycleGraph.addEdge(current, next, edge);
+	}
+
+	private boolean isEdgeReverse(Segment2D edge) {
+		if (splitOriginalGraph.getEdgeSource(edge) != edge.start()) {
+			assert splitOriginalGraph.getEdgeSource(edge) == edge.end()
+				&& splitOriginalGraph.getEdgeTarget(edge) == edge.start();
+			return true;
+		} else {
+			assert splitOriginalGraph.getEdgeSource(edge) == edge.start()
+				&& splitOriginalGraph.getEdgeTarget(edge) == edge.end();
+			return false;
+		}
+
 	}
 
 	boolean isAgainstCycleDirection(Segment2D edge) {
 		return reverseEdges.contains(edge);
 	}
 
-	/**
-	 * For each of two new parts of a spilt edge, calculates if that part goes clockwise or counter-clockwise and
-	 * remembers that information.
-	 * <p>
-	 * This method should be called each time an edge of this OrientedCycle is split with
-	 */
 	@Override
 	public void integrateSplitEdge(CutSegment2D cutSegment) {
 		Segment2D originalSegment = cutSegment.originalSegment();
@@ -112,9 +108,15 @@ final class OrientedCycle implements NetworkPart, Cycle2D {
 			.filter(segment -> isSplitEdgeAgainst ^ originalVector.dotProduct(segment.asVector()) < 0)
 			.forEach(this::setReverse);
 		reverseEdges.remove(originalSegment);
-		NetworkPart.super.integrateSplitEdge(cutSegment);
+		SharingSubgraph2D.super.integrateSplitEdge(cutSegment);
 	}
 
+	/**
+	 * For each of two new parts of a spilt edge, calculates if that part goes clockwise or counter-clockwise and
+	 * remembers that information.
+	 * <p>
+	 * This method should be called each time an edge of this OrientedCycle is split with
+	 */
 	private void setReverse(Segment2D edge) {
 		assert !reverseEdges.contains(edge);
 		reverseEdges.add(edge);
@@ -122,7 +124,7 @@ final class OrientedCycle implements NetworkPart, Cycle2D {
 
 	// TODO: bisector is not deviated
 	public Ray deviatedAngleBisector(Point2D bisectorStart, boolean inward) {
-		Set<Segment2D> adjacentEdges = cycleGraph.edgesOf(bisectorStart);
+		Set<Segment2D> adjacentEdges = cycleGraph().edgesOf(bisectorStart);
 		assert adjacentEdges.size() == 2;
 		Iterator<Segment2D> iterator = adjacentEdges.iterator();
 
@@ -157,18 +159,8 @@ final class OrientedCycle implements NetworkPart, Cycle2D {
 		);
 	}
 
-	@Override
 	public boolean isClockwise(Segment2D edge) {
-		return isCycleClockwise ^ isAgainstCycleDirection(edge);
-	}
-
-	List<Point2D> vertexList() {
-		return GraphChainTraversal
-			.traverse(graph())
-			.startingWith(graph().vertexSet().stream().findFirst().get())
-			.stream()
-			.map(NeighborsTriplet::current)
-			.collect(Collectors.toList());
+		return isCycleClockwise() ^ isAgainstCycleDirection(edge);
 	}
 
 	Ray normal(SplitSegment2D segmentWithPoint, boolean inward) {
@@ -191,5 +183,160 @@ final class OrientedCycle implements NetworkPart, Cycle2D {
 			rayStart,
 			rayStart.angleTo(pointOnRay)
 		);
+	}
+
+	@Override
+	public Set<Segment2D> getAllEdges(Point2D sourceVertex, Point2D targetVertex) {
+		return cycleGraph().getAllEdges(sourceVertex, targetVertex);
+	}
+
+	@Override
+	public Segment2D getEdge(Point2D sourceVertex, Point2D targetVertex) {
+		return cycleGraph().getEdge(sourceVertex, targetVertex);
+	}
+
+	@Override
+	public EdgeFactory<Point2D, Segment2D> getEdgeFactory() {
+		return cycleGraph().getEdgeFactory();
+	}
+
+	@Deprecated
+	@Override
+	public Segment2D addEdge(Point2D sourceVertex, Point2D targetVertex) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Deprecated
+	@Override
+	public boolean addEdge(Point2D sourceVertex, Point2D targetVertex, Segment2D segment2D) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Deprecated
+	@Override
+	public boolean addVertex(Point2D point2D) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean containsEdge(Point2D sourceVertex, Point2D targetVertex) {
+		return cycleGraph().containsEdge(sourceVertex, targetVertex);
+	}
+
+	@Override
+	public boolean containsEdge(Segment2D segment2D) {
+		return cycleGraph().containsEdge(segment2D);
+	}
+
+	@Override
+	public boolean containsVertex(Point2D point2D) {
+		return cycleGraph().containsVertex(point2D);
+	}
+
+	@Override
+	public Set<Segment2D> edgeSet() {
+		return cycleGraph().edgeSet();
+	}
+
+	@Override
+	public Set<Segment2D> edgesOf(Point2D vertex) {
+		return cycleGraph().edgesOf(vertex);
+	}
+
+	@Deprecated
+	@Override
+	public boolean removeAllEdges(Collection<? extends Segment2D> edges) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Deprecated
+	@Override
+	public Set<Segment2D> removeAllEdges(Point2D sourceVertex, Point2D targetVertex) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Deprecated
+	@Override
+	public boolean removeAllVertices(Collection<? extends Point2D> vertices) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Deprecated
+	@Override
+	public Segment2D removeEdge(Point2D sourceVertex, Point2D targetVertex) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Deprecated
+	@Override
+	public boolean removeEdge(Segment2D segment2D) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Deprecated
+	@Override
+	public boolean removeVertex(Point2D point2D) {
+		throw new UnsupportedOperationException();
+	}
+
+
+	@Override
+	public Set<Point2D> vertexSet() {
+		return cycleGraph().vertexSet();
+	}
+
+	@Override
+	public Point2D getEdgeSource(Segment2D segment2D) {
+		return cycleGraph().getEdgeSource(segment2D);
+	}
+
+	@Override
+	public Point2D getEdgeTarget(Segment2D segment2D) {
+		return cycleGraph().getEdgeTarget(segment2D);
+	}
+
+	@Override
+	public double getEdgeWeight(Segment2D segment2D) {
+		return cycleGraph().getEdgeWeight(segment2D);
+	}
+
+	@Override
+	public boolean isClockwise() {
+		return isCycleClockwise();
+	}
+
+	@Override
+	public int size() {
+		return cycleGraph().vertexSet().size();
+	}
+
+	@Override
+	public boolean contains(Object o) {
+		return cycleGraph().vertexSet().contains(o);
+	}
+
+	@Override
+	public Iterator<Point2D> iterator() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Point2D get(int index) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public int indexOf(Object o) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public int lastIndexOf(Object o) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public int degreeOf(Point2D vertex) {
+		return cycleGraph().degreeOf(vertex);
 	}
 }

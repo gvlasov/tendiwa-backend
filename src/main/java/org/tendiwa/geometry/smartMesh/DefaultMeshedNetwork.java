@@ -3,6 +3,8 @@ package org.tendiwa.geometry.smartMesh;
 import com.google.common.collect.ImmutableSet;
 import org.tendiwa.geometry.graphs2d.Graph2D;
 import org.tendiwa.geometry.graphs2d.Mesh2D;
+import org.tendiwa.geometry.graphs2d.PerforatedMesh2D;
+import org.tendiwa.geometry.graphs2d.PolylineGraph2D;
 
 public final class DefaultMeshedNetwork implements MeshedNetwork {
 
@@ -16,12 +18,12 @@ public final class DefaultMeshedNetwork implements MeshedNetwork {
 
 
 	@Override
-	public ImmutableSet<Graph2D> filaments() {
+	public ImmutableSet<PolylineGraph2D> filaments() {
 		return mesh.filaments();
 	}
 
 	@Override
-	public ImmutableSet<Mesh2D> meshes() {
+	public ImmutableSet<PerforatedMesh2D> meshes() {
 		return mesh.meshes();
 	}
 

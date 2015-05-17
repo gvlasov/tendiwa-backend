@@ -1,64 +1,32 @@
 package org.tendiwa.settlements.utils;
 
-import com.google.common.collect.Iterators;
 import org.tendiwa.collections.Collectors;
-import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawablePolygon;
+import org.tendiwa.geometry.CrackedPolygon;
 import org.tendiwa.geometry.Polygon;
 import org.tendiwa.geometry.extensions.daveedvMaxRec.MaximalRectanlges;
 import org.tendiwa.geometry.extensions.polygonRasterization.PolygonRasterizer;
-import org.tendiwa.geometry.smartMesh.EnclosedCyclesSet;
-import org.tendiwa.geometry.smartMesh.SmartMeshedNetwork;
-import org.tendiwa.settlements.LinkedPolygon;
+import org.tendiwa.geometry.extensions.straightSkeleton.ShrinkedPolygon;
+import org.tendiwa.geometry.smartMesh.MeshedNetwork;
 
-import java.awt.Color;
-import java.util.Iterator;
 import java.util.Set;
+
+import static org.tendiwa.geometry.GeometryPrimitives.rectangle;
 
 public final class RectangularBuildingLots {
 	private RectangularBuildingLots() {
 		throw new UnsupportedOperationException();
 	}
 
-	public static Set<RectangleWithNeighbors> placeInside(
-		SmartMeshedNetwork segment2DSmartMesh
-	) {
-		EnclosedCyclesSet enclosedCycles = new EnclosedCyclesSet(segment2DSmartMesh);
-
-		Set<Polygon> encBlocks = segment2DSmartMesh.networks()
+	public static Set<RectangleWithNeighbors> placeInside(MeshedNetwork network) {
+		return network.meshes()
 			.stream()
-			.flatMap(n -> n.enclosedBlocks().stream().filter(b -> !enclosedCycles.contains(b)))
-			.flatMap(b -> b.shrinkToRegions(3.3).stream())
-			.flatMap(b -> b.subdivideLots(16, 16, 0.5).stream())
-			.collect(Collectors.toImmutableSet());
-
-//		drawBlocks(encBlocks);
-
-//		drawEnclosedBlocks(segment2DSmartMesh, enclosedCycles);
-
-		return encBlocks.stream()
+			.flatMap(n -> n.meshCells().stream())
+			.flatMap(b -> new ShrinkedPolygon(b, 3.3).stream())
+			.flatMap(b -> new CrackedPolygon(b, rectangle(16, 16), 0.5).pieces().stream())
 			.map(lot -> PolygonRasterizer.rasterizeToMutable(lot))
 			.map(rasterized -> MaximalRectanlges.searchUntilSmallEnoughMutatingBitmap(rasterized, 21))
 			.filter(list -> !list.isEmpty())
 			.map(list -> new BasicRectangleWithNeighbors(list.get(0), list.subList(1, list.size())))
 			.collect(Collectors.toImmutableSet());
-	}
-
-	private static void drawEnclosedBlocks(SmartMeshedNetwork segment2DSmartMesh, EnclosedCyclesSet enclosedCycles) {
-		TestCanvas.canvas.drawAll(
-			segment2DSmartMesh.networks()
-				.stream()
-				.flatMap(n -> n.enclosedBlocks().stream().filter(enclosedCycles::contains))
-				.flatMap(b -> b.shrinkToRegions(3.3).stream()),
-			block -> new DrawablePolygon(block, Color.black)
-		);
-	}
-
-	private static void drawBlocks(Set<LinkedPolygon> encBlocks) {
-		Iterator<Color> colors = Iterators.cycle(Color.magenta, Color.cyan, Color.orange);
-		TestCanvas.canvas.drawAll(
-			encBlocks,
-			block -> new DrawablePolygon(block, colors.next())
-		);
 	}
 }

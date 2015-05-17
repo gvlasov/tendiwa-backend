@@ -248,7 +248,7 @@ public interface Rectangle extends RecTree, BoundedCellSet, Dimension {
 	}
 
 
-	default double area() {
+	default int area() {
 		return width() * height();
 	}
 

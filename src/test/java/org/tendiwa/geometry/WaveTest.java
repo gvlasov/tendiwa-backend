@@ -25,7 +25,7 @@ public class WaveTest {
 
 	@Test
 	public void iterateOverCellSetBoundedByScalar() {
-		BasicCell centerPoint = new BasicCell(5, 5);
+		Cell centerPoint = new BasicCell(5, 5);
 		Rectangle rectangle = centerPoint.centerRectangle(3, 3);
 		int numberOfCellsInWave = Wave
 			.from(centerPoint)

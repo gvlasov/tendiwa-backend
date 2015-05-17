@@ -12,10 +12,12 @@ import org.tendiwa.geometry.GeometryPrimitives;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
+import org.tendiwa.geometry.graphs2d.Graph2D;
 import org.tendiwa.graphs.MinimalCycle;
 
 import java.awt.Color;
 
+import static org.tendiwa.geometry.GeometryPrimitives.graph2D;
 import static org.tendiwa.geometry.GeometryPrimitives.graphConstructor;
 
 public class MinimumCycleBasisDemo implements Runnable {
@@ -28,9 +30,12 @@ public class MinimumCycleBasisDemo implements Runnable {
 
 	@Override
 	public void run() {
-		UndirectedGraph<Point2D, Segment2D> graph = graphConstructor()
-			.cycleOfVertices(new ConvexAndReflexAmoeba())
-			.graph();
+		Graph2D graph =
+			graph2D(
+				graphConstructor()
+					.cycleOfVertices(new ConvexAndReflexAmoeba())
+					.graph()
+			);
 		canvas.draw(
 			new DrawableGraph2D.CircleVertices(
 				graph,

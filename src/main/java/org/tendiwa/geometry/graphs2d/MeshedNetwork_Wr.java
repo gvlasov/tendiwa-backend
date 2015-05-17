@@ -11,12 +11,12 @@ public abstract class MeshedNetwork_Wr implements MeshedNetwork {
 	}
 
 	@Override
-	public ImmutableSet<Graph2D> filaments() {
+	public ImmutableSet<PolylineGraph2D> filaments() {
 		return network.filaments();
 	}
 
 	@Override
-	public ImmutableSet<Mesh2D> meshes() {
+	public ImmutableSet<PerforatedMesh2D> meshes() {
 		return network.meshes();
 	}
 

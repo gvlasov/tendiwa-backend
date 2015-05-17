@@ -1,10 +1,11 @@
 package org.tendiwa.geometry.smartMesh;
 
 import org.jgrapht.UndirectedGraph;
-import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.extensions.PlanarGraphs;
+import org.tendiwa.geometry.graphs2d.Graph2D;
+import org.tendiwa.graphs.graphs2d.BasicMutableGraph2D;
+import org.tendiwa.graphs.graphs2d.MutableGraph2D;
 
 import java.util.Collection;
 import java.util.Random;
@@ -251,15 +252,13 @@ public class MeshedNetworkBuilder {
 	}
 
 
-	private static UndirectedGraph<Point2D, Segment2D> createRoadGraph(
+	private static Graph2D createRoadGraph(
 		Collection<Point2D> vertices,
 		Collection<Segment2D> edges
 	) {
-		UndirectedGraph<Point2D, Segment2D> answer = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
+		MutableGraph2D answer = new BasicMutableGraph2D();
 		vertices.forEach(answer::addVertex);
-		for (Segment2D edge : edges) {
-			answer.addEdge(edge.start(), edge.end(), edge);
-		}
+		edges.forEach(answer::addSegmentAsEdge);
 		return answer;
 	}
 

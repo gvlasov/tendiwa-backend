@@ -4,7 +4,7 @@ import org.tendiwa.core.meta.Cell;
 import org.tendiwa.demos.Demos;
 import org.tendiwa.demos.DrawableRectangle;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawableGraph2D;
+import org.tendiwa.drawing.extensions.DrawablePolygon;
 import org.tendiwa.geometry.BoundedCellSet;
 import org.tendiwa.geometry.CellSet;
 import org.tendiwa.geometry.Polygon;
@@ -60,10 +60,9 @@ class CityBoundsWithHoles implements Runnable {
 				)
 			);
 			canvas.draw(
-				new DrawableGraph2D.CircleVertices(
-					cityBounds.graph(),
-					Color.red,
-					0
+				new DrawablePolygon.Thin(
+					cityBounds,
+					Color.red
 				)
 			);
 

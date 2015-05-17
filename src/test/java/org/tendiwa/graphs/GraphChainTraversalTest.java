@@ -10,6 +10,7 @@ import org.tendiwa.drawing.extensions.DrawableGraph2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PointTrail;
+import org.tendiwa.geometry.graphs2d.Graph2D;
 
 import java.awt.Color;
 import java.util.List;
@@ -50,9 +51,12 @@ public class GraphChainTraversalTest {
 			.moveByX(50)
 			.moveByY(-50)
 			.points();
-		UndirectedGraph<Point2D, Segment2D> graph = graphConstructor()
-			.chain(trail)
-			.graph();
+		Graph2D graph =
+			graph2D(
+				graphConstructor()
+					.chain(trail)
+					.graph()
+			);
 		Canvas canvas = new TestCanvas(
 			3,
 			rectangle(200, 200)

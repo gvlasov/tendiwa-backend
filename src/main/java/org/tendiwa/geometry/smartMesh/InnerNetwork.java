@@ -6,30 +6,27 @@ import org.tendiwa.geometry.CutSegment2D;
 import org.tendiwa.geometry.Sector;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.SplitSegment2D;
+import org.tendiwa.graphs.graphs2d.BasicMutableGraph2D;
 import org.tendiwa.graphs.graphs2d.MutableGraph2D;
 
 import java.util.Optional;
 import java.util.Random;
-import java.util.Set;
 import java.util.stream.Stream;
 
 final class InnerNetwork {
 	private final MutableGraph2D fullGraph;
-	private final OrientedCycle outerCycle;
-	private final Set<OrientedCycle> innerCycles;
 	private final NetworkGenerationParameters config;
 	private final Random random;
 	private final DeadEndSet deadEnds;
 	private final ExitsOnCycles branchEnds;
+	private final CycleWithInnerCycles perforatedCycle;
 
 	InnerNetwork(
-		OrientedCycle outerCycle,
-		Set<OrientedCycle> innerCycles,
+		CycleWithInnerCycles perforatedCycle,
 		NetworkGenerationParameters config,
 		Random random
 	) {
-		this.outerCycle = outerCycle;
-		this.innerCycles = innerCycles;
+		this.perforatedCycle = perforatedCycle;
 		this.config = config;
 		this.random = random;
 		this.deadEnds = new DeadEndSet();
@@ -38,9 +35,9 @@ final class InnerNetwork {
 	}
 
 	private MutableGraph2D initFullGraph() {
-		MutableGraph2D fullGraph = new MutableGraph2D();
-		Graphs.addGraph(fullGraph, outerCycle.graph());
-		innerCycles.forEach(cycle -> Graphs.addGraph(fullGraph, cycle.graph()));
+		MutableGraph2D fullGraph = new BasicMutableGraph2D();
+		Graphs.addGraph(fullGraph, perforatedCycle.enclosingCycle());
+		perforatedCycle.innerCycles().forEach(cycle -> Graphs.addGraph(fullGraph, cycle));
 		return fullGraph;
 	}
 

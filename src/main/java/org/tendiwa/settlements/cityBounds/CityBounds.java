@@ -4,18 +4,21 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableSet;
 import org.jgrapht.UndirectedGraph;
-import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.core.Direction;
 import org.tendiwa.core.Directions;
 import org.tendiwa.core.meta.Cell;
 import org.tendiwa.geometry.*;
-import org.tendiwa.geometry.extensions.*;
+import org.tendiwa.geometry.extensions.CachedCellSet;
+import org.tendiwa.geometry.extensions.ChebyshovDistanceBufferBorder;
+import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.geometry.graphs2d.BasicCycle2D;
 import org.tendiwa.geometry.graphs2d.Cycle2D;
+import org.tendiwa.geometry.graphs2d.Graph2D;
 import org.tendiwa.geometry.smartMesh.MeshedNetworkBuilder;
 import org.tendiwa.geometry.smartMesh.SmartMeshedNetwork;
 import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.graphs.algorithms.SameOrPerpendicularSlopeGraphEdgesPerturbations;
+import org.tendiwa.graphs.graphs2d.BasicMutableGraph2D;
 import org.tendiwa.pathfinding.dijkstra.PathTable;
 import org.tendiwa.terrain.WorldGenerationException;
 
@@ -51,7 +54,7 @@ public final class CityBounds {
 					"and at least 1 cell away from cityShape's border"
 			);
 		}
-		UndirectedGraph<Point2D, Segment2D> answer = computeCityBoundingRoads(cityShape, startCell, maxCityRadius);
+		Graph2D answer = computeCityBoundingRoads(cityShape, startCell, maxCityRadius);
 		assert !minimalCyclesOfGraphHaveCommonVertices(answer);
 		return new BasicCycle2D(answer);
 	}
@@ -120,7 +123,7 @@ public final class CityBounds {
 		).computeFull();
 	}
 
-	private static UndirectedGraph<Point2D, Segment2D> computeCityBoundingRoads(
+	private static Graph2D computeCityBoundingRoads(
 		BoundedCellSet cityShape,
 		Cell startCell,
 		int radius
@@ -165,11 +168,11 @@ public final class CityBounds {
 	 * @return A graph where vertices are all the cells of the one cell wide border,
 	 * and edges are two cells being near each other from cardinal sides.
 	 */
-	private static UndirectedGraph<Point2D, Segment2D> bufferBorderToGraph(
+	private static Graph2D bufferBorderToGraph(
 		FiniteCellSet bufferBorder,
 		CellSet cellsInsideBufferBorder
 	) {
-		UndirectedGraph<Point2D, Segment2D> graph = new SimpleGraph<>(PlanarGraphs.getEdgeFactory());
+		Graph2D graph = new BasicMutableGraph2D();
 
 		ImmutableSet<Cell> borderCells = bufferBorder.toSet();
 		BiMap<Cell, Point2D> cell2PointMap = HashBiMap.create();

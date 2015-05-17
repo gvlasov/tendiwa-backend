@@ -9,10 +9,10 @@ import org.tendiwa.geometry.Segment2D;
 import java.util.Collection;
 import java.util.Set;
 
-public final class PolylineGraph extends Polyline_Wr implements Graph2D {
+public final class PolylineGraph2D extends Polyline_Wr implements Graph2D {
 	private final Graph2D graph;
 
-	public PolylineGraph(Polyline polyline) {
+	public PolylineGraph2D(Polyline polyline) {
 		super(polyline);
 		this.graph = Graph2D.createGraph(polyline, polyline.toSegments());
 	}

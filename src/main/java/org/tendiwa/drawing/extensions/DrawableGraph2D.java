@@ -1,12 +1,12 @@
 package org.tendiwa.drawing.extensions;
 
-import org.jgrapht.UndirectedGraph;
 import org.tendiwa.drawing.Canvas;
 import org.tendiwa.drawing.Drawable;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.graphs.graphs2d.Graph2D_Wr;
+import org.tendiwa.geometry.graphs2d.Graph2D;
 import org.tendiwa.graphs.GraphConstructor;
+import org.tendiwa.graphs.graphs2d.Graph2D_Wr;
 
 import java.awt.Color;
 import java.util.function.Function;
@@ -16,7 +16,7 @@ public final class DrawableGraph2D extends Graph2D_Wr implements Drawable {
 	private final Function<Segment2D, Drawable> howToDrawEdges;
 
 	public DrawableGraph2D(
-		UndirectedGraph<Point2D, Segment2D> graph,
+		Graph2D graph,
 		Function<Point2D, Drawable> howToDrawVertices,
 		Function<Segment2D, Drawable> howToDrawEdges
 	) {
@@ -43,7 +43,7 @@ public final class DrawableGraph2D extends Graph2D_Wr implements Drawable {
 		private final double diameter;
 
 		public CircleVertices(
-			UndirectedGraph<Point2D, Segment2D> graph,
+			Graph2D graph,
 			Color color,
 			double diameter
 		) {
@@ -64,7 +64,7 @@ public final class DrawableGraph2D extends Graph2D_Wr implements Drawable {
 		private final Color color;
 
 		public Thin(
-			UndirectedGraph<Point2D, Segment2D> graph,
+			Graph2D graph,
 			Color color
 		) {
 			super(graph);
@@ -85,7 +85,7 @@ public final class DrawableGraph2D extends Graph2D_Wr implements Drawable {
 		private final Color color;
 
 		public OnlyThinEdges(
-			UndirectedGraph<Point2D, Segment2D> graph,
+			Graph2D graph,
 			Color color
 		) {
 			super(graph);
@@ -106,7 +106,7 @@ public final class DrawableGraph2D extends Graph2D_Wr implements Drawable {
 		private final GraphConstructor<Point2D, Segment2D> graphConstructor;
 
 		public WithAliases(
-			UndirectedGraph<Point2D, Segment2D> graph,
+			Graph2D graph,
 			GraphConstructor<Point2D, Segment2D> aliasSource
 		) {
 			super(graph);

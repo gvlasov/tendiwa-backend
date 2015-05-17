@@ -18,7 +18,7 @@ final class OrientedCycleSector implements Sector {
 		Point2D source,
 		boolean inner
 	) {
-		MutableGraph2D cycleGraph = cycle.graph();
+		MutableGraph2D cycleGraph = cycle.asMutable();
 		assert cycleGraph.containsVertex(source);
 		Set<Segment2D> edges = cycleGraph.edgesOf(source);
 		assert edges.size() == 2;
@@ -36,7 +36,7 @@ final class OrientedCycleSector implements Sector {
 	}
 
 	private static Segment2D toCounterClockwise(Segment2D oneEdge, OrientedCycle cycle) {
-		assert cycle.graph().containsEdge(oneEdge);
+		assert cycle.asMutable().containsEdge(oneEdge);
 		if (cycle.isClockwise(oneEdge)) {
 			oneEdge = oneEdge.reverse();
 		}

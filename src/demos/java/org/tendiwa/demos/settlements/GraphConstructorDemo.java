@@ -7,6 +7,7 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.graphs.GraphConstructor;
 
+import static org.tendiwa.geometry.GeometryPrimitives.graph2D;
 import static org.tendiwa.geometry.GeometryPrimitives.graphConstructor;
 import static org.tendiwa.geometry.GeometryPrimitives.point2D;
 
@@ -38,7 +39,7 @@ public class GraphConstructorDemo implements Runnable {
 			.path(2, 4, 6);
 		canvas.draw(
 			new DrawableGraph2D.WithAliases(
-				gc.graph(),
+				graph2D(gc.graph()),
 				gc
 			)
 		);

@@ -2,12 +2,13 @@ package org.tendiwa.geometry.smartMesh;
 
 import com.google.common.collect.ImmutableSet;
 import org.jgrapht.UndirectedGraph;
-import org.tendiwa.geometry.BasicPolygon;
-import org.tendiwa.geometry.CutSegment2D;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
+import org.tendiwa.geometry.graphs2d.Cycle2D_Wr;
+import org.tendiwa.geometry.graphs2d.Mesh2D;
+import org.tendiwa.geometry.graphs2d.PerforatedCycle2D;
 import org.tendiwa.graphs.algorithms.SameOrPerpendicularSlopeGraphEdgesPerturbations;
+import org.tendiwa.graphs.graphs2d.BasicMutableGraph2D;
 
 import java.util.List;
 import java.util.Random;
@@ -16,38 +17,39 @@ import java.util.Set;
 import static java.util.stream.Collectors.toList;
 import static org.tendiwa.collections.Collectors.toImmutableSet;
 
-public final class OriginalMeshCell {
-	private final InnerNetwork innerNetwork;
-	private final OrientedCycle outerCycle;
+public final class IncrementingSubgraph extends BasicMutableGraph2D implements SharingSubgraph2D {
 
-	OriginalMeshCell(
-		FullNetwork fullNetwork,
-		OrientedCycle outerCycle,
-		Set<OrientedCycle> innerCycles,
+	private final CycleWithInnerCycles perforatedCycle;
+	private final InnerNetwork innerNetwork;
+
+	IncrementingSubgraph(
+		FullGraph fullGraph,
+		CycleWithInnerCycles perforatedCycle,
 		NetworkGenerationParameters config,
 		Random random
 	) {
-		this.outerCycle = outerCycle;
-		fullNetwork.addNetworkPart(outerCycle);
+		super(perforatedCycle);
+		this.perforatedCycle = perforatedCycle;
+		fullGraph.registerSubgraph(perforatedCycle.hull());
 		this.innerNetwork = new Flood(
-			outerCycle,
-			innerCycles,
+			perforatedCycle,
 			config,
 			random
 		).createNetwork();
-		fullNetwork.integrateForest(innerNetwork);
+		fullGraph.integrateForest(innerNetwork);
 	}
 
-	public UndirectedGraph<Point2D, Segment2D> network() {
-		return innerNetwork.fullGraph().without(outerCycle.graph());
+
+	UndirectedGraph<Point2D, Segment2D> network() {
+		return innerNetwork.fullGraph().without(perforatedCycle);
 	}
 
-	public UndirectedGraph<Point2D, Segment2D> cycle() {
+	UndirectedGraph<Point2D, Segment2D> cycle() {
 		return outerCycle.graph();
 	}
 
 
-	public List<SecondaryRoadNetworkBlock> enclosedBlocks() {
+	public List<Polygon> enclosedBlocks() {
 		UndirectedGraph<Point2D, Segment2D> fullCellGraph = PlanarGraphs.copyGraph(innerNetwork.fullGraph());
 		SameOrPerpendicularSlopeGraphEdgesPerturbations.perturb(fullCellGraph, 1e-4);
 		return PlanarGraphs
@@ -55,10 +57,8 @@ public final class OriginalMeshCell {
 			.minimalCyclesSet()
 			.stream()
 			.map(cycle ->
-					new SecondaryRoadNetworkBlock(
-						new BasicPolygon(
-							cycle.vertexList()
-						)
+					new BasicPolygon(
+						cycle.vertexList()
 					)
 			)
 			.collect(toList());
@@ -74,4 +74,5 @@ public final class OriginalMeshCell {
 			.flatMap(CutSegment2D::pointStream)
 			.collect(toImmutableSet());
 	}
+
 }

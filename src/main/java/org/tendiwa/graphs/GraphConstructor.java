@@ -3,14 +3,13 @@ package org.tendiwa.graphs;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Lists;
 import org.jgrapht.EdgeFactory;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.collections.SuccessiveTuples;
-import org.tendiwa.geometry.Point2D;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 /**

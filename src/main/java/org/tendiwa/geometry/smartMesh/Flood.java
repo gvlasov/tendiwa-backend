@@ -8,25 +8,22 @@ import java.util.*;
 import static org.tendiwa.collections.Collectors.toImmutableSet;
 
 final class Flood {
-	private final Set<OrientedCycle> innerCycles;
-	private final OrientedCycle outerCycle;
 	private final NetworkGenerationParameters config;
 	private final Random random;
 	private final DirectionDeviation directionDeviation;
 	private final InnerNetwork network;
+	private final CycleWithInnerCycles perforatedCycle;
 
 	Flood(
-		OrientedCycle outerCycle,
-		Set<OrientedCycle> innerCycles,
+		CycleWithInnerCycles perforatedCycle,
 		NetworkGenerationParameters config,
 		Random random
 	) {
-		this.innerCycles = innerCycles;
-		this.outerCycle = outerCycle;
+		this.perforatedCycle = perforatedCycle;
 		this.config = config;
 		this.random = random;
 		this.directionDeviation = createDirectionDeviation();
-		this.network = new InnerNetwork(outerCycle, innerCycles, config, random);
+		this.network = new InnerNetwork(perforatedCycle, config, random);
 	}
 
 	private DirectionDeviation createDirectionDeviation() {
@@ -78,7 +75,7 @@ final class Flood {
 
 	private FloodFromOuterCycle createMainFlooder() {
 		return new FloodFromOuterCycle(
-			outerCycle,
+			perforatedCycle.enclosingCycle(),
 			config,
 			random
 		);
@@ -86,7 +83,7 @@ final class Flood {
 
 	private FloodFromMissingInnerCycles createMissingFlooder() {
 		return new FloodFromMissingInnerCycles(
-			innerCycles,
+			perforatedCycle.innerCycles(),
 			network.whereBranchesStuckIntoCycles()
 				.flatMap(CutSegment2D::pointStream)
 				.collect(toImmutableSet()),

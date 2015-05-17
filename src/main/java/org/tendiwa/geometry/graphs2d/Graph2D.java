@@ -6,6 +6,10 @@ import org.jgrapht.alg.ConnectivityInspector;
 import org.tendiwa.geometry.GeometryException;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
+import org.tendiwa.geometry.extensions.ShamosHoeyAlgorithm;
+import org.tendiwa.graphs.MinimumCycleBasis;
+import org.tendiwa.graphs.graphs2d.BasicMutableGraph2D;
 import org.tendiwa.graphs.graphs2d.MutableGraph2D;
 import org.tendiwa.settlements.utils.streetsDetector.ConnectivityComponent;
 
@@ -13,12 +17,8 @@ import static org.tendiwa.collections.Collectors.toImmutableSet;
 
 public interface Graph2D extends UndirectedGraph<Point2D, Segment2D> {
 
-	static Graph2D unite(UndirectedGraph<Point2D, Segment2D> graph, Graph2D graph2D) {
-		return null;
-	}
-
 	static Graph2D createGraph(Iterable<Point2D> vertices, Iterable<Segment2D> segments) {
-		MutableGraph2D graph = new MutableGraph2D();
+		MutableGraph2D graph = new BasicMutableGraph2D();
 		vertices.forEach(graph::addVertex);
 		segments.forEach(graph::addSegmentAsEdge);
 		return graph;
@@ -29,7 +29,7 @@ public interface Graph2D extends UndirectedGraph<Point2D, Segment2D> {
 	}
 
 	default Graph2D without(UndirectedGraph<Point2D, Segment2D> graph) {
-		MutableGraph2D answer = new MutableGraph2D();
+		MutableGraph2D answer = new BasicMutableGraph2D();
 		edgeSet().stream()
 			.filter(edge -> !graph.containsEdge(edge))
 			.forEach((segment) -> {
@@ -45,7 +45,7 @@ public interface Graph2D extends UndirectedGraph<Point2D, Segment2D> {
 	}
 
 	default Graph2D intersection(Graph2D graph) {
-		MutableGraph2D answer = new MutableGraph2D();
+		MutableGraph2D answer = new BasicMutableGraph2D();
 		vertexSet()
 			.stream()
 			.filter(graph::containsVertex)
@@ -63,6 +63,7 @@ public interface Graph2D extends UndirectedGraph<Point2D, Segment2D> {
 			.map(set -> new ConnectivityComponent<>(this, set))
 			.collect(toImmutableSet());
 	}
+
 	default Point2D findNeighborOnSegment(Point2D hub, Segment2D segment) {
 		if (!segment.oneOfEndsIs(hub)) {
 			throw new IllegalArgumentException("Hub point should be one of the segment's ends");
@@ -78,5 +79,20 @@ public interface Graph2D extends UndirectedGraph<Point2D, Segment2D> {
 			}
 		}
 		return answer;
+	}
+
+	default boolean hasOnlyEdge(Segment2D edge) {
+		return containsEdge(edge) && edgeSet().size() == 1;
+	}
+
+	default MinimumCycleBasis<Point2D, Segment2D> minimumCycleBasis() {
+		return new MinimumCycleBasis<>(
+			this,
+			Point2DVertexPositionAdapter.get()
+		);
+	}
+
+	default boolean isPlanar() {
+		return ShamosHoeyAlgorithm.areIntersected(edgeSet());
 	}
 }

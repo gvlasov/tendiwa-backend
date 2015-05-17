@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="AspectJ" name="AspectJ">
+      <configuration>
+        <option name="weaveOnly" value="true" />
+        <option name="aspectPath">
+          <projectLibrary>
+            <option name="name" value="Maven: com.jcabi:jcabi-aspects:0.21.1" />
+          </projectLibrary>
+        </option>
+      </configuration>
+    </facet>
+  </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
@@ -35,17 +47,6 @@
     <orderEntry type="library" name="Maven: com.google.inject:guice:4.0-beta4" level="project" />
     <orderEntry type="library" name="Maven: javax.inject:javax.inject:1" level="project" />
     <orderEntry type="library" name="Maven: aopalliance:aopalliance:1.0" level="project" />
-    <orderEntry type="library" name="Maven: org.codehaus.groovy:groovy-all:1.8.6" level="project" />
-    <orderEntry type="library" name="Maven: org.codehaus.groovy.maven.runtime:gmaven-runtime-1.6:1.0" level="project" />
-    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.5.6" level="project" />
-    <orderEntry type="library" name="Maven: org.codehaus.groovy.maven.feature:gmaven-feature-support:1.0" level="project" />
-    <orderEntry type="library" name="Maven: org.codehaus.groovy.maven.feature:gmaven-feature-api:1.0" level="project" />
-    <orderEntry type="library" name="Maven: org.codehaus.groovy.maven.runtime:gmaven-runtime-support:1.0" level="project" />
-    <orderEntry type="library" name="Maven: org.codehaus.groovy.maven.runtime:gmaven-runtime-api:1.0" level="project" />
-    <orderEntry type="library" name="Maven: org.codehaus.groovy.maven:gmaven-common:1.0" level="project" />
-    <orderEntry type="library" name="Maven: org.codehaus.plexus:plexus-utils:1.5.5" level="project" />
-    <orderEntry type="library" name="Maven: com.thoughtworks.qdox:qdox:1.8" level="project" />
-    <orderEntry type="library" name="Maven: jline:jline:0.9.94" level="project" />
     <orderEntry type="library" name="Maven: com.googlecode.combinatoricslib:combinatoricslib:2.0" level="project" />
     <orderEntry type="library" name="Maven: log4j:log4j:1.2.16" level="project" />
     <orderEntry type="library" name="Maven: org.jgrapht:jgrapht-ext:0.9.1-SNAPSHOT" level="project" />
@@ -60,6 +61,6 @@
     <orderEntry type="library" name="Maven: org.openjdk.jmh:jmh-core:0.9.4" level="project" />
     <orderEntry type="library" name="Maven: net.sf.jopt-simple:jopt-simple:4.6" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-math3:3.2" level="project" />
-    <orderEntry type="library" name="Maven: com.google.code.findbugs:jsr305:2.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.tendiwa:lombok:1.16.5" level="project" />
   </component>
 </module>

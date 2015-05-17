@@ -34,10 +34,10 @@ final class FloodFromOuterCycle {
 
 	private Map<Segment2D, List<Point2D>> pointsAtRegularIntervals(OrientedCycle cycle) {
 		return IntervalsAlongPolygonBorder.compute(
-			cycle.vertexList(),
+			cycle,
 			config.segmentLength,
 			config.innerNetworkSegmentLengthDeviation,
-			cycle.graph()::getEdge,
+			cycle::getEdge,
 			random
 		);
 	}
@@ -61,7 +61,7 @@ final class FloodFromOuterCycle {
 	}
 
 	private Sector sector(SplitSegment2D splitSegment) {
-		if (outerCycle.graph().containsVertex(splitSegment.middlePoint())) {
+		if (outerCycle.containsVertex(splitSegment.middlePoint())) {
 			return new OrientedCycleSector(outerCycle, splitSegment.middlePoint(), true);
 		} else {
 			return new OrientedCycleEdgeHalfplane(outerCycle, splitSegment, true);
@@ -69,10 +69,10 @@ final class FloodFromOuterCycle {
 	}
 
 	private Ray normal(SplitSegment2D splitSegment) {
-		if (outerCycle.graph().containsVertex(splitSegment.middlePoint())) {
+		if (outerCycle.containsVertex(splitSegment.middlePoint())) {
 			return outerCycle.deviatedAngleBisector(splitSegment.middlePoint(), true);
 		} else {
-			assert outerCycle.graph().containsEdge(splitSegment.originalSegment());
+			assert outerCycle.containsEdge(splitSegment.originalSegment());
 			return outerCycle.normal(splitSegment, true);
 		}
 	}
