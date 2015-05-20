@@ -2,16 +2,13 @@ package org.tendiwa.geometry.smartMesh;
 
 import com.google.common.collect.ImmutableSet;
 import org.tendiwa.geometry.graphs2d.Graph2D;
-import org.tendiwa.geometry.graphs2d.Mesh2D;
-import org.tendiwa.geometry.graphs2d.PerforatedMesh2D;
-import org.tendiwa.geometry.graphs2d.PolylineGraph2D;
+import org.tendiwa.geometry.graphs2d.PerforatedCycle2D;
 
-public interface MeshedNetwork {
-	ImmutableSet<? extends PolylineGraph2D> filaments();
+public interface MeshedNetwork extends Graph2D {
 
-	ImmutableSet<? extends Mesh2D> meshes();
+	ImmutableSet<? extends PerforatedCycle2D> cycles();
 
-	Graph2D fullGraph();
-
-	Graph2D outerHull();
+	default Graph2D outerHull() {
+		return new OuterHull(this).graph();
+	}
 }

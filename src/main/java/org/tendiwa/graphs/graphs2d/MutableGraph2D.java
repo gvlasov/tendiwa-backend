@@ -10,7 +10,7 @@ import org.tendiwa.geometry.graphs2d.Graph2D;
 import java.util.Collection;
 import java.util.Set;
 
-public interface MutableGraph2D extends Graph2D {
+public interface MutableGraph2D extends SplitableGraph2D {
 	default void addSegmentAsEdge(Segment2D segment) {
 		boolean added = addEdge(segment.start(), segment.end(), segment);
 		if (!added) {
@@ -30,6 +30,7 @@ public interface MutableGraph2D extends Graph2D {
 		return answer;
 	}
 
+	@Override
 	default void integrateCutSegment(CutSegment2D cutSegment) {
 		Segment2D originalSegment = cutSegment.originalSegment();
 		boolean removed = removeEdge(

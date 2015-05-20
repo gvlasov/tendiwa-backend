@@ -12,7 +12,6 @@ import static org.tendiwa.collections.Collectors.toLinkedHashSet;
 final class FloodFromMissingInnerCycles {
 	private final Collection<OrientedCycle> enclosedCycles;
 	private final Random random;
-	private final Set<Point2D> deadEnds;
 
 	FloodFromMissingInnerCycles(
 		Collection<OrientedCycle> enclosedCycles,
@@ -20,7 +19,6 @@ final class FloodFromMissingInnerCycles {
 		Random random
 	) {
 		this.enclosedCycles = enclosedCycles;
-		this.deadEnds = deadEnds;
 		this.random = random;
 	}
 
@@ -30,7 +28,7 @@ final class FloodFromMissingInnerCycles {
 			.collect(toLinkedHashSet());
 	}
 
-	public FloodStart createFlood(OrientedCycle enclosedCycle, Point2D root) {
+	private FloodStart createFlood(OrientedCycle enclosedCycle, Point2D root) {
 		return new FloodStart(
 			enclosedCycle.deviatedAngleBisector(root, false),
 			new OrientedCycleSector(enclosedCycle, root, false),
@@ -88,7 +86,7 @@ final class FloodFromMissingInnerCycles {
 	}
 
 	private Point2D findOppositePointOnCycle(OrientedCycle cycle, Point2D point) {
-		return cycle.asMutable()
+		return cycle
 			.vertexSet()
 			.stream()
 			.max((a, b) -> {

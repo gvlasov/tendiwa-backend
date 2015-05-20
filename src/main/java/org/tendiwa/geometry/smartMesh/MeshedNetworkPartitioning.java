@@ -14,7 +14,14 @@ import org.tendiwa.settlements.SettlementGenerationException;
 import static org.tendiwa.collections.Collectors.toImmutableSet;
 
 /**
- * The original graph partitioned in mutable cycles and immutable filaments.
+ * The original graph partitioned in groups of subgraphs:
+ * <ul>
+ * <li>Cycles — {@link MinimumCycleBasis#minimalCyclesSet()}</li>
+ * <li>Filaments — {@link MinimumCycleBasis#filamentsSet()}</li>
+ * <li>Nested cycles — {@link CycleWithInnerCycles}</li>
+ * </ul>
+ * <p>
+ * Each subgraph contains a subset of edges and vertices of the original graph.
  */
 public final class MeshedNetworkPartitioning extends Graph2D_Wr {
 	public MeshedNetworkPartitioning(Graph2D graphToCopy) {
@@ -26,7 +33,6 @@ public final class MeshedNetworkPartitioning extends Graph2D_Wr {
 	public MinimumCycleBasis<Point2D, Segment2D> minimumCycleBasis() {
 		return super.minimumCycleBasis();
 	}
-
 
 	@Lazy
 	ImmutableSet<OrientedCycle> cycles() {
@@ -41,15 +47,10 @@ public final class MeshedNetworkPartitioning extends Graph2D_Wr {
 	}
 
 	@Lazy
-	ImmutableSet<PolylineGraph2D> filaments() {
-		return minimumCycleBasis()
-			.filamentsSet()
+	ImmutableSet<CycleWithInnerCycles> nestedCycles() {
+		return cycles()
 			.stream()
-			.map(filament -> new PolylineGraph2D(
-				new BasicPolyline(
-					filament.vertexList()
-				)
-			))
+			.map(cycle -> new CycleWithInnerCycles(cycle, cycles()))
 			.collect(toImmutableSet());
 	}
 }

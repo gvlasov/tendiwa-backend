@@ -2,12 +2,14 @@ package org.tendiwa.geometry.smartMesh;
 
 import org.tendiwa.geometry.CutSegment2D;
 import org.tendiwa.geometry.Sector;
+import org.tendiwa.graphs.graphs2d.MutableGraph2D;
 
 import java.util.*;
 
 import static org.tendiwa.collections.Collectors.toImmutableSet;
 
 final class Flood {
+	private final CycleEdges cycleEdges;
 	private final NetworkGenerationParameters config;
 	private final Random random;
 	private final DirectionDeviation directionDeviation;
@@ -16,14 +18,29 @@ final class Flood {
 
 	Flood(
 		CycleWithInnerCycles perforatedCycle,
+		CycleEdges cycleEdges,
+		MutableGraph2D fullGraph,
 		NetworkGenerationParameters config,
 		Random random
 	) {
 		this.perforatedCycle = perforatedCycle;
+		this.cycleEdges = cycleEdges;
 		this.config = config;
 		this.random = random;
 		this.directionDeviation = createDirectionDeviation();
-		this.network = new InnerNetwork(perforatedCycle, config, random);
+		this.network = new InnerNetwork(
+			perforatedCycle,
+			cycleEdges,
+			fullGraph,
+			config,
+			random
+		);
+	}
+	void fill() {
+		Set<FloodStart> mainFloods = createMainFlooder().floods();
+		floodUntilDepletion(mainFloods);
+		Set<FloodStart> missingFloods = createMissingFlooder().floods();
+		floodUntilDepletion(missingFloods);
 	}
 
 	private DirectionDeviation createDirectionDeviation() {
@@ -72,10 +89,9 @@ final class Flood {
 		);
 	}
 
-
 	private FloodFromOuterCycle createMainFlooder() {
 		return new FloodFromOuterCycle(
-			perforatedCycle.enclosingCycle(),
+			perforatedCycle.hull(),
 			config,
 			random
 		);
@@ -83,7 +99,7 @@ final class Flood {
 
 	private FloodFromMissingInnerCycles createMissingFlooder() {
 		return new FloodFromMissingInnerCycles(
-			perforatedCycle.innerCycles(),
+			perforatedCycle.holes(),
 			network.whereBranchesStuckIntoCycles()
 				.flatMap(CutSegment2D::pointStream)
 				.collect(toImmutableSet()),
@@ -91,11 +107,4 @@ final class Flood {
 		);
 	}
 
-	InnerNetwork createNetwork() {
-		Set<FloodStart> mainFloods = createMainFlooder().floods();
-		floodUntilDepletion(mainFloods);
-		Set<FloodStart> missingFloods = createMissingFlooder().floods();
-		floodUntilDepletion(missingFloods);
-		return network;
-	}
 }

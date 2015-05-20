@@ -234,13 +234,13 @@ public final class IntervalsAlongPolygonBorder {
 	 * @return A map from segments of a {@code polygon} to points on those segments.
 	 */
 	public static Map<Segment2D, List<Point2D>> compute(
-		List<Point2D> polygon,
+		Polygon polygon,
 		double interval,
 		double deviation,
-		BiFunction<Point2D, Point2D, Segment2D> endpointsToSegments,
+		BiFunction<Point2D, Point2D, Segment2D> getSegment,
 		Random random
 	) {
-		return new IntervalsAlongPolygonBorder(polygon, interval, deviation, endpointsToSegments, random).compute();
+		return new IntervalsAlongPolygonBorder(polygon, interval, deviation, getSegment, random).compute();
 	}
 
 	private boolean isBeforeCurrentPoint(Point2D intersectionPoint) {

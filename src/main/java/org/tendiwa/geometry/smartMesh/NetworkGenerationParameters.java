@@ -23,7 +23,7 @@ final class NetworkGenerationParameters {
 	 * 	<p>
 	 * 	A radius around secondary roads' end points inside which new end points would snap to existing ones.
 	 * @param maxStartPointsPerCell
-	 * 	Number of starting points for road generation in each {@link IncrementingSubgraph}.
+	 * 	Number of starting points for road generation in each {@link MeshSapling}.
 	 * 	Must be 0 or greater.
 	 * 	<p>
 	 * 	In [Kelly figure 43] there are 2 starting points.

@@ -100,7 +100,8 @@ final class OrientedCycle implements MutableGraph2D, Cycle2D {
 	}
 
 	@Override
-	public void integrateSplitEdge(CutSegment2D cutSegment) {
+	public void integrateCutSegment(CutSegment2D cutSegment) {
+		MutableGraph2D.super.integrateCutSegment(cutSegment);
 		Segment2D originalSegment = cutSegment.originalSegment();
 		Vector2D originalVector = originalSegment.asVector();
 		boolean isSplitEdgeAgainst = isAgainstCycleDirection(originalSegment);
@@ -108,7 +109,6 @@ final class OrientedCycle implements MutableGraph2D, Cycle2D {
 			.filter(segment -> isSplitEdgeAgainst ^ originalVector.dotProduct(segment.asVector()) < 0)
 			.forEach(this::setReverse);
 		reverseEdges.remove(originalSegment);
-		SharingSubgraph2D.super.integrateSplitEdge(cutSegment);
 	}
 
 	/**

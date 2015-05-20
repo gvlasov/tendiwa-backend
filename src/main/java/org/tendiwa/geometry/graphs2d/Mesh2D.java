@@ -6,7 +6,7 @@ import org.tendiwa.geometry.Point2D;
 import java.util.stream.Stream;
 
 public interface Mesh2D extends Graph2D {
-	ImmutableSet<Cycle2D> meshCells();
+	ImmutableSet<? extends Cycle2D> meshCells();
 
 	Cycle2D hull();
 

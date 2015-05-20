@@ -1,57 +1,34 @@
 package org.tendiwa.geometry.smartMesh;
 
-import com.google.common.collect.ImmutableSet;
-import org.jgrapht.Graphs;
-import org.tendiwa.geometry.CutSegment2D;
 import org.tendiwa.geometry.Sector;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.SplitSegment2D;
-import org.tendiwa.graphs.graphs2d.BasicMutableGraph2D;
 import org.tendiwa.graphs.graphs2d.MutableGraph2D;
 
 import java.util.Optional;
 import java.util.Random;
-import java.util.stream.Stream;
 
 final class InnerNetwork {
 	private final MutableGraph2D fullGraph;
 	private final NetworkGenerationParameters config;
 	private final Random random;
-	private final DeadEndSet deadEnds;
-	private final ExitsOnCycles branchEnds;
 	private final CycleWithInnerCycles perforatedCycle;
+	private final CycleEdges cycleEdges;
 
 	InnerNetwork(
 		CycleWithInnerCycles perforatedCycle,
+		CycleEdges cycleEdges,
+		MutableGraph2D fullGraph,
 		NetworkGenerationParameters config,
 		Random random
 	) {
 		this.perforatedCycle = perforatedCycle;
+		this.fullGraph = fullGraph;
 		this.config = config;
 		this.random = random;
-		this.deadEnds = new DeadEndSet();
-		this.branchEnds = new ExitsOnCycles(config);
-		this.fullGraph = initFullGraph();
+		this.cycleEdges = cycleEdges;
 	}
 
-	private MutableGraph2D initFullGraph() {
-		MutableGraph2D fullGraph = new BasicMutableGraph2D();
-		Graphs.addGraph(fullGraph, perforatedCycle.enclosingCycle());
-		perforatedCycle.innerCycles().forEach(cycle -> Graphs.addGraph(fullGraph, cycle));
-		return fullGraph;
-	}
-
-	MutableGraph2D fullGraph() {
-		return fullGraph;
-	}
-
-	Stream<CutSegment2D> whereBranchesStuckIntoCycles() {
-		return branchEnds.getPartitionedSegments();
-	}
-
-	ImmutableSet<Segment2D> removableSegments() {
-		return ImmutableSet.copyOf(deadEnds.values());
-	}
 
 	Optional<Ray> tryPlacingSegment(Ray beginning, Sector allowedSector) {
 		double segmentLength = deviatedLength();
@@ -73,9 +50,7 @@ final class InnerNetwork {
 	}
 
 	Optional<Ray> tryPlacingFirstSegment(FloodStart floodStart) {
-		if (floodStart.holdingSegment.isPresent()) {
-			branchEnds.addOnSegment(floodStart.rootRay.start, floodStart.holdingSegment.get());
-		} else {
+		if (!floodStart.holdingSegment.isPresent()) {
 			assert fullGraph.containsVertex(floodStart.rootRay.start);
 		}
 		return tryPlacingSegment(floodStart.rootRay, floodStart.rootSector);
@@ -93,8 +68,8 @@ final class InnerNetwork {
 		Optional<Segment2D> splitMaybe = event.splitSegmentMaybe();
 		if (splitMaybe.isPresent()) {
 			Segment2D edge = splitMaybe.get();
-			if (edgeIsOnCycles(edge)) {
-				branchEnds.addOnSegment(newSegment.end(), edge);
+			if (cycleEdges.isShared(edge)) {
+				cycleEdges.splitSharedEdge(new SplitSegment2D(edge, event.target()));
 			} else {
 				fullGraph.integrateCutSegment(new SplitSegment2D(edge, newSegment.end()));
 			}
@@ -104,14 +79,5 @@ final class InnerNetwork {
 		fullGraph.addSegmentAsEdge(newSegment);
 
 		NonIntersectionTest.test(fullGraph, newSegment);
-
-		if (event.isTerminal()) {
-			deadEnds.add(newSegment);
-		}
-	}
-
-	private boolean edgeIsOnCycles(Segment2D edge) {
-		return outerCycle.graph().containsEdge(edge)
-			|| innerCycles.stream().map(OrientedCycle::graph).anyMatch(g -> g.containsEdge(edge));
 	}
 }
