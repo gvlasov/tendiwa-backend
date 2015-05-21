@@ -1,13 +1,10 @@
 package org.tendiwa.geometry.smartMesh;
 
 import org.tendiwa.geometry.Polygon;
-import org.tendiwa.geometry.graphs2d.Graph2D;
+import org.tendiwa.graphs.graphs2d.BasicSplittableCycle2D;
 
-public final class Hull extends OrientedCycle {
-	Hull(
-		Polygon originalMinimalCycle,
-		Graph2D splitOriginalGraph
-	) {
-		super(originalMinimalCycle, splitOriginalGraph);
+public final class Hull extends BasicSplittableCycle2D implements OrientedCycle {
+	Hull(Polygon polygon) {
+		super(polygon);
 	}
 }

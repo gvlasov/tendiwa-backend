@@ -1,15 +1,16 @@
 package org.tendiwa.geometry.smartMesh;
 
-import org.tendiwa.geometry.CutSegment2D;
+import org.tendiwa.geometry.Ray;
 import org.tendiwa.geometry.Sector;
 import org.tendiwa.graphs.graphs2d.MutableGraph2D;
 
 import java.util.*;
 
-import static org.tendiwa.collections.Collectors.toImmutableSet;
+import static org.tendiwa.collections.Collectors.toLinkedHashSet;
 
 final class Flood {
 	private final CycleEdges cycleEdges;
+	private final MutableGraph2D fullGraph;
 	private final NetworkGenerationParameters config;
 	private final Random random;
 	private final DirectionDeviation directionDeviation;
@@ -25,6 +26,7 @@ final class Flood {
 	) {
 		this.perforatedCycle = perforatedCycle;
 		this.cycleEdges = cycleEdges;
+		this.fullGraph = fullGraph;
 		this.config = config;
 		this.random = random;
 		this.directionDeviation = createDirectionDeviation();
@@ -36,10 +38,15 @@ final class Flood {
 			random
 		);
 	}
+
 	void fill() {
 		Set<FloodStart> mainFloods = createMainFlooder().floods();
 		floodUntilDepletion(mainFloods);
-		Set<FloodStart> missingFloods = createMissingFlooder().floods();
+		Set<FloodStart> missingFloods = perforatedCycle
+			.holes()
+			.stream()
+			.flatMap(hole -> hole.missingTreesStream(fullGraph))
+			.collect(toLinkedHashSet());
 		floodUntilDepletion(missingFloods);
 	}
 
@@ -96,15 +103,4 @@ final class Flood {
 			random
 		);
 	}
-
-	private FloodFromMissingInnerCycles createMissingFlooder() {
-		return new FloodFromMissingInnerCycles(
-			perforatedCycle.holes(),
-			network.whereBranchesStuckIntoCycles()
-				.flatMap(CutSegment2D::pointStream)
-				.collect(toImmutableSet()),
-			random
-		);
-	}
-
 }

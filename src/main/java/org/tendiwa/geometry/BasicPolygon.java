@@ -47,6 +47,11 @@ public class BasicPolygon implements Polygon {
 	}
 
 	@Override
+	public boolean isClockwise(Segment2D segment) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public final int size() {
 		return points.size();
 	}

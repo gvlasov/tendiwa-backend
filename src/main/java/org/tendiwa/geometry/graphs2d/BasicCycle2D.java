@@ -44,8 +44,15 @@ public class BasicCycle2D extends Graph2D_Wr implements Cycle2D {
 			.allMatch(v -> graph.degreeOf(v) == 2);
 	}
 
+	@Deprecated
 	@Override
 	public boolean isClockwise() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Deprecated
+	@Override
+	public boolean isClockwise(Segment2D segment) {
 		throw new UnsupportedOperationException();
 	}
 

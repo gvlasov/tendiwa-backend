@@ -1,13 +1,13 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
 import com.google.common.collect.Iterators;
+import com.sun.istack.internal.Nullable;
 import org.tendiwa.collections.SuccessiveTuples;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawablePoint2D;
 import org.tendiwa.drawing.extensions.DrawableSegment2D;
 import org.tendiwa.geometry.*;
 
-import javax.annotation.Nullable;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Iterator;

@@ -38,7 +38,7 @@ public class VariousCityGenerationDemo {
 			.build();
 		canvas.draw(
 			new DrawableGraph2D.Thin(
-				network.fullGraph(),
+				network,
 				Color.red
 			)
 		);

@@ -12,6 +12,8 @@ import static org.tendiwa.collections.Collectors.*;
 public interface Polygon extends List<Point2D> {
 	boolean isClockwise();
 
+	boolean isClockwise(Segment2D segment);
+
 	default List<Segment2D> toSegments() {
 		List<Segment2D> segments = new ArrayList<>(size());
 		new BasicPolyline(this).toSegments().forEach(segments::add);

@@ -20,6 +20,21 @@ public final class SplitSegment2D implements CutSegment2D {
 		this.firstHalf = segment2D(originalSegment.start(), splitPoint);
 		this.secondHalf = segment2D(splitPoint, originalSegment.end());
 	}
+	public final Ray leftNormal() {
+		Point2D cwPoint = originalEnd();
+		Point2D ccwPoint = originalStart();
+		Point2D rayStart = middlePoint();
+		Point2D pointOnRay = rayStart.add(
+			new BasicBisector(
+				cwPoint.subtract(rayStart),
+				ccwPoint.subtract(rayStart)
+			).asInbetweenVector()
+		);
+		return new Ray(
+			rayStart,
+			rayStart.angleTo(pointOnRay)
+		);
+	}
 
 	public Segment2D firstHalf() {
 		return firstHalf;

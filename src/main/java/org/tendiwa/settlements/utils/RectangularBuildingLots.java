@@ -2,7 +2,6 @@ package org.tendiwa.settlements.utils;
 
 import org.tendiwa.collections.Collectors;
 import org.tendiwa.geometry.CrackedPolygon;
-import org.tendiwa.geometry.Polygon;
 import org.tendiwa.geometry.extensions.daveedvMaxRec.MaximalRectanlges;
 import org.tendiwa.geometry.extensions.polygonRasterization.PolygonRasterizer;
 import org.tendiwa.geometry.extensions.straightSkeleton.ShrinkedPolygon;
@@ -18,9 +17,8 @@ public final class RectangularBuildingLots {
 	}
 
 	public static Set<RectangleWithNeighbors> placeInside(MeshedNetwork network) {
-		return network.meshes()
+		return network.meshCells()
 			.stream()
-			.flatMap(n -> n.meshCells().stream())
 			.flatMap(b -> new ShrinkedPolygon(b, 3.3).stream())
 			.flatMap(b -> new CrackedPolygon(b, rectangle(16, 16), 0.5).pieces().stream())
 			.map(lot -> PolygonRasterizer.rasterizeToMutable(lot))

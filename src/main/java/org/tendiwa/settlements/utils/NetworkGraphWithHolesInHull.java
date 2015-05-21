@@ -41,7 +41,7 @@ public final class NetworkGraphWithHolesInHull implements Graph2D {
 	 * Removes some of the outer cycle edges
 	 */
 	private Graph2D rejectRoads() {
-		MutableGraph2D modifiedGraph = new BasicMutableGraph2D(network.fullGraph());
+		MutableGraph2D modifiedGraph = new BasicMutableGraph2D(network);
 		placeHolesOnChains(
 			new HullSplitInChains(network).hullChains()
 		)

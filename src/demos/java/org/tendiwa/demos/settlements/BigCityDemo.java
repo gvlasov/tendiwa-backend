@@ -14,7 +14,6 @@ import org.tendiwa.geometry.extensions.straightSkeleton.ShrinkedPolygon;
 import org.tendiwa.geometry.graphs2d.Graph2D;
 import org.tendiwa.geometry.smartMesh.MeshedNetwork;
 import org.tendiwa.geometry.smartMesh.MeshedNetworkBuilder;
-import org.tendiwa.geometry.smartMesh.SmartMeshedNetwork;
 import org.tendiwa.settlements.utils.*;
 import org.tendiwa.settlements.utils.streetsDetector.DetectedStreets;
 
@@ -45,7 +44,7 @@ public class BigCityDemo implements Runnable {
 			)
 		);
 
-		SmartMeshedNetwork segment2DSmartMesh = new MeshedNetworkBuilder(graph)
+		MeshedNetwork segment2DSmartMesh = new MeshedNetworkBuilder(graph)
 			.withDefaults()
 			.withMaxStartPointsPerCycle(5)
 			.withRoadsFromPoint(2)
@@ -60,11 +59,10 @@ public class BigCityDemo implements Runnable {
 		drawBlocks(segment2DSmartMesh);
 	}
 
-	private void drawBlocks(SmartMeshedNetwork segment2DSmartMesh) {
+	private void drawBlocks(MeshedNetwork meshedNetwork) {
 		canvas.drawAll(
-			segment2DSmartMesh.meshes()
+			meshedNetwork.meshCells()
 				.stream()
-				.flatMap(n -> n.meshCells().stream())
 				.flatMap(b -> new ShrinkedPolygon(b, 3).stream()),
 			polygon -> new DrawablePolygon.Thin(polygon, Color.lightGray)
 		);

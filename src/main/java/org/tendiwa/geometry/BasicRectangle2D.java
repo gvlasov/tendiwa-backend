@@ -3,7 +3,6 @@ package org.tendiwa.geometry;
 import com.google.common.collect.ImmutableList;
 
 import java.util.Iterator;
-import java.util.List;
 
 import static org.tendiwa.geometry.GeometryPrimitives.point2D;
 

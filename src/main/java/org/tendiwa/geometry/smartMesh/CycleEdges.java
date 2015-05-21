@@ -1,10 +1,11 @@
 package org.tendiwa.geometry.smartMesh;
 
+import com.google.common.collect.ImmutableCollection;
 import org.jgrapht.Graph;
 import org.tendiwa.geometry.CutSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.graphs.graphs2d.SplitableGraph2D;
+import org.tendiwa.graphs.graphs2d.SplittableGraph2D;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,9 +14,9 @@ import java.util.Map;
 
 final class CycleEdges {
 
-	private final Map<Segment2D, Collection<SplitableGraph2D>> edgesToSubgraphs = new LinkedHashMap<>();
+	private final Map<Segment2D, Collection<SplittableGraph2D>> edgesToSubgraphs = new LinkedHashMap<>();
 
-	CycleEdges(Collection<? extends SplitableGraph2D> subgraphs) {
+	CycleEdges(ImmutableCollection<? extends SplittableGraph2D> subgraphs) {
 		subgraphs.forEach(this::registerSubgraph);
 	}
 
@@ -23,7 +24,7 @@ final class CycleEdges {
 		if (!splitEdge.hasBeenCut()) {
 			return;
 		}
-		Collection<SplitableGraph2D> affectedSubgraphs =
+		Collection<SplittableGraph2D> affectedSubgraphs =
 			edgesToSubgraphs.get(
 				splitEdge.originalSegment()
 			);
@@ -33,13 +34,13 @@ final class CycleEdges {
 			.forEach(collection -> collection.addAll(affectedSubgraphs));
 	}
 
-	private void registerSubgraph(SplitableGraph2D subgraph) {
+	private void registerSubgraph(SplittableGraph2D subgraph) {
 		for (Segment2D edge : subgraph.edgeSet()) {
 			shareEdgeWithNetworkPart(edge, subgraph);
 		}
 	}
 
-	private void shareEdgeWithNetworkPart(Segment2D edge, SplitableGraph2D sharingSubgraph2D) {
+	private void shareEdgeWithNetworkPart(Segment2D edge, SplittableGraph2D sharingSubgraph2D) {
 		assert sharingSubgraph2D.hasOnlyEdge(edge)
 			|| anotherEdgeOfGraphIsInFullGraph(sharingSubgraph2D, edge);
 		if (!sharingSubgraph2D.containsEdge(edge)) {
@@ -57,15 +58,11 @@ final class CycleEdges {
 			.isPresent();
 	}
 
-	private Collection<SplitableGraph2D> createCollectionFor(Segment2D segment) {
+	private Collection<SplittableGraph2D> createCollectionFor(Segment2D segment) {
 		assert !edgesToSubgraphs.containsKey(segment);
-		Collection<SplitableGraph2D> collection = new ArrayList<>();
+		Collection<SplittableGraph2D> collection = new ArrayList<>();
 		edgesToSubgraphs.put(segment, collection);
 		return collection;
-	}
-
-	void integrateForest(InnerNetwork innerNetwork) {
-		innerNetwork.whereBranchesStuckIntoCycles().forEach(this::splitSharedEdge);
 	}
 
 	boolean isShared(Segment2D edge) {

@@ -21,6 +21,11 @@ public interface Rectangle2D extends RectangularHull, Polygon {
 	double height();
 
 	@Override
+	default boolean isClockwise(Segment2D segment) {
+		return true;
+	}
+
+	@Override
 	default Point2D get(int index) {
 		if (index == 0) {
 			return nwCorner();

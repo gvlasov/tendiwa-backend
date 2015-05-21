@@ -93,13 +93,13 @@ public final class ShapeFromOutline {
 	 * 	A minimal cycle.
 	 * @return A cell that is within a cycle.
 	 */
-	private static CellSet polygonCells(MinimalCycle<Point2D, Segment2D> cycle) {
+	private static CellSet polygonCells(MinimalCycle cycle) {
 		GeometryFactory gf = new GeometryFactory();
-		Coordinate[] coordinates = cycle.vertexList()
+		Coordinate[] coordinates = cycle
 			.stream()
 			.map(p -> new Coordinate(p.x(), p.y()))
 			.collect(Collectors.toList())
-			.toArray(new Coordinate[cycle.vertexList().size() + 1]);
+			.toArray(new Coordinate[cycle.size() + 1]);
 		coordinates[coordinates.length - 1] = coordinates[0];
 
 		Polygon polygon = gf.createPolygon(gf.createLinearRing(coordinates), null);

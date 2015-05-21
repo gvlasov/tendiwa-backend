@@ -3,7 +3,6 @@ package org.tendiwa.settlements.cityBounds;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableSet;
-import org.jgrapht.UndirectedGraph;
 import org.tendiwa.core.Direction;
 import org.tendiwa.core.Directions;
 import org.tendiwa.core.meta.Cell;
@@ -14,9 +13,8 @@ import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.geometry.graphs2d.BasicCycle2D;
 import org.tendiwa.geometry.graphs2d.Cycle2D;
 import org.tendiwa.geometry.graphs2d.Graph2D;
+import org.tendiwa.geometry.smartMesh.MeshedNetwork;
 import org.tendiwa.geometry.smartMesh.MeshedNetworkBuilder;
-import org.tendiwa.geometry.smartMesh.SmartMeshedNetwork;
-import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.graphs.algorithms.SameOrPerpendicularSlopeGraphEdgesPerturbations;
 import org.tendiwa.graphs.graphs2d.BasicMutableGraph2D;
 import org.tendiwa.pathfinding.dijkstra.PathTable;
@@ -26,7 +24,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * From {@link CellSet}, creates a graph used as a base for a {@link SmartMeshedNetwork}.
+ * From {@link CellSet}, creates a graph used as a base for a {@link MeshedNetwork}.
  */
 public final class CityBounds {
 
@@ -34,13 +32,13 @@ public final class CityBounds {
 	}
 
 	/**
-	 * Creates a new graph that can be used as a base for {@link SmartMeshedNetwork}.
+	 * Creates a new graph that can be used as a base for {@link MeshedNetwork}.
 	 *
 	 * @param startCell
 	 * 	A cell from which a City originates. Roughly denotes its final position.
 	 * @param maxCityRadius
 	 * 	A maximum radius of a Rectangle containing resulting City.
-	 * @return A new graph that can be used as a base for {@link SmartMeshedNetwork}.
+	 * @return A new graph that can be used as a base for {@link MeshedNetwork}.
 	 * @see MeshedNetworkBuilder
 	 */
 	public static Cycle2D create(
@@ -86,12 +84,12 @@ public final class CityBounds {
 	 * 	A graph.
 	 * @return true if there is such vertex, false otherwise.
 	 */
-	private static boolean minimalCyclesOfGraphHaveCommonVertices(UndirectedGraph<Point2D, Segment2D> graph) {
-		Set<MinimalCycle<Point2D, Segment2D>> minimalCycles = PlanarGraphs.minimumCycleBasis(graph)
-			.minimalCyclesSet();
+	private static boolean minimalCyclesOfGraphHaveCommonVertices(Graph2D graph) {
+		Set<Polygon> minimalCycles =
+			PlanarGraphs.minimumCycleBasis(graph).minimalCyclesSet();
 		Set<Point2D> usedVertices = new HashSet<>();
-		for (MinimalCycle<Point2D, Segment2D> cycle : minimalCycles) {
-			for (Point2D vertex : cycle.vertexList()) {
+		for (Polygon cycle : minimalCycles) {
+			for (Point2D vertex : cycle) {
 				boolean added = usedVertices.add(vertex);
 				if (!added) {
 					return true;

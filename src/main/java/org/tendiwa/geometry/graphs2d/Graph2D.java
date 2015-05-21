@@ -6,7 +6,6 @@ import org.jgrapht.alg.ConnectivityInspector;
 import org.tendiwa.geometry.GeometryException;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
 import org.tendiwa.geometry.extensions.ShamosHoeyAlgorithm;
 import org.tendiwa.graphs.MinimumCycleBasis;
 import org.tendiwa.graphs.graphs2d.BasicMutableGraph2D;
@@ -89,10 +88,7 @@ public interface Graph2D extends UndirectedGraph<Point2D, Segment2D> {
 	}
 
 	default MinimumCycleBasis minimumCycleBasis() {
-		return new MinimumCycleBasis(
-			this,
-			Point2DVertexPositionAdapter.get()
-		);
+		return new MinimumCycleBasis(this);
 	}
 
 	default boolean isPlanar() {

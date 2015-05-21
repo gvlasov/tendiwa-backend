@@ -18,6 +18,11 @@ public abstract class Polygon_Wr implements Polygon {
 	}
 
 	@Override
+	public boolean isClockwise(Segment2D segment) {
+		return polygon.isClockwise(segment);
+	}
+
+	@Override
 	public List<Segment2D> toSegments() {
 		return polygon.toSegments();
 	}

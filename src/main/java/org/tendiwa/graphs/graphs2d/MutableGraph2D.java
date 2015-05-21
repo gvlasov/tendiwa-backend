@@ -5,12 +5,11 @@ import org.jgrapht.UndirectedGraph;
 import org.tendiwa.geometry.CutSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.graphs2d.Graph2D;
 
 import java.util.Collection;
 import java.util.Set;
 
-public interface MutableGraph2D extends SplitableGraph2D {
+public interface MutableGraph2D extends SplittableGraph2D {
 	default void addSegmentAsEdge(Segment2D segment) {
 		boolean added = addEdge(segment.start(), segment.end(), segment);
 		if (!added) {

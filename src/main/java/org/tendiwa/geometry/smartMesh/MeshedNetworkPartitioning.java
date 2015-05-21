@@ -2,14 +2,10 @@ package org.tendiwa.geometry.smartMesh;
 
 import com.google.common.collect.ImmutableSet;
 import lombok.Lazy;
-import org.tendiwa.geometry.BasicPolyline;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.graphs2d.Graph2D;
-import org.tendiwa.geometry.graphs2d.PolylineGraph2D;
 import org.tendiwa.graphs.MinimumCycleBasis;
 import org.tendiwa.graphs.graphs2d.Graph2D_Wr;
-import org.tendiwa.settlements.SettlementGenerationException;
+import org.tendiwa.graphs.graphs2d.SplittableGraph2D;
 
 import static org.tendiwa.collections.Collectors.toImmutableSet;
 
@@ -42,5 +38,15 @@ public final class MeshedNetworkPartitioning extends Graph2D_Wr {
 			.stream()
 			.map(cycle -> new CycleWithInnerCycles(cycle, minimumCycleBasis().minimalCyclesSet()))
 			.collect(toImmutableSet());
+	}
+
+	@Lazy
+	public ImmutableSet<SplittableGraph2D> cycles() {
+		ImmutableSet.Builder<SplittableGraph2D> builder = ImmutableSet.builder();
+		for (CycleWithInnerCycles group : nestedCycles()) {
+			builder.addAll(group.holes());
+			builder.add(group.hull());
+		}
+		return builder.build();
 	}
 }

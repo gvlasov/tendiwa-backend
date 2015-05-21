@@ -1,5 +1,6 @@
 package org.tendiwa.geometry.smartMesh;
 
+import org.tendiwa.geometry.Ray;
 import org.tendiwa.geometry.Sector;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.SplitSegment2D;

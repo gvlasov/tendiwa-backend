@@ -1,10 +1,9 @@
 package org.tendiwa.geometry.smartMesh;
 
-import org.tendiwa.geometry.Sector;
+import org.tendiwa.geometry.Ray;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 

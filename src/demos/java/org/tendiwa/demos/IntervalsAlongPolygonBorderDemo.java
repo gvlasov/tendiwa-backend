@@ -6,10 +6,12 @@ import org.tendiwa.data.FourCyclePenisGraph;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawablePoint2D;
 import org.tendiwa.drawing.extensions.DrawablePolygon;
-import org.tendiwa.geometry.*;
+import org.tendiwa.geometry.BasicSegment2D;
+import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Polygon;
+import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.IntervalsAlongPolygonBorder;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
-import org.tendiwa.graphs.MinimalCycle;
 
 import java.awt.Color;
 import java.util.Iterator;
@@ -30,10 +32,10 @@ public class IntervalsAlongPolygonBorderDemo implements Runnable {
 	@Override
 	public void run() {
 		TestCanvas.canvas = canvas;
-		Iterator<MinimalCycle<Point2D, Segment2D>> iterator =
+		Iterator<Polygon> iterator =
 			PlanarGraphs.minimumCycleBasis(new FourCyclePenisGraph())
 				.minimalCyclesSet().iterator();
-		Polygon polygon = polygon(iterator.next().vertexList());
+		Polygon polygon = polygon(iterator.next());
 		Map<Segment2D, List<Point2D>> points = IntervalsAlongPolygonBorder.compute(
 			polygon,
 			25,

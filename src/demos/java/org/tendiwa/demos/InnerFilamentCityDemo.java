@@ -1,6 +1,5 @@
 package org.tendiwa.demos;
 
-import org.tendiwa.demos.settlements.DrawableMesh2D;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawableGraph2D;
 import org.tendiwa.geometry.Point2D;
@@ -8,7 +7,6 @@ import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.smartMesh.MeshedNetwork;
 import org.tendiwa.graphs.GraphConstructor;
 import org.tendiwa.geometry.smartMesh.MeshedNetworkBuilder;
-import org.tendiwa.geometry.smartMesh.SmartMeshedNetwork;
 
 import java.awt.Color;
 
@@ -44,7 +42,7 @@ public class InnerFilamentCityDemo implements Runnable {
 			.build();
 		canvas.draw(
 			new DrawableGraph2D.Thin(
-				network.fullGraph(),
+				network,
 				Color.red
 			)
 		);

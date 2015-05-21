@@ -6,6 +6,7 @@ import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.geometry.BasicSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.graphs2d.Graph2D;
 import org.tendiwa.graphs.MinimumCycleBasis;
 
 public final class PlanarGraphs {
@@ -27,8 +28,8 @@ public final class PlanarGraphs {
 	}
 
 
-	public static MinimumCycleBasis<Point2D, Segment2D> minimumCycleBasis(UndirectedGraph<Point2D, Segment2D> graph) {
-		return new MinimumCycleBasis<>(graph, Point2DVertexPositionAdapter.get());
+	public static MinimumCycleBasis minimumCycleBasis(Graph2D graph) {
+		return new MinimumCycleBasis(graph);
 	}
 
 	public static EdgeFactory<Point2D, Segment2D> getEdgeFactory() {
@@ -49,6 +50,7 @@ public final class PlanarGraphs {
 	 * 	An edge to remove.
 	 */
 	public static void removeEdgeAndOrphanedVertices(UndirectedGraph<Point2D, Segment2D> graph, Segment2D edge) {
+		throw new UnsupportedOperationException();
 	}
 
 	public UndirectedGraph<Point2D, Segment2D> graphOfSegments(Iterable<Segment2D> segments) {

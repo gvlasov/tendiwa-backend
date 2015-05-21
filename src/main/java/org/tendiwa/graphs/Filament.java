@@ -2,7 +2,6 @@ package org.tendiwa.graphs;
 
 import com.google.common.collect.ImmutableList;
 import org.tendiwa.geometry.BasicMutablePolyline;
-import org.tendiwa.geometry.BasicSegment2D;
 import org.tendiwa.geometry.MutablePolyline;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.graphs2d.Graph2D;

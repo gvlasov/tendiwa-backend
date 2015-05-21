@@ -3,7 +3,6 @@ package org.tendiwa.geometry.smartMesh;
 import com.google.common.collect.ImmutableSet;
 import lombok.Lazy;
 import org.tendiwa.geometry.Polygon;
-import org.tendiwa.geometry.graphs2d.Cycle2D_Wr;
 import org.tendiwa.geometry.graphs2d.PerforatedCycle2D;
 
 import java.util.Collection;
@@ -15,39 +14,39 @@ import static org.tendiwa.collections.Collectors.toImmutableSet;
  * <p>
  * Has only one level of nesting, i.e. enclosed cycles don't track cycles enclosed in them.
  */
-public final class CycleWithInnerCycles extends Cycle2D_Wr implements PerforatedCycle2D {
-	private final Polygon enclosingCycle;
-	private final Collection<Polygon> allCycles;
+public final class CycleWithInnerCycles implements PerforatedCycle2D {
+	private final Polygon enclosingPolygon;
+	private final Collection<Polygon> allPolygons;
 
 	public CycleWithInnerCycles(
-		Polygon enclosingCycle,
-		Collection<Polygon> allCycles
+		Polygon outerPolygon,
+		Collection<Polygon> allPolygons
 	) {
-		super(enclosingCycle);
-		this.enclosingCycle = enclosingCycle;
-		this.allCycles = allCycles;
+		assert allPolygons.contains(outerPolygon);
+		this.enclosingPolygon = outerPolygon;
+		this.allPolygons = allPolygons;
 	}
 
-
-	private boolean isCycleInsideEnclosingCycle(OrientedCycle cycle) {
-		return this.containsPoint(
+	private boolean isCycleInsideEnclosingCycle(Polygon cycle) {
+		return enclosingPolygon.containsPoint(
 			cycle.iterator().next()
 		);
 	}
 
+	@Lazy
 	@Override
 	public Hull hull() {
-		return new Hull(
-			enclosingCycle
-		)
+		return new Hull(enclosingPolygon);
 	}
 
 	@Lazy
 	@Override
 	public ImmutableSet<Hole> holes() {
-		return allCycles
+		return allPolygons
 			.stream()
+			.filter(cycle -> cycle != enclosingPolygon)
 			.filter(this::isCycleInsideEnclosingCycle)
+			.map(Hole::new)
 			.collect(toImmutableSet());
 	}
 }
