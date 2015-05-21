@@ -1,10 +1,8 @@
 package org.tendiwa.geometry.smartMesh;
 
 import org.tendiwa.geometry.*;
-import org.tendiwa.geometry.extensions.IntervalsAlongPolygonBorder;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 import static org.tendiwa.collections.Collectors.toLinkedHashSet;
 
@@ -24,33 +22,16 @@ final class FloodFromOuterCycle {
 	}
 
 	Set<FloodStart> floods() {
-		Map<Segment2D, List<Point2D>> points = pointsAtRegularIntervals(outerCycle);
-		return snapShredsToSegmentEnds(points)
-			.stream()
-			.flatMap(this::toDistinctPointsOnSegment)
+		return new CycleWithStartingPoints(
+			outerCycle,
+			config,
+			random
+		)
+			.startingPointsOnSegments()
 			.map(this::createFloodStart)
 			.collect(toLinkedHashSet());
 	}
 
-	private Map<Segment2D, List<Point2D>> pointsAtRegularIntervals(OrientedCycle cycle) {
-		return IntervalsAlongPolygonBorder.compute(
-			cycle,
-			config.segmentLength,
-			config.innerNetworkSegmentLengthDeviation,
-			cycle::getEdge,
-			random
-		);
-	}
-
-	private Stream<SplitSegment2D> toDistinctPointsOnSegment(CutSegment2D cutSegment) {
-		return cutSegment
-			.pointStream()
-			.map(p -> new SplitSegment2D(cutSegment.originalSegment(), p));
-	}
-
-	private Set<MutableShreddedSegment2D> snapShredsToSegmentEnds(Map<Segment2D, List<Point2D>> points) {
-		return new CycleWithStartingPoints(config).snapStartingPoints(points);
-	}
 
 	private FloodStart createFloodStart(SplitSegment2D splitSegment) {
 		return new FloodStart(

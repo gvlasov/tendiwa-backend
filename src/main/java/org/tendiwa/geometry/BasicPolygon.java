@@ -6,7 +6,7 @@ import com.sun.istack.internal.NotNull;
 import java.util.*;
 import java.util.function.Consumer;
 
-public final class BasicPolygon implements Polygon {
+public class BasicPolygon implements Polygon {
 	private final ImmutableList<Point2D> points;
 
 	public BasicPolygon(Point2D... points) {
@@ -37,7 +37,7 @@ public final class BasicPolygon implements Polygon {
 	 * @return true if polygon is clockwise, false if polygon is counter-clockwise.
 	 */
 	@Override
-	public boolean isClockwise() {
+	public final boolean isClockwise() {
 		double sum = 0;
 		int preLast = points.size() - 1;
 		for (int i = 0; i < preLast; i++) {
@@ -47,17 +47,17 @@ public final class BasicPolygon implements Polygon {
 	}
 
 	@Override
-	public int size() {
+	public final int size() {
 		return points.size();
 	}
 
 	@Override
-	public boolean isEmpty() {
+	public final boolean isEmpty() {
 		return false;
 	}
 
 	@Override
-	public boolean contains(Object o) {
+	public final boolean contains(Object o) {
 		for (Point2D point : points) {
 			if (point.equals(o)) {
 				return true;
@@ -67,7 +67,7 @@ public final class BasicPolygon implements Polygon {
 	}
 
 	@Override
-	public Iterator<Point2D> iterator() {
+	public final Iterator<Point2D> iterator() {
 		// TODO: Write a custom iterator
 		return points.iterator();
 	}
@@ -75,30 +75,30 @@ public final class BasicPolygon implements Polygon {
 	@NotNull
 	@Override
 	@Deprecated
-	public Object[] toArray() {
+	public final Object[] toArray() {
 		throw new UnsupportedOperationException();
 	}
 
 	@NotNull
 	@Override
-	public <T> T[] toArray(T[] a) {
+	public final <T> T[] toArray(T[] a) {
 		return null;
 	}
 
 	@Deprecated
 	@Override
-	public boolean add(Point2D point2D) {
+	public final boolean add(Point2D point2D) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	@Deprecated
-	public boolean remove(Object o) {
+	public final boolean remove(Object o) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public boolean containsAll(Collection<?> c) {
+	public final boolean containsAll(Collection<?> c) {
 		for (Object o : c) {
 			if (!contains(o)) {
 				return false;
@@ -109,59 +109,59 @@ public final class BasicPolygon implements Polygon {
 
 	@Deprecated
 	@Override
-	public boolean addAll(Collection<? extends Point2D> c) {
+	public final boolean addAll(Collection<? extends Point2D> c) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Deprecated
 	@Override
-	public boolean addAll(int index, Collection<? extends Point2D> c) {
+	public final boolean addAll(int index, Collection<? extends Point2D> c) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Deprecated
 	@Override
-	public boolean removeAll(Collection<?> c) {
+	public final boolean removeAll(Collection<?> c) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Deprecated
 	@Override
-	public boolean retainAll(Collection<?> c) {
+	public final boolean retainAll(Collection<?> c) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Deprecated
 	@Override
-	public void clear() {
+	public final void clear() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Point2D get(int index) {
+	public final Point2D get(int index) {
 		return points.get(index);
 	}
 
 	@Override
 	@Deprecated
-	public Point2D set(int index, Point2D element) {
+	public final Point2D set(int index, Point2D element) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	@Deprecated
-	public void add(int index, Point2D element) {
+	public final void add(int index, Point2D element) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	@Deprecated
-	public Point2D remove(int index) {
+	public final Point2D remove(int index) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public int indexOf(Object o) {
+	public final int indexOf(Object o) {
 		int size = size();
 		for (int i = 0; i < size; i++) {
 			if (points.get(i).equals(o)) {
@@ -172,7 +172,7 @@ public final class BasicPolygon implements Polygon {
 	}
 
 	@Override
-	public int lastIndexOf(Object o) {
+	public final int lastIndexOf(Object o) {
 		int size = size();
 		for (int i = size - 1; i >= 0; i--) {
 			if (points.get(i).equals(o)) {
@@ -185,26 +185,26 @@ public final class BasicPolygon implements Polygon {
 	@NotNull
 	@Override
 	@Deprecated
-	public ListIterator<Point2D> listIterator() {
+	public final ListIterator<Point2D> listIterator() {
 		throw new UnsupportedOperationException();
 	}
 
 	@NotNull
 	@Override
 	@Deprecated
-	public ListIterator<Point2D> listIterator(int index) {
+	public final ListIterator<Point2D> listIterator(int index) {
 		throw new UnsupportedOperationException();
 	}
 
 	@NotNull
 	@Override
 	@Deprecated
-	public List<Point2D> subList(int fromIndex, int toIndex) {
+	public final List<Point2D> subList(int fromIndex, int toIndex) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void forEach(Consumer<? super Point2D> action) {
+	public final void forEach(Consumer<? super Point2D> action) {
 		points.forEach(action::accept);
 	}
 }

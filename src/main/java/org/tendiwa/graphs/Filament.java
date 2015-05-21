@@ -1,41 +1,33 @@
 package org.tendiwa.graphs;
 
 import com.google.common.collect.ImmutableList;
-import org.jgrapht.UndirectedGraph;
+import org.tendiwa.geometry.BasicMutablePolyline;
+import org.tendiwa.geometry.BasicSegment2D;
+import org.tendiwa.geometry.MutablePolyline;
+import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.graphs2d.Graph2D;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-public class Filament<V, E> implements Primitive<V>, Iterable<E> {
-	private final List<V> queue = new ArrayList<>();
-	private UndirectedGraph<V, E> graph;
+/**
+ * A filament in a graph.
+ */
+public class Filament extends BasicMutablePolyline implements MutablePolyline {
+	private final Graph2D supergraph;
 
-	Filament(UndirectedGraph<V, E> graph) {
-		this.graph = graph;
+	public Filament(Graph2D supergraph) {
+		super(10);
+		this.supergraph = supergraph;
 	}
 
 	@Override
-	public void insert(V vertex) {
-		queue.add(vertex);
-	}
-
-	@Override
-	public Iterator<E> iterator() {
-		int numberOfEdges = queue.size() - 1;
-		List<E> edgesOfFilament = new ArrayList<>(numberOfEdges);
-		for (int i = 0; i < numberOfEdges; i++) {
-			E edge = graph.getEdge(queue.get(i), queue.get(i + 1));
-			if (edge == null) {
-				edge = graph.getEdge(queue.get(i + 1), queue.get(i));
-			}
-			assert edge != null;
-			edgesOfFilament.add(edge);
+	public final ImmutableList<Segment2D> toSegments() {
+		List<Segment2D> segments = new ArrayList<>(size());
+		int last = size() - 1;
+		for (int i = 0; i < last; i++) {
+			segments.add(supergraph.getEdge(get(i), get(i + 1)));
 		}
-		return edgesOfFilament.iterator();
-	}
-
-	public List<V> vertexList() {
-		return ImmutableList.<V>builder().addAll(queue).build();
+		return ImmutableList.copyOf(segments);
 	}
 }

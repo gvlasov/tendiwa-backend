@@ -7,24 +7,27 @@ import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.graphs2d.Cycle2D;
 import org.tendiwa.geometry.graphs2d.Graph2D;
 import org.tendiwa.graphs.GraphChainTraversal;
-import org.tendiwa.graphs.MinimalCycle;
 import org.tendiwa.graphs.graphs2d.BasicMutableGraph2D;
 import org.tendiwa.graphs.graphs2d.MutableGraph2D;
+import org.tendiwa.graphs.graphs2d.SplitableGraph2D;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Holds a graph of a cycle within which {@link FloodPart} is constructed,
  * and for each edge remembers whether that edge goes clockwise or counter-clockwise. That effectively means that
  * OrientedCycle can tell if its innards are to the right or to the left from its certain edge.
  */
-final class OrientedCycle implements MutableGraph2D, Cycle2D {
-	private final MinimalCycle<Point2D, Segment2D> originalMinimalCycle;
+abstract class OrientedCycle extends BasicMutableGraph2D implements SplitableGraph2D, Cycle2D {
+	private final Polygon originalMinimalCycle;
 	private final Graph2D splitOriginalGraph;
 	private final Set<Segment2D> reverseEdges = new HashSet<>();
 
 	OrientedCycle(
-		MinimalCycle<Point2D, Segment2D> originalMinimalCycle,
+		Polygon originalMinimalCycle,
 		Graph2D splitOriginalGraph
 	) {
 		this.originalMinimalCycle = originalMinimalCycle;
@@ -34,14 +37,14 @@ final class OrientedCycle implements MutableGraph2D, Cycle2D {
 	// TODO: primitive support for @Lazy annotation
 	@Lazy
 	private Boolean isCycleClockwise() {
-		return JTSUtils.isYDownCCW(originalMinimalCycle.vertexList());
+		return JTSUtils.isYDownCCW(originalMinimalCycle);
 	}
 
 	@Lazy
 	private MutableGraph2D cycleGraph() {
 		MutableGraph2D cycleGraph = new BasicMutableGraph2D();
 		SuccessiveTuples.forEachLooped(
-			originalMinimalCycle.asVertices(),
+			originalMinimalCycle,
 			(previous, current, next) -> {
 				if (splitOriginalGraph.containsEdge(current, next)) {
 					addAutoDirectedEdge(cycleGraph, current, next);

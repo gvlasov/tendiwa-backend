@@ -13,6 +13,9 @@ import org.tendiwa.graphs.graphs2d.BasicMutableGraph2D;
 import org.tendiwa.graphs.graphs2d.MutableGraph2D;
 import org.tendiwa.settlements.utils.streetsDetector.ConnectivityComponent;
 
+import java.util.Collection;
+import java.util.Set;
+
 import static org.tendiwa.collections.Collectors.toImmutableSet;
 
 public interface Graph2D extends UndirectedGraph<Point2D, Segment2D> {
@@ -32,7 +35,7 @@ public interface Graph2D extends UndirectedGraph<Point2D, Segment2D> {
 		MutableGraph2D answer = new BasicMutableGraph2D();
 		edgeSet().stream()
 			.filter(edge -> !graph.containsEdge(edge))
-			.forEach((segment) -> {
+			.forEach(segment -> {
 				answer.addVertex(segment.start());
 				answer.addVertex(segment.end());
 				answer.addSegmentAsEdge(segment);
@@ -85,8 +88,8 @@ public interface Graph2D extends UndirectedGraph<Point2D, Segment2D> {
 		return containsEdge(edge) && edgeSet().size() == 1;
 	}
 
-	default MinimumCycleBasis<Point2D, Segment2D> minimumCycleBasis() {
-		return new MinimumCycleBasis<>(
+	default MinimumCycleBasis minimumCycleBasis() {
+		return new MinimumCycleBasis(
 			this,
 			Point2DVertexPositionAdapter.get()
 		);
@@ -94,5 +97,59 @@ public interface Graph2D extends UndirectedGraph<Point2D, Segment2D> {
 
 	default boolean isPlanar() {
 		return ShamosHoeyAlgorithm.areIntersected(edgeSet());
+	}
+
+	@Deprecated
+	@Override
+	default Segment2D addEdge(Point2D sourceVertex, Point2D targetVertex) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Deprecated
+	@Override
+	default boolean addEdge(Point2D sourceVertex, Point2D targetVertex, Segment2D segment2D) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Deprecated
+	@Override
+	default boolean addVertex(Point2D point2D) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Deprecated
+	@Override
+	default boolean removeAllEdges(Collection<? extends Segment2D> edges) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Deprecated
+	@Override
+	default Set<Segment2D> removeAllEdges(Point2D sourceVertex, Point2D targetVertex) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Deprecated
+	@Override
+	default boolean removeAllVertices(Collection<? extends Point2D> vertices) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Deprecated
+	@Override
+	default Segment2D removeEdge(Point2D sourceVertex, Point2D targetVertex) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Deprecated
+	@Override
+	default boolean removeEdge(Segment2D segment2D) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Deprecated
+	@Override
+	default boolean removeVertex(Point2D point2D) {
+		throw new UnsupportedOperationException();
 	}
 }

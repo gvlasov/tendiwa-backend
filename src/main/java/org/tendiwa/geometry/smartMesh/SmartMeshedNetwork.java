@@ -5,8 +5,6 @@ import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawableGraph2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.graphs2d.Graph2D;
-import org.tendiwa.geometry.graphs2d.Mesh2D;
-import org.tendiwa.geometry.graphs2d.PolylineGraph2D;
 import org.tendiwa.graphs.graphs2d.MutableGraph2D;
 
 import java.awt.Color;
@@ -39,7 +37,7 @@ public final class SmartMeshedNetwork extends MutableGraph2D implements MeshedNe
 			.collect(toImmutableSet());
 
 
-		floods.forEach(MeshSapling::fill);
+		floods.forEach(flood->flood.fill());
 
 		TestCanvas.canvas.draw(
 			new DrawableGraph2D.Thin(

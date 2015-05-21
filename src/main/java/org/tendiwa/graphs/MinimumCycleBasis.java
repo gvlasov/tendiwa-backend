@@ -4,6 +4,11 @@ import org.jgrapht.UndirectedGraph;
 import org.jgrapht.alg.NeighborIndex;
 import org.jgrapht.graph.ListenableUndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
+import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.Polygon;
+import org.tendiwa.geometry.Polyline;
+import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.graphs2d.Graph2D;
 
 import java.util.*;
 
@@ -12,55 +17,45 @@ import static org.tendiwa.geometry.Vectors2D.*;
 /**
  * Implementation of minimal cycle basis algorithm as described in the <a href="http://www.geometrictools
  * .com/Documentation/MinimalCycleBasis.pdf">[Eberly 2005]</a> paper.
- *
- * @param <V>
- * 	Type of vertices.
- * @param <E>
- * 	Type of edges.
  */
-public class MinimumCycleBasis<V, E> {
-	private final ListenableUndirectedGraph<V, E> graph;
-	private final Comparator<V> comparator = new Comparator<V>() {
-		@Override
-		public int compare(V v1, V v2) {
-			int v = (int) Math.signum(positionAdapter.getX(v1) - positionAdapter.getX(v2));
+public class MinimumCycleBasis {
+	private final ListenableUndirectedGraph<Point2D, Segment2D> graph;
+	private final Comparator<Point2D> comparator = (v1, v2) -> {
+		int v = (int) Math.signum(v1.x() - v2.x());
+		if (v == 0) {
+			v = (int) Math.signum(v1.y() - v2.y());
 			if (v == 0) {
-				v = (int) Math.signum(positionAdapter.getY(v1) - positionAdapter.getY(v2));
-				if (v == 0) {
-					throw new IllegalArgumentException("Vertices have equal coordinates x:" + positionAdapter.getX(v1) + ";y:" + positionAdapter.getY(v2));
-				}
+				throw new IllegalArgumentException(
+					"Vertices have equal coordinates x:" + v1.x() + ";y:" + v2.y()
+				);
 			}
-			return v;
 		}
+		return v;
 	};
 	private final PrimitiveContainer primitives;
-	private final Queue<V> heap;
-	private final Collection<E> cycleEdges = new HashSet<>();
-	private final NeighborIndex<V, E> neighborIndex;
-	private UndirectedGraph<V, E> originalGraph;
-	private VertexPositionAdapter<V> positionAdapter;
+	private final Queue<Point2D> heap;
+	private final Collection<Segment2D> cycleEdges = new HashSet<>();
+	private final NeighborIndex<Point2D, Segment2D> neighborIndex;
+	private Graph2D originalGraph;
 
 	/**
 	 * @param graph
 	 * 	A graph from which to extract a minimum cycle basis.
-	 * @param positionAdapter
-	 * 	[Eberly 2005, formula on p. 25]
 	 * 	<p>
 	 * 	A strategy of two methods describing how to get x and y coordinates from vertices.
 	 */
 
-	public MinimumCycleBasis(UndirectedGraph<V, E> graph, VertexPositionAdapter<V> positionAdapter) {
+	public MinimumCycleBasis(Graph2D graph) {
 		originalGraph = graph;
-		this.positionAdapter = positionAdapter;
 		this.primitives = new PrimitiveContainer();
 		// Listenable graph is used here because we need to determine neighbor vertices,
 		// and it is better done with a listenable graph.
 		this.graph = new ListenableUndirectedGraph<>(new SimpleGraph<>(graph.getEdgeFactory()));
 		// TODO: Should we add vertices and edges explicitly here?
-		for (V v : graph.vertexSet()) {
+		for (Point2D v : graph.vertexSet()) {
 			this.graph.addVertex(v);
 		}
-		for (E e : graph.edgeSet()) {
+		for (Segment2D e : graph.edgeSet()) {
 			this.graph.addEdge(graph.getEdgeSource(e), graph.getEdgeTarget(e), e);
 		}
 		if (graph.vertexSet().size() > 0) {
@@ -83,7 +78,7 @@ public class MinimumCycleBasis<V, E> {
 	 */
 	private void extractPrimitives() {
 		while (!heap.isEmpty()) {
-			V v0 = heap.peek();// OR .remove()?
+			Point2D v0 = heap.peek();// OR .remove()?
 			int i = graph.degreeOf(v0);
 			switch (i) {
 				case 0:
@@ -98,8 +93,7 @@ public class MinimumCycleBasis<V, E> {
 		}
 	}
 
-
-	private void extractIsolatedVertex(V v0) {
+	private void extractIsolatedVertex(Point2D v0) {
 		heap.remove(v0);
 		graph.removeVertex(v0);
 		primitives.add(v0);
@@ -115,7 +109,7 @@ public class MinimumCycleBasis<V, E> {
 	 * @param v1
 	 * 	Target edge.
 	 */
-	private void extractFilament(V v0, V v1) {
+	private void extractFilament(Point2D v0, Point2D v1) {
 		if (isCycleEdge(v0, v1)) {
 			if (graph.degreeOf(v0) >= 3) {
 				boolean edgeRemoved = graph.removeEdge(graph.getEdge(v0, v1));
@@ -138,9 +132,9 @@ public class MinimumCycleBasis<V, E> {
 				graph.removeVertex(v0);
 			}
 		} else {
-			Filament<V, E> filament = new Filament<>(originalGraph);
+			Filament filament = new Filament(originalGraph);
 			if (graph.degreeOf(v0) >= 3) {
-				filament.insert(v0);
+				filament.addInFront(v0);
 				graph.removeEdge(v0, v1);
 				v0 = v1;
 				if (graph.degreeOf(v0) == 1) {
@@ -148,14 +142,14 @@ public class MinimumCycleBasis<V, E> {
 				}
 			}
 			while (graph.degreeOf(v0) == 1) {
-				filament.insert(v0);
+				filament.addInFront(v0);
 				v1 = neighborIndex.neighborListOf(v0).get(0);
 				heap.remove(v0);
 				graph.removeEdge(v0, v1);
 				graph.removeVertex(v0);
 				v0 = v1;
 			}
-			filament.insert(v0);
+			filament.addInFront(v0);
 			if (graph.degreeOf(v0) == 0) {
 				// If end of a filament is not a branch point
 				heap.remove(v0);
@@ -167,7 +161,6 @@ public class MinimumCycleBasis<V, E> {
 
 	}
 
-
 	/**
 	 * [Eberly 2005, function Graph::ExtractPrimitive of p. 32]
 	 * <p>
@@ -176,17 +169,17 @@ public class MinimumCycleBasis<V, E> {
 	 * @param v0
 	 * 	Source edge, least in the lexicographical order.
 	 */
-	private void extractPrimitive(V v0) {
-		Set<V> visited = new HashSet<>();
-		List<V> sequence = new ArrayList<>();
+	private void extractPrimitive(Point2D v0) {
+		Set<Point2D> visited = new HashSet<>();
+		List<Point2D> sequence = new ArrayList<>();
 		sequence.add(v0);
-		V v1 = getMost(null, v0, true);
-		V vprev = v0;
-		V vcurr = v1;
+		Point2D v1 = getMost(null, v0, true);
+		Point2D vprev = v0;
+		Point2D vcurr = v1;
 		while (vcurr != null && !vcurr.equals(v0) && !visited.contains(vcurr)) {
 			sequence.add(vcurr);
 			visited.add(vcurr);
-			V vnext = getMost(vprev, vcurr, false);
+			Point2D vnext = getMost(vprev, vcurr, false);
 			vprev = vcurr;
 			vcurr = vnext;
 		}
@@ -203,8 +196,8 @@ public class MinimumCycleBasis<V, E> {
 		}
 	}
 
-	private void extractMinimalCycle(V v0, V v1, List<V> sequence) {
-		MinimalCycle<V, E> cycle = new MinimalCycle<>(originalGraph, sequence);
+	private void extractMinimalCycle(Point2D v0, Point2D v1, List<Point2D> sequence) {
+		Polygon cycle = new MinimalCycle(originalGraph, sequence);
 		primitives.add(cycle);
 
 		for (int i = 0, l = sequence.size() - 1; i < l; i++) {
@@ -235,7 +228,7 @@ public class MinimumCycleBasis<V, E> {
 	 * 	true if searching clockwise, false if searching counter-clockwise.
 	 * @return A vertex that is clockwise- or counterclockwise-most relative to a vector {@code vcurr-vprev}.
 	 */
-	private V getMost(V vprev, V vcurr, boolean clockwise) {
+	private Point2D getMost(Point2D vprev, Point2D vcurr, boolean clockwise) {
 		if (neighborIndex.neighborsOf(vcurr).size() == 1 && neighborIndex.neighborsOf(vcurr).iterator().next()
 			.equals(vprev)) {
 			return null;
@@ -246,13 +239,13 @@ public class MinimumCycleBasis<V, E> {
 			dcurr = new double[]{0, -1};
 		} else {
 			dcurr = new double[]{
-				positionAdapter.getX(vcurr) - positionAdapter.getX(vprev),
-				positionAdapter.getY(vcurr) - positionAdapter.getY(vprev)
+				vcurr.x() - vprev.x(),
+				vcurr.y() - vprev.y()
 			};
 		}
 
-		V vnext = null;
-		for (V vertex : neighborIndex.neighborsOf(vcurr)) {
+		Point2D vnext = null;
+		for (Point2D vertex : neighborIndex.neighborsOf(vcurr)) {
 			if (!vertex.equals(vprev)) {
 				vnext = vertex;
 				break;
@@ -262,8 +255,8 @@ public class MinimumCycleBasis<V, E> {
 		assert vnext != null;
 
 		double[] dnext = new double[]{
-			positionAdapter.getX(vnext) - positionAdapter.getX(vcurr),
-			positionAdapter.getY(vnext) - positionAdapter.getY(vcurr)
+			vnext.x() - vcurr.x(),
+			vnext.y() - vcurr.y()
 		};
 		boolean currWasReversed = dotProduct(dcurr, dnext) < 1;
 
@@ -274,19 +267,19 @@ public class MinimumCycleBasis<V, E> {
 		// errors.
 		boolean isNextConsideredParallel = areParallel(dcurr, dnext);
 
-		for (V vadj : neighborIndex.neighborsOf(vcurr)) {
+		for (Point2D vadj : neighborIndex.neighborsOf(vcurr)) {
 			if (vadj.equals(vprev) || vadj.equals(vnext)) {
 				continue;
 			}
 			double[] dadj = new double[]{
-				positionAdapter.getX(vadj) - positionAdapter.getX(vcurr),
-				positionAdapter.getY(vadj) - positionAdapter.getY(vcurr)
+				vadj.x() - vcurr.x(),
+				vadj.y() - vcurr.y()
 			};
 			if (isNextConsideredParallel) {
 				// When vectors dcurr and dnext are almost parallel, we need a distinct way of finding the next
 				// (counter-)clockwise vertex.
 				double angle = angleBetweenVectors(dcurr, dadj, clockwise);
-				if ( currWasReversed ? angle > Math.PI : angle < Math.PI ) {
+				if (currWasReversed ? angle > Math.PI : angle < Math.PI) {
 					vnext = vadj;
 					dnext = dadj;
 					vcurrIsConvex = perpDotProduct(dnext, dcurr);
@@ -328,7 +321,7 @@ public class MinimumCycleBasis<V, E> {
 	 * @param v1
 	 * 	Edge end. Order doesn't matter since the graph is undirected.
 	 */
-	private void markCycleEdge(V v0, V v1) {
+	private void markCycleEdge(Point2D v0, Point2D v1) {
 		cycleEdges.add(graph.getEdge(v0, v1));
 	}
 
@@ -341,42 +334,42 @@ public class MinimumCycleBasis<V, E> {
 	 * 	Edge end. Order doesn't matter since the graph is undirected.
 	 * @return true if it was, false otherwise.
 	 */
-	private boolean isCycleEdge(V v0, V v1) {
+	private boolean isCycleEdge(Point2D v0, Point2D v1) {
 		return cycleEdges.contains(graph.getEdge(v0, v1));
 	}
 
-	private Queue<V> sortVertices(UndirectedGraph<V, E> graph) {
-		PriorityQueue<V> vs = new PriorityQueue<>(graph.vertexSet().size(), comparator);
+	private Queue<Point2D> sortVertices(UndirectedGraph<Point2D, Segment2D> graph) {
+		PriorityQueue<Point2D> vs = new PriorityQueue<>(graph.vertexSet().size(), comparator);
 		vs.addAll(graph.vertexSet());
 		return vs;
 	}
 
-	public Set<V> isolatedVertexSet() {
+	public Set<Point2D> isolatedVertexSet() {
 		return primitives.isolatedVertices;
 	}
 
-	public Set<Filament<V, E>> filamentsSet() {
+	public Set<Polyline> filamentsSet() {
 		return primitives.filaments;
 	}
 
-	public Set<MinimalCycle<V, E>> minimalCyclesSet() {
+	public Set<Polygon> minimalCyclesSet() {
 		return primitives.minimalCycles;
 	}
 
 	private class PrimitiveContainer {
-		private final Set<V> isolatedVertices = new LinkedHashSet<>();
-		private final Set<Filament<V, E>> filaments = new LinkedHashSet<>();
-		private final Set<MinimalCycle<V, E>> minimalCycles = new LinkedHashSet<>();
+		private final Set<Point2D> isolatedVertices = new LinkedHashSet<>();
+		private final Set<Polyline> filaments = new LinkedHashSet<>();
+		private final Set<Polygon> minimalCycles = new LinkedHashSet<>();
 
-		private void add(V isolatedVertex) {
+		private void add(Point2D isolatedVertex) {
 			isolatedVertices.add(isolatedVertex);
 		}
 
-		private void add(Filament<V, E> filament) {
+		private void add(Polyline filament) {
 			filaments.add(filament);
 		}
 
-		private void add(MinimalCycle<V, E> cycle) {
+		private void add(Polygon cycle) {
 			minimalCycles.add(cycle);
 		}
 	}

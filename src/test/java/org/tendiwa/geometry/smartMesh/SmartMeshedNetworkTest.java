@@ -4,8 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.tendiwa.data.FourCyclePenisGraph;
 import org.tendiwa.geometry.PolygonGraph;
+import org.tendiwa.geometry.graphs2d.BasicPolylineGraph2D;
 import org.tendiwa.geometry.graphs2d.Graph2D;
-import org.tendiwa.geometry.graphs2d.PolylineGraph2D;
 
 import static org.junit.Assert.*;
 import static org.tendiwa.geometry.GeometryPrimitives.pointTrail;
@@ -37,7 +37,7 @@ public final class SmartMeshedNetworkTest {
 		assertEquals(
 			0,
 			new DefaultMeshedNetwork(
-				new PolylineGraph2D(
+				new BasicPolylineGraph2D(
 					pointTrail(0, 0)
 						.moveBy(20, 0)
 						.moveBy(0, 20)

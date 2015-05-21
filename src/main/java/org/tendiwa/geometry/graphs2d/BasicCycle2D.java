@@ -12,7 +12,7 @@ import java.util.List;
 
 import static org.tendiwa.collections.Collectors.toImmutableList;
 
-public final class BasicCycle2D extends Graph2D_Wr implements Cycle2D {
+public class BasicCycle2D extends Graph2D_Wr implements Cycle2D {
 
 	private final Polygon polygon;
 

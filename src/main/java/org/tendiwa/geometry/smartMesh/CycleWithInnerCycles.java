@@ -2,6 +2,7 @@ package org.tendiwa.geometry.smartMesh;
 
 import com.google.common.collect.ImmutableSet;
 import lombok.Lazy;
+import org.tendiwa.geometry.Polygon;
 import org.tendiwa.geometry.graphs2d.Cycle2D_Wr;
 import org.tendiwa.geometry.graphs2d.PerforatedCycle2D;
 
@@ -15,12 +16,12 @@ import static org.tendiwa.collections.Collectors.toImmutableSet;
  * Has only one level of nesting, i.e. enclosed cycles don't track cycles enclosed in them.
  */
 public final class CycleWithInnerCycles extends Cycle2D_Wr implements PerforatedCycle2D {
-	private final OrientedCycle enclosingCycle;
-	private final Collection<OrientedCycle> allCycles;
+	private final Polygon enclosingCycle;
+	private final Collection<Polygon> allCycles;
 
 	public CycleWithInnerCycles(
-		OrientedCycle enclosingCycle,
-		Collection<OrientedCycle> allCycles
+		Polygon enclosingCycle,
+		Collection<Polygon> allCycles
 	) {
 		super(enclosingCycle);
 		this.enclosingCycle = enclosingCycle;
@@ -35,13 +36,15 @@ public final class CycleWithInnerCycles extends Cycle2D_Wr implements Perforated
 	}
 
 	@Override
-	public OrientedCycle hull() {
-		return enclosingCycle;
+	public Hull hull() {
+		return new Hull(
+			enclosingCycle
+		)
 	}
 
 	@Lazy
 	@Override
-	public ImmutableSet<OrientedCycle> holes() {
+	public ImmutableSet<Hole> holes() {
 		return allCycles
 			.stream()
 			.filter(this::isCycleInsideEnclosingCycle)

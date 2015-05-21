@@ -4,7 +4,6 @@ import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Sector;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.Vector2D;
-import org.tendiwa.graphs.graphs2d.MutableGraph2D;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -18,9 +17,8 @@ final class OrientedCycleSector implements Sector {
 		Point2D source,
 		boolean inner
 	) {
-		MutableGraph2D cycleGraph = cycle.asMutable();
-		assert cycleGraph.containsVertex(source);
-		Set<Segment2D> edges = cycleGraph.edgesOf(source);
+		assert cycle.containsVertex(source);
+		Set<Segment2D> edges = cycle.edgesOf(source);
 		assert edges.size() == 2;
 		Iterator<Segment2D> iterator = edges.iterator();
 		Segment2D oneEdge = toCounterClockwise(iterator.next(), cycle);
@@ -36,7 +34,7 @@ final class OrientedCycleSector implements Sector {
 	}
 
 	private static Segment2D toCounterClockwise(Segment2D oneEdge, OrientedCycle cycle) {
-		assert cycle.asMutable().containsEdge(oneEdge);
+		assert cycle.containsEdge(oneEdge);
 		if (cycle.isClockwise(oneEdge)) {
 			oneEdge = oneEdge.reverse();
 		}

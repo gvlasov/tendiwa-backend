@@ -33,13 +33,13 @@ public final class DrawableCycleBasis2D implements Drawable {
 		for (Point2D p : basis.isolatedVertexSet()) {
 			canvas.draw(new DrawablePoint2D.Circle(p, freeVertices, 3));
 		}
-		for (Filament<Point2D, Segment2D> filament : basis.filamentsSet()) {
+		for (Filament filament : basis.filamentsSet()) {
 			canvas.drawAll(
 				filament,
 				edge -> new DrawableSegment2D(edge, filaments)
 			);
 		}
-		for (MinimalCycle<Point2D, Segment2D> cycle : basis.minimalCyclesSet()) {
+		for (MinimalCycle cycle : basis.minimalCyclesSet()) {
 			canvas.drawAll(
 				cycle.asEdges(),
 				edge -> new DrawableSegment2D(edge, cycles)

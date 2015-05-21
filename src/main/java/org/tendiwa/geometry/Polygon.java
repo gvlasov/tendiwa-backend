@@ -14,11 +14,8 @@ public interface Polygon extends List<Point2D> {
 
 	default List<Segment2D> toSegments() {
 		List<Segment2D> segments = new ArrayList<>(size());
-		int last = size() - 1;
-		for (int i = 0; i < last; i++) {
-			segments.add(new BasicSegment2D(get(i), get(i + 1)));
-		}
-		segments.add(new BasicSegment2D(get(last), get(0)));
+		new BasicPolyline(this).toSegments().forEach(segments::add);
+		segments.add(new BasicSegment2D(get(size()-1), get(0)));
 		return segments;
 	}
 

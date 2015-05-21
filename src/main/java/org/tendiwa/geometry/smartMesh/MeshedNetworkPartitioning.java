@@ -30,27 +30,17 @@ public final class MeshedNetworkPartitioning extends Graph2D_Wr {
 
 	@Lazy
 	@Override
-	public MinimumCycleBasis<Point2D, Segment2D> minimumCycleBasis() {
+	public MinimumCycleBasis minimumCycleBasis() {
 		return super.minimumCycleBasis();
 	}
 
-	@Lazy
-	ImmutableSet<OrientedCycle> cycles() {
-		if (minimumCycleBasis().minimalCyclesSet().isEmpty()) {
-			throw new SettlementGenerationException("A City with 0 city networks was made");
-		}
-		return minimumCycleBasis()
-			.minimalCyclesSet()
-			.stream()
-			.map(cycle -> new OrientedCycle(cycle, this))
-			.collect(toImmutableSet());
-	}
 
 	@Lazy
 	ImmutableSet<CycleWithInnerCycles> nestedCycles() {
-		return cycles()
+		return minimumCycleBasis()
+			.minimalCyclesSet()
 			.stream()
-			.map(cycle -> new CycleWithInnerCycles(cycle, cycles()))
+			.map(cycle -> new CycleWithInnerCycles(cycle, minimumCycleBasis().minimalCyclesSet()))
 			.collect(toImmutableSet());
 	}
 }
