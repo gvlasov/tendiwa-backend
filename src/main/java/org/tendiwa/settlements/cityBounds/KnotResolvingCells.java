@@ -178,7 +178,7 @@ final class KnotResolvingCells implements CellSet {
 	 * @return A set of all cells that are arount
 	 */
 	private BoundedCellSet findInnerCellsAround2BorderNeighbors(Cell cell, boolean vertical) {
-		Mutable2DCellSet markedCells;
+		MutableBoundedCellSet markedCells;
 		if (vertical) {
 			markedCells = new Mutable2DCellSet(rectangle(cell.x() - 1, cell.y() - 1, 3, 4));
 			markCellIfItIsInside(markedCells, cell.x() - 1, cell.y() - 1);

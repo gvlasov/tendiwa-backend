@@ -20,6 +20,14 @@ public interface OrthoCellSegment extends BoundedCellSet, Range {
 
 	Orientation orientation();
 
+	default int getEndX() {
+		return getX() + length() - 1;
+	}
+
+	default int getEndY() {
+		return getY() + length() - 1;
+	}
+
 	default int min() {
 		switch (orientation()) {
 			case HORIZONTAL:

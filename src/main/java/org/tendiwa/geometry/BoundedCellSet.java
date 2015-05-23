@@ -20,10 +20,10 @@ public interface BoundedCellSet extends FiniteCellSet {
 	 *
 	 * @return Rectangular bounds of this CellSet.
 	 */
-	public Rectangle getBounds();
+	Rectangle getBounds();
 
 	@Override
-	public default Iterator<Cell> iterator() {
+	default Iterator<Cell> iterator() {
 		return new Iterator<Cell>() {
 			private int n = -1;
 			private final int maxN = getBounds().width() * getBounds().height();
@@ -66,7 +66,7 @@ public interface BoundedCellSet extends FiniteCellSet {
 		};
 	}
 
-	public default Stream<Cell> stream() {
+	default Stream<Cell> stream() {
 		return IterableToStream.stream(iterator());
 	}
 
@@ -75,7 +75,7 @@ public interface BoundedCellSet extends FiniteCellSet {
 	 *
 	 * @return A new ImmutableSet containing all of cells within {@link #getBounds()} that are buffer border cells.
 	 */
-	public default ImmutableSet<Cell> toSet() {
+	default ImmutableSet<Cell> toSet() {
 		ImmutableSet.Builder<Cell> builder = ImmutableSet.builder();
 		int width = getBounds().width();
 		int height = getBounds().height();
@@ -90,7 +90,7 @@ public interface BoundedCellSet extends FiniteCellSet {
 	}
 
 	@Override
-	public default void forEach(Consumer<? super Cell> action) {
+	default void forEach(Consumer<? super Cell> action) {
 		int startX = getBounds().x();
 		int startY = getBounds().y();
 		int maxX = getBounds().maxX() + 1;
@@ -105,7 +105,7 @@ public interface BoundedCellSet extends FiniteCellSet {
 	}
 
 	@Override
-	public default BoundedCellSet without(CellSet set) {
+	default BoundedCellSet without(CellSet set) {
 		return new BoundedCellSet() {
 			@Override
 			public Rectangle getBounds() {

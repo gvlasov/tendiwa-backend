@@ -2,75 +2,39 @@ package org.tendiwa.geometry.extensions.polygonRasterization;
 
 import org.tendiwa.core.meta.Cell;
 import org.tendiwa.core.meta.Utils;
-import org.tendiwa.geometry.BasicCellSegment;
-import org.tendiwa.geometry.BoundedCellSet;
-import org.tendiwa.geometry.Point2D;
+import org.tendiwa.geometry.*;
 
 import java.util.*;
 
-public final class PolygonRasterizer {
+/**
+ * The algorithm is described here: <a href="http://habrahabr.ru/post/116398/">Алгоритмы со списком рёберных
+ * точек</a>.
+ * <p>
+ * The base algorithm is pretty simple. However, this method's complexity comes from handling the case where there
+ * are several consecutive points of a polygon on the same horizontal line with a whole number y-coordinate.
+ * <p>
+ */
+public final class MutableRasterizedPolygon extends Mutable2DCellSet {
 
-	private PolygonRasterizer() {
-		throw new UnsupportedOperationException();
-	}
+	private final Polygon polygon;
 
-	/**
-	 * The algorithm is described here: <a href="http://habrahabr.ru/post/116398/">Алгоритмы со списком рёберных
-	 * точек</a>.
-	 * <p>
-	 * The base algorithm is pretty simple. However, this method's complexity comes from handling the case where there
-	 * are several consecutive points of a polygon on the same horizontal line with a whole number y-coordinate.
-	 * <p>
-	 */
-	private static ResultData rasterize(List<Point2D> poly) {
-		Objects.requireNonNull(poly);
-		if (poly.size() < 3) {
-			throw new IllegalArgumentException("Polygon must have at least 3 vertices");
-		}
-		double minXd = Integer.MAX_VALUE,
-			maxXd = Integer.MIN_VALUE,
-			minYd = Integer.MAX_VALUE,
-			maxYd = Integer.MIN_VALUE;
-		int indexWithMinX = Integer.MIN_VALUE;
-		int size = poly.size();
-		for (int i = 0; i < size; i++) {
-			Point2D vertex = poly.get(i);
-			if (minXd > vertex.x()) {
-				minXd = vertex.x();
-				indexWithMinX = i;
-			}
-			if (minYd > vertex.y()) {
-				minYd = vertex.y();
-			}
-			if (maxXd < vertex.x()) {
-				maxXd = vertex.x();
-			}
-			if (maxYd < vertex.y()) {
-				maxYd = vertex.y();
-			}
-		}
-		int minX = (int) Math.floor(minXd);
-		int maxX = (int) Math.ceil(maxXd);
-		int minY = (int) Math.floor(minYd);
-		int maxY = (int) Math.ceil(maxYd);
-		List<Point2D> polygon = PolygonRebuilding.rebuildIfBad(poly, indexWithMinX);
+	public MutableRasterizedPolygon(Polygon poly) {
+		super(poly.integerBounds());
+		Rectangle bounds = poly.integerBounds();
+		this.polygon = new CollapsedHorizontalChainsPolygon(poly);
 		int numberOfVertices = polygon.size();
 		Map<Point2D, PointSlidingOnEdge> map = new HashMap<>(numberOfVertices);
 		polygon.forEach(v -> map.put(v, new PointSlidingOnEdge()));
-		// Indices x and y in this array are swapped
-		// so Arrays.fill bellow will operate on continuous ranges.
-		boolean[][] bitmap = new boolean[maxY - minY + 1][maxX - minX + 1];
-		boolean anythingWasRasterized = false;
-		for (int y = minY; y <= maxY; y++) {
+		for (int y = bounds.y(); y <= bounds.maxY(); y++) {
 			int numberOfIntersections = 0;
 			/* Here are saved pairs of indices of vertices for which (1) vertex.y == y
-			 * and (2) for that pair of indices a vertex before the 0-th index and a vertex after the 1-th index
+			 * and (2) for that pair of indices a vertex before the 0th index and a vertex after the 1st index
 			 * are from different sides from the horizontal line y. */
 			List<int[]> consecutiveSegments = null;
 			Point2D vertex;
 			for (int i = 0; i < numberOfVertices; i++) {
 				vertex = polygon.get(i);
-				Point2D nextVertex = polygon.get(i + 1 == numberOfVertices ? 0 : i + 1);
+				Point2D nextVertex = polygon.get(Utils.nextIndex(i, numberOfVertices));
 				if (vertex.y() < y && nextVertex.y() > y || vertex.y() > y && nextVertex.y() < y) {
 					numberOfIntersections++;
 				} else if (vertex.y() == y) {
@@ -159,13 +123,7 @@ public final class PolygonRasterizer {
 				double ax = polygon.get(array[0]).x();
 				double bx = polygon.get(array[1]).x();
 				assert bx > ax;
-				Arrays.fill(
-					bitmap[y - minY],
-					(int) Math.ceil(ax) - minX,
-					(int) Math.floor(bx) - minX + 1,
-					true
-				);
-				anythingWasRasterized = true;
+				fillHorizontalSegment(new RasterizationSegment(ax, bx, y));
 			} else {
 				for (int i = 0; i < intersections.length; i += 2) {
 					Object a = intersections[i];
@@ -199,63 +157,36 @@ public final class PolygonRasterizer {
 						bx = polygon.get(bint[1]).x();
 					}
 					assert bx > ax;
-					Arrays.fill(
-						bitmap[y - minY],
-						(int) Math.ceil(ax) - minX,
-						(int) Math.floor(bx) - minX + 1,
-						true
-					);
-					anythingWasRasterized = true;
+					fillHorizontalSegment(new RasterizationSegment(ax, bx, y));
 				}
 			}
 		}
-//		drawPolygonEdgesToBitmap(polygon, bitmap, minX, minY);
-
-		if (!anythingWasRasterized || bitmap[0].length == 0) {
-			bitmap = new boolean[0][0];
-		}
-		return new ResultData(minX, minY, bitmap);
+		drawIntegerHorizontalEdges();
 	}
 
-	/**
-	 * Rasterizes edges of a polygon and puts their cells to {@code bitmap}.
-	 *
-	 * @param polygon
-	 * 	A polygon to draw.
-	 * @param bitmap
-	 * 	A bitmap to put cells into.
-	 */
-	private static void drawPolygonEdgesToBitmap(List<Point2D> polygon, boolean[][] bitmap, int minX, int minY) {
-		int polygonSize = polygon.size();
-		Point2D vertex = polygon.get(0);
-		for (int i = 0; i < polygonSize; i++) {
-			Point2D nextVertex = polygon.get(Utils.nextIndex(i, polygonSize));
-			Cell[] cells = BasicCellSegment.cells(
-				vertex.toCell(),
-				nextVertex.toCell()
-			);
-			for (Cell cell : cells) {
-				bitmap[cell.y()-minY][cell.x()-minX] = true;
+	private void drawIntegerHorizontalEdges() {
+		polygon.toSegments().stream()
+			.filter(this::edgeNeedsExplicitRasterization)
+			.map(BasicCellSegment::new)
+			.forEach(this::fillWithCells);
+	}
+
+	private boolean edgeNeedsExplicitRasterization(Segment2D segment) {
+		double startY = segment.start().y();
+		if (startY != Math.floor(startY)) {
+			return false;
+		}
+		double endY = segment.end().y();
+		return startY == endY;
+	}
+
+	private void fillWithCells(Iterable<Cell> cells) {
+		cells.forEach(
+			cell -> {
+				if (!this.contains(cell)) {
+					this.add(cell);
+				}
 			}
-			vertex = nextVertex;
-		}
+		);
 	}
-
-	/**
-	 * Creates a new {@link org.tendiwa.geometry.BoundedCellSet} that is a raster image of {@code polygon}.
-	 *
-	 * @param simplePolygon
-	 * 	A simple polygon.
-	 * @return A new cell set.
-	 */
-	public static BoundedCellSet rasterizeToCellSet(List<Point2D> simplePolygon) {
-		ResultData data = rasterize(simplePolygon);
-		return new RasterizationResult(data.minX, data.minY, data.bitmap);
-	}
-
-	public static MutableRasterizationResult rasterizeToMutable(List<Point2D> polygon) {
-		ResultData data = rasterize(polygon);
-		return new MutableRasterizationResult(data.minX, data.minY, data.bitmap);
-	}
-
 }

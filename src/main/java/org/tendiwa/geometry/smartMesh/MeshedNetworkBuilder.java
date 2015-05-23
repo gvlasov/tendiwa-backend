@@ -50,7 +50,7 @@ public class MeshedNetworkBuilder {
 	 * @see #withSecondaryRoadNetworkRoadLengthDeviation(double)
 	 */
 	public static final double DEFAULT_SECONDARY_ROAD_NETWORK_ROAD_LENGTH_DEVIATION = 0;
-	private UndirectedGraph<Point2D, Segment2D> graph;
+	private Graph2D graph;
 	private Double sampleRadius;
 	private Integer samplesPerStep;
 	private Double deviationAngle;
@@ -70,7 +70,7 @@ public class MeshedNetworkBuilder {
 	 * 	The high level road graph of a city.
 	 * @see [Kelly 4.2.0]
 	 */
-	public MeshedNetworkBuilder(UndirectedGraph<Point2D, Segment2D> graph) {
+	public MeshedNetworkBuilder(Graph2D graph) {
 		this.graph = graph;
 	}
 

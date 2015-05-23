@@ -2,17 +2,16 @@ package org.tendiwa.demos.settlements;
 
 import com.google.common.collect.Iterators;
 import com.google.inject.Inject;
-import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawableChain2D;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.graphs2d.Graph2D;
 import org.tendiwa.settlements.utils.streetsDetector.DetectedStreets;
 
 import java.awt.Color;
 import java.util.Iterator;
 
+import static org.tendiwa.geometry.GeometryPrimitives.graph2D;
 import static org.tendiwa.geometry.GeometryPrimitives.graphConstructor;
 import static org.tendiwa.geometry.GeometryPrimitives.point2D;
 
@@ -26,7 +25,8 @@ public class StreetsDetectorDemo implements Runnable {
 
 	@Override
 	public void run() {
-		SimpleGraph<Point2D, Segment2D> graph = graphConstructor()
+		Graph2D graph = graph2D(
+			graphConstructor()
 			.vertex(0, point2D(20, 20))
 			.vertex(1, point2D(40, 20))
 			.vertex(2, point2D(60, 20))
@@ -46,7 +46,8 @@ public class StreetsDetectorDemo implements Runnable {
 			.path(10, 11, 2)
 			.edge(11, 12)
 			.edge(11, 20)
-			.graph();
+			.graph()
+		);
 		Iterator<Color> colors = Iterators.cycle(
 			Color.red, Color.blue, Color.green,
 			Color.cyan, Color.magenta, Color.orange

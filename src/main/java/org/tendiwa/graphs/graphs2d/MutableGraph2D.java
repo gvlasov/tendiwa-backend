@@ -9,7 +9,7 @@ import org.tendiwa.geometry.Segment2D;
 import java.util.Collection;
 import java.util.Set;
 
-public interface MutableGraph2D extends SplittableGraph2D {
+public interface MutableGraph2D extends SplittableGraph2D, UndirectedGraph<Point2D, Segment2D> {
 	default void addSegmentAsEdge(Segment2D segment) {
 		boolean added = addEdge(segment.start(), segment.end(), segment);
 		if (!added) {
@@ -48,16 +48,6 @@ public interface MutableGraph2D extends SplittableGraph2D {
 		assert !cutSegment.hasBeenCut() || !containsEdge(originalSegment);
 	}
 
-	default void removeEdgeAndOrphanedVertices(Segment2D edge) {
-		assert containsEdge(edge);
-		removeEdge(edge);
-		if (degreeOf(edge.start()) == 0) {
-			removeVertex(edge.start());
-		}
-		if (degreeOf(edge.end()) == 0) {
-			removeVertex(edge.end());
-		}
-	}
 
 	@Override
 	int degreeOf(Point2D vertex);

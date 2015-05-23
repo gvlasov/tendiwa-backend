@@ -12,6 +12,11 @@ public final class BasicPoint2D implements Point2D {
 	}
 
 	@Override
+	public String toString() {
+		return "[" + x + ":" + y + "]";
+	}
+
+	@Override
 	public double x() {
 		return x;
 	}

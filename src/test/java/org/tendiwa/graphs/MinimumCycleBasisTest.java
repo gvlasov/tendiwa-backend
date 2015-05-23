@@ -1,7 +1,6 @@
 package org.tendiwa.graphs;
 
 import org.junit.Test;
-import org.tendiwa.geometry.extensions.Point2DVertexPositionAdapter;
 import org.tendiwa.geometry.extensions.PointTrail;
 import org.tendiwa.geometry.graphs2d.Graph2D;
 import org.tendiwa.graphs.graphs2d.Graph2D_Wr;
@@ -24,10 +23,7 @@ public final class MinimumCycleBasisTest {
 		);
 		assertEquals(
 			2,
-			new MinimumCycleBasis<>(
-				tShape,
-				Point2DVertexPositionAdapter.get()
-			).filamentsSet().size()
+			new MinimumCycleBasis(tShape).filamentsSet().size()
 		);
 	}
 

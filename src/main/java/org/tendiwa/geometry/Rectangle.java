@@ -6,17 +6,14 @@ import org.tendiwa.core.CardinalDirection;
 import org.tendiwa.core.OrdinalDirection;
 import org.tendiwa.core.Orientation;
 import org.tendiwa.core.meta.Cell;
-import org.tendiwa.core.meta.Utils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
-import static org.tendiwa.geometry.GeometryPrimitives.point2D;
-import static org.tendiwa.geometry.GeometryPrimitives.segment2D;
-
 public interface Rectangle extends RecTree, BoundedCellSet, Dimension {
-
-
 	int x();
 
 	int y();
@@ -240,7 +237,10 @@ public interface Rectangle extends RecTree, BoundedCellSet, Dimension {
 	 */
 	@Override
 	default boolean contains(int x, int y) {
-		return x >= this.x() && x < this.x() + this.width() && y >= this.y() && y < this.y() + this.height();
+		return x >= this.x()
+			&& x < this.x() + this.width()
+			&& y >= this.y()
+			&& y < this.y() + this.height();
 	}
 
 	default boolean contains(Cell cell) {
@@ -256,6 +256,15 @@ public interface Rectangle extends RecTree, BoundedCellSet, Dimension {
 		return new BasicRectangle(
 			x,
 			y,
+			width(),
+			height()
+		);
+	}
+
+	default Rectangle moveTo(Cell cell) {
+		return new BasicRectangle(
+			cell.x(),
+			cell.y(),
 			width(),
 			height()
 		);
@@ -374,4 +383,9 @@ public interface Rectangle extends RecTree, BoundedCellSet, Dimension {
 	default int perpendicularDistanceTo(Rectangle rectangle) {
 		throw new UnsupportedOperationException();
 	}
+
+	default Cell nwCorner() {
+		return new BasicCell(x(), y());
+	}
+
 }

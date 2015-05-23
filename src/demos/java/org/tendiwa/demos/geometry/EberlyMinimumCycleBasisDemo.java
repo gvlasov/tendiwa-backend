@@ -1,20 +1,18 @@
 package org.tendiwa.demos.geometry;
 
 import com.google.inject.Inject;
-import org.jgrapht.graph.SimpleGraph;
 import org.tendiwa.demos.Demos;
 import org.tendiwa.drawing.DrawableCycleBasis2D;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingModule;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.extensions.PlanarGraphs;
+import org.tendiwa.geometry.graphs2d.Graph2D;
 import org.tendiwa.graphs.GraphConstructor;
 
 import java.awt.Color;
 
-import static org.tendiwa.geometry.GeometryPrimitives.graphConstructor;
-import static org.tendiwa.geometry.GeometryPrimitives.point2D;
+import static org.tendiwa.geometry.GeometryPrimitives.*;
 
 public class EberlyMinimumCycleBasisDemo implements Runnable {
 	@Inject
@@ -77,12 +75,12 @@ public class EberlyMinimumCycleBasisDemo implements Runnable {
 				.edge(23, 27) // This extra edge screws a cycle up in the original algorithm implementation
 
 				.path(14, 15, 16);
-		final SimpleGraph<Point2D, Segment2D> graph = constructor.graph();
+		final Graph2D graph = graph2D(constructor.graph());
 //		canvas.draw(graph, DrawingGraph.withAliases(constructor, (p -> p.x), (p -> p.y)));
 //		MinimumCycleBasis<Point2D, Segment2D> basis = new MinimumCycleBasis<>(graph, Point2DVertexPositionAdapter.get());
 		canvas.draw(
 			new DrawableCycleBasis2D(
-				PlanarGraphs.minimumCycleBasis(graph),
+				graph.minimumCycleBasis(),
 				Color.green,
 				Color.red,
 				Color.blue

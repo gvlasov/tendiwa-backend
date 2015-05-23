@@ -24,12 +24,12 @@ public final class SmartMeshedNetworkTest {
 
 	@Test
 	public void canProduceAdditionalSegments() throws Exception {
-		assertTrue(originalGraph.edgeSet().size() <= network.fullGraph().edgeSet().size());
+		assertTrue(originalGraph.edgeSet().size() <= network.edgeSet().size());
 	}
 
 	@Test
 	public void consistsOfCells() throws Exception {
-		assertTrue(!network.meshes().isEmpty());
+		assertTrue(!network.meshCells().isEmpty());
 	}
 
 	@Test
@@ -43,33 +43,7 @@ public final class SmartMeshedNetworkTest {
 						.moveBy(0, 20)
 						.polyline()
 				)
-			).meshes().size()
-		);
-	}
-
-	@Test
-	public void canConsistOfOneMesh() {
-		assertEquals(
-			1,
-			new DefaultMeshedNetwork(
-				new PolygonGraph(
-					pointTrail(0, 0)
-						.moveByX(20)
-						.moveByY(30)
-						.moveByX(-40)
-						.polygon()
-				)
-			).meshes().size()
-		);
-	}
-
-	@Test
-	public void canConsistOfMultipleMeshes() {
-		assertEquals(
-			2,
-			new DefaultMeshedNetwork(
-				new GraphWith2CyclesAnd3Filaments()
-			).meshes().size()
+			).meshCells().size()
 		);
 	}
 
@@ -80,7 +54,10 @@ public final class SmartMeshedNetworkTest {
 			3,
 			new DefaultMeshedNetwork(
 				new GraphWith2CyclesAnd3Filaments()
-			).filaments().size()
+			)
+				.minimumCycleBasis()
+				.filamentsSet()
+				.size()
 		);
 	}
 
@@ -92,7 +69,10 @@ public final class SmartMeshedNetworkTest {
 				new PolygonGraph(
 					rectangle2D(10, 10)
 				)
-			).filaments().size()
+			)
+				.minimumCycleBasis()
+				.filamentsSet()
+				.size()
 		);
 	}
 }

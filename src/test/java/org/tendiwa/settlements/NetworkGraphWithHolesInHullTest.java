@@ -3,8 +3,8 @@ package org.tendiwa.settlements;
 import org.junit.Before;
 import org.junit.Test;
 import org.tendiwa.geometry.graphs2d.Graph2D;
+import org.tendiwa.geometry.smartMesh.MeshedNetwork;
 import org.tendiwa.geometry.smartMesh.MeshedNetworkBuilder;
-import org.tendiwa.geometry.smartMesh.SmartMeshedNetwork;
 import org.tendiwa.settlements.utils.NetworkGraphWithHolesInHull;
 
 import java.util.Random;
@@ -14,7 +14,7 @@ import static org.tendiwa.geometry.GeometryPrimitives.*;
 
 public class NetworkGraphWithHolesInHullTest {
 
-	private SmartMeshedNetwork network;
+	private MeshedNetwork network;
 	private Graph2D fullRoadGraph;
 
 	@Before
@@ -32,7 +32,7 @@ public class NetworkGraphWithHolesInHullTest {
 		)
 			.withDefaults()
 			.build();
-		fullRoadGraph = network.fullGraph();
+		fullRoadGraph = network;
 	}
 
 	/**
@@ -76,9 +76,9 @@ public class NetworkGraphWithHolesInHullTest {
 			);
 		assertTrue(
 			network
-				.meshes()
+				.outerHull()
+				.edgeSet()
 				.stream()
-				.flatMap(mesh -> mesh.hull().edgeSet().stream())
 				.allMatch(e -> !graphWithoutCycleEdges.containsEdge(e))
 		);
 	}

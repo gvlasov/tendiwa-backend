@@ -16,7 +16,7 @@ import java.util.stream.Collector;
  */
 public interface CellSet {
 
-	static final Function<ScatteredMutableCellSet, FiniteCellSet> scatteredMutableCellSetFiniteCellSetFunction = (a) -> a;
+	Function<ScatteredMutableCellSet, FiniteCellSet> scatteredMutableCellSetFiniteCellSetFunction = (a) -> a;
 
 	/**
 	 * Checks if a cell is in the set.
@@ -27,7 +27,7 @@ public interface CellSet {
 	 * 	Y coordinate of a cell.
 	 * @return true if a cell is in the set, false otherwise.
 	 */
-	public boolean contains(int x, int y);
+	boolean contains(int x, int y);
 
 	/**
 	 * Checks if a cell is in the set.
@@ -36,8 +36,7 @@ public interface CellSet {
 	 * 	A cell.
 	 * @return true if a cell is in the set, false otherwise.
 	 */
-	@SuppressWarnings("unused")
-	public default boolean contains(Cell cell) {
+	default boolean contains(Cell cell) {
 		return contains(cell.x(), cell.y());
 	}
 
@@ -48,7 +47,7 @@ public interface CellSet {
 	 * 	Another set.
 	 * @return A set that is an intersection of this set and another set.
 	 */
-	public default CellSet and(CellSet set) {
+	default CellSet and(CellSet set) {
 		return (x, y) -> contains(x, y) && set.contains(x, y);
 	}
 
@@ -59,7 +58,7 @@ public interface CellSet {
 	 * 	Another set.
 	 * @return A set that is a union of this set and another set.
 	 */
-	public default CellSet or(CellSet set) {
+	default CellSet or(CellSet set) {
 		return (x, y) -> contains(x, y) || set.contains(x, y);
 	}
 
@@ -71,15 +70,15 @@ public interface CellSet {
 	 * @return A set that is a symmetric difference of this set and another set.
 	 * @see <a href="http://en.wikipedia.org/wiki/Symmetric_difference">Symmetric difference</a>
 	 */
-	public default CellSet xor(CellSet set) {
+	default CellSet xor(CellSet set) {
 		return (x, y) -> contains(x, y) ^ set.contains(x, y);
 	}
 
-	public default CellSet without(CellSet set) {
+	default CellSet without(CellSet set) {
 		return (x, y) -> contains(x, y) && !set.contains(x, y);
 	}
 
-	public static Collector<Cell, ?, FiniteCellSet> toCellSet() {
+	static Collector<Cell, ?, FiniteCellSet> toCellSet() {
 		return new Collector<Cell, ScatteredMutableCellSet, FiniteCellSet>() {
 			@Override
 			public Supplier<ScatteredMutableCellSet> supplier() {
@@ -119,25 +118,25 @@ public interface CellSet {
 	 *
 	 * @return A cell set that doesn't contain any cells.
 	 */
-	public static CellSet empty() {
+	static CellSet empty() {
 		return (x, y) -> false;
 	}
 
-	public static Collector<Cell, ?, BoundedCellSet> toBoundedCellSet(Rectangle bounds) {
+	static Collector<Cell, ?, BoundedCellSet> toBoundedCellSet(Rectangle bounds) {
 
-		return new Collector<Cell, Mutable2DCellSet, BoundedCellSet>() {
+		return new Collector<Cell, MutableBoundedCellSet, BoundedCellSet>() {
 			@Override
-			public Supplier<Mutable2DCellSet> supplier() {
+			public Supplier<MutableBoundedCellSet> supplier() {
 				return () -> new Mutable2DCellSet(bounds);
 			}
 
 			@Override
-			public BiConsumer<Mutable2DCellSet, Cell> accumulator() {
-				return Mutable2DCellSet::add;
+			public BiConsumer<MutableBoundedCellSet, Cell> accumulator() {
+				return MutableBoundedCellSet::add;
 			}
 
 			@Override
-			public BinaryOperator<Mutable2DCellSet> combiner() {
+			public BinaryOperator<MutableBoundedCellSet> combiner() {
 				return (left, right) -> {
 					left.addAll(right);
 					return left;
@@ -145,7 +144,7 @@ public interface CellSet {
 			}
 
 			@Override
-			public Function<Mutable2DCellSet, BoundedCellSet> finisher() {
+			public Function<MutableBoundedCellSet, BoundedCellSet> finisher() {
 				return (a) -> a;
 			}
 

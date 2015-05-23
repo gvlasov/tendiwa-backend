@@ -74,7 +74,6 @@ public class Tendiwa extends Observable {
 //		}
 //			modulesCreatingWorlds.add(new ScriptShell(module).getModuleClass());
 //		}
-		new ScriptShell(MODULES_CONF_FILE);
 //		if (modulesCreatingWorlds.size() == 0) {
 //			throw new RuntimeException("No world-creating modules provided");
 //		}

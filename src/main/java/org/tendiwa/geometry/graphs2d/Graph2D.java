@@ -1,23 +1,22 @@
 package org.tendiwa.geometry.graphs2d;
 
 import com.google.common.collect.ImmutableSet;
+import com.sun.istack.internal.NotNull;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.alg.ConnectivityInspector;
-import org.tendiwa.geometry.GeometryException;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.extensions.ShamosHoeyAlgorithm;
 import org.tendiwa.graphs.MinimumCycleBasis;
 import org.tendiwa.graphs.graphs2d.BasicMutableGraph2D;
 import org.tendiwa.graphs.graphs2d.MutableGraph2D;
 import org.tendiwa.settlements.utils.streetsDetector.ConnectivityComponent;
 
-import java.util.Collection;
+import java.util.Iterator;
 import java.util.Set;
 
 import static org.tendiwa.collections.Collectors.toImmutableSet;
 
-public interface Graph2D extends UndirectedGraph<Point2D, Segment2D> {
+public interface Graph2D extends BoundedShape {
 
 	static Graph2D createGraph(Iterable<Point2D> vertices, Iterable<Segment2D> segments) {
 		MutableGraph2D graph = new BasicMutableGraph2D();
@@ -46,6 +45,34 @@ public interface Graph2D extends UndirectedGraph<Point2D, Segment2D> {
 		return answer;
 	}
 
+	Set<Point2D> vertexSet();
+
+	Set<Segment2D> edgeSet();
+
+	boolean containsVertex(Point2D vertex);
+
+	boolean containsEdge(Segment2D edge);
+
+	int degreeOf(Point2D vertex);
+
+	Set<Segment2D> edgesOf(Point2D vertex);
+
+	Segment2D getEdge(Point2D sourceVertex, Point2D targetVertex);
+
+	boolean containsEdge(Point2D sourceVertex, Point2D targetVertex);
+
+	Point2D getEdgeSource(Segment2D e);
+
+	Point2D getEdgeTarget(Segment2D e);
+
+	default UndirectedGraph<Point2D, Segment2D> toJgrapht() {
+		MutableGraph2D graph = new BasicMutableGraph2D();
+		vertexSet().forEach(graph::addVertex);
+		edgeSet().forEach(graph::addSegmentAsEdge);
+		return graph;
+	}
+
+
 	default Graph2D intersection(Graph2D graph) {
 		MutableGraph2D answer = new BasicMutableGraph2D();
 		vertexSet()
@@ -60,9 +87,10 @@ public interface Graph2D extends UndirectedGraph<Point2D, Segment2D> {
 	}
 
 	default ImmutableSet<ConnectivityComponent<Point2D, Segment2D>> connectivityComponents() {
-		return new ConnectivityInspector<>(this).connectedSets()
+		UndirectedGraph<Point2D, Segment2D> jgraphtGraph = toJgrapht();
+		return new ConnectivityInspector<>(jgraphtGraph).connectedSets()
 			.stream()
-			.map(set -> new ConnectivityComponent<>(this, set))
+			.map(set -> new ConnectivityComponent<>(jgraphtGraph, set))
 			.collect(toImmutableSet());
 	}
 
@@ -95,57 +123,9 @@ public interface Graph2D extends UndirectedGraph<Point2D, Segment2D> {
 		return ShamosHoeyAlgorithm.areIntersected(edgeSet());
 	}
 
-	@Deprecated
 	@Override
-	default Segment2D addEdge(Point2D sourceVertex, Point2D targetVertex) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Deprecated
-	@Override
-	default boolean addEdge(Point2D sourceVertex, Point2D targetVertex, Segment2D segment2D) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Deprecated
-	@Override
-	default boolean addVertex(Point2D point2D) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Deprecated
-	@Override
-	default boolean removeAllEdges(Collection<? extends Segment2D> edges) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Deprecated
-	@Override
-	default Set<Segment2D> removeAllEdges(Point2D sourceVertex, Point2D targetVertex) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Deprecated
-	@Override
-	default boolean removeAllVertices(Collection<? extends Point2D> vertices) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Deprecated
-	@Override
-	default Segment2D removeEdge(Point2D sourceVertex, Point2D targetVertex) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Deprecated
-	@Override
-	default boolean removeEdge(Segment2D segment2D) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Deprecated
-	@Override
-	default boolean removeVertex(Point2D point2D) {
-		throw new UnsupportedOperationException();
+	@NotNull
+	default Iterator<Point2D> iterator() {
+		return vertexSet().iterator();
 	}
 }

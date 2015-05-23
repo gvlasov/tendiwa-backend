@@ -5,6 +5,7 @@ import org.jgrapht.Graph;
 import org.tendiwa.geometry.CutSegment2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.graphs2d.Graph2D;
 import org.tendiwa.graphs.graphs2d.SplittableGraph2D;
 
 import java.util.ArrayList;
@@ -51,7 +52,7 @@ final class CycleEdges {
 			.add(sharingSubgraph2D);
 	}
 
-	private boolean anotherEdgeOfGraphIsInFullGraph(Graph<Point2D, Segment2D> graph, Segment2D edge) {
+	private boolean anotherEdgeOfGraphIsInFullGraph(Graph2D graph, Segment2D edge) {
 		return graph.edgeSet().stream()
 			.filter(e -> !e.equals(edge))
 			.findAny()

@@ -4,10 +4,7 @@ import org.jgrapht.UndirectedGraph;
 import org.jgrapht.alg.NeighborIndex;
 import org.jgrapht.graph.ListenableUndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Polygon;
-import org.tendiwa.geometry.Polyline;
-import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.graphs2d.Graph2D;
 
 import java.util.*;
@@ -50,7 +47,7 @@ public class MinimumCycleBasis {
 		this.primitives = new PrimitiveContainer();
 		// Listenable graph is used here because we need to determine neighbor vertices,
 		// and it is better done with a listenable graph.
-		this.graph = new ListenableUndirectedGraph<>(new SimpleGraph<>(graph.getEdgeFactory()));
+		this.graph = new ListenableUndirectedGraph<Point2D, Segment2D>(new SimpleGraph<>(BasicSegment2D::new));
 		// TODO: Should we add vertices and edges explicitly here?
 		for (Point2D v : graph.vertexSet()) {
 			this.graph.addVertex(v);
@@ -338,7 +335,7 @@ public class MinimumCycleBasis {
 		return cycleEdges.contains(graph.getEdge(v0, v1));
 	}
 
-	private Queue<Point2D> sortVertices(UndirectedGraph<Point2D, Segment2D> graph) {
+	private Queue<Point2D> sortVertices(Graph2D graph) {
 		PriorityQueue<Point2D> vs = new PriorityQueue<>(graph.vertexSet().size(), comparator);
 		vs.addAll(graph.vertexSet());
 		return vs;

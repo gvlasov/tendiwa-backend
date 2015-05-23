@@ -1,24 +1,15 @@
-package org.tendiwa.geometry.extensions.daveedvMaxRec;
-
-
-import org.tendiwa.geometry.BasicRectangle;
-import org.tendiwa.geometry.Rectangle;
+package org.tendiwa.geometry;
 
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Optional;
 
-public class MaximalCellRectangleFinder {
-	private MaximalCellRectangleFinder() {
-		throw new UnsupportedOperationException();
-	}
+public interface ArrayBackedCellSet extends BoundedCellSet {
+	boolean arrayElement(int arrayX, int arrayY);
 
 	/**
 	 * Finds a large enough axis-parallel rectangle in a 2d array of obstacles.
 	 *
-	 * @param cells
-	 * 	Array of obstacles. {@code false} means an obstacle, {@code true} means no obstacle. First index
-	 * 	is y-coordinate, second index is x-coordinate.
 	 * @return An Optional with the computed Rectangle with {@link org.tendiwa.geometry.Rectangle#x} and {@link org
 	 * .tendiwa.geometry.Rectangle#y} relative to {@code cells}' top-left corner,
 	 * or an {@link java.util.Optional#empty()} if there are no
@@ -29,26 +20,25 @@ public class MaximalCellRectangleFinder {
 	 * Note that, since {@code cells} has width and height but no defined top-left corner, the
 	 * @throws java.lang.IllegalArgumentException
 	 * 	if {@code maximumArea < 0}.
-	 * @see org.tendiwa.geometry.extensions.polygonRasterization.PolygonRasterizer One way to produce the {@code cells} array.
+	 * @see org.tendiwa.geometry.extensions.polygonRasterization.MutableRasterizedPolygon One way to produce the
+	 * {@code cells} array.
 	 * @see <a href="http://stackoverflow.com/a/20039017/1028367">Stackoverflow question</a>
 	 * @see <a href="http://www.drdobbs.com/database/the-maximal-rectangle-problem/184410529">Article with the
 	 * description of the algorithm</a>
 	 */
-	public static Optional<Rectangle> compute(boolean[][] cells) {
-		if (cells.length == 0) {
-			return Optional.empty();
-		}
-		int height = cells.length;
+	default Optional<Rectangle> maximalRectangle() {
+		Rectangle bounds = getBounds();
+		int height = bounds.height();
 		int[] cache = new int[height + 1];
 		Deque<int[]> stack = new LinkedList<>();
 		int[] best_ll = {0, 0};
 		int[] best_ur = {-1, -1};
 		int bestArea = 0;
 		all:
-		for (int x = cells[0].length - 1; x > -1; x--) {
+		for (int x = bounds.width() - 1; x > -1; x--) {
 			for (int y = 0; y < height; y++) {
 				// Update cache
-				if (cells[y][x]) {
+				if (arrayElement(x, y)) {
 					cache[y]++;
 				} else {
 					cache[y] = 0;

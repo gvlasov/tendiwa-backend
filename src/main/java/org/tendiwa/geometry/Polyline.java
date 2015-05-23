@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
-public interface Polyline extends List<Point2D> {
+public interface Polyline extends List<Point2D>, BoundedShape {
 	default ImmutableList<Segment2D> toSegments() {
 		List<Segment2D> segments = new ArrayList<>(size());
 		int last = size() - 1;
@@ -25,6 +25,12 @@ public interface Polyline extends List<Point2D> {
 		return get(size() - 1);
 	}
 
+	@Override
+	default void add(int index, Point2D element) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Deprecated
 	@Override
 	default boolean add(Point2D point2D) {
 		throw new UnsupportedOperationException();
@@ -67,11 +73,6 @@ public interface Polyline extends List<Point2D> {
 
 	@Override
 	default Point2D remove(int index) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	default void add(int index, Point2D element) {
 		throw new UnsupportedOperationException();
 	}
 

@@ -1,17 +1,11 @@
 package org.tendiwa.graphs;
 
-import com.google.common.collect.ImmutableList;
 import org.tendiwa.geometry.BasicPolygon;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.graphs2d.BasicCycle2D;
-import org.tendiwa.geometry.graphs2d.Cycle2D;
 import org.tendiwa.geometry.graphs2d.Graph2D;
-import org.tendiwa.graphs.graphs2d.BasicMutableGraph2D;
-import org.tendiwa.graphs.graphs2d.MutableGraph2D;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**

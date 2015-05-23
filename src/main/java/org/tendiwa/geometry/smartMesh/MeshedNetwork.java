@@ -8,7 +8,7 @@ import org.tendiwa.geometry.graphs2d.PerforatedCycle2D;
 
 public interface MeshedNetwork extends Graph2D {
 	default Graph2D outerHull() {
-		return new OuterHull(this).graph();
+		return new OuterHull(this);
 	}
 
 	ImmutableSet<Polygon> meshCells();

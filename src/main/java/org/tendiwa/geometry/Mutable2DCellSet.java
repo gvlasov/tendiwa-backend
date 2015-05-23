@@ -2,17 +2,22 @@ package org.tendiwa.geometry;
 
 import org.tendiwa.core.meta.Cell;
 
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
- * An editable CellSet that holds a finite number of {@link Cell}s.
+ * An editable CellSet backed up by a 2d array that contains a finite number of cells.
  * <p>
  * It is preferable to {@link ScatteredMutableCellSet} when cells in this set cover a significant part of their
- * bounding rectangle. Uses {@code O(bounds.width*bound.height)} memory.
+ * bounding rectangle. Uses {@code Θ(bounds.width*bound.height)} memory.
  */
-public class Mutable2DCellSet implements MutableCellSet, BoundedCellSet {
+public class Mutable2DCellSet implements MutableBoundedCellSet, ArrayBackedCellSet {
 
 	private final Rectangle bounds;
+	/*
+	First index is y coordinate, second index is x coordinate.
+	 */
 	private final boolean[][] cells;
 
 	/**
@@ -20,8 +25,9 @@ public class Mutable2DCellSet implements MutableCellSet, BoundedCellSet {
 	 * 	Bounds where you can write cells.
 	 */
 	public Mutable2DCellSet(Rectangle bounds) {
+		Objects.requireNonNull(bounds);
 		this.bounds = bounds;
-		cells = new boolean[bounds.width()][bounds.height()];
+		cells = new boolean[bounds.height()][bounds.width()];
 	}
 
 	@Override
@@ -43,13 +49,13 @@ public class Mutable2DCellSet implements MutableCellSet, BoundedCellSet {
 	 */
 	@Override
 	public void add(int x, int y) {
-		boolean present = cells[x - bounds.x()][y - bounds.y()];
+		boolean present = cells[y - bounds.y()][x - bounds.x()];
 		if (present) {
 			throw new IllegalArgumentException(
 				"Can't add cell " + x + " " + y + " because it is already present in this set"
 			);
 		}
-		cells[x - bounds.x()][y - bounds.y()] = true;
+		cells[y - bounds.y()][x - bounds.x()] = true;
 	}
 
 	/**
@@ -64,8 +70,9 @@ public class Mutable2DCellSet implements MutableCellSet, BoundedCellSet {
 	 * @param y
 	 * 	Y coordinate of a cell.
 	 */
+	@Override
 	public void addAnyway(int x, int y) {
-		cells[x - bounds.x()][y - bounds.y()] = true;
+		cells[y - bounds.y()][x - bounds.x()] = true;
 	}
 
 	@Override
@@ -100,13 +107,13 @@ public class Mutable2DCellSet implements MutableCellSet, BoundedCellSet {
 	 */
 	@Override
 	public void remove(int x, int y) {
-		boolean present = cells[x - bounds.x()][y - bounds.y()];
+		boolean present = cells[y - bounds.y()][x - bounds.x()];
 		if (present) {
 			throw new IllegalArgumentException(
 				"Can't remove cell " + x + " " + y + " because it is not present in this set"
 			);
 		}
-		cells[x - bounds.x()][y - bounds.y()] = false;
+		cells[y - bounds.y()][x - bounds.x()] = false;
 	}
 
 	/**
@@ -119,8 +126,9 @@ public class Mutable2DCellSet implements MutableCellSet, BoundedCellSet {
 	 * @throws java.lang.ArrayIndexOutOfBoundsException
 	 * 	If cell is not within {@link #getBounds()}.
 	 */
+	@Override
 	public void toggle(int x, int y) {
-		cells[x - bounds.x()][y - bounds.y()] = !cells[x - bounds.x()][y - bounds.y()];
+		cells[y - bounds.y()][x - bounds.x()] = !cells[y - bounds.y()][x - bounds.x()];
 	}
 
 	/**
@@ -134,17 +142,52 @@ public class Mutable2DCellSet implements MutableCellSet, BoundedCellSet {
 	 */
 	@Override
 	public boolean contains(int x, int y) {
-		return bounds.contains(x, y) && cells[x - bounds.x()][y - bounds.y()];
+		return bounds.contains(x, y) && cells[y - bounds.y()][x - bounds.x()];
 	}
 
 	@Override
 	public void forEach(Consumer<? super Cell> action) {
 		for (int x = 0; x < bounds.width(); x++) {
 			for (int y = 0; y < bounds.height(); y++) {
-				if (cells[x][y]) {
+				if (cells[y][x]) {
 					action.accept(new BasicCell(x + bounds.x(), y + bounds.y()));
 				}
 			}
 		}
+	}
+
+	/**
+	 * Fills a rectangular area with obstacle cells.
+	 *
+	 * @param r
+	 * 	A rectangle to fill.
+	 */
+	@Override
+	public void excludeRectangle(Rectangle r) {
+		int startX = r.x() - bounds.x();
+		int endX = r.x() + r.width() - bounds.x();
+		int endY = r.y() - bounds.y() + r.height();
+		for (int row = r.y() - bounds.y(); row < endY; row++) {
+			Arrays.fill(
+				cells[row],
+				startX,
+				endX,
+				false
+			);
+		}
+	}
+
+	public void fillHorizontalSegment(OrthoCellSegment segment) {
+		Arrays.fill(
+			cells[segment.getY() - bounds.y()],
+			segment.getX() - bounds.x(),
+			segment.getEndX() - bounds.x()+1,
+			true
+		);
+	}
+
+	@Override
+	public boolean arrayElement(int arrayX, int arrayY) {
+		return cells[arrayY][arrayX]; // not a typo
 	}
 }

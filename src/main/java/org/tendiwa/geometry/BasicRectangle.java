@@ -10,13 +10,15 @@ public final class BasicRectangle implements Rectangle {
 	private final int height;
 
 	public BasicRectangle(int x, int y, int width, int height) {
+		if (width == 0 || height == 0) {
+			throw new IllegalArgumentException(
+				"Width or height can't be 0. Trying to create rectangle " + width + "×" + height
+			);
+		}
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
-		if (width == 0 || height == 0) {
-			throw new IllegalArgumentException("Width or height can't be 0");
-		}
 	}
 
 	public BasicRectangle(Rectangle r) {

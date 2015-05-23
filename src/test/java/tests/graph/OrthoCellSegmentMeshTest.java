@@ -9,6 +9,7 @@ import org.tendiwa.data.FourCyclePenisGraph;
 import org.tendiwa.drawing.extensions.DrawingModule;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.graphs2d.Graph2D;
 import org.tendiwa.geometry.smartMesh.MeshedNetworkBuilder;
 
 import java.util.Arrays;
@@ -64,7 +65,7 @@ public class OrthoCellSegmentMeshTest {
 
 	@Test
 	public void buildCity() {
-		UndirectedGraph<Point2D, Segment2D> graph = new FourCyclePenisGraph();
+		Graph2D graph = new FourCyclePenisGraph();
 		for (int i = 0; i < 1; i++) {
 			new MeshedNetworkBuilder(graph)
 				.withDefaults()

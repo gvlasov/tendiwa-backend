@@ -1,10 +1,12 @@
 package org.tendiwa.graphs.graphs2d;
 
-import org.jgrapht.EdgeFactory;
 import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.graphs2d.Cycle2D;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class BasicSplittableCycle2D extends ArrayList<Point2D> implements Cycle2D, SplittableGraph2D {
 	private final MutableGraph2D graph;
@@ -32,18 +34,18 @@ public class BasicSplittableCycle2D extends ArrayList<Point2D> implements Cycle2
 
 	private void addVerticesAndEdges(Polygon polygon) {
 		List<Segment2D> segments = polygon.toSegments();
-		addVertex(polygon.get(0));
+		graph.addVertex(polygon.get(0));
 		for (int i = 0; i < polygon.size(); i++) {
 			Point2D point = polygon.get(i);
 			Segment2D segment = segments.get(i);
 			if (point == segment.start()) {
-				addVertex(segment.end());
+				graph.addVertex(segment.end());
 			} else {
 				assert point == segment.end();
 				setReverse(segment);
-				addVertex(segment.start());
+				graph.addVertex(segment.start());
 			}
-			addEdge(segment.start(), segment.end(), segment);
+			graph.addEdge(segment.start(), segment.end(), segment);
 		}
 	}
 
@@ -66,20 +68,8 @@ public class BasicSplittableCycle2D extends ArrayList<Point2D> implements Cycle2
 
 
 	@Override
-	public Set<Segment2D> getAllEdges(
-		Point2D sourceVertex, Point2D targetVertex
-	) {
-		return graph.getAllEdges(sourceVertex, targetVertex);
-	}
-
-	@Override
 	public Segment2D getEdge(Point2D sourceVertex, Point2D targetVertex) {
 		return graph.getEdge(sourceVertex, targetVertex);
-	}
-
-	@Override
-	public EdgeFactory<Point2D, Segment2D> getEdgeFactory() {
-		return graph.getEdgeFactory();
 	}
 
 	@Override
@@ -120,11 +110,6 @@ public class BasicSplittableCycle2D extends ArrayList<Point2D> implements Cycle2
 	@Override
 	public Point2D getEdgeTarget(Segment2D segment2D) {
 		return graph.getEdgeTarget(segment2D);
-	}
-
-	@Override
-	public double getEdgeWeight(Segment2D segment2D) {
-		return graph.getEdgeWeight(segment2D);
 	}
 
 	@Override

@@ -9,15 +9,19 @@ import java.util.ListIterator;
 
 import static org.tendiwa.collections.Collectors.*;
 
-public interface Polygon extends List<Point2D> {
-	boolean isClockwise();
+public interface Polygon extends List<Point2D>, BoundedShape {
+	default boolean isClockwise() {
+		throw new UnsupportedOperationException();
+	}
 
-	boolean isClockwise(Segment2D segment);
+	default boolean isClockwise(Segment2D segment) {
+		throw new UnsupportedOperationException();
+	}
 
 	default List<Segment2D> toSegments() {
 		List<Segment2D> segments = new ArrayList<>(size());
 		new BasicPolyline(this).toSegments().forEach(segments::add);
-		segments.add(new BasicSegment2D(get(size()-1), get(0)));
+		segments.add(new BasicSegment2D(get(size() - 1), get(0)));
 		return segments;
 	}
 
@@ -155,4 +159,5 @@ public interface Polygon extends List<Point2D> {
 	default boolean containsPoint(Point2D point) {
 		throw new UnsupportedOperationException();
 	}
+
 }

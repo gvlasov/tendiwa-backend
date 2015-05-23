@@ -44,7 +44,7 @@ public final class DrawablePolygon extends Polygon_Wr implements Drawable {
 			int size = size();
 			for (int i = 0; i < size; i++) {
 				canvas.draw(
-					new DrawableSegment2D(
+					new DrawableSegment2D.Thin(
 						segment2D(
 							get(i),
 							get(Utils.nextIndex(i, size))

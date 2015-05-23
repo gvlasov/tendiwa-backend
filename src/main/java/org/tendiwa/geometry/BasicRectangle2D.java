@@ -41,6 +41,11 @@ public final class BasicRectangle2D implements Rectangle2D {
 
 
 	@Override
+	public String toString() {
+		return "Rectangle at " + x + ":" + y + ", " + width + "×" + height;
+	}
+
+	@Override
 	public Iterator<Point2D> iterator() {
 		return
 			ImmutableList.of(
@@ -49,20 +54,5 @@ public final class BasicRectangle2D implements Rectangle2D {
 				point2D(maxX(), maxY()),
 				point2D(x(), maxY())
 			).iterator();
-	}
-
-	@Override
-	public Point2D get(int index) {
-		return null;
-	}
-
-	@Override
-	public int indexOf(Object o) {
-		return 0;
-	}
-
-	@Override
-	public int lastIndexOf(Object o) {
-		return 0;
 	}
 }

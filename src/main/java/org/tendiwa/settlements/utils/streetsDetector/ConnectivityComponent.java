@@ -15,7 +15,6 @@ public final class ConnectivityComponent<V, E> {
 		UndirectedGraph<V, E> fullGraph,
 		Set<V> componentVertices
 	) {
-
 		this.fullGraph = fullGraph;
 		this.vertices = componentVertices;
 	}

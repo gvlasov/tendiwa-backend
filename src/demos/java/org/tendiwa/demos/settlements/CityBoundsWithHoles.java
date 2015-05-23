@@ -4,11 +4,11 @@ import org.tendiwa.core.meta.Cell;
 import org.tendiwa.demos.Demos;
 import org.tendiwa.demos.DrawableRectangle;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawablePolygon;
+import org.tendiwa.drawing.extensions.DrawableGraph2D;
 import org.tendiwa.geometry.BoundedCellSet;
 import org.tendiwa.geometry.CellSet;
-import org.tendiwa.geometry.Polygon;
 import org.tendiwa.geometry.Rectangle;
+import org.tendiwa.geometry.graphs2d.Graph2D;
 import org.tendiwa.noise.Noise;
 import org.tendiwa.pathfinding.dijkstra.PathTable;
 import org.tendiwa.settlements.cityBounds.CityBounds;
@@ -45,7 +45,7 @@ class CityBoundsWithHoles implements Runnable {
 			) < counter.get();
 
 		for (int i = 0; i < iterations; i++) {
-			Polygon cityBounds = buildCityBoundsGraph(water);
+			Graph2D cityBounds = buildCityBoundsGraph(water);
 
 			canvas.draw(
 				new DrawableRectangle(
@@ -60,7 +60,7 @@ class CityBoundsWithHoles implements Runnable {
 				)
 			);
 			canvas.draw(
-				new DrawablePolygon.Thin(
+				new DrawableGraph2D.Thin(
 					cityBounds,
 					Color.red
 				)
@@ -73,7 +73,7 @@ class CityBoundsWithHoles implements Runnable {
 //		gifBuilder.saveAnimation(System.getProperty("user.home") + "/cityBoundsWithHolesAnimation.gif");
 	}
 
-	private Polygon buildCityBoundsGraph(CellSet water) {
+	private Graph2D buildCityBoundsGraph(CellSet water) {
 		BoundedCellSet cityShape = new PathTable(
 			startCell,
 			(x, y) -> !water.contains(x, y),

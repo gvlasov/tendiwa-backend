@@ -5,6 +5,7 @@ import org.jgrapht.alg.ConnectivityInspector;
 import org.tendiwa.geometry.Chain2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.graphs2d.Graph2D;
 
 import java.util.stream.Stream;
 
@@ -20,11 +21,10 @@ public final class DetectedStreets {
 	 * 	A planar graph.
 	 * @return Streets found in a road graph.
 	 */
-	public static Stream<Chain2D> toChain2DStream(
-		UndirectedGraph<Point2D, Segment2D> cityGraph
-	) {
-		return new ConnectivityInspector<>(cityGraph).connectedSets().stream()
-			.map(set -> new ConnectivityComponent<>(cityGraph, set))
+	public static Stream<Chain2D> toChain2DStream( Graph2D cityGraph ) {
+		UndirectedGraph<Point2D, Segment2D> jgraphtGraph = cityGraph.toJgrapht();
+		return new ConnectivityInspector<>(jgraphtGraph).connectedSets().stream()
+			.map(set -> new ConnectivityComponent<>(jgraphtGraph, set))
 			.map(ConnectivityComponent::graph)
 			.map(ChainNetwork::new)
 			.flatMap(ChainNetwork::chains);

@@ -33,20 +33,8 @@ public class MeshedNetwork_Wr implements MeshedNetwork {
 	}
 
 	@Override
-	public Set<Segment2D> getAllEdges(
-		Point2D sourceVertex, Point2D targetVertex
-	) {
-		return network.getAllEdges(sourceVertex, targetVertex);
-	}
-
-	@Override
 	public Segment2D getEdge(Point2D sourceVertex, Point2D targetVertex) {
 		return network.getEdge(sourceVertex, targetVertex);
-	}
-
-	@Override
-	public EdgeFactory<Point2D, Segment2D> getEdgeFactory() {
-		return network.getEdgeFactory();
 	}
 
 	@Override
@@ -87,10 +75,5 @@ public class MeshedNetwork_Wr implements MeshedNetwork {
 	@Override
 	public Point2D getEdgeTarget(Segment2D segment2D) {
 		return network.getEdgeTarget(segment2D);
-	}
-
-	@Override
-	public double getEdgeWeight(Segment2D segment2D) {
-		return network.getEdgeWeight(segment2D);
 	}
 }

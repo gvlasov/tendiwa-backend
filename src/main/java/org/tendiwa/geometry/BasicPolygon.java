@@ -28,6 +28,11 @@ public class BasicPolygon implements Polygon {
 		this.points = ImmutableList.copyOf(points);
 	}
 
+	@Override
+	public String toString() {
+		return points.toString();
+	}
+
 	/**
 	 * Checks if the polygon is clockwise in terms of a y-down coordinate system.
 	 * <p>

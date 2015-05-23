@@ -6,13 +6,10 @@ import org.jgrapht.graph.DefaultEdge;
 import org.junit.Test;
 import org.tendiwa.drawing.Canvas;
 import org.tendiwa.drawing.TestCanvas;
-import org.tendiwa.drawing.extensions.DrawableGraph2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PointTrail;
-import org.tendiwa.geometry.graphs2d.Graph2D;
 
-import java.awt.Color;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -51,21 +48,13 @@ public class GraphChainTraversalTest {
 			.moveByX(50)
 			.moveByY(-50)
 			.points();
-		Graph2D graph =
-			graph2D(
+		UndirectedGraph<Point2D, Segment2D> graph =
 				graphConstructor()
 					.chain(trail)
-					.graph()
-			);
+					.graph();
 		Canvas canvas = new TestCanvas(
 			3,
 			rectangle(200, 200)
-		);
-		canvas.draw(
-			new DrawableGraph2D.Thin(
-				graph,
-				Color.red
-			)
 		);
 		Point2D startVertex = point2D(50, 50);
 		long verticesTraversed = GraphChainTraversal

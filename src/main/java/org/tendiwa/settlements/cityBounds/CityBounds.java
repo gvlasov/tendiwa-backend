@@ -10,13 +10,12 @@ import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.extensions.CachedCellSet;
 import org.tendiwa.geometry.extensions.ChebyshovDistanceBufferBorder;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
-import org.tendiwa.geometry.graphs2d.BasicCycle2D;
-import org.tendiwa.geometry.graphs2d.Cycle2D;
 import org.tendiwa.geometry.graphs2d.Graph2D;
 import org.tendiwa.geometry.smartMesh.MeshedNetwork;
 import org.tendiwa.geometry.smartMesh.MeshedNetworkBuilder;
 import org.tendiwa.graphs.algorithms.SameOrPerpendicularSlopeGraphEdgesPerturbations;
 import org.tendiwa.graphs.graphs2d.BasicMutableGraph2D;
+import org.tendiwa.graphs.graphs2d.MutableGraph2D;
 import org.tendiwa.pathfinding.dijkstra.PathTable;
 import org.tendiwa.terrain.WorldGenerationException;
 
@@ -41,7 +40,7 @@ public final class CityBounds {
 	 * @return A new graph that can be used as a base for {@link MeshedNetwork}.
 	 * @see MeshedNetworkBuilder
 	 */
-	public static Cycle2D create(
+	public static Graph2D create(
 		BoundedCellSet cityShape,
 		Cell startCell,
 		int maxCityRadius
@@ -54,7 +53,7 @@ public final class CityBounds {
 		}
 		Graph2D answer = computeCityBoundingRoads(cityShape, startCell, maxCityRadius);
 		assert !minimalCyclesOfGraphHaveCommonVertices(answer);
-		return new BasicCycle2D(answer);
+		return answer;
 	}
 
 	/**
@@ -170,7 +169,7 @@ public final class CityBounds {
 		FiniteCellSet bufferBorder,
 		CellSet cellsInsideBufferBorder
 	) {
-		Graph2D graph = new BasicMutableGraph2D();
+		MutableGraph2D graph = new BasicMutableGraph2D();
 
 		ImmutableSet<Cell> borderCells = bufferBorder.toSet();
 		BiMap<Cell, Point2D> cell2PointMap = HashBiMap.create();

@@ -1,19 +1,14 @@
 package org.tendiwa.demos.geometry;
 
 import com.google.inject.Inject;
-import org.jgrapht.UndirectedGraph;
 import org.tendiwa.demos.Demos;
 import org.tendiwa.demos.geometry.polygons.ConvexAndReflexAmoeba;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawableGraph2D;
 import org.tendiwa.drawing.extensions.DrawablePolygon;
 import org.tendiwa.drawing.extensions.DrawingModule;
-import org.tendiwa.geometry.GeometryPrimitives;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
 import org.tendiwa.geometry.graphs2d.Graph2D;
-import org.tendiwa.graphs.MinimalCycle;
 
 import java.awt.Color;
 
@@ -46,10 +41,7 @@ public class MinimumCycleBasisDemo implements Runnable {
 		canvas.drawAll(
 			PlanarGraphs
 				.minimumCycleBasis(graph)
-				.minimalCyclesSet()
-				.stream()
-				.map(MinimalCycle::vertexList)
-				.map(GeometryPrimitives::polygon),
+				.minimalCyclesSet(),
 			polygon -> new DrawablePolygon(polygon, Color.blue)
 		);
 	}

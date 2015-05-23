@@ -11,7 +11,7 @@ import static org.tendiwa.geometry.GeometryPrimitives.rectangle;
  * Represents the result of polygon rasterization: a grid within a rectangular area with cells that either belong
  * to polygon's area or not.
  *
- * @see org.tendiwa.geometry.extensions.polygonRasterization.PolygonRasterizer#rasterizeToCellSet(java.util.List) to
+ * @see PolygonRasterizer#rasterizeToCellSet(java.util.List) to
  * construct this object.
  */
 public class RasterizationResult implements BoundedCellSet {
@@ -59,8 +59,8 @@ public class RasterizationResult implements BoundedCellSet {
 	public void forEach(Consumer<? super Cell> action) {
 		int maxX = bounds.maxX();
 		int maxY = bounds.maxY();
-		for (int i = bounds.x(); i < maxX; i++) {
-			for (int j = bounds.y(); j < maxY; j++) {
+		for (int i = bounds.x(); i <= maxX; i++) {
+			for (int j = bounds.y(); j <= maxY; j++) {
 				if (bitmap[j - bounds.y()][i - bounds.x()]) {
 					action.accept(new BasicCell(i, j));
 				}

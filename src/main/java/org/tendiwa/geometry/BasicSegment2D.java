@@ -15,6 +15,14 @@ public final class BasicSegment2D implements Segment2D {
 	}
 
 	@Override
+	public String toString() {
+		return "BasicSegment2D{" +
+			"start=" + start +
+			", end=" + end +
+			'}';
+	}
+
+	@Override
 	public Point2D start() {
 		return start;
 	}
