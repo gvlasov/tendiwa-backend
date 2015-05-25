@@ -31,10 +31,10 @@ public final class BasicPoint2D implements Point2D {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
-		BasicPoint2D that = (BasicPoint2D) o;
+		Point2D that = (Point2D) o;
 
-		if (Double.compare(that.x, x) != 0) return false;
-		if (Double.compare(that.y, y) != 0) return false;
+		if (Double.compare(that.x(), x) != 0) return false;
+		if (Double.compare(that.y(), y) != 0) return false;
 
 		return true;
 	}

@@ -9,8 +9,8 @@ public final class Narrowing extends Polygon_Wr {
 			new PointTrail(0, 0)
 				.moveBy(2, 2)
 				.moveBy(2, -2)
-				.moveBy(0, 5)
-				.moveBy(-2, -2)
+				.moveBy(0, 6)
+				.moveBy(-2, -3)
 				.moveBy(-2, 2)
 				.polygon()
 		);

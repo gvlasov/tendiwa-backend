@@ -8,7 +8,7 @@ import java.util.Optional;
 interface Penetrable {
 	void add(Point2D poll, Point2D poll1);
 
-	Optional<Point2D> obtainItersectionPoint(Segment2D intersected, Segment2D intersecting);
+	Optional<Point2D> obtainIntersectionPoint(Segment2D intersected, Segment2D intersecting);
 
 	double depth();
 }

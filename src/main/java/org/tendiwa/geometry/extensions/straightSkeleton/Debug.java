@@ -10,6 +10,7 @@ import org.tendiwa.geometry.extensions.ShamosHoeyAlgorithm;
 import java.awt.Color;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
 import static org.tendiwa.geometry.GeometryPrimitives.segment2D;
 
 final class Debug {
@@ -33,7 +34,7 @@ final class Debug {
 		TestCanvas.canvas.draw(
 			new DrawableSegment2D.Thin(
 				segment2D(leftParent.vertex, point),
-				Color.yellow
+				Color.orange
 			)
 		);
 		TestCanvas.canvas.draw(
@@ -50,7 +51,7 @@ final class Debug {
 			ShamosHoeyAlgorithm.areIntersected(
 				arcs.entries().stream()
 					.map(e -> segment2D(e.getKey(), e.getValue()))
-					.collect(Collectors.toList()))
+					.collect(toList()))
 			) {
 			drawIntersectingArc(start, end);
 			System.out.println(start);

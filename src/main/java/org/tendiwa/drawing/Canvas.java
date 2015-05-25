@@ -4,6 +4,7 @@ import org.tendiwa.core.meta.Cell;
 import org.tendiwa.geometry.*;
 
 import java.awt.Color;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -13,8 +14,9 @@ public interface Canvas {
 	int getScale();
 
 	default <T> void drawAll(Iterable<T> what, Function<T, Drawable> toDrawable) {
+		Objects.requireNonNull(what);
 		for (T shape : what) {
-			toDrawable.apply(shape).drawIn(this);
+			draw(toDrawable.apply(shape));
 		}
 	}
 

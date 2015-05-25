@@ -1,7 +1,7 @@
 package org.tendiwa.demos.geometry;
 
-import com.google.inject.Inject;
 import org.tendiwa.demos.Demos;
+import org.tendiwa.drawing.Canvas;
 import org.tendiwa.drawing.DrawableCycleBasis2D;
 import org.tendiwa.drawing.TestCanvas;
 import org.tendiwa.drawing.extensions.DrawingModule;
@@ -15,15 +15,13 @@ import java.awt.Color;
 import static org.tendiwa.geometry.GeometryPrimitives.*;
 
 public class EberlyMinimumCycleBasisDemo implements Runnable {
-	@Inject
-	TestCanvas canvas;
 
 	public static void main(String[] args) {
 		Demos.run(EberlyMinimumCycleBasisDemo.class, new DrawingModule());
 	}
 
 	/**
-	 * Draws example from
+	 * Draws the example from
 	 * <a href="https://docs.google.com/viewer?url=www.geometrictools.com%2FDocumentation%2FMinimalCycleBasis.pdf&embedded=true#:0.page.4">page
 	 * 4 of [Eberly 2005], Figure 2.1</a>
 	 *
@@ -31,7 +29,7 @@ public class EberlyMinimumCycleBasisDemo implements Runnable {
 	 */
 	@Override
 	public void run() {
-		TestCanvas.canvas = canvas;
+		Canvas canvas = new TestCanvas(1, rectangle(400, 400));
 		final GraphConstructor<Point2D, Segment2D> constructor =
 			graphConstructor()
 				.vertex(0, point2D(20, 20))

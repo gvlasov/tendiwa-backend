@@ -1,5 +1,7 @@
 package org.tendiwa.geometry;
 
+import com.google.common.collect.ImmutableList;
+
 public abstract class Rectangle2D_Wr implements Rectangle2D {
 	private final Rectangle2D rectangle;
 
@@ -27,4 +29,8 @@ public abstract class Rectangle2D_Wr implements Rectangle2D {
 		return rectangle.height();
 	}
 
+	@Override
+	public ImmutableList<Point2D> toImmutableList() {
+		return rectangle.toImmutableList();
+	}
 }

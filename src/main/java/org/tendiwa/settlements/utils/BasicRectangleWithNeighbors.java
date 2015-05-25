@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import org.tendiwa.geometry.Rectangle;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -19,10 +20,18 @@ public final class BasicRectangleWithNeighbors implements RectangleWithNeighbors
 	private final Rectangle rectangle;
 	private final ImmutableList<Rectangle> neighbors;
 
-	BasicRectangleWithNeighbors(Rectangle rectangle, ImmutableList<Rectangle> neighbors) {
+	BasicRectangleWithNeighbors(List<Rectangle> rectangles) {
+		this(
+			rectangles.get(0),
+			ImmutableList.copyOf(
+				rectangles.subList(1, rectangles.size())
+			)
+		);
+	}
+
+	public BasicRectangleWithNeighbors(Rectangle rectangle, ImmutableList<Rectangle> neighbors) {
 		Objects.requireNonNull(rectangle);
 		Objects.requireNonNull(neighbors);
-		assert !neighbors.contains(rectangle);
 		this.rectangle = rectangle;
 		this.neighbors = neighbors;
 	}

@@ -1,12 +1,14 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
-import org.tendiwa.geometry.Point2D;
+import org.junit.Test;
+import org.tendiwa.geometry.ConstructedPolygon;
+import org.tendiwa.geometry.Polygon;
+import org.tendiwa.geometry.extensions.WobblingPolygon;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.IntStream;
 
-import static java.util.stream.Collectors.toList;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static org.tendiwa.geometry.GeometryPrimitives.point2D;
 
 /**
@@ -17,8 +19,10 @@ import static org.tendiwa.geometry.GeometryPrimitives.point2D;
  * @author suseika
  */
 public class SuseikaStraightSkeletonTest {
-	public void nonConvexPolygonWithoutHoles() {
-		List<Point2D> vertices = new ArrayList<Point2D>() {{
+	private static class NonConvexTestPolygon extends ConstructedPolygon {
+
+		protected NonConvexTestPolygon() {
+			super(20);
 			add(point2D(4, 30));
 			add(point2D(41, 41));
 			add(point2D(48, 11));
@@ -37,15 +41,26 @@ public class SuseikaStraightSkeletonTest {
 			add(point2D(31, 123));
 			add(point2D(7, 112));
 			add(point2D(50, 83));
-		}};
-		new SuseikaStraightSkeleton(vertices);
+		}
 	}
 
-	/**
-	 * Mutates a given polygon, testing with each slightly different polygon that the algorithm runs without any error.
-	 */
-	public void manySimilarPolygons() {
-		List<Point2D> points = new ArrayList<Point2D>() {{
+	@Test
+	public void non_convex_polygon_without_holes() {
+		Polygon vertices = new NonConvexTestPolygon();
+		assertEquals(
+			vertices.size(),
+			new SuseikaStraightSkeleton(vertices)
+				.cap(1)
+				.iterator()
+				.next()
+				.size()
+		);
+	}
+
+	private final class WobblingTestPolygon extends WobblingPolygon {
+
+		public WobblingTestPolygon(int parts) {
+			super(20, parts);
 			add(point2D(11, 14));
 			add(point2D(26, 61));
 			add(point2D(12, 92));
@@ -63,15 +78,22 @@ public class SuseikaStraightSkeletonTest {
 			add(point2D(178, 6));
 			add(point2D(89, 54));
 			add(point2D(100, 13));
-		}};
-		IntStream.range(0, 180).forEach(i -> new SuseikaStraightSkeleton(
-			points.stream().map(p -> {
-				double angle = Math.PI * 2 / (180 / (points.indexOf(p) % 6 + 1)) * i;
-				return point2D(
-					p.x() + Math.cos(angle) * 6,
-					p.y() + Math.sin(angle) * 6
-				);
-			}).collect(toList())
-		));
+		}
+	}
+
+	/**
+	 * Mutates a given polygon, testing with each slightly different polygon that the algorithm runs without any error.
+	 */
+	@Test
+	public void many_similar_polygons() {
+		int parts = 180;
+		WobblingPolygon polygon = new WobblingTestPolygon(parts);
+		polygon
+			.polygonStream()
+			.map(SuseikaStraightSkeleton::new)
+			.map(
+				skeleton -> skeleton.cap(skeleton.vanishDepth() * 0.5)
+			)
+			.forEach(polygons -> assertFalse(polygons.isEmpty()));
 	}
 }

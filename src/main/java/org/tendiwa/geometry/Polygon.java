@@ -1,27 +1,59 @@
 package org.tendiwa.geometry;
 
+import com.google.common.collect.ImmutableList;
 import com.sun.istack.internal.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.ListIterator;
-
-import static org.tendiwa.collections.Collectors.*;
+import java.util.*;
+import java.util.stream.Stream;
 
 public interface Polygon extends List<Point2D>, BoundedShape {
 	default boolean isClockwise() {
 		throw new UnsupportedOperationException();
 	}
 
-	default boolean isClockwise(Segment2D segment) {
-		throw new UnsupportedOperationException();
+
+	ImmutableList<Point2D> toImmutableList();
+
+	default Segment2D edge(Point2D a, Point2D b) {
+		return new BasicSegment2D(a, b);
+	}
+
+	@Override
+	default boolean contains(Object o) {
+		return toImmutableList().contains(o);
+	}
+
+	@Override
+	default int size() {
+		return toImmutableList().size();
+	}
+
+	@NotNull
+	@Override
+	default Iterator<Point2D> iterator() {
+		return toImmutableList().iterator();
+	}
+
+
+	@Override
+	default int indexOf(Object o) {
+		return toImmutableList().indexOf(o);
+	}
+
+	@Override
+	default int lastIndexOf(Object o) {
+		return toImmutableList().lastIndexOf(o);
+	}
+
+	@Override
+	default Point2D get(int index) {
+		return toImmutableList().get(index);
 	}
 
 	default List<Segment2D> toSegments() {
 		List<Segment2D> segments = new ArrayList<>(size());
 		new BasicPolyline(this).toSegments().forEach(segments::add);
-		segments.add(new BasicSegment2D(get(size() - 1), get(0)));
+		segments.add(edge(get(size() - 1), get(0)));
 		return segments;
 	}
 
@@ -145,19 +177,27 @@ public interface Polygon extends List<Point2D>, BoundedShape {
 			area = area + (get(j).x() + get(i).x()) * (get(j).y() - get(i).y());
 			j = i;
 		}
-		return area / 2;
+		return Math.abs(area / 2);
 	}
 
 	default Polygon translate(Vector2D vector) {
 		return new BasicPolygon(
 			stream()
 				.map(p -> p.add(vector))
-				.collect(toImmutableList())
+				.collect(
+					org.tendiwa.collections.Collectors.toImmutableList()
+				)
 		);
+	}
+
+	@Override
+	default Stream<Point2D> stream() {
+		return toImmutableList().stream();
 	}
 
 	default boolean containsPoint(Point2D point) {
 		throw new UnsupportedOperationException();
 	}
+
 
 }

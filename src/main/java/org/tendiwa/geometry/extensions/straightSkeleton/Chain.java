@@ -5,7 +5,7 @@ import org.tendiwa.collections.DoublyLinkedNode;
 import javax.annotation.Nullable;
 
 /**
- * Holds start and end of a subchain of a {@link IncompleteFace}
+ * Holds start and end of a subchain of a {@link IncompleteMutableFace}
  */
 final class Chain {
 	private DoublyLinkedNode<Node> first;
@@ -22,8 +22,8 @@ final class Chain {
 		} else {
 			this.first = new DoublyLinkedNode<>(oneEnd);
 			this.last = new DoublyLinkedNode<>(last);
-			this.first.setNext(this.last);
-			this.last.setPrevious(this.first);
+			this.first.connectWithNext(this.last);
+			this.last.connectWithPrevious(this.first);
 		}
 
 		this.previousChain = previousChain;

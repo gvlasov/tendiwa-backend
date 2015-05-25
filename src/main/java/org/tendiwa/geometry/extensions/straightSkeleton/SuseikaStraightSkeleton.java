@@ -4,13 +4,13 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import org.jgrapht.UndirectedGraph;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Polygon;
-import org.tendiwa.geometry.Segment2D;
-import org.tendiwa.geometry.StraightSkeleton;
+import org.tendiwa.collections.Collectors;
+import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.extensions.PlanarGraphs;
 
 import java.util.*;
+
+import static org.tendiwa.collections.Collectors.toLinkedHashSet;
 
 public final class SuseikaStraightSkeleton implements StraightSkeleton {
 	private final InitialListOfActiveVertices initialLav;
@@ -18,10 +18,11 @@ public final class SuseikaStraightSkeleton implements StraightSkeleton {
 	private final Multimap<Point2D, Point2D> arcs = HashMultimap.create();
 	final Debug debug = new Debug();
 	private static int skeletonNumber = 0;
+	private final Polygon polygon;
 	private int hash = skeletonNumber++;
 
-	public SuseikaStraightSkeleton(List<Point2D> vertices) {
-		this(vertices, false);
+	public SuseikaStraightSkeleton(Polygon polygon) {
+		this(polygon, false);
 	}
 
 	@Override
@@ -29,10 +30,11 @@ public final class SuseikaStraightSkeleton implements StraightSkeleton {
 		return hash;
 	}
 
-	private SuseikaStraightSkeleton(List<Point2D> vertices, boolean trustCounterClockwise) {
+	private SuseikaStraightSkeleton(Polygon polygon, boolean trustCounterClockwise) {
+		this.polygon = polygon;
 //		Utils.printListOfPoints(vertices);
 
-		this.initialLav = new InitialListOfActiveVertices(vertices, trustCounterClockwise);
+		this.initialLav = new InitialListOfActiveVertices(polygon, trustCounterClockwise);
 		this.queue = new PriorityQueue<>(initialLav.size());
 
 		// [Obdrzalek 1998, paragraph 2.2, algorithm step 1c]
@@ -92,16 +94,21 @@ public final class SuseikaStraightSkeleton implements StraightSkeleton {
 
 	@Override
 	public ImmutableSet<Polygon> cap(double depth) {
-		return new ShrinkedFront(faces(), depth).polygons();
+		if (depth <= -Vectors2D.EPSILON) {
+			throw new IllegalArgumentException("Cap depth can't be negative");
+		}
+		if (depth <= Vectors2D.EPSILON) {
+			return ImmutableSet.of(polygon);
+		} else {
+			return new ShrinkedFront(faces(), depth).polygons();
+		}
 	}
 
 	@Override
-	public Set<Polygon> faces() {
-		Set<Polygon> answer = new LinkedHashSet<>();
-		initialLav.nodes.stream()
+	public Set<StraightSkeletonFace> faces() {
+		return initialLav.nodes.stream()
 			.map(node -> node.face().toPolygon())
-			.forEach(answer::add);
-		return answer;
+			.collect(toLinkedHashSet());
 	}
 
 	void queueEvent(SplitEvent splitEvent) {

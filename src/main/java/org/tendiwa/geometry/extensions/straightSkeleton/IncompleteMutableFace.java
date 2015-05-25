@@ -12,7 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
 
-final class IncompleteFace implements Face, UnderlyingFace {
+final class IncompleteMutableFace implements MutableFace, UnderlyingFace {
 	final Chain startHalfface;
 	@Nonnull
 	final Chain endHalfface;
@@ -22,7 +22,7 @@ final class IncompleteFace implements Face, UnderlyingFace {
 	private int numberOfSkeletonNodes;
 	private final TreeSet<Node> sortedLinkEnds;
 
-	IncompleteFace(OriginalEdgeStart edgeStart, OriginalEdgeStart edgeEnd) {
+	IncompleteMutableFace(OriginalEdgeStart edgeStart, OriginalEdgeStart edgeEnd) {
 		this.edgeStart = edgeStart;
 		this.edgeEnd = edgeEnd;
 		assert edgeStart.next() == edgeEnd;
@@ -104,7 +104,7 @@ final class IncompleteFace implements Face, UnderlyingFace {
 	}
 
 	@Override
-	public Polygon toPolygon() {
+	public StraightSkeletonFace toPolygon() {
 		List<Point2D> points = new ArrayList<>(numberOfSkeletonNodes);
 		DoublyLinkedNode<Node> seed = startHalfface.firstFaceNode();
 		assert !seed.hasBothNeighbors();
@@ -122,7 +122,7 @@ final class IncompleteFace implements Face, UnderlyingFace {
 		}
 
 		assertPolygonCorrectness(points);
-		return new BasicPolygon(points);
+		return new PolygonStartingWithFaceFront(points);
 	}
 
 	private void assertPolygonCorrectness(List<Point2D> points) {

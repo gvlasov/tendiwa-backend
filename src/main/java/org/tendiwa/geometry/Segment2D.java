@@ -6,6 +6,8 @@ import org.tendiwa.core.meta.Cell;
 import java.util.List;
 import java.util.function.Function;
 
+import static org.tendiwa.geometry.GeometryPrimitives.vector;
+
 /**
  * An immutable line segment.
  */
@@ -15,6 +17,22 @@ public interface Segment2D extends RectangularHull {
 	Point2D start();
 
 	Point2D end();
+
+	default double startX() {
+		return start().x();
+	}
+
+	default double startY() {
+		return start().y();
+	}
+
+	default double endX() {
+		return end().x();
+	}
+
+	default double endY() {
+		return end().y();
+	}
 
 	default Segment2D reverse() {
 		return new BasicSegment2D(end(), start());
@@ -176,6 +194,7 @@ public interface Segment2D extends RectangularHull {
 	default boolean intersects(Rectangle rectangle) {
 		return new RectangleSegmentIntersection(rectangle, this).intersect();
 	}
+
 	default Rectangle2D boundingBox() {
 		return new BasicRectangle2D(
 			Math.min(start().x(), end().x()),
@@ -183,5 +202,9 @@ public interface Segment2D extends RectangularHull {
 			Math.abs(dx()),
 			Math.abs(dy())
 		);
+	}
+
+	default Point2D pointAt(double distance) {
+		return start().add(asVector().normalize().multiply(distance));
 	}
 }

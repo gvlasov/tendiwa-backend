@@ -1,5 +1,7 @@
 package org.tendiwa.geometry;
 
+import com.google.common.collect.ImmutableList;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -18,8 +20,8 @@ public abstract class Polygon_Wr implements Polygon {
 	}
 
 	@Override
-	public boolean isClockwise(Segment2D segment) {
-		return polygon.isClockwise(segment);
+	public ImmutableList<Point2D> toImmutableList() {
+		return polygon.toImmutableList();
 	}
 
 	@Override

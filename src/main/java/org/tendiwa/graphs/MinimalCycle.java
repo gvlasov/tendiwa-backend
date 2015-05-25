@@ -1,5 +1,6 @@
 package org.tendiwa.graphs;
 
+import com.google.common.collect.ImmutableList;
 import org.tendiwa.geometry.BasicPolygon;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
@@ -15,6 +16,11 @@ public final class MinimalCycle extends BasicPolygon {
 	private final List<Point2D> cycle = new ArrayList<>();
 	private Graph2D graph;
 
+	@Override
+	public Segment2D edge(Point2D a, Point2D b) {
+		return graph.getEdge(a, b);
+	}
+
 	/**
 	 * @param graph
 	 * 	A larger graph in which this minimal cycle exists.
@@ -29,7 +35,7 @@ public final class MinimalCycle extends BasicPolygon {
 	}
 
 	@Override
-	public List<Segment2D> toSegments() {
-		return null;
+	public ImmutableList<Point2D> toImmutableList() {
+		return ImmutableList.copyOf(cycle);
 	}
 }

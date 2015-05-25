@@ -1,6 +1,7 @@
 package org.tendiwa.geometry;
 
 import com.google.common.collect.ImmutableList;
+import com.sun.istack.internal.NotNull;
 
 import java.util.Iterator;
 
@@ -46,13 +47,18 @@ public final class BasicRectangle2D implements Rectangle2D {
 	}
 
 	@Override
+	public ImmutableList<Point2D> toImmutableList() {
+		return ImmutableList.of(
+			point2D(x(), y()),
+			point2D(maxX(), y()),
+			point2D(maxX(), maxY()),
+			point2D(x(), maxY())
+		);
+	}
+
+	@NotNull
+	@Override
 	public Iterator<Point2D> iterator() {
-		return
-			ImmutableList.of(
-				point2D(x(), y()),
-				point2D(maxX(), y()),
-				point2D(maxX(), maxY()),
-				point2D(x(), maxY())
-			).iterator();
+		return toImmutableList().iterator();
 	}
 }

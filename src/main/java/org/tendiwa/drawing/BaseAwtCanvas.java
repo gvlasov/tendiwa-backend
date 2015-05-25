@@ -23,6 +23,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.function.Function;
 
 /**
  * Window where you can draw world, locations or anything for what there is a {@link DrawingAlgorithm}.
@@ -174,6 +175,7 @@ class BaseAwtCanvas implements AwtCanvas, ScaledCanvas {
 	@Override
 	public void draw(Drawable drawable) {
 		drawable.drawIn(this);
+		currentLayer.component.repaint();
 	}
 
 	@Override
@@ -387,6 +389,7 @@ class BaseAwtCanvas implements AwtCanvas, ScaledCanvas {
 			),
 			color
 		);
+		currentLayer.component.repaint();
 	}
 
 	@Override
@@ -394,8 +397,8 @@ class BaseAwtCanvas implements AwtCanvas, ScaledCanvas {
 		Rectangle2D bounds = circle.bounds();
 		fillShape(
 			new Ellipse2D.Double(
-				bounds.x(),
-				bounds.y(),
+				bounds.x() + 0.5,
+				bounds.y() + 0.5,
 				bounds.width(),
 				bounds.height()
 			),

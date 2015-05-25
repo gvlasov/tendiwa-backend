@@ -10,6 +10,7 @@ import org.tendiwa.drawing.extensions.Gif;
 import org.tendiwa.files.FileInHome;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Polygon;
+import org.tendiwa.geometry.extensions.WobblingPolygon;
 import org.tendiwa.geometry.extensions.straightSkeleton.SuseikaStraightSkeleton;
 
 import java.awt.Color;
@@ -26,15 +27,29 @@ public class StraightSkeletonDemo implements Runnable {
 		Demos.run(StraightSkeletonDemo.class, new DrawingModule());
 	}
 
+	private final class WobblingDemoPolygon extends WobblingPolygon {
+
+		@Override
+		protected Point2D wobble(Point2D p, int part) {
+			double angle = Math.PI * 2 / (numberOfParts() / (this.indexOf(p) % 6 + 1)) * part;
+			return p.add(vector(Math.cos(angle) * 6, Math.sin(angle) * 6));
+		}
+
+		public WobblingDemoPolygon(int parts) {
+			super(100, parts);
+			new ConvexAndReflexAmoeba().forEach(this::add);
+		}
+	}
+
 	@Override
 	public void run() {
-
-		Polygon points = new ConvexAndReflexAmoeba();
-		Stream<AnimationFrame> frames = IntStream.range(0, 180)
+		int parts = 180;
+		WobblingPolygon points = new WobblingDemoPolygon(parts);
+		Stream<AnimationFrame> frames = IntStream.range(0, parts)
 			.mapToObj(i ->
 					new DrawableStraightSkeleton(
 						new SuseikaStraightSkeleton(
-							ithVersionOfPolygon(points, i)
+							points.wobbled(i)
 						),
 						Color.red,
 						Color.cyan
@@ -53,12 +68,5 @@ public class StraightSkeletonDemo implements Runnable {
 			30,
 			frames
 		).save();
-	}
-
-	private List<Point2D> ithVersionOfPolygon(Polygon points, int i) {
-		return points.stream().map(p -> {
-			double angle = Math.PI * 2 / (180 / (points.indexOf(p) % 6 + 1)) * i;
-			return p.add(vector(Math.cos(angle) * 6, Math.sin(angle) * 6));
-		}).collect(toList());
 	}
 }

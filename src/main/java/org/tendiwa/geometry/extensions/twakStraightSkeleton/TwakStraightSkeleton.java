@@ -20,9 +20,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.tendiwa.geometry.GeometryPrimitives.point2D;
-import static org.tendiwa.geometry.GeometryPrimitives.rectangle;
-import static org.tendiwa.geometry.GeometryPrimitives.segment2D;
+import static org.tendiwa.geometry.GeometryPrimitives.*;
 
 /**
  * This class is a facade for <a href="http://twak.blogspot.ru/2009/10/skeleton-index-page.html">a straight skeleton
@@ -168,7 +166,7 @@ public class TwakStraightSkeleton implements StraightSkeleton {
 	}
 
 	@Override
-	public Set<Polygon> faces() {
+	public Set<StraightSkeletonFace> faces() {
 		throw new UnsupportedOperationException();
 	}
 

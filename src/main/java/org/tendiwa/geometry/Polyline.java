@@ -12,9 +12,13 @@ public interface Polyline extends List<Point2D>, BoundedShape {
 		List<Segment2D> segments = new ArrayList<>(size());
 		int last = size() - 1;
 		for (int i = 0; i < last; i++) {
-			segments.add(new BasicSegment2D(get(i), get(i + 1)));
+			segments.add(edge(get(i), get(i + 1)));
 		}
 		return ImmutableList.copyOf(segments);
+	}
+
+	default Segment2D edge(Point2D a, Point2D b) {
+		return new BasicSegment2D(a, b);
 	}
 
 	default Point2D start() {

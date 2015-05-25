@@ -7,7 +7,7 @@ final class OrientedCycleEdgeHalfplane implements Sector {
 	private final Vector2D ccw;
 
 	OrientedCycleEdgeHalfplane(
-		OrientedCycle cycle,
+		MeshedNetworkCycle cycle,
 		SplitSegment2D splitSegment,
 		boolean inward
 	) {

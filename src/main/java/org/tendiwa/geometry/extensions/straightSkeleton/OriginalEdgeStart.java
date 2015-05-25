@@ -1,7 +1,6 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
 import org.tendiwa.collections.SuccessiveTuples;
-import org.tendiwa.geometry.GeometryPrimitives;
 import org.tendiwa.geometry.RayIntersection;
 import org.tendiwa.geometry.Segment2D;
 
@@ -16,7 +15,7 @@ import static org.tendiwa.geometry.GeometryPrimitives.segment2D;
  * from this node.
  */
 final class OriginalEdgeStart extends Node {
-	private Face face;
+	private MutableFace mutableFace;
 
 	OriginalEdgeStart(Segment2D edge) {
 		super(edge.start());
@@ -29,7 +28,7 @@ final class OriginalEdgeStart extends Node {
 	}
 
 	void initFace() {
-		this.face = new IncompleteFace(currentEdgeStart, (OriginalEdgeStart) currentEdgeStart.next());
+		this.mutableFace = new IncompleteMutableFace(currentEdgeStart, (OriginalEdgeStart) currentEdgeStart.next());
 	}
 
 
@@ -38,15 +37,15 @@ final class OriginalEdgeStart extends Node {
 		return false;
 	}
 
-	Face face() {
-		return face;
+	MutableFace face() {
+		return mutableFace;
 	}
 
 	void integrateSplitNodes(Node parent, LeftSplitNode leftNode, RightSplitNode rightNode) {
 		Node leftLavNextNode, rightLavPreviousNode;
-		assert !face.isClosed();
-		leftLavNextNode = face.getNodeFromLeft(leftNode);
-		rightLavPreviousNode = face.getNodeFromRight(rightNode);
+		assert !mutableFace.isClosed();
+		leftLavNextNode = mutableFace.getNodeFromLeft(leftNode);
+		rightLavPreviousNode = mutableFace.getNodeFromRight(rightNode);
 
 		leftNode.setPreviousInLav(parent.previous());
 		leftLavNextNode.setPreviousInLav(leftNode);
@@ -58,14 +57,14 @@ final class OriginalEdgeStart extends Node {
 
 		parent.growRightFace(rightNode);
 		parent.growLeftFace(leftNode);
-		face.addLink(leftNode, rightNode);
+		mutableFace.addLink(leftNode, rightNode);
 	}
 
 	OriginalEdgeStart findAnotherOppositeEdgeStart(Node parent) {
 		Node leftLavNextNode, rightLavPreviousNode;
 		Segment2D oppositeInClosed = findClosestIntersectedSegment(parent.bisector);
 		Node oneNode = null, anotherNode = null;
-		for (Node node : face) {
+		for (Node node : mutableFace) {
 			if (node.vertex.equals(oppositeInClosed.start())
 				|| node.vertex.equals(oppositeInClosed.end())) {
 				if (oneNode == null) {
@@ -93,9 +92,9 @@ final class OriginalEdgeStart extends Node {
 		return leftLavNextNode.previousEdgeStart;
 	}
 
-	private Stream<Segment2D> asSegmentStream(Face face) {
+	private Stream<Segment2D> asSegmentStream(MutableFace mutableFace) {
 		Collection<Segment2D> segments = new ArrayList<>();
-		SuccessiveTuples.forEachLooped(face, (a, b) -> {
+		SuccessiveTuples.forEachLooped(mutableFace, (a, b) -> {
 			if (a.vertex != b.vertex) {
 				segments.add(segment2D(a.vertex, b.vertex));
 			}
@@ -104,8 +103,8 @@ final class OriginalEdgeStart extends Node {
 	}
 
 	private Segment2D findClosestIntersectedSegment(Segment2D ray) {
-		assert face.isClosed();
-		return asSegmentStream(face)
+		assert mutableFace.isClosed();
+		return asSegmentStream(mutableFace)
 			.filter(s -> {
 				double r = new RayIntersection(s, ray).r;
 				return r < 1. && r > 0.;

@@ -1,9 +1,15 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
 import org.junit.Test;
+import org.tendiwa.drawing.TestCanvas;
+import org.tendiwa.drawing.extensions.DrawablePolygon;
 import org.tendiwa.geometry.*;
 
+import java.awt.Color;
+
 import static org.junit.Assert.*;
+import static org.tendiwa.geometry.GeometryPrimitives.point2D;
+import static org.tendiwa.geometry.GeometryPrimitives.rectangle;
 
 public class ShrinkedPolygonTest {
 	@Test
@@ -45,9 +51,8 @@ public class ShrinkedPolygonTest {
 		Polygon polygon = new Narrowing();
 		double shrinkedArea = new ShrinkedPolygon(polygon, 1)
 			.stream()
-			.map(Polygon::area)
-			.reduce(Double::sum)
-			.get();
+			.mapToDouble(Polygon::area)
+			.sum();
 		assertTrue(shrinkedArea < polygon.area());
 	}
 }

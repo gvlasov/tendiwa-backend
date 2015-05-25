@@ -25,7 +25,8 @@ final class ShrinkedFront implements Penetrable {
 	 * @param depth
 	 * 	How much to intrude the polygon.
 	 */
-	ShrinkedFront(Set<Polygon> faces, double depth) {
+	ShrinkedFront(Collection<StraightSkeletonFace> faces, double depth) {
+		assert depth > Vectors2D.EPSILON;
 		this.depth = depth;
 		// Minimum possible number of points on a front is faces.size(), so we pick a value twice as big. That should
 		// be enough for most cases and not too much.
@@ -55,7 +56,7 @@ final class ShrinkedFront implements Penetrable {
 	}
 
 	@Override
-	public Optional<Point2D> obtainItersectionPoint(Segment2D inner, Segment2D intruded) {
+	public Optional<Point2D> obtainIntersectionPoint(Segment2D inner, Segment2D intruded) {
 		Segment2D reverse = inner.reverse();
 		if (intersectionsOnSegments.containsValue(reverse)) {
 			return Optional.of(getExistingIntersectionPoint(reverse));

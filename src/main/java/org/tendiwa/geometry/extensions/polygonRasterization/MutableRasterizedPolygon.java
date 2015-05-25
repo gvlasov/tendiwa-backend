@@ -14,7 +14,7 @@ import java.util.*;
  * are several consecutive points of a polygon on the same horizontal line with a whole number y-coordinate.
  * <p>
  */
-public final class MutableRasterizedPolygon extends Mutable2DCellSet {
+public final class MutableRasterizedPolygon extends Mutable2DCellSet implements RasterizedPolygon {
 
 	private final Polygon polygon;
 
@@ -162,6 +162,11 @@ public final class MutableRasterizedPolygon extends Mutable2DCellSet {
 			}
 		}
 		drawIntegerHorizontalEdges();
+	}
+
+	@Override
+	public Polygon polygon() {
+		return polygon;
 	}
 
 	private void drawIntegerHorizontalEdges() {

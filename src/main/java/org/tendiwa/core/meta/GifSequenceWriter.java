@@ -132,7 +132,7 @@ public class GifSequenceWriter {
 	 */
 	public void close() {
 		try {
-			outputStream.close();
+//			outputStream.close();
 			gifWriter.endWriteSequence();
 		} catch (IOException e) {
 			throw new RuntimeException(e);

@@ -27,11 +27,20 @@ public class Mutable2DCellSet implements MutableBoundedCellSet, ArrayBackedCellS
 	public Mutable2DCellSet(Rectangle bounds) {
 		Objects.requireNonNull(bounds);
 		this.bounds = bounds;
-		cells = new boolean[bounds.height()][bounds.width()];
+		this.cells = new boolean[bounds.height()][bounds.width()];
+	}
+
+	public Mutable2DCellSet(ArrayBackedCellSet rasterized) {
+		this(rasterized.getBounds());
+		for (int i=0; i<bounds.height(); i++) {
+			for (int j=0; j<bounds.width(); j++) {
+				cells[i][j] = rasterized.arrayElement(j, i); // indices not mixed up!
+			}
+		}
 	}
 
 	@Override
-	public Rectangle getBounds() {
+	public final Rectangle getBounds() {
 		return bounds;
 	}
 
@@ -48,7 +57,7 @@ public class Mutable2DCellSet implements MutableBoundedCellSet, ArrayBackedCellS
 	 * 	If {x:y} is not within bounds.
 	 */
 	@Override
-	public void add(int x, int y) {
+	public final void add(int x, int y) {
 		boolean present = cells[y - bounds.y()][x - bounds.x()];
 		if (present) {
 			throw new IllegalArgumentException(
@@ -71,12 +80,12 @@ public class Mutable2DCellSet implements MutableBoundedCellSet, ArrayBackedCellS
 	 * 	Y coordinate of a cell.
 	 */
 	@Override
-	public void addAnyway(int x, int y) {
+	public final void addAnyway(int x, int y) {
 		cells[y - bounds.y()][x - bounds.x()] = true;
 	}
 
 	@Override
-	public void add(Cell cell) {
+	public final void add(Cell cell) {
 		add(cell.x(), cell.y());
 	}
 
@@ -91,7 +100,7 @@ public class Mutable2DCellSet implements MutableBoundedCellSet, ArrayBackedCellS
 	 * 	If {x:y} is not within bounds.
 	 */
 	@Override
-	public void remove(Cell cell) {
+	public final void remove(Cell cell) {
 		remove(cell.x(), cell.y());
 	}
 
@@ -106,7 +115,7 @@ public class Mutable2DCellSet implements MutableBoundedCellSet, ArrayBackedCellS
 	 * 	Y coordinate of a cell.
 	 */
 	@Override
-	public void remove(int x, int y) {
+	public final void remove(int x, int y) {
 		boolean present = cells[y - bounds.y()][x - bounds.x()];
 		if (present) {
 			throw new IllegalArgumentException(
@@ -127,7 +136,7 @@ public class Mutable2DCellSet implements MutableBoundedCellSet, ArrayBackedCellS
 	 * 	If cell is not within {@link #getBounds()}.
 	 */
 	@Override
-	public void toggle(int x, int y) {
+	public final void toggle(int x, int y) {
 		cells[y - bounds.y()][x - bounds.x()] = !cells[y - bounds.y()][x - bounds.x()];
 	}
 
@@ -141,12 +150,12 @@ public class Mutable2DCellSet implements MutableBoundedCellSet, ArrayBackedCellS
 	 * @return true if this set contains a cell {x:y}, false otherwise.
 	 */
 	@Override
-	public boolean contains(int x, int y) {
+	public final boolean contains(int x, int y) {
 		return bounds.contains(x, y) && cells[y - bounds.y()][x - bounds.x()];
 	}
 
 	@Override
-	public void forEach(Consumer<? super Cell> action) {
+	public final void forEach(Consumer<? super Cell> action) {
 		for (int x = 0; x < bounds.width(); x++) {
 			for (int y = 0; y < bounds.height(); y++) {
 				if (cells[y][x]) {
@@ -163,7 +172,7 @@ public class Mutable2DCellSet implements MutableBoundedCellSet, ArrayBackedCellS
 	 * 	A rectangle to fill.
 	 */
 	@Override
-	public void excludeRectangle(Rectangle r) {
+	public final void excludeRectangle(Rectangle r) {
 		int startX = r.x() - bounds.x();
 		int endX = r.x() + r.width() - bounds.x();
 		int endY = r.y() - bounds.y() + r.height();
@@ -177,7 +186,7 @@ public class Mutable2DCellSet implements MutableBoundedCellSet, ArrayBackedCellS
 		}
 	}
 
-	public void fillHorizontalSegment(OrthoCellSegment segment) {
+	public final void fillHorizontalSegment(OrthoCellSegment segment) {
 		Arrays.fill(
 			cells[segment.getY() - bounds.y()],
 			segment.getX() - bounds.x(),
@@ -187,7 +196,7 @@ public class Mutable2DCellSet implements MutableBoundedCellSet, ArrayBackedCellS
 	}
 
 	@Override
-	public boolean arrayElement(int arrayX, int arrayY) {
+	public final boolean arrayElement(int arrayX, int arrayY) {
 		return cells[arrayY][arrayX]; // not a typo
 	}
 }

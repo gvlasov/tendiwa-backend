@@ -1,119 +1,91 @@
 package org.tendiwa.graphs.graphs2d;
 
+import com.google.common.collect.ImmutableList;
 import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.graphs2d.Cycle2D;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Set;
 
-public class BasicSplittableCycle2D extends ArrayList<Point2D> implements Cycle2D, SplittableGraph2D {
-	private final MutableGraph2D graph;
+public class BasicSplittableCycle2D extends LinkedList<Point2D> implements Cycle2D, SplittableGraph2D {
+	private final LinkedGraph2D linkedGraph;
 	private final boolean isCycleClockwise;
-	private final Set<Segment2D> reverseEdges = new HashSet<>();
+	private final ReverseEdges reverseEdges;
 
 	public BasicSplittableCycle2D(Polygon polygon) {
-		this.graph = new BasicMutableGraph2D();
 		this.isCycleClockwise = JTSUtils.isYDownCCW(polygon);
-		addVerticesAndEdges(polygon);
+		this.linkedGraph = new LinkedGraph2D(polygon);
+		this.reverseEdges = new ReverseEdges(polygon);
 	}
+
+	@Override
+	public void integrateCutSegment(CutSegment2D cutSegment) {
+		linkedGraph.splitEdge(cutSegment);
+		reverseEdges.replaceReverseEdge(cutSegment);
+	}
+
 
 	@Override
 	public boolean isClockwise() {
 		return isCycleClockwise;
 	}
 
-	public boolean isClockwise(Segment2D edge) {
-		return isCycleClockwise ^ isAgainstCycleDirection(edge);
-	}
-
-	private boolean isAgainstCycleDirection(Segment2D edge) {
-		return reverseEdges.contains(edge);
-	}
-
-	private void addVerticesAndEdges(Polygon polygon) {
-		List<Segment2D> segments = polygon.toSegments();
-		graph.addVertex(polygon.get(0));
-		for (int i = 0; i < polygon.size(); i++) {
-			Point2D point = polygon.get(i);
-			Segment2D segment = segments.get(i);
-			if (point == segment.start()) {
-				graph.addVertex(segment.end());
-			} else {
-				assert point == segment.end();
-				setReverse(segment);
-				graph.addVertex(segment.start());
-			}
-			graph.addEdge(segment.start(), segment.end(), segment);
-		}
-	}
-
-	private void setReverse(Segment2D edge) {
-		assert !reverseEdges.contains(edge);
-		reverseEdges.add(edge);
-	}
-
 	@Override
-	public void integrateCutSegment(CutSegment2D cutSegment) {
-		graph.integrateCutSegment(cutSegment);
-		Segment2D originalSegment = cutSegment.originalSegment();
-		Vector2D originalVector = originalSegment.asVector();
-		boolean isSplitEdgeAgainst = isAgainstCycleDirection(originalSegment);
-		cutSegment.segmentStream()
-			.filter(segment -> isSplitEdgeAgainst ^ originalVector.dotProduct(segment.asVector()) < 0)
-			.forEach(this::setReverse);
-		reverseEdges.remove(originalSegment);
+	public ImmutableList<Point2D> toImmutableList() {
+		return ImmutableList.copyOf(this);
 	}
 
+	public boolean isClockwise(Segment2D edge) {
+		return isCycleClockwise ^ reverseEdges.isAgainstCycleDirection(edge);
+	}
 
 	@Override
 	public Segment2D getEdge(Point2D sourceVertex, Point2D targetVertex) {
-		return graph.getEdge(sourceVertex, targetVertex);
+		return linkedGraph.getEdgeBetweenPoints(sourceVertex, targetVertex);
 	}
 
 	@Override
 	public boolean containsEdge(Point2D sourceVertex, Point2D targetVertex) {
-		return graph.containsEdge(sourceVertex, targetVertex);
+		return linkedGraph.containsEdgeBetweenPoints(sourceVertex, targetVertex);
 	}
 
 	@Override
 	public boolean containsEdge(Segment2D segment2D) {
-		return graph.containsEdge(segment2D);
+		return linkedGraph.containsEdge(segment2D);
 	}
 
 	@Override
 	public boolean containsVertex(Point2D point2D) {
-		return graph.containsVertex(point2D);
+		return linkedGraph.containsVertexAtPoint(point2D);
 	}
 
 	@Override
 	public Set<Segment2D> edgeSet() {
-		return graph.edgeSet();
+		return linkedGraph.edgeSet();
 	}
 
 	@Override
 	public Set<Segment2D> edgesOf(Point2D vertex) {
-		return graph.edgesOf(vertex);
+		return linkedGraph.edgesOfPoint(vertex);
 	}
 
 	@Override
 	public Set<Point2D> vertexSet() {
-		return graph.vertexSet();
+		return linkedGraph.pointSet();
 	}
 
 	@Override
-	public Point2D getEdgeSource(Segment2D segment2D) {
-		return graph.getEdgeSource(segment2D);
+	public Point2D getEdgeSource(Segment2D segment) {
+		return linkedGraph.getEdgeSource(segment).getPayload();
 	}
 
 	@Override
-	public Point2D getEdgeTarget(Segment2D segment2D) {
-		return graph.getEdgeTarget(segment2D);
+	public Point2D getEdgeTarget(Segment2D segment) {
+		return linkedGraph.getEdgeTarget(segment).getPayload();
 	}
 
 	@Override
 	public boolean contains(Object o) {
-		return graph.vertexSet().contains(o);
+		return vertexSet().contains(o);
 	}
 }

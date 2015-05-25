@@ -128,30 +128,30 @@ final class FaceConstructionStep {
 			DoublyLinkedNode<Node> first1 = chainAtEnd1.firstFaceNode();
 			DoublyLinkedNode<Node> oldFirst2 = chainAtEnd2.firstFaceNode();
 			oldFirst2.revertChain();
-			first1.setPrevious(oldFirst2);
-			oldFirst2.setNext(first1);
+			first1.connectWithPrevious(oldFirst2);
+			oldFirst2.connectWithNext(first1);
 			chainAtEnd1.moveFirstFaceNode(chainAtEnd2.lastFaceNode());
 		} else if (linkAtEnd1First) {
 			assert !linkAtEnd2First;
 			DoublyLinkedNode<Node> first1 = chainAtEnd1.firstFaceNode();
 			DoublyLinkedNode<Node> last2 = chainAtEnd2.lastFaceNode();
-			first1.setPrevious(last2);
-			last2.setNext(first1);
+			first1.connectWithPrevious(last2);
+			last2.connectWithNext(first1);
 			chainAtEnd1.moveFirstFaceNode(chainAtEnd2.firstFaceNode());
 		} else if (linkAtEnd2First) {
 			assert !linkAtEnd1First;
 			DoublyLinkedNode<Node> last1 = chainAtEnd1.lastFaceNode();
 			DoublyLinkedNode<Node> first2 = chainAtEnd2.firstFaceNode();
-			last1.setNext(first2);
-			first2.setPrevious(last1);
+			last1.connectWithNext(first2);
+			first2.connectWithPrevious(last1);
 			chainAtEnd1.moveLastFaceNode(chainAtEnd2.lastFaceNode());
 		} else {
 			assert !linkAtEnd1First && !linkAtEnd2First;
 			DoublyLinkedNode<Node> last1 = chainAtEnd1.lastFaceNode();
 			DoublyLinkedNode<Node> oldLast2 = chainAtEnd2.lastFaceNode();
 			oldLast2.revertChain();
-			last1.setNext(oldLast2);
-			oldLast2.setPrevious(last1);
+			last1.connectWithNext(oldLast2);
+			oldLast2.connectWithPrevious(last1);
 			chainAtEnd1.moveLastFaceNode(chainAtEnd2.firstFaceNode());
 		}
 		chainAtEnd2.removeFromFace();
@@ -166,15 +166,15 @@ final class FaceConstructionStep {
 			face.forgetNodeProjection(chain.firstFaceNode().getPayload());
 			DoublyLinkedNode<Node> newFirst = new DoublyLinkedNode<>(end);
 			DoublyLinkedNode<Node> first = chain.firstFaceNode();
-			first.setPrevious(newFirst);
-			newFirst.setNext(first);
+			first.connectWithPrevious(newFirst);
+			newFirst.connectWithNext(first);
 			chain.moveFirstFaceNode(newFirst);
 		} else {
 			face.forgetNodeProjection(chain.lastFaceNode().getPayload());
 			DoublyLinkedNode<Node> newLast = new DoublyLinkedNode<>(end);
 			DoublyLinkedNode<Node> last = chain.lastFaceNode();
-			last.setNext(newLast);
-			newLast.setPrevious(last);
+			last.connectWithNext(newLast);
+			newLast.connectWithPrevious(last);
 			chain.moveLastFaceNode(newLast);
 		}
 		if (!face.isHalfface(chain)) {

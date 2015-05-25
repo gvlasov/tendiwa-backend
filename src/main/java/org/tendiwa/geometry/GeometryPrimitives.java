@@ -60,8 +60,8 @@ public final class GeometryPrimitives {
 		return new BasicPolygon(points);
 	}
 
-	public static Polygon polygon(Point2D... points) {
-		return new BasicPolygon(points);
+	public static Polygon polygon(Point2D first, Point2D second, Point2D third, Point2D... rest) {
+		return new BasicPolygon(first, second, third, rest);
 	}
 
 	public static Cell cell(int x, int y) {

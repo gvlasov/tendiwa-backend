@@ -11,7 +11,27 @@ public interface StraightSkeleton {
 
 	ImmutableSet<Polygon> cap(double depth);
 
-	Set<Polygon> faces();
+	Set<StraightSkeletonFace> faces();
 
 	List<Segment2D> originalEdges();
+
+	/**
+	 * Depth at which {@link #cap(double)} of a StraightSkeleton becomes empty (doesn't produce any shrinked polygon
+	 * because depth is too large).
+	 *
+	 * @return
+	 */
+	default double vanishDepth() {
+		double maxDepth = 0;
+		for (StraightSkeletonFace face : faces()) {
+			Segment2D front = face.front();
+			for (Point2D point : face) {
+				double distance = point.distanceToLine(front);
+				if (distance > maxDepth) {
+					maxDepth = distance;
+				}
+			}
+		}
+		return maxDepth;
+	}
 }

@@ -2,9 +2,7 @@ package org.tendiwa.graphs.graphs2d;
 
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
-import org.tendiwa.geometry.BasicSegment2D;
-import org.tendiwa.geometry.Point2D;
-import org.tendiwa.geometry.Segment2D;
+import org.tendiwa.geometry.*;
 import org.tendiwa.geometry.graphs2d.Graph2D;
 
 import java.util.Set;
@@ -26,15 +24,24 @@ public abstract class ConstructedGraph2D implements Graph2D {
 	) {
 		return graph.addEdge(sourceVertex, targetVertex);
 	}
+
 	protected final void addSegmentAsEdge(Segment2D segment) {
-		boolean added = addEdge(segment.start(), segment.end(), segment);
-		if (!added) {
-			throw new IllegalArgumentException("Segment " + segment + " is already contained in this graph");
-		}
+		addEdge(segment.start(), segment.end(), segment);
 	}
+
 	protected final void addGraph(Graph2D graph) {
 		graph.vertexSet().forEach(this::addVertex);
 		graph.edgeSet().forEach(this::addSegmentAsEdge);
+	}
+
+	protected final void addPolygon(Polygon polygon) {
+		polygon.forEach(this::addVertex);
+		polygon.toSegments().forEach(this::addSegmentAsEdge);
+	}
+
+	protected final void addPolyline(Polyline polyline) {
+		polyline.forEach(this::addVertex);
+		polyline.toSegments().forEach(this::addSegmentAsEdge);
 	}
 
 	protected final boolean addEdge(

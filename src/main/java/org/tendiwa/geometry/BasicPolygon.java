@@ -9,15 +9,6 @@ import java.util.function.Consumer;
 public class BasicPolygon implements Polygon {
 	private final ImmutableList<Point2D> points;
 
-	public BasicPolygon(Point2D... points) {
-		if (points.length < 3) {
-			throw new IllegalArgumentException(
-				"Polygon must contain at least 3 vertices, but argument's length is " + points.length
-			);
-		}
-		this.points = ImmutableList.copyOf(points);
-	}
-
 	public BasicPolygon(List<Point2D> points) {
 		int size = points.size();
 		if (size < 3) {
@@ -26,6 +17,35 @@ public class BasicPolygon implements Polygon {
 			);
 		}
 		this.points = ImmutableList.copyOf(points);
+	}
+
+	public BasicPolygon(
+		Point2D first,
+		Point2D second,
+		Point2D third,
+		Point2D... rest
+	) {
+		this(constructList(first, second, third, rest));
+	}
+
+	private static List<Point2D> constructList(
+		Point2D first,
+		Point2D second,
+		Point2D third,
+		Point2D... rest
+	) {
+		Objects.requireNonNull(first);
+		Objects.requireNonNull(second);
+		Objects.requireNonNull(third);
+		for (Point2D point : rest) {
+			Objects.requireNonNull(point);
+		}
+		return ImmutableList.<Point2D>builder()
+			.add(first)
+			.add(second)
+			.add(third)
+			.add(rest)
+			.build();
 	}
 
 	@Override
@@ -52,8 +72,8 @@ public class BasicPolygon implements Polygon {
 	}
 
 	@Override
-	public boolean isClockwise(Segment2D segment) {
-		throw new UnsupportedOperationException();
+	public ImmutableList<Point2D> toImmutableList() {
+		return points;
 	}
 
 	@Override
@@ -86,7 +106,12 @@ public class BasicPolygon implements Polygon {
 	@Override
 	@Deprecated
 	public final Object[] toArray() {
-		throw new UnsupportedOperationException();
+		int size = size();
+		Object[] array = new Object[size];
+		for (int i = 0; i < size; i++) {
+			array[i] = get(i);
+		}
+		return array;
 	}
 
 	@NotNull

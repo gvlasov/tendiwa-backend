@@ -3,6 +3,7 @@ package org.tendiwa.graphs;
 import com.google.common.collect.ImmutableList;
 import org.tendiwa.geometry.BasicMutablePolyline;
 import org.tendiwa.geometry.MutablePolyline;
+import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Segment2D;
 import org.tendiwa.geometry.graphs2d.Graph2D;
 
@@ -21,12 +22,7 @@ public class Filament extends BasicMutablePolyline implements MutablePolyline {
 	}
 
 	@Override
-	public final ImmutableList<Segment2D> toSegments() {
-		List<Segment2D> segments = new ArrayList<>(size());
-		int last = size() - 1;
-		for (int i = 0; i < last; i++) {
-			segments.add(supergraph.getEdge(get(i), get(i + 1)));
-		}
-		return ImmutableList.copyOf(segments);
+	public Segment2D edge(Point2D a, Point2D b) {
+		return supergraph.getEdge(a, b);
 	}
 }

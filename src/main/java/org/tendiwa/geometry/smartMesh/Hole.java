@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 
 import static org.tendiwa.collections.Collectors.toImmutableSet;
 
-public final class Hole extends BasicSplittableCycle2D implements OrientedCycle {
+public final class Hole extends BasicSplittableCycle2D implements MeshedNetworkCycle {
 	Hole(Polygon polygon) {
 		super(polygon);
 	}

@@ -7,12 +7,7 @@ import org.tendiwa.graphs.graphs2d.SplittableGraph2D;
 import java.util.Iterator;
 import java.util.Set;
 
-/**
- * Holds a graph of a cycle within which {@link FloodPart} is constructed,
- * and for each edge remembers whether that edge goes clockwise or counter-clockwise. That effectively means that
- * OrientedCycle can tell if its innards are to the right or to the left from its certain edge.
- */
-interface OrientedCycle extends Cycle2D, SplittableGraph2D {
+interface MeshedNetworkCycle extends Cycle2D, SplittableGraph2D, OrientedPolygon {
 	// TODO: bisector is not deviated
 	default Ray deviatedAngleBisector(Point2D bisectorStart, boolean inward) {
 		Set<Segment2D> adjacentEdges = edgesOf(bisectorStart);

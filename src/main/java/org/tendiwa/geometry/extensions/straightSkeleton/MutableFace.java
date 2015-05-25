@@ -1,13 +1,13 @@
 package org.tendiwa.geometry.extensions.straightSkeleton;
 
-import org.tendiwa.geometry.Polygon;
+import org.tendiwa.geometry.StraightSkeletonFace;
 
-interface Face extends Iterable<Node> {
+interface MutableFace extends Iterable<Node> {
 	void addLink(Node one, Node another);
 
 	boolean isClosed();
 
-	Polygon toPolygon();
+	StraightSkeletonFace toPolygon();
 
 	Node getNodeFromLeft(LeftSplitNode leftNode);
 

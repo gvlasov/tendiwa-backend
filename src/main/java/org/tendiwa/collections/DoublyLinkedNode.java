@@ -1,8 +1,8 @@
 package org.tendiwa.collections;
 
-import org.tendiwa.geometry.Segment2D;
-
 import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -11,7 +11,7 @@ import java.util.function.Consumer;
  * @param <T>
  * 	Type of payload.
  */
-public final class DoublyLinkedNode<T> implements Iterable<T> {
+public class DoublyLinkedNode<T> implements Iterable<T> {
 	private final T payload;
 
 
@@ -34,42 +34,46 @@ public final class DoublyLinkedNode<T> implements Iterable<T> {
 		return previous;
 	}
 
-	// TODO: Make setNext and setPrevious set previous and next for another node as well
-	public final void setNext(DoublyLinkedNode<T> node) {
+	// TODO: Make connectWithNext and connectWithPrevious set previous and next for another node as well
+	public final void connectWithNext(DoublyLinkedNode<T> node) {
+		Objects.requireNonNull(node);
 		assert settingNextPreservesConnectivity(node);
 		next = node;
+		node.previous = this;
+	}
+
+	public final void connectWithPrevious(DoublyLinkedNode<T> node) {
+		Objects.requireNonNull(node);
+		assert settingPreviousPreservesConnectivity(node);
+		previous = node;
+		node.next = this;
 	}
 
 	/**
 	 * @param node
 	 * 	A node to insert.
-	 * @return false if inserting {@code node} with {@link #setNext(DoublyLinkedNode)} will introduce a loop or
+	 * @return false if inserting {@code node} with {@link #connectWithNext(DoublyLinkedNode)} will introduce a loop or
 	 * isolate some part of the list.
 	 * @see #settingPreviousPreservesConnectivity(DoublyLinkedNode)
 	 */
-	private final boolean settingNextPreservesConnectivity(DoublyLinkedNode<T> node) {
-		return (node.previous == this || node.previous == null)
-			&& node != null
-			&& next == null
+	private boolean settingNextPreservesConnectivity(DoublyLinkedNode<T> node) {
+		return node != null
+			&& (node.previous == this || node.previous == null)
+//			&& next == null
 			&& node != this;
-	}
-
-	public final void setPrevious(DoublyLinkedNode<T> node) {
-		assert settingPreviousPreservesConnectivity(node);
-		previous = node;
 	}
 
 	/**
 	 * @param node
 	 * 	A node to insert.
-	 * @return false if inserting {@code node} with {@link #setPrevious(DoublyLinkedNode)} will introduce a loop or
+	 * @return false if inserting {@code node} with {@link #connectWithPrevious(DoublyLinkedNode)} will introduce a loop
+	 * or
 	 * isolate some part of the list.
-	 * @see #settingNextPreservesConnectivity(DoublyLinkedNode)
 	 */
 	private boolean settingPreviousPreservesConnectivity(DoublyLinkedNode<T> node) {
-		return (node.next == this || node.next == null)
-			&& node != null
-			&& previous == null
+		return node != null
+			&& (node.next == this || node.next == null)
+//			&& previous == null
 			&& node != this;
 	}
 
@@ -117,22 +121,22 @@ public final class DoublyLinkedNode<T> implements Iterable<T> {
 		if (thisNextNull && thisPreviousNull) {
 			// Two free on this end, one free on listEnd.
 			if (anotherNextNull) {
-				listEnd.setNext(this);
-				this.setPrevious(listEnd);
+				listEnd.connectWithNext(this);
+				this.connectWithPrevious(listEnd);
 			} else {
 				assert anotherPreviousNull;
-				listEnd.setPrevious(this);
-				this.setNext(listEnd);
+				listEnd.connectWithPrevious(this);
+				this.connectWithNext(listEnd);
 			}
 		} else if (anotherNextNull && anotherPreviousNull) {
 			// Two free on listEnd, one free on this end.
 			if (thisNextNull) {
-				this.setNext(listEnd);
-				listEnd.setPrevious(this);
+				this.connectWithNext(listEnd);
+				listEnd.connectWithPrevious(this);
 			} else {
 				assert thisPreviousNull;
-				this.setPrevious(listEnd);
-				listEnd.setNext(this);
+				this.connectWithPrevious(listEnd);
+				listEnd.connectWithNext(this);
 			}
 		} else {
 			// One free on one end, one free on another end.
@@ -162,86 +166,109 @@ public final class DoublyLinkedNode<T> implements Iterable<T> {
 	@Override
 	public final void forEach(Consumer<? super T> action) {
 		if (next == null) {
-			// List with start and end, starting from the end.
-			DoublyLinkedNode<T> current = this;
-			while (current != null) {
-				action.accept(current.payload);
-				current = current.previous;
-			}
+			iterateChainFromEnd(action);
 		} else if (previous == null) {
-			// List with start and end, starting from the beginning.
-			DoublyLinkedNode<T> current = this;
-			while (current != null) {
-				action.accept(current.payload);
-				current = current.next;
-			}
+			iterateChainFromStart(action);
 		} else {
-			// Circular list
-			DoublyLinkedNode<T> current = this;
-			do {
-				action.accept(current.payload);
-				current = current.next;
-				if (current == null) {
-					throw new IllegalArgumentException(
-						"You can only iterate over a chain of nodes beginning from a " +
-							"node that is either end or start of a chain, or is in the middle of a circular chain"
-					);
-				}
-			} while (current != this);
+			iterateCircularList(action);
 		}
 	}
 
-	public boolean hasBothNeighbors() {
+	private void iterateCircularList(Consumer<? super T> action) {
+		assert next != null && previous != null;
+		DoublyLinkedNode<T> current = this;
+		do {
+			action.accept(current.payload);
+			current = current.next;
+			if (current == null) {
+				throw new IllegalArgumentException(
+					"You can only iterate over a chain of nodes beginning from a " +
+						"node that is either end or start of a chain, or is in the middle of a circular chain"
+				);
+			}
+		} while (current != this);
+	}
+
+	private void iterateChainFromStart(Consumer<? super T> action) {
+		assert previous == null && next != null;
+		DoublyLinkedNode<T> current = this;
+		while (current != null) {
+			action.accept(current.payload);
+			current = current.next;
+		}
+	}
+
+	private void iterateChainFromEnd(Consumer<? super T> action) {
+		assert next == null && previous != null;
+		DoublyLinkedNode<T> current = this;
+		while (current != null) {
+			action.accept(current.payload);
+			current = current.previous;
+		}
+	}
+
+	public final boolean hasBothNeighbors() {
 		// TODO: Maybe here should be XOR?
 		return previous != null && next != null;
 	}
 
-	// TODO: Find if getNext is used instead of this method anywhere
-	public boolean hasNext() {
+	// TODO: Find out if getNext is used instead of this method anywhere
+	public final boolean hasNext() {
 		return next != null;
 	}
 
-	public boolean hasPrevious() {
+	public final boolean hasPrevious() {
 		return previous != null;
 	}
 
-	public boolean isStartOfAChain() {
+	public final boolean isStartOfAChain() {
 		return hasNext() && !hasPrevious();
 	}
 
-	private class ForwardIterator implements Iterator<T> {
-		private DoublyLinkedNode<T> current = DoublyLinkedNode.this;
+	private abstract class LinkedListIterator implements Iterator<T> {
+
+		protected DoublyLinkedNode<T> current = DoublyLinkedNode.this;
+		protected final DoublyLinkedNode<T> start = DoublyLinkedNode.this;
+		protected boolean hasNext = true;
 
 		@Override
 		public boolean hasNext() {
-			return current != null;
+			return hasNext;
 		}
 
+		protected void recomputeHasNext() {
+			hasNext = current != null && current != start;
+		}
 		@Override
 		public T next() {
+			if (!hasNext) {
+				throw new NoSuchElementException();
+			}
 			T answer = current.payload;
-			current = current.next;
+			current = chooseNext(current);
+			recomputeHasNext();
 			return answer;
+		}
+		protected abstract DoublyLinkedNode<T> chooseNext(DoublyLinkedNode<T> current);
+	}
+
+	private final class ForwardIterator extends LinkedListIterator {
+
+		@Override
+		protected DoublyLinkedNode<T> chooseNext(DoublyLinkedNode<T> current) {
+			return current.next;
 		}
 	}
 
-	private class BackwardIterator implements Iterator<T> {
-		private DoublyLinkedNode<T> next = DoublyLinkedNode.this;
+	private class BackwardIterator extends LinkedListIterator {
 
 		@Override
-		public boolean hasNext() {
-			return next != null;
-		}
-
-		@Override
-		public T next() {
-			T answer = next.payload;
-			next = next.previous;
-			return answer;
+		protected DoublyLinkedNode<T> chooseNext(DoublyLinkedNode<T> current) {
+			return current.previous;
 		}
 	}
 
-	public boolean isDisconnected() {
+	public final boolean isDisconnected() {
 		return next == null && previous == null;
 	}
 

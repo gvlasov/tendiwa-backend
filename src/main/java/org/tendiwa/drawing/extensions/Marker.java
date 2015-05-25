@@ -1,7 +1,7 @@
 package org.tendiwa.drawing.extensions;
 
+import com.google.common.collect.ImmutableList;
 import org.tendiwa.drawing.Canvas;
-import org.tendiwa.drawing.ScaledCanvas;
 import org.tendiwa.geometry.BasicRectangle2D;
 import org.tendiwa.geometry.Point2D;
 import org.tendiwa.geometry.Rectangle2D;
@@ -42,6 +42,10 @@ final class Marker implements Rectangle2D {
 		);
 	}
 
+	Segment2D post() {
+		return post;
+	}
+
 	Point2D textStart() {
 		return stringStart;
 	}
@@ -66,7 +70,8 @@ final class Marker implements Rectangle2D {
 		return box.height();
 	}
 
-	Segment2D post() {
-		return post;
+	@Override
+	public ImmutableList<Point2D> toImmutableList() {
+		return box.toImmutableList();
 	}
 }

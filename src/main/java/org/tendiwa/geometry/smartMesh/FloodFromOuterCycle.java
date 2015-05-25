@@ -7,12 +7,12 @@ import java.util.*;
 import static org.tendiwa.collections.Collectors.toLinkedHashSet;
 
 final class FloodFromOuterCycle {
-	private final OrientedCycle outerCycle;
+	private final MeshedNetworkCycle outerCycle;
 	private final NetworkGenerationParameters config;
 	private final Random random;
 
 	FloodFromOuterCycle(
-		OrientedCycle outerCycle,
+		MeshedNetworkCycle outerCycle,
 		NetworkGenerationParameters config,
 		Random random
 	) {

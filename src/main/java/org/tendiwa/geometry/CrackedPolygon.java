@@ -1,9 +1,14 @@
 package org.tendiwa.geometry;
 
+import com.google.common.collect.ForwardingCollection;
 import com.google.common.collect.ImmutableSet;
+import lombok.Lazy;
+
+import java.util.Collection;
 
 
-public final class CrackedPolygon extends Polygon_Wr {
+public class CrackedPolygon extends ForwardingCollection<Polygon> {
+	private final Polygon polygon;
 	private final Dimension pieceSize;
 	private final double deviance;
 
@@ -12,12 +17,18 @@ public final class CrackedPolygon extends Polygon_Wr {
 		Dimension pieceSize,
 		double deviance
 	) {
-		super(polygon);
+		this.polygon = polygon;
 		this.pieceSize = pieceSize;
 		this.deviance = deviance;
 	}
 
-	public ImmutableSet<Polygon> pieces() {
-		return ImmutableSet.of(this);
+	private ImmutableSet<Polygon> pieces() {
+		return ImmutableSet.of(polygon);
+	}
+
+	@Lazy
+	@Override
+	protected final Collection<Polygon> delegate() {
+		return pieces();
 	}
 }

@@ -13,7 +13,7 @@ final class OrientedCycleSector implements Sector {
 	private final Vector2D ccw;
 
 	OrientedCycleSector(
-		OrientedCycle cycle,
+		MeshedNetworkCycle cycle,
 		Point2D source,
 		boolean inner
 	) {
@@ -33,7 +33,7 @@ final class OrientedCycleSector implements Sector {
 		}
 	}
 
-	private static Segment2D toCounterClockwise(Segment2D oneEdge, OrientedCycle cycle) {
+	private static Segment2D toCounterClockwise(Segment2D oneEdge, MeshedNetworkCycle cycle) {
 		assert cycle.containsEdge(oneEdge);
 		if (cycle.isClockwise(oneEdge)) {
 			oneEdge = oneEdge.reverse();

@@ -2,10 +2,7 @@ package org.tendiwa.geometry;
 
 import com.google.common.collect.ImmutableList;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 public final class BasicPolyline implements Polyline {
 	private final ImmutableList<Point2D> points;
@@ -17,6 +14,23 @@ public final class BasicPolyline implements Polyline {
 			);
 		}
 		this.points = ImmutableList.copyOf(points);
+	}
+
+	public BasicPolyline(Point2D first, Point2D second, Point2D... rest) {
+		this(constructList(first, second, rest));
+	}
+
+	private static ImmutableList<Point2D> constructList(Point2D first, Point2D second, Point2D... rest) {
+		Objects.requireNonNull(first);
+		Objects.requireNonNull(second);
+		for (Point2D point : rest) {
+			Objects.requireNonNull(point);
+		}
+		return ImmutableList.<Point2D>builder()
+			.add(first)
+			.add(second)
+			.add(rest)
+			.build();
 	}
 
 	@Override

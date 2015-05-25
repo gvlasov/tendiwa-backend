@@ -40,7 +40,7 @@ public class CrackedPolygonTest {
 				.polygon(),
 			rectangle(10, 10),
 			0
-		).pieces();
+		);
 	}
 
 	@Test
@@ -52,7 +52,7 @@ public class CrackedPolygonTest {
 				.polygon(),
 			rectangle(20, 20),
 			0
-		).pieces();
+		);
 	}
 
 }
